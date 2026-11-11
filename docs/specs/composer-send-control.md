@@ -1,6 +1,7 @@
 # Spec: composer send control (send / stop / queue / steer)
 
-**Status:** draft v0.1 (2026-11-11). Hero component of the composer family. Target **12 free + 20 Pro
+**Status:** draft v0.1 (2026-11-11). This is the **worked example** of the depth every Oxyn component gets
+(see [README.md](README.md)); nothing here is special to the send button. Target **12 free + 20 Pro
 variants**, all driven by one state machine.
 
 ## 1. Why it matters
