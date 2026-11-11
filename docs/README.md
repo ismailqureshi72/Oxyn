@@ -10,5 +10,6 @@
 | [website-stack.md](website-stack.md) | Website, docs, demos, Studio, registry, payments, hosting, CI |
 | [studio.md](studio.md) | Studio UX blueprint |
 | [roadmap.md](roadmap.md) | Baseline (V1) and V2 phases |
+| [pr-plan.md](pr-plan.md) | The 30-PR plan from research to launch |
 | [licensing.md](licensing.md) | Licence and attribution rules for reference material |
 | [research/](research/README.md) | Reference index: sites, apps, creators, posts |
