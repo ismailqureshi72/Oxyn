@@ -118,8 +118,8 @@ Glyph shapes follow research note 05's recommended metaphors (warning triangle =
 critical); the circle / diamond pair for low / medium is our proposal. Permission *levels* (tiers 0–4 in
 the permission selector) are a different scale: a level says **which request risks auto-run**:
 `ReadOnly` none · `Ask` none · `AutoEdit` Low `Edit` only · `FullAccess` up to High inside the sandbox ·
-`Bypass` up to High, Critical only if `bypass_includes_critical` (proposed; refines the selector's
-"no approvals" wording for tier 4 — see §10 open questions).
+`Bypass` up to High; **Critical never auto-runs at any level** (decided 2026-11-12;
+`bypass_includes_critical = false`, matching the permission selector).
 
 ### 2.4 Decision set
 | Decision | Label (i18n token, default copy) | Key | Effect | Agent receives | Allowed for |
@@ -431,7 +431,7 @@ badge) · [composer-mode-switch.md](composer-mode-switch.md) (Plan → Agent) ·
 **Open questions / gaps** (for the next revision):
 - `AgentState::AwaitingApproval { request }` carries one request; the queue is new `oxyn-core` state
   (proposed here). Architecture.md should list `ApprovalQueue` beside `RunLog`.
-- Bypass vs Critical: this family proposes `bypass_includes_critical = false`; the permission selector
-  describes Bypass as "no approvals". One of the two documents must change.
+- ~~Bypass vs Critical~~ resolved 2026-11-12: Bypass still stops for Critical requests; the permission
+  selector spec now says so.
 - Risk floors per kind and the destructive-verb list are proposals; the classifier is the app's.
 - No source documents a shield / hand glyph set (note 03 §1D); our glyphs are proposals.

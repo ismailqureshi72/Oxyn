@@ -10,8 +10,8 @@ is `Co-authored-by` on every commit. Agreed 2026-11-11.
 | #3 | specs/composer | All composer specs: input, attach, model, effort, context, send | V2.2 | Ismail | ✅ merged |
 | #4 | specs/thinking-loaders | Thinking, loaders, status-text specs | V2.2 | Khubaib | ✅ merged |
 | #5 | specs/messages-tools | Messages, reasoning, tool calls, plans | V2.2 | Ismail | ✅ merged |
-| #6 | specs/approvals-diff | Approvals, checkpoints, diff, merge conflict | V2.2 | Khubaib | in progress |
-| #7 | specs/genui-chrome-voice | Gen UI, workspace chrome, voice, icons | V2.2 | Ismail | |
+| #6 | specs/approvals-diff | Approvals, checkpoints, diff, merge conflict | V2.2 | Khubaib | ✅ merged |
+| #7 | specs/genui-chrome-voice | Gen UI, workspace chrome, voice, icons | V2.2 | Ismail | in progress |
 | #8 | design/tokens-motion | Tokens, motion language, SVG logo | V2.3 | Khubaib | |
 | #9 | docs/category-kits | Coding, app builder, CRM, finance, video shells | V2.4 | Ismail | |
 | #10 | docs/site-studio-ia | Site map, gallery filters, Studio wireframes | V2.5 | Khubaib | |
