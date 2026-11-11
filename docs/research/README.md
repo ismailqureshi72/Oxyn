@@ -2,7 +2,7 @@
 
 Everything we study. Licence column decides what we may do (see [../licensing.md](../licensing.md)).
 Full notes, screenshots and videos live in our private research folder and `/captures` (git-ignored).
-Checked 2026-11-11.
+Checked 2026-11-11. **Full catalog with IDs: [sources.md](sources.md)** (CSV: [sources.csv](sources.csv)).
 
 ## 1. Agent-UI kits (closest peers)
 | Reference | What to learn | Licence |
