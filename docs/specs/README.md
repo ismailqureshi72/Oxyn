@@ -25,5 +25,18 @@ specified just as deeply. When we point at one component as an example, the stan
 ## Specs
 | Spec | Status |
 |---|---|
-| [composer-send-control.md](composer-send-control.md) | draft v0.1 — worked example |
+| [composer.md](composer.md) | draft v0.1 — composer family overview |
+| [composer-send-control.md](composer-send-control.md) | draft v0.2 — worked example |
+| [composer-input-shell.md](composer-input-shell.md) | draft v0.1 |
+| [composer-tools-menu.md](composer-tools-menu.md) | draft v0.1 |
+| [composer-attachments.md](composer-attachments.md) | draft v0.1 |
+| [composer-slash-mentions.md](composer-slash-mentions.md) | draft v0.1 |
+| [composer-model-picker.md](composer-model-picker.md) | draft v0.1 |
+| [composer-effort-control.md](composer-effort-control.md) | draft v0.1 |
+| [composer-context-meter.md](composer-context-meter.md) | draft v0.1 |
+| [composer-mode-switch.md](composer-mode-switch.md) | draft v0.1 |
+| [composer-permission-selector.md](composer-permission-selector.md) | draft v0.1 |
+| [composer-voice-input.md](composer-voice-input.md) | draft v0.1 |
+| [composer-queue-stack.md](composer-queue-stack.md) | draft v0.1 |
+| [composer-status-strip.md](composer-status-strip.md) | draft v0.1 |
 | Every other component in [../component-taxonomy.md](../component-taxonomy.md) | to write in V2.2 |
