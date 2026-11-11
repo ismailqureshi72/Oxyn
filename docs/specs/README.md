@@ -71,4 +71,17 @@ specified just as deeply. When we point at one component as an example, the stan
 | [background-jobs.md](background-jobs.md) | draft v0.1 |
 | [run-replay.md](run-replay.md) | draft v0.1 |
 | [run-meter.md](run-meter.md) | draft v0.1 |
+| [approvals.md](approvals.md) | draft v0.1 — family G overview |
+| [approval-card.md](approval-card.md) | draft v0.1 |
+| [plan-approval.md](plan-approval.md) | draft v0.1 |
+| [permission-rules.md](permission-rules.md) | draft v0.1 |
+| [takeover-banner.md](takeover-banner.md) | draft v0.1 |
+| [checkpoints-git.md](checkpoints-git.md) | draft v0.1 — family H overview |
+| [checkpoint-timeline.md](checkpoint-timeline.md) | draft v0.1 |
+| [rollback-impact.md](rollback-impact.md) | draft v0.1 |
+| [diff-viewer.md](diff-viewer.md) | draft v0.1 |
+| [merge-conflict.md](merge-conflict.md) | draft v0.1 |
+| [git-chips.md](git-chips.md) | draft v0.1 |
+| [pr-card.md](pr-card.md) | draft v0.1 |
+| [review-card.md](review-card.md) | draft v0.1 |
 | Every other component in [../component-taxonomy.md](../component-taxonomy.md) | to write in V2.2 |
