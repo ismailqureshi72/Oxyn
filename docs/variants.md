@@ -26,5 +26,6 @@ not just colour. Colour, radius, font and density are **tokens**, tuned in the S
 8. Credits / licence of any reference it is based on.
 
 ## Per-component minimum
+The same micro-level depth applies to **every** component (see `specs/README.md`).
 - Free: at least 3 variants per component at launch.
 - Pro: deeper sets (target 8–20 for hero components like the send control, loaders and thinking).

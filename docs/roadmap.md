@@ -11,7 +11,7 @@ composer send-control spec, website stack, Studio blueprint, reference index, br
 | Phase | Goal | Output (in `docs/`) | Exit check |
 |---|---|---|---|
 | **V2.1 Reference capture** | Turn every saved post, site and app into a catalogued reference | `research/sources.md` (one row per reference: link, family, category, interaction, licence), screenshots/videos kept locally in `/captures` (git-ignored) | Every family A–M has ≥ 10 references |
-| **V2.2 Interaction specs** | Write a spec like the composer one for each hero component | `specs/` — thinking indicator, status text, loaders, tool call, approval, checkpoint, diff & merge, context meter, model/effort picker, voice orb | Each spec has states × variants × timing table |
+| **V2.2 Interaction specs** | Write a spec at the composer-arrow depth for **every** component, family by family | `specs/` — one spec per component following `specs/README.md` (starting with thinking, status text, loaders, tool call, approval, checkpoint, diff & merge, context meter, model/effort picker, voice orb, then the rest) | Every component in the taxonomy has states × micro-interactions × timing × variants × edge cases |
 | **V2.3 Design language** | Tokens and motion language | `design/tokens.md`, `design/motion.md` (durations, springs, stagger rules, reduced-motion), vector logo + mark states | Tokens reviewed in light + dark; logo legible at 16–20 px |
 | **V2.4 Category kits** | Define each agent-app category's shell and screens | `categories/<name>.md` for coding, app builder, CRM, finance, video (first five) | Each lists screens + components used |
 | **V2.5 Site & Studio IA** | Information architecture and wireframes | `site/ia.md`, Studio wireframes, gallery filter model | Both maintainers sign off |
