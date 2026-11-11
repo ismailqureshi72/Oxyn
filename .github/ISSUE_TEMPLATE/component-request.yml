@@ -1,0 +1,28 @@
+name: Component / variant request
+description: Propose a new component, variant or interaction
+labels: ["component"]
+body:
+  - type: input
+    id: name
+    attributes:
+      label: Component
+      placeholder: "Composer send control — 'liquid stop' variant"
+    validations:
+      required: true
+  - type: dropdown
+    id: family
+    attributes:
+      label: Family
+      options: [Composer, Loaders & thinking, Text effects, Messages & reasoning, Tool calls & plans, Approvals, Checkpoints & diff, Generative UI, Workspace chrome, Live & voice, Icons & marks, Shells & dashboards]
+    validations:
+      required: true
+  - type: textarea
+    id: states
+    attributes:
+      label: States and behaviour
+      description: Which agent states it covers, motion, timing, keyboard behaviour.
+  - type: textarea
+    id: refs
+    attributes:
+      label: References
+      description: Links, screenshots or videos. Note the licence if you know it.
