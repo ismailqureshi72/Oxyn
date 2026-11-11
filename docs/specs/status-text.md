@@ -365,8 +365,8 @@ the only kit doing this and only in demo copy — note 02). `status-text/semanti
 | **Counts** | **24** | **76** |
 
 Naming note: [../variants.md](../variants.md) uses `status-text/shimmer-comet` as an example; under this
-spec that effect is `text-shimmer/comet`, and `status-text/*` is reserved for composite lines. Proposed;
-variants.md is not edited here.
+spec that effect is `text-shimmer/comet`, and `status-text/*` is reserved for composite lines. variants.md
+now uses `text-shimmer/comet`.
 
 ## 10. Edge cases (family-wide)
 - **RTL:** line mirrors; numbers in bidi isolates; sweep/reveal direction = reading direction; mixed
