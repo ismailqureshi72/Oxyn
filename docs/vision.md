@@ -17,7 +17,8 @@ pieces every agent product needs, in more variants than anyone else, tunable in 
 1. **State first.** Components render an `AgentState`; they never invent their own status logic.
 2. **Variants are first-class.** Every component has a variant matrix (layout × surface × motion), named
    and documented the same way ([variants.md](variants.md)).
-3. **Micro matters.** We specify timing, easing, frame counts and stall behaviour, not just looks.
+3. **Micro matters, everywhere.** Every component, not only the hero ones, is specified down to its
+   states, transitions, timing, easing, frame counts, edge cases and stall behaviour, not just its looks.
 4. **Calm by default.** Matte, low-glow, monochrome-plus-one-accent. Expressive motion is opt-in.
 5. **Accessible always.** Reduced-motion, keyboard, screen-reader labels and contrast on every variant.
 6. **Agent-native docs.** llms.txt, copy-prompt, MCP server and a CLI that coding agents can drive.
