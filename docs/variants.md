@@ -13,7 +13,7 @@ not just colour. Colour, radius, font and density are **tokens**, tuned in the S
 
 ## Naming
 `<component>/<style-family>[-<detail>]`, e.g. `send-control/ring-progress`, `loader/particle-orb`,
-`status-text/shimmer-comet`. Names are stable once released.
+`text-shimmer/comet`. Names are stable once released.
 
 ## Every variant documents
 1. Supported `AgentState`s and what each looks like.

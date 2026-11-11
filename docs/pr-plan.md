@@ -6,9 +6,9 @@ is `Co-authored-by` on every commit. Agreed 2026-11-11.
 | PR | Branch | Delivers | Phase | Author | Status |
 |---|---|---|---|---|---|
 | #1 | docs/baseline | README, docs, spec standard, roadmap, brand | V1 | Both | ✅ merged |
-| #2 | research/sources | Reference catalog (141 refs, IDs, CSV) + this plan | V2.1 | Khubaib | open |
-| #3 | specs/composer | All composer specs: input, attach, model, effort, context, send | V2.2 | Ismail | |
-| #4 | specs/thinking-loaders | Thinking, loaders, status-text specs | V2.2 | Khubaib | |
+| #2 | research/sources | Reference catalog (141 refs, IDs, CSV) + this plan | V2.1 | Khubaib | ✅ merged |
+| #3 | specs/composer | All composer specs: input, attach, model, effort, context, send | V2.2 | Ismail | ✅ merged |
+| #4 | specs/thinking-loaders | Thinking, loaders, status-text specs | V2.2 | Khubaib | in progress |
 | #5 | specs/messages-tools | Messages, reasoning, tool calls, plans | V2.2 | Ismail | |
 | #6 | specs/approvals-diff | Approvals, checkpoints, diff, merge conflict | V2.2 | Khubaib | |
 | #7 | specs/genui-chrome-voice | Gen UI, workspace chrome, voice, icons | V2.2 | Ismail | |
