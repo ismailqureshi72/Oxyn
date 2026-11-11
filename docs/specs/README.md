@@ -39,4 +39,19 @@ specified just as deeply. When we point at one component as an example, the stan
 | [composer-voice-input.md](composer-voice-input.md) | draft v0.1 |
 | [composer-queue-stack.md](composer-queue-stack.md) | draft v0.1 |
 | [composer-status-strip.md](composer-status-strip.md) | draft v0.1 |
+| [loaders.md](loaders.md) | draft v0.1 — family B overview |
+| [loader-glyph.md](loader-glyph.md) | draft v0.1 |
+| [loader-vector.md](loader-vector.md) | draft v0.1 |
+| [thinking-orb.md](thinking-orb.md) | draft v0.1 |
+| [loader-mascot.md](loader-mascot.md) | draft v0.1 |
+| [status-text.md](status-text.md) | draft v0.1 — family C overview |
+| [text-shimmer.md](text-shimmer.md) | draft v0.1 |
+| [verb-cycler.md](verb-cycler.md) | draft v0.1 |
+| [text-reveal.md](text-reveal.md) | draft v0.1 |
+| [elapsed-timer.md](elapsed-timer.md) | draft v0.1 |
+| [container-loaders.md](container-loaders.md) | draft v0.1 — family D overview |
+| [border-beam.md](border-beam.md) | draft v0.1 |
+| [media-generation-placeholder.md](media-generation-placeholder.md) | draft v0.1 |
+| [media-analysis-scan.md](media-analysis-scan.md) | draft v0.1 |
+| [skeletons.md](skeletons.md) | draft v0.1 |
 | Every other component in [../component-taxonomy.md](../component-taxonomy.md) | to write in V2.2 |
