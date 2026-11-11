@@ -1,0 +1,218 @@
+# Reference catalog (V2.1)
+
+Every reference we study, one row each. Machine-readable copy: [sources.csv](sources.csv)
+(used later to power gallery "inspired by" notes and research search). Licence rules: [../licensing.md](../licensing.md).
+Screens and videos stay local in `/captures/<id>/` (git-ignored), named by the row ID.
+
+**Family tags are a first pass** (keyword-assigned on 2026-11-11); correct them as each reference is captured.
+
+**Status values:** `catalogued` → `captured` (screens/video saved) → `specced` (folded into a spec) → `built`.
+
+## Coverage
+
+| Family | References |
+|---|---|
+| A Composer | 19 |
+| B Loaders & thinking | 20 |
+| C Text effects | 1 |
+| D Container & media | 5 |
+| E Messages & reasoning | 8 |
+| F Tool calls & plans | 30 |
+| G Approvals | 7 |
+| H Checkpoints & diff | 10 |
+| I Generative UI | 6 |
+| J Workspace chrome | 9 |
+| K Live & voice | 3 |
+| L Icons & marks | 7 |
+| M Shells | 10 |
+| Studio | 23 |
+| Sound | 2 |
+| Other | 39 |
+
+| Type | Count |
+|---|---|
+| X post | 53 |
+| X post (found) | 21 |
+| Queue/steer ref | 15 |
+| Site | 38 |
+| Site (found) | 14 |
+
+**Gaps to fill in V2.1** (families under 10 references): C Text effects, D Container & media, E Messages & reasoning, G Approvals, I Generative UI, J Workspace chrome, K Live & voice, L Icons & marks, Sound.
+
+
+## X posts (founders' saves)
+
+| ID | Reference | Family | What it shows | Takeaway | Licence |
+|---|---|---|---|---|---|
+| R001 | [@pontusab](https://x.com/pontusab/status/2119865335990141433) | Other | macOS sign-in screen ("The AI workspace where knowledge compounds") over a sand/particle cymatics field that forms… | First-run hero: a particle field that settles into a pattern and then disperses, behind a still auth card. Good as an "Oxyn Field" background primitive with seed +… | Study only |
+| R002 | [@fayazara](https://x.com/fayazara/status/2119742543357444272) | F Tool calls & plans | Local markdown notes app: Mermaid flowchart, embeds, "Publish to the web" popover, VS Code themes | Publish popover that slides out of the toolbar button. Not agent-specific. | Study only |
+| R003 | [@aryagm01](https://x.com/aryagm01/status/2119611853244645763) | A Composer, B Loaders & thinking, G Approvals | Coding-agent shell: thread sidebar per repo with status badges Approval (amber), Input (blue), "21m", Done (green), a… | Sidebar status taxonomy: Approval / Input / Working (spinner + elapsed) / Done / Settled, with groups that collapse. Under the composer: "Current checkout · main · Full… | Study only |
+| R004 | [@FinnoTaylor](https://x.com/FinnoTaylor/status/2112286571999428676) | J Workspace chrome | Finder-style window where folders are branches of a pixel tree; opening a folder grows twigs + leaves for its children;… | Growth-as-reveal: children sprout along a curve with staggered leaf pops (≈40–60 ms stagger). Use for the agent file tree when it touches files. | Study only |
+| R005 | [@Jakubantalik](https://x.com/Jakubantalik/status/2113656694303551906) | D Container & media, I Generative UI | Dotted wireframe with mono size labels ("IMAGE 1024×1024", "AGENT.LOG // PARTS", "MOTION.CSS // 04 RECIPES") draws in,… | Skeleton-blueprint → real UI: dashed corner handles, dotted outline built from the element's own structure, a log stream, then a scan-line reveal. Skill:… | Study only |
+| R006 | [@kushsolitary](https://x.com/kushsolitary/status/2113644365142958213) | E Messages & reasoning | Glass "Stretch" pill on wavy lines: pressing stretches it elastically with refractive edges, then a separate ✓ circle… | Split-off confirmation: on success the pill stretches (overshoot), and a check bubble pinches off like a droplet. Good for "Approved" / "Sent". | Study only |
+| R007 | [@naklecha](https://x.com/naklecha/status/2113728791294226729) | A Composer, D Container & media | Research agent for long cloud experiments. Composer with "Work" chip; while running the placeholder becomes "Guide this… | Steer-in-place: the same composer turns into a steering field with a new placeholder; Stop and Pause are separate buttons. Time-budget chip (elapsed of budget +… | Study only |
+| R008 | [@miu21590](https://x.com/miu21590/status/2114095879632375944) | B Loaders & thinking, F Tool calls & plans | Dark promo: wireframe glass orb, isometric "World / Interfaces / System" layers with light beams; agent harness with a… | Layer-explode isometric view with vertical light beams between planes. Useful for an Oxyn "architecture" hero. Rust kernel is a peer reference. | Study only |
+| R009 | [@60fpsdesign](https://x.com/60fpsdesign/status/2114031823831650451) | B Loaders & thinking, D Container & media, M Shells | "The agent layer for video understanding": a 3D snake of video-thumbnail tiles with a glowing scanner travelling along… | Scan-car loader for video agents: a light runs along a strip of frames and lights each one as it is indexed. | Study only |
+| R010 | [@supermemory](https://x.com/supermemory/status/2114491489648853364) | L Icons & marks | Electric-blue explainer: halftone brain, pixel icons extracted and "{ infers }" into a node graph, captions 01–05 | Pixel icons that fly out of a dotted head into a graph: a memory-extraction visual for a memory panel. | Study only |
+| R011 | [@praveenisomer](https://x.com/praveenisomer/status/2114680944196264294) | J Workspace chrome, M Shells | Rotating ASCII/dot-matrix globe, cards with morphing ASCII 3D forms (shell, swirl, ribbon) | ASCII-glyph 3D renderer (a char-density ramp mapped onto a mesh). This is the terminal-native look Rust TUIs can do too. | Study only |
+| R012 | [@zahragr8r](https://x.com/zahragr8r/status/2114320013956141086) | J Workspace chrome | Calendar app zooms in; tasks drag from sidebar lists into week slots; event cards with avatars and progress bars | Drag from list to time grid with a ghost card and slot highlight. | Study only |
+| R013 | [@seanaiux](https://x.com/seanaiux/status/2115462341261402428) | J Workspace chrome, K Live & voice, M Shells | (a) "Studio · Brand launch — Q4": round + morphs into × and opens "Create anything…" menu (Image/Video/Voice/3D… | +→× morph (45° rotate, ≈200 ms). Background job pill docks bottom-centre with %. Progressive de-noise reveal for generated media. Floating bulk bar springs up on the… | Study only |
+| R014 | [@seanaiux](https://x.com/seanaiux/status/2115162868039442861) | Studio | Northwind Studio dark library (same as 13c) | Folder card whose thumbnails fan out on hover. | Study only |
+| R015 | [@nutlope](https://x.com/nutlope/status/2116207994832838818) | Other | AI font generator gallery; grid → "Hello, world" preview; glyph sheet; "Give to your agent" button | "Give to your agent" CTA: copy an agent-ready prompt/skill. Oxyn component pages should have this. | Study only |
+| R016 | [@keviduk](https://x.com/keviduk/status/2116168166673924226) | H Checkpoints & diff, J Workspace chrome, L Icons & marks | Agent-app sidebar (New thread, Search, Projects, Automations, Agents; threads with status dots and +/− diff counts).… | Icon-anchored collapse: labels fade/clip while icons don't move. Thread rows carry `+12 −3` diff badges. | Study only |
+| R017 | [@driceroland](https://x.com/driceroland/status/2116116058549481657) | F Tool calls & plans, I Generative UI, Studio | Generative patterns (dither, letter-in-circles, voronoi/topo, foliage) from user-built tools | Every tool gets the same clean control panel (sliders) and can be shared as "use only" or "full edit". Relevant to the Studio (a shareable tuned component). | Study only |
+| R018 | [@seanaiux](https://x.com/seanaiux/status/2116240216751247393) | Other | Widget bento: weather, music, countdown ring ticking, step bars rising, calendar; toggle Off→On flips the card into a… | Live counters roll. A toggle that re-themes its own card (the theme change as feedback). | Study only |
+| R019 | [@david_visuals_](https://x.com/david_visuals_/status/2116174187375046735) | B Loaders & thinking | Compact "AI Assist" panel: iridescent liquid orb that morphs while answering; suggestion chips scroll sideways; answer… | Trailing-fade streaming: the last ≈3–5 words stay at reduced opacity and darken as new words arrive. The orb's speed tracks the state (idle slow, answering fast).… | Study only |
+| R020 | [@DopeOblivion](https://x.com/DopeOblivion/status/2116120076583633153) | K Live & voice | Voice-agent hero "Ask out loud. Hear it in your ear.": halftone heads, a glass card where conversation lines populate,… | Listening pill with a breathing dot; lines appear with a short blur-in. | Study only |
+| R021 | [@pitus_](https://x.com/pitus_/status/2110059026818212244) | A Composer, B Loaders & thinking, F Tool calls & plans | Coding-agent composer, voice dictation, thinking timeline, token-usage chart, isometric feature cards | The richest composer reference (details in §3). Thinking header "Thinking 1s…13s" ticks, then becomes "Thought for 14s". Steps use present continuous → past tense… | Study only |
+| R022 | [@ceefryingpan](https://x.com/ceefryingpan/status/2117705368474358071) | A Composer, F Tool calls & plans | "Inbox for all your coding agents": agents tell you when they need attention. Composer with repo pill, "Cloud" env,… | Attention inbox: a blue unread dot per agent that needs you; the agent's question shows as numbered options with one marked recommended. | Study only |
+| R023 | [@dannyinsf_](https://x.com/dannyinsf_/status/2117714570164732328) | L Icons & marks | Todo list run by agents: a pill mascot with two-bar "pause" eyes; "Claude is working" substatus; Working → Improve →… | Mascot from glyphs: the pause icon's two bars double as eyes that blink. The loop pipeline shows retry iterations. Per-account usage bars. | Study only |
+| R024 | [@TekonBurns](https://x.com/TekonBurns/status/2118064914028019978) | F Tool calls & plans, H Checkpoints & diff | Claude Code update: background subagent status lines used to re-read the whole transcript every 30 s; Haiku now writes… | Design takeaway: subagent status lines refresh ~every 30 s; make the status-line component accept cheap summarised text and animate only the diff. | Study only |
+| R025 | [@augustasdesign](https://x.com/augustasdesign/status/2117859582546526215) | G Approvals, M Shells | Fintech "Authorizations" dashboard: KPIs with sparkbars, radial tick sunburst "89.6% approval" drawing in,… | Radial tick gauge whose ticks fill one by one. Anomaly card with two actions inline: a template for a finance agent alert. | Study only |
+| R026 | [@twentycrm](https://x.com/twentycrm/status/2118056653861896668) | F Tool calls & plans, M Shells | 79 OSS components + Figma; CRM company page (Timeline/Tasks/Notes/Files/Emails/Calendar), a "Recording" red badge, a… | CRM record layout + side-panel form with ⌘↵ submit. Reference for an Oxyn CRM shell. | Study only |
+| R027 | [@SavannahFeder](https://x.com/SavannahFeder/status/2118247839197532242) | H Checkpoints & diff, L Icons & marks | OSS app for a team of coding agents (Conductor replacement): pixel-grid logo builds in; "each agent gets its own git… | Pixel-grid logo assembly; ready-to-merge card; a cloud-running counter pill. | Study only |
+| R028 | [@s1dashu](https://x.com/s1dashu/status/2117948239349534937) | A Composer, Studio | Local-first rich text editor in Rust + GPUI (≈5 ms/frame typing in a 1M-char doc); dithered pixel-art landing | GPUI precedent for Oxyn: open-source GPUI app code to study (text input, IME, scrolling). Dither hero aesthetic. | Study only |
+| R029 | [@Alok619308](https://x.com/Alok619308/status/2118262179745161617) | C Text effects | "make your AI look expensive": a masonry wall of AI UI shots, "Cue" wordmark with a rainbow shimmer | Rainbow sweep across the wordmark. A competitor gallery to watch. | Study only |
+| R030 | [@flohoeller](https://x.com/flohoeller/status/2117957229227786507) | F Tool calls & plans | "Run cost: Report on LLM API prices in 2026": Live → Done; Total cost ticks $0.05→$0.46; a row per step (Plan/Opus,… | Rows append live and each bar starts at the running cost offset. The total rolls. Failed steps auto-expand. A Cost↔Tokens toggle re-scales the bars. | Study only |
+| R031 | [@eliakuratli](https://x.com/eliakuratli/status/2118271867706618291) | B Loaders & thinking, L Icons & marks | Blue blob with two eye-dots; states Idle / Listening (dot orbit) / Thinking (dot circles the head) / Writing ("Writing… | Mascot state machine with 6 states and a caption per state. The Done state reports a result metric. | Study only |
+| R032 | [@shinyobjectz_](https://x.com/shinyobjectz_/status/2118157793635225739) | M Shells | OSS video engine on Bevy + Blitz DOM (Dioxus) that renders without a browser; ends with an "Ask your AI about raea.io"… | Rust precedent: Bevy + Blitz/Dioxus bridge, so React/TS drives 3D/video. Relevant to Oxyn's video-agent shell and to a Dioxus target. | Study only |
+| R033 | [@jkelleyrtp](https://x.com/jkelleyrtp/status/2118843865415463348) | A Composer, J Workspace chrome | Dark Devin concept: dithered pixel-noise + spectral light-streak backdrop, "Sessions" sidebar, big glass composer ("Ask… | Split send button (↑ + ⌄ for send options). Usage + activity heatmap bento as the home screen. The Dioxus team is designing agent UI: an ecosystem signal. | Study only |
+| R034 | [@jbedln](https://x.com/jbedln/status/2118439042845114706) | F Tool calls & plans | A shader sweep (aurora glow) washes over a running-coach app while the agent fills the plan; tip: give the shader a… | "Agent is writing here" sweep: a glow passes over the region being changed, and the content settles after it. Snapshot-then-shader is easy in GPUI (render to texture). | Study only |
+| R035 | [@MSchwaibold](https://x.com/MSchwaibold/status/2119156591404687608) | Studio | Quote of @svenma3: "Drag a frame over a component to see its dev specs. Every padding, gap and radius, measured live."… | Studio inspector: a marquee drag over a component overlays live padding/gap/radius measurements. Copy this for the Oxyn Studio. | Study only |
+| R036 | [@componest](https://x.com/componest/status/2119304640323793268) | A Composer, G Approvals | BoardUI "Composer Attachments": context breadcrumb "Main · project-sea", attachment strip of 56 px tiles. On upload an… | Ring-progress tile → dismiss swap (blur-cross-fade in the same slot). The "Bypass all" approval-mode toggle sits in the composer. | Study only |
+| R037 | [@zzzzshawn](https://x.com/zzzzshawn/status/2119398278337073555) | H Checkpoints & diff | "Running tests — Frontend agent · PR #214 · pnpm test": timer 2.9→10.6 s, passed/failed counters, tests-per-second… | Tick-row test runner: each test is a tiny tick that fills its colour. Failed rows stay lit and the others dim. The fix card pops over the failing file and shows a diff… | Study only |
+| R038 | [@HacktronAI](https://x.com/HacktronAI/status/2119252317241303221) | J Workspace chrome | Security agent site: a line-art file tree grows ("974 files, 20 agents checking"); metro-line pipeline Patched / False… | Metro-line triage pipeline: each finding is a dot travelling lines that branch to outcomes. | Study only |
+| R039 | [@Kubai087](https://x.com/Kubai087/status/2119359092334743735) | Other | A physical shockwave ring across an app page. 6 layers (from the post): page snapshot → lens distortion (outside… | "Agent arrived / task done" shockwave, with exact layer recipe in the post text. Maps directly onto a GPUI/wgpu shader. | Study only |
+| R040 | [@a1x45h](https://x.com/a1x45h/status/2119443557119615337) | D Container & media | Kanban drag: the card lifts with tilt + shadow, the placeholder gap opens, then it settles | Lift (scale 1.03, tilt ≈3°, shadow) → spring settle. For agent task boards. | Study only |
+| R041 | [@codycollier](https://x.com/codycollier/status/2119780776095121848) | Other | Clean X client; a Grok Bot post with an inline action card ("Your internet contract renews in 3 days. Want me to call… | Inline proactive action card inside a feed. | Study only |
+| R042 | [@componest](https://x.com/componest/status/2119811032340390130) | E Messages & reasoning | Trigger (Slack message) → Action nodes (Claude/ChatGPT/Grok) with "+ Connect App"; add-node popover; node flips to "✓… | Node connect state flip; edges draw on connect; JSON export modal with copy→check. | Study only |
+| R043 | [@componest](https://x.com/componest/status/2119660082753356006) | Other | Repost of #37 | Same as #37. | Study only |
+| R044 | [@flohoeller](https://x.com/flohoeller/status/2119480887297638894) | A Composer, G Approvals | affectUI composer: "Help me brainstorm ideas for…", + / "Request approval" chip / model pill "Claude Haiku 5.5 ⌄" (or… | Approval-mode chip in the composer ("Request approval"). A disabled↑ that lights up on the first keystroke. A footer tray for folder/app context. | Study only |
+| R045 | [@benchodev](https://x.com/benchodev/status/2119527879960650057) | A Composer, J Workspace chrome | "…" button that genie/goo-stretches into a menu (Select notes, View gallery, Pin folder, Share folder) and sucks back in | Gooey origin-anchored menu morph. Good for the composer "+" menu. | Study only |
+| R046 | [@_adamboyle](https://x.com/_adamboyle/status/2119679881784991750) | L Icons & marks, Studio | Drag the rail to resize; snaps to icon-only under ≈160 px, labels fade in ≈0.18 s; control panel: Ease out / Cascade /… | Snap threshold + cascade label fade. The tweak panel itself is a Studio pattern. | Study only |
+| R047 | [@desdivj](https://x.com/desdivj/status/2119738295039250507) | A Composer, F Tool calls & plans, I Generative UI | Messaging CRM: composer quick-action chips (Share timeline / Schedule a call / Send report / Ask AI); "Schedule a call"… | Composer action chips that open gen-UI popovers and resolve into a result card in the thread. | Study only |
+| R048 | [@seanaiux](https://x.com/seanaiux/status/2119830876703879366) | M Shells | A vertical wipe line sweeps the dashboard and reveals the other theme behind it | Theme switch as a clip-path wipe (≈500–700 ms, ease-in-out). | Study only |
+| R049 | [@n___vc](https://x.com/n___vc/status/2119815118032871499) | G Approvals | "Ada's routines" list with statuses; "Secrets stay out of the chat" STRIPE_KEY card; "Reaches your own servers" node… | Secret redaction card (key masked; never enters the chat). A good approval/permission visual. | Study only |
+| R050 | [@micka_design](https://x.com/micka_design/status/2119814240760660411) | Other | Corner-radius modes Sharp / Rounded / Pill (press R to cycle); glass chips; checklist with fluid hover and font-weight… | Global shape token cycle (one key re-shapes every component), plus a numbered agent question card. | Study only |
+| R051 | [@AdiKodez](https://x.com/AdiKodez/status/2119362052993306706) | Other | Halftone dotted globe; a quote blurs in word by word; presence chip | Word-by-word blur-in (blur 8 px→0, y +4→0, ≈60 ms stagger). | Study only |
+| R052 | [@omarships](https://x.com/omarships/status/2119588761608827253) | F Tool calls & plans | Agent OS: canvas with a Today timeline, revenue, score ring; Deal desk / Inbox / Sales room; agent chat with Review /… | Draft → Review / Approve and send pair under a drafted artifact. Rooms where agents team up. | Study only |
+| R053 | [@waynesutton](https://x.com/waynesutton/status/2119683627936321896) | B Loaders & thinking, F Tool calls & plans | Dark agentic IDE on Convex: threads grouped Inbox / Running (spinner + `+5 −1`) / Hibernating / Archived; "Good night,… | Hibernating as a thread state (paused or parked agents). A greeting page by time of day. | Study only |
+
+## X posts (found by search)
+
+| ID | Reference | Family | What it shows | Takeaway | Licence |
+|---|---|---|---|---|---|
+| R054 | [pitus_ · Generative UI #2 Merge conflicts](https://x.com/pitus_/status/2111519352503873866) | A Composer, H Checkpoints & diff, I Generative UI | PR card "Refresh sessions in the auth middleware #128": a commit graph rail with branch chips; "Checking it merges… | Merge-conflict gen-UI with a status pill docked in the composer. Conflicting rows turn amber and later resolve. | Study only |
+| R055 | [pitus_ · Merge-conflict first version](https://x.com/pitus_/status/2111887566907802073) | H Checkpoints & diff | "Why hire a designer?" v1 vs v2 | Before/after critique. | Study only |
+| R056 | [pitus_ · Generative UI #1 Map](https://x.com/pitus_/status/2110421626873643338) | I Generative UI | Map gen-UI card | Series to track. | Study only |
+| R057 | [pitus_ · Generative UI #4 FAQ](https://x.com/pitus_/status/2113344534021124231) | I Generative UI | Accordion FAQ where your typed custom question joins the accordion as a new item and gets answered inline | A typed question becomes a component row. | Study only |
+| R058 | [pitus_ profile mirror](https://xitter.cf/pitus_) | F Tool calls & plans | Lists Gen UI #5 Document signing, #6 CI checks, #7 Interactive Action Plan, "Session splitting ✂️", "Now in dark mode" | Watch #6 CI checks and #7 Action Plan; both are Oxyn scope. | Study only |
+| R059 | [vibrant.design · Pitus AI Thinking Process UI](https://vibrant.design/feed/ik393ot-ai-thinking-process-ui) | B Loaders & thinking | Collapsing Thinking panel + codebase search + TS chip | Catalogued copy. | Study only |
+| R060 | [flohoeller · Decision tree](https://x.com/flohoeller/status/2113565484469686342) | Other | "Map out agent decisions" | Branch options with risky branches marked. | Study only |
+| R061 | [flohoeller · Agent lanes](https://x.com/flohoeller/status/2111405211478900836) | F Tool calls & plans | Agents header "2 running · 1 need you", a lane per agent (Researcher Opus 5.5, Writer Sonnet 5.5, Reviewer GPT-6 Sol… | Swimlane timeline with a live "now" edge. | Study only |
+| R062 | [flohoeller · Agent inbox](https://x.com/flohoeller/status/2110693194384163100) | F Tool calls & plans | Board columns NEEDS YOU / RUNNING / DONE with counts; cards show live clock, msgs/tools counts; a card expands into… | Cards glide between columns as their state changes. | Study only |
+| R063 | [flohoeller · Delegate tasks](https://x.com/flohoeller/status/2111780371469582365) | Other | Delegate board | Drag a task onto an agent to see a "busy until" preview. | Study only |
+| R064 | [flohoeller · Chat component interaction](https://x.com/flohoeller/status/2102660458658582913) | Other | Early chatbox | — | Study only |
+| R065 | [flohoeller · Components merged into a block](https://x.com/flohoeller/status/2119118427382067375) | F Tool calls & plans, H Checkpoints & diff | Mission Timeline block | — | Study only |
+| R066 | [zzzzshawn · Agent composer on steroids](https://x.com/zzzzshawn/status/2115270577866842602) | A Composer | Node-canvas composer: the composer is a node, with context nodes wired in (Repository, Files, Skills,… | Composer as a graph: context sources plug in visually. A strong "advanced composer" variant. | Study only |
+| R067 | [zzzzshawn · Orbkit](https://x.com/zzzzshawn/status/2096548536972370319) | B Loaders & thinking | 30+ WebGL orbs with idle / thinking / speaking states | Orb state API (3 states). | Study only |
+| R068 | [Jakubantalik · Thinking Orbs](https://x.com/Jakubantalik/status/2079609095079047494) | B Loaders & thinking | 9 dotted orb states on a plain 2D canvas (working, searching, solving, listening, connecting, weaving…), 64 px and 20… | Canvas-only, no shaders: a direct port target for GPUI paths. Each state is a verb. | Study only |
+| R069 | [Jakubantalik · One skill for all UI motion](https://x.com/Jakubantalik/status/2099162438016901449) | Other | transitions.dev skill | Motion tokens (e.g. `--avatar-dur:320ms`, ease `cubic-bezier(0.22,1,0.36,1)`) are in collection.html. | Study only |
+| R070 | [Jakubantalik · Transitions Builder](https://x.com/Jakubantalik/status/2108227167880421692) | Studio | One-prompt component builder | Studio competitor. | Study only |
+| R071 | [seanaiux · Unslopping a vibecoded mobile app](https://x.com/seanaiux/status/2115425851374223811) | Other | Before/after | Marketing format to copy. | Study only |
+| R072 | [eliakuratli · "Tool calls should look this good"](https://x.com/eliakuratli/status/2114800098534387734?s=46) | F Tool calls & plans | Arc UI tool-call animation | — | Study only |
+| R073 | [egorvert · loader animation](https://x.com/egorvert/status/2115141484957909187) | B Loaders & thinking, F Tool calls & plans | Internal-tool loader | Viral loader benchmark. | Study only |
+| R074 | [shannholmberg on Benji's design skill](https://x.com/shannholmberg/status/2116957574008590445) | Other | Head of Design at X's open-sourced UI taste skill: "every motion has a cause"; the agent films its own work and checks… | Reuse for Oxyn QA: film each component and check every frame. | Study only |
+
+## Composer queue / steer references
+
+| ID | Reference | Family | What it shows | Takeaway | Licence |
+|---|---|---|---|---|---|
+| R075 | [witcheer · Hermes queue](https://x.com/witcheer/status/2111109920288596471) | A Composer, E Messages & reasoning | Queue / steer behaviour | Cmd+Enter while working → the message waits in a queue above the composer. | Check source |
+| R076 | [HermesAgentTips · /steer vs /queue vs /busy](https://x.com/HermesAgentTips/status/2098742992819409293) | F Tool calls & plans | Queue / steer behaviour | steer appends to the last tool result (no interrupt); `/busy` picks queue / steer / interrupt. | Check source |
+| R077 | [sqs (Amp) · steering default](https://x.com/sqs/status/2091076950916010471) | Other | Queue / steer behaviour | Enter while working = queue; Enter again (or the ↑) = steer. | Check source |
+| R078 | [Replit · Queue](https://x.com/Replit/status/1947751962361139391) | Other | Queue / steer behaviour | edit, reorder, per-task model and settings. | Check source |
+| R079 | [renzobianchi · "The exit is the confirmation"](https://renzobianchi.com/notes/the-exit-is-the-confirmation) | A Composer, E Messages & reasoning, H Checkpoints & diff | Queue / steer behaviour | Send/Queue/Stash/Stop each exit differently. Send = the text becomes the bubble (ease-in, capped 260 ms). Queue = a chip unfolds upward above the composer. Stash = the… | Check source |
+| R080 | [affectUI Agent Steering](https://www.affectui.com/components/agent-steering) | F Tool calls & plans | Queue / steer behaviour | ↵ queues a note for the next step (it glides into the plan when picked up); ⌘↵ interrupts now; queued notes have Now and ✕; Pause/Resume. | Check source |
+| R081 | [TUFFUI Agent Composer](https://tuffui.com/components/agent-composer) | A Composer, F Tool calls & plans | Queue / steer behaviour | Ask/Plan/Act modes (Act sends in the brand colour); while streaming, Enter queues and Stop appears; context tray with token counts. | Check source |
+| R082 | [AI Patterns message-queue](https://ai-patterns.netlify.app/patterns/composer/message-queue) | E Messages & reasoning | Queue / steer behaviour | send morphs to Stop while busy and empty; a "Queue ⌘↵" button appears while busy and a draft exists; queued items have send-now/edit. | Check source |
+| R083 | [Glaze manual](https://manual.glaze.app/prompting/agent-chat) | E Messages & reasoning | Queue / steer behaviour | queued messages show under a "Queued" count; hover gives Edit / Steer (move to next) / Delete; drag to reorder. | Check source |
+| R084 | [fal.ai queue & steering](https://fal.ai/docs/documentation/agent/chats/queue) | E Messages & reasoning, F Tool calls & plans | Queue / steer behaviour | an "Up next" badge; two lanes (your messages vs agent's queued work); Esc stops, Esc twice confirms. | Check source |
+| R085 | [openwork commit](https://github.com/different-ai/openwork/commit/9997324ff1bc10c1e07c86a417c529d3106b9f4f) | Other | Queue / steer behaviour | busy = Steer + Queue + outline Stop; Enter while busy shakes the buttons to force a choice; Esc arms "Esc again to stop". | Check source |
+| R086 | [os-clovy commit](https://github.com/open-software-network/os-clovy/commit/a6c7a2f737476d658725d5eb9ed5e282131408ef) | A Composer, B Loaders & thinking | Queue / steer behaviour | Send→Stop swap instantly (no spinner); a second steer-send button blurs+slides in beside Stop as you type. | Check source |
+| R087 | [gaia SendStopButton.tsx](https://github.com/theexperiencecompany/gaia/blob/0974f42d/apps/web/src/features/chat/components/composer/SendStopButton.tsx) | Other | Queue / steer behaviour | streaming + empty = Stop square; streaming + text = Queue widens into a labelled pill. | Check source |
+| R088 | [hermes-agent desktop controls.tsx](https://github.com/NousResearch/hermes-agent/blob/main/apps/desktop/src/app/chat/composer/controls.tsx) | Other | Queue / steer behaviour | `busyAction: 'interrupt' / 'steer' / 'queue' / 'stop'`; Stop only when empty; while a card waits, Send answers the card. | Check source |
+| R089 | [T3 Code issue #5507](https://github.com/pingdotgg/t3code/issues/5507) | Other | Queue / steer behaviour | proposes a "queue" glyph and an "Enter to queue" footer hint. | Check source |
+
+## Sites
+
+| ID | Reference | Family | What it shows | Takeaway | Licence |
+|---|---|---|---|---|---|
+| R090 | [loading.dev](https://loading.dev) | B Loaders & thinking | React spinner library | One small shared prop contract for every loader, plus `play_state` | MIT, free (373★) |
+| R091 | [loading-ui.com](https://loading-ui.com) | B Loaders & thinking | CSS/React loader gallery | Agent-verb loaders as a first-class category | Free, open source (527★) |
+| R092 | [ui.watermelon.sh](https://ui.watermelon.sh) | Other | Open-source React catalog + public API + MCP | Public read-only catalog API + MCP with `compose_page` | MIT, free |
+| R093 | [uiverse.io/loaders](https://uiverse.io) | B Loaders & thinking | Community CSS/Tailwind element gallery | Community submissions with author credit; "Get code" per tile | All elements MIT |
+| R094 | [obsidianui.dev](https://obsidianui.dev) | F Tool calls & plans, J Workspace chrome | Small polished React set | Status Bars: keyboard-navigable grid and a gliding tooltip | Free (source in public registry) |
+| R095 | [boardui.com](https://boardui.com) | A Composer, B Loaders & thinking, M Shells | React design system for agentic UIs + dashboards | One `waiting` flag drives the composer glow, the thinking row and the glass controls together | Free MIT tier; Pro €149 (1 yr updates), €199 lifetime, €349… |
+| R096 | [originkit.dev](https://originkit.dev) | Studio | Creative animated components with an in-page editor | Props table maps 1:1 to the controls panel, plus "Edit with AI" and presets | Free (3 copies/day, 5 AI credits/day); Pro $79/yr; Ultimate… |
+| R097 | [scrolltide.co](https://scrolltide.co) | Other | Prompt library for scroll-driven hero templates | Each item ships with "the prompt that generates it" | $39/mo, $144/yr, $299 lifetime |
+| R098 | [reactbits.dev](https://reactbits.dev) | F Tool calls & plans, Studio | Animated React components + creative tools | Tools: Background Studio exports code/PNG/MP4/WebM/share link | Open source + Pro |
+| R099 | [lusion.co/projects](https://lusion.co) | B Loaders & thinking, Studio | WebGL studio portfolio | Motion craft benchmark for a hero/agent orb | Agency (not a library) |
+| R100 | [libraries.dev](https://libraries.dev) | Studio | UI effect libraries for AI interfaces + paid Studio | Studio with an AI agent that moves the knobs; exports props for the free package | Packages MIT; Studio is Pro |
+| R101 | [thrine.app](https://thrine.app) | F Tool calls & plans, M Shells | Browser 3D scene tool (beta) | Template → one panel → export image/video/embed | Free to start (beta) |
+| R102 | [unsection.com](https://unsection.com) | Other | Section-design inspiration gallery | "Build this" button that hands a reference to the builder | Free account; ads |
+| R103 | [astryx.atmeta.com](https://astryx.atmeta.com) | Studio | Meta open-source design system + Playground | Playground: theme editor + code editor + click-to-select + share URL | Open source (Meta) |
+| R104 | [skiper-ui.com](https://skiper-ui.com) | Other | "Uncommon" shadcn components | Numbered items + a registry JSON per item | $129 Premium / $549 Exclusive, one-time |
+| R105 | [uiroot.com](https://uiroot.com) | F Tool calls & plans | Directory of UI tools | Discovery source: listed AIcss, Beautiful UI, HextaUI, Cuelume, Canvas UI, ThreeUI | Free directory |
+
+## Sites (found by search)
+
+| ID | Reference | Family | What it shows | Takeaway | Licence |
+|---|---|---|---|---|---|
+| R106 | [Beautiful UI](https://beautifului.dev) | Studio | MIT copy-paste "primitives for AI-native interfaces" by Turbo design studio. 21 sections (list below) | Best single page of agent primitives; each demo has inline variant toggles | See notes |
+| R107 | [signoff-ui (Agent UI Kit)](https://agent-ui-kit-demo.vercel.app) | G Approvals, H Checkpoints & diff | MIT React kit (details below) | Our approvals/diff spec should match this depth | See notes |
+| R108 | [HextaUI](https://hextaui.com/) | Other | 65 MIT components on Base UI + 55 Pro AI blocks (details below) | "Built for what happens next": stop, retry, versions, no-jump thread | See notes |
+| R109 | [Stagger](https://stagger.dev/) | L Icons & marks | Prompt-to-Motion generator (details below) | Generator model; state-machine icons; brand kit | See notes |
+| R110 | [Cuelume](https://cuelume.dev/) | Sound | 14 interaction sounds made live with Web Audio (details below) | Sound cues for agent events (loading, ready, success, error, attention) | See notes |
+| R111 | [Shaders (shaders.com)](https://github.com/shader-effects-inc/shaders) | Studio | "200+ effects" as WebGPU components for React/Vue/Svelte/Solid/JS/Framer, plus a design editor on an infinite canvas… | Infinite-canvas shader editor → code | See notes |
+| R112 | [21st.dev Shader Builder](https://21st.dev/blog/introducing-shader-builder) | Studio | Browser WebGL background editor "with knobs instead of code"; live preset thumbnails; cursor reactivity; exports… | Live preset thumbnails + remix/publish | See notes |
+| R113 | [Math Curve Loaders](https://paidax01.github.io/math-curve-loaders/) | B Loaders & thinking | Bilingual gallery of loaders built from mathematical curves; tweak and reset controls; "inspect the formula and… | Parametric loaders with the formula shown | See notes |
+| R114 | [Lightswind UI Playground Studio](https://lightswind.com/playground) | Studio | Props playground: variant/size/className, Grid/Dark/Light canvas, Mobile/Tablet/Desktop viewports, Copy Component Code | Canvas background + viewport switcher | See notes |
+| R115 | [HorizonX Tools](https://horizonx.so/tools/about) | F Tool calls & plans, Studio | Browser editors for carousels, marquees, parallax and focus stacks; "215 components"; cubic-bezier drag; export… | Bezier-curve editor; Figma paste | See notes |
+| R116 | [verve](https://www.verveapp.dev/) | Other | "Paste your component, drag the spring until it feels right, export Motion, GSAP or CSS"; no account | Spring tuning by direct manipulation | See notes |
+| R117 | [PraxysUI Animation Studio](https://github.com/sushanttverma/PraxysUI) | Studio | Open-source animated React set; "Animation Studio" with live preview, 30+ presets (entrance/attention/exit/loop) and… | Preset families for motion | See notes |
+| R118 | [vividsites](https://www.vividsites.app/templates) | Other | 329 "cinematic website" templates with prompts; Preview / Remix; theme filters (e.g. "AI & software 83"); lifetime $49 | Same prompt-library model as Scrolltide, cheaper | See notes |
+| R119 | [Wensity UI (agentic category)](https://ui.wensity.com/components/category/agentic-ai-interfaces) | F Tool calls & plans, G Approvals, H Checkpoints & diff | 12 agentic components including AI Agent UI (steps array; per-tool verb/icon; terminal/diff/favicon renderers; approval… | Already in 02/06 as a name; this page adds the agentic details | See notes |
+
+## Sites
+
+| ID | Reference | Family | What it shows | Takeaway | Licence |
+|---|---|---|---|---|---|
+| R120 | [savee.com](https://savee.com) | Other | Inspiration saver and boards | Search by colour or by image; MCP for "taste" | Pro $9/mo, Portfolio $15, Team $12/seat (billed yearly) |
+| R121 | [animos.app](https://animos.app) | M Shells, Studio | Browser motion-template editor that exports MP4 | Client-side render and video export of components | Free 720p; Pro $9/mo or $90/yr for 1080p to 8K |
+| R122 | [ui.aceternity.com](https://ui.aceternity.com) | A Composer, B Loaders & thinking, D Container & media | React + Tailwind + Motion effects library | Image-gen loader, stateful send button, "Labs" section | Free components; one-time All-Access (price not fetched) |
+| R123 | [refero.design](https://refero.design) | E Messages & reasoning | Design-research library (real product screens and flows) | Taxonomy model; "Research mode" with reasoning | Paid (pricing page not fetched) |
+| R124 | [feralui.dev/library](https://feralui.dev/library) | Other | Art plus code visuals | Dither and fluted-glass art as background presets | Has licence and refunds pages; Premium tier |
+| R125 | [originui-ng.com](https://originui-ng.com) | Other | Angular port of Origin UI (unofficial) | Count-per-category index cards | MIT (radix-ng/origin-ui) |
+| R126 | [coss.com/ui](https://coss.com/ui) | A Composer | Cal.com's design system on Base UI + Tailwind (formerly Origin UI) | Composer API is a reference design for our composer | MIT, 10.8k stars |
+| R127 | [shadcn.io](https://shadcn.io) | Other | Independent shadcn registry and Pro kit | Theme preset code; DESIGN.md per brand; reduced-motion and RTL policy | Free components; Pro $32 / $66 / $132 per month (yearly) |
+| R128 | [landing.gallery](https://landing.gallery) | Other | Landing-page inspiration | "Verified today" freshness stamp | Free plus ads |
+| R129 | [typeui.sh](https://typeui.sh) | Other | Design skills, prompts and brand kits for coding agents (by the Flowbite makers) | Ship an Oxyn "design skill" for agents | Paid plans (amounts not fetched) |
+| R130 | [toolfolio.com](https://toolfolio.com) | F Tool calls & plans, Sound | Tool directory with Agent Resources (MCP, Skills) | Listing channel for launch; pointed me to affectUI, dithercn, Termcn, Audiocn | Free plus paid listings |
+| R131 | [easyui.site](https://easyui.site) | Other | Open-source React kit | Filter chips by intent (Motion, Feedback, Overlays) | MIT |
+| R132 | [transitions.dev](https://transitions.dev) | F Tool calls & plans, Studio | Motion/transition library, Builder agent and Refine tool | Best motion reference. Remix-to-studio pattern; tokenised CSS with reduced-motion guard | Custom licence: use freely, but do not redistribute as a… |
+| R133 | [beautifului.dev](https://beautifului.dev) | Studio | Crafted primitives for AI-native interfaces (by Turbo studio) | Closest peer to Oxyn. See the deep dive | MIT (© 2026 Shane Levine) |
+| R134 | [morphin.dev](https://morphin.dev) | Other | Premium animated React (Motion + GSAP) | Views/likes on cards | MIT repo (13 stars); Pro content paid |
+| R135 | [details.so](https://details.so) | Other | Production-site detail inspiration plus code Vault | Natural-language search over the catalog; "AI just got taste" MCP | Pro $9/mo, Vault $19/mo |
+| R136 | [spyui.online](https://spyui.online) | B Loaders & thinking, K Live & voice, Studio | Animated components, charts, blocks | Voice and orb states; theme studio | Free plus lifetime Pro |
+| R137 | [rareui.com](https://rareui.com) | Other | "Rare" animated React components | One-file-per-component rule | GitHub licence: NOASSERTION (custom or unclear), so do not… |
+| R138 | [fancycomponents.dev](https://fancycomponents.dev) | Other | Playful microinteractions (Daniel Petho) | Physics category; variable-font proximity effects | MIT (danielpetho/fancy, 3.3k stars) |
+| R139 | [uilora.com](https://uilora.com) | Other | Web plus React Native dual-runtime kit | Dual runtime is a parallel to our web/native Rust targets | Free; Pro $99, Ultimate $179 one-time |
+| R140 | [shaders.paper.design](https://shaders.paper.design) | Studio | Zero-dependency WebGL shader gallery and editor | Primary Studio reference | Apache-2.0 (attribution appreciated) |
+| R141 | [magnific.com](https://magnific.com) | Studio | Stock and AI creative platform; the given URL is a PSD search-results page | Multi-page editor, AI on selection, export matrix | Paid plans |
+
+## How to add a reference
+1. Append a row to `sources.csv` with the next ID and status `catalogued`.
+2. Save screens/video under `/captures/<id>/` (never commit them).
+3. Add the row here under its section.
+4. When a spec uses it, set status to `specced` and cite the ID in the spec.
