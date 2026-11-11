@@ -1,0 +1,31 @@
+# Rust
+/target/
+**/target/
+Cargo.lock.bak
+**/*.rs.bk
+
+# WASM / web builds
+/dist/
+**/dist/
+**/pkg/
+node_modules/
+.astro/
+.vercel/
+.wrangler/
+
+# Editors / OS
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+.DS_Store
+Thumbs.db
+
+# Local env & secrets (never commit)
+.env
+.env.*
+!.env.example
+*.pem
+
+# Research captures (keep screenshots/videos local, link them instead)
+/captures/
