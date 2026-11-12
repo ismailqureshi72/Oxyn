@@ -16,7 +16,8 @@ What carries forward is the decisions below and the `AgentState` shape in `spike
 | Headless poster from the **web** renderer | Works: Chromium `--headless --virtual-time-budget=<ms> --screenshot` | ✅ confirmed |
 | GPUI native build on Linux | Builds (with one patch, below). Release binary 10.4 MB | ✅ with caveat |
 | Headless poster from **GPUI** on a GPU-less Linux runner | Window opens and the Vulkan renderer initialises on llvmpipe, but every capture is black | ❌ not working here |
-| GPUI-on-web WASM size | Not built in this spike (see below). Only external figure: a full GPUI app at 14.4 MB raw / 3.9 MB brotli | ⚠️ unmeasured |
+| GPUI-on-web WASM size | Built from Zed `gpui_web` (rev `6ceb6fe`): **1.87 MB brotli** / 2.49 MB gzip / 6.24 MB raw for one component, font included | ✅ measured |
+| GPUI-on-web renders in a real browser | Yes. Chrome on a laptop with integrated graphics: all states, pulse, crisp text. WebGPU first, WebGL2 fallback | ✅ confirmed (manual) |
 | GPUI video decode | Not tested | ⚠️ open |
 
 ## 1. `oxyn-core` (spike/core)
@@ -63,13 +64,34 @@ Findings:
 
 **Decision proposed:** change level 0 of the demo runtime from "poster rendered headlessly from GPUI" to **"poster rendered headlessly from the web renderer (Chromium), with GPUI captures made on a real GPU runner for the reference look"**. The website only shows web output anyway, and this path works today on any CI runner. GPUI posters move to an optional job on a macOS runner (Metal) or a machine with a GPU, to be tried in #12 or #15.
 
-## 4. GPUI on the web
+## 4. GPUI on the web (spike/gpui-web-status)
 
-Not built. `gpui` 0.2.2 on crates.io has no web platform. The web platform lives in Zed's repo as `gpui_web` (first merged 2026-02-26, zed PR #50228) and is pulled as a git dependency. Its default `multithreaded` feature needs nightly; single-threaded static builds use `default-features = false` on stable (per the gpui-component issue #3414 discussion). Zed's commit history also shows a WebGL backend being added alongside WebGPU, which would remove the "WebGPU only" limit in `website-stack.md`; this needs confirming against a current Zed commit.
+Built from Zed's repo at rev `6ceb6fe` (2026-11-12), not crates.io: `gpui`, `gpui_platform` with `default-features = false` and `gpui_platform::single_threaded_web()`. Stable rustc 1.99.1, no nightly, no `SharedArrayBuffer`, so no COOP/COEP headers are needed and any static host works. Same `StatusIndicator` and the same `oxyn-core` script as the native build. The crate is its own workspace with path dependencies into a Zed checkout next to the Oxyn repo (`git clone https://github.com/zed-industries/zed ../zed`).
 
-Only external size figure: Cydonia shipped their full GPUI app in the browser for two weeks (2026-09-26 to 2026-10-10): **14.4 MB WASM after `wasm-opt`, 5.7 MB gzip, 3.9 MB brotli**, then removed it because the download was too heavy for a landing page. That is a whole app with bundled fonts; a single component will be smaller, but GPUI's renderer, text shaping and fonts are a fixed floor we have not measured.
+Clean release build (`opt-level = "z"`, fat LTO): 811 s on 2 cores.
 
-**Proposed:** keep GPUI-on-web as the opt-in level 2 on detail pages only (already the plan in `docs/site/ia.md`), and measure a single-component build in a short follow-up spike before #25. Do not promise it in launch copy until then.
+| File | Raw | gzip -9 | brotli -q 11 |
+|---|---|---|---|
+| WASM after wasm-bindgen | 9,160,134 B | 2,873,314 B | 2,037,035 B |
+| WASM after `wasm-opt -Oz` | **6,244,217 B** | **2,494,523 B** | **1,865,206 B** |
+| JS glue | 156,005 B | 23,195 B | 19,407 B |
+
+The embedded font (Inter Medium, 411,500 B raw) is part of that. The rest is GPUI's floor: layout, text shaping and the wgpu renderer. A second component adds far less than the first.
+
+**Rendering.** The backend probes WebGPU and falls back to WebGL2 (`WebBackendPreference::Auto`). In headless Chromium on this GPU-less sandbox it initialises on SwiftShader WebGL2, but canvas readback is blank and screenshots hang, so it cannot be verified here. On a real laptop (Chrome, integrated graphics) it renders and animates correctly through every state, confirmed by a screen recording on 2026-11-12. Integrated GPUs are enough; the blank result is a limit of this sandbox, not of GPUI.
+
+**Comparison** (same component unless noted, compressed transfer):
+
+| Build | Transfer |
+|---|---|
+| Dioxus `StatusIndicator` | 89 KB brotli |
+| GPUI-web `StatusIndicator` | 1.87 MB brotli |
+| affectUI whole site, first load (React, Vite, Vercel; entry JS + CSS) | ~263 KB gzip |
+| Cydonia full GPUI app (external, removed 2026-10-10) | 3.9 MB brotli |
+
+affectUI's app-shell demo (`/screens/app-shell-flat`) is plain DOM rendered by React: the browser draws the text, scrolls and handles input, which is why it feels instant on any machine. GPUI-web draws everything into one canvas and ships its own renderer and fonts, so it costs about 1.9 MB before the first pixel, and canvas text is not selectable, searchable or indexed.
+
+**Proposed:** to match affectUI's lightness, the site, gallery and the interactive app-shell demo use the DOM renderer (Dioxus). GPUI-web stays as an opt-in "native renderer" view on detail pages, loaded only on click, cached across pages, and preceded by a poster. Both fit Cloudflare Pages' free tier (25 MiB per file). Vercel Hobby is non-commercial only, so it would not fit once Pro is sold.
 
 ## 5. Decisions for the maintainers
 
@@ -77,7 +99,8 @@ Only external size figure: Cydonia shipped their full GPUI app in the browser fo
 2. `Stalled { since, level, was }` in `oxyn-core`. **Recommended.**
 3. GPUI dependency: crates.io 0.2.2 + `xattr` patch, or a pinned Zed git revision (needed anyway for `gpui_web`). **Recommended: pinned git revision from #12.**
 4. Tighter Dioxus budget (warn 250 KB / fail 400 KB brotli). Optional, after #25 measures a real page.
-5. Follow-up mini-spike for GPUI-on-web size and GPUI video decode before #25. Not blocking M0–M2.
+5. Site renderer split: Dioxus (DOM) for the site, gallery and app-shell demo; GPUI-web as an on-click native view on detail pages. **Recommended.**
+6. GPUI video decode still untested; check before #25. Not blocking M0–M2.
 
 ## Reproduce
 
@@ -94,6 +117,18 @@ wasm-opt -Oz --enable-bulk-memory --enable-nontrapping-float-to-int --enable-sig
 chromium --headless=new --window-size=480,160 --virtual-time-budget=6500 \
   --screenshot=poster.png http://localhost:8765/index.html
 cargo build --profile release-native -p oxyn-gpui-status-spike   # Linux needs xkbcommon, xcb, wayland, fontconfig, vulkan dev packages
+```
+
+GPUI on the web (needs Zed cloned next to the Oxyn repo):
+
+```bash
+git clone https://github.com/zed-industries/zed ../zed && git -C ../zed checkout 6ceb6fe
+cd spike/gpui-web-status
+cargo build --release --target wasm32-unknown-unknown
+wasm-bindgen --target web --no-typescript --out-dir out \
+  target/wasm32-unknown-unknown/release/oxyn-gpui-web-status.wasm
+wasm-opt -Oz <same --enable flags as above> out/oxyn-gpui-web-status_bg.wasm -o out/opt.wasm
+cp index.html out/ && cd out && python -m http.server 8000   # open http://localhost:8000
 ```
 
 `spike/dioxus-status/index.html` is the page used for the posters.
