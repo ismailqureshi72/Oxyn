@@ -10,6 +10,7 @@ pub mod context;
 pub mod effort;
 pub mod input;
 pub mod model;
+pub mod send;
 
 use std::time::Duration;
 
@@ -34,6 +35,7 @@ pub use model::{
     Capabilities, DraftNeeds, MidRunPolicy, ModelCatalog, ModelInfo, ModelPickerVariant,
     ModelSelection, ModelStatus, Picker, PickerKey, PickerRow, SelectOutcome,
 };
+pub use send::{SendAction, SendControl, SendState, SendVariant, SendView, StopConfirm};
 
 /// Shared composer motion tokens (`composer.md` §4).
 pub mod timing {
@@ -105,21 +107,31 @@ impl ComposerLayout {
         use EffortVariant as E;
         use InputVariant as I;
         use ModelPickerVariant as M;
-        let (input, attachments, model, effort, context) = match self {
+        use SendVariant as S;
+        let (input, attachments, model, effort, context, send) = match self {
             Self::Chat => (
                 I::RoundedBox,
                 A::TileRing,
                 M::PillPopover,
                 E::SignalBars,
                 C::Ring,
+                S::QueuePill,
             ),
-            Self::IdePanel => (I::IdeInline, A::Chip, M::Compact, E::Menu, C::Text),
+            Self::IdePanel => (
+                I::IdeInline,
+                A::Chip,
+                M::Compact,
+                E::Menu,
+                C::Text,
+                S::Minimal,
+            ),
             Self::Desktop => (
                 I::Floating,
                 A::TileRing,
                 M::PillPopover,
                 E::Segmented,
                 C::Ring,
+                S::Split,
             ),
             Self::Mobile => (
                 I::DockedBar,
@@ -127,6 +139,7 @@ impl ComposerLayout {
                 M::PillPopover,
                 E::Menu,
                 C::Ring,
+                S::Classic,
             ),
             Self::Terminal => (
                 I::TerminalPrompt,
@@ -134,6 +147,7 @@ impl ComposerLayout {
                 M::Glyph,
                 E::Chevrons,
                 C::Text,
+                S::Glyph,
             ),
             Self::Node => (
                 I::RoundedBox,
@@ -141,6 +155,7 @@ impl ComposerLayout {
                 M::PillPopover,
                 E::Slider,
                 C::Bar,
+                S::Classic,
             ),
         };
         LayoutDefaults {
@@ -149,6 +164,7 @@ impl ComposerLayout {
             model,
             effort,
             context,
+            send,
         }
     }
 }
@@ -166,6 +182,8 @@ pub struct LayoutDefaults {
     pub effort: EffortVariant,
     /// Context meter.
     pub context: ContextVariant,
+    /// Send control.
+    pub send: SendVariant,
 }
 
 /// What Enter does while the agent works (`composer.md` §1 rule 3).

@@ -7,6 +7,7 @@ mod context;
 mod effort;
 mod icons;
 mod model;
+mod send;
 
 use std::{cell::RefCell, rc::Rc, time::Duration};
 
@@ -17,7 +18,8 @@ use oxyn_core::{
         AttachmentItem, AttachmentKind, BusyAction, ComposerLayout, ComposerPhase, ComposerState,
         ContextMeter, ContextUsage, DisabledReason, DraftNeeds, EffortControl, EffortLevel,
         EffortSetting, InputVariant, MidRunPolicy, ModelCatalog, ModelSelection, Picker, PickerKey,
-        Placeholder, ReasoningSupport, SelectOutcome, SendGate, Surface, TurnSettings,
+        Placeholder, ReasoningSupport, SelectOutcome, SendAction, SendControl, SendGate, SendState,
+        SendVariant, StopConfirm, Surface, TurnSettings,
         attachments::PendingPolicy,
         effort::{EffortFx, band_position, prompt_glyph},
         input::busy_hint,
@@ -30,6 +32,7 @@ pub use context::{ContextMeterChip, ContextMeterChipProps};
 pub use effort::{EffortChip, EffortChipProps, tier_color};
 pub use icons::{Icon, IconProps};
 pub use model::{ModelPicker, ModelPickerProps};
+pub use send::{SendButton, SendButtonProps};
 
 use crate::{ElapsedTimer, GlyphLoader, VerbCycler};
 
@@ -124,9 +127,39 @@ pub fn Composer(
     /// Override the context meter variant.
     #[props(default)]
     context_variant: Option<String>,
+    /// Override the send control variant.
+    #[props(default)]
+    send_variant: Option<String>,
+    /// The last send failed with this reason (send shows ⟲ Retry).
+    #[props(default)]
+    error: Option<String>,
+    /// Dictation strip open (send shows ✓).
+    #[props(default)]
+    dictating: bool,
+    /// Stop confirmation: `double-esc` or `hold` (touch, 400 ms).
+    #[props(default)]
+    stop_confirm: Option<String>,
+    /// Time or token budget used, `0..=1` (ring-progress).
+    #[props(default)]
+    budget: Option<f32>,
     /// Reduced motion.
     #[props(default)]
     reduced: bool,
+    /// Pause (`true`) or resume (`false`) pressed.
+    #[props(default)]
+    on_pause: EventHandler<bool>,
+    /// Retry pressed.
+    #[props(default)]
+    on_retry: EventHandler<()>,
+    /// Answer submitted to the pending card.
+    #[props(default)]
+    on_answer: EventHandler<String>,
+    /// Dictated text accepted.
+    #[props(default)]
+    on_accept: EventHandler<()>,
+    /// Split ▾ or busy "ask" pressed: the host shows its choices.
+    #[props(default)]
+    on_choose: EventHandler<()>,
     /// Send pressed or Enter.
     #[props(default)]
     on_submit: EventHandler<Submission>,
@@ -156,6 +189,10 @@ pub fn Composer(
     let model_v = model_variant.unwrap_or_else(|| d.model.id().to_string());
     let effort_v = effort_variant.unwrap_or_else(|| d.effort.id().to_string());
     let ctx_v = context_variant.unwrap_or_else(|| d.context.id().to_string());
+    let send_v = send_variant
+        .as_deref()
+        .and_then(SendVariant::from_id)
+        .unwrap_or(d.send);
 
     let init_open = open.clone();
     let mut draft = use_signal(|| text.clone());
@@ -184,6 +221,18 @@ pub fn Composer(
     let meter = use_hook(|| Rc::new(RefCell::new(ContextMeter::default())));
     let held = use_hook(|| Rc::new(RefCell::new(None::<oxyn_core::composer::Held<String>>)));
     let was_busy = use_hook(|| Rc::new(RefCell::new(false)));
+    let mut paused = use_signal(|| false);
+    let send_ctl = use_hook(|| {
+        let mut c = SendControl::new(send_v);
+        c.reduced = reduced;
+        c.stop_confirm = match stop_confirm.as_deref() {
+            Some("double-esc") => StopConfirm::DoubleEsc,
+            Some("hold") => StopConfirm::Hold(Duration::from_millis(400)),
+            _ => StopConfirm::None,
+        };
+        Rc::new(RefCell::new(c))
+    });
+    send_ctl.borrow_mut().variant = send_v;
     let _ = bump();
 
     // Model and reasoning support for the next turn.
@@ -233,6 +282,11 @@ pub fn Composer(
             _ => Surface::Chat,
         },
     );
+    let send_state = SendState::derive(&state, error.as_deref(), dictating, paused());
+    let send_view =
+        send_ctl
+            .borrow_mut()
+            .view(send_state.clone(), busy_action, elapsed, budget, now);
     // The reason line already says why sending is off; the placeholder keeps its normal copy.
     let ph_now = placeholder.text(&agent, busy_action, None);
     let ph = {
@@ -301,31 +355,58 @@ pub fn Composer(
             bump += 1;
         }
     };
-    let action = state.submit_action();
     let att_ids: Vec<u64> = attachments
         .iter()
         .filter(|a| !a.is_error())
         .map(|a| a.id)
         .collect();
     let settings = state.next_turn.clone();
-    let mut submit = {
-        let action = action.clone();
-        move || {
-            let busy = match &action {
-                oxyn_core::composer::SubmitAction::Send => None,
-                oxyn_core::composer::SubmitAction::Busy(b) => Some(*b),
-                _ => return,
-            };
+    let dispatch = move |a: SendAction| {
+        let emit = |busy: Option<BusyAction>| {
             on_submit.call(Submission {
                 text: draft.peek().clone(),
                 attachments: att_ids.clone(),
                 settings: settings.clone(),
                 busy,
             });
-            draft.set(String::new());
+        };
+        match a {
+            SendAction::Send => emit(None),
+            SendAction::Queue => emit(Some(BusyAction::Queue)),
+            SendAction::Steer => emit(Some(BusyAction::Steer)),
+            SendAction::Interrupt => emit(Some(BusyAction::Interrupt)),
+            SendAction::Answer => on_answer.call(draft.peek().clone()),
+            SendAction::Stop => {
+                paused.set(false);
+                on_stop.call(());
+                return;
+            }
+            SendAction::Pause => {
+                paused.set(true);
+                on_pause.call(true);
+                return;
+            }
+            SendAction::Resume => {
+                paused.set(false);
+                on_pause.call(false);
+                return;
+            }
+            SendAction::Accept => {
+                on_accept.call(());
+                return;
+            }
+            SendAction::Retry => {
+                on_retry.call(());
+                return;
+            }
+            SendAction::Choose => {
+                on_choose.call(());
+                return;
+            }
+            SendAction::None => return,
         }
+        draft.set(String::new());
     };
-    let mut submit2 = submit.clone();
 
     // Ignition wash.
     let wash = match effort_view.fx {
@@ -356,7 +437,23 @@ pub fn Composer(
         },
         if disabled.is_some() { " disabled" } else { "" }
     );
-    let send = send_button(&state, &action, on_stop);
+    let send = {
+        let send_c = send_ctl.clone();
+        let send_c2 = send_ctl.clone();
+        let mut d1 = dispatch.clone();
+        let mut d2 = dispatch.clone();
+        rsx! {
+            SendButton {
+                view: send_view.clone(),
+                variant: send_v.id().to_string(),
+                on_action: move |a| { let a = send_c.borrow_mut().press(a, now); d1(a); bump += 1; },
+                on_hold: move |down: bool| {
+                    let mut c = send_c2.borrow_mut();
+                    if down { c.hold_start(now) } else { let a = c.hold_end(now); std::mem::drop(c); d2(a); }
+                },
+            }
+        }
+    };
     let lay_cls = &lay.id()[9..];
     let running = agent.is_busy() || agent.is_finished();
     let show_tab = running && !terminal;
@@ -417,7 +514,16 @@ pub fn Composer(
 
     rsx! {
         form { class: "oxyn-composer {lay_cls}", "aria-label": "Message the agent",
-            onsubmit: move |e| { e.prevent_default(); submit2(); },
+            onsubmit: {
+                let send_c = send_ctl.clone();
+                let st = send_state.clone();
+                let mut dispatch = dispatch.clone();
+                move |e: FormEvent| {
+                    e.prevent_default();
+                    let a = send_c.borrow_mut().enter(&st, busy_action, false, now);
+                    dispatch(a);
+                }
+            },
             if show_tab {
                 div { class: "oxyn-tab", role: "status",
                     GlyphLoader { state: agent.clone(), now, size: 13.0 }
@@ -455,11 +561,23 @@ pub fn Composer(
                             let effort_c = effort_ctl.clone();
                             let agent = agent.clone();
                             let support = support.clone();
+                            let send_c = send_ctl.clone();
+                            let st = send_state.clone();
+                            let mut dispatch = dispatch.clone();
                             move |e: KeyboardEvent| {
                                 let m = e.modifiers();
                                 match e.key() {
-                                    Key::Enter if !m.shift() && !e.is_composing() => { e.prevent_default(); submit(); }
-                                    Key::Escape => { picker.write().open = false; pop.set(None); }
+                                    Key::Enter if !m.shift() && !e.is_composing() => {
+                                        e.prevent_default();
+                                        let a = send_c.borrow_mut().enter(&st, busy_action, m.meta() || m.ctrl(), now);
+                                        dispatch(a);
+                                    }
+                                    Key::Escape if picker.peek().open || pop.peek().is_some() => { picker.write().open = false; pop.set(None); }
+                                    Key::Escape => {
+                                        let a = send_c.borrow_mut().escape(&st, now);
+                                        dispatch(a);
+                                        bump += 1;
+                                    }
                                     Key::Character(c) if m.alt() && (c == "." || c == "≥" || c == "," || c == "≤") => {
                                         e.prevent_default();
                                         effort_c.borrow_mut().step(c == "." || c == "≥", &agent, &support, now);
@@ -533,46 +651,6 @@ fn support_for(catalog: &ModelCatalog, sel: &ModelSelection) -> ReasoningSupport
         })
 }
 
-fn send_button(
-    state: &ComposerState,
-    action: &oxyn_core::composer::SubmitAction,
-    on_stop: EventHandler<()>,
-) -> Element {
-    use oxyn_core::composer::SubmitAction as A;
-    let (class, icon, label, title) = match (&state.phase, action) {
-        (ComposerPhase::Busy | ComposerPhase::Submitted, _) => {
-            ("send stop", "stop", "", "Stop · Esc".to_string())
-        }
-        (ComposerPhase::BusyWithDraft, _) => (
-            "send queue",
-            "up",
-            match state.busy_action {
-                BusyAction::Steer => "Steer",
-                _ => "Queue",
-            },
-            busy_hint(state.busy_action).to_string(),
-        ),
-        (_, A::Send) => ("send ready", "up", "", "Send · Enter".to_string()),
-        (_, A::WaitForUploads(n)) => (
-            "send wait",
-            "up",
-            "",
-            format!("Waiting for {n} upload{}", if *n == 1 { "" } else { "s" }),
-        ),
-        (_, A::Blocked(r)) => ("send muted", "up", "", r.clone()),
-        _ => ("send muted", "up", "", String::new()),
-    };
-    let stop = class == "send stop";
-    let kind = if stop { "button" } else { "submit" };
-    rsx! {
-        button { r#type: "{kind}", class: "{class}", title: "{title}",
-            onclick: move |e| if stop { e.prevent_default(); on_stop.call(()) }, "aria-label": if label.is_empty() { title.clone() } else { label.to_string() },
-            Icon { name: icon, size: if icon == "stop" { 11.0 } else { 16.0 }, stroke: 2.0 }
-            if !label.is_empty() { span { "{label}" } }
-        }
-    }
-}
-
 /// Stylesheet for the composer and its parts.
 pub const COMPOSER_CSS: &str = include_str!("composer.css");
 
@@ -636,17 +714,20 @@ mod tests {
     fn idle_with_model_popover() {
         let h = html(AgentState::Idle, "hello", "model", None);
         assert!(h.contains("Search models") && h.contains("Alpha 1"));
-        assert!(h.contains("send ready"), "draft makes send ready");
+        assert!(
+            h.contains("seg primary") && h.contains("aria-label=\"Send message\""),
+            "draft makes send ready"
+        );
         assert!(h.contains("Ask anything"));
     }
 
     #[test]
     fn busy_draft_queues_and_shows_tab() {
         let h = html(AgentState::Streaming, "also this", "", None);
-        assert!(h.contains("send queue") && h.contains(">Queue<"));
+        assert!(h.contains("oxyn-send queue-pill") && h.contains(">Queue<"));
         assert!(h.contains("oxyn-tab") && h.contains("Enter to queue"));
         let h = html(AgentState::Streaming, "", "", None);
-        assert!(h.contains("send stop"));
+        assert!(h.contains("aria-label=\"Stop generating\""));
     }
 
     #[test]
@@ -658,7 +739,7 @@ mod tests {
             Some(DisabledReason::Offline),
         );
         assert!(h.contains("offline · your draft is saved") && h.contains(">kept<"));
-        assert!(h.contains("send muted"));
+        assert!(h.contains("seg muted"));
         assert!(h.contains("Deeper reasoning, slower"), "effort menu open");
     }
 }
