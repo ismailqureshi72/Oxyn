@@ -5,13 +5,14 @@
 > Generated outputs (plan #13): Rust in `oxyn-tokens` (`crates/oxyn-tokens/src/generated.rs`) and CSS variables in
 > `tokens/dist/oxyn.css`, both written by `cargo run -p oxyn-tokens-gen`. CI runs it with `--check`.
 
-## 0. Default palette: monochrome (decided 2026-11-12)
-The shipped themes are black and grey (`dark`, `hc-dark`) and white and grey (`light`), like affectUI. No hue is used by
-default: the accent is off-white on dark and near-black on light, and status, risk, agent, loader, diff, merge, git and
-monogram roles are neutral greys. State is carried by glyph, label, weight and fill, never by colour alone. Terminal
-`ansi.*` keeps its colours because it renders program output. The earlier coloured palette is kept as
-`tokens/presets/ember.tokens.json`, which Studio (plan #26) applies only when the user picks colours. The brand mark is
-separate from component themes. Contrast: 715 rows, 0 failures.
+## 0. Default palette: monochrome chrome, semantic colour (decided 2026-11-12)
+The shipped themes are black and grey (`dark`, `hc-dark`) and white and grey (`light`), like affectUI. Chrome has no hue:
+the accent (primary buttons, focus, selection, links, loaders, thinking/streaming state) is off-white on dark and
+near-black on light. Colour is kept only where it carries meaning, as affectUI does: `status.*` (success, warning,
+danger, info, waiting), `risk.*`, `diff.*`, `merge.*`, `git.*`, `review.*`, `impact.*`, `agent.*` (identity and
+context-meter categories), `monogram.*` and terminal `ansi.*`. `risk.medium` follows the accent, so it is neutral.
+The full coloured palette, accent included, is `tokens/presets/ember.tokens.json`, which Studio (plan #26) applies only
+when the user picks it. The brand mark is separate. Contrast: 715 rows, 0 failures.
 
 ## 1. Principles
 | # | Rule |
