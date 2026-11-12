@@ -1,0 +1,2172 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "$description": "Oxyn motion tokens. Source of truth: docs/motion.md. Springs and loops are $type duration (nominal t95 / period) with the real definition in $extensions.\"dev.oxyn\".",
+  "dur": {
+    "instant": {
+      "$type": "duration",
+      "$value": "{dur.step.80}",
+      "$description": "press-down, reduced-motion crossfade",
+      "$extensions": {
+        "dev.oxyn": {
+          "kind": "primitive",
+          "range": {
+            "min": {
+              "value": 0,
+              "unit": "ms"
+            },
+            "max": {
+              "value": 80,
+              "unit": "ms"
+            }
+          },
+          "reduced": "is the reduced form"
+        }
+      }
+    },
+    "fast": {
+      "$type": "duration",
+      "$value": "{dur.step.120}",
+      "$description": "hover, colour, small fades",
+      "$extensions": {
+        "dev.oxyn": {
+          "kind": "primitive",
+          "range": {
+            "min": {
+              "value": 100,
+              "unit": "ms"
+            },
+            "max": {
+              "value": 140,
+              "unit": "ms"
+            }
+          },
+          "reduced": "crossfade `dur.instant` (80 ms opacity, no transform)"
+        }
+      }
+    },
+    "base": {
+      "$type": "duration",
+      "$value": "{dur.step.180}",
+      "$description": "morphs, chip enter, popovers",
+      "$extensions": {
+        "dev.oxyn": {
+          "kind": "primitive",
+          "range": {
+            "min": {
+              "value": 160,
+              "unit": "ms"
+            },
+            "max": {
+              "value": 200,
+              "unit": "ms"
+            }
+          },
+          "reduced": "crossfade `dur.instant` (80 ms opacity, no transform)"
+        }
+      }
+    },
+    "travel": {
+      "$type": "duration",
+      "$value": "{dur.step.240}",
+      "$description": "element moving between two resting places",
+      "$extensions": {
+        "dev.oxyn": {
+          "kind": "primitive",
+          "range": {
+            "min": {
+              "value": 220,
+              "unit": "ms"
+            },
+            "max": {
+              "value": 260,
+              "unit": "ms"
+            }
+          },
+          "cap": {
+            "value": 260,
+            "unit": "ms"
+          },
+          "reduced": "crossfade `dur.instant` (80 ms opacity, no transform)"
+        }
+      }
+    },
+    "pulse": {
+      "$type": "duration",
+      "$value": "{dur.step.400}",
+      "$description": "single attention pulse, completion pass, ring",
+      "$extensions": {
+        "dev.oxyn": {
+          "kind": "primitive",
+          "range": {
+            "min": {
+              "value": 300,
+              "unit": "ms"
+            },
+            "max": {
+              "value": 400,
+              "unit": "ms"
+            }
+          },
+          "reduced": "no pulse; state shown by tone/badge"
+        }
+      }
+    },
+    "beat": {
+      "$type": "duration",
+      "$value": "{dur.step.600}",
+      "$description": "hold of a ✓ / tint before it fades",
+      "$extensions": {
+        "dev.oxyn": {
+          "kind": "primitive",
+          "range": {
+            "min": {
+              "value": 400,
+              "unit": "ms"
+            },
+            "max": {
+              "value": 800,
+              "unit": "ms"
+            }
+          },
+          "reduced": "kept (a hold carries meaning)"
+        }
+      }
+    },
+    "row": {
+      "enter": {
+        "$type": "duration",
+        "$value": "{dur.step.200}",
+        "$description": "200 ms height (spring.snap) + 160 ms fade (ease.out), y +4 → 0",
+        "$extensions": {
+          "dev.oxyn": {
+            "kind": "component",
+            "curve": "{spring.snap}",
+            "reduced": "fade `dur.instant`, height instant",
+            "offset_y_px": 4,
+            "parts": [
+              {
+                "property": "height",
+                "duration": "{dur.step.200}",
+                "curve": "{spring.snap}"
+              },
+              {
+                "property": "opacity",
+                "duration": "{dur.step.160}",
+                "curve": "{ease.out}"
+              }
+            ],
+            "stagger": "{stagger.base}"
+          }
+        }
+      },
+      "morph": {
+        "$type": "duration",
+        "$value": "{dur.step.160}",
+        "$description": "160 ms",
+        "$extensions": {
+          "dev.oxyn": {
+            "kind": "component",
+            "curve": "{spring.snap}",
+            "reduced": "crossfade `dur.instant` (80 ms opacity, no transform)"
+          }
+        }
+      }
+    },
+    "chip": {
+      "enter": {
+        "$type": "duration",
+        "$value": "{dur.step.180}",
+        "$description": "180 ms fade + y +4 → 0, no height animation",
+        "$extensions": {
+          "dev.oxyn": {
+            "kind": "component",
+            "curve": "{ease.out}",
+            "reduced": "crossfade `dur.instant` (80 ms opacity, no transform)",
+            "offset_y_px": 4,
+            "stagger": "{stagger.base}",
+            "role": "append-only chips / cards that do not push content"
+          }
+        }
+      }
+    },
+    "check": {
+      "draw": {
+        "$type": "duration",
+        "$value": "{dur.step.240}",
+        "$description": "240 ms",
+        "$extensions": {
+          "dev.oxyn": {
+            "kind": "component",
+            "curve": "{ease.out}",
+            "reduced": "✓ appears without stroke draw"
+          }
+        }
+      }
+    },
+    "expand": {
+      "$type": "duration",
+      "$value": "{dur.step.220}",
+      "$description": "220 ms height (spring.snap) + content fade 150 ms (ease.out) at +40 ms",
+      "$extensions": {
+        "dev.oxyn": {
+          "kind": "component",
+          "curve": "{spring.snap}",
+          "reduced": "height instant, content fade `dur.instant`",
+          "parts": [
+            {
+              "property": "height",
+              "duration": "{dur.step.220}",
+              "curve": "{spring.snap}"
+            },
+            {
+              "property": "opacity",
+              "duration": "{dur.step.150}",
+              "curve": "{ease.out}",
+              "delay_ms": 40
+            }
+          ]
+        }
+      }
+    },
+    "collapse": {
+      "$type": "duration",
+      "$value": "{dur.step.280}",
+      "$description": "280 ms total: content fade 100 ms then height 180 ms, both ease.in",
+      "$extensions": {
+        "dev.oxyn": {
+          "kind": "component",
+          "curve": "{ease.in}",
+          "reduced": "height instant, content fade `dur.instant`",
+          "parts": [
+            {
+              "property": "opacity",
+              "duration": "{dur.step.100}",
+              "curve": "{ease.in}"
+            },
+            {
+              "property": "height",
+              "duration": "{dur.step.180}",
+              "curve": "{ease.in}",
+              "delay_ms": 100
+            }
+          ]
+        }
+      }
+    },
+    "context": {
+      "expand": {
+        "$type": "duration",
+        "$value": "{dur.expand}",
+        "$extensions": {
+          "dev.oxyn": {
+            "status": "alias of dur.expand (180 → 220)"
+          }
+        }
+      }
+    },
+    "height": {
+      "settle": {
+        "$type": "duration",
+        "$value": "{dur.step.200}",
+        "$description": "200 ms",
+        "$extensions": {
+          "dev.oxyn": {
+            "kind": "component",
+            "curve": "{spring.snap}",
+            "reduced": "height jumps once"
+          }
+        }
+      }
+    },
+    "version": {
+      "swap": {
+        "$type": "duration",
+        "$value": "{dur.step.180}",
+        "$description": "180 ms crossfade + height dur.height.settle",
+        "$extensions": {
+          "dev.oxyn": {
+            "kind": "component",
+            "curve": "{ease.in-out}",
+            "reduced": "crossfade `dur.instant` (80 ms opacity, no transform)",
+            "height": "{dur.height.settle}"
+          }
+        }
+      }
+    },
+    "highlight": {
+      "fade": {
+        "$type": "duration",
+        "$value": "{dur.step.1600}",
+        "$description": "1600 ms",
+        "$extensions": {
+          "dev.oxyn": {
+            "kind": "component",
+            "curve": "{ease.out}",
+            "reduced": "static 2 px accent bar for 4 s"
+          }
+        }
+      }
+    },
+    "flash": {
+      "target": {
+        "$type": "duration",
+        "$value": "{dur.step.900}",
+        "$description": "600 ms hold (dur.beat) + 900 ms fade",
+        "$extensions": {
+          "dev.oxyn": {
+            "kind": "component",
+            "curve": "{ease.out}",
+            "reduced": "static tint for the hold, then removed",
+            "hold": "{dur.beat}"
+          }
+        }
+      }
+    },
+    "digit": {
+      "roll": {
+        "$type": "duration",
+        "$value": "{dur.step.280}",
+        "$description": "280 ms",
+        "$extensions": {
+          "dev.oxyn": {
+            "kind": "component",
+            "curve": "{ease.out}",
+            "reduced": "digits swap without rolling",
+            "stagger": "{stagger.digit}",
+            "must_be_below_ms": 1000
+          }
+        }
+      }
+    },
+    "count": {
+      "roll": {
+        "$type": "duration",
+        "$value": "{dur.digit.roll}",
+        "$extensions": {
+          "dev.oxyn": {
+            "status": "alias of dur.digit.roll"
+          }
+        }
+      },
+      "up": {
+        "$type": "duration",
+        "$value": "{dur.step.500}",
+        "$description": "500 ms",
+        "$extensions": {
+          "dev.oxyn": {
+            "kind": "component",
+            "curve": "{ease.out}",
+            "reduced": "final value shown"
+          }
+        }
+      }
+    },
+    "restore": {
+      "tick": {
+        "$type": "duration",
+        "$value": "{dur.digit.roll}",
+        "$extensions": {
+          "dev.oxyn": {
+            "status": "alias of dur.digit.roll"
+          }
+        }
+      }
+    },
+    "tense": {
+      "roll": {
+        "$type": "duration",
+        "$value": "{dur.step.240}",
+        "$description": "240 ms",
+        "$extensions": {
+          "dev.oxyn": {
+            "kind": "component",
+            "curve": "{ease.out}",
+            "reduced": "crossfade `dur.instant` (80 ms opacity, no transform)"
+          }
+        }
+      }
+    },
+    "verb": {
+      "swap": {
+        "$type": "duration",
+        "$value": "{dur.step.180}",
+        "$description": "180 ms",
+        "$extensions": {
+          "dev.oxyn": {
+            "kind": "component",
+            "curve": "{ease.out}",
+            "reduced": "crossfade `dur.instant` (80 ms opacity, no transform); dwell ×2"
+          }
+        }
+      },
+      "dwell": {
+        "$type": "duration",
+        "$value": "{dur.step.2800}",
+        "$description": "2800 ms",
+        "$extensions": {
+          "dev.oxyn": {
+            "kind": "component",
+            "curve": "—",
+            "reduced": "doubled (5600 ms)",
+            "min": true,
+            "grows_with_length": true
+          }
+        }
+      }
+    },
+    "reveal": {
+      "token": {
+        "$type": "duration",
+        "$value": "{dur.step.160}",
+        "$description": "160 ms",
+        "$extensions": {
+          "dev.oxyn": {
+            "kind": "component",
+            "curve": "{ease.out}",
+            "reduced": "whole block appears with `dur.instant` fade",
+            "stagger": "{stagger.glyph}"
+          }
+        }
+      },
+      "media": {
+        "$type": "duration",
+        "$value": "{dur.step.600}",
+        "$description": "600 ms",
+        "$extensions": {
+          "dev.oxyn": {
+            "kind": "component",
+            "curve": "{ease.out}",
+            "reduced": "crossfade `dur.instant` (80 ms opacity, no transform)",
+            "blur_px": [
+              24,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "shimmer": {
+      "sweep": {
+        "$type": "duration",
+        "$value": "{dur.step.1400}",
+        "$description": "1400 ms",
+        "$extensions": {
+          "dev.oxyn": {
+            "kind": "component",
+            "curve": "{ease.coast}",
+            "reduced": "shimmer off",
+            "long_line_speed_px_s": 140
+          }
+        }
+      },
+      "rest": {
+        "$type": "duration",
+        "$value": "{dur.step.800}",
+        "$description": "800 ms",
+        "$extensions": {
+          "dev.oxyn": {
+            "kind": "component",
+            "curve": "—",
+            "reduced": "shimmer off"
+          }
+        }
+      },
+      "delay": {
+        "$type": "duration",
+        "$value": "{delay.shimmer}",
+        "$deprecated": "renamed → delay.shimmer"
+      }
+    },
+    "settle": {
+      "$type": "duration",
+      "$value": "{dur.step.240}",
+      "$description": "240 ms",
+      "$extensions": {
+        "dev.oxyn": {
+          "kind": "component",
+          "curve": "{ease.in}",
+          "reduced": "crossfade `dur.instant` (80 ms opacity, no transform)"
+        }
+      }
+    },
+    "stall": {
+      "ramp": {
+        "$type": "duration",
+        "$value": "{dur.step.2000}",
+        "$description": "2000 ms",
+        "$extensions": {
+          "dev.oxyn": {
+            "kind": "component",
+            "curve": "{ease.linear}",
+            "reduced": "tone swaps with `dur.instant`"
+          }
+        }
+      },
+      "recover": {
+        "$type": "duration",
+        "$value": "{dur.step.200}",
+        "$description": "200 ms",
+        "$extensions": {
+          "dev.oxyn": {
+            "kind": "component",
+            "curve": "{ease.out}",
+            "reduced": "crossfade `dur.instant` (80 ms opacity, no transform)"
+          }
+        }
+      }
+    },
+    "tempo": {
+      "change": {
+        "$type": "duration",
+        "$value": "{dur.step.400}",
+        "$description": "400 ms",
+        "$extensions": {
+          "dev.oxyn": {
+            "kind": "component",
+            "curve": "{ease.in-out}",
+            "reduced": "n/a (loops static)"
+          }
+        }
+      }
+    },
+    "error": {
+      "nudge": {
+        "$type": "duration",
+        "$value": "{dur.step.300}",
+        "$description": "300 ms",
+        "$extensions": {
+          "dev.oxyn": {
+            "kind": "component",
+            "curve": "{ease.linear}",
+            "reduced": "no nudge; inline text",
+            "cycles": 2,
+            "amplitude_px": 3
+          }
+        }
+      }
+    },
+    "actions": {
+      "reveal": {
+        "$type": "duration",
+        "$value": "{dur.step.120}",
+        "$description": "120 ms",
+        "$extensions": {
+          "dev.oxyn": {
+            "kind": "component",
+            "curve": "{ease.out}",
+            "reduced": "crossfade `dur.instant` (80 ms opacity, no transform)",
+            "delay": "{delay.intent}"
+          }
+        }
+      },
+      "hide": {
+        "$type": "duration",
+        "$value": "{dur.step.160}",
+        "$description": "160 ms",
+        "$extensions": {
+          "dev.oxyn": {
+            "kind": "component",
+            "curve": "{ease.in}",
+            "reduced": "crossfade `dur.instant` (80 ms opacity, no transform)",
+            "delay": "{delay.leave}"
+          }
+        }
+      }
+    },
+    "marker": {
+      "reveal": {
+        "$type": "duration",
+        "$value": "{dur.actions.reveal}",
+        "$extensions": {
+          "dev.oxyn": {
+            "status": "alias of dur.actions.reveal (delay delay.hover)"
+          }
+        }
+      }
+    },
+    "copy": {
+      "confirm": {
+        "$type": "duration",
+        "$value": "{dur.step.1500}",
+        "$description": "1500 ms hold, then 160 ms revert",
+        "$extensions": {
+          "dev.oxyn": {
+            "kind": "component",
+            "curve": "—",
+            "reduced": "hold kept (carries meaning); revert `dur.instant`",
+            "revert": "{dur.step.160}",
+            "revert_curve": "{ease.out}"
+          }
+        }
+      }
+    },
+    "preview": {
+      "in": {
+        "$type": "duration",
+        "$value": "{dur.step.140}",
+        "$description": "140 ms",
+        "$extensions": {
+          "dev.oxyn": {
+            "kind": "component",
+            "curve": "{ease.out}",
+            "reduced": "crossfade `dur.instant` (80 ms opacity, no transform)",
+            "delay": "{delay.preview.open}"
+          }
+        }
+      }
+    },
+    "sheet": {
+      "enter": {
+        "$type": "duration",
+        "$value": "{dur.step.220}",
+        "$description": "220 ms",
+        "$extensions": {
+          "dev.oxyn": {
+            "kind": "component",
+            "curve": "{spring.snap}",
+            "reduced": "crossfade `dur.instant` (80 ms opacity, no transform)",
+            "offset_y_px": 12
+          }
+        }
+      },
+      "exit": {
+        "$type": "duration",
+        "$value": "{dur.step.160}",
+        "$description": "160 ms",
+        "$extensions": {
+          "dev.oxyn": {
+            "kind": "component",
+            "curve": "{ease.in}",
+            "reduced": "crossfade `dur.instant` (80 ms opacity, no transform)"
+          }
+        }
+      }
+    },
+    "surface": {
+      "enter": {
+        "$type": "duration",
+        "$value": "{dur.step.200}",
+        "$description": "200 ms",
+        "$extensions": {
+          "dev.oxyn": {
+            "kind": "component",
+            "curve": "{ease.out}",
+            "reduced": "crossfade `dur.instant` (80 ms opacity, no transform)",
+            "offset_y_px": 8
+          }
+        }
+      },
+      "exit": {
+        "$type": "duration",
+        "$value": "{dur.step.160}",
+        "$description": "160 ms",
+        "$extensions": {
+          "dev.oxyn": {
+            "kind": "component",
+            "curve": "{ease.in}",
+            "reduced": "crossfade `dur.instant` (80 ms opacity, no transform)"
+          }
+        }
+      }
+    },
+    "popover": {
+      "open": {
+        "$type": "duration",
+        "$value": "{dur.step.180}",
+        "$description": "180 ms",
+        "$extensions": {
+          "dev.oxyn": {
+            "kind": "component",
+            "curve": "{ease.out}",
+            "reduced": "crossfade `dur.instant` (80 ms opacity, no transform)",
+            "scale": [
+              0.96,
+              1
+            ]
+          }
+        }
+      },
+      "close": {
+        "$type": "duration",
+        "$value": "{dur.step.120}",
+        "$description": "120 ms",
+        "$extensions": {
+          "dev.oxyn": {
+            "kind": "component",
+            "curve": "{ease.in}",
+            "reduced": "crossfade `dur.instant` (80 ms opacity, no transform)"
+          }
+        }
+      }
+    },
+    "rewind": {
+      "fold": {
+        "$type": "duration",
+        "$value": "{dur.step.280}",
+        "$description": "280 ms",
+        "$extensions": {
+          "dev.oxyn": {
+            "kind": "component",
+            "curve": "{ease.in-out}",
+            "reduced": "heights instant",
+            "stagger": "{stagger.fold}"
+          }
+        }
+      }
+    },
+    "hunk": {
+      "resolve": {
+        "$type": "duration",
+        "$value": "{dur.step.240}",
+        "$description": "240 ms tint → neutral (ease.out) + chip morph dur.row.morph",
+        "$extensions": {
+          "dev.oxyn": {
+            "kind": "component",
+            "curve": "{ease.out}",
+            "reduced": "crossfade `dur.instant` (80 ms opacity, no transform)",
+            "morph": "{dur.row.morph}"
+          }
+        }
+      }
+    },
+    "line": {
+      "enter": {
+        "$type": "duration",
+        "$value": "{dur.step.120}",
+        "$description": "120 ms",
+        "$extensions": {
+          "dev.oxyn": {
+            "kind": "component",
+            "curve": "{ease.out}",
+            "reduced": "appears without fade",
+            "opacity_only": true
+          }
+        }
+      }
+    },
+    "layout": {
+      "switch": {
+        "$type": "duration",
+        "$value": "{dur.step.160}",
+        "$description": "160 ms",
+        "$extensions": {
+          "dev.oxyn": {
+            "kind": "component",
+            "curve": "{ease.in-out}",
+            "reduced": "crossfade `dur.instant` (80 ms opacity, no transform)"
+          }
+        }
+      }
+    },
+    "approval": {
+      "in": {
+        "$type": "duration",
+        "$value": "{dur.row.enter}",
+        "$extensions": {
+          "dev.oxyn": {
+            "status": "alias of dur.row.enter (curve conflict resolved)"
+          }
+        }
+      },
+      "resolve": {
+        "$type": "duration",
+        "$value": "{dur.step.220}",
+        "$description": "220 ms",
+        "$extensions": {
+          "dev.oxyn": {
+            "kind": "component",
+            "curve": "{spring.snap}",
+            "reduced": "crossfade `dur.instant` (80 ms opacity, no transform)"
+          }
+        }
+      },
+      "arm": {
+        "$type": "duration",
+        "$value": "{dur.step.600}",
+        "$description": "600 ms",
+        "$extensions": {
+          "dev.oxyn": {
+            "kind": "component",
+            "curve": "{ease.linear}",
+            "reduced": "static “Available in 0.6 s” text, delay kept",
+            "safety": true
+          }
+        }
+      },
+      "hold": {
+        "$type": "duration",
+        "$value": "{dur.step.1200}",
+        "$description": "1200 ms",
+        "$extensions": {
+          "dev.oxyn": {
+            "kind": "component",
+            "curve": "{ease.linear}",
+            "reduced": "duration kept; stepped 4-segment fill at 4 Hz + “Hold to allow · 1.2 s”",
+            "safety": true
+          }
+        }
+      },
+      "drain": {
+        "$type": "duration",
+        "$value": "{dur.step.200}",
+        "$description": "200 ms",
+        "$extensions": {
+          "dev.oxyn": {
+            "kind": "component",
+            "curve": "{ease.out}",
+            "reduced": "fill clears with `dur.instant`"
+          }
+        }
+      },
+      "page": {
+        "$type": "duration",
+        "$value": "{dur.step.160}",
+        "$description": "160 ms fade + 12 px slide",
+        "$extensions": {
+          "dev.oxyn": {
+            "kind": "component",
+            "curve": "{ease.out}",
+            "reduced": "crossfade `dur.instant` (80 ms opacity, no transform)",
+            "offset_x_px": 12
+          }
+        }
+      },
+      "stale": {
+        "$type": "duration",
+        "$value": "{dur.step.160}",
+        "$description": "160 ms desaturate (ease.out), 4000 ms hold, 180 ms collapse (ease.in)",
+        "$extensions": {
+          "dev.oxyn": {
+            "kind": "component",
+            "curve": "{ease.out}",
+            "reduced": "desaturate instant; hold kept; collapse instant",
+            "hold_ms": 4000,
+            "collapse": "{dur.step.180}",
+            "collapse_curve": "{ease.in}"
+          }
+        }
+      }
+    },
+    "frame": {
+      "glyph": {
+        "$type": "duration",
+        "$value": "{dur.step.80}",
+        "$description": "80 / 100 / 120 / 160 / 200 ms per frame",
+        "$extensions": {
+          "dev.oxyn": {
+            "kind": "component",
+            "curve": "step",
+            "reduced": "still glyph per phase",
+            "allowed_ms": [
+              80,
+              100,
+              120,
+              160,
+              200
+            ]
+          }
+        }
+      }
+    },
+    "loader": {
+      "min-visible": {
+        "$type": "duration",
+        "$value": "{dur.step.600}",
+        "$description": "600 ms",
+        "$extensions": {
+          "dev.oxyn": {
+            "kind": "component",
+            "curve": "—",
+            "reduced": "unchanged (not motion)"
+          }
+        }
+      }
+    },
+    "container": {
+      "min-visible": {
+        "$type": "duration",
+        "$value": "{dur.step.300}",
+        "$description": "300 ms",
+        "$extensions": {
+          "dev.oxyn": {
+            "kind": "component",
+            "curve": "—",
+            "reduced": "unchanged (not motion)"
+          }
+        }
+      }
+    },
+    "voice": {
+      "source-crossfade": {
+        "$type": "duration",
+        "$value": "{dur.step.160}",
+        "$description": "160 ms",
+        "$extensions": {
+          "dev.oxyn": {
+            "kind": "component",
+            "curve": "{ease.in-out}",
+            "reduced": "crossfade `dur.instant` (80 ms opacity, no transform)"
+          }
+        }
+      },
+      "speaker-swap": {
+        "$type": "duration",
+        "$value": "{dur.step.120}",
+        "$description": "120 ms",
+        "$extensions": {
+          "dev.oxyn": {
+            "kind": "component",
+            "curve": "{ease.out}",
+            "reduced": "crossfade `dur.instant` (80 ms opacity, no transform)"
+          }
+        }
+      },
+      "barge-drop": {
+        "$type": "duration",
+        "$value": "{dur.step.80}",
+        "$description": "80 ms",
+        "$extensions": {
+          "dev.oxyn": {
+            "kind": "component",
+            "curve": "{ease.firm}",
+            "reduced": "level → 0 instantly"
+          }
+        }
+      },
+      "asleep-fade": {
+        "$type": "duration",
+        "$value": "{dur.step.1200}",
+        "$description": "1200 ms",
+        "$extensions": {
+          "dev.oxyn": {
+            "kind": "component",
+            "curve": "{ease.in-out}",
+            "reduced": "poster swap `dur.instant`"
+          }
+        }
+      },
+      "wake": {
+        "$type": "duration",
+        "$value": "{dur.step.240}",
+        "$description": "240 ms",
+        "$extensions": {
+          "dev.oxyn": {
+            "kind": "component",
+            "curve": "{ease.out}",
+            "reduced": "crossfade `dur.instant` (80 ms opacity, no transform)"
+          }
+        }
+      },
+      "level": {
+        "attack": {
+          "$type": "duration",
+          "$value": "{dur.step.30}",
+          "$description": "30 ms",
+          "$extensions": {
+            "dev.oxyn": {
+              "kind": "component",
+              "curve": "filter: one-pole",
+              "reduced": "level ring updated at 10 Hz, kept",
+              "filter": "one-pole exponential"
+            }
+          }
+        },
+        "release": {
+          "$type": "duration",
+          "$value": "{dur.step.150}",
+          "$description": "150 ms",
+          "$extensions": {
+            "dev.oxyn": {
+              "kind": "component",
+              "curve": "filter: one-pole",
+              "reduced": "kept at 10 Hz",
+              "filter": "one-pole exponential"
+            }
+          }
+        }
+      }
+    },
+    "step": {
+      "30": {
+        "$type": "duration",
+        "$value": {
+          "value": 30,
+          "unit": "ms"
+        }
+      },
+      "80": {
+        "$type": "duration",
+        "$value": {
+          "value": 80,
+          "unit": "ms"
+        }
+      },
+      "100": {
+        "$type": "duration",
+        "$value": {
+          "value": 100,
+          "unit": "ms"
+        }
+      },
+      "120": {
+        "$type": "duration",
+        "$value": {
+          "value": 120,
+          "unit": "ms"
+        }
+      },
+      "140": {
+        "$type": "duration",
+        "$value": {
+          "value": 140,
+          "unit": "ms"
+        }
+      },
+      "150": {
+        "$type": "duration",
+        "$value": {
+          "value": 150,
+          "unit": "ms"
+        }
+      },
+      "160": {
+        "$type": "duration",
+        "$value": {
+          "value": 160,
+          "unit": "ms"
+        }
+      },
+      "180": {
+        "$type": "duration",
+        "$value": {
+          "value": 180,
+          "unit": "ms"
+        }
+      },
+      "200": {
+        "$type": "duration",
+        "$value": {
+          "value": 200,
+          "unit": "ms"
+        }
+      },
+      "220": {
+        "$type": "duration",
+        "$value": {
+          "value": 220,
+          "unit": "ms"
+        }
+      },
+      "240": {
+        "$type": "duration",
+        "$value": {
+          "value": 240,
+          "unit": "ms"
+        }
+      },
+      "250": {
+        "$type": "duration",
+        "$value": {
+          "value": 250,
+          "unit": "ms"
+        }
+      },
+      "280": {
+        "$type": "duration",
+        "$value": {
+          "value": 280,
+          "unit": "ms"
+        }
+      },
+      "300": {
+        "$type": "duration",
+        "$value": {
+          "value": 300,
+          "unit": "ms"
+        }
+      },
+      "400": {
+        "$type": "duration",
+        "$value": {
+          "value": 400,
+          "unit": "ms"
+        }
+      },
+      "500": {
+        "$type": "duration",
+        "$value": {
+          "value": 500,
+          "unit": "ms"
+        }
+      },
+      "600": {
+        "$type": "duration",
+        "$value": {
+          "value": 600,
+          "unit": "ms"
+        }
+      },
+      "800": {
+        "$type": "duration",
+        "$value": {
+          "value": 800,
+          "unit": "ms"
+        }
+      },
+      "900": {
+        "$type": "duration",
+        "$value": {
+          "value": 900,
+          "unit": "ms"
+        }
+      },
+      "1200": {
+        "$type": "duration",
+        "$value": {
+          "value": 1200,
+          "unit": "ms"
+        }
+      },
+      "1400": {
+        "$type": "duration",
+        "$value": {
+          "value": 1400,
+          "unit": "ms"
+        }
+      },
+      "1500": {
+        "$type": "duration",
+        "$value": {
+          "value": 1500,
+          "unit": "ms"
+        }
+      },
+      "1600": {
+        "$type": "duration",
+        "$value": {
+          "value": 1600,
+          "unit": "ms"
+        }
+      },
+      "2000": {
+        "$type": "duration",
+        "$value": {
+          "value": 2000,
+          "unit": "ms"
+        }
+      },
+      "2800": {
+        "$type": "duration",
+        "$value": {
+          "value": 2800,
+          "unit": "ms"
+        }
+      }
+    }
+  },
+  "ease": {
+    "out": {
+      "$type": "cubicBezier",
+      "$value": [
+        0.22,
+        1,
+        0.36,
+        1
+      ],
+      "$description": "enters, responses to input, fades in, rolls",
+      "$extensions": {
+        "dev.oxyn": {
+          "kind": "easing",
+          "css": "cubic-bezier(0.22, 1, 0.36, 1)"
+        }
+      }
+    },
+    "in": {
+      "$type": "cubicBezier",
+      "$value": [
+        0.4,
+        0,
+        1,
+        1
+      ],
+      "$description": "system-initiated exits, fly-up, collapse",
+      "$extensions": {
+        "dev.oxyn": {
+          "kind": "easing",
+          "css": "cubic-bezier(0.4, 0, 1, 1)"
+        }
+      }
+    },
+    "in-out": {
+      "$type": "cubicBezier",
+      "$value": [
+        0.65,
+        0,
+        0.35,
+        1
+      ],
+      "$description": "travel between two resting places, crossfades of equals, one-shot passes",
+      "$extensions": {
+        "dev.oxyn": {
+          "kind": "easing",
+          "css": "cubic-bezier(0.65, 0, 0.35, 1)"
+        }
+      }
+    },
+    "firm": {
+      "$type": "cubicBezier",
+      "$value": [
+        0.2,
+        0,
+        0,
+        1
+      ],
+      "$description": "interrupt / barge-in / come-to-rest, no overshoot",
+      "$extensions": {
+        "dev.oxyn": {
+          "kind": "easing",
+          "css": "cubic-bezier(0.2, 0, 0, 1)"
+        }
+      }
+    },
+    "linear": {
+      "$type": "cubicBezier",
+      "$value": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "$description": "constant-speed sweeps, fills that represent time (arming, hold), OKLab colour ramps",
+      "$extensions": {
+        "dev.oxyn": {
+          "kind": "easing",
+          "css": "cubic-bezier(0, 0, 1, 1)"
+        }
+      }
+    },
+    "sine": {
+      "$type": "cubicBezier",
+      "$value": [
+        0.37,
+        0,
+        0.63,
+        1
+      ],
+      "$description": "breathe loops (half-cycle, alternate)",
+      "$extensions": {
+        "dev.oxyn": {
+          "kind": "easing",
+          "css": "cubic-bezier(0.37, 0, 0.63, 1)"
+        }
+      }
+    },
+    "coast": {
+      "$type": "cubicBezier",
+      "$value": [
+        0.25,
+        0,
+        0.75,
+        1
+      ],
+      "$description": "shimmer band travel",
+      "$extensions": {
+        "dev.oxyn": {
+          "kind": "easing",
+          "css": "linear() exact; cubic-bezier(0.25, 0, 0.75, 1) fallback",
+          "exact": "piecewise: v=1.25; t<0.2: v·t²/0.4; 0.2≤t≤0.8: 0.125+v(t−0.2); t>0.8: 1−v(1−t)²/0.4",
+          "css_linear": "linear(0, 0.0078, 0.0312, 0.0703, 0.125, 0.1875, 0.25, 0.3125, 0.375, 0.4375, 0.5, 0.5625, 0.625, 0.6875, 0.75, 0.8125, 0.875, 0.9297, 0.9688, 0.9922, 1)"
+        }
+      }
+    }
+  },
+  "spring": {
+    "snap": {
+      "$type": "duration",
+      "$value": {
+        "value": 214,
+        "unit": "ms"
+      },
+      "$description": "morphs, reflow, heights, highlight glides, presses — $value is the nominal (t95) duration for tools without spring support",
+      "$extensions": {
+        "dev.oxyn": {
+          "type": "spring",
+          "stiffness": 500,
+          "damping": 45,
+          "mass": 1,
+          "dampingRatio": 1.006,
+          "naturalFrequency": 22.36,
+          "overshootPercent": 0,
+          "t95": {
+            "value": 214,
+            "unit": "ms"
+          },
+          "settle2pct": {
+            "value": 264,
+            "unit": "ms"
+          },
+          "settle01pct": {
+            "value": 420,
+            "unit": "ms"
+          },
+          "css": {
+            "duration": {
+              "value": 420,
+              "unit": "ms"
+            },
+            "timingFunction": "linear(0, 0.0236, 0.081, 0.157, 0.2412, 0.3269, 0.4098, 0.4872, 0.558, 0.6214, 0.6775, 0.7266, 0.7691, 0.8057, 0.8371, 0.8637, 0.8863, 0.9054, 0.9214, 0.9348, 0.946, 0.9554, 0.9632, 0.9696, 0.975, 0.9794, 0.9831, 0.9861, 0.9886, 0.9906, 0.9923, 0.9937, 0.9949, 0.9958, 0.9966, 0.9972, 0.9977, 0.9981, 0.9985, 0.9988, 1)"
+          },
+          "reduced": "crossfade `dur.instant`; value followers jump"
+        }
+      }
+    },
+    "soft": {
+      "$type": "duration",
+      "$value": {
+        "value": 212,
+        "unit": "ms"
+      },
+      "$description": "expressive fans, voice-mode morph, pops, drag snaps — $value is the nominal (t95) duration for tools without spring support",
+      "$extensions": {
+        "dev.oxyn": {
+          "type": "spring",
+          "stiffness": 260,
+          "damping": 26,
+          "mass": 1,
+          "dampingRatio": 0.806,
+          "naturalFrequency": 16.12,
+          "overshootPercent": 1.38,
+          "t95": {
+            "value": 212,
+            "unit": "ms"
+          },
+          "settle2pct": {
+            "value": 236,
+            "unit": "ms"
+          },
+          "settle01pct": {
+            "value": 528,
+            "unit": "ms"
+          },
+          "css": {
+            "duration": {
+              "value": 528,
+              "unit": "ms"
+            },
+            "timingFunction": "linear(0, 0.0202, 0.072, 0.1441, 0.228, 0.3171, 0.4063, 0.4923, 0.5727, 0.6461, 0.7117, 0.7692, 0.8189, 0.861, 0.8962, 0.9252, 0.9486, 0.9671, 0.9815, 0.9925, 1.0005, 1.0062, 1.01, 1.0123, 1.0135, 1.0138, 1.0135, 1.0128, 1.0118, 1.0106, 1.0094, 1.0081, 1.007, 1.0059, 1.0048, 1.0039, 1.0032, 1.0025, 1.0019, 1.0014, 1)"
+          },
+          "reduced": "crossfade `dur.instant`; value followers jump"
+        }
+      }
+    },
+    "follow": {
+      "$type": "duration",
+      "$value": {
+        "value": 362,
+        "unit": "ms"
+      },
+      "$description": "slow value followers: context meter arc, level-driven bars (progress follows that must lag ≤ 250 ms stay on spring.snap) — $value is the nominal (t95) duration for tools without spring support",
+      "$extensions": {
+        "dev.oxyn": {
+          "type": "spring",
+          "stiffness": 170,
+          "damping": 26,
+          "mass": 1,
+          "dampingRatio": 0.997,
+          "naturalFrequency": 13.04,
+          "overshootPercent": 0,
+          "t95": {
+            "value": 362,
+            "unit": "ms"
+          },
+          "settle2pct": {
+            "value": 444,
+            "unit": "ms"
+          },
+          "settle01pct": {
+            "value": 702,
+            "unit": "ms"
+          },
+          "css": {
+            "duration": {
+              "value": 702,
+              "unit": "ms"
+            },
+            "timingFunction": "linear(0, 0.0225, 0.0777, 0.1513, 0.2334, 0.3176, 0.3994, 0.4765, 0.5472, 0.6109, 0.6676, 0.7175, 0.7609, 0.7984, 0.8306, 0.8581, 0.8814, 0.9012, 0.9179, 0.9319, 0.9436, 0.9534, 0.9615, 0.9683, 0.9739, 0.9786, 0.9824, 0.9856, 0.9882, 0.9904, 0.9921, 0.9936, 0.9948, 0.9957, 0.9965, 0.9972, 0.9977, 0.9981, 0.9985, 0.9988, 1)"
+          },
+          "reduced": "crossfade `dur.instant`; value followers jump"
+        }
+      }
+    },
+    "calm": {
+      "$type": "duration",
+      "$value": {
+        "value": 436,
+        "unit": "ms"
+      },
+      "$description": "ambient energy (orb energy, loader tempo-linked scalars) — $value is the nominal (t95) duration for tools without spring support",
+      "$extensions": {
+        "dev.oxyn": {
+          "type": "spring",
+          "stiffness": 120,
+          "damping": 22,
+          "mass": 1,
+          "dampingRatio": 1.004,
+          "naturalFrequency": 10.95,
+          "overshootPercent": 0,
+          "t95": {
+            "value": 436,
+            "unit": "ms"
+          },
+          "settle2pct": {
+            "value": 536,
+            "unit": "ms"
+          },
+          "settle01pct": {
+            "value": 854,
+            "unit": "ms"
+          },
+          "css": {
+            "duration": {
+              "value": 854,
+              "unit": "ms"
+            },
+            "timingFunction": "linear(0, 0.0234, 0.0805, 0.1561, 0.2401, 0.3256, 0.4084, 0.4858, 0.5566, 0.6201, 0.6763, 0.7255, 0.7682, 0.8049, 0.8364, 0.8632, 0.8859, 0.905, 0.9211, 0.9346, 0.9459, 0.9553, 0.9631, 0.9696, 0.975, 0.9794, 0.9831, 0.9861, 0.9886, 0.9907, 0.9924, 0.9938, 0.9949, 0.9958, 0.9966, 0.9972, 0.9977, 0.9982, 0.9985, 0.9988, 1)"
+          },
+          "reduced": "crossfade `dur.instant`; value followers jump"
+        }
+      }
+    }
+  },
+  "loop": {
+    "brisk": {
+      "$type": "duration",
+      "$value": {
+        "value": 800,
+        "unit": "ms"
+      },
+      "$description": "loop period — 800 ms (range 700–900); = loop.base ÷ 1.25",
+      "$extensions": {
+        "dev.oxyn": {
+          "type": "loop",
+          "curve": "{ease.linear}",
+          "range": [
+            700,
+            900
+          ],
+          "role": "tool running",
+          "reduced": "static still frame (no loop)"
+        }
+      }
+    },
+    "base": {
+      "$type": "duration",
+      "$value": {
+        "value": 1000,
+        "unit": "ms"
+      },
+      "$description": "loop period — 1000 ms (range 1000–1200)",
+      "$extensions": {
+        "dev.oxyn": {
+          "type": "loop",
+          "curve": "{ease.linear}",
+          "range": [
+            1000,
+            1200
+          ],
+          "role": "default spinners, indeterminate rings",
+          "reduced": "static still frame (no loop)"
+        }
+      }
+    },
+    "calm": {
+      "$type": "duration",
+      "$value": {
+        "value": 2000,
+        "unit": "ms"
+      },
+      "$description": "loop period — 2000 ms (range 1600–2400)",
+      "$extensions": {
+        "dev.oxyn": {
+          "type": "loop",
+          "curve": "{ease.sine}",
+          "range": [
+            1600,
+            2400
+          ],
+          "role": "thinking, idle breathe",
+          "waveform": "raised cosine",
+          "reduced": "static; opt-in `SlowFade` 0.5 Hz opacity 1 ↔ 0.6"
+        }
+      }
+    },
+    "glow": {
+      "$type": "duration",
+      "$value": {
+        "value": 3200,
+        "unit": "ms"
+      },
+      "$description": "loop period — 3200 ms breathe, intensity 0.7 ↔ 1",
+      "$extensions": {
+        "dev.oxyn": {
+          "type": "loop",
+          "curve": "{ease.sine}",
+          "amplitude": [
+            0.7,
+            1
+          ],
+          "role": "edge glow, conic borders, voice listening breathe",
+          "reduced": "static edge tone"
+        }
+      }
+    },
+    "dormant": {
+      "$type": "duration",
+      "$value": {
+        "value": 6000,
+        "unit": "ms"
+      },
+      "$description": "loop period — 6000 ms breathe",
+      "$extensions": {
+        "dev.oxyn": {
+          "type": "loop",
+          "curve": "{ease.sine}",
+          "role": "asleep / dormant presence",
+          "reduced": "static poster"
+        }
+      }
+    },
+    "pulse": {
+      "$type": "duration",
+      "$value": {
+        "value": 2000,
+        "unit": "ms"
+      },
+      "$description": "loop period — 2000 ms, opacity 0.45 ↔ 1",
+      "$extensions": {
+        "dev.oxyn": {
+          "type": "loop",
+          "curve": "{ease.sine}",
+          "amplitude": [
+            0.45,
+            1
+          ],
+          "role": "skeleton pulse",
+          "reduced": "static skeleton tone"
+        }
+      }
+    },
+    "wave": {
+      "$type": "duration",
+      "$value": {
+        "value": 2000,
+        "unit": "ms"
+      },
+      "$description": "loop period — 2000 ms, 150 ms per bar, cap 8 bars",
+      "$extensions": {
+        "dev.oxyn": {
+          "type": "loop",
+          "curve": "{ease.sine}",
+          "bar_offset_ms": 150,
+          "cap": 8,
+          "role": "skeleton wave",
+          "reduced": "static skeleton tone"
+        }
+      }
+    },
+    "sweep": {
+      "$type": "duration",
+      "$value": {
+        "value": 2000,
+        "unit": "ms"
+      },
+      "$description": "loop period — 2000 ms per pass, 105° band",
+      "$extensions": {
+        "dev.oxyn": {
+          "type": "loop",
+          "curve": "{ease.linear}",
+          "band_angle_deg": 105,
+          "role": "skeleton shimmer",
+          "reduced": "static skeleton tone"
+        }
+      }
+    },
+    "scan": {
+      "$type": "duration",
+      "$value": {
+        "value": 1400,
+        "unit": "ms"
+      },
+      "$description": "loop period — 1200 ms pass + 200 ms rest (period 1400 ms)",
+      "$extensions": {
+        "dev.oxyn": {
+          "type": "loop",
+          "curve": "{ease.in-out}",
+          "pass_ms": 1200,
+          "rest_ms": 200,
+          "role": "analysis scan line",
+          "reduced": "static line at last reported position"
+        }
+      }
+    },
+    "beam": {
+      "$type": "duration",
+      "$value": {
+        "value": 1600,
+        "unit": "ms"
+      },
+      "$description": "loop period — lap = clamp(perimeter ÷ 400 px/s, 1.6 s, 4.0 s)",
+      "$extensions": {
+        "dev.oxyn": {
+          "type": "loop",
+          "curve": "{ease.linear}",
+          "speed_px_s": 400,
+          "min_ms": 1600,
+          "max_ms": 4000,
+          "role": "border beam, composer border light",
+          "reduced": "static border tone"
+        }
+      }
+    },
+    "noise": {
+      "$type": "duration",
+      "$value": {
+        "value": 33,
+        "unit": "ms"
+      },
+      "$description": "loop period — 30 fps evolution, seed drift 0.2 cells/s",
+      "$extensions": {
+        "dev.oxyn": {
+          "type": "loop",
+          "curve": "{ease.linear}",
+          "fps": 30,
+          "drift_cells_s": 0.2,
+          "role": "generation placeholder",
+          "reduced": "static noise poster"
+        }
+      }
+    },
+    "shimmer": {
+      "default": {
+        "$type": "duration",
+        "$value": {
+          "value": 2200,
+          "unit": "ms"
+        },
+        "$description": "loop period — sweep 1400 ms + rest 800 ms (period 2200), delay 600 ms",
+        "$extensions": {
+          "dev.oxyn": {
+            "type": "loop",
+            "curve": "{ease.coast}",
+            "sweep": "{dur.shimmer.sweep}",
+            "rest": "{dur.shimmer.rest}",
+            "delay": "{delay.shimmer}",
+            "long_line_speed_px_s": 140,
+            "reduced": "shimmer off, plain text at full fg"
+          }
+        }
+      },
+      "calm": {
+        "$type": "duration",
+        "$value": {
+          "value": 4000,
+          "unit": "ms"
+        },
+        "$description": "loop period — sweep 1000 ms + rest 3000 ms (period 4000), delay 600 ms",
+        "$extensions": {
+          "dev.oxyn": {
+            "type": "loop",
+            "curve": "{ease.linear}",
+            "sweep_ms": 1000,
+            "rest_ms": 3000,
+            "delay": "{delay.shimmer}",
+            "reduced": "shimmer off"
+          }
+        }
+      }
+    },
+    "waiting": {
+      "$type": "duration",
+      "$value": {
+        "value": 2000,
+        "unit": "ms"
+      },
+      "$description": "loop period — 2000 ms period, 300 ms turn",
+      "$extensions": {
+        "dev.oxyn": {
+          "type": "loop",
+          "curve": "{ease.in-out}",
+          "motion_ms": 300,
+          "role": "awaiting-you tip",
+          "reduced": "static waiting glyph"
+        }
+      }
+    }
+  },
+  "stagger": {
+    "base": {
+      "$type": "duration",
+      "$value": {
+        "value": 40,
+        "unit": "ms"
+      },
+      "$extensions": {
+        "dev.oxyn": {
+          "type": "stagger",
+          "cap": 6
+        }
+      }
+    },
+    "tight": {
+      "$type": "duration",
+      "$value": {
+        "value": 30,
+        "unit": "ms"
+      },
+      "$extensions": {
+        "dev.oxyn": {
+          "type": "stagger",
+          "cap": 8
+        }
+      }
+    },
+    "fold": {
+      "$type": "duration",
+      "$value": {
+        "value": 20,
+        "unit": "ms"
+      },
+      "$extensions": {
+        "dev.oxyn": {
+          "type": "stagger",
+          "cap": 6
+        }
+      }
+    },
+    "digit": {
+      "$type": "duration",
+      "$value": {
+        "value": 30,
+        "unit": "ms"
+      },
+      "$extensions": {
+        "dev.oxyn": {
+          "type": "stagger",
+          "direction": "right-to-left"
+        }
+      }
+    },
+    "glyph": {
+      "$type": "duration",
+      "$value": {
+        "value": 25,
+        "unit": "ms"
+      },
+      "$extensions": {
+        "dev.oxyn": {
+          "type": "stagger",
+          "total_cap_ms": 300
+        }
+      }
+    },
+    "row": {
+      "$type": "duration",
+      "$value": "{stagger.base}",
+      "$extensions": {
+        "dev.oxyn": {
+          "type": "stagger",
+          "status": "alias of stagger.base"
+        }
+      }
+    },
+    "chips": {
+      "$type": "duration",
+      "$value": "{stagger.base}",
+      "$extensions": {
+        "dev.oxyn": {
+          "type": "stagger",
+          "status": "alias of stagger.base (cap aligned 5 → 6)"
+        }
+      }
+    },
+    "bulk": {
+      "$type": "duration",
+      "$value": "{stagger.tight}",
+      "$extensions": {
+        "dev.oxyn": {
+          "type": "stagger",
+          "status": "alias of stagger.tight"
+        }
+      }
+    }
+  },
+  "delay": {
+    "intent": {
+      "$type": "duration",
+      "$value": "{dur.step.80}",
+      "$extensions": {
+        "dev.oxyn": {
+          "kind": "delay",
+          "reduced": "unchanged (not motion)"
+        }
+      },
+      "$description": "hover intent before revealing actions"
+    },
+    "hover": {
+      "$type": "duration",
+      "$value": "{dur.step.150}",
+      "$extensions": {
+        "dev.oxyn": {
+          "kind": "delay",
+          "reduced": "unchanged (not motion)"
+        }
+      },
+      "$description": "reveal of affordances on hover / marker"
+    },
+    "marker": {
+      "hover": {
+        "$type": "duration",
+        "$value": "{delay.hover}",
+        "$extensions": {
+          "dev.oxyn": {
+            "kind": "delay",
+            "reduced": "unchanged (not motion)",
+            "status": "alias of delay.hover"
+          }
+        }
+      }
+    },
+    "leave": {
+      "$type": "duration",
+      "$value": "{dur.step.300}",
+      "$extensions": {
+        "dev.oxyn": {
+          "kind": "delay",
+          "reduced": "unchanged (not motion)"
+        }
+      },
+      "$description": "grace after pointer leaves before hiding"
+    },
+    "preview": {
+      "open": {
+        "$type": "duration",
+        "$value": "{dur.step.300}",
+        "$extensions": {
+          "dev.oxyn": {
+            "kind": "delay",
+            "reduced": "unchanged (not motion)"
+          }
+        }
+      },
+      "close": {
+        "$type": "duration",
+        "$value": "{dur.step.150}",
+        "$extensions": {
+          "dev.oxyn": {
+            "kind": "delay",
+            "reduced": "unchanged (not motion)"
+          }
+        }
+      }
+    },
+    "tooltip": {
+      "$type": "duration",
+      "$value": "{dur.step.400}",
+      "$extensions": {
+        "dev.oxyn": {
+          "kind": "delay",
+          "reduced": "unchanged (not motion)"
+        }
+      }
+    },
+    "row-guard": {
+      "$type": "duration",
+      "$value": "{dur.step.150}",
+      "$extensions": {
+        "dev.oxyn": {
+          "kind": "delay",
+          "reduced": "unchanged (not motion)"
+        }
+      }
+    },
+    "container": {
+      "show": {
+        "$type": "duration",
+        "$value": "{dur.step.150}",
+        "$extensions": {
+          "dev.oxyn": {
+            "kind": "delay",
+            "reduced": "unchanged (not motion)"
+          }
+        }
+      }
+    },
+    "skeleton": {
+      "$type": "duration",
+      "$value": "{delay.container.show}",
+      "$extensions": {
+        "dev.oxyn": {
+          "kind": "delay",
+          "reduced": "unchanged (not motion)",
+          "status": "alias of delay.container.show"
+        }
+      }
+    },
+    "loader": {
+      "show": {
+        "$type": "duration",
+        "$value": "{dur.step.300}",
+        "$extensions": {
+          "dev.oxyn": {
+            "kind": "delay",
+            "reduced": "unchanged (not motion)"
+          }
+        }
+      },
+      "handoff": {
+        "$type": "duration",
+        "$value": "{dur.step.250}",
+        "$extensions": {
+          "dev.oxyn": {
+            "kind": "delay",
+            "reduced": "unchanged (not motion)"
+          }
+        }
+      }
+    },
+    "auto-collapse": {
+      "$type": "duration",
+      "$value": "{dur.step.1200}",
+      "$extensions": {
+        "dev.oxyn": {
+          "kind": "delay",
+          "reduced": "unchanged (not motion)"
+        }
+      }
+    },
+    "approval": {
+      "input-guard": {
+        "$type": "duration",
+        "$value": "{dur.step.400}",
+        "$extensions": {
+          "dev.oxyn": {
+            "kind": "delay",
+            "reduced": "unchanged (not motion)"
+          }
+        }
+      }
+    },
+    "shimmer": {
+      "$type": "duration",
+      "$value": "{dur.step.600}",
+      "$extensions": {
+        "dev.oxyn": {
+          "kind": "delay",
+          "reduced": "n/a (shimmer off)"
+        }
+      }
+    }
+  },
+  "highlight": {
+    "flash": {
+      "$type": "duration",
+      "$value": "{dur.flash.target}",
+      "$deprecated": "renamed → dur.flash.target"
+    }
+  },
+  "frame": {
+    "glyph": {
+      "$type": "duration",
+      "$value": "{dur.frame.glyph}",
+      "$deprecated": "renamed → dur.frame.glyph"
+    }
+  },
+  "voice": {
+    "source": {
+      "crossfade": {
+        "$type": "duration",
+        "$value": "{dur.voice.source-crossfade}",
+        "$deprecated": "renamed → dur.voice.source-crossfade"
+      }
+    },
+    "speaker": {
+      "swap": {
+        "$type": "duration",
+        "$value": "{dur.voice.speaker-swap}",
+        "$deprecated": "renamed → dur.voice.speaker-swap"
+      }
+    },
+    "barge": {
+      "drop": {
+        "$type": "duration",
+        "$value": "{dur.voice.barge-drop}",
+        "$deprecated": "renamed → dur.voice.barge-drop"
+      }
+    },
+    "asleep": {
+      "fade": {
+        "$type": "duration",
+        "$value": "{dur.voice.asleep-fade}",
+        "$deprecated": "renamed → dur.voice.asleep-fade"
+      },
+      "wake": {
+        "$type": "duration",
+        "$value": "{dur.voice.wake}",
+        "$deprecated": "renamed → dur.voice.wake"
+      }
+    },
+    "level": {
+      "attack": {
+        "$type": "duration",
+        "$value": "{dur.voice.level.attack}",
+        "$deprecated": "renamed → dur.voice.level.attack"
+      },
+      "release": {
+        "$type": "duration",
+        "$value": "{dur.voice.level.release}",
+        "$deprecated": "renamed → dur.voice.level.release"
+      }
+    }
+  },
+  "motion": {
+    "loop": {
+      "min-period": {
+        "$type": "duration",
+        "$value": {
+          "value": 700,
+          "unit": "ms"
+        },
+        "$description": "700 ms (≈ 1.43 Hz)"
+      },
+      "luminance-min-period": {
+        "$type": "duration",
+        "$value": {
+          "value": 1000,
+          "unit": "ms"
+        },
+        "$description": "1000 ms (1 Hz)"
+      }
+    },
+    "flash": {
+      "max-per-second": {
+        "$type": "number",
+        "$value": 3,
+        "$description": "3"
+      },
+      "max-luminance-delta": {
+        "$type": "number",
+        "$value": 0.25,
+        "$description": "0.25 (single completion flash)"
+      }
+    },
+    "audio": {
+      "luminance-max": {
+        "$type": "number",
+        "$value": 0.1,
+        "$description": "±10 %"
+      },
+      "luminance-lowpass": {
+        "$type": "number",
+        "$value": 3,
+        "$extensions": {
+          "dev.oxyn": {
+            "unit": "Hz"
+          }
+        },
+        "$description": "3 Hz one-pole"
+      }
+    },
+    "fps": {
+      "max": {
+        "$type": "number",
+        "$value": 60,
+        "$extensions": {
+          "dev.oxyn": {
+            "unit": "fps"
+          }
+        },
+        "$description": "60 fps (120 Hz displays not raised)"
+      },
+      "vector": {
+        "$type": "number",
+        "$value": 60,
+        "$extensions": {
+          "dev.oxyn": {
+            "unit": "fps"
+          }
+        },
+        "$description": "60 fps cap"
+      },
+      "particle": {
+        "$type": "number",
+        "$value": 60,
+        "$extensions": {
+          "dev.oxyn": {
+            "unit": "fps"
+          }
+        },
+        "$description": "60 fps cap"
+      },
+      "shader": {
+        "$type": "number",
+        "$value": 60,
+        "$extensions": {
+          "dev.oxyn": {
+            "unit": "fps"
+          }
+        },
+        "$description": "60 fps cap"
+      },
+      "pixel": {
+        "$type": "number",
+        "$value": 15,
+        "$extensions": {
+          "dev.oxyn": {
+            "unit": "fps"
+          }
+        },
+        "$description": "7.5 or 15 fps"
+      },
+      "text-effects": {
+        "$type": "number",
+        "$value": 30,
+        "$extensions": {
+          "dev.oxyn": {
+            "unit": "fps"
+          }
+        },
+        "$description": "30 fps (shimmer, rolls)"
+      },
+      "unfocused": {
+        "$type": "number",
+        "$value": 20,
+        "$extensions": {
+          "dev.oxyn": {
+            "unit": "fps"
+          }
+        },
+        "$description": "20 fps vector/shader, 15 fps particle"
+      },
+      "low-power": {
+        "$type": "number",
+        "$value": 30,
+        "$extensions": {
+          "dev.oxyn": {
+            "unit": "fps"
+          }
+        },
+        "$description": "30 fps, half particles"
+      },
+      "idle": {
+        "$type": "number",
+        "$value": 1,
+        "$extensions": {
+          "dev.oxyn": {
+            "unit": "fps"
+          }
+        },
+        "$description": "1 Hz (timers only)"
+      }
+    }
+  }
+}
