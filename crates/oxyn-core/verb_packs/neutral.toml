@@ -1,0 +1,57 @@
+# Verb pack "neutral". Original copy, MIT. Schema: docs/specs/status-text.md §5.1.
+id = "neutral"
+name = "Neutral"
+description = "Plain, calm, product-safe. The default."
+locale = "en"
+tier = "free"
+order = "shuffle"
+reasoning_done = "Thought for {d}"
+turn_done = "Worked for {d}"
+
+[[cycle]]
+present = "Planning"
+past = "Planned"
+
+[[cycle]]
+present = "Reading"
+past = "Read"
+
+[[cycle]]
+present = "Checking"
+past = "Checked"
+
+[[cycle]]
+present = "Comparing"
+past = "Compared"
+
+[[cycle]]
+present = "Organizing"
+past = "Organized"
+
+[[cycle]]
+present = "Reviewing"
+past = "Reviewed"
+
+[[cycle]]
+present = "Summarizing"
+past = "Summarized"
+
+[[cycle]]
+present = "Preparing"
+past = "Prepared"
+
+[[cycle]]
+present = "Outlining"
+past = "Outlined"
+
+[[cycle]]
+present = "Weighing options"
+past = "Weighed options"
+
+[[cycle]]
+present = "Looking closer"
+past = "Looked closer"
+
+[[cycle]]
+present = "Putting it together"
+past = "Put it together"

@@ -1,0 +1,57 @@
+# Verb pack "crm". Original copy, MIT. Schema: docs/specs/status-text.md §5.1.
+id = "crm"
+name = "CRM"
+description = "Sales and CRM agents."
+locale = "en"
+tier = "free"
+order = "shuffle"
+reasoning_done = "Thought for {d}"
+turn_done = "Worked for {d}"
+
+[[cycle]]
+present = "Enriching records"
+past = "Enriched records"
+
+[[cycle]]
+present = "Qualifying leads"
+past = "Qualified leads"
+
+[[cycle]]
+present = "Deduplicating"
+past = "Deduplicated"
+
+[[cycle]]
+present = "Segmenting"
+past = "Segmented"
+
+[[cycle]]
+present = "Drafting outreach"
+past = "Drafted outreach"
+
+[[cycle]]
+present = "Logging activity"
+past = "Logged activity"
+
+[[cycle]]
+present = "Scoring leads"
+past = "Scored leads"
+
+[[cycle]]
+present = "Syncing contacts"
+past = "Synced contacts"
+
+[[cycle]]
+present = "Routing"
+past = "Routed"
+
+[[cycle]]
+present = "Checking history"
+past = "Checked history"
+
+[[cycle]]
+present = "Updating the pipeline"
+past = "Updated the pipeline"
+
+[[cycle]]
+present = "Finding contacts"
+past = "Found contacts"
