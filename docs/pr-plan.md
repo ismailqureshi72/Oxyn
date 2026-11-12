@@ -24,8 +24,8 @@ is `Co-authored-by` on every commit. Agreed 2026-11-11.
 | #17 | feat/status-text | Shimmer, verb cycler, timers, reveal | M2 | Ismail | merged (GitHub #18) |
 | #18 | feat/composer-shell | Input, attach, model, effort, context | M3 | Khubaib | merged (GitHub #19) |
 | #19 | feat/send-control | Send / stop / queue / steer + variants | M3 | Ismail | merged (GitHub #20) |
-| #20 | feat/tool-calls | Tool rows, plans, sub-agent tree | M4 | Khubaib | in progress (GitHub #21) |
-| #21 | feat/approvals-checkpoints | Approval cards, checkpoint timeline | M4 | Ismail | |
+| #20 | feat/tool-calls | Tool rows, plans, sub-agent tree | M4 | Khubaib | merged (GitHub #21) |
+| #21 | feat/approvals-checkpoints | Approval cards, checkpoint timeline | M4 | Ismail | in progress (GitHub #22) |
 | #22 | feat/diff-viewer | Split / stacked diff, per-hunk actions | M5 | Khubaib | |
 | #23 | feat/merge-conflict | 3-way merge conflict editor | M5 | Ismail | |
 | #24 | feat/cli-registry | `oxyn` CLI + free registry | M6 | Khubaib | |
