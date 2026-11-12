@@ -1,4 +1,5 @@
-**Status:** draft v0.1 (2026-11-11).
+**Status:** v1 — free set implemented (plan #16, 2026-11-12): `oxyn-core::loader::FREE_GLYPH_TABLES`,
+`oxyn_gpui::GlyphLoaderView`, `oxyn_dioxus::GlyphLoader`. Pro tables are not built yet.
 
 # Spec: glyph loaders (terminal / text frame loaders)
 
