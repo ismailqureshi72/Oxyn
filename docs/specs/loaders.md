@@ -49,7 +49,13 @@ Family rules (apply to every loader):
 4. **Every variant ships a still frame per state** (reduced motion, paused, offscreen poster).
 5. **No flashing above 3 per second**, and meaning never depends on motion or colour alone.
 
-## 2. The loader engine (`oxyn-core::motion`, drawn by `oxyn-gpui` / `oxyn-dioxus`)
+## 2. The loader engine (`oxyn-core::loader`, drawn by `oxyn-gpui` / `oxyn-dioxus`)
+
+> Implemented in plan #16: `LoaderPhase` (§3.2), `TempoClock` (phase integral, §2.1), show/hide
+> hysteresis (§3.3), `BusyArbiter` (§2.3) and the T1 glyph engine. T2–T4 tiers, the steer blip and
+> per-size tuning land with the vector, orb and mascot PRs. Deviations: `Queued` and `Steering`
+> map to `Thinking`; a run that never showed a loader shows no `✓` either (the status strip says
+> "Worked for…"); GPUI mixes colours in sRGB, the web in OKLab (`color-mix`).
 
 ### 2.1 Frame clock
 ```
