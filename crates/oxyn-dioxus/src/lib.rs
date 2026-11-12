@@ -1,14 +1,16 @@
-//! Dioxus components for web demos, Studio and web apps. First component lands in #15.
+//! Dioxus components for Oxyn (web demos, Studio, web apps).
 //!
-//! Placeholder crate so the workspace, CI and crate names exist from M0.
+//! Components style themselves with the `--oxyn-*` custom properties from `tokens/dist/oxyn.css`;
+//! include that stylesheet once (and set `data-oxyn-theme` for light or high contrast). Each
+//! component also ships its own small stylesheet as a constant (`STATUS_INDICATOR_CSS`).
 
-/// Crate version, from `Cargo.toml`.
-pub const VERSION: &str = env!("CARGO_PKG_VERSION");
+mod status_indicator;
 
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn version_is_set() {
-        assert!(!super::VERSION.is_empty());
-    }
+pub use status_indicator::{
+    IndicatorSize, IndicatorVariant, STATUS_INDICATOR_CSS, StatusIndicator, StatusIndicatorProps,
+};
+
+/// `var(--oxyn-color-…)` for a colour role.
+pub fn color_var(role: oxyn_tokens::ColorRole) -> String {
+    format!("var(--oxyn-color-{})", role.path().replace('.', "-"))
 }

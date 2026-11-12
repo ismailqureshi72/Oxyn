@@ -26,6 +26,7 @@
 
 pub mod clock;
 pub mod ease;
+pub mod indicator;
 pub mod state;
 mod time;
 pub mod verbs;
