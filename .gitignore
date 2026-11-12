@@ -7,6 +7,7 @@ Cargo.lock.bak
 # WASM / web builds
 /dist/
 **/dist/
+!tokens/dist/
 **/pkg/
 node_modules/
 .astro/
