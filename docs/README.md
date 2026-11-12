@@ -9,6 +9,7 @@
 | [specs/composer-send-control.md](specs/composer-send-control.md) | Send / stop / queue / steer control: states and variants |
 | [tokens.md](tokens.md) | Design tokens: colour, type, space, themes, contrast (source: `tokens/oxyn.tokens.json`) |
 | [motion.md](motion.md) | Motion language: durations, easings, springs, loops, reduced motion, token registry |
+| [categories/](categories/README.md) | Category kits: full agent-app shells and screens (coding, app builder, CRM, finance, video) |
 | [website-stack.md](website-stack.md) | Website, docs, demos, Studio, registry, payments, hosting, CI |
 | [studio.md](studio.md) | Studio UX blueprint |
 | [roadmap.md](roadmap.md) | Baseline (V1) and V2 phases |
