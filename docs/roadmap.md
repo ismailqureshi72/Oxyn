@@ -14,7 +14,7 @@ composer send-control spec, website stack, Studio blueprint, reference index, br
 | **V2.2 Interaction specs** | Write a spec at the composer-arrow depth for **every** component, family by family | `specs/` — one spec per component following `specs/README.md` (starting with thinking, status text, loaders, tool call, approval, checkpoint, diff & merge, context meter, model/effort picker, voice orb, then the rest) | Every component in the taxonomy has states × micro-interactions × timing × variants × edge cases |
 | **V2.3 Design language** | Tokens and motion language | [`tokens.md`](tokens.md) + `tokens/*.json`, [`motion.md`](motion.md) (durations, springs, stagger rules, reduced-motion), vector logo + mark states | Tokens reviewed in light + dark; logo legible at 16–20 px |
 | **V2.4 Category kits** | Define each agent-app category's shell and screens | [`categories/<name>.md`](categories/README.md) for coding, app builder, CRM, finance, video (first five) | Each lists screens + components used |
-| **V2.5 Site & Studio IA** | Information architecture and wireframes | `site/ia.md`, Studio wireframes, gallery filter model | Both maintainers sign off |
+| **V2.5 Site & Studio IA** | Information architecture and wireframes | [`site/ia.md`](site/ia.md), [Studio wireframes](site/studio-wireframes.md), [gallery filter model](site/gallery.md) | Both maintainers sign off |
 | **V2.6 Tech spike** | Prove the risky parts with throwaway code on a `spike/` branch | Spike report: core state + one GPUI and one Dioxus component, WASM size, headless poster render | Decisions in `website-stack.md` confirmed or revised |
 
 ## V3 — Build (after V2)
