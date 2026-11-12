@@ -1,0 +1,15 @@
+[package]
+name = "oxyn-tokens-gen"
+description = "Validates tokens/*.json and generates oxyn-tokens Rust code and tokens/dist/oxyn.css."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish = false
+
+[dependencies]
+serde_json = { version = "1", features = ["preserve_order"] }
+
+[lints]
+workspace = true

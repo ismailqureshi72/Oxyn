@@ -9,6 +9,16 @@ Source of truth for Oxyn's design tokens. Format: [W3C Design Tokens (DTCG) 2025
 | `oxyn.tokens.json` | colour, type, space, radius, border, size, density, z-index, opacity, blur, focus, elevation, themes |
 | `oxyn.motion.json` | durations, easings, springs, loops, stagger, delays, `motion.reduced` (spec: `docs/motion.md`) |
 
+### Generated (never edit by hand)
+| Output | For |
+|---|---|
+| `dist/oxyn.css` | Web: one `--oxyn-*` custom property per semantic, motion and theme token. Themes switch with `data-oxyn-theme="dark\|light\|hc-dark"`; dark is the default on `:root`. |
+| `crates/oxyn-tokens/src/generated.rs` | Rust: `Theme::{DARK, LIGHT, HC_DARK}`, `ColorRole` / `ElevationRole` enums, `primitive::*`, `semantic::*`, `motion::*` consts. `oxyn-gpui` maps these to GPUI types. |
+
+After changing a JSON file run `cargo run -p oxyn-tokens-gen`. It validates (structure, aliases, tiers, theme parity,
+WCAG contrast) and rewrites both outputs. CI runs `cargo run -p oxyn-tokens-gen -- --check` and fails on any error or
+stale output.
+
 `oxyn.tokens.json` does not repeat motion values; `semantic.motion` only points at the motion file.
 
 ## Tiers
