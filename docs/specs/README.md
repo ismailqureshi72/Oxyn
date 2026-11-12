@@ -84,4 +84,24 @@ specified just as deeply. When we point at one component as an example, the stan
 | [git-chips.md](git-chips.md) | draft v0.1 |
 | [pr-card.md](pr-card.md) | draft v0.1 |
 | [review-card.md](review-card.md) | draft v0.1 |
+| [genui.md](genui.md) | draft v0.1 — family I overview |
+| [genui-renderer.md](genui-renderer.md) | draft v0.1 |
+| [genui-blocks.md](genui-blocks.md) | draft v0.1 |
+| [genui-forms.md](genui-forms.md) | draft v0.1 |
+| [genui-skeletons.md](genui-skeletons.md) | draft v0.1 |
+| [workspace-chrome.md](workspace-chrome.md) | draft v0.1 — family J overview |
+| [terminal-tabs.md](terminal-tabs.md) | draft v0.1 |
+| [side-panels.md](side-panels.md) | draft v0.1 |
+| [mcp-plugin-list.md](mcp-plugin-list.md) | draft v0.1 |
+| [command-palette.md](command-palette.md) | draft v0.1 |
+| [desktop-overlays.md](desktop-overlays.md) | draft v0.1 |
+| [live-voice.md](live-voice.md) | draft v0.1 — family K overview |
+| [voice-orb.md](voice-orb.md) | draft v0.1 |
+| [voice-visualisers.md](voice-visualisers.md) | draft v0.1 |
+| [voice-control-bar.md](voice-control-bar.md) | draft v0.1 |
+| [live-captions.md](live-captions.md) | draft v0.1 |
+| [icons.md](icons.md) | draft v0.1 — family L overview |
+| [icon-states.md](icon-states.md) | draft v0.1 |
+| [plugin-icons.md](plugin-icons.md) | draft v0.1 |
+| [animated-marks.md](animated-marks.md) | draft v0.1 |
 | Every other component in [../component-taxonomy.md](../component-taxonomy.md) | to write in V2.2 |

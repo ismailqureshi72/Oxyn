@@ -68,6 +68,9 @@ Rules:
    Tiers 3–4 are reachable only through the open list + confirm. No shortcut can enable Bypass.
 4. "Always allow `<prefix>`" on an approval card adds a **rule**; it never changes the level. Rules and
    level are shown together in the popover ("Ask · 3 rules").
+5. **Bypass never skips Critical requests** (decided by Ismail, 2026-11-12). Deploys, payments,
+   credentials and other Critical-tier requests still show a press-and-hold approval card
+   (`bypass_includes_critical = false`, not configurable in the free core). See [approvals.md](approvals.md).
 5. Policy-managed limits (org / workspace) cap the selectable max; capped rows are disabled-with-reason.
 6. Scope options: **This session** (default for raises), **This project**, **Always** (user). Persisting
    Bypass requires the app to set `allow_persistent_bypass = true`; default false.
@@ -82,7 +85,7 @@ Rules:
 | 1 | `Ask` ("Request approval") | asks before every write and command | hand | `risk.1` info |
 | 2 | `AutoEdit` ("Accept edits") | file edits inside the workspace auto; commands and network ask | pencil + shield | `risk.2` accent |
 | 3 | `FullAccess` | edits + commands auto within the sandbox; network per sandbox setting | open shield | `risk.3` warning (amber) |
-| 4 | `Bypass` ("Bypass all") | no approvals, no sandbox restrictions | shield-off + warning | `risk.4` danger (red) |
+| 4 | `Bypass` ("Bypass all") | no approvals except Critical-tier requests, no sandbox restrictions | shield-off + warning | `risk.4` danger (red) |
 
 Autonomy model maps Off → 1, Low → 2 (auto-runs low-risk), Medium → 3 (≤ medium), High → 3 (≤ high);
 Bypass stays a separate, explicit row. TwoAxis model shows `sandbox × approval` and derives the tier
