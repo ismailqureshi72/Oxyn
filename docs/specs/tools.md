@@ -1,4 +1,4 @@
-**Status:** draft v0.1 (2026-11-11).
+**Status:** v0.2 (2026-11-12), implemented in plan #20: `oxyn-core::run::stack` (grouping, density, worked-for fold), Dioxus `ToolStack` (3 free).
 
 # Spec: tool calls, plans & orchestration (family F overview)
 
@@ -326,7 +326,7 @@ change the counts.
 | `file-edit-chip` | file-edit-chip.md | 3 | 11 | counter, row, tree-rollup | odometer, block-bar, writing-sweep, review-bar, composer-accordion, hover-hunk, status-letters, stack-fan, viewed-progress, rename-morph, prose |
 | `terminal-output` | terminal-output.md | 3 | 11 | block, tail, tui | follow-hud, split-streams, test-ticks, progress-native, rate-sparkline, pty-live, runnable-snippet, window-chrome, section-fold, hold-to-kill, dock-to-jobs |
 | `todo-list` / `plan-card` / `step-timeline` | plan-todo.md | 4 | 14 | todo-list/checklist, todo-list/dock, plan-card/document, step-timeline/vertical | todo-list/ring, todo-list/capsules, todo-list/owner-lanes, todo-list/strike-sweep, todo-list/board, plan-card/versioned, plan-card/autonomy, plan-card/countdown, plan-card/flowchart, plan-card/plan-vs-actual, step-timeline/fold-to-line, step-timeline/stepper, step-timeline/metro, step-timeline/filter |
-| `subagent-tree` | subagent-tree.md | 3 | 8 | *reserved* | *reserved* |
+| `subagent-tree` | subagent-tree.md | 5 | 14 | indented, rail, dock, inline-wrapper, terminal | see subagent-tree.md §6 |
 | `fanout-grid` | fanout-grid.md | 3 | 8 | *reserved* | *reserved* |
 | `acting-indicator` | acting-indicator.md | 3 | 8 | *reserved* | *reserved* |
 | `trace-view` | trace-view.md | 3 | 8 | *reserved* | *reserved* |

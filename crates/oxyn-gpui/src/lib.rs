@@ -6,11 +6,13 @@
 
 mod composer;
 mod glyph_loader;
+mod run;
 mod status_indicator;
 mod status_text;
 
 pub use composer::{Composer, ComposerEvent};
 pub use glyph_loader::GlyphLoaderView;
+pub use run::{SubagentTreeEl, TodoChecklist, ToolCallRowEl};
 pub use status_indicator::{IndicatorSize, IndicatorVariant, StatusIndicator};
 pub use status_text::{RevealText, ShimmerText, TimerText, VerbCyclerView};
 
