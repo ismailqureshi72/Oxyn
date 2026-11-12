@@ -4,8 +4,10 @@
 //! [`MotionClock`]; the host keeps the clock advanced and requests frames while
 //! [`MotionClock::next_frame_in`] says so.
 
+mod glyph_loader;
 mod status_indicator;
 
+pub use glyph_loader::GlyphLoaderView;
 pub use status_indicator::{IndicatorSize, IndicatorVariant, StatusIndicator};
 
 use gpui::{Hsla, Rgba};

@@ -1,6 +1,6 @@
 # Architecture (planned)
 
-> Design document. Implemented so far: `oxyn-tokens` (plan #13) and the `oxyn-core` state machine, clock and verb packs (plan #14), and the first component, `StatusIndicator`, in GPUI and Dioxus over one shared model (`oxyn-core::indicator`, plan #15).
+> Design document. Implemented so far: `oxyn-tokens` (plan #13) and the `oxyn-core` state machine, clock and verb packs (plan #14), and the first component, `StatusIndicator`, in GPUI and Dioxus over one shared model (`oxyn-core::indicator`, plan #15), and the loader engine with the 14 free glyph loaders (`oxyn-core::loader`, plan #16).
 
 ## Crates
 
