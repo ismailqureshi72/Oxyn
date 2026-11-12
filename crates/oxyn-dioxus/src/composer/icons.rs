@@ -1,0 +1,116 @@
+//! Oxyn's own outlined icons (24 px grid, 1.5 px stroke, `currentColor`). Drawn in-house.
+
+use dioxus::prelude::*;
+use oxyn_core::composer::FileType;
+
+/// Path data for an icon by name.
+pub fn path(name: &str) -> &'static str {
+    match name {
+        "plus" => "M12 5v14M5 12h14",
+        "clip" => {
+            "M20.5 11.5 12.3 19.7a5 5 0 0 1-7.1-7.1l8.5-8.5a3.3 3.3 0 0 1 4.7 4.7l-8.5 8.5a1.7 1.7 0 0 1-2.4-2.4l7.8-7.8"
+        }
+        "up" => "M12 19V5M6 11l6-6 6 6",
+        "stop" => "M7 7h10v10H7z",
+        "chevron" => "m7 10 5 5 5-5",
+        "x" => "M6 6l12 12M18 6 6 18",
+        "check" => "m5 12.5 4.5 4.5L19 7.5",
+        "search" => "M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM20 20l-4-4",
+        "star" => "m12 4 2.5 5.2 5.6.8-4 4 1 5.6-5.1-2.7L6.9 19.6l1-5.6-4-4 5.6-.8z",
+        "lock" => "M7 11V8a5 5 0 0 1 10 0v3M6 11h12v9H6z",
+        "key" => "M14.5 9.5a4 4 0 1 1-1.2 2.9L4 21.7V18h2.5v-2.5H9l2.3-2.3",
+        "clock" => "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 7v5l3 2",
+        "eye" => {
+            "M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12zM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"
+        }
+        "tool" => "M14.7 6.3a4 4 0 0 0 5 5L12 19a2.1 2.1 0 0 1-3-3l7.7-7.7zM14.7 6.3 17.5 3.5",
+        "brain" => {
+            "M9 4a3 3 0 0 0-3 3 3 3 0 0 0-2 5 3 3 0 0 0 2 5 3 3 0 0 0 6 1V5a2 2 0 0 0-3-1zM15 4a3 3 0 0 1 3 3 3 3 0 0 1 2 5 3 3 0 0 1-2 5 3 3 0 0 1-6 1"
+        }
+        "retry" => "M4 12a8 8 0 1 0 2.3-5.7M4 4v4.5h4.5",
+        "file" => "M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8zM14 3v5h5",
+        "image" => {
+            "M5 4h14a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zM4 16l5-5 4 4 3-3 4 4M15.5 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"
+        }
+        "table" => "M4 5h16v14H4zM4 10h16M4 15h16M10 5v14",
+        "folder" => "M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z",
+        "link" => {
+            "M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"
+        }
+        "branch" => {
+            "M6 3v12M6 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM18 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM18 9a9 9 0 0 1-9 9"
+        }
+        "code" => "m9 8-4 4 4 4M15 8l4 4-4 4",
+        "archive" => "M4 4h16v4H4zM5 8v12h14V8M10 12h4",
+        "audio" => {
+            "M9 18V6l10-2v12M9 18a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM19 16a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"
+        }
+        "video" => "M4 6h11v12H4zM15 10l5-3v10l-5-3",
+        "text" => "M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8zM9 13h6M9 17h4",
+        "symbol" => {
+            "M10 4c-2 0-3 1-3 3v2c0 1.5-1 3-3 3 2 0 3 1.5 3 3v2c0 2 1 3 3 3M14 4c2 0 3 1 3 3v2c0 1.5 1 3 3 3-2 0-3 1.5-3 3v2c0 2-1 3-3 3"
+        }
+        "thread" => "M4 5h16v10H9l-5 4z",
+        "cursor" => "M9 4h6M9 20h6M12 4v16",
+        "spark" => {
+            "M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"
+        }
+        "compact" => "M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7",
+        _ => "M12 12h.01",
+    }
+}
+
+/// The icon for a file type.
+pub fn file_icon(t: FileType) -> &'static str {
+    match t {
+        FileType::Image => "image",
+        FileType::Spreadsheet => "table",
+        FileType::Code(_) => "code",
+        FileType::Archive => "archive",
+        FileType::Audio => "audio",
+        FileType::Video => "video",
+        FileType::Text | FileType::Pdf | FileType::Document | FileType::Slides => "text",
+        FileType::Folder => "folder",
+        FileType::Repo => "branch",
+        FileType::Url => "link",
+        FileType::Symbol => "symbol",
+        FileType::Thread => "thread",
+        FileType::Selection => "cursor",
+        FileType::Unknown => "file",
+    }
+}
+
+/// An inline icon.
+#[component]
+pub fn Icon(
+    /// Icon name.
+    name: String,
+    /// Size in px.
+    #[props(default = 16.0)]
+    size: f32,
+    /// Stroke width.
+    #[props(default = 1.5)]
+    stroke: f32,
+) -> Element {
+    let d = path(&name);
+    let fill = if name == "stop" {
+        "currentColor"
+    } else {
+        "none"
+    };
+    rsx! {
+        svg {
+            class: "oxyn-ic",
+            width: "{size}",
+            height: "{size}",
+            view_box: "0 0 24 24",
+            fill: "{fill}",
+            stroke: "currentColor",
+            stroke_width: "{stroke}",
+            stroke_linecap: "round",
+            stroke_linejoin: "round",
+            "aria-hidden": "true",
+            path { d: "{d}" }
+        }
+    }
+}

@@ -4,10 +4,16 @@
 //! include that stylesheet once (and set `data-oxyn-theme` for light or high contrast). Each
 //! component also ships its own small stylesheet as a constant (`STATUS_INDICATOR_CSS`).
 
+mod composer;
 mod glyph_loader;
 mod status_indicator;
 mod status_text;
 
+pub use composer::{
+    AttachmentRow, AttachmentRowProps, COMPOSER_CSS, Composer, ComposerProps, ContextMeterChip,
+    ContextMeterChipProps, DropZone, DropZoneProps, EffortChip, EffortChipProps, Icon, IconProps,
+    ModelPicker, ModelPickerProps, Submission,
+};
 pub use glyph_loader::{GLYPH_LOADER_CSS, GlyphLoader, GlyphLoaderProps};
 pub use status_indicator::{
     IndicatorSize, IndicatorVariant, STATUS_INDICATOR_CSS, StatusIndicator, StatusIndicatorProps,

@@ -1,4 +1,4 @@
-**Status:** draft v0.1 (2026-11-11).
+**Status:** v1 (plan #18, 2026-11-12): 6 free variants in `oxyn-core::composer::effort` (clamp, step, next turn, ignition + cooldown). Dioxus `EffortChip` (all 6); GPUI signal-bars + menu.
 
 # Spec: composer thinking-effort control
 

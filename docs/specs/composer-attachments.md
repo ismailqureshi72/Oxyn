@@ -1,4 +1,4 @@
-**Status:** draft v0.1 (2026-11-11).
+**Status:** v1 (plan #18, 2026-11-12): 10 free variants in `oxyn-core::composer::attachments`. Dioxus `AttachmentRow` + `DropZone` (all 10); GPUI tiles with upload ring.
 
 # Spec: composer attachments (clip, drop zone, chips and tiles)
 
