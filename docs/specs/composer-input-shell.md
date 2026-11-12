@@ -1,4 +1,4 @@
-**Status:** draft v0.1 (2026-11-11).
+**Status:** v1 (plan #18, 2026-11-12): 9 free variants in `oxyn-core::composer::input` (rows, paste chips, limits, history, placeholders). Dioxus all 9; GPUI rounded-box.
 
 # Spec: composer input shell (text area + container)
 
