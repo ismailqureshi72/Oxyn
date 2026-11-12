@@ -5,7 +5,7 @@
 mod attachments;
 mod context;
 mod effort;
-mod icons;
+pub(crate) mod icons;
 mod model;
 mod send;
 

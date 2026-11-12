@@ -1,4 +1,4 @@
-**Status:** draft v0.1 (2026-11-11).
+**Status:** v0.2 (2026-11-12), implemented in plan #20: `oxyn-core::run` (ToolCall, row_view), Dioxus `ToolCallRow` (4 free), GPUI `ToolCallRowEl` (row).
 
 # Spec: tool call (rows, cards, group rows, MCP badge)
 

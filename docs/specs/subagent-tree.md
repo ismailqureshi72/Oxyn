@@ -1,4 +1,4 @@
-**Status:** draft v0.1 (2026-11-11).
+**Status:** v0.2 (2026-11-12), implemented in plan #20: `oxyn-core::run::graph`, Dioxus `SubagentTree` (5 free), GPUI `SubagentTreeEl` (indented, rail).
 
 # Spec: sub-agent tree (`subagent-tree`)
 

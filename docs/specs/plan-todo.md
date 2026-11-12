@@ -1,4 +1,4 @@
-**Status:** draft v0.1 (2026-11-11).
+**Status:** v0.2 (2026-11-12), implemented in plan #20: `oxyn-core::run::plan`, Dioxus `TodoList` (checklist, dock), `PlanCard` (document), `StepTimeline` (vertical), GPUI `TodoChecklist`.
 
 # Spec: plans & todos (todo list, plan card, step timeline)
 
