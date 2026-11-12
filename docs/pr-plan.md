@@ -20,8 +20,8 @@ is `Co-authored-by` on every commit. Agreed 2026-11-11.
 | #13 | feat/tokens | Tokens JSON → Rust, CSS, GPUI theme | M0 | Ismail | merged (GitHub #14) |
 | #14 | feat/core-state | AgentState machine, clock, verb packs | M1 | Khubaib | merged (GitHub #15) |
 | #15 | feat/status-indicator | First component, all states | M1 | Ismail | merged (GitHub #16) |
-| #16 | feat/loaders | Loader engine + first variant set | M2 | Khubaib | in progress (GitHub #17) |
-| #17 | feat/status-text | Shimmer, verb cycler, timers, reveal | M2 | Ismail | |
+| #16 | feat/loaders | Loader engine + first variant set | M2 | Khubaib | merged (GitHub #17) |
+| #17 | feat/status-text | Shimmer, verb cycler, timers, reveal | M2 | Ismail | in progress (GitHub #18) |
 | #18 | feat/composer-shell | Input, attach, model, effort, context | M3 | Khubaib | |
 | #19 | feat/send-control | Send / stop / queue / steer + variants | M3 | Ismail | |
 | #20 | feat/tool-calls | Tool rows, plans, sub-agent tree | M4 | Khubaib | |

@@ -1898,6 +1898,7 @@ dependencies = [
  "oxyn-tokens",
  "serde",
  "toml",
+ "unicode-segmentation",
 ]
 
 [[package]]

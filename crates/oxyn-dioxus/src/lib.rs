@@ -6,10 +6,15 @@
 
 mod glyph_loader;
 mod status_indicator;
+mod status_text;
 
 pub use glyph_loader::{GLYPH_LOADER_CSS, GlyphLoader, GlyphLoaderProps};
 pub use status_indicator::{
     IndicatorSize, IndicatorVariant, STATUS_INDICATOR_CSS, StatusIndicator, StatusIndicatorProps,
+};
+pub use status_text::{
+    ElapsedTimer, ElapsedTimerProps, STATUS_TEXT_CSS, TextReveal, TextRevealProps, TextShimmer,
+    TextShimmerProps, VerbCycler, VerbCyclerProps,
 };
 
 /// `var(--oxyn-color-…)` for a colour role.
