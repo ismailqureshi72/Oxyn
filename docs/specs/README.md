@@ -26,6 +26,7 @@ specified just as deeply. When we point at one component as an example, the stan
 | Spec | Status |
 |---|---|
 | [composer.md](composer.md) | draft v0.1 — composer family overview |
+| [status-indicator.md](status-indicator.md) | v1 — implemented (plan #15) |
 | [composer-send-control.md](composer-send-control.md) | draft v0.2 — worked example |
 | [composer-input-shell.md](composer-input-shell.md) | draft v0.1 |
 | [composer-tools-menu.md](composer-tools-menu.md) | draft v0.1 |
