@@ -1,0 +1,16 @@
+[package]
+name = "oxyn-cli"
+description = "The oxyn command line: add, init, mcp. Filled in by #24."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish = false
+
+[lints]
+workspace = true
+
+[[bin]]
+name = "oxyn"
+path = "src/main.rs"

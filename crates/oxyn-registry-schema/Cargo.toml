@@ -1,0 +1,12 @@
+[package]
+name = "oxyn-registry-schema"
+description = "Schema for registry items (meta.toml), free and pro. Filled in by #24."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish = false
+
+[lints]
+workspace = true
