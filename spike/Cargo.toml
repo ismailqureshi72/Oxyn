@@ -2,6 +2,7 @@
 [workspace]
 resolver = "3"
 members = ["core", "dioxus-status", "gpui-status"]
+exclude = ["gpui-web-status"]  # own workspace: path deps into a Zed checkout
 
 [workspace.package]
 edition = "2024"
