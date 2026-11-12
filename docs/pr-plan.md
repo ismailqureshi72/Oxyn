@@ -13,8 +13,8 @@ is `Co-authored-by` on every commit. Agreed 2026-11-11.
 | #6 | specs/approvals-diff | Approvals, checkpoints, diff, merge conflict | V2.2 | Khubaib | ✅ merged |
 | #7 | specs/genui-chrome-voice | Gen UI, workspace chrome, voice, icons | V2.2 | Ismail | ✅ merged |
 | #8 | design/tokens-motion | Tokens, motion language, SVG logo | V2.3 | Khubaib | ✅ merged |
-| #9 | docs/category-kits | Coding, app builder, CRM, finance, video shells | V2.4 | Ismail | in progress |
-| #10 | docs/site-studio-ia | Site map, gallery filters, Studio wireframes | V2.5 | Khubaib | |
+| #9 | docs/category-kits | Coding, app builder, CRM, finance, video shells | V2.4 | Ismail | ✅ merged |
+| #10 | docs/site-studio-ia | Site map, gallery filters, Studio wireframes | V2.5 | Khubaib | in progress |
 | #11 | spike/rust-web | GPUI + Dioxus + WASM size proof | V2.6 | Ismail | |
 | #12 | chore/workspace-ci | Cargo workspace, fmt/clippy/test CI (no artifacts) | M0 | Khubaib | |
 | #13 | feat/tokens | Tokens JSON → Rust, CSS, GPUI theme | M0 | Ismail | |
