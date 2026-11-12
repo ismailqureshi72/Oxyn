@@ -15,8 +15,8 @@ is `Co-authored-by` on every commit. Agreed 2026-11-11.
 | #8 | design/tokens-motion | Tokens, motion language, SVG logo | V2.3 | Khubaib | ✅ merged |
 | #9 | docs/category-kits | Coding, app builder, CRM, finance, video shells | V2.4 | Ismail | ✅ merged |
 | #10 | docs/site-studio-ia | Site map, gallery filters, Studio wireframes | V2.5 | Khubaib | ✅ merged |
-| #11 | spike/rust-web | GPUI + Dioxus + WASM size proof ([report](spike/rust-web.md)) | V2.6 | Ismail | in progress |
-| #12 | chore/workspace-ci | Cargo workspace, fmt/clippy/test CI (no artifacts) | M0 | Khubaib | |
+| #11 | spike/rust-web | GPUI + Dioxus + WASM size proof ([report](spike/rust-web.md)) | V2.6 | Ismail | merged (+ GitHub #12 follow-up) |
+| #12 | chore/workspace-ci | Cargo workspace, fmt/clippy/test CI (no artifacts) | M0 | Khubaib | in progress |
 | #13 | feat/tokens | Tokens JSON → Rust, CSS, GPUI theme | M0 | Ismail | |
 | #14 | feat/core-state | AgentState machine, clock, verb packs | M1 | Khubaib | |
 | #15 | feat/status-indicator | First component, all states | M1 | Ismail | |
@@ -35,3 +35,7 @@ is `Co-authored-by` on every commit. Agreed 2026-11-11.
 | #28 | feat/shells-crm-finance-video | CRM, finance, video shells | M8 | Khubaib | |
 | #29 | feat/pro-registry | Polar licences + Pro registry | M9 | Ismail | |
 | #30 | release/v0.1 | Changelog, release, launch | M9 | Khubaib | |
+
+> **Numbering note (2026-11-12):** the #11 follow-up (GPUI on the web) landed as GitHub PR #12, so from
+> plan #12 on, the GitHub number is the plan number + 1 (plan #12 `chore/workspace-ci` is GitHub #13).
+> This table keeps the plan numbers.
