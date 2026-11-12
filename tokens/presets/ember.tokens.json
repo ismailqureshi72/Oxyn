@@ -1,0 +1,4443 @@
+{
+  "$description": "Colour preset 'ember': the coloured palette that was the default before plan #19 made the default themes monochrome. Not generated; Studio (plan #26) applies it as an opt-in theme.",
+  "theme": {
+    "dark": {
+      "$description": "Default. Brand ink #0B0B0C, paper #F2EFEA, rust #FF5A1F.",
+      "color": {
+        "$type": "color",
+        "bg": {
+          "base": {
+            "$value": "{primitive.color.neutral.950}"
+          }
+        },
+        "surface": {
+          "sunken": {
+            "$value": "{primitive.color.neutral.975}"
+          },
+          "base": {
+            "$value": "{theme.dark.color.bg.base}"
+          },
+          "raised": {
+            "$value": "{primitive.color.neutral.900}"
+          },
+          "overlay": {
+            "$value": "{primitive.color.neutral.850}"
+          },
+          "hover": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0.949,
+                0.9373,
+                0.9176
+              ],
+              "hex": "#F2EFEA",
+              "alpha": 0.06
+            },
+            "$extensions": {
+              "dev.oxyn": {
+                "derivedFrom": "{theme.dark.color.fg.default}",
+                "alpha": 0.06
+              }
+            }
+          },
+          "pressed": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0.949,
+                0.9373,
+                0.9176
+              ],
+              "hex": "#F2EFEA",
+              "alpha": 0.1
+            },
+            "$extensions": {
+              "dev.oxyn": {
+                "derivedFrom": "{theme.dark.color.fg.default}",
+                "alpha": 0.1
+              }
+            }
+          },
+          "selected": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                1.0,
+                0.3529,
+                0.1216
+              ],
+              "hex": "#FF5A1F",
+              "alpha": 0.16
+            },
+            "$extensions": {
+              "dev.oxyn": {
+                "derivedFrom": "{theme.dark.color.accent.solid}",
+                "alpha": 0.16
+              }
+            }
+          }
+        },
+        "fg": {
+          "default": {
+            "$value": "{primitive.color.neutral.50}"
+          },
+          "muted": {
+            "$value": "{primitive.color.neutral.300}"
+          },
+          "subtle": {
+            "$value": "{primitive.color.neutral.400}"
+          },
+          "disabled": {
+            "$value": "{primitive.color.neutral.600}"
+          },
+          "on-accent": {
+            "$value": "{primitive.color.neutral.950}"
+          },
+          "inverse": {
+            "$value": "{primitive.color.neutral.950}"
+          }
+        },
+        "border": {
+          "subtle": {
+            "$value": "{primitive.color.neutral.850}"
+          },
+          "default": {
+            "$value": "{primitive.color.neutral.800}"
+          },
+          "strong": {
+            "$value": "{primitive.color.neutral.500}"
+          }
+        },
+        "accent": {
+          "solid": {
+            "$value": "{primitive.color.rust.500}"
+          },
+          "solid-hover": {
+            "$value": "{primitive.color.rust.400}"
+          },
+          "solid-pressed": {
+            "$value": "{primitive.color.rust.300}"
+          },
+          "fg": {
+            "$value": "{primitive.color.rust.400}"
+          },
+          "border": {
+            "$value": "{primitive.color.rust.500}"
+          },
+          "bg": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                1.0,
+                0.3529,
+                0.1216
+              ],
+              "hex": "#FF5A1F",
+              "alpha": 0.14
+            },
+            "$extensions": {
+              "dev.oxyn": {
+                "derivedFrom": "{primitive.color.rust.500}",
+                "alpha": 0.14
+              }
+            }
+          }
+        },
+        "focus": {
+          "$value": "{primitive.color.rust.500}"
+        },
+        "selection": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              1.0,
+              0.3529,
+              0.1216
+            ],
+            "hex": "#FF5A1F",
+            "alpha": 0.3
+          },
+          "$extensions": {
+            "dev.oxyn": {
+              "derivedFrom": "{primitive.color.rust.500}",
+              "alpha": 0.3
+            }
+          }
+        },
+        "scrim": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "hex": "#000000",
+            "alpha": 0.6
+          },
+          "$extensions": {
+            "dev.oxyn": {
+              "derivedFrom": "{primitive.color.neutral.1000}",
+              "alpha": 0.6
+            }
+          }
+        },
+        "highlight": {
+          "$value": "{theme.dark.color.accent.solid}"
+        },
+        "link": {
+          "$value": "{theme.dark.color.accent.fg}"
+        },
+        "status": {
+          "success": {
+            "fg": {
+              "$value": "{primitive.color.green.400}"
+            },
+            "border": {
+              "$value": "{primitive.color.green.500}"
+            },
+            "bg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.2157,
+                  0.6902,
+                  0.3647
+                ],
+                "hex": "#37B05D",
+                "alpha": 0.14
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "derivedFrom": "{primitive.color.green.500}",
+                  "alpha": 0.14
+                }
+              }
+            }
+          },
+          "warning": {
+            "fg": {
+              "$value": "{primitive.color.amber.400}"
+            },
+            "border": {
+              "$value": "{primitive.color.amber.500}"
+            },
+            "bg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.7686,
+                  0.5333,
+                  0.0
+                ],
+                "hex": "#C48800",
+                "alpha": 0.14
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "derivedFrom": "{primitive.color.amber.500}",
+                  "alpha": 0.14
+                }
+              }
+            }
+          },
+          "danger": {
+            "fg": {
+              "$value": "{primitive.color.red.400}"
+            },
+            "border": {
+              "$value": "{primitive.color.red.500}"
+            },
+            "bg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.9647,
+                  0.3216,
+                  0.4549
+                ],
+                "hex": "#F65274",
+                "alpha": 0.14
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "derivedFrom": "{primitive.color.red.500}",
+                  "alpha": 0.14
+                }
+              }
+            }
+          },
+          "info": {
+            "fg": {
+              "$value": "{primitive.color.blue.400}"
+            },
+            "border": {
+              "$value": "{primitive.color.blue.500}"
+            },
+            "bg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.2863,
+                  0.5882,
+                  0.9608
+                ],
+                "hex": "#4996F5",
+                "alpha": 0.14
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "derivedFrom": "{primitive.color.blue.500}",
+                  "alpha": 0.14
+                }
+              }
+            }
+          },
+          "waiting": {
+            "fg": {
+              "$value": "{primitive.color.amber.400}"
+            },
+            "border": {
+              "$value": "{primitive.color.amber.500}"
+            },
+            "bg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.7686,
+                  0.5333,
+                  0.0
+                ],
+                "hex": "#C48800",
+                "alpha": 0.14
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "derivedFrom": "{primitive.color.amber.500}",
+                  "alpha": 0.14
+                }
+              }
+            }
+          }
+        },
+        "state": {
+          "idle": {
+            "$value": "{theme.dark.color.fg.muted}"
+          },
+          "composing": {
+            "$value": "{theme.dark.color.fg.default}"
+          },
+          "submitted": {
+            "$value": "{theme.dark.color.accent.fg}"
+          },
+          "thinking": {
+            "$value": "{theme.dark.color.accent.fg}"
+          },
+          "streaming": {
+            "$value": "{theme.dark.color.accent.fg}"
+          },
+          "tool-running": {
+            "$value": "{theme.dark.color.accent.fg}"
+          },
+          "awaiting-approval": {
+            "$value": "{theme.dark.color.status.waiting.fg}"
+          },
+          "queued": {
+            "$value": "{theme.dark.color.fg.muted}"
+          },
+          "steering": {
+            "$value": "{theme.dark.color.status.info.fg}"
+          },
+          "done": {
+            "$value": "{theme.dark.color.status.success.fg}"
+          },
+          "error": {
+            "$value": "{theme.dark.color.status.danger.fg}"
+          },
+          "cancelled": {
+            "$value": "{theme.dark.color.fg.muted}"
+          },
+          "stalled": {
+            "$value": "{theme.dark.color.status.warning.fg}"
+          }
+        },
+        "risk": {
+          "low": {
+            "fg": {
+              "$value": "{theme.dark.color.status.info.fg}"
+            },
+            "border": {
+              "$value": "{theme.dark.color.status.info.border}"
+            },
+            "bg": {
+              "$value": "{theme.dark.color.status.info.bg}"
+            }
+          },
+          "medium": {
+            "fg": {
+              "$value": "{theme.dark.color.accent.fg}"
+            },
+            "border": {
+              "$value": "{theme.dark.color.accent.border}"
+            },
+            "bg": {
+              "$value": "{theme.dark.color.accent.bg}"
+            }
+          },
+          "high": {
+            "fg": {
+              "$value": "{theme.dark.color.status.warning.fg}"
+            },
+            "border": {
+              "$value": "{theme.dark.color.status.warning.border}"
+            },
+            "bg": {
+              "$value": "{theme.dark.color.status.warning.bg}"
+            }
+          },
+          "critical": {
+            "fg": {
+              "$value": "{theme.dark.color.status.danger.fg}"
+            },
+            "border": {
+              "$value": "{theme.dark.color.status.danger.border}"
+            },
+            "bg": {
+              "$value": "{theme.dark.color.status.danger.bg}"
+            }
+          },
+          "critical-hatch": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0.9647,
+                0.3216,
+                0.4549
+              ],
+              "hex": "#F65274",
+              "alpha": 0.08
+            },
+            "$extensions": {
+              "dev.oxyn": {
+                "derivedFrom": "{primitive.color.red.500}",
+                "alpha": 0.08
+              }
+            }
+          }
+        },
+        "diff": {
+          "add": {
+            "fg": {
+              "$value": "{theme.dark.color.status.success.fg}"
+            },
+            "bg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.2157,
+                  0.6902,
+                  0.3647
+                ],
+                "hex": "#37B05D",
+                "alpha": 0.14
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "derivedFrom": "{primitive.color.green.500}",
+                  "alpha": 0.14
+                }
+              }
+            },
+            "word": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.2157,
+                  0.6902,
+                  0.3647
+                ],
+                "hex": "#37B05D",
+                "alpha": 0.34
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "derivedFrom": "{primitive.color.green.500}",
+                  "alpha": 0.34
+                }
+              }
+            },
+            "stripe": {
+              "$value": "{primitive.color.green.500}"
+            }
+          },
+          "gutter": {
+            "add": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.2157,
+                  0.6902,
+                  0.3647
+                ],
+                "hex": "#37B05D",
+                "alpha": 0.22
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "derivedFrom": "{primitive.color.green.500}",
+                  "alpha": 0.22
+                }
+              }
+            },
+            "del": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.9647,
+                  0.3216,
+                  0.4549
+                ],
+                "hex": "#F65274",
+                "alpha": 0.22
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "derivedFrom": "{primitive.color.red.500}",
+                  "alpha": 0.22
+                }
+              }
+            }
+          },
+          "del": {
+            "fg": {
+              "$value": "{theme.dark.color.status.danger.fg}"
+            },
+            "bg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.9647,
+                  0.3216,
+                  0.4549
+                ],
+                "hex": "#F65274",
+                "alpha": 0.14
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "derivedFrom": "{primitive.color.red.500}",
+                  "alpha": 0.14
+                }
+              }
+            },
+            "word": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.9647,
+                  0.3216,
+                  0.4549
+                ],
+                "hex": "#F65274",
+                "alpha": 0.34
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "derivedFrom": "{primitive.color.red.500}",
+                  "alpha": 0.34
+                }
+              }
+            },
+            "stripe": {
+              "$value": "{primitive.color.red.500}"
+            }
+          },
+          "hunk": {
+            "header": {
+              "$value": "{theme.dark.color.fg.muted}"
+            },
+            "bg": {
+              "$value": "{theme.dark.color.surface.sunken}"
+            }
+          },
+          "kept": {
+            "$value": "{theme.dark.color.fg.muted}"
+          },
+          "undone": {
+            "$value": "{theme.dark.color.fg.muted}"
+          }
+        },
+        "merge": {
+          "current": {
+            "$value": "{primitive.color.blue.400}"
+          },
+          "incoming": {
+            "$value": "{primitive.color.teal.400}"
+          },
+          "base": {
+            "$value": "{theme.dark.color.fg.muted}"
+          },
+          "conflict": {
+            "$value": "{theme.dark.color.loader.waiting}"
+          },
+          "suggested": {
+            "$value": "{primitive.color.violet-soft.400}"
+          },
+          "resolved": {
+            "$value": "{primitive.color.green-soft.400}"
+          },
+          "marker": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0.9647,
+                0.3216,
+                0.4549
+              ],
+              "hex": "#F65274",
+              "alpha": 0.16
+            },
+            "$extensions": {
+              "dev.oxyn": {
+                "derivedFrom": "{primitive.color.red.500}",
+                "alpha": 0.16
+              }
+            }
+          }
+        },
+        "git": {
+          "branch": {
+            "$value": "{theme.dark.color.fg.default}"
+          },
+          "ahead": {
+            "$value": "{theme.dark.color.fg.muted}"
+          },
+          "behind": {
+            "$value": "{theme.dark.color.fg.muted}"
+          },
+          "behind-warn": {
+            "$value": "{theme.dark.color.status.warning.fg}"
+          },
+          "dirty": {
+            "$value": "{primitive.color.amber-soft.400}"
+          },
+          "detached": {
+            "$value": "{primitive.color.amber-soft.400}"
+          },
+          "worktree": {
+            "$value": "{primitive.color.rust-soft.400}"
+          }
+        },
+        "review": {
+          "critical": {
+            "$value": "{theme.dark.color.status.danger.fg}"
+          },
+          "warning": {
+            "$value": "{theme.dark.color.status.warning.fg}"
+          },
+          "suggestion": {
+            "$value": "{theme.dark.color.accent.fg}"
+          },
+          "nit": {
+            "$value": "{theme.dark.color.fg.muted}"
+          },
+          "info": {
+            "$value": "{theme.dark.color.fg.default}"
+          }
+        },
+        "impact": {
+          "external": {
+            "$value": "{theme.dark.color.status.warning.fg}"
+          },
+          "irreversible": {
+            "$value": "{theme.dark.color.status.danger.fg}"
+          }
+        },
+        "icon": {
+          "fg": {
+            "$value": "{theme.dark.color.fg.muted}"
+          },
+          "fg-strong": {
+            "$value": "{theme.dark.color.fg.default}"
+          },
+          "on-accent": {
+            "$value": "{theme.dark.color.fg.on-accent}"
+          }
+        },
+        "loader": {
+          "fg": {
+            "$value": "{theme.dark.color.fg.default}"
+          },
+          "track": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0.949,
+                0.9373,
+                0.9176
+              ],
+              "hex": "#F2EFEA",
+              "alpha": 0.2
+            },
+            "$extensions": {
+              "dev.oxyn": {
+                "derivedFrom": "{primitive.color.neutral.50}",
+                "alpha": 0.2
+              }
+            }
+          },
+          "accent": {
+            "$value": "{theme.dark.color.accent.solid}"
+          },
+          "waiting": {
+            "$value": "{theme.dark.color.status.waiting.fg}"
+          },
+          "warn": {
+            "$value": "{theme.dark.color.status.warning.fg}"
+          },
+          "danger": {
+            "$value": "{theme.dark.color.status.danger.fg}"
+          },
+          "success": {
+            "$value": "{theme.dark.color.status.success.fg}"
+          },
+          "spectral": {
+            "0": {
+              "$value": "{theme.dark.color.accent.solid}"
+            },
+            "1": {
+              "$value": "{primitive.color.amber.400}"
+            },
+            "2": {
+              "$value": "{primitive.color.pink.400}"
+            },
+            "3": {
+              "$value": "{primitive.color.violet.400}"
+            },
+            "4": {
+              "$value": "{primitive.color.blue.400}"
+            },
+            "5": {
+              "$value": "{primitive.color.teal.400}"
+            }
+          }
+        },
+        "term": {
+          "prompt": {
+            "$value": "{theme.dark.color.accent.fg}"
+          }
+        },
+        "plan": {
+          "changed": {
+            "$value": "{theme.dark.color.accent.solid}"
+          }
+        },
+        "feedback": {
+          "on": {
+            "$value": "{theme.dark.color.accent.fg}"
+          }
+        },
+        "code": {
+          "inline": {
+            "bg": {
+              "$value": "{primitive.color.neutral.900}"
+            }
+          }
+        },
+        "bubble": {
+          "user": {
+            "$value": "{primitive.color.neutral.900}"
+          }
+        },
+        "checkpoint": {
+          "marker": {
+            "$value": "{theme.dark.color.fg.muted}"
+          },
+          "current": {
+            "$value": "{theme.dark.color.accent.fg}"
+          }
+        },
+        "text-status": {
+          "fg": {
+            "$value": "{theme.dark.color.fg.default}"
+          },
+          "crest": {
+            "$value": "{theme.dark.color.fg.default}"
+          },
+          "base": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0.5882,
+                0.5804,
+                0.5686
+              ],
+              "hex": "#969491"
+            },
+            "$extensions": {
+              "dev.oxyn": {
+                "derivedFrom": "mix({theme.dark.color.fg.default} -> {theme.dark.color.bg.base}, k <= 0.4), floored to 4.5:1"
+              }
+            }
+          }
+        },
+        "agent": {
+          "red": {
+            "$value": "{primitive.color.red.400}"
+          },
+          "orange": {
+            "$value": "{primitive.color.rust.400}"
+          },
+          "yellow": {
+            "$value": "{primitive.color.amber.400}"
+          },
+          "green": {
+            "$value": "{primitive.color.green.400}"
+          },
+          "blue": {
+            "$value": "{primitive.color.blue.400}"
+          },
+          "violet": {
+            "$value": "{primitive.color.violet.400}"
+          },
+          "pink": {
+            "$value": "{primitive.color.pink.400}"
+          },
+          "cyan": {
+            "$value": "{primitive.color.teal.400}"
+          }
+        },
+        "mcp": {
+          "disconnected": {
+            "$value": "{theme.dark.color.fg.muted}"
+          },
+          "connecting": {
+            "$value": "{theme.dark.color.status.info.fg}"
+          },
+          "connected": {
+            "$value": "{theme.dark.color.status.success.fg}"
+          },
+          "needs-auth": {
+            "$value": "{theme.dark.color.status.waiting.fg}"
+          },
+          "pending-approval": {
+            "$value": "{theme.dark.color.status.waiting.fg}"
+          },
+          "error": {
+            "$value": "{theme.dark.color.status.danger.fg}"
+          },
+          "disabled": {
+            "$value": "{theme.dark.color.fg.subtle}"
+          },
+          "blocked": {
+            "$value": "{theme.dark.color.status.danger.fg}"
+          },
+          "updating": {
+            "$value": "{theme.dark.color.status.info.fg}"
+          },
+          "flag-warning": {
+            "$value": "{theme.dark.color.status.warning.fg}"
+          }
+        },
+        "voice": {
+          "idle": {
+            "$value": "{theme.dark.color.fg.muted}"
+          },
+          "connecting": {
+            "$value": "{theme.dark.color.fg.muted}"
+          },
+          "listening": {
+            "$value": "{theme.dark.color.status.info.fg}"
+          },
+          "user-speaking": {
+            "$value": "{theme.dark.color.status.info.fg}"
+          },
+          "thinking": {
+            "$value": "{theme.dark.color.accent.fg}"
+          },
+          "agent-speaking": {
+            "$value": "{theme.dark.color.accent.fg}"
+          },
+          "awaiting-approval": {
+            "$value": "{theme.dark.color.status.waiting.fg}"
+          },
+          "interrupted": {
+            "$value": "{theme.dark.color.status.warning.fg}"
+          },
+          "muted": {
+            "$value": "{theme.dark.color.fg.muted}"
+          },
+          "asleep": {
+            "$value": "{theme.dark.color.fg.subtle}"
+          },
+          "latency-good": {
+            "$value": "{theme.dark.color.status.success.fg}"
+          },
+          "latency-ok": {
+            "$value": "{theme.dark.color.status.warning.fg}"
+          },
+          "latency-slow": {
+            "$value": "{theme.dark.color.status.danger.fg}"
+          },
+          "latency-very-slow": {
+            "$value": "{theme.dark.color.status.danger.fg}"
+          }
+        },
+        "monogram": {
+          "0": {
+            "bg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.3765,
+                  0.1647,
+                  0.1529
+                ],
+                "hex": "#602A27"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.36 0.08 25)"
+                }
+              }
+            },
+            "fg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  1.0,
+                  0.8588,
+                  0.8431
+                ],
+                "hex": "#FFDBD7"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.92 0.05 25)"
+                }
+              }
+            }
+          },
+          "1": {
+            "bg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.3608,
+                  0.1882,
+                  0.0431
+                ],
+                "hex": "#5C300B"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.36 0.08 55)"
+                }
+              }
+            },
+            "fg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  1.0,
+                  0.8667,
+                  0.7804
+                ],
+                "hex": "#FFDDC7"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.92 0.05 55)"
+                }
+              }
+            }
+          },
+          "2": {
+            "bg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.3098,
+                  0.2235,
+                  0.0
+                ],
+                "hex": "#4F3900"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.36 0.08 85)"
+                }
+              }
+            },
+            "fg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.9569,
+                  0.8902,
+                  0.749
+                ],
+                "hex": "#F4E3BF"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.92 0.05 85)"
+                }
+              }
+            }
+          },
+          "3": {
+            "bg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.2353,
+                  0.2588,
+                  0.0078
+                ],
+                "hex": "#3C4202"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.36 0.08 115)"
+                }
+              }
+            },
+            "fg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.8902,
+                  0.9137,
+                  0.7686
+                ],
+                "hex": "#E3E9C4"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.92 0.05 115)"
+                }
+              }
+            }
+          },
+          "4": {
+            "bg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.1176,
+                  0.2824,
+                  0.1294
+                ],
+                "hex": "#1E4821"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.36 0.08 145)"
+                }
+              }
+            },
+            "fg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.8196,
+                  0.9333,
+                  0.8196
+                ],
+                "hex": "#D1EED1"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.92 0.05 145)"
+                }
+              }
+            }
+          },
+          "5": {
+            "bg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.0,
+                  0.2824,
+                  0.2314
+                ],
+                "hex": "#00483B"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.36 0.08 175)"
+                }
+              }
+            },
+            "fg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.7647,
+                  0.9412,
+                  0.8902
+                ],
+                "hex": "#C3F0E3"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.92 0.05 175)"
+                }
+              }
+            }
+          },
+          "6": {
+            "bg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.0,
+                  0.2745,
+                  0.298
+                ],
+                "hex": "#00464C"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.36 0.08 205)"
+                }
+              }
+            },
+            "fg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.749,
+                  0.9373,
+                  0.9569
+                ],
+                "hex": "#BFEFF4"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.92 0.05 205)"
+                }
+              }
+            }
+          },
+          "7": {
+            "bg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.0,
+                  0.2627,
+                  0.3725
+                ],
+                "hex": "#00435F"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.36 0.08 235)"
+                }
+              }
+            },
+            "fg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.7843,
+                  0.9176,
+                  1.0
+                ],
+                "hex": "#C8EAFF"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.92 0.05 235)"
+                }
+              }
+            }
+          },
+          "8": {
+            "bg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.1569,
+                  0.2314,
+                  0.4039
+                ],
+                "hex": "#283B67"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.36 0.08 265)"
+                }
+              }
+            },
+            "fg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.8471,
+                  0.898,
+                  1.0
+                ],
+                "hex": "#D8E5FF"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.92 0.05 265)"
+                }
+              }
+            }
+          },
+          "9": {
+            "bg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.2549,
+                  0.2,
+                  0.3843
+                ],
+                "hex": "#413362"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.36 0.08 295)"
+                }
+              }
+            },
+            "fg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.902,
+                  0.8784,
+                  1.0
+                ],
+                "hex": "#E6E0FF"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.92 0.05 295)"
+                }
+              }
+            }
+          },
+          "10": {
+            "bg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.3216,
+                  0.1765,
+                  0.3294
+                ],
+                "hex": "#522D54"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.36 0.08 325)"
+                }
+              }
+            },
+            "fg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.9647,
+                  0.8549,
+                  0.9686
+                ],
+                "hex": "#F6DAF7"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.92 0.05 325)"
+                }
+              }
+            }
+          },
+          "11": {
+            "bg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.3647,
+                  0.1608,
+                  0.2471
+                ],
+                "hex": "#5D293F"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.36 0.08 355)"
+                }
+              }
+            },
+            "fg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  1.0,
+                  0.851,
+                  0.902
+                ],
+                "hex": "#FFD9E6"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.92 0.05 355)"
+                }
+              }
+            }
+          }
+        },
+        "ansi": {
+          "0": {
+            "$value": "{primitive.color.neutral.850}"
+          },
+          "1": {
+            "$value": "{primitive.color.red.400}"
+          },
+          "2": {
+            "$value": "{primitive.color.green.400}"
+          },
+          "3": {
+            "$value": "{primitive.color.amber.400}"
+          },
+          "4": {
+            "$value": "{primitive.color.blue.400}"
+          },
+          "5": {
+            "$value": "{primitive.color.pink.400}"
+          },
+          "6": {
+            "$value": "{primitive.color.teal.400}"
+          },
+          "7": {
+            "$value": "{primitive.color.neutral.200}"
+          },
+          "8": {
+            "$value": "{primitive.color.neutral.400}"
+          },
+          "9": {
+            "$value": "{primitive.color.red.300}"
+          },
+          "10": {
+            "$value": "{primitive.color.green.300}"
+          },
+          "11": {
+            "$value": "{primitive.color.amber.300}"
+          },
+          "12": {
+            "$value": "{primitive.color.blue.300}"
+          },
+          "13": {
+            "$value": "{primitive.color.pink.300}"
+          },
+          "14": {
+            "$value": "{primitive.color.teal.300}"
+          },
+          "15": {
+            "$value": "{primitive.color.neutral.50}"
+          }
+        }
+      },
+      "elevation": {
+        "$type": "shadow",
+        "raised": {
+          "$value": {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "hex": "#000000",
+              "alpha": 0.5
+            },
+            "offsetX": {
+              "value": 0,
+              "unit": "px"
+            },
+            "offsetY": {
+              "value": 1,
+              "unit": "px"
+            },
+            "blur": {
+              "value": 2,
+              "unit": "px"
+            },
+            "spread": {
+              "value": 0,
+              "unit": "px"
+            }
+          }
+        },
+        "popover": {
+          "$value": {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "hex": "#000000",
+              "alpha": 0.55
+            },
+            "offsetX": {
+              "value": 0,
+              "unit": "px"
+            },
+            "offsetY": {
+              "value": 4,
+              "unit": "px"
+            },
+            "blur": {
+              "value": 12,
+              "unit": "px"
+            },
+            "spread": {
+              "value": 0,
+              "unit": "px"
+            }
+          }
+        },
+        "modal": {
+          "$value": {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "hex": "#000000",
+              "alpha": 0.6
+            },
+            "offsetX": {
+              "value": 0,
+              "unit": "px"
+            },
+            "offsetY": {
+              "value": 12,
+              "unit": "px"
+            },
+            "blur": {
+              "value": 32,
+              "unit": "px"
+            },
+            "spread": {
+              "value": -4,
+              "unit": "px"
+            }
+          }
+        },
+        "approval": {
+          "$value": {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "hex": "#000000",
+              "alpha": 0.65
+            },
+            "offsetX": {
+              "value": 0,
+              "unit": "px"
+            },
+            "offsetY": {
+              "value": 16,
+              "unit": "px"
+            },
+            "blur": {
+              "value": 40,
+              "unit": "px"
+            },
+            "spread": {
+              "value": -4,
+              "unit": "px"
+            }
+          }
+        }
+      },
+      "focus": {
+        "ring": {
+          "$type": "border",
+          "$value": {
+            "color": "{theme.dark.color.focus}",
+            "width": "{semantic.focus.width}",
+            "style": "solid"
+          },
+          "$description": "2 px ring, offset {semantic.focus.offset}; keyboard focus only, no animation."
+        }
+      }
+    },
+    "light": {
+      "$description": "Paper surfaces, ink text; rust darkened for text.",
+      "color": {
+        "$type": "color",
+        "bg": {
+          "base": {
+            "$value": "{primitive.color.neutral.25}"
+          }
+        },
+        "surface": {
+          "sunken": {
+            "$value": "{primitive.color.neutral.50}"
+          },
+          "base": {
+            "$value": "{theme.light.color.bg.base}"
+          },
+          "raised": {
+            "$value": "{primitive.color.neutral.0}"
+          },
+          "overlay": {
+            "$value": "{primitive.color.neutral.0}"
+          },
+          "hover": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0.0431,
+                0.0431,
+                0.0471
+              ],
+              "hex": "#0B0B0C",
+              "alpha": 0.05
+            },
+            "$extensions": {
+              "dev.oxyn": {
+                "derivedFrom": "{theme.light.color.fg.default}",
+                "alpha": 0.05
+              }
+            }
+          },
+          "pressed": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0.0431,
+                0.0431,
+                0.0471
+              ],
+              "hex": "#0B0B0C",
+              "alpha": 0.09
+            },
+            "$extensions": {
+              "dev.oxyn": {
+                "derivedFrom": "{theme.light.color.fg.default}",
+                "alpha": 0.09
+              }
+            }
+          },
+          "selected": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0.8157,
+                0.251,
+                0.0
+              ],
+              "hex": "#D04000",
+              "alpha": 0.12
+            },
+            "$extensions": {
+              "dev.oxyn": {
+                "derivedFrom": "{theme.light.color.accent.solid}",
+                "alpha": 0.12
+              }
+            }
+          }
+        },
+        "fg": {
+          "default": {
+            "$value": "{primitive.color.neutral.950}"
+          },
+          "muted": {
+            "$value": "{primitive.color.neutral.700}"
+          },
+          "subtle": {
+            "$value": "{primitive.color.neutral.600}"
+          },
+          "disabled": {
+            "$value": "{primitive.color.neutral.300}"
+          },
+          "on-accent": {
+            "$value": "{primitive.color.neutral.0}"
+          },
+          "inverse": {
+            "$value": "{primitive.color.neutral.50}"
+          }
+        },
+        "border": {
+          "subtle": {
+            "$value": "{primitive.color.neutral.100}"
+          },
+          "default": {
+            "$value": "{primitive.color.neutral.150}"
+          },
+          "strong": {
+            "$value": "{primitive.color.neutral.500}"
+          }
+        },
+        "accent": {
+          "solid": {
+            "$value": "{primitive.color.rust.600}"
+          },
+          "solid-hover": {
+            "$value": "{primitive.color.rust.700}"
+          },
+          "solid-pressed": {
+            "$value": "{primitive.color.rust.800}"
+          },
+          "fg": {
+            "$value": "{primitive.color.rust.700}"
+          },
+          "border": {
+            "$value": "{primitive.color.rust.600}"
+          },
+          "bg": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                1.0,
+                0.3529,
+                0.1216
+              ],
+              "hex": "#FF5A1F",
+              "alpha": 0.1
+            },
+            "$extensions": {
+              "dev.oxyn": {
+                "derivedFrom": "{primitive.color.rust.500}",
+                "alpha": 0.1
+              }
+            }
+          }
+        },
+        "focus": {
+          "$value": "{primitive.color.rust.600}"
+        },
+        "selection": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              1.0,
+              0.3529,
+              0.1216
+            ],
+            "hex": "#FF5A1F",
+            "alpha": 0.2
+          },
+          "$extensions": {
+            "dev.oxyn": {
+              "derivedFrom": "{primitive.color.rust.500}",
+              "alpha": 0.2
+            }
+          }
+        },
+        "scrim": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.0431,
+              0.0431,
+              0.0471
+            ],
+            "hex": "#0B0B0C",
+            "alpha": 0.4
+          },
+          "$extensions": {
+            "dev.oxyn": {
+              "derivedFrom": "{primitive.color.neutral.950}",
+              "alpha": 0.4
+            }
+          }
+        },
+        "highlight": {
+          "$value": "{theme.light.color.accent.solid}"
+        },
+        "link": {
+          "$value": "{theme.light.color.accent.fg}"
+        },
+        "status": {
+          "success": {
+            "fg": {
+              "$value": "{primitive.color.green.700}"
+            },
+            "border": {
+              "$value": "{primitive.color.green.600}"
+            },
+            "bg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.2157,
+                  0.6902,
+                  0.3647
+                ],
+                "hex": "#37B05D",
+                "alpha": 0.1
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "derivedFrom": "{primitive.color.green.500}",
+                  "alpha": 0.1
+                }
+              }
+            }
+          },
+          "warning": {
+            "fg": {
+              "$value": "{primitive.color.amber.700}"
+            },
+            "border": {
+              "$value": "{primitive.color.amber.600}"
+            },
+            "bg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.7686,
+                  0.5333,
+                  0.0
+                ],
+                "hex": "#C48800",
+                "alpha": 0.1
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "derivedFrom": "{primitive.color.amber.500}",
+                  "alpha": 0.1
+                }
+              }
+            }
+          },
+          "danger": {
+            "fg": {
+              "$value": "{primitive.color.red.700}"
+            },
+            "border": {
+              "$value": "{primitive.color.red.600}"
+            },
+            "bg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.9647,
+                  0.3216,
+                  0.4549
+                ],
+                "hex": "#F65274",
+                "alpha": 0.1
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "derivedFrom": "{primitive.color.red.500}",
+                  "alpha": 0.1
+                }
+              }
+            }
+          },
+          "info": {
+            "fg": {
+              "$value": "{primitive.color.blue.700}"
+            },
+            "border": {
+              "$value": "{primitive.color.blue.600}"
+            },
+            "bg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.2863,
+                  0.5882,
+                  0.9608
+                ],
+                "hex": "#4996F5",
+                "alpha": 0.1
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "derivedFrom": "{primitive.color.blue.500}",
+                  "alpha": 0.1
+                }
+              }
+            }
+          },
+          "waiting": {
+            "fg": {
+              "$value": "{primitive.color.amber.700}"
+            },
+            "border": {
+              "$value": "{primitive.color.amber.600}"
+            },
+            "bg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.7686,
+                  0.5333,
+                  0.0
+                ],
+                "hex": "#C48800",
+                "alpha": 0.1
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "derivedFrom": "{primitive.color.amber.500}",
+                  "alpha": 0.1
+                }
+              }
+            }
+          }
+        },
+        "state": {
+          "idle": {
+            "$value": "{theme.light.color.fg.muted}"
+          },
+          "composing": {
+            "$value": "{theme.light.color.fg.default}"
+          },
+          "submitted": {
+            "$value": "{theme.light.color.accent.fg}"
+          },
+          "thinking": {
+            "$value": "{theme.light.color.accent.fg}"
+          },
+          "streaming": {
+            "$value": "{theme.light.color.accent.fg}"
+          },
+          "tool-running": {
+            "$value": "{theme.light.color.accent.fg}"
+          },
+          "awaiting-approval": {
+            "$value": "{theme.light.color.status.waiting.fg}"
+          },
+          "queued": {
+            "$value": "{theme.light.color.fg.muted}"
+          },
+          "steering": {
+            "$value": "{theme.light.color.status.info.fg}"
+          },
+          "done": {
+            "$value": "{theme.light.color.status.success.fg}"
+          },
+          "error": {
+            "$value": "{theme.light.color.status.danger.fg}"
+          },
+          "cancelled": {
+            "$value": "{theme.light.color.fg.muted}"
+          },
+          "stalled": {
+            "$value": "{theme.light.color.status.warning.fg}"
+          }
+        },
+        "risk": {
+          "low": {
+            "fg": {
+              "$value": "{theme.light.color.status.info.fg}"
+            },
+            "border": {
+              "$value": "{theme.light.color.status.info.border}"
+            },
+            "bg": {
+              "$value": "{theme.light.color.status.info.bg}"
+            }
+          },
+          "medium": {
+            "fg": {
+              "$value": "{theme.light.color.accent.fg}"
+            },
+            "border": {
+              "$value": "{theme.light.color.accent.border}"
+            },
+            "bg": {
+              "$value": "{theme.light.color.accent.bg}"
+            }
+          },
+          "high": {
+            "fg": {
+              "$value": "{theme.light.color.status.warning.fg}"
+            },
+            "border": {
+              "$value": "{theme.light.color.status.warning.border}"
+            },
+            "bg": {
+              "$value": "{theme.light.color.status.warning.bg}"
+            }
+          },
+          "critical": {
+            "fg": {
+              "$value": "{theme.light.color.status.danger.fg}"
+            },
+            "border": {
+              "$value": "{theme.light.color.status.danger.border}"
+            },
+            "bg": {
+              "$value": "{theme.light.color.status.danger.bg}"
+            }
+          },
+          "critical-hatch": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0.8157,
+                0.2118,
+                0.3529
+              ],
+              "hex": "#D0365A",
+              "alpha": 0.08
+            },
+            "$extensions": {
+              "dev.oxyn": {
+                "derivedFrom": "{primitive.color.red.600}",
+                "alpha": 0.08
+              }
+            }
+          }
+        },
+        "diff": {
+          "add": {
+            "fg": {
+              "$value": "{theme.light.color.status.success.fg}"
+            },
+            "bg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.2157,
+                  0.6902,
+                  0.3647
+                ],
+                "hex": "#37B05D",
+                "alpha": 0.1
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "derivedFrom": "{primitive.color.green.500}",
+                  "alpha": 0.1
+                }
+              }
+            },
+            "word": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.2157,
+                  0.6902,
+                  0.3647
+                ],
+                "hex": "#37B05D",
+                "alpha": 0.26
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "derivedFrom": "{primitive.color.green.500}",
+                  "alpha": 0.26
+                }
+              }
+            },
+            "stripe": {
+              "$value": "{primitive.color.green.600}"
+            }
+          },
+          "gutter": {
+            "add": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.2157,
+                  0.6902,
+                  0.3647
+                ],
+                "hex": "#37B05D",
+                "alpha": 0.18
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "derivedFrom": "{primitive.color.green.500}",
+                  "alpha": 0.18
+                }
+              }
+            },
+            "del": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.9647,
+                  0.3216,
+                  0.4549
+                ],
+                "hex": "#F65274",
+                "alpha": 0.18
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "derivedFrom": "{primitive.color.red.500}",
+                  "alpha": 0.18
+                }
+              }
+            }
+          },
+          "del": {
+            "fg": {
+              "$value": "{theme.light.color.status.danger.fg}"
+            },
+            "bg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.9647,
+                  0.3216,
+                  0.4549
+                ],
+                "hex": "#F65274",
+                "alpha": 0.1
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "derivedFrom": "{primitive.color.red.500}",
+                  "alpha": 0.1
+                }
+              }
+            },
+            "word": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.9647,
+                  0.3216,
+                  0.4549
+                ],
+                "hex": "#F65274",
+                "alpha": 0.26
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "derivedFrom": "{primitive.color.red.500}",
+                  "alpha": 0.26
+                }
+              }
+            },
+            "stripe": {
+              "$value": "{primitive.color.red.600}"
+            }
+          },
+          "hunk": {
+            "header": {
+              "$value": "{theme.light.color.fg.muted}"
+            },
+            "bg": {
+              "$value": "{theme.light.color.surface.sunken}"
+            }
+          },
+          "kept": {
+            "$value": "{theme.light.color.fg.muted}"
+          },
+          "undone": {
+            "$value": "{theme.light.color.fg.muted}"
+          }
+        },
+        "merge": {
+          "current": {
+            "$value": "{primitive.color.blue.700}"
+          },
+          "incoming": {
+            "$value": "{primitive.color.teal.700}"
+          },
+          "base": {
+            "$value": "{theme.light.color.fg.muted}"
+          },
+          "conflict": {
+            "$value": "{theme.light.color.loader.waiting}"
+          },
+          "suggested": {
+            "$value": "{primitive.color.violet-soft.700}"
+          },
+          "resolved": {
+            "$value": "{primitive.color.green-soft.700}"
+          },
+          "marker": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0.9647,
+                0.3216,
+                0.4549
+              ],
+              "hex": "#F65274",
+              "alpha": 0.16
+            },
+            "$extensions": {
+              "dev.oxyn": {
+                "derivedFrom": "{primitive.color.red.500}",
+                "alpha": 0.16
+              }
+            }
+          }
+        },
+        "git": {
+          "branch": {
+            "$value": "{theme.light.color.fg.default}"
+          },
+          "ahead": {
+            "$value": "{theme.light.color.fg.muted}"
+          },
+          "behind": {
+            "$value": "{theme.light.color.fg.muted}"
+          },
+          "behind-warn": {
+            "$value": "{theme.light.color.status.warning.fg}"
+          },
+          "dirty": {
+            "$value": "{primitive.color.amber-soft.700}"
+          },
+          "detached": {
+            "$value": "{primitive.color.amber-soft.700}"
+          },
+          "worktree": {
+            "$value": "{primitive.color.rust-soft.700}"
+          }
+        },
+        "review": {
+          "critical": {
+            "$value": "{theme.light.color.status.danger.fg}"
+          },
+          "warning": {
+            "$value": "{theme.light.color.status.warning.fg}"
+          },
+          "suggestion": {
+            "$value": "{theme.light.color.accent.fg}"
+          },
+          "nit": {
+            "$value": "{theme.light.color.fg.muted}"
+          },
+          "info": {
+            "$value": "{theme.light.color.fg.default}"
+          }
+        },
+        "impact": {
+          "external": {
+            "$value": "{theme.light.color.status.warning.fg}"
+          },
+          "irreversible": {
+            "$value": "{theme.light.color.status.danger.fg}"
+          }
+        },
+        "icon": {
+          "fg": {
+            "$value": "{theme.light.color.fg.muted}"
+          },
+          "fg-strong": {
+            "$value": "{theme.light.color.fg.default}"
+          },
+          "on-accent": {
+            "$value": "{theme.light.color.fg.on-accent}"
+          }
+        },
+        "loader": {
+          "fg": {
+            "$value": "{theme.light.color.fg.default}"
+          },
+          "track": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0.0431,
+                0.0431,
+                0.0471
+              ],
+              "hex": "#0B0B0C",
+              "alpha": 0.2
+            },
+            "$extensions": {
+              "dev.oxyn": {
+                "derivedFrom": "{primitive.color.neutral.950}",
+                "alpha": 0.2
+              }
+            }
+          },
+          "accent": {
+            "$value": "{theme.light.color.accent.solid}"
+          },
+          "waiting": {
+            "$value": "{theme.light.color.status.waiting.fg}"
+          },
+          "warn": {
+            "$value": "{theme.light.color.status.warning.fg}"
+          },
+          "danger": {
+            "$value": "{theme.light.color.status.danger.fg}"
+          },
+          "success": {
+            "$value": "{theme.light.color.status.success.fg}"
+          },
+          "spectral": {
+            "0": {
+              "$value": "{theme.light.color.accent.solid}"
+            },
+            "1": {
+              "$value": "{primitive.color.amber.600}"
+            },
+            "2": {
+              "$value": "{primitive.color.pink.600}"
+            },
+            "3": {
+              "$value": "{primitive.color.violet.600}"
+            },
+            "4": {
+              "$value": "{primitive.color.blue.600}"
+            },
+            "5": {
+              "$value": "{primitive.color.teal.600}"
+            }
+          }
+        },
+        "term": {
+          "prompt": {
+            "$value": "{theme.light.color.accent.fg}"
+          }
+        },
+        "plan": {
+          "changed": {
+            "$value": "{theme.light.color.accent.solid}"
+          }
+        },
+        "feedback": {
+          "on": {
+            "$value": "{theme.light.color.accent.fg}"
+          }
+        },
+        "code": {
+          "inline": {
+            "bg": {
+              "$value": "{primitive.color.neutral.100}"
+            }
+          }
+        },
+        "bubble": {
+          "user": {
+            "$value": "{primitive.color.neutral.100}"
+          }
+        },
+        "checkpoint": {
+          "marker": {
+            "$value": "{theme.light.color.fg.muted}"
+          },
+          "current": {
+            "$value": "{theme.light.color.accent.fg}"
+          }
+        },
+        "text-status": {
+          "fg": {
+            "$value": "{theme.light.color.fg.default}"
+          },
+          "crest": {
+            "$value": "{theme.light.color.fg.default}"
+          },
+          "base": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0.3765,
+                0.3686,
+                0.3686
+              ],
+              "hex": "#605E5E"
+            },
+            "$extensions": {
+              "dev.oxyn": {
+                "derivedFrom": "mix({theme.light.color.fg.default} -> {theme.light.color.bg.base}, k <= 0.35), floored to 4.5:1"
+              }
+            }
+          }
+        },
+        "agent": {
+          "red": {
+            "$value": "{primitive.color.red.600}"
+          },
+          "orange": {
+            "$value": "{primitive.color.rust.600}"
+          },
+          "yellow": {
+            "$value": "{primitive.color.amber.600}"
+          },
+          "green": {
+            "$value": "{primitive.color.green.600}"
+          },
+          "blue": {
+            "$value": "{primitive.color.blue.600}"
+          },
+          "violet": {
+            "$value": "{primitive.color.violet.600}"
+          },
+          "pink": {
+            "$value": "{primitive.color.pink.600}"
+          },
+          "cyan": {
+            "$value": "{primitive.color.teal.600}"
+          }
+        },
+        "mcp": {
+          "disconnected": {
+            "$value": "{theme.light.color.fg.muted}"
+          },
+          "connecting": {
+            "$value": "{theme.light.color.status.info.fg}"
+          },
+          "connected": {
+            "$value": "{theme.light.color.status.success.fg}"
+          },
+          "needs-auth": {
+            "$value": "{theme.light.color.status.waiting.fg}"
+          },
+          "pending-approval": {
+            "$value": "{theme.light.color.status.waiting.fg}"
+          },
+          "error": {
+            "$value": "{theme.light.color.status.danger.fg}"
+          },
+          "disabled": {
+            "$value": "{theme.light.color.fg.subtle}"
+          },
+          "blocked": {
+            "$value": "{theme.light.color.status.danger.fg}"
+          },
+          "updating": {
+            "$value": "{theme.light.color.status.info.fg}"
+          },
+          "flag-warning": {
+            "$value": "{theme.light.color.status.warning.fg}"
+          }
+        },
+        "voice": {
+          "idle": {
+            "$value": "{theme.light.color.fg.muted}"
+          },
+          "connecting": {
+            "$value": "{theme.light.color.fg.muted}"
+          },
+          "listening": {
+            "$value": "{theme.light.color.status.info.fg}"
+          },
+          "user-speaking": {
+            "$value": "{theme.light.color.status.info.fg}"
+          },
+          "thinking": {
+            "$value": "{theme.light.color.accent.fg}"
+          },
+          "agent-speaking": {
+            "$value": "{theme.light.color.accent.fg}"
+          },
+          "awaiting-approval": {
+            "$value": "{theme.light.color.status.waiting.fg}"
+          },
+          "interrupted": {
+            "$value": "{theme.light.color.status.warning.fg}"
+          },
+          "muted": {
+            "$value": "{theme.light.color.fg.muted}"
+          },
+          "asleep": {
+            "$value": "{theme.light.color.fg.subtle}"
+          },
+          "latency-good": {
+            "$value": "{theme.light.color.status.success.fg}"
+          },
+          "latency-ok": {
+            "$value": "{theme.light.color.status.warning.fg}"
+          },
+          "latency-slow": {
+            "$value": "{theme.light.color.status.danger.fg}"
+          },
+          "latency-very-slow": {
+            "$value": "{theme.light.color.status.danger.fg}"
+          }
+        },
+        "monogram": {
+          "0": {
+            "bg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  1.0,
+                  0.8392,
+                  0.8235
+                ],
+                "hex": "#FFD6D2"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.91 0.05 25)"
+                }
+              }
+            },
+            "fg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.4549,
+                  0.1804,
+                  0.1686
+                ],
+                "hex": "#742E2B"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.4 0.1 25)"
+                }
+              }
+            }
+          },
+          "1": {
+            "bg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.9922,
+                  0.851,
+                  0.7608
+                ],
+                "hex": "#FDD9C2"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.91 0.05 55)"
+                }
+              }
+            },
+            "fg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.4353,
+                  0.2118,
+                  0.0
+                ],
+                "hex": "#6F3600"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.4 0.1 55)"
+                }
+              }
+            }
+          },
+          "2": {
+            "bg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.9451,
+                  0.8745,
+                  0.7373
+                ],
+                "hex": "#F1DFBC"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.91 0.05 85)"
+                }
+              }
+            },
+            "fg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.3608,
+                  0.2627,
+                  0.0
+                ],
+                "hex": "#5C4300"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.4 0.1 85)"
+                }
+              }
+            }
+          },
+          "3": {
+            "bg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.8784,
+                  0.902,
+                  0.7529
+                ],
+                "hex": "#E0E6C0"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.91 0.05 115)"
+                }
+              }
+            },
+            "fg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.2784,
+                  0.302,
+                  0.0
+                ],
+                "hex": "#474D00"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.4 0.1 115)"
+                }
+              }
+            }
+          },
+          "4": {
+            "bg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.8078,
+                  0.9216,
+                  0.8039
+                ],
+                "hex": "#CEEBCD"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.91 0.05 145)"
+                }
+              }
+            },
+            "fg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.1137,
+                  0.3333,
+                  0.1333
+                ],
+                "hex": "#1D5522"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.4 0.1 145)"
+                }
+              }
+            }
+          },
+          "5": {
+            "bg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.7529,
+                  0.9294,
+                  0.8745
+                ],
+                "hex": "#C0EDDF"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.91 0.05 175)"
+                }
+              }
+            },
+            "fg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.0,
+                  0.3333,
+                  0.2706
+                ],
+                "hex": "#005545"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.4 0.1 175)"
+                }
+              }
+            }
+          },
+          "6": {
+            "bg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.7333,
+                  0.9255,
+                  0.9451
+                ],
+                "hex": "#BBECF1"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.91 0.05 205)"
+                }
+              }
+            },
+            "fg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.0,
+                  0.3216,
+                  0.349
+                ],
+                "hex": "#005259"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.4 0.1 205)"
+                }
+              }
+            }
+          },
+          "7": {
+            "bg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.7608,
+                  0.9059,
+                  0.9961
+                ],
+                "hex": "#C2E7FE"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.91 0.05 235)"
+                }
+              }
+            },
+            "fg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.0,
+                  0.3059,
+                  0.4353
+                ],
+                "hex": "#004E6F"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.4 0.1 235)"
+                }
+              }
+            }
+          },
+          "8": {
+            "bg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.8275,
+                  0.8863,
+                  1.0
+                ],
+                "hex": "#D3E2FF"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.91 0.05 265)"
+                }
+              }
+            },
+            "fg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.1765,
+                  0.2706,
+                  0.4902
+                ],
+                "hex": "#2D457D"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.4 0.1 265)"
+                }
+              }
+            }
+          },
+          "9": {
+            "bg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.8902,
+                  0.8627,
+                  1.0
+                ],
+                "hex": "#E3DCFF"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.91 0.05 295)"
+                }
+              }
+            },
+            "fg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.298,
+                  0.2314,
+                  0.4667
+                ],
+                "hex": "#4C3B77"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.4 0.1 295)"
+                }
+              }
+            }
+          },
+          "10": {
+            "bg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.9529,
+                  0.8431,
+                  0.9569
+                ],
+                "hex": "#F3D7F4"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.91 0.05 325)"
+                }
+              }
+            },
+            "fg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.3843,
+                  0.1961,
+                  0.3961
+                ],
+                "hex": "#623265"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.4 0.1 325)"
+                }
+              }
+            }
+          },
+          "11": {
+            "bg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.9961,
+                  0.8314,
+                  0.8902
+                ],
+                "hex": "#FED4E3"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.91 0.05 355)"
+                }
+              }
+            },
+            "fg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.4353,
+                  0.1765,
+                  0.2902
+                ],
+                "hex": "#6F2D4A"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.4 0.1 355)"
+                }
+              }
+            }
+          }
+        },
+        "ansi": {
+          "0": {
+            "$value": "{primitive.color.neutral.950}"
+          },
+          "1": {
+            "$value": "{primitive.color.red.700}"
+          },
+          "2": {
+            "$value": "{primitive.color.green.700}"
+          },
+          "3": {
+            "$value": "{primitive.color.amber.700}"
+          },
+          "4": {
+            "$value": "{primitive.color.blue.700}"
+          },
+          "5": {
+            "$value": "{primitive.color.pink.700}"
+          },
+          "6": {
+            "$value": "{primitive.color.teal.700}"
+          },
+          "7": {
+            "$value": "{primitive.color.neutral.300}"
+          },
+          "8": {
+            "$value": "{primitive.color.neutral.600}"
+          },
+          "9": {
+            "$value": "{primitive.color.red.800}"
+          },
+          "10": {
+            "$value": "{primitive.color.green.800}"
+          },
+          "11": {
+            "$value": "{primitive.color.amber.800}"
+          },
+          "12": {
+            "$value": "{primitive.color.blue.800}"
+          },
+          "13": {
+            "$value": "{primitive.color.pink.800}"
+          },
+          "14": {
+            "$value": "{primitive.color.teal.800}"
+          },
+          "15": {
+            "$value": "{primitive.color.neutral.200}"
+          }
+        }
+      },
+      "elevation": {
+        "$type": "shadow",
+        "raised": {
+          "$value": {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "hex": "#000000",
+              "alpha": 0.06
+            },
+            "offsetX": {
+              "value": 0,
+              "unit": "px"
+            },
+            "offsetY": {
+              "value": 1,
+              "unit": "px"
+            },
+            "blur": {
+              "value": 2,
+              "unit": "px"
+            },
+            "spread": {
+              "value": 0,
+              "unit": "px"
+            }
+          }
+        },
+        "popover": {
+          "$value": {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "hex": "#000000",
+              "alpha": 0.1
+            },
+            "offsetX": {
+              "value": 0,
+              "unit": "px"
+            },
+            "offsetY": {
+              "value": 4,
+              "unit": "px"
+            },
+            "blur": {
+              "value": 12,
+              "unit": "px"
+            },
+            "spread": {
+              "value": 0,
+              "unit": "px"
+            }
+          }
+        },
+        "modal": {
+          "$value": {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "hex": "#000000",
+              "alpha": 0.14
+            },
+            "offsetX": {
+              "value": 0,
+              "unit": "px"
+            },
+            "offsetY": {
+              "value": 12,
+              "unit": "px"
+            },
+            "blur": {
+              "value": 32,
+              "unit": "px"
+            },
+            "spread": {
+              "value": -4,
+              "unit": "px"
+            }
+          }
+        },
+        "approval": {
+          "$value": {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "hex": "#000000",
+              "alpha": 0.16
+            },
+            "offsetX": {
+              "value": 0,
+              "unit": "px"
+            },
+            "offsetY": {
+              "value": 16,
+              "unit": "px"
+            },
+            "blur": {
+              "value": 40,
+              "unit": "px"
+            },
+            "spread": {
+              "value": -4,
+              "unit": "px"
+            }
+          }
+        }
+      },
+      "focus": {
+        "ring": {
+          "$type": "border",
+          "$value": {
+            "color": "{theme.light.color.focus}",
+            "width": "{semantic.focus.width}",
+            "style": "solid"
+          },
+          "$description": "2 px ring, offset {semantic.focus.offset}; keyboard focus only, no animation."
+        }
+      }
+    },
+    "hc-dark": {
+      "$description": "High contrast: text >= 7:1, UI >= 4.5:1; no shadows, no shimmer.",
+      "color": {
+        "$type": "color",
+        "bg": {
+          "base": {
+            "$value": "{primitive.color.neutral.1000}"
+          }
+        },
+        "surface": {
+          "sunken": {
+            "$value": "{primitive.color.neutral.1000}"
+          },
+          "base": {
+            "$value": "{theme.hc-dark.color.bg.base}"
+          },
+          "raised": {
+            "$value": "{primitive.color.neutral.950}"
+          },
+          "overlay": {
+            "$value": "{primitive.color.neutral.925}"
+          },
+          "hover": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0.949,
+                0.9373,
+                0.9176
+              ],
+              "hex": "#F2EFEA",
+              "alpha": 0.1
+            },
+            "$extensions": {
+              "dev.oxyn": {
+                "derivedFrom": "{theme.hc-dark.color.fg.default}",
+                "alpha": 0.1
+              }
+            }
+          },
+          "pressed": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0.949,
+                0.9373,
+                0.9176
+              ],
+              "hex": "#F2EFEA",
+              "alpha": 0.16
+            },
+            "$extensions": {
+              "dev.oxyn": {
+                "derivedFrom": "{theme.hc-dark.color.fg.default}",
+                "alpha": 0.16
+              }
+            }
+          },
+          "selected": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                1.0,
+                0.5176,
+                0.3725
+              ],
+              "hex": "#FF845F",
+              "alpha": 0.24
+            },
+            "$extensions": {
+              "dev.oxyn": {
+                "derivedFrom": "{theme.hc-dark.color.accent.solid}",
+                "alpha": 0.24
+              }
+            }
+          }
+        },
+        "fg": {
+          "default": {
+            "$value": "{primitive.color.neutral.50}"
+          },
+          "muted": {
+            "$value": "{primitive.color.neutral.150}"
+          },
+          "subtle": {
+            "$value": "{primitive.color.neutral.200}"
+          },
+          "disabled": {
+            "$value": "{primitive.color.neutral.500}"
+          },
+          "on-accent": {
+            "$value": "{primitive.color.neutral.1000}"
+          },
+          "inverse": {
+            "$value": "{primitive.color.neutral.1000}"
+          }
+        },
+        "border": {
+          "subtle": {
+            "$value": "{primitive.color.neutral.700}"
+          },
+          "default": {
+            "$value": "{primitive.color.neutral.500}"
+          },
+          "strong": {
+            "$value": "{primitive.color.neutral.300}"
+          }
+        },
+        "accent": {
+          "solid": {
+            "$value": "{primitive.color.rust.400}"
+          },
+          "solid-hover": {
+            "$value": "{primitive.color.rust.300}"
+          },
+          "solid-pressed": {
+            "$value": "{primitive.color.rust.200}"
+          },
+          "fg": {
+            "$value": "{primitive.color.rust.300}"
+          },
+          "border": {
+            "$value": "{primitive.color.rust.300}"
+          },
+          "bg": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                1.0,
+                0.3529,
+                0.1216
+              ],
+              "hex": "#FF5A1F",
+              "alpha": 0.2
+            },
+            "$extensions": {
+              "dev.oxyn": {
+                "derivedFrom": "{primitive.color.rust.500}",
+                "alpha": 0.2
+              }
+            }
+          }
+        },
+        "focus": {
+          "$value": "{primitive.color.rust.300}"
+        },
+        "selection": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              1.0,
+              0.3529,
+              0.1216
+            ],
+            "hex": "#FF5A1F",
+            "alpha": 0.4
+          },
+          "$extensions": {
+            "dev.oxyn": {
+              "derivedFrom": "{primitive.color.rust.500}",
+              "alpha": 0.4
+            }
+          }
+        },
+        "scrim": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "hex": "#000000",
+            "alpha": 0.8
+          },
+          "$extensions": {
+            "dev.oxyn": {
+              "derivedFrom": "{primitive.color.neutral.1000}",
+              "alpha": 0.8
+            }
+          }
+        },
+        "highlight": {
+          "$value": "{theme.hc-dark.color.accent.solid}"
+        },
+        "link": {
+          "$value": "{theme.hc-dark.color.accent.fg}"
+        },
+        "status": {
+          "success": {
+            "fg": {
+              "$value": "{primitive.color.green.300}"
+            },
+            "border": {
+              "$value": "{primitive.color.green.300}"
+            },
+            "bg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.2157,
+                  0.6902,
+                  0.3647
+                ],
+                "hex": "#37B05D",
+                "alpha": 0.2
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "derivedFrom": "{primitive.color.green.500}",
+                  "alpha": 0.2
+                }
+              }
+            }
+          },
+          "warning": {
+            "fg": {
+              "$value": "{primitive.color.amber.300}"
+            },
+            "border": {
+              "$value": "{primitive.color.amber.300}"
+            },
+            "bg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.7686,
+                  0.5333,
+                  0.0
+                ],
+                "hex": "#C48800",
+                "alpha": 0.2
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "derivedFrom": "{primitive.color.amber.500}",
+                  "alpha": 0.2
+                }
+              }
+            }
+          },
+          "danger": {
+            "fg": {
+              "$value": "{primitive.color.red.300}"
+            },
+            "border": {
+              "$value": "{primitive.color.red.300}"
+            },
+            "bg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.9647,
+                  0.3216,
+                  0.4549
+                ],
+                "hex": "#F65274",
+                "alpha": 0.2
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "derivedFrom": "{primitive.color.red.500}",
+                  "alpha": 0.2
+                }
+              }
+            }
+          },
+          "info": {
+            "fg": {
+              "$value": "{primitive.color.blue.300}"
+            },
+            "border": {
+              "$value": "{primitive.color.blue.300}"
+            },
+            "bg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.2863,
+                  0.5882,
+                  0.9608
+                ],
+                "hex": "#4996F5",
+                "alpha": 0.2
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "derivedFrom": "{primitive.color.blue.500}",
+                  "alpha": 0.2
+                }
+              }
+            }
+          },
+          "waiting": {
+            "fg": {
+              "$value": "{primitive.color.amber.300}"
+            },
+            "border": {
+              "$value": "{primitive.color.amber.300}"
+            },
+            "bg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.7686,
+                  0.5333,
+                  0.0
+                ],
+                "hex": "#C48800",
+                "alpha": 0.2
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "derivedFrom": "{primitive.color.amber.500}",
+                  "alpha": 0.2
+                }
+              }
+            }
+          }
+        },
+        "state": {
+          "idle": {
+            "$value": "{theme.hc-dark.color.fg.muted}"
+          },
+          "composing": {
+            "$value": "{theme.hc-dark.color.fg.default}"
+          },
+          "submitted": {
+            "$value": "{theme.hc-dark.color.accent.fg}"
+          },
+          "thinking": {
+            "$value": "{theme.hc-dark.color.accent.fg}"
+          },
+          "streaming": {
+            "$value": "{theme.hc-dark.color.accent.fg}"
+          },
+          "tool-running": {
+            "$value": "{theme.hc-dark.color.accent.fg}"
+          },
+          "awaiting-approval": {
+            "$value": "{theme.hc-dark.color.status.waiting.fg}"
+          },
+          "queued": {
+            "$value": "{theme.hc-dark.color.fg.muted}"
+          },
+          "steering": {
+            "$value": "{theme.hc-dark.color.status.info.fg}"
+          },
+          "done": {
+            "$value": "{theme.hc-dark.color.status.success.fg}"
+          },
+          "error": {
+            "$value": "{theme.hc-dark.color.status.danger.fg}"
+          },
+          "cancelled": {
+            "$value": "{theme.hc-dark.color.fg.muted}"
+          },
+          "stalled": {
+            "$value": "{theme.hc-dark.color.status.warning.fg}"
+          }
+        },
+        "risk": {
+          "low": {
+            "fg": {
+              "$value": "{theme.hc-dark.color.status.info.fg}"
+            },
+            "border": {
+              "$value": "{theme.hc-dark.color.status.info.border}"
+            },
+            "bg": {
+              "$value": "{theme.hc-dark.color.status.info.bg}"
+            }
+          },
+          "medium": {
+            "fg": {
+              "$value": "{theme.hc-dark.color.accent.fg}"
+            },
+            "border": {
+              "$value": "{theme.hc-dark.color.accent.border}"
+            },
+            "bg": {
+              "$value": "{theme.hc-dark.color.accent.bg}"
+            }
+          },
+          "high": {
+            "fg": {
+              "$value": "{theme.hc-dark.color.status.warning.fg}"
+            },
+            "border": {
+              "$value": "{theme.hc-dark.color.status.warning.border}"
+            },
+            "bg": {
+              "$value": "{theme.hc-dark.color.status.warning.bg}"
+            }
+          },
+          "critical": {
+            "fg": {
+              "$value": "{theme.hc-dark.color.status.danger.fg}"
+            },
+            "border": {
+              "$value": "{theme.hc-dark.color.status.danger.border}"
+            },
+            "bg": {
+              "$value": "{theme.hc-dark.color.status.danger.bg}"
+            }
+          },
+          "critical-hatch": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                1.0,
+                0.6392,
+                0.6824
+              ],
+              "hex": "#FFA3AE",
+              "alpha": 0.08
+            },
+            "$extensions": {
+              "dev.oxyn": {
+                "derivedFrom": "{primitive.color.red.300}",
+                "alpha": 0.08
+              }
+            }
+          }
+        },
+        "diff": {
+          "add": {
+            "fg": {
+              "$value": "{theme.hc-dark.color.status.success.fg}"
+            },
+            "bg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.2157,
+                  0.6902,
+                  0.3647
+                ],
+                "hex": "#37B05D",
+                "alpha": 0.22
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "derivedFrom": "{primitive.color.green.500}",
+                  "alpha": 0.22
+                }
+              }
+            },
+            "word": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.2157,
+                  0.6902,
+                  0.3647
+                ],
+                "hex": "#37B05D",
+                "alpha": 0.36
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "derivedFrom": "{primitive.color.green.500}",
+                  "alpha": 0.36
+                }
+              }
+            },
+            "stripe": {
+              "$value": "{primitive.color.green.300}"
+            }
+          },
+          "gutter": {
+            "add": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.2157,
+                  0.6902,
+                  0.3647
+                ],
+                "hex": "#37B05D",
+                "alpha": 0.3
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "derivedFrom": "{primitive.color.green.500}",
+                  "alpha": 0.3
+                }
+              }
+            },
+            "del": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.9647,
+                  0.3216,
+                  0.4549
+                ],
+                "hex": "#F65274",
+                "alpha": 0.3
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "derivedFrom": "{primitive.color.red.500}",
+                  "alpha": 0.3
+                }
+              }
+            }
+          },
+          "del": {
+            "fg": {
+              "$value": "{theme.hc-dark.color.status.danger.fg}"
+            },
+            "bg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.9647,
+                  0.3216,
+                  0.4549
+                ],
+                "hex": "#F65274",
+                "alpha": 0.22
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "derivedFrom": "{primitive.color.red.500}",
+                  "alpha": 0.22
+                }
+              }
+            },
+            "word": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.9647,
+                  0.3216,
+                  0.4549
+                ],
+                "hex": "#F65274",
+                "alpha": 0.36
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "derivedFrom": "{primitive.color.red.500}",
+                  "alpha": 0.36
+                }
+              }
+            },
+            "stripe": {
+              "$value": "{primitive.color.red.300}"
+            }
+          },
+          "hunk": {
+            "header": {
+              "$value": "{theme.hc-dark.color.fg.muted}"
+            },
+            "bg": {
+              "$value": "{theme.hc-dark.color.surface.sunken}"
+            }
+          },
+          "kept": {
+            "$value": "{theme.hc-dark.color.fg.muted}"
+          },
+          "undone": {
+            "$value": "{theme.hc-dark.color.fg.muted}"
+          }
+        },
+        "merge": {
+          "current": {
+            "$value": "{primitive.color.blue.300}"
+          },
+          "incoming": {
+            "$value": "{primitive.color.teal.300}"
+          },
+          "base": {
+            "$value": "{theme.hc-dark.color.fg.muted}"
+          },
+          "conflict": {
+            "$value": "{theme.hc-dark.color.loader.waiting}"
+          },
+          "suggested": {
+            "$value": "{primitive.color.violet-soft.300}"
+          },
+          "resolved": {
+            "$value": "{primitive.color.green-soft.300}"
+          },
+          "marker": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0.9647,
+                0.3216,
+                0.4549
+              ],
+              "hex": "#F65274",
+              "alpha": 0.16
+            },
+            "$extensions": {
+              "dev.oxyn": {
+                "derivedFrom": "{primitive.color.red.500}",
+                "alpha": 0.16
+              }
+            }
+          }
+        },
+        "git": {
+          "branch": {
+            "$value": "{theme.hc-dark.color.fg.default}"
+          },
+          "ahead": {
+            "$value": "{theme.hc-dark.color.fg.muted}"
+          },
+          "behind": {
+            "$value": "{theme.hc-dark.color.fg.muted}"
+          },
+          "behind-warn": {
+            "$value": "{theme.hc-dark.color.status.warning.fg}"
+          },
+          "dirty": {
+            "$value": "{primitive.color.amber-soft.300}"
+          },
+          "detached": {
+            "$value": "{primitive.color.amber-soft.300}"
+          },
+          "worktree": {
+            "$value": "{primitive.color.rust-soft.300}"
+          }
+        },
+        "review": {
+          "critical": {
+            "$value": "{theme.hc-dark.color.status.danger.fg}"
+          },
+          "warning": {
+            "$value": "{theme.hc-dark.color.status.warning.fg}"
+          },
+          "suggestion": {
+            "$value": "{theme.hc-dark.color.accent.fg}"
+          },
+          "nit": {
+            "$value": "{theme.hc-dark.color.fg.muted}"
+          },
+          "info": {
+            "$value": "{theme.hc-dark.color.fg.default}"
+          }
+        },
+        "impact": {
+          "external": {
+            "$value": "{theme.hc-dark.color.status.warning.fg}"
+          },
+          "irreversible": {
+            "$value": "{theme.hc-dark.color.status.danger.fg}"
+          }
+        },
+        "icon": {
+          "fg": {
+            "$value": "{theme.hc-dark.color.fg.muted}"
+          },
+          "fg-strong": {
+            "$value": "{theme.hc-dark.color.fg.default}"
+          },
+          "on-accent": {
+            "$value": "{theme.hc-dark.color.fg.on-accent}"
+          }
+        },
+        "loader": {
+          "fg": {
+            "$value": "{theme.hc-dark.color.fg.default}"
+          },
+          "track": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0.949,
+                0.9373,
+                0.9176
+              ],
+              "hex": "#F2EFEA",
+              "alpha": 0.2
+            },
+            "$extensions": {
+              "dev.oxyn": {
+                "derivedFrom": "{primitive.color.neutral.50}",
+                "alpha": 0.2
+              }
+            }
+          },
+          "accent": {
+            "$value": "{theme.hc-dark.color.accent.solid}"
+          },
+          "waiting": {
+            "$value": "{theme.hc-dark.color.status.waiting.fg}"
+          },
+          "warn": {
+            "$value": "{theme.hc-dark.color.status.warning.fg}"
+          },
+          "danger": {
+            "$value": "{theme.hc-dark.color.status.danger.fg}"
+          },
+          "success": {
+            "$value": "{theme.hc-dark.color.status.success.fg}"
+          },
+          "spectral": {
+            "0": {
+              "$value": "{theme.hc-dark.color.accent.solid}"
+            },
+            "1": {
+              "$value": "{primitive.color.amber.300}"
+            },
+            "2": {
+              "$value": "{primitive.color.pink.300}"
+            },
+            "3": {
+              "$value": "{primitive.color.violet.300}"
+            },
+            "4": {
+              "$value": "{primitive.color.blue.300}"
+            },
+            "5": {
+              "$value": "{primitive.color.teal.300}"
+            }
+          }
+        },
+        "term": {
+          "prompt": {
+            "$value": "{theme.hc-dark.color.accent.fg}"
+          }
+        },
+        "plan": {
+          "changed": {
+            "$value": "{theme.hc-dark.color.accent.solid}"
+          }
+        },
+        "feedback": {
+          "on": {
+            "$value": "{theme.hc-dark.color.accent.fg}"
+          }
+        },
+        "code": {
+          "inline": {
+            "bg": {
+              "$value": "{primitive.color.neutral.925}"
+            }
+          }
+        },
+        "bubble": {
+          "user": {
+            "$value": "{primitive.color.neutral.925}"
+          }
+        },
+        "checkpoint": {
+          "marker": {
+            "$value": "{theme.hc-dark.color.fg.muted}"
+          },
+          "current": {
+            "$value": "{theme.hc-dark.color.accent.fg}"
+          }
+        },
+        "text-status": {
+          "fg": {
+            "$value": "{theme.hc-dark.color.fg.default}"
+          },
+          "crest": {
+            "$value": "{theme.hc-dark.color.fg.default}"
+          },
+          "base": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0.949,
+                0.9373,
+                0.9176
+              ],
+              "hex": "#F2EFEA"
+            },
+            "$extensions": {
+              "dev.oxyn": {
+                "derivedFrom": "mix({theme.hc-dark.color.fg.default} -> {theme.hc-dark.color.bg.base}, k <= 0.0), floored to 4.5:1"
+              }
+            }
+          }
+        },
+        "agent": {
+          "red": {
+            "$value": "{primitive.color.red.300}"
+          },
+          "orange": {
+            "$value": "{primitive.color.rust.300}"
+          },
+          "yellow": {
+            "$value": "{primitive.color.amber.300}"
+          },
+          "green": {
+            "$value": "{primitive.color.green.300}"
+          },
+          "blue": {
+            "$value": "{primitive.color.blue.300}"
+          },
+          "violet": {
+            "$value": "{primitive.color.violet.300}"
+          },
+          "pink": {
+            "$value": "{primitive.color.pink.300}"
+          },
+          "cyan": {
+            "$value": "{primitive.color.teal.300}"
+          }
+        },
+        "mcp": {
+          "disconnected": {
+            "$value": "{theme.hc-dark.color.fg.muted}"
+          },
+          "connecting": {
+            "$value": "{theme.hc-dark.color.status.info.fg}"
+          },
+          "connected": {
+            "$value": "{theme.hc-dark.color.status.success.fg}"
+          },
+          "needs-auth": {
+            "$value": "{theme.hc-dark.color.status.waiting.fg}"
+          },
+          "pending-approval": {
+            "$value": "{theme.hc-dark.color.status.waiting.fg}"
+          },
+          "error": {
+            "$value": "{theme.hc-dark.color.status.danger.fg}"
+          },
+          "disabled": {
+            "$value": "{theme.hc-dark.color.fg.subtle}"
+          },
+          "blocked": {
+            "$value": "{theme.hc-dark.color.status.danger.fg}"
+          },
+          "updating": {
+            "$value": "{theme.hc-dark.color.status.info.fg}"
+          },
+          "flag-warning": {
+            "$value": "{theme.hc-dark.color.status.warning.fg}"
+          }
+        },
+        "voice": {
+          "idle": {
+            "$value": "{theme.hc-dark.color.fg.muted}"
+          },
+          "connecting": {
+            "$value": "{theme.hc-dark.color.fg.muted}"
+          },
+          "listening": {
+            "$value": "{theme.hc-dark.color.status.info.fg}"
+          },
+          "user-speaking": {
+            "$value": "{theme.hc-dark.color.status.info.fg}"
+          },
+          "thinking": {
+            "$value": "{theme.hc-dark.color.accent.fg}"
+          },
+          "agent-speaking": {
+            "$value": "{theme.hc-dark.color.accent.fg}"
+          },
+          "awaiting-approval": {
+            "$value": "{theme.hc-dark.color.status.waiting.fg}"
+          },
+          "interrupted": {
+            "$value": "{theme.hc-dark.color.status.warning.fg}"
+          },
+          "muted": {
+            "$value": "{theme.hc-dark.color.fg.muted}"
+          },
+          "asleep": {
+            "$value": "{theme.hc-dark.color.fg.subtle}"
+          },
+          "latency-good": {
+            "$value": "{theme.hc-dark.color.status.success.fg}"
+          },
+          "latency-ok": {
+            "$value": "{theme.hc-dark.color.status.warning.fg}"
+          },
+          "latency-slow": {
+            "$value": "{theme.hc-dark.color.status.danger.fg}"
+          },
+          "latency-very-slow": {
+            "$value": "{theme.hc-dark.color.status.danger.fg}"
+          }
+        },
+        "monogram": {
+          "0": {
+            "bg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.2941,
+                  0.1137,
+                  0.1059
+                ],
+                "hex": "#4B1D1B"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.3 0.07 25)"
+                }
+              }
+            },
+            "fg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  1.0,
+                  0.949,
+                  0.9412
+                ],
+                "hex": "#FFF2F0"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.97 0.02 25)"
+                }
+              }
+            }
+          },
+          "1": {
+            "bg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.2824,
+                  0.1373,
+                  0.0157
+                ],
+                "hex": "#482304"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.3 0.07 55)"
+                }
+              }
+            },
+            "fg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  1.0,
+                  0.949,
+                  0.9176
+                ],
+                "hex": "#FFF2EA"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.97 0.02 55)"
+                }
+              }
+            }
+          },
+          "2": {
+            "bg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.2353,
+                  0.1686,
+                  0.0
+                ],
+                "hex": "#3C2B00"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.3 0.07 85)"
+                }
+              }
+            },
+            "fg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.9843,
+                  0.9569,
+                  0.902
+                ],
+                "hex": "#FBF4E6"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.97 0.02 85)"
+                }
+              }
+            }
+          },
+          "3": {
+            "bg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.1765,
+                  0.1922,
+                  0.0
+                ],
+                "hex": "#2D3100"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.3 0.07 115)"
+                }
+              }
+            },
+            "fg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.9569,
+                  0.9686,
+                  0.9098
+                ],
+                "hex": "#F4F7E8"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.97 0.02 115)"
+                }
+              }
+            }
+          },
+          "4": {
+            "bg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.0745,
+                  0.2157,
+                  0.0863
+                ],
+                "hex": "#133716"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.3 0.07 145)"
+                }
+              }
+            },
+            "fg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.9294,
+                  0.9765,
+                  0.9294
+                ],
+                "hex": "#EDF9ED"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.97 0.02 145)"
+                }
+              }
+            }
+          },
+          "5": {
+            "bg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.0,
+                  0.2157,
+                  0.1725
+                ],
+                "hex": "#00372C"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.3 0.07 175)"
+                }
+              }
+            },
+            "fg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.9098,
+                  0.9804,
+                  0.9569
+                ],
+                "hex": "#E8FAF4"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.97 0.02 175)"
+                }
+              }
+            }
+          },
+          "6": {
+            "bg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.0,
+                  0.2078,
+                  0.2275
+                ],
+                "hex": "#00353A"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.3 0.07 205)"
+                }
+              }
+            },
+            "fg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.9059,
+                  0.9765,
+                  0.9882
+                ],
+                "hex": "#E7F9FC"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.97 0.02 205)"
+                }
+              }
+            }
+          },
+          "7": {
+            "bg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.0,
+                  0.1961,
+                  0.2863
+                ],
+                "hex": "#003249"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.3 0.07 235)"
+                }
+              }
+            },
+            "fg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.9216,
+                  0.9686,
+                  1.0
+                ],
+                "hex": "#EBF7FF"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.97 0.02 235)"
+                }
+              }
+            }
+          },
+          "8": {
+            "bg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.1098,
+                  0.1725,
+                  0.3176
+                ],
+                "hex": "#1C2C51"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.3 0.07 265)"
+                }
+              }
+            },
+            "fg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.9412,
+                  0.9608,
+                  1.0
+                ],
+                "hex": "#F0F5FF"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.97 0.02 265)"
+                }
+              }
+            }
+          },
+          "9": {
+            "bg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.1922,
+                  0.1451,
+                  0.302
+                ],
+                "hex": "#31254D"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.3 0.07 295)"
+                }
+              }
+            },
+            "fg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.9647,
+                  0.9529,
+                  1.0
+                ],
+                "hex": "#F6F3FF"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.97 0.02 295)"
+                }
+              }
+            }
+          },
+          "10": {
+            "bg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.2471,
+                  0.1255,
+                  0.2549
+                ],
+                "hex": "#3F2041"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.3 0.07 325)"
+                }
+              }
+            },
+            "fg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.9882,
+                  0.9451,
+                  0.9922
+                ],
+                "hex": "#FCF1FD"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.97 0.02 325)"
+                }
+              }
+            }
+          },
+          "11": {
+            "bg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.2824,
+                  0.1137,
+                  0.1882
+                ],
+                "hex": "#481D30"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.3 0.07 355)"
+                }
+              }
+            },
+            "fg": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  1.0,
+                  0.9451,
+                  0.9647
+                ],
+                "hex": "#FFF1F6"
+              },
+              "$extensions": {
+                "dev.oxyn": {
+                  "source": "oklch(0.97 0.02 355)"
+                }
+              }
+            }
+          }
+        },
+        "ansi": {
+          "0": {
+            "$value": "{primitive.color.neutral.800}"
+          },
+          "1": {
+            "$value": "{primitive.color.red.300}"
+          },
+          "2": {
+            "$value": "{primitive.color.green.300}"
+          },
+          "3": {
+            "$value": "{primitive.color.amber.300}"
+          },
+          "4": {
+            "$value": "{primitive.color.blue.300}"
+          },
+          "5": {
+            "$value": "{primitive.color.pink.300}"
+          },
+          "6": {
+            "$value": "{primitive.color.teal.300}"
+          },
+          "7": {
+            "$value": "{primitive.color.neutral.100}"
+          },
+          "8": {
+            "$value": "{primitive.color.neutral.200}"
+          },
+          "9": {
+            "$value": "{primitive.color.red.200}"
+          },
+          "10": {
+            "$value": "{primitive.color.green.200}"
+          },
+          "11": {
+            "$value": "{primitive.color.amber.200}"
+          },
+          "12": {
+            "$value": "{primitive.color.blue.200}"
+          },
+          "13": {
+            "$value": "{primitive.color.pink.200}"
+          },
+          "14": {
+            "$value": "{primitive.color.teal.200}"
+          },
+          "15": {
+            "$value": "{primitive.color.neutral.0}"
+          }
+        }
+      },
+      "elevation": {
+        "$type": "shadow",
+        "raised": {
+          "$value": {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "hex": "#000000",
+              "alpha": 0.0
+            },
+            "offsetX": {
+              "value": 0,
+              "unit": "px"
+            },
+            "offsetY": {
+              "value": 0,
+              "unit": "px"
+            },
+            "blur": {
+              "value": 0,
+              "unit": "px"
+            },
+            "spread": {
+              "value": 0,
+              "unit": "px"
+            }
+          }
+        },
+        "popover": {
+          "$value": {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "hex": "#000000",
+              "alpha": 0.0
+            },
+            "offsetX": {
+              "value": 0,
+              "unit": "px"
+            },
+            "offsetY": {
+              "value": 0,
+              "unit": "px"
+            },
+            "blur": {
+              "value": 0,
+              "unit": "px"
+            },
+            "spread": {
+              "value": 0,
+              "unit": "px"
+            }
+          }
+        },
+        "modal": {
+          "$value": {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "hex": "#000000",
+              "alpha": 0.0
+            },
+            "offsetX": {
+              "value": 0,
+              "unit": "px"
+            },
+            "offsetY": {
+              "value": 0,
+              "unit": "px"
+            },
+            "blur": {
+              "value": 0,
+              "unit": "px"
+            },
+            "spread": {
+              "value": 0,
+              "unit": "px"
+            }
+          }
+        },
+        "approval": {
+          "$value": {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "hex": "#000000",
+              "alpha": 0.0
+            },
+            "offsetX": {
+              "value": 0,
+              "unit": "px"
+            },
+            "offsetY": {
+              "value": 0,
+              "unit": "px"
+            },
+            "blur": {
+              "value": 0,
+              "unit": "px"
+            },
+            "spread": {
+              "value": 0,
+              "unit": "px"
+            }
+          }
+        },
+        "$description": "High contrast uses borders (border.strong) instead of shadows; all shadows are transparent."
+      },
+      "focus": {
+        "ring": {
+          "$type": "border",
+          "$value": {
+            "color": "{theme.hc-dark.color.focus}",
+            "width": "{semantic.focus.width}",
+            "style": "solid"
+          },
+          "$description": "2 px ring, offset {semantic.focus.offset}; keyboard focus only, no animation."
+        }
+      }
+    }
+  }
+}
