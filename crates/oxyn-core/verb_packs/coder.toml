@@ -1,0 +1,60 @@
+# Verb pack "coder". Original copy, MIT. Schema: docs/specs/status-text.md §5.1.
+id = "coder"
+name = "Coder"
+description = "Coding agents, IDEs and terminals."
+locale = "en"
+tier = "free"
+order = "shuffle"
+reasoning_done = "Thought for {d}"
+turn_done = "Worked for {d}"
+
+[[cycle]]
+present = "Tracing calls"
+past = "Traced calls"
+
+[[cycle]]
+present = "Grepping"
+past = "Grepped"
+
+[[cycle]]
+present = "Reading the diff"
+past = "Read the diff"
+
+[[cycle]]
+present = "Linting"
+past = "Linted"
+
+[[cycle]]
+present = "Refactoring"
+past = "Refactored"
+
+[[cycle]]
+present = "Compiling"
+past = "Compiled"
+
+[[cycle]]
+present = "Profiling"
+past = "Profiled"
+
+[[cycle]]
+present = "Bisecting"
+past = "Bisected"
+
+[[cycle]]
+present = "Patching"
+past = "Patched"
+
+[[cycle]]
+present = "Type-checking"
+past = "Type-checked"
+
+[[cycle]]
+present = "Resolving imports"
+past = "Resolved imports"
+
+[[cycle]]
+present = "Stepping through"
+past = "Stepped through"
+
+[activity]
+search = { present = "Grepping", past = "Grepped" }

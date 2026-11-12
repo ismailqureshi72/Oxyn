@@ -1,0 +1,72 @@
+# Verb pack "terse". Original copy, MIT. Schema: docs/specs/status-text.md §5.1.
+id = "terse"
+name = "Terse"
+description = "16–20 px rows and terminals; bare stems."
+locale = "en"
+tier = "free"
+order = "sequential"
+reasoning_done = "Thought for {d}"
+turn_done = "Done · {d}"
+
+[[cycle]]
+present = "Busy"
+past = "Done"
+
+[[cycle]]
+present = "Plan"
+past = "Planned"
+
+[[cycle]]
+present = "Read"
+past = "Read"
+
+[[cycle]]
+present = "Find"
+past = "Found"
+
+[[cycle]]
+present = "Edit"
+past = "Edited"
+
+[[cycle]]
+present = "Run"
+past = "Ran"
+
+[[cycle]]
+present = "Test"
+past = "Tested"
+
+[[cycle]]
+present = "Fetch"
+past = "Fetched"
+
+[[cycle]]
+present = "Wait"
+past = "Waited"
+
+[[cycle]]
+present = "Sync"
+past = "Synced"
+
+[[cycle]]
+present = "Check"
+past = "Checked"
+
+[[cycle]]
+present = "Write"
+past = "Wrote"
+
+[activity]
+think = { present = "Think", past = "Thought for {d}" }
+plan = { present = "Plan", past = "Planned" }
+read = { present = "Read", past = "Read" }
+search = { present = "Find", past = "Found" }
+edit = { present = "Edit", past = "Edited" }
+write = { present = "Write", past = "Wrote" }
+run = { present = "Run", past = "Ran" }
+test = { present = "Test", past = "Tested" }
+browse = { present = "Browse", past = "Browsed" }
+fetch = { present = "Fetch", past = "Fetched" }
+wait-user = { present = "Wait", past = "Waited {d}" }
+retry = { present = "Retry", past = "Retried" }
+generic = { present = "Busy", past = "Done · {d}" }
