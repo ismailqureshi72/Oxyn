@@ -42,5 +42,5 @@ jobs:
       - run: cargo test --workspace --locked
       - name: tokens are valid and generated outputs are fresh
         run: cargo run --locked -p oxyn-tokens-gen -- --check
-      - name: wasm32 check (UI-free crates)
-        run: cargo check --locked --target wasm32-unknown-unknown -p oxyn-core -p oxyn-tokens -p oxyn-registry-schema -p oxyn-codegen
+      - name: wasm32 check (core and both renderers)
+        run: cargo check --locked --target wasm32-unknown-unknown -p oxyn-core -p oxyn-tokens -p oxyn-registry-schema -p oxyn-codegen -p oxyn-gpui -p oxyn-dioxus
