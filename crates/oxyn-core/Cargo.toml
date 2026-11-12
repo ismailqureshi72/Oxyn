@@ -1,12 +1,17 @@
 [package]
 name = "oxyn-core"
-description = "UI-free agent state machine, event stream model and verb packs. Filled in by #14."
+description = "UI-free core for Oxyn: the AgentState machine, the shared motion clock, easing and verb packs."
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
 repository.workspace = true
 publish = false
+
+[dependencies]
+oxyn-tokens.workspace = true
+serde = { version = "1", features = ["derive"] }
+toml = "0.9"
 
 [lints]
 workspace = true

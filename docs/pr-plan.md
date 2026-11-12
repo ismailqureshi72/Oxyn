@@ -17,8 +17,8 @@ is `Co-authored-by` on every commit. Agreed 2026-11-11.
 | #10 | docs/site-studio-ia | Site map, gallery filters, Studio wireframes | V2.5 | Khubaib | ✅ merged |
 | #11 | spike/rust-web | GPUI + Dioxus + WASM size proof ([report](spike/rust-web.md)) | V2.6 | Ismail | merged (+ GitHub #12 follow-up) |
 | #12 | chore/workspace-ci | Cargo workspace, fmt/clippy/test CI (no artifacts) | M0 | Khubaib | merged (GitHub #13) |
-| #13 | feat/tokens | Tokens JSON → Rust, CSS, GPUI theme | M0 | Ismail | in progress (GitHub #14) |
-| #14 | feat/core-state | AgentState machine, clock, verb packs | M1 | Khubaib | |
+| #13 | feat/tokens | Tokens JSON → Rust, CSS, GPUI theme | M0 | Ismail | merged (GitHub #14) |
+| #14 | feat/core-state | AgentState machine, clock, verb packs | M1 | Khubaib | in progress (GitHub #15) |
 | #15 | feat/status-indicator | First component, all states | M1 | Ismail | |
 | #16 | feat/loaders | Loader engine + first variant set | M2 | Khubaib | |
 | #17 | feat/status-text | Shimmer, verb cycler, timers, reveal | M2 | Ismail | |
