@@ -1,4 +1,4 @@
-**Status:** draft v0.1 (2026-11-11).
+**Status:** v1 (plan #18, 2026-11-12): `oxyn-core::composer::ComposerState` + 6 free layouts. Dioxus `Composer` (all 6 layouts), GPUI `Composer` (chat layout). Send control is a basic ↑ / ■ / Queue button until plan #19.
 
 # Spec: composer (family overview)
 

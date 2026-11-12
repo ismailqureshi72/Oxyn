@@ -1,4 +1,4 @@
-**Status:** draft v0.1 (2026-11-11).
+**Status:** v1 (plan #18, 2026-11-12): 6 free variants in `oxyn-core::composer::context` (hysteresis, roll, compaction, grid). Dioxus `ContextMeterChip` (all 6); GPUI ring + breakdown.
 
 # Spec: composer context-window meter
 

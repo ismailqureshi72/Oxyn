@@ -25,6 +25,7 @@
 //! ```
 
 pub mod clock;
+pub mod composer;
 pub mod ease;
 pub mod indicator;
 pub mod loader;

@@ -4,10 +4,12 @@
 //! [`MotionClock`]; the host keeps the clock advanced and requests frames while
 //! [`MotionClock::next_frame_in`] says so.
 
+mod composer;
 mod glyph_loader;
 mod status_indicator;
 mod status_text;
 
+pub use composer::{Composer, ComposerEvent};
 pub use glyph_loader::GlyphLoaderView;
 pub use status_indicator::{IndicatorSize, IndicatorVariant, StatusIndicator};
 pub use status_text::{RevealText, ShimmerText, TimerText, VerbCyclerView};
