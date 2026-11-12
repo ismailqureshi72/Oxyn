@@ -1,4 +1,4 @@
-**Status:** draft v0.2 (2026-11-11).
+**Status:** v0.3 (2026-11-12): implemented in plan #19 (`oxyn-core::composer::send`, Dioxus `SendButton`, GPUI `Composer`). Default themes are monochrome, so "accent" and "danger" below render as greys unless a Studio preset is applied.
 
 # Spec: composer send control (send / stop / queue / steer)
 

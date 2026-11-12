@@ -33,15 +33,37 @@
   border:1px solid var(--oxyn-color-border-subtle);transition:background 80ms,color 80ms}
 .oxyn-composer .tool:hover{background:var(--oxyn-color-surface-hover);color:var(--oxyn-color-fg-default)}
 
-/* send (plan #19 replaces this with the send-control variants) */
-.oxyn-composer .send{height:32px;min-width:32px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;gap:6px;
-  transition:background 120ms,transform 120ms,opacity 120ms;flex:none}
-.oxyn-composer .send:active{transform:scale(.94)}
-.oxyn-composer .send.ready{background:var(--c-acc);color:var(--oxyn-color-fg-on-accent)}
-.oxyn-composer .send.muted,.oxyn-composer .send.wait{background:var(--oxyn-color-surface-hover);color:var(--oxyn-color-fg-subtle);cursor:default}
-.oxyn-composer .send.stop{background:var(--oxyn-color-fg-default);color:var(--oxyn-color-bg-base)}
-.oxyn-composer .send.queue{background:var(--oxyn-color-accent-bg);color:var(--oxyn-color-accent-fg);padding:0 12px 0 10px;font-size:13px;font-weight:500;
-  border:1px solid var(--oxyn-color-accent-border)}
+/* send control */
+.oxyn-send{position:relative;display:inline-flex;align-items:center;gap:6px;flex:none;transition:transform 120ms cubic-bezier(.22,1,.36,1)}
+.oxyn-send .seg{position:relative;height:32px;min-width:32px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  font:inherit;font-size:13px;font-weight:500;border:1px solid transparent;cursor:pointer;padding:0;
+  transition:background 120ms,color 120ms,border-color 120ms,transform 80ms,width 180ms cubic-bezier(.22,1,.36,1),padding 180ms cubic-bezier(.22,1,.36,1)}
+.oxyn-send .seg:active{transform:scale(.94)}
+.oxyn-send .seg.labelled{padding:0 12px 0 10px;animation:oxyn-widen 180ms cubic-bezier(.22,1,.36,1)}
+@keyframes oxyn-widen{from{max-width:32px;opacity:.6}to{max-width:160px}}
+.oxyn-send .seg.primary{background:var(--oxyn-color-accent-solid);color:var(--oxyn-color-fg-on-accent)}
+.oxyn-send .seg.primary:hover{background:var(--oxyn-color-accent-solid-hover);transform:translateY(-1px)}
+.oxyn-send .seg.strong{background:var(--oxyn-color-fg-default);color:var(--oxyn-color-bg-base)}
+.oxyn-send .seg.muted{background:var(--oxyn-color-surface-hover);color:var(--oxyn-color-fg-subtle);cursor:default}
+.oxyn-send .seg.soft{background:var(--oxyn-color-accent-bg);color:var(--oxyn-color-fg-default);border-color:var(--oxyn-color-border-strong)}
+.oxyn-send .seg.soft:hover{background:var(--oxyn-color-surface-selected)}
+.oxyn-send .seg.danger{background:var(--oxyn-color-status-danger-bg);color:var(--oxyn-color-status-danger-fg);border-color:var(--oxyn-color-status-danger-border)}
+.oxyn-send.steer-slide .seg.soft{animation:oxyn-slide 160ms cubic-bezier(.22,1,.36,1)}
+@keyframes oxyn-slide{from{opacity:0;transform:translateX(8px);filter:blur(3px)}}
+.oxyn-send.joined{gap:0}.oxyn-send.joined .seg.first{border-radius:999px 0 0 999px;padding-left:4px;min-width:34px}
+.oxyn-send.joined .seg.last{border-radius:0 999px 999px 0;min-width:28px;border-left:1px solid color-mix(in oklab,currentColor 25%,transparent)}
+.oxyn-send .seg .ring{position:absolute;inset:-1px;width:34px;height:34px;transform:rotate(-90deg);pointer-events:none}
+.oxyn-send .seg .ring circle{fill:none;stroke-width:1.5}
+.oxyn-send .seg .ring .track{stroke:color-mix(in oklab,var(--oxyn-color-bg-base) 70%,transparent)}
+.oxyn-send .seg .ring .arc{stroke:var(--oxyn-color-bg-base);stroke-linecap:round;transition:stroke-dasharray 200ms linear}
+.oxyn-send .seg.text{min-width:0;height:26px;border-radius:6px;padding:0 9px;font-size:12px}
+.oxyn-send.glyph .seg.text{font-family:var(--oxyn-typography-code-font-family,monospace);border-radius:3px;height:22px;padding:0 6px;font-weight:400}
+.oxyn-send.glyph .seg.primary{background:transparent;color:var(--oxyn-color-fg-default);border-color:var(--oxyn-color-border-strong)}
+.oxyn-send.glyph .seg.strong{background:var(--oxyn-color-fg-default)}
+.oxyn-send.glyph .seg.muted{background:transparent;border-color:var(--oxyn-color-border-subtle)}
+.oxyn-send .note,.oxyn-send .hint{position:absolute;right:0;bottom:calc(100% + 8px);white-space:nowrap;font-size:11.5px;padding:3px 8px;border-radius:6px;
+  background:var(--oxyn-color-surface-overlay);border:1px solid var(--oxyn-color-border-default);color:var(--oxyn-color-fg-muted)}
+.oxyn-send .note{position:static;order:-1;color:var(--oxyn-color-status-danger-fg);border-color:var(--oxyn-color-status-danger-border)}
 
 /* shared chip + popover */
 .oxyn-mp.pill,.oxyn-ef.bars-chip,.oxyn-ef.menu,.oxyn-ef.chev,.oxyn-ef.toggle,.oxyn-ctx{height:30px;padding:0 9px;border-radius:999px;
@@ -60,7 +82,7 @@
   border-radius:999px;font-size:11px;color:var(--oxyn-color-accent-fg);animation:oxyn-badge 180ms ease-out}
 .oxyn-pending button{opacity:.7}
 @keyframes oxyn-badge{from{opacity:0;transform:translateX(-6px)}}
-.oxyn-mark{display:inline-grid;place-items:center;border-radius:4px;color:#0B0B0C;font-weight:700;line-height:1;flex:none}
+.oxyn-mark{display:inline-grid;place-items:center;border-radius:4px;color:var(--oxyn-color-bg-base);font-weight:700;line-height:1;flex:none}
 .oxyn-composer .auto-ic{color:var(--oxyn-color-accent-fg)}
 .oxyn-mp .dots{display:inline-flex;gap:2px}.oxyn-mp .dots i{width:3px;height:3px;border-radius:9px;background:currentColor}
 
@@ -227,8 +249,7 @@
 .oxyn-composer.ide-panel .shell{border-radius:8px;padding:6px 6px 4px 9px;gap:4px;box-shadow:none}
 .oxyn-composer.ide-panel .input{font-size:13px;line-height:18px}
 .oxyn-composer.ide-panel .footer{min-height:26px;gap:2px}
-.oxyn-composer.ide-panel .tool,.oxyn-composer.ide-panel .send{width:24px;height:24px;min-width:24px;padding:0}
-.oxyn-composer.ide-panel .send span{display:none}
+.oxyn-composer.ide-panel .tool{width:24px;height:24px;min-width:24px;padding:0}
 .oxyn-composer.ide-panel .oxyn-mp.pill,.oxyn-composer.ide-panel .oxyn-ef,.oxyn-composer.ide-panel .oxyn-ctx{height:24px;font-size:12px;padding:0 6px}
 .oxyn-composer.ide-panel .oxyn-tab{font-size:12px;padding:3px 9px 7px;margin-left:8px}
 .oxyn-composer.desktop .shell{border-radius:20px;background:color-mix(in oklab,var(--oxyn-color-surface-raised) 82%,transparent);
@@ -238,14 +259,14 @@
   color:var(--oxyn-color-fg-muted);border:1px solid var(--oxyn-color-border-subtle)}
 .oxyn-composer.mobile{max-width:390px}
 .oxyn-composer.mobile .shell{border-radius:22px 22px 0 0;border-bottom:0;padding:10px 10px 18px 14px}
-.oxyn-composer.mobile .send,.oxyn-composer.mobile .tool{width:40px;height:40px;min-width:40px}
+.oxyn-composer.mobile .tool{width:40px;height:40px;min-width:40px}
+.oxyn-composer.mobile .oxyn-send .seg{height:40px;min-width:40px}
 .oxyn-composer.terminal{font-family:var(--oxyn-typography-code-font-family,monospace);max-width:760px}
 .oxyn-composer.terminal .shell{border-radius:0;border:0;border-left:2px solid var(--oxyn-color-term-prompt);background:var(--oxyn-color-surface-sunken);
   padding:8px 12px;box-shadow:none;gap:6px}
 .oxyn-composer.terminal .shell:focus-within{box-shadow:none}
 .oxyn-composer.terminal .input{font-family:inherit;font-size:13.5px}
 .oxyn-composer.terminal .prompt{font-weight:700;line-height:1.5;font-size:14px}
-.oxyn-composer.terminal .send{height:22px;min-width:22px;border-radius:4px}
 .oxyn-composer.terminal .term-foot{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--oxyn-color-fg-subtle)}
 .oxyn-composer.terminal .term-foot .keys{font-size:11.5px}
 .oxyn-composer.terminal .term-foot .sep{opacity:.6}

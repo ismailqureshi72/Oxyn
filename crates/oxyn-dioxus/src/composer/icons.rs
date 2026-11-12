@@ -12,6 +12,9 @@ pub fn path(name: &str) -> &'static str {
         }
         "up" => "M12 19V5M6 11l6-6 6 6",
         "stop" => "M7 7h10v10H7z",
+        "pause" => "M8 6v12M16 6v12",
+        "play" => "M8 5.5v13l10-6.5z",
+        "steer" => "M6 5v6a4 4 0 0 0 4 4h8M14 11l4 4-4 4",
         "chevron" => "m7 10 5 5 5-5",
         "x" => "M6 6l12 12M18 6 6 18",
         "check" => "m5 12.5 4.5 4.5L19 7.5",
@@ -93,7 +96,7 @@ pub fn Icon(
     stroke: f32,
 ) -> Element {
     let d = path(&name);
-    let fill = if name == "stop" {
+    let fill = if name == "stop" || name == "play" {
         "currentColor"
     } else {
         "none"
