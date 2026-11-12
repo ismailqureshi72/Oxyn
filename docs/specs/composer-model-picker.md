@@ -1,4 +1,4 @@
-**Status:** draft v0.1 (2026-11-11).
+**Status:** v1 (plan #18, 2026-11-12): 6 free variants in `oxyn-core::composer::model` (select + mid-run policy, fuzzy search, keyboard). Dioxus `ModelPicker` (all 6); GPUI pill + popover.
 
 # Spec: composer model picker (pill + popover)
 
