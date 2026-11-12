@@ -1,4 +1,4 @@
-**Status:** draft v0.1 (2026-11-11).
+**Status:** v1 (plan #17, 2026-11-12): 4 free variants: `oxyn-core::text::timer_view`, Dioxus `ElapsedTimer`, GPUI `TimerText`.
 
 # Spec: elapsed timer and run counters (`elapsed-timer`)
 

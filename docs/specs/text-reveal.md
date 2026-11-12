@@ -1,4 +1,4 @@
-**Status:** draft v0.1 (2026-11-11).
+**Status:** v1 (plan #17, 2026-11-12): 5 free reveals + 3 carets: `oxyn-core::text::Reveal`, Dioxus `TextReveal`, GPUI `RevealText`. Markdown tail repair (§5) and scroll anchoring (§7) are not built yet.
 
 # Spec: text reveal and carets (`text-reveal`, `caret`)
 

@@ -1,4 +1,4 @@
-**Status:** draft v0.1 (2026-11-11).
+**Status:** v1 (plan #17, 2026-11-12): 5 free variants: `oxyn-core::text::VerbCycler`, Dioxus `VerbCycler`, GPUI `VerbCyclerView`.
 
 # Spec: verb cycler (`verb-cycler`)
 

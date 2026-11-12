@@ -29,6 +29,7 @@ pub mod ease;
 pub mod indicator;
 pub mod loader;
 pub mod state;
+pub mod text;
 mod time;
 pub mod verbs;
 
