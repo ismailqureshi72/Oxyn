@@ -1,6 +1,6 @@
 [package]
 name = "oxyn-tokens"
-description = "Design tokens (tokens/*.json) as Rust theme structs, CSS variables and GPUI theme. Filled in by #13."
+description = "Oxyn design tokens as Rust values: themes, colour roles, semantic scales and motion."
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
