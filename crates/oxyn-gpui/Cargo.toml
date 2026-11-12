@@ -1,12 +1,17 @@
 [package]
 name = "oxyn-gpui"
-description = "GPUI components (primary renderer). First component lands in #15."
+description = "GPUI components (primary renderer)."
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
 repository.workspace = true
 publish = false
+
+[dependencies]
+gpui.workspace = true
+oxyn-core.workspace = true
+oxyn-tokens.workspace = true
 
 [lints]
 workspace = true
