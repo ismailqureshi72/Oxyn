@@ -6,9 +6,11 @@
 
 mod glyph_loader;
 mod status_indicator;
+mod status_text;
 
 pub use glyph_loader::GlyphLoaderView;
 pub use status_indicator::{IndicatorSize, IndicatorVariant, StatusIndicator};
+pub use status_text::{RevealText, ShimmerText, TimerText, VerbCyclerView};
 
 use gpui::{Hsla, Rgba};
 use oxyn_tokens::Color;
