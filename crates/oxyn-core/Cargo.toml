@@ -1,0 +1,12 @@
+[package]
+name = "oxyn-core"
+description = "UI-free agent state machine, event stream model and verb packs. Filled in by #14."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish = false
+
+[lints]
+workspace = true
