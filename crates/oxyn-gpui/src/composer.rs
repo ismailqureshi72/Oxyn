@@ -20,13 +20,14 @@ use oxyn_core::{
         AttachmentItem, BusyAction, ComposerPhase, ComposerState, ContextLevel, ContextMeter,
         ContextUsage, DisabledReason, DraftNeeds, DraftSummary, EffortControl, EffortLevel,
         EffortSetting, MidRunPolicy, ModelCatalog, ModelSelection, Picker, PickerKey, PickerRow,
-        Placeholder, ReasoningSupport, SelectOutcome, SubmitAction, Surface, TurnSettings,
-        UploadRing,
+        Placeholder, ReasoningSupport, SelectOutcome, SendAction, SendControl, SendState,
+        SendVariant, StopConfirm, Surface, TurnSettings, UploadRing,
         attachments::RingFrame,
         context::LabelMode,
         effort::{EffortFx, allowed, bars},
         input::busy_hint,
         model::{PickerEvent, format_context, select, status_note},
+        send::Tone,
     },
 };
 use oxyn_tokens::{ColorRole, Theme};
@@ -47,8 +48,14 @@ pub enum ComposerEvent {
         /// Queue / steer while busy; `None` for a new turn.
         busy: Option<BusyAction>,
     },
-    /// Stop pressed.
+    /// Stop pressed (after any confirmation).
     Stop,
+    /// Pause (`true`) or resume (`false`).
+    Pause(bool),
+    /// Retry the failed send.
+    Retry,
+    /// Answer for the pending card.
+    Answer(String),
     /// An attachment's × pressed.
     Remove(u64),
     /// The attach button.
@@ -87,6 +94,10 @@ pub struct Composer {
     placeholder: Placeholder,
     pop: Option<Pop>,
     was_busy: bool,
+    send: SendControl,
+    paused: bool,
+    error: Option<String>,
+    elapsed: std::time::Duration,
 }
 
 impl EventEmitter<ComposerEvent> for Composer {}
@@ -122,6 +133,10 @@ impl Composer {
             placeholder: Placeholder::default(),
             pop: None,
             was_busy: false,
+            send: SendControl::new(SendVariant::QueuePill),
+            paused: false,
+            error: None,
+            elapsed: std::time::Duration::ZERO,
         }
     }
 
@@ -168,6 +183,22 @@ impl Composer {
         self.effort = EffortControl::new(effort);
     }
 
+    /// Send control variant and stop confirmation.
+    pub fn set_send(&mut self, variant: SendVariant, confirm: StopConfirm) {
+        self.send.variant = variant;
+        self.send.stop_confirm = confirm;
+    }
+
+    /// The last send failed (send shows ⟲ Retry); `None` clears it.
+    pub fn set_error(&mut self, error: Option<String>) {
+        self.error = error;
+    }
+
+    /// Elapsed run time (ring-progress).
+    pub fn set_elapsed(&mut self, elapsed: std::time::Duration) {
+        self.elapsed = elapsed;
+    }
+
     /// Busy policy.
     pub fn set_busy_action(&mut self, b: BusyAction) {
         self.busy_action = b;
@@ -186,6 +217,7 @@ impl Composer {
     /// Frames are needed (an effect, a ring or a roll is moving).
     pub fn animating(&self) -> bool {
         self.effort.animating()
+            || self.send.animating(self.now)
             || self.meter.animating(self.now)
             || self.attachments.iter().any(AttachmentItem::is_pending)
     }
@@ -290,13 +322,37 @@ impl Composer {
         }
     }
 
-    fn submit(&mut self, cx: &mut Context<Self>) {
-        let st = self.state();
-        let busy = match st.submit_action() {
-            SubmitAction::Send => None,
-            SubmitAction::Busy(b) => Some(b),
-            _ => return,
+    fn send_state(&self) -> SendState {
+        SendState::derive(&self.state(), self.error.as_deref(), false, self.paused)
+    }
+
+    fn dispatch(&mut self, a: SendAction, cx: &mut Context<Self>) {
+        let busy = match a {
+            SendAction::Send => None,
+            SendAction::Queue => Some(BusyAction::Queue),
+            SendAction::Steer => Some(BusyAction::Steer),
+            SendAction::Interrupt => Some(BusyAction::Interrupt),
+            SendAction::Stop => {
+                self.paused = false;
+                cx.emit(ComposerEvent::Stop);
+                return;
+            }
+            SendAction::Pause | SendAction::Resume => {
+                self.paused = a == SendAction::Pause;
+                cx.emit(ComposerEvent::Pause(self.paused));
+                return;
+            }
+            SendAction::Retry => {
+                cx.emit(ComposerEvent::Retry);
+                return;
+            }
+            SendAction::Answer => {
+                cx.emit(ComposerEvent::Answer(std::mem::take(&mut self.draft)));
+                return;
+            }
+            SendAction::Accept | SendAction::Choose | SendAction::None => return,
         };
+        let st = self.state();
         cx.emit(ComposerEvent::Submit {
             text: std::mem::take(&mut self.draft),
             attachments: self
@@ -338,7 +394,12 @@ impl Composer {
             return;
         }
         match k.key.as_str() {
-            "enter" if !k.modifiers.shift => self.submit(cx),
+            "enter" if !k.modifiers.shift => {
+                let st = self.send_state();
+                let modk = k.modifiers.platform || k.modifiers.control;
+                let a = self.send.enter(&st, self.busy_action, modk, self.now);
+                self.dispatch(a, cx);
+            }
             "enter" => self.draft.push('\n'),
             "backspace" => {
                 self.draft.pop();
@@ -346,8 +407,10 @@ impl Composer {
             "escape" => {
                 if self.pop.is_some() {
                     self.pop = None;
-                } else if self.agent.is_busy() {
-                    cx.emit(ComposerEvent::Stop);
+                } else {
+                    let st = self.send_state();
+                    let a = self.send.escape(&st, self.now);
+                    self.dispatch(a, cx);
                 }
             }
             "." | "," if k.modifiers.alt => {
@@ -663,55 +726,98 @@ impl Render for Composer {
                 )
         });
 
-        // Send.
-        let (send_bg, send_fg, glyph, label) = match (&st.phase, st.submit_action()) {
-            (ComposerPhase::Busy | ComposerPhase::Submitted, _) => (
-                c(t, ColorRole::FgDefault),
-                c(t, ColorRole::BgBase),
-                "■",
-                None,
-            ),
-            (ComposerPhase::BusyWithDraft, _) => (
-                c(t, ColorRole::AccentBg),
-                c(t, ColorRole::AccentFg),
-                "↑",
-                Some(if self.busy_action == BusyAction::Steer {
-                    "Steer"
-                } else {
-                    "Queue"
-                }),
-            ),
-            (_, SubmitAction::Send) => (accent, c(t, ColorRole::FgOnAccent), "↑", None),
-            _ => (c(t, ColorRole::SurfaceHover), subtle, "↑", None),
-        };
-        let stop = matches!(st.phase, ComposerPhase::Busy | ComposerPhase::Submitted);
+        // Send control.
+        let sv = self
+            .send
+            .view(self.send_state(), self.busy_action, self.elapsed, None, now);
+        let text_variant = matches!(self.send.variant, SendVariant::Minimal | SendVariant::Glyph);
         let send = div()
-            .h(px(32.))
-            .min_w(px(32.))
-            .px(px(if label.is_some() { 12. } else { 0. }))
-            .rounded_full()
-            .bg(send_bg)
-            .text_color(send_fg)
             .flex()
             .items_center()
-            .justify_center()
             .gap(px(6.))
-            .text_size(px(14.))
-            .font_weight(FontWeight::SEMIBOLD)
-            .cursor_pointer()
-            .child(glyph)
-            .when_some(label, |d, l| d.child(div().text_size(px(13.)).child(l)))
-            .on_mouse_down(
-                MouseButton::Left,
-                cx.listener(move |this, _, _, cx| {
-                    if stop {
-                        cx.emit(ComposerEvent::Stop)
-                    } else {
-                        this.submit(cx)
-                    }
-                    cx.notify();
-                }),
-            );
+            .ml(px(sv.shake_px))
+            .when_some(sv.note.clone(), |d, n| {
+                d.child(
+                    div()
+                        .text_size(px(11.5))
+                        .text_color(c(t, ColorRole::StatusDangerFg))
+                        .child(n),
+                )
+            })
+            .when_some(sv.confirm_hint, |d, h| {
+                d.child(div().text_size(px(11.5)).text_color(muted).child(h))
+            })
+            .children(sv.segments.into_iter().map(|seg| {
+                let (bg, fg, border) = match seg.tone {
+                    Tone::Primary => (accent, c(t, ColorRole::FgOnAccent), accent),
+                    Tone::Strong => (
+                        c(t, ColorRole::FgDefault),
+                        c(t, ColorRole::BgBase),
+                        c(t, ColorRole::FgDefault),
+                    ),
+                    Tone::Muted => (
+                        c(t, ColorRole::SurfaceHover),
+                        subtle,
+                        c(t, ColorRole::SurfaceHover),
+                    ),
+                    Tone::Soft => (
+                        c(t, ColorRole::AccentBg),
+                        c(t, ColorRole::FgDefault),
+                        c(t, ColorRole::BorderStrong),
+                    ),
+                    Tone::Danger => (
+                        c(t, ColorRole::StatusDangerBg),
+                        c(t, ColorRole::StatusDangerFg),
+                        c(t, ColorRole::StatusDangerBorder),
+                    ),
+                };
+                let a = seg.action;
+                let pad = if seg.label.is_some() || text_variant {
+                    10.
+                } else {
+                    0.
+                };
+                div()
+                    .h(px(if text_variant { 26. } else { 32. }))
+                    .min_w(px(if text_variant { 0. } else { 32. }))
+                    .px(px(pad))
+                    .rounded(px(if text_variant { 6. } else { 999. }))
+                    .bg(bg)
+                    .text_color(fg)
+                    .border_1()
+                    .border_color(border)
+                    .flex()
+                    .items_center()
+                    .justify_center()
+                    .gap(px(6.))
+                    .text_size(px(13.))
+                    .font_weight(FontWeight::MEDIUM)
+                    .cursor_pointer()
+                    .when_some(seg.glyph, |d, g| d.child(g.text()))
+                    .when_some(seg.label, |d, l| d.child(l))
+                    .on_mouse_down(
+                        MouseButton::Left,
+                        cx.listener(move |this, _, _, cx| {
+                            if this.send.stop_confirm != StopConfirm::None && a == SendAction::Stop
+                            {
+                                this.send.hold_start(this.now);
+                            }
+                            let a = this.send.press(a, this.now);
+                            this.dispatch(a, cx);
+                            cx.notify();
+                        }),
+                    )
+                    .on_mouse_up(
+                        MouseButton::Left,
+                        cx.listener(move |this, _, _, cx| {
+                            if a == SendAction::Stop {
+                                let a = this.send.hold_end(this.now);
+                                this.dispatch(a, cx);
+                                cx.notify();
+                            }
+                        }),
+                    )
+            }));
 
         // Popovers.
         let popover = |w: f32, right: bool| {

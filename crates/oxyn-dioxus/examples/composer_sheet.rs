@@ -14,12 +14,12 @@ use oxyn_core::{
         AttachmentItem, AttachmentState, Capabilities, CategoryUsage, ContextCategory as C,
         ContextMeter, ContextRef, ContextUsage, DisabledReason, EffortControl, EffortLevel,
         EffortSetting, ModelCatalog, ModelInfo, ModelSelection, ModelStatus, Picker,
-        ReasoningSupport, attachments::Reject, model::Tier3,
+        ReasoningSupport, SendControl, SendState, SendVariant, attachments::Reject, model::Tier3,
     },
 };
 use oxyn_dioxus::{
     AttachmentRow, COMPOSER_CSS, Composer, ContextMeterChip, DropZone, EffortChip,
-    GLYPH_LOADER_CSS, ModelPicker, STATUS_TEXT_CSS,
+    GLYPH_LOADER_CSS, ModelPicker, STATUS_TEXT_CSS, SendButton,
 };
 
 const NOW: ClockMs = ClockMs(1_000_000);
@@ -253,6 +253,43 @@ fn ctx_refs() -> Vec<AttachmentItem> {
     ]
 }
 
+fn send_states(v: SendVariant, now: ClockMs) -> Vec<(String, oxyn_core::composer::SendView)> {
+    let mut st = vec![
+        SendState::Empty,
+        SendState::Ready,
+        SendState::Working,
+        SendState::WorkingWithDraft,
+    ];
+    match v {
+        SendVariant::PauseStop => st.push(SendState::Paused),
+        SendVariant::Retry => st.push(SendState::Error("Couldn't send".into())),
+        SendVariant::AnswerCard => st.push(SendState::Answering),
+        SendVariant::VoiceConfirm => st.push(SendState::Dictating),
+        _ => {}
+    }
+    st.into_iter()
+        .map(|s| {
+            let mut c = SendControl::new(v);
+            c.reduced = true;
+            let label = match &s {
+                SendState::WorkingWithDraft => "busy+draft".to_string(),
+                SendState::Error(_) => "error".into(),
+                x => format!("{x:?}").to_lowercase(),
+            };
+            (
+                label,
+                c.view(
+                    s,
+                    oxyn_core::composer::BusyAction::Queue,
+                    Duration::from_secs(20),
+                    None,
+                    now,
+                ),
+            )
+        })
+        .collect()
+}
+
 #[component]
 fn Sheet() -> Element {
     let now = ClockMs(T.with(Cell::get));
@@ -294,7 +331,7 @@ fn Sheet() -> Element {
         div { class: "page",
             header {
                 h1 { "Oxyn · composer" }
-                p { "Plan #18 · input shell, attachments, model picker, effort, context meter · Dioxus renderer · dark theme" }
+                p { "Plans #18–#19 · composer, attachments, model picker, effort, context meter, send control · Dioxus · default monochrome dark theme" }
             }
             section { class: "layouts",
                 div { class: "cell tall",
@@ -351,6 +388,14 @@ fn Sheet() -> Element {
                         div { class: "prow", span { class: "pnm", "{v}" } div { class: "v", EffortChip { view: ev.clone(), support: levels(), variant: v.to_string() } } }
                     }
                     div { class: "prow", span { class: "pnm", "pending next turn" } div { class: "v", EffortChip { view: ev_pending.clone(), support: levels() } } }
+                    h2 { class: "gap", "Send control · 12" }
+                    for v in SendVariant::ALL {
+                        div { class: "prow", span { class: "pnm", "{v.id()}" } div { class: "v sends",
+                            for (l, view) in send_states(v, now) {
+                                div { class: "sc", SendButton { view, variant: v.id().to_string() } span { class: "sl", "{l}" } }
+                            }
+                        } }
+                    }
                 }
                 div { class: "card",
                     h2 { "Model picker · 6" }
@@ -396,6 +441,8 @@ header p{margin:4px 0 22px;color:#8A867F;font-size:13px}
 .prow.tallrow{min-height:420px;align-items:end}
 .prow.glyphrow{min-height:200px;align-items:end}
 .drops{gap:10px}
+.sends{gap:18px}.sc{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:64px}
+.sl{font-size:10px;color:var(--oxyn-color-fg-subtle);font-family:"DejaVu Sans Mono",monospace}
 .dz{position:relative;width:230px;height:64px;border-radius:12px;--c-bg:var(--oxyn-color-surface-raised);background:var(--c-bg)}
 "#;
 

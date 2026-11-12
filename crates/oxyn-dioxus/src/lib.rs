@@ -12,7 +12,7 @@ mod status_text;
 pub use composer::{
     AttachmentRow, AttachmentRowProps, COMPOSER_CSS, Composer, ComposerProps, ContextMeterChip,
     ContextMeterChipProps, DropZone, DropZoneProps, EffortChip, EffortChipProps, Icon, IconProps,
-    ModelPicker, ModelPickerProps, Submission,
+    ModelPicker, ModelPickerProps, SendButton, SendButtonProps, Submission,
 };
 pub use glyph_loader::{GLYPH_LOADER_CSS, GlyphLoader, GlyphLoaderProps};
 pub use status_indicator::{
