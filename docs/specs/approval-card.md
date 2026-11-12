@@ -305,3 +305,7 @@ rule) · [plan-approval.md](plan-approval.md) · [subagent-tree.md](subagent-tre
 | Arc UI "Hold to confirm" gesture (note 12) | hold-to-confirm as a gesture family | Paid — study only; our hold timing is from the permission selector |
 | Agent inbox board [R062]; Vespin "(recommended)" [R022]; secret card [R049] | inbox columns; recommended option; masked secret | Study only |
 | hermes-agent controls [R088] | ↑ answers the pending card | Licence not recorded — study only |
+
+
+## Implementation (v0.2, plan #21)
+`oxyn-core::approval`: `Risk`, `Decision`, `ApprovalRequest` (title, description, tray label, details, command, amount, reasons, expiry), `ApprovalCard` (400 ms input guard, 600 ms arming for High, 1200 ms hold with 200 ms drain for Critical, Enter = safe default by tier, countdown paused while hovered or focused and warning in the last 10 s, spinner after 300 ms, resolved row and live-region text), `ApprovalQueue` (pager, batch for ≥ 2 requests ≤ Medium), `pattern_ladder` / `pattern_matches`. Dioxus `ApprovalCard` (inline with tray or in-card actions, footer, terminal, modal) and `ApprovalPager` (paged). GPUI `ApprovalCardEl` (inline). affectUI Approval Card parity: title, description, risk badge (gray / amber / red), details, tray label, always-allow checkbox, Edit, ⌘↵ / Esc, pausing countdown, morph to resolved row, `actions: tray | card`. Risk tokens now map low → neutral, medium → warning, high and critical → danger. Not built yet: PatternEditing, EditingArgs and ReasonEditing panes, Paging animation, Pro variants.

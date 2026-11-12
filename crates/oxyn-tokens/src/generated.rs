@@ -1148,15 +1148,15 @@ impl Theme {
             Color::rgb(255, 126, 146), // state.error
             Color::rgb(183, 180, 175), // state.cancelled
             Color::rgb(225, 158, 0), // state.stalled
-            Color::rgb(112, 175, 255), // risk.low.fg
-            Color::rgb(73, 150, 245), // risk.low.border
-            Color::rgba(73, 150, 245, 0.14), // risk.low.bg
-            Color::rgb(242, 239, 234), // risk.medium.fg
-            Color::rgb(129, 126, 122), // risk.medium.border
-            Color::rgba(242, 239, 234, 0.08), // risk.medium.bg
-            Color::rgb(225, 158, 0), // risk.high.fg
-            Color::rgb(196, 136, 0), // risk.high.border
-            Color::rgba(196, 136, 0, 0.14), // risk.high.bg
+            Color::rgb(183, 180, 175), // risk.low.fg
+            Color::rgb(155, 152, 147), // risk.low.border
+            Color::rgba(242, 239, 234, 0.06), // risk.low.bg
+            Color::rgb(225, 158, 0), // risk.medium.fg
+            Color::rgb(196, 136, 0), // risk.medium.border
+            Color::rgba(196, 136, 0, 0.14), // risk.medium.bg
+            Color::rgb(255, 126, 146), // risk.high.fg
+            Color::rgb(246, 82, 116), // risk.high.border
+            Color::rgba(246, 82, 116, 0.14), // risk.high.bg
             Color::rgb(255, 126, 146), // risk.critical.fg
             Color::rgb(246, 82, 116), // risk.critical.border
             Color::rgba(246, 82, 116, 0.14), // risk.critical.bg
@@ -1363,15 +1363,15 @@ impl Theme {
             Color::rgb(180, 39, 75), // state.error
             Color::rgb(83, 81, 78), // state.cancelled
             Color::rgb(135, 93, 0), // state.stalled
-            Color::rgb(35, 102, 180), // risk.low.fg
-            Color::rgb(48, 121, 208), // risk.low.border
-            Color::rgba(73, 150, 245, 0.1), // risk.low.bg
-            Color::rgb(11, 11, 12), // risk.medium.fg
-            Color::rgb(129, 126, 122), // risk.medium.border
-            Color::rgba(11, 11, 12, 0.06), // risk.medium.bg
-            Color::rgb(135, 93, 0), // risk.high.fg
-            Color::rgb(159, 110, 0), // risk.high.border
-            Color::rgba(196, 136, 0, 0.1), // risk.high.bg
+            Color::rgb(83, 81, 78), // risk.low.fg
+            Color::rgb(106, 103, 99), // risk.low.border
+            Color::rgba(11, 11, 12, 0.05), // risk.low.bg
+            Color::rgb(135, 93, 0), // risk.medium.fg
+            Color::rgb(159, 110, 0), // risk.medium.border
+            Color::rgba(196, 136, 0, 0.1), // risk.medium.bg
+            Color::rgb(180, 39, 75), // risk.high.fg
+            Color::rgb(208, 54, 90), // risk.high.border
+            Color::rgba(246, 82, 116, 0.1), // risk.high.bg
             Color::rgb(180, 39, 75), // risk.critical.fg
             Color::rgb(208, 54, 90), // risk.critical.border
             Color::rgba(246, 82, 116, 0.1), // risk.critical.bg
@@ -1578,15 +1578,15 @@ impl Theme {
             Color::rgb(255, 163, 174), // state.error
             Color::rgb(220, 216, 212), // state.cancelled
             Color::rgb(238, 182, 88), // state.stalled
-            Color::rgb(150, 196, 255), // risk.low.fg
-            Color::rgb(150, 196, 255), // risk.low.border
-            Color::rgba(73, 150, 245, 0.2), // risk.low.bg
-            Color::rgb(255, 255, 255), // risk.medium.fg
-            Color::rgb(183, 180, 175), // risk.medium.border
-            Color::rgba(242, 239, 234, 0.08), // risk.medium.bg
-            Color::rgb(238, 182, 88), // risk.high.fg
-            Color::rgb(238, 182, 88), // risk.high.border
-            Color::rgba(196, 136, 0, 0.2), // risk.high.bg
+            Color::rgb(220, 216, 212), // risk.low.fg
+            Color::rgb(207, 203, 199), // risk.low.border
+            Color::rgba(242, 239, 234, 0.1), // risk.low.bg
+            Color::rgb(238, 182, 88), // risk.medium.fg
+            Color::rgb(238, 182, 88), // risk.medium.border
+            Color::rgba(196, 136, 0, 0.2), // risk.medium.bg
+            Color::rgb(255, 163, 174), // risk.high.fg
+            Color::rgb(255, 163, 174), // risk.high.border
+            Color::rgba(246, 82, 116, 0.2), // risk.high.bg
             Color::rgb(255, 163, 174), // risk.critical.fg
             Color::rgb(255, 163, 174), // risk.critical.border
             Color::rgba(246, 82, 116, 0.2), // risk.critical.bg

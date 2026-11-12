@@ -2875,27 +2875,16 @@
         "risk": {
           "low": {
             "fg": {
-              "$value": "{theme.dark.color.status.info.fg}"
+              "$value": "{theme.dark.color.fg.muted}"
             },
             "border": {
-              "$value": "{theme.dark.color.status.info.border}"
+              "$value": "{theme.dark.color.fg.subtle}"
             },
             "bg": {
-              "$value": "{theme.dark.color.status.info.bg}"
+              "$value": "{theme.dark.color.surface.hover}"
             }
           },
           "medium": {
-            "fg": {
-              "$value": "{theme.dark.color.accent.fg}"
-            },
-            "border": {
-              "$value": "{theme.dark.color.accent.border}"
-            },
-            "bg": {
-              "$value": "{theme.dark.color.accent.bg}"
-            }
-          },
-          "high": {
             "fg": {
               "$value": "{theme.dark.color.status.warning.fg}"
             },
@@ -2904,6 +2893,17 @@
             },
             "bg": {
               "$value": "{theme.dark.color.status.warning.bg}"
+            }
+          },
+          "high": {
+            "fg": {
+              "$value": "{theme.dark.color.status.danger.fg}"
+            },
+            "border": {
+              "$value": "{theme.dark.color.status.danger.border}"
+            },
+            "bg": {
+              "$value": "{theme.dark.color.status.danger.bg}"
             }
           },
           "critical": {
@@ -4354,27 +4354,16 @@
         "risk": {
           "low": {
             "fg": {
-              "$value": "{theme.light.color.status.info.fg}"
+              "$value": "{theme.light.color.fg.muted}"
             },
             "border": {
-              "$value": "{theme.light.color.status.info.border}"
+              "$value": "{theme.light.color.fg.subtle}"
             },
             "bg": {
-              "$value": "{theme.light.color.status.info.bg}"
+              "$value": "{theme.light.color.surface.hover}"
             }
           },
           "medium": {
-            "fg": {
-              "$value": "{theme.light.color.accent.fg}"
-            },
-            "border": {
-              "$value": "{theme.light.color.accent.border}"
-            },
-            "bg": {
-              "$value": "{theme.light.color.accent.bg}"
-            }
-          },
-          "high": {
             "fg": {
               "$value": "{theme.light.color.status.warning.fg}"
             },
@@ -4383,6 +4372,17 @@
             },
             "bg": {
               "$value": "{theme.light.color.status.warning.bg}"
+            }
+          },
+          "high": {
+            "fg": {
+              "$value": "{theme.light.color.status.danger.fg}"
+            },
+            "border": {
+              "$value": "{theme.light.color.status.danger.border}"
+            },
+            "bg": {
+              "$value": "{theme.light.color.status.danger.bg}"
             }
           },
           "critical": {
@@ -5833,27 +5833,16 @@
         "risk": {
           "low": {
             "fg": {
-              "$value": "{theme.hc-dark.color.status.info.fg}"
+              "$value": "{theme.hc-dark.color.fg.muted}"
             },
             "border": {
-              "$value": "{theme.hc-dark.color.status.info.border}"
+              "$value": "{theme.hc-dark.color.fg.subtle}"
             },
             "bg": {
-              "$value": "{theme.hc-dark.color.status.info.bg}"
+              "$value": "{theme.hc-dark.color.surface.hover}"
             }
           },
           "medium": {
-            "fg": {
-              "$value": "{theme.hc-dark.color.accent.fg}"
-            },
-            "border": {
-              "$value": "{theme.hc-dark.color.accent.border}"
-            },
-            "bg": {
-              "$value": "{theme.hc-dark.color.accent.bg}"
-            }
-          },
-          "high": {
             "fg": {
               "$value": "{theme.hc-dark.color.status.warning.fg}"
             },
@@ -5862,6 +5851,17 @@
             },
             "bg": {
               "$value": "{theme.hc-dark.color.status.warning.bg}"
+            }
+          },
+          "high": {
+            "fg": {
+              "$value": "{theme.hc-dark.color.status.danger.fg}"
+            },
+            "border": {
+              "$value": "{theme.hc-dark.color.status.danger.border}"
+            },
+            "bg": {
+              "$value": "{theme.hc-dark.color.status.danger.bg}"
             }
           },
           "critical": {

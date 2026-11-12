@@ -179,12 +179,13 @@ Milestones) · `LoadFailed` (Retry).
 
 ## 6. Variants
 
-### Free (4)
+### Free (5)
 | Name | Idea | Surfaces |
 |---|---|---|
 | `checkpoint-timeline/inline-marker` | Hairline marker between turns with hover-revealed Restore ▾ menu and preview popover (anatomy above) | chat, desktop, ide |
 | `checkpoint-timeline/hover-revert` | No standing markers; a ↶ appears on hover / focus of each user message (Windsurf / Verdent / Cursor "+" placement, note 03) | chat, desktop, mobile (long-press) |
 | `checkpoint-timeline/side-list` | Vertical list in a side panel grouped by day: time, kind glyph, prompt excerpt, `+N −N`; selecting a row previews | ide, desktop |
+| `checkpoint-timeline/lanes` | Run checkpoints as lanes like git for agents: rewinding starts a new attempt on its own lane, the head path is solid, left-behind attempts fade but stay; header "6 checkpoints · 2 attempts · $0.42"; fixed 36 px rows, Rewind replaces files and time on hover (affectUI Agent Checkpoints parity) | desktop, ide, chat |
 | `checkpoint-timeline/terminal` | Rewind list opened by Esc Esc on an empty prompt (Claude Code binding, note 05 §2): numbered prompts, then a scope list `1 Restore files · 2 Rewind chat · 3 Both · 4 Fork · esc never mind` | terminal |
 
 ### Pro (14)
@@ -323,3 +324,7 @@ back a branch over changed files).
 | AI Elements Checkpoint (note 05 §1) | inline icon + trigger row | Not in licensing.md — study only until checked |
 | affectUI Agent Checkpoints (note 11) | exists as a Pro component; no behaviour taken | Paid — study only |
 | Arc one-cell label swaps (note 12) | confirm button keeps one width | Paid — study only |
+
+
+## Implementation (v0.2, plan #21)
+`oxyn-core::checkpoint` (lanes, head path, restore labels, `RestoreFlow` with 10 s undo window); Dioxus `CheckpointLanes`, `CheckpointMarker` (inline-marker, hover-revert), `CheckpointList` (side-list, terminal), `RestoreToast`; GPUI `CheckpointLanesEl`. Not built yet: preview popover and snapshot banner, impact sheet (rollback-impact.md), scrubber, Pro variants.
