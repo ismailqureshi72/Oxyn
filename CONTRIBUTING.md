@@ -76,3 +76,19 @@ may be ported, with attribution; everything else (paid kits, AGPL, unclear licen
 - Rust: `cargo fmt`, `cargo clippy -- -D warnings`, stable toolchain.
 - Docs: sentence-case headings, absolute dates (`2026-11-11`), link sources.
 - Every component: all agent states, reduced-motion fallback, keyboard access, light + dark.
+
+## Local development
+
+The Rust toolchain is pinned in `rust-toolchain.toml` (1.99, with `rustfmt`, `clippy` and the
+`wasm32-unknown-unknown` target); `rustup` installs it on first use. Before pushing, run what CI runs:
+
+```bash
+cargo fmt --all --check
+cargo clippy --workspace --all-targets --locked
+cargo test --workspace --locked
+cargo check --locked --target wasm32-unknown-unknown -p oxyn-core -p oxyn-tokens -p oxyn-registry-schema -p oxyn-codegen
+```
+
+CI sets `RUSTFLAGS=-D warnings`, so warnings fail the build. CI never uploads artifacts; builds ship
+through GitHub Releases. Crates live in `crates/` (layout in `docs/architecture.md`). GPUI is pinned to
+one Zed git revision in the root `Cargo.toml`; bump it in its own PR.

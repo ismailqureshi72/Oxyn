@@ -1,0 +1,12 @@
+[package]
+name = "oxyn-codegen"
+description = "Renders a component, its props and tokens to Rust source; shared by the CLI and Studio."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish = false
+
+[lints]
+workspace = true

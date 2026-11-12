@@ -3,7 +3,7 @@
 Date: 2026-11-12. Machine: 2 vCPU aarch64 Linux sandbox, 7 GB RAM, no GPU (Mesa llvmpipe / lavapipe).
 Toolchain: rustc 1.99.1 stable, wasm-bindgen 0.2.130, binaryen wasm-opt version_133, Chromium 156 headless.
 
-The spike code lives in [`spike/`](../../spike/) and is throwaway. It is deleted when the real workspace lands in #12.
+The spike code was throwaway and was removed in plan #12 (`chore/workspace-ci`). It is preserved in history at commit [`52886d2`](https://github.com/ismailqureshi72/Oxyn/tree/52886d2/spike).
 What carries forward is the decisions below and the `AgentState` shape in `spike/core`.
 
 ## Summary
