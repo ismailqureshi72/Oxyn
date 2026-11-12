@@ -2702,130 +2702,130 @@
         "status": {
           "success": {
             "fg": {
-              "$value": "{primitive.color.neutral.50}"
+              "$value": "{primitive.color.green.400}"
             },
             "border": {
-              "$value": "{primitive.color.neutral.500}"
+              "$value": "{primitive.color.green.500}"
             },
             "bg": {
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.949,
-                  0.9373,
-                  0.9176
+                  0.2157,
+                  0.6902,
+                  0.3647
                 ],
-                "hex": "#F2EFEA",
-                "alpha": 0.06
+                "hex": "#37B05D",
+                "alpha": 0.14
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "derivedFrom": "{primitive.color.neutral.50}",
-                  "alpha": 0.06
+                  "derivedFrom": "{primitive.color.green.500}",
+                  "alpha": 0.14
                 }
               }
             }
           },
           "warning": {
             "fg": {
-              "$value": "{primitive.color.neutral.200}"
+              "$value": "{primitive.color.amber.400}"
             },
             "border": {
-              "$value": "{primitive.color.neutral.500}"
+              "$value": "{primitive.color.amber.500}"
             },
             "bg": {
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.949,
-                  0.9373,
-                  0.9176
+                  0.7686,
+                  0.5333,
+                  0.0
                 ],
-                "hex": "#F2EFEA",
-                "alpha": 0.06
+                "hex": "#C48800",
+                "alpha": 0.14
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "derivedFrom": "{primitive.color.neutral.50}",
-                  "alpha": 0.06
+                  "derivedFrom": "{primitive.color.amber.500}",
+                  "alpha": 0.14
                 }
               }
             }
           },
           "danger": {
             "fg": {
-              "$value": "{primitive.color.neutral.50}"
+              "$value": "{primitive.color.red.400}"
             },
             "border": {
-              "$value": "{primitive.color.neutral.300}"
+              "$value": "{primitive.color.red.500}"
             },
             "bg": {
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.949,
-                  0.9373,
-                  0.9176
+                  0.9647,
+                  0.3216,
+                  0.4549
                 ],
-                "hex": "#F2EFEA",
-                "alpha": 0.1
+                "hex": "#F65274",
+                "alpha": 0.14
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "derivedFrom": "{primitive.color.neutral.50}",
-                  "alpha": 0.1
+                  "derivedFrom": "{primitive.color.red.500}",
+                  "alpha": 0.14
                 }
               }
             }
           },
           "info": {
             "fg": {
-              "$value": "{primitive.color.neutral.300}"
+              "$value": "{primitive.color.blue.400}"
             },
             "border": {
-              "$value": "{primitive.color.neutral.500}"
+              "$value": "{primitive.color.blue.500}"
             },
             "bg": {
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.949,
-                  0.9373,
-                  0.9176
+                  0.2863,
+                  0.5882,
+                  0.9608
                 ],
-                "hex": "#F2EFEA",
-                "alpha": 0.06
+                "hex": "#4996F5",
+                "alpha": 0.14
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "derivedFrom": "{primitive.color.neutral.50}",
-                  "alpha": 0.06
+                  "derivedFrom": "{primitive.color.blue.500}",
+                  "alpha": 0.14
                 }
               }
             }
           },
           "waiting": {
             "fg": {
-              "$value": "{primitive.color.neutral.200}"
+              "$value": "{primitive.color.amber.400}"
             },
             "border": {
-              "$value": "{primitive.color.neutral.500}"
+              "$value": "{primitive.color.amber.500}"
             },
             "bg": {
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.949,
-                  0.9373,
-                  0.9176
+                  0.7686,
+                  0.5333,
+                  0.0
                 ],
-                "hex": "#F2EFEA",
-                "alpha": 0.06
+                "hex": "#C48800",
+                "alpha": 0.14
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "derivedFrom": "{primitive.color.neutral.50}",
-                  "alpha": 0.06
+                  "derivedFrom": "{primitive.color.amber.500}",
+                  "alpha": 0.14
                 }
               }
             }
@@ -2921,17 +2921,17 @@
             "$value": {
               "colorSpace": "srgb",
               "components": [
-                0.949,
-                0.9373,
-                0.9176
+                0.9647,
+                0.3216,
+                0.4549
               ],
-              "hex": "#F2EFEA",
-              "alpha": 0.25
+              "hex": "#F65274",
+              "alpha": 0.08
             },
             "$extensions": {
               "dev.oxyn": {
-                "derivedFrom": "{primitive.color.neutral.50}",
-                "alpha": 0.25
+                "derivedFrom": "{primitive.color.red.500}",
+                "alpha": 0.08
               }
             }
           }
@@ -2945,17 +2945,17 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.949,
-                  0.9373,
-                  0.9176
+                  0.2157,
+                  0.6902,
+                  0.3647
                 ],
-                "hex": "#F2EFEA",
-                "alpha": 0.08
+                "hex": "#37B05D",
+                "alpha": 0.14
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "derivedFrom": "{primitive.color.neutral.50}",
-                  "alpha": 0.08
+                  "derivedFrom": "{primitive.color.green.500}",
+                  "alpha": 0.14
                 }
               }
             },
@@ -2963,22 +2963,22 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.949,
-                  0.9373,
-                  0.9176
+                  0.2157,
+                  0.6902,
+                  0.3647
                 ],
-                "hex": "#F2EFEA",
-                "alpha": 0.16
+                "hex": "#37B05D",
+                "alpha": 0.34
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "derivedFrom": "{primitive.color.neutral.50}",
-                  "alpha": 0.16
+                  "derivedFrom": "{primitive.color.green.500}",
+                  "alpha": 0.34
                 }
               }
             },
             "stripe": {
-              "$value": "{primitive.color.neutral.200}"
+              "$value": "{primitive.color.green.500}"
             }
           },
           "gutter": {
@@ -2986,17 +2986,17 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.949,
-                  0.9373,
-                  0.9176
+                  0.2157,
+                  0.6902,
+                  0.3647
                 ],
-                "hex": "#F2EFEA",
-                "alpha": 0.16
+                "hex": "#37B05D",
+                "alpha": 0.22
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "derivedFrom": "{primitive.color.neutral.50}",
-                  "alpha": 0.16
+                  "derivedFrom": "{primitive.color.green.500}",
+                  "alpha": 0.22
                 }
               }
             },
@@ -3004,40 +3004,40 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.949,
-                  0.9373,
-                  0.9176
+                  0.9647,
+                  0.3216,
+                  0.4549
                 ],
-                "hex": "#F2EFEA",
-                "alpha": 0.1
+                "hex": "#F65274",
+                "alpha": 0.22
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "derivedFrom": "{primitive.color.neutral.50}",
-                  "alpha": 0.1
+                  "derivedFrom": "{primitive.color.red.500}",
+                  "alpha": 0.22
                 }
               }
             }
           },
           "del": {
             "fg": {
-              "$value": "{theme.dark.color.fg.muted}"
+              "$value": "{theme.dark.color.status.danger.fg}"
             },
             "bg": {
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.949,
-                  0.9373,
-                  0.9176
+                  0.9647,
+                  0.3216,
+                  0.4549
                 ],
-                "hex": "#F2EFEA",
-                "alpha": 0.03
+                "hex": "#F65274",
+                "alpha": 0.14
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "derivedFrom": "{primitive.color.neutral.50}",
-                  "alpha": 0.03
+                  "derivedFrom": "{primitive.color.red.500}",
+                  "alpha": 0.14
                 }
               }
             },
@@ -3045,22 +3045,22 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.949,
-                  0.9373,
-                  0.9176
+                  0.9647,
+                  0.3216,
+                  0.4549
                 ],
-                "hex": "#F2EFEA",
-                "alpha": 0.08
+                "hex": "#F65274",
+                "alpha": 0.34
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "derivedFrom": "{primitive.color.neutral.50}",
-                  "alpha": 0.08
+                  "derivedFrom": "{primitive.color.red.500}",
+                  "alpha": 0.34
                 }
               }
             },
             "stripe": {
-              "$value": "{primitive.color.neutral.400}"
+              "$value": "{primitive.color.red.500}"
             }
           },
           "hunk": {
@@ -3080,10 +3080,10 @@
         },
         "merge": {
           "current": {
-            "$value": "{primitive.color.neutral.0}"
+            "$value": "{primitive.color.blue.400}"
           },
           "incoming": {
-            "$value": "{primitive.color.neutral.300}"
+            "$value": "{primitive.color.teal.400}"
           },
           "base": {
             "$value": "{theme.dark.color.fg.muted}"
@@ -3092,26 +3092,26 @@
             "$value": "{theme.dark.color.loader.waiting}"
           },
           "suggested": {
-            "$value": "{primitive.color.neutral.200}"
+            "$value": "{primitive.color.violet-soft.400}"
           },
           "resolved": {
-            "$value": "{primitive.color.neutral.50}"
+            "$value": "{primitive.color.green-soft.400}"
           },
           "marker": {
             "$value": {
               "colorSpace": "srgb",
               "components": [
-                0.949,
-                0.9373,
-                0.9176
+                0.9647,
+                0.3216,
+                0.4549
               ],
-              "hex": "#F2EFEA",
-              "alpha": 0.3
+              "hex": "#F65274",
+              "alpha": 0.16
             },
             "$extensions": {
               "dev.oxyn": {
-                "derivedFrom": "{primitive.color.neutral.50}",
-                "alpha": 0.3
+                "derivedFrom": "{primitive.color.red.500}",
+                "alpha": 0.16
               }
             }
           }
@@ -3130,13 +3130,13 @@
             "$value": "{theme.dark.color.status.warning.fg}"
           },
           "dirty": {
-            "$value": "{primitive.color.neutral.200}"
+            "$value": "{primitive.color.amber-soft.400}"
           },
           "detached": {
-            "$value": "{primitive.color.neutral.200}"
+            "$value": "{primitive.color.amber-soft.400}"
           },
           "worktree": {
-            "$value": "{primitive.color.neutral.300}"
+            "$value": "{primitive.color.rust-soft.400}"
           }
         },
         "review": {
@@ -3294,28 +3294,28 @@
         },
         "agent": {
           "red": {
-            "$value": "{primitive.color.neutral.50}"
+            "$value": "{primitive.color.red.400}"
           },
           "orange": {
-            "$value": "{primitive.color.neutral.0}"
+            "$value": "{primitive.color.rust.400}"
           },
           "yellow": {
-            "$value": "{primitive.color.neutral.200}"
+            "$value": "{primitive.color.amber.400}"
           },
           "green": {
-            "$value": "{primitive.color.neutral.300}"
+            "$value": "{primitive.color.green.400}"
           },
           "blue": {
-            "$value": "{primitive.color.neutral.500}"
+            "$value": "{primitive.color.blue.400}"
           },
           "violet": {
-            "$value": "{primitive.color.neutral.400}"
+            "$value": "{primitive.color.violet.400}"
           },
           "pink": {
-            "$value": "{primitive.color.neutral.150}"
+            "$value": "{primitive.color.pink.400}"
           },
           "cyan": {
-            "$value": "{primitive.color.neutral.100}"
+            "$value": "{primitive.color.teal.400}"
           }
         },
         "mcp": {
@@ -3400,15 +3400,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.2392,
-                  0.2314,
-                  0.2235
+                  0.3765,
+                  0.1647,
+                  0.1529
                 ],
-                "hex": "#3D3B39"
+                "hex": "#602A27"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.800}"
+                  "source": "oklch(0.36 0.08 25)"
                 }
               }
             },
@@ -3416,15 +3416,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.949,
-                  0.9373,
-                  0.9176
+                  1.0,
+                  0.8588,
+                  0.8431
                 ],
-                "hex": "#F2EFEA"
+                "hex": "#FFDBD7"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.50}"
+                  "source": "oklch(0.92 0.05 25)"
                 }
               }
             }
@@ -3434,15 +3434,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.1804,
-                  0.1725,
-                  0.1647
+                  0.3608,
+                  0.1882,
+                  0.0431
                 ],
-                "hex": "#2E2C2A"
+                "hex": "#5C300B"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.850}"
+                  "source": "oklch(0.36 0.08 55)"
                 }
               }
             },
@@ -3450,15 +3450,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.949,
-                  0.9373,
-                  0.9176
+                  1.0,
+                  0.8667,
+                  0.7804
                 ],
-                "hex": "#F2EFEA"
+                "hex": "#FFDDC7"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.50}"
+                  "source": "oklch(0.92 0.05 55)"
                 }
               }
             }
@@ -3468,15 +3468,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.2392,
-                  0.2314,
-                  0.2235
+                  0.3098,
+                  0.2235,
+                  0.0
                 ],
-                "hex": "#3D3B39"
+                "hex": "#4F3900"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.800}"
+                  "source": "oklch(0.36 0.08 85)"
                 }
               }
             },
@@ -3484,15 +3484,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.949,
-                  0.9373,
-                  0.9176
+                  0.9569,
+                  0.8902,
+                  0.749
                 ],
-                "hex": "#F2EFEA"
+                "hex": "#F4E3BF"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.50}"
+                  "source": "oklch(0.92 0.05 85)"
                 }
               }
             }
@@ -3502,15 +3502,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.1804,
-                  0.1725,
-                  0.1647
+                  0.2353,
+                  0.2588,
+                  0.0078
                 ],
-                "hex": "#2E2C2A"
+                "hex": "#3C4202"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.850}"
+                  "source": "oklch(0.36 0.08 115)"
                 }
               }
             },
@@ -3518,15 +3518,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.949,
-                  0.9373,
-                  0.9176
+                  0.8902,
+                  0.9137,
+                  0.7686
                 ],
-                "hex": "#F2EFEA"
+                "hex": "#E3E9C4"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.50}"
+                  "source": "oklch(0.92 0.05 115)"
                 }
               }
             }
@@ -3536,15 +3536,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.2392,
-                  0.2314,
-                  0.2235
+                  0.1176,
+                  0.2824,
+                  0.1294
                 ],
-                "hex": "#3D3B39"
+                "hex": "#1E4821"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.800}"
+                  "source": "oklch(0.36 0.08 145)"
                 }
               }
             },
@@ -3552,15 +3552,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.949,
-                  0.9373,
-                  0.9176
+                  0.8196,
+                  0.9333,
+                  0.8196
                 ],
-                "hex": "#F2EFEA"
+                "hex": "#D1EED1"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.50}"
+                  "source": "oklch(0.92 0.05 145)"
                 }
               }
             }
@@ -3570,15 +3570,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.1804,
-                  0.1725,
-                  0.1647
+                  0.0,
+                  0.2824,
+                  0.2314
                 ],
-                "hex": "#2E2C2A"
+                "hex": "#00483B"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.850}"
+                  "source": "oklch(0.36 0.08 175)"
                 }
               }
             },
@@ -3586,15 +3586,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.949,
-                  0.9373,
-                  0.9176
+                  0.7647,
+                  0.9412,
+                  0.8902
                 ],
-                "hex": "#F2EFEA"
+                "hex": "#C3F0E3"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.50}"
+                  "source": "oklch(0.92 0.05 175)"
                 }
               }
             }
@@ -3604,15 +3604,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.2392,
-                  0.2314,
-                  0.2235
+                  0.0,
+                  0.2745,
+                  0.298
                 ],
-                "hex": "#3D3B39"
+                "hex": "#00464C"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.800}"
+                  "source": "oklch(0.36 0.08 205)"
                 }
               }
             },
@@ -3620,15 +3620,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.949,
+                  0.749,
                   0.9373,
-                  0.9176
+                  0.9569
                 ],
-                "hex": "#F2EFEA"
+                "hex": "#BFEFF4"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.50}"
+                  "source": "oklch(0.92 0.05 205)"
                 }
               }
             }
@@ -3638,15 +3638,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.1804,
-                  0.1725,
-                  0.1647
+                  0.0,
+                  0.2627,
+                  0.3725
                 ],
-                "hex": "#2E2C2A"
+                "hex": "#00435F"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.850}"
+                  "source": "oklch(0.36 0.08 235)"
                 }
               }
             },
@@ -3654,15 +3654,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.949,
-                  0.9373,
-                  0.9176
+                  0.7843,
+                  0.9176,
+                  1.0
                 ],
-                "hex": "#F2EFEA"
+                "hex": "#C8EAFF"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.50}"
+                  "source": "oklch(0.92 0.05 235)"
                 }
               }
             }
@@ -3672,15 +3672,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.2392,
+                  0.1569,
                   0.2314,
-                  0.2235
+                  0.4039
                 ],
-                "hex": "#3D3B39"
+                "hex": "#283B67"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.800}"
+                  "source": "oklch(0.36 0.08 265)"
                 }
               }
             },
@@ -3688,15 +3688,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.949,
-                  0.9373,
-                  0.9176
+                  0.8471,
+                  0.898,
+                  1.0
                 ],
-                "hex": "#F2EFEA"
+                "hex": "#D8E5FF"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.50}"
+                  "source": "oklch(0.92 0.05 265)"
                 }
               }
             }
@@ -3706,15 +3706,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.1804,
-                  0.1725,
-                  0.1647
+                  0.2549,
+                  0.2,
+                  0.3843
                 ],
-                "hex": "#2E2C2A"
+                "hex": "#413362"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.850}"
+                  "source": "oklch(0.36 0.08 295)"
                 }
               }
             },
@@ -3722,15 +3722,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.949,
-                  0.9373,
-                  0.9176
+                  0.902,
+                  0.8784,
+                  1.0
                 ],
-                "hex": "#F2EFEA"
+                "hex": "#E6E0FF"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.50}"
+                  "source": "oklch(0.92 0.05 295)"
                 }
               }
             }
@@ -3740,15 +3740,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.2392,
-                  0.2314,
-                  0.2235
+                  0.3216,
+                  0.1765,
+                  0.3294
                 ],
-                "hex": "#3D3B39"
+                "hex": "#522D54"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.800}"
+                  "source": "oklch(0.36 0.08 325)"
                 }
               }
             },
@@ -3756,15 +3756,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.949,
-                  0.9373,
-                  0.9176
+                  0.9647,
+                  0.8549,
+                  0.9686
                 ],
-                "hex": "#F2EFEA"
+                "hex": "#F6DAF7"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.50}"
+                  "source": "oklch(0.92 0.05 325)"
                 }
               }
             }
@@ -3774,15 +3774,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.1804,
-                  0.1725,
-                  0.1647
+                  0.3647,
+                  0.1608,
+                  0.2471
                 ],
-                "hex": "#2E2C2A"
+                "hex": "#5D293F"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.850}"
+                  "source": "oklch(0.36 0.08 355)"
                 }
               }
             },
@@ -3790,15 +3790,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.949,
-                  0.9373,
-                  0.9176
+                  1.0,
+                  0.851,
+                  0.902
                 ],
-                "hex": "#F2EFEA"
+                "hex": "#FFD9E6"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.50}"
+                  "source": "oklch(0.92 0.05 355)"
                 }
               }
             }
@@ -4181,77 +4181,77 @@
         "status": {
           "success": {
             "fg": {
-              "$value": "{primitive.color.neutral.950}"
+              "$value": "{primitive.color.green.700}"
             },
             "border": {
-              "$value": "{primitive.color.neutral.500}"
+              "$value": "{primitive.color.green.600}"
             },
             "bg": {
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.0431,
-                  0.0431,
-                  0.0471
+                  0.2157,
+                  0.6902,
+                  0.3647
                 ],
-                "hex": "#0B0B0C",
-                "alpha": 0.06
+                "hex": "#37B05D",
+                "alpha": 0.1
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "derivedFrom": "{primitive.color.neutral.950}",
-                  "alpha": 0.06
+                  "derivedFrom": "{primitive.color.green.500}",
+                  "alpha": 0.1
                 }
               }
             }
           },
           "warning": {
             "fg": {
-              "$value": "{primitive.color.neutral.800}"
+              "$value": "{primitive.color.amber.700}"
             },
             "border": {
-              "$value": "{primitive.color.neutral.500}"
+              "$value": "{primitive.color.amber.600}"
             },
             "bg": {
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.0431,
-                  0.0431,
-                  0.0471
+                  0.7686,
+                  0.5333,
+                  0.0
                 ],
-                "hex": "#0B0B0C",
-                "alpha": 0.06
+                "hex": "#C48800",
+                "alpha": 0.1
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "derivedFrom": "{primitive.color.neutral.950}",
-                  "alpha": 0.06
+                  "derivedFrom": "{primitive.color.amber.500}",
+                  "alpha": 0.1
                 }
               }
             }
           },
           "danger": {
             "fg": {
-              "$value": "{primitive.color.neutral.950}"
+              "$value": "{primitive.color.red.700}"
             },
             "border": {
-              "$value": "{primitive.color.neutral.700}"
+              "$value": "{primitive.color.red.600}"
             },
             "bg": {
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.0431,
-                  0.0431,
-                  0.0471
+                  0.9647,
+                  0.3216,
+                  0.4549
                 ],
-                "hex": "#0B0B0C",
+                "hex": "#F65274",
                 "alpha": 0.1
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "derivedFrom": "{primitive.color.neutral.950}",
+                  "derivedFrom": "{primitive.color.red.500}",
                   "alpha": 0.1
                 }
               }
@@ -4259,52 +4259,52 @@
           },
           "info": {
             "fg": {
-              "$value": "{primitive.color.neutral.700}"
+              "$value": "{primitive.color.blue.700}"
             },
             "border": {
-              "$value": "{primitive.color.neutral.500}"
+              "$value": "{primitive.color.blue.600}"
             },
             "bg": {
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.0431,
-                  0.0431,
-                  0.0471
+                  0.2863,
+                  0.5882,
+                  0.9608
                 ],
-                "hex": "#0B0B0C",
-                "alpha": 0.06
+                "hex": "#4996F5",
+                "alpha": 0.1
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "derivedFrom": "{primitive.color.neutral.950}",
-                  "alpha": 0.06
+                  "derivedFrom": "{primitive.color.blue.500}",
+                  "alpha": 0.1
                 }
               }
             }
           },
           "waiting": {
             "fg": {
-              "$value": "{primitive.color.neutral.800}"
+              "$value": "{primitive.color.amber.700}"
             },
             "border": {
-              "$value": "{primitive.color.neutral.500}"
+              "$value": "{primitive.color.amber.600}"
             },
             "bg": {
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.0431,
-                  0.0431,
-                  0.0471
+                  0.7686,
+                  0.5333,
+                  0.0
                 ],
-                "hex": "#0B0B0C",
-                "alpha": 0.06
+                "hex": "#C48800",
+                "alpha": 0.1
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "derivedFrom": "{primitive.color.neutral.950}",
-                  "alpha": 0.06
+                  "derivedFrom": "{primitive.color.amber.500}",
+                  "alpha": 0.1
                 }
               }
             }
@@ -4400,17 +4400,17 @@
             "$value": {
               "colorSpace": "srgb",
               "components": [
-                0.0431,
-                0.0431,
-                0.0471
+                0.8157,
+                0.2118,
+                0.3529
               ],
-              "hex": "#0B0B0C",
-              "alpha": 0.25
+              "hex": "#D0365A",
+              "alpha": 0.08
             },
             "$extensions": {
               "dev.oxyn": {
-                "derivedFrom": "{primitive.color.neutral.950}",
-                "alpha": 0.25
+                "derivedFrom": "{primitive.color.red.600}",
+                "alpha": 0.08
               }
             }
           }
@@ -4424,17 +4424,17 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.0431,
-                  0.0431,
-                  0.0471
+                  0.2157,
+                  0.6902,
+                  0.3647
                 ],
-                "hex": "#0B0B0C",
-                "alpha": 0.08
+                "hex": "#37B05D",
+                "alpha": 0.1
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "derivedFrom": "{primitive.color.neutral.950}",
-                  "alpha": 0.08
+                  "derivedFrom": "{primitive.color.green.500}",
+                  "alpha": 0.1
                 }
               }
             },
@@ -4442,22 +4442,22 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.0431,
-                  0.0431,
-                  0.0471
+                  0.2157,
+                  0.6902,
+                  0.3647
                 ],
-                "hex": "#0B0B0C",
-                "alpha": 0.16
+                "hex": "#37B05D",
+                "alpha": 0.26
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "derivedFrom": "{primitive.color.neutral.950}",
-                  "alpha": 0.16
+                  "derivedFrom": "{primitive.color.green.500}",
+                  "alpha": 0.26
                 }
               }
             },
             "stripe": {
-              "$value": "{primitive.color.neutral.800}"
+              "$value": "{primitive.color.green.600}"
             }
           },
           "gutter": {
@@ -4465,17 +4465,17 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.0431,
-                  0.0431,
-                  0.0471
+                  0.2157,
+                  0.6902,
+                  0.3647
                 ],
-                "hex": "#0B0B0C",
-                "alpha": 0.16
+                "hex": "#37B05D",
+                "alpha": 0.18
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "derivedFrom": "{primitive.color.neutral.950}",
-                  "alpha": 0.16
+                  "derivedFrom": "{primitive.color.green.500}",
+                  "alpha": 0.18
                 }
               }
             },
@@ -4483,40 +4483,40 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.0431,
-                  0.0431,
-                  0.0471
+                  0.9647,
+                  0.3216,
+                  0.4549
                 ],
-                "hex": "#0B0B0C",
-                "alpha": 0.1
+                "hex": "#F65274",
+                "alpha": 0.18
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "derivedFrom": "{primitive.color.neutral.950}",
-                  "alpha": 0.1
+                  "derivedFrom": "{primitive.color.red.500}",
+                  "alpha": 0.18
                 }
               }
             }
           },
           "del": {
             "fg": {
-              "$value": "{theme.light.color.fg.muted}"
+              "$value": "{theme.light.color.status.danger.fg}"
             },
             "bg": {
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.0431,
-                  0.0431,
-                  0.0471
+                  0.9647,
+                  0.3216,
+                  0.4549
                 ],
-                "hex": "#0B0B0C",
-                "alpha": 0.03
+                "hex": "#F65274",
+                "alpha": 0.1
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "derivedFrom": "{primitive.color.neutral.950}",
-                  "alpha": 0.03
+                  "derivedFrom": "{primitive.color.red.500}",
+                  "alpha": 0.1
                 }
               }
             },
@@ -4524,22 +4524,22 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.0431,
-                  0.0431,
-                  0.0471
+                  0.9647,
+                  0.3216,
+                  0.4549
                 ],
-                "hex": "#0B0B0C",
-                "alpha": 0.08
+                "hex": "#F65274",
+                "alpha": 0.26
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "derivedFrom": "{primitive.color.neutral.950}",
-                  "alpha": 0.08
+                  "derivedFrom": "{primitive.color.red.500}",
+                  "alpha": 0.26
                 }
               }
             },
             "stripe": {
-              "$value": "{primitive.color.neutral.600}"
+              "$value": "{primitive.color.red.600}"
             }
           },
           "hunk": {
@@ -4559,10 +4559,10 @@
         },
         "merge": {
           "current": {
-            "$value": "{primitive.color.neutral.1000}"
+            "$value": "{primitive.color.blue.700}"
           },
           "incoming": {
-            "$value": "{primitive.color.neutral.700}"
+            "$value": "{primitive.color.teal.700}"
           },
           "base": {
             "$value": "{theme.light.color.fg.muted}"
@@ -4571,26 +4571,26 @@
             "$value": "{theme.light.color.loader.waiting}"
           },
           "suggested": {
-            "$value": "{primitive.color.neutral.800}"
+            "$value": "{primitive.color.violet-soft.700}"
           },
           "resolved": {
-            "$value": "{primitive.color.neutral.950}"
+            "$value": "{primitive.color.green-soft.700}"
           },
           "marker": {
             "$value": {
               "colorSpace": "srgb",
               "components": [
-                0.0431,
-                0.0431,
-                0.0471
+                0.9647,
+                0.3216,
+                0.4549
               ],
-              "hex": "#0B0B0C",
-              "alpha": 0.3
+              "hex": "#F65274",
+              "alpha": 0.16
             },
             "$extensions": {
               "dev.oxyn": {
-                "derivedFrom": "{primitive.color.neutral.950}",
-                "alpha": 0.3
+                "derivedFrom": "{primitive.color.red.500}",
+                "alpha": 0.16
               }
             }
           }
@@ -4609,13 +4609,13 @@
             "$value": "{theme.light.color.status.warning.fg}"
           },
           "dirty": {
-            "$value": "{primitive.color.neutral.800}"
+            "$value": "{primitive.color.amber-soft.700}"
           },
           "detached": {
-            "$value": "{primitive.color.neutral.800}"
+            "$value": "{primitive.color.amber-soft.700}"
           },
           "worktree": {
-            "$value": "{primitive.color.neutral.700}"
+            "$value": "{primitive.color.rust-soft.700}"
           }
         },
         "review": {
@@ -4773,28 +4773,28 @@
         },
         "agent": {
           "red": {
-            "$value": "{primitive.color.neutral.950}"
+            "$value": "{primitive.color.red.600}"
           },
           "orange": {
-            "$value": "{primitive.color.neutral.1000}"
+            "$value": "{primitive.color.rust.600}"
           },
           "yellow": {
-            "$value": "{primitive.color.neutral.800}"
+            "$value": "{primitive.color.amber.600}"
           },
           "green": {
-            "$value": "{primitive.color.neutral.700}"
+            "$value": "{primitive.color.green.600}"
           },
           "blue": {
-            "$value": "{primitive.color.neutral.500}"
+            "$value": "{primitive.color.blue.600}"
           },
           "violet": {
-            "$value": "{primitive.color.neutral.600}"
+            "$value": "{primitive.color.violet.600}"
           },
           "pink": {
-            "$value": "{primitive.color.neutral.850}"
+            "$value": "{primitive.color.pink.600}"
           },
           "cyan": {
-            "$value": "{primitive.color.neutral.900}"
+            "$value": "{primitive.color.teal.600}"
           }
         },
         "mcp": {
@@ -4879,15 +4879,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.8627,
-                  0.8471,
-                  0.8314
+                  1.0,
+                  0.8392,
+                  0.8235
                 ],
-                "hex": "#DCD8D4"
+                "hex": "#FFD6D2"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.150}"
+                  "source": "oklch(0.91 0.05 25)"
                 }
               }
             },
@@ -4895,15 +4895,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.0431,
-                  0.0431,
-                  0.0471
+                  0.4549,
+                  0.1804,
+                  0.1686
                 ],
-                "hex": "#0B0B0C"
+                "hex": "#742E2B"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.950}"
+                  "source": "oklch(0.4 0.1 25)"
                 }
               }
             }
@@ -4913,15 +4913,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.9059,
-                  0.8941,
-                  0.8745
+                  0.9922,
+                  0.851,
+                  0.7608
                 ],
-                "hex": "#E7E4DF"
+                "hex": "#FDD9C2"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.100}"
+                  "source": "oklch(0.91 0.05 55)"
                 }
               }
             },
@@ -4929,15 +4929,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.0431,
-                  0.0431,
-                  0.0471
+                  0.4353,
+                  0.2118,
+                  0.0
                 ],
-                "hex": "#0B0B0C"
+                "hex": "#6F3600"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.950}"
+                  "source": "oklch(0.4 0.1 55)"
                 }
               }
             }
@@ -4947,15 +4947,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.8627,
-                  0.8471,
-                  0.8314
+                  0.9451,
+                  0.8745,
+                  0.7373
                 ],
-                "hex": "#DCD8D4"
+                "hex": "#F1DFBC"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.150}"
+                  "source": "oklch(0.91 0.05 85)"
                 }
               }
             },
@@ -4963,15 +4963,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.0431,
-                  0.0431,
-                  0.0471
+                  0.3608,
+                  0.2627,
+                  0.0
                 ],
-                "hex": "#0B0B0C"
+                "hex": "#5C4300"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.950}"
+                  "source": "oklch(0.4 0.1 85)"
                 }
               }
             }
@@ -4981,15 +4981,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.9059,
-                  0.8941,
-                  0.8745
+                  0.8784,
+                  0.902,
+                  0.7529
                 ],
-                "hex": "#E7E4DF"
+                "hex": "#E0E6C0"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.100}"
+                  "source": "oklch(0.91 0.05 115)"
                 }
               }
             },
@@ -4997,15 +4997,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.0431,
-                  0.0431,
-                  0.0471
+                  0.2784,
+                  0.302,
+                  0.0
                 ],
-                "hex": "#0B0B0C"
+                "hex": "#474D00"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.950}"
+                  "source": "oklch(0.4 0.1 115)"
                 }
               }
             }
@@ -5015,15 +5015,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.8627,
-                  0.8471,
-                  0.8314
+                  0.8078,
+                  0.9216,
+                  0.8039
                 ],
-                "hex": "#DCD8D4"
+                "hex": "#CEEBCD"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.150}"
+                  "source": "oklch(0.91 0.05 145)"
                 }
               }
             },
@@ -5031,15 +5031,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.0431,
-                  0.0431,
-                  0.0471
+                  0.1137,
+                  0.3333,
+                  0.1333
                 ],
-                "hex": "#0B0B0C"
+                "hex": "#1D5522"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.950}"
+                  "source": "oklch(0.4 0.1 145)"
                 }
               }
             }
@@ -5049,15 +5049,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.9059,
-                  0.8941,
+                  0.7529,
+                  0.9294,
                   0.8745
                 ],
-                "hex": "#E7E4DF"
+                "hex": "#C0EDDF"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.100}"
+                  "source": "oklch(0.91 0.05 175)"
                 }
               }
             },
@@ -5065,15 +5065,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.0431,
-                  0.0431,
-                  0.0471
+                  0.0,
+                  0.3333,
+                  0.2706
                 ],
-                "hex": "#0B0B0C"
+                "hex": "#005545"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.950}"
+                  "source": "oklch(0.4 0.1 175)"
                 }
               }
             }
@@ -5083,15 +5083,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.8627,
-                  0.8471,
-                  0.8314
+                  0.7333,
+                  0.9255,
+                  0.9451
                 ],
-                "hex": "#DCD8D4"
+                "hex": "#BBECF1"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.150}"
+                  "source": "oklch(0.91 0.05 205)"
                 }
               }
             },
@@ -5099,15 +5099,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.0431,
-                  0.0431,
-                  0.0471
+                  0.0,
+                  0.3216,
+                  0.349
                 ],
-                "hex": "#0B0B0C"
+                "hex": "#005259"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.950}"
+                  "source": "oklch(0.4 0.1 205)"
                 }
               }
             }
@@ -5117,15 +5117,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
+                  0.7608,
                   0.9059,
-                  0.8941,
-                  0.8745
+                  0.9961
                 ],
-                "hex": "#E7E4DF"
+                "hex": "#C2E7FE"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.100}"
+                  "source": "oklch(0.91 0.05 235)"
                 }
               }
             },
@@ -5133,15 +5133,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.0431,
-                  0.0431,
-                  0.0471
+                  0.0,
+                  0.3059,
+                  0.4353
                 ],
-                "hex": "#0B0B0C"
+                "hex": "#004E6F"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.950}"
+                  "source": "oklch(0.4 0.1 235)"
                 }
               }
             }
@@ -5151,15 +5151,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.8627,
-                  0.8471,
-                  0.8314
+                  0.8275,
+                  0.8863,
+                  1.0
                 ],
-                "hex": "#DCD8D4"
+                "hex": "#D3E2FF"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.150}"
+                  "source": "oklch(0.91 0.05 265)"
                 }
               }
             },
@@ -5167,15 +5167,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.0431,
-                  0.0431,
-                  0.0471
+                  0.1765,
+                  0.2706,
+                  0.4902
                 ],
-                "hex": "#0B0B0C"
+                "hex": "#2D457D"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.950}"
+                  "source": "oklch(0.4 0.1 265)"
                 }
               }
             }
@@ -5185,15 +5185,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.9059,
-                  0.8941,
-                  0.8745
+                  0.8902,
+                  0.8627,
+                  1.0
                 ],
-                "hex": "#E7E4DF"
+                "hex": "#E3DCFF"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.100}"
+                  "source": "oklch(0.91 0.05 295)"
                 }
               }
             },
@@ -5201,15 +5201,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.0431,
-                  0.0431,
-                  0.0471
+                  0.298,
+                  0.2314,
+                  0.4667
                 ],
-                "hex": "#0B0B0C"
+                "hex": "#4C3B77"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.950}"
+                  "source": "oklch(0.4 0.1 295)"
                 }
               }
             }
@@ -5219,15 +5219,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.8627,
-                  0.8471,
-                  0.8314
+                  0.9529,
+                  0.8431,
+                  0.9569
                 ],
-                "hex": "#DCD8D4"
+                "hex": "#F3D7F4"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.150}"
+                  "source": "oklch(0.91 0.05 325)"
                 }
               }
             },
@@ -5235,15 +5235,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.0431,
-                  0.0431,
-                  0.0471
+                  0.3843,
+                  0.1961,
+                  0.3961
                 ],
-                "hex": "#0B0B0C"
+                "hex": "#623265"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.950}"
+                  "source": "oklch(0.4 0.1 325)"
                 }
               }
             }
@@ -5253,15 +5253,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.9059,
-                  0.8941,
-                  0.8745
+                  0.9961,
+                  0.8314,
+                  0.8902
                 ],
-                "hex": "#E7E4DF"
+                "hex": "#FED4E3"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.100}"
+                  "source": "oklch(0.91 0.05 355)"
                 }
               }
             },
@@ -5269,15 +5269,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.0431,
-                  0.0431,
-                  0.0471
+                  0.4353,
+                  0.1765,
+                  0.2902
                 ],
-                "hex": "#0B0B0C"
+                "hex": "#6F2D4A"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.950}"
+                  "source": "oklch(0.4 0.1 355)"
                 }
               }
             }
@@ -5660,130 +5660,130 @@
         "status": {
           "success": {
             "fg": {
-              "$value": "{primitive.color.neutral.0}"
+              "$value": "{primitive.color.green.300}"
             },
             "border": {
-              "$value": "{primitive.color.neutral.300}"
+              "$value": "{primitive.color.green.300}"
             },
             "bg": {
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.949,
-                  0.9373,
-                  0.9176
+                  0.2157,
+                  0.6902,
+                  0.3647
                 ],
-                "hex": "#F2EFEA",
-                "alpha": 0.06
+                "hex": "#37B05D",
+                "alpha": 0.2
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "derivedFrom": "{primitive.color.neutral.50}",
-                  "alpha": 0.06
+                  "derivedFrom": "{primitive.color.green.500}",
+                  "alpha": 0.2
                 }
               }
             }
           },
           "warning": {
             "fg": {
-              "$value": "{primitive.color.neutral.50}"
+              "$value": "{primitive.color.amber.300}"
             },
             "border": {
-              "$value": "{primitive.color.neutral.300}"
+              "$value": "{primitive.color.amber.300}"
             },
             "bg": {
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.949,
-                  0.9373,
-                  0.9176
+                  0.7686,
+                  0.5333,
+                  0.0
                 ],
-                "hex": "#F2EFEA",
-                "alpha": 0.06
+                "hex": "#C48800",
+                "alpha": 0.2
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "derivedFrom": "{primitive.color.neutral.50}",
-                  "alpha": 0.06
+                  "derivedFrom": "{primitive.color.amber.500}",
+                  "alpha": 0.2
                 }
               }
             }
           },
           "danger": {
             "fg": {
-              "$value": "{primitive.color.neutral.0}"
+              "$value": "{primitive.color.red.300}"
             },
             "border": {
-              "$value": "{primitive.color.neutral.100}"
+              "$value": "{primitive.color.red.300}"
             },
             "bg": {
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.949,
-                  0.9373,
-                  0.9176
+                  0.9647,
+                  0.3216,
+                  0.4549
                 ],
-                "hex": "#F2EFEA",
-                "alpha": 0.1
+                "hex": "#F65274",
+                "alpha": 0.2
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "derivedFrom": "{primitive.color.neutral.50}",
-                  "alpha": 0.1
+                  "derivedFrom": "{primitive.color.red.500}",
+                  "alpha": 0.2
                 }
               }
             }
           },
           "info": {
             "fg": {
-              "$value": "{primitive.color.neutral.100}"
+              "$value": "{primitive.color.blue.300}"
             },
             "border": {
-              "$value": "{primitive.color.neutral.300}"
+              "$value": "{primitive.color.blue.300}"
             },
             "bg": {
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.949,
-                  0.9373,
-                  0.9176
+                  0.2863,
+                  0.5882,
+                  0.9608
                 ],
-                "hex": "#F2EFEA",
-                "alpha": 0.06
+                "hex": "#4996F5",
+                "alpha": 0.2
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "derivedFrom": "{primitive.color.neutral.50}",
-                  "alpha": 0.06
+                  "derivedFrom": "{primitive.color.blue.500}",
+                  "alpha": 0.2
                 }
               }
             }
           },
           "waiting": {
             "fg": {
-              "$value": "{primitive.color.neutral.50}"
+              "$value": "{primitive.color.amber.300}"
             },
             "border": {
-              "$value": "{primitive.color.neutral.300}"
+              "$value": "{primitive.color.amber.300}"
             },
             "bg": {
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.949,
-                  0.9373,
-                  0.9176
+                  0.7686,
+                  0.5333,
+                  0.0
                 ],
-                "hex": "#F2EFEA",
-                "alpha": 0.06
+                "hex": "#C48800",
+                "alpha": 0.2
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "derivedFrom": "{primitive.color.neutral.50}",
-                  "alpha": 0.06
+                  "derivedFrom": "{primitive.color.amber.500}",
+                  "alpha": 0.2
                 }
               }
             }
@@ -5879,17 +5879,17 @@
             "$value": {
               "colorSpace": "srgb",
               "components": [
-                0.949,
-                0.9373,
-                0.9176
+                1.0,
+                0.6392,
+                0.6824
               ],
-              "hex": "#F2EFEA",
-              "alpha": 0.25
+              "hex": "#FFA3AE",
+              "alpha": 0.08
             },
             "$extensions": {
               "dev.oxyn": {
-                "derivedFrom": "{primitive.color.neutral.50}",
-                "alpha": 0.25
+                "derivedFrom": "{primitive.color.red.300}",
+                "alpha": 0.08
               }
             }
           }
@@ -5903,17 +5903,17 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.949,
-                  0.9373,
-                  0.9176
+                  0.2157,
+                  0.6902,
+                  0.3647
                 ],
-                "hex": "#F2EFEA",
-                "alpha": 0.08
+                "hex": "#37B05D",
+                "alpha": 0.22
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "derivedFrom": "{primitive.color.neutral.50}",
-                  "alpha": 0.08
+                  "derivedFrom": "{primitive.color.green.500}",
+                  "alpha": 0.22
                 }
               }
             },
@@ -5921,22 +5921,22 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.949,
-                  0.9373,
-                  0.9176
+                  0.2157,
+                  0.6902,
+                  0.3647
                 ],
-                "hex": "#F2EFEA",
-                "alpha": 0.16
+                "hex": "#37B05D",
+                "alpha": 0.36
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "derivedFrom": "{primitive.color.neutral.50}",
-                  "alpha": 0.16
+                  "derivedFrom": "{primitive.color.green.500}",
+                  "alpha": 0.36
                 }
               }
             },
             "stripe": {
-              "$value": "{primitive.color.neutral.50}"
+              "$value": "{primitive.color.green.300}"
             }
           },
           "gutter": {
@@ -5944,17 +5944,17 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.949,
-                  0.9373,
-                  0.9176
+                  0.2157,
+                  0.6902,
+                  0.3647
                 ],
-                "hex": "#F2EFEA",
-                "alpha": 0.16
+                "hex": "#37B05D",
+                "alpha": 0.3
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "derivedFrom": "{primitive.color.neutral.50}",
-                  "alpha": 0.16
+                  "derivedFrom": "{primitive.color.green.500}",
+                  "alpha": 0.3
                 }
               }
             },
@@ -5962,40 +5962,40 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.949,
-                  0.9373,
-                  0.9176
+                  0.9647,
+                  0.3216,
+                  0.4549
                 ],
-                "hex": "#F2EFEA",
-                "alpha": 0.1
+                "hex": "#F65274",
+                "alpha": 0.3
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "derivedFrom": "{primitive.color.neutral.50}",
-                  "alpha": 0.1
+                  "derivedFrom": "{primitive.color.red.500}",
+                  "alpha": 0.3
                 }
               }
             }
           },
           "del": {
             "fg": {
-              "$value": "{theme.hc-dark.color.fg.muted}"
+              "$value": "{theme.hc-dark.color.status.danger.fg}"
             },
             "bg": {
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.949,
-                  0.9373,
-                  0.9176
+                  0.9647,
+                  0.3216,
+                  0.4549
                 ],
-                "hex": "#F2EFEA",
-                "alpha": 0.03
+                "hex": "#F65274",
+                "alpha": 0.22
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "derivedFrom": "{primitive.color.neutral.50}",
-                  "alpha": 0.03
+                  "derivedFrom": "{primitive.color.red.500}",
+                  "alpha": 0.22
                 }
               }
             },
@@ -6003,22 +6003,22 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.949,
-                  0.9373,
-                  0.9176
+                  0.9647,
+                  0.3216,
+                  0.4549
                 ],
-                "hex": "#F2EFEA",
-                "alpha": 0.08
+                "hex": "#F65274",
+                "alpha": 0.36
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "derivedFrom": "{primitive.color.neutral.50}",
-                  "alpha": 0.08
+                  "derivedFrom": "{primitive.color.red.500}",
+                  "alpha": 0.36
                 }
               }
             },
             "stripe": {
-              "$value": "{primitive.color.neutral.400}"
+              "$value": "{primitive.color.red.300}"
             }
           },
           "hunk": {
@@ -6038,10 +6038,10 @@
         },
         "merge": {
           "current": {
-            "$value": "{primitive.color.neutral.0}"
+            "$value": "{primitive.color.blue.300}"
           },
           "incoming": {
-            "$value": "{primitive.color.neutral.100}"
+            "$value": "{primitive.color.teal.300}"
           },
           "base": {
             "$value": "{theme.hc-dark.color.fg.muted}"
@@ -6050,26 +6050,26 @@
             "$value": "{theme.hc-dark.color.loader.waiting}"
           },
           "suggested": {
-            "$value": "{primitive.color.neutral.50}"
+            "$value": "{primitive.color.violet-soft.300}"
           },
           "resolved": {
-            "$value": "{primitive.color.neutral.0}"
+            "$value": "{primitive.color.green-soft.300}"
           },
           "marker": {
             "$value": {
               "colorSpace": "srgb",
               "components": [
-                0.949,
-                0.9373,
-                0.9176
+                0.9647,
+                0.3216,
+                0.4549
               ],
-              "hex": "#F2EFEA",
-              "alpha": 0.3
+              "hex": "#F65274",
+              "alpha": 0.16
             },
             "$extensions": {
               "dev.oxyn": {
-                "derivedFrom": "{primitive.color.neutral.50}",
-                "alpha": 0.3
+                "derivedFrom": "{primitive.color.red.500}",
+                "alpha": 0.16
               }
             }
           }
@@ -6088,13 +6088,13 @@
             "$value": "{theme.hc-dark.color.status.warning.fg}"
           },
           "dirty": {
-            "$value": "{primitive.color.neutral.50}"
+            "$value": "{primitive.color.amber-soft.300}"
           },
           "detached": {
-            "$value": "{primitive.color.neutral.50}"
+            "$value": "{primitive.color.amber-soft.300}"
           },
           "worktree": {
-            "$value": "{primitive.color.neutral.100}"
+            "$value": "{primitive.color.rust-soft.300}"
           }
         },
         "review": {
@@ -6252,28 +6252,28 @@
         },
         "agent": {
           "red": {
-            "$value": "{primitive.color.neutral.0}"
+            "$value": "{primitive.color.red.300}"
           },
           "orange": {
-            "$value": "{primitive.color.neutral.0}"
+            "$value": "{primitive.color.rust.300}"
           },
           "yellow": {
-            "$value": "{primitive.color.neutral.50}"
+            "$value": "{primitive.color.amber.300}"
           },
           "green": {
-            "$value": "{primitive.color.neutral.100}"
+            "$value": "{primitive.color.green.300}"
           },
           "blue": {
-            "$value": "{primitive.color.neutral.300}"
+            "$value": "{primitive.color.blue.300}"
           },
           "violet": {
-            "$value": "{primitive.color.neutral.400}"
+            "$value": "{primitive.color.violet.300}"
           },
           "pink": {
-            "$value": "{primitive.color.neutral.200}"
+            "$value": "{primitive.color.pink.300}"
           },
           "cyan": {
-            "$value": "{primitive.color.neutral.150}"
+            "$value": "{primitive.color.teal.300}"
           }
         },
         "mcp": {
@@ -6358,15 +6358,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.2392,
-                  0.2314,
-                  0.2235
+                  0.2941,
+                  0.1137,
+                  0.1059
                 ],
-                "hex": "#3D3B39"
+                "hex": "#4B1D1B"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.800}"
+                  "source": "oklch(0.3 0.07 25)"
                 }
               }
             },
@@ -6375,14 +6375,14 @@
                 "colorSpace": "srgb",
                 "components": [
                   1.0,
-                  1.0,
-                  1.0
+                  0.949,
+                  0.9412
                 ],
-                "hex": "#FFFFFF"
+                "hex": "#FFF2F0"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.0}"
+                  "source": "oklch(0.97 0.02 25)"
                 }
               }
             }
@@ -6392,15 +6392,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.1804,
-                  0.1725,
-                  0.1647
+                  0.2824,
+                  0.1373,
+                  0.0157
                 ],
-                "hex": "#2E2C2A"
+                "hex": "#482304"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.850}"
+                  "source": "oklch(0.3 0.07 55)"
                 }
               }
             },
@@ -6409,14 +6409,14 @@
                 "colorSpace": "srgb",
                 "components": [
                   1.0,
-                  1.0,
-                  1.0
+                  0.949,
+                  0.9176
                 ],
-                "hex": "#FFFFFF"
+                "hex": "#FFF2EA"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.0}"
+                  "source": "oklch(0.97 0.02 55)"
                 }
               }
             }
@@ -6426,15 +6426,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.2392,
-                  0.2314,
-                  0.2235
+                  0.2353,
+                  0.1686,
+                  0.0
                 ],
-                "hex": "#3D3B39"
+                "hex": "#3C2B00"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.800}"
+                  "source": "oklch(0.3 0.07 85)"
                 }
               }
             },
@@ -6442,15 +6442,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  1.0,
-                  1.0,
-                  1.0
+                  0.9843,
+                  0.9569,
+                  0.902
                 ],
-                "hex": "#FFFFFF"
+                "hex": "#FBF4E6"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.0}"
+                  "source": "oklch(0.97 0.02 85)"
                 }
               }
             }
@@ -6460,15 +6460,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.1804,
-                  0.1725,
-                  0.1647
+                  0.1765,
+                  0.1922,
+                  0.0
                 ],
-                "hex": "#2E2C2A"
+                "hex": "#2D3100"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.850}"
+                  "source": "oklch(0.3 0.07 115)"
                 }
               }
             },
@@ -6476,15 +6476,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  1.0,
-                  1.0,
-                  1.0
+                  0.9569,
+                  0.9686,
+                  0.9098
                 ],
-                "hex": "#FFFFFF"
+                "hex": "#F4F7E8"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.0}"
+                  "source": "oklch(0.97 0.02 115)"
                 }
               }
             }
@@ -6494,15 +6494,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.2392,
-                  0.2314,
-                  0.2235
+                  0.0745,
+                  0.2157,
+                  0.0863
                 ],
-                "hex": "#3D3B39"
+                "hex": "#133716"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.800}"
+                  "source": "oklch(0.3 0.07 145)"
                 }
               }
             },
@@ -6510,15 +6510,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  1.0,
-                  1.0,
-                  1.0
+                  0.9294,
+                  0.9765,
+                  0.9294
                 ],
-                "hex": "#FFFFFF"
+                "hex": "#EDF9ED"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.0}"
+                  "source": "oklch(0.97 0.02 145)"
                 }
               }
             }
@@ -6528,15 +6528,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.1804,
-                  0.1725,
-                  0.1647
+                  0.0,
+                  0.2157,
+                  0.1725
                 ],
-                "hex": "#2E2C2A"
+                "hex": "#00372C"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.850}"
+                  "source": "oklch(0.3 0.07 175)"
                 }
               }
             },
@@ -6544,15 +6544,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  1.0,
-                  1.0,
-                  1.0
+                  0.9098,
+                  0.9804,
+                  0.9569
                 ],
-                "hex": "#FFFFFF"
+                "hex": "#E8FAF4"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.0}"
+                  "source": "oklch(0.97 0.02 175)"
                 }
               }
             }
@@ -6562,15 +6562,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.2392,
-                  0.2314,
-                  0.2235
+                  0.0,
+                  0.2078,
+                  0.2275
                 ],
-                "hex": "#3D3B39"
+                "hex": "#00353A"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.800}"
+                  "source": "oklch(0.3 0.07 205)"
                 }
               }
             },
@@ -6578,15 +6578,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  1.0,
-                  1.0,
-                  1.0
+                  0.9059,
+                  0.9765,
+                  0.9882
                 ],
-                "hex": "#FFFFFF"
+                "hex": "#E7F9FC"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.0}"
+                  "source": "oklch(0.97 0.02 205)"
                 }
               }
             }
@@ -6596,15 +6596,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.1804,
-                  0.1725,
-                  0.1647
+                  0.0,
+                  0.1961,
+                  0.2863
                 ],
-                "hex": "#2E2C2A"
+                "hex": "#003249"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.850}"
+                  "source": "oklch(0.3 0.07 235)"
                 }
               }
             },
@@ -6612,15 +6612,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  1.0,
-                  1.0,
+                  0.9216,
+                  0.9686,
                   1.0
                 ],
-                "hex": "#FFFFFF"
+                "hex": "#EBF7FF"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.0}"
+                  "source": "oklch(0.97 0.02 235)"
                 }
               }
             }
@@ -6630,15 +6630,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.2392,
-                  0.2314,
-                  0.2235
+                  0.1098,
+                  0.1725,
+                  0.3176
                 ],
-                "hex": "#3D3B39"
+                "hex": "#1C2C51"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.800}"
+                  "source": "oklch(0.3 0.07 265)"
                 }
               }
             },
@@ -6646,15 +6646,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  1.0,
-                  1.0,
+                  0.9412,
+                  0.9608,
                   1.0
                 ],
-                "hex": "#FFFFFF"
+                "hex": "#F0F5FF"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.0}"
+                  "source": "oklch(0.97 0.02 265)"
                 }
               }
             }
@@ -6664,15 +6664,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.1804,
-                  0.1725,
-                  0.1647
+                  0.1922,
+                  0.1451,
+                  0.302
                 ],
-                "hex": "#2E2C2A"
+                "hex": "#31254D"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.850}"
+                  "source": "oklch(0.3 0.07 295)"
                 }
               }
             },
@@ -6680,15 +6680,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  1.0,
-                  1.0,
+                  0.9647,
+                  0.9529,
                   1.0
                 ],
-                "hex": "#FFFFFF"
+                "hex": "#F6F3FF"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.0}"
+                  "source": "oklch(0.97 0.02 295)"
                 }
               }
             }
@@ -6698,15 +6698,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.2392,
-                  0.2314,
-                  0.2235
+                  0.2471,
+                  0.1255,
+                  0.2549
                 ],
-                "hex": "#3D3B39"
+                "hex": "#3F2041"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.800}"
+                  "source": "oklch(0.3 0.07 325)"
                 }
               }
             },
@@ -6714,15 +6714,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  1.0,
-                  1.0,
-                  1.0
+                  0.9882,
+                  0.9451,
+                  0.9922
                 ],
-                "hex": "#FFFFFF"
+                "hex": "#FCF1FD"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.0}"
+                  "source": "oklch(0.97 0.02 325)"
                 }
               }
             }
@@ -6732,15 +6732,15 @@
               "$value": {
                 "colorSpace": "srgb",
                 "components": [
-                  0.1804,
-                  0.1725,
-                  0.1647
+                  0.2824,
+                  0.1137,
+                  0.1882
                 ],
-                "hex": "#2E2C2A"
+                "hex": "#481D30"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.850}"
+                  "source": "oklch(0.3 0.07 355)"
                 }
               }
             },
@@ -6749,14 +6749,14 @@
                 "colorSpace": "srgb",
                 "components": [
                   1.0,
-                  1.0,
-                  1.0
+                  0.9451,
+                  0.9647
                 ],
-                "hex": "#FFFFFF"
+                "hex": "#FFF1F6"
               },
               "$extensions": {
                 "dev.oxyn": {
-                  "source": "{primitive.color.neutral.0}"
+                  "source": "oklch(0.97 0.02 355)"
                 }
               }
             }
