@@ -1,0 +1,22 @@
+{
+  "name": "oxyn-site",
+  "private": true,
+  "type": "module",
+  "description": "The Oxyn website: Astro (static) + Starlight docs, Pagefind search, live Dioxus WASM demos.",
+  "scripts": {
+    "gen": "node scripts/gen.mjs",
+    "gen:wasm": "node scripts/gen.mjs --wasm",
+    "dev": "astro dev",
+    "build": "node scripts/gen.mjs --wasm && astro build && pagefind --site dist",
+    "build:site": "astro build && pagefind --site dist",
+    "preview": "astro preview"
+  },
+  "engines": {
+    "node": ">=22.12"
+  },
+  "devDependencies": {
+    "@astrojs/starlight": "^0.42.11",
+    "astro": "^7.4.1",
+    "pagefind": "^1.6.0"
+  }
+}

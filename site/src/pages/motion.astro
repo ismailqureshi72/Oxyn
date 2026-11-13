@@ -1,0 +1,72 @@
+---
+import Base from '../layouts/Base.astro';
+import OxynDemo from '../components/OxynDemo.astro';
+import { demos, motion, parityItems, demoUrl, REPO } from '../lib/data';
+
+// Resolve {dur.step.80}-style references in the motion tokens.
+const get = (p: string) => p.split('.').reduce((o: any, k) => o?.[k], motion);
+const resolve = (v: any, depth = 0): any => {
+  if (depth > 8) return v;
+  if (typeof v === 'string' && /^\{.+\}$/.test(v)) {
+    const t = get(v.slice(1, -1));
+    return resolve(t?.$value, depth + 1);
+  }
+  return v;
+};
+const fmt = (v: any) => {
+  const r = resolve(v);
+  if (r && typeof r === 'object' && 'value' in r) return `${r.value} ${r.unit}`;
+  if (Array.isArray(r)) return `cubic-bezier(${r.join(', ')})`;
+  if (r && typeof r === 'object') return Object.entries(r).map(([k, x]) => `${k} ${x}`).join(', ');
+  return String(r);
+};
+const rows = (group: string, keys: string[]) =>
+  keys.map((k) => ({ token: `${group}.${k}`, value: fmt(motion[group]?.[k]?.$value), note: motion[group]?.[k]?.$description ?? '' }))
+      .filter((r) => r.value !== 'undefined');
+const durs = rows('dur', ['instant', 'fast', 'base', 'travel', 'pulse', 'beat']);
+const eases = Object.keys(motion.ease ?? {}).filter((k) => !k.startsWith('$')).slice(0, 8);
+const easeRows = rows('ease', eases);
+const springs = Object.keys(motion.spring ?? {}).filter((k) => !k.startsWith('$')).slice(0, 6);
+const springRows = rows('spring', springs);
+const live = ['text-shimmer', 'verb-cycler', 'text-reveal', 'number-ticker', 'glyph-loader'].map((s) => demos.find((d) => d.slug === s)!);
+const planned = parityItems('Motion');
+---
+<Base title="Motion" description="Oxyn's motion system: durations, easings and springs as tokens, and the motion components that use them.">
+  <div class="wrap content">
+    <h1 class="title">Motion</h1>
+    <p class="lede">Every animation in Oxyn reads its timing from one token file, <code>tokens/oxyn.motion.json</code>, so web and desktop move the same way. Everything here respects reduced motion: the OS setting, or the switch in the footer.</p>
+    <div class="meta-row"><span class="tag">{live.length} motion components live</span><span class="tag">{planned.length} motion items in the parity plan</span><a class="tag" href={`${REPO}/blob/main/docs/motion.md`}>docs/motion.md ↗</a></div>
+
+    <section class="block">
+      <h2>Live</h2>
+      <p class="sub">Text and number motion, driven by a shared clock.</p>
+      <div class="variants">
+        {live.map((d) => (
+          <div class="variant">
+            <OxynDemo slug={d.slug} html={d.variants[0].html} variant={0} />
+            <h3><a href={demoUrl(d)}>{d.name}</a></h3>
+            <p>{d.variants[0].note}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section class="block">
+      <h2>Durations</h2>
+      <div class="table-wrap"><table><thead><tr><th>Token</th><th>Value</th><th>Used for</th></tr></thead>
+        <tbody>{durs.map((r) => <tr><td><code>{r.token}</code></td><td><code>{r.value}</code></td><td>{r.note}</td></tr>)}</tbody></table></div>
+    </section>
+    <section class="block">
+      <h2>Easings</h2>
+      <div class="table-wrap"><table><thead><tr><th>Token</th><th>Value</th><th>Notes</th></tr></thead>
+        <tbody>{easeRows.map((r) => <tr><td><code>{r.token}</code></td><td><code>{r.value}</code></td><td>{r.note}</td></tr>)}</tbody></table></div>
+    </section>
+    {springRows.length > 0 && (
+      <section class="block">
+        <h2>Springs</h2>
+        <div class="table-wrap"><table><thead><tr><th>Token</th><th>Value</th><th>Notes</th></tr></thead>
+          <tbody>{springRows.map((r) => <tr><td><code>{r.token}</code></td><td><code>{r.value}</code></td><td>{r.note}</td></tr>)}</tbody></table></div>
+      </section>
+    )}
+  </div>
+</Base>

@@ -1,0 +1,35 @@
+[package]
+name = "oxyn-gallery-web"
+description = "Live Dioxus demos for the Oxyn site: one WASM bundle, mounted by <oxyn-demo>, plus the SSR fallback and site data."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish = false
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[[bin]]
+name = "site-data"
+path = "src/bin/site_data.rs"
+
+[dependencies]
+dioxus = { version = "0.7", default-features = false, features = ["macro", "html", "signals", "hooks"] }
+oxyn-core.workspace = true
+oxyn-dioxus = { path = "../../crates/oxyn-dioxus" }
+oxyn-tokens.workspace = true
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+dioxus-web = { version = "0.7", default-features = false, features = ["mounted"] }
+gloo-timers = { version = "0.3", features = ["futures"] }
+wasm-bindgen = "=0.2.130"
+web-sys = { version = "0.3", features = ["Element"] }
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+dioxus-ssr = "0.7"
+serde_json = "1"
+
+[lints]
+workspace = true

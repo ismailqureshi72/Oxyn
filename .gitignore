@@ -30,3 +30,10 @@ Thumbs.db
 
 # Research captures (keep screenshots/videos local, link them instead)
 /captures/
+
+# Site (Astro): generated data, built WASM, build output
+site/src/generated/
+site/public/wasm/
+site/dist/
+site/node_modules/
+site/.astro/
