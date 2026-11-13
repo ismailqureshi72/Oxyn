@@ -1,7 +1,7 @@
 // Cloudflare Workers static-assets config for the Oxyn site.
 // Build first (`npm run build` in site/), then `npx wrangler deploy` from site/.
 // CI deploys on every push to main (repo secrets CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID).
-// Live at https://ui.<account-subdomain>.workers.dev (Worker name "ui").
+// Live at https://ui.oxyn.workers.dev (Worker name "ui").
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "ui",

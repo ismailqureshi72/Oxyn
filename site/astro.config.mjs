@@ -6,7 +6,7 @@ import { defineConfig } from 'astro/config';
 // Search is one Pagefind index over every page (built after `astro build`, see package.json),
 // so Starlight's own Pagefind run is off and its header is replaced by the site nav.
 export default defineConfig({
-  site: 'https://oxyn.dev',
+  site: 'https://ui.oxyn.workers.dev',
   output: 'static',
   trailingSlash: 'ignore',
   integrations: [
