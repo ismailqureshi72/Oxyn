@@ -1,0 +1,17 @@
+---
+import { categories, demosIn, demoUrl } from '../lib/data';
+interface Props { current?: string }
+const { current = '' } = Astro.props;
+---
+<nav class="side" aria-label="Components" data-pagefind-ignore>
+  {categories.map((c) => (
+    <>
+      <h3><a href={`/components/${c.slug}/`}>{c.name}</a></h3>
+      <ul>
+        {demosIn(c.slug).map((d) => (
+          <li><a href={demoUrl(d)} aria-current={current === demoUrl(d) ? 'page' : undefined}>{d.name}</a></li>
+        ))}
+      </ul>
+    </>
+  ))}
+</nav>

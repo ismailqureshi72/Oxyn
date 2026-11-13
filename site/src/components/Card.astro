@@ -1,0 +1,16 @@
+---
+import OxynDemo from './OxynDemo.astro';
+import { demoUrl, type Demo } from '../lib/data';
+interface Props { demo: Demo; showCategory?: string }
+const { demo, showCategory } = Astro.props;
+const v = demo.variants[0];
+---
+<a class="card" href={demoUrl(demo)}>
+  <div class="poster" aria-hidden="true" inert>
+    <OxynDemo slug={demo.slug} html={v.html} variant={0} />
+  </div>
+  <div class="body">
+    <h3>{demo.name} <span>{showCategory ?? `${demo.variants.length} variants`}</span></h3>
+    <p>{demo.summary}</p>
+  </div>
+</a>

@@ -256,7 +256,7 @@ Arc UI,Avatar upload,https://uiarc.dev/components/avatar-upload,Components · Ed
 Arc UI,Tabs,https://uiarc.dev/components/tabs,Components · Navigation,Free,terminal-tabs.md (partial),,#27,planned
 Arc UI,Breadcrumb,https://uiarc.dev/components/breadcrumb,Components · Navigation,Free,workspace-chrome.md (partial),,#27,planned
 Arc UI,Pagination,https://uiarc.dev/components/pagination,Components · Navigation,Free,NEW (primitive),N3,#26,planned
-Arc UI,Mega menu morph,https://uiarc.dev/components/mega-menu-morph,Components · Navigation,Pro,NEW (site),N24,#24,planned
+Arc UI,Mega menu morph,https://uiarc.dev/components/mega-menu-morph,Components · Navigation,Pro,NEW (site),N24,#24,built
 Arc UI,Table of contents progress,https://uiarc.dev/components/toc-progress,Components · Navigation,Pro,streaming-markdown.md (partial),,#27,planned
 Arc UI,Scroll area,https://uiarc.dev/components/scroll-area,Components · Expand,Free,NEW (primitive),N3,#26,planned
 Arc UI,Accordion,https://uiarc.dev/components/accordion,Components · Expand,Free,reasoning-block.md (partial),,#27,planned
@@ -274,8 +274,8 @@ Arc UI,Confirm popover,https://uiarc.dev/components/confirm-popover,Components �
 Arc UI,Alert,https://uiarc.dev/components/alert,Components · Messages,Free,NEW,N3,#26,planned
 Arc UI,Toast,https://uiarc.dev/components/toast,Components · Messages,Free,workspace-chrome.md (partial),,#27,planned
 Arc UI,Toast stack,https://uiarc.dev/components/toast-stack,Components · Messages,Free,workspace-chrome.md (partial),,#27,planned
-Arc UI,Announcement bar,https://uiarc.dev/components/announcement-bar,Components · Messages,Free,NEW (site),N24,#24,planned
-Arc UI,Cookie consent,https://uiarc.dev/components/cookie-consent,Components · Messages,Free,NEW (site),N24,#24,planned
+Arc UI,Announcement bar,https://uiarc.dev/components/announcement-bar,Components · Messages,Free,NEW (site),N24,#24,built
+Arc UI,Cookie consent,https://uiarc.dev/components/cookie-consent,Components · Messages,Free,NEW (site),N24,#24,built
 Arc UI,Undo toast,https://uiarc.dev/components/undo-toast,Components · Messages,Pro,rollback-impact.md (partial),,#31,planned
 Arc UI,Progress,https://uiarc.dev/components/progress,Components · Progress,Free,run-meter.md (partial),,#33,planned
 Arc UI,Skeleton,https://uiarc.dev/components/skeleton,Components · Progress,Free,skeletons.md,,#26,planned
@@ -378,7 +378,7 @@ Arc UI,Agent gallery,https://uiarc.dev/components/blocks/agent-gallery,Blocks ·
 Arc UI,Sidebar,https://uiarc.dev/components/blocks/sidebar,Blocks · App shell,Pro,"workspace-chrome.md, side-panels.md",,#27,planned
 Arc UI,Workspace sidebar,https://uiarc.dev/components/blocks/workspace-sidebar,None · None,Pro,workspace-chrome.md,,#27,planned
 Arc UI,Sidebar rail,https://uiarc.dev/components/blocks/sidebar-rail,None · None,Pro,workspace-chrome.md,,#27,planned
-Arc UI,Docs sidebar,https://uiarc.dev/components/blocks/docs-sidebar,None · None,Pro,NEW (site),N24,#24,planned
+Arc UI,Docs sidebar,https://uiarc.dev/components/blocks/docs-sidebar,None · None,Pro,NEW (site),N24,#24,built
 Arc UI,Inbox sidebar,https://uiarc.dev/components/blocks/inbox-sidebar,None · None,Pro,workspace-chrome.md (partial),,#27,planned
 Arc UI,Page header,https://uiarc.dev/components/blocks/page-header,Blocks · App shell,Free,workspace-chrome.md (partial),,#27,planned
 Arc UI,Command palette,https://uiarc.dev/components/blocks/command-palette,Blocks · App shell,Free,command-palette.md,,#26,planned
@@ -464,8 +464,8 @@ Arc UI,FAQ section,https://uiarc.dev/components/blocks/faq-section,Blocks · Con
 Arc UI,Contact section,https://uiarc.dev/components/blocks/contact-section,Blocks · Content,Free,NEW (site),N25,#41,planned
 Arc UI,Team showcase,https://uiarc.dev/components/blocks/team-showcase,Blocks · Content,Pro,NEW (site),N25,#41,planned
 Arc UI,Blog grid,https://uiarc.dev/components/blocks/blog-grid,Blocks · Content,Free,NEW (site),N25,#41,planned
-Arc UI,Site header,https://uiarc.dev/components/blocks/site-header,Blocks · Headers and footers,Free,NEW (site),N24,#24,planned
-Arc UI,Site footer,https://uiarc.dev/components/blocks/site-footer,Blocks · Headers and footers,Free,NEW (site),N24,#24,planned
+Arc UI,Site header,https://uiarc.dev/components/blocks/site-header,Blocks · Headers and footers,Free,NEW (site),N24,#24,built
+Arc UI,Site footer,https://uiarc.dev/components/blocks/site-footer,Blocks · Headers and footers,Free,NEW (site),N24,#24,built
 Arc UI,CTA section,https://uiarc.dev/components/blocks/cta-section,Blocks · Headers and footers,Free,NEW (site),N25,#41,planned
 Arc UI,Newsletter signup,https://uiarc.dev/components/blocks/newsletter-signup,Blocks · Headers and footers,Free,NEW (site),N25,#41,planned
 Arc UI,Activity terrain,https://uiarc.dev/components/blocks/activity-terrain,Blocks · Showpieces,Pro,NEW (showpiece),N22,#40,planned
@@ -567,7 +567,7 @@ Arc UI,Trial banner,https://uiarc.dev/components/trial-banner,Special components
 Arc UI,Team switcher,https://uiarc.dev/components/team-switcher,Special components · AI,Pro,workspace-chrome.md (partial),,#27,planned
 Arc UI,Live visitors,https://uiarc.dev/components/live-visitors,Special components · AI,Pro,NEW (growth),N25,#41,planned
 Arc UI,Social proof toast,https://uiarc.dev/components/social-proof-toast,Special components · AI,Pro,NEW (growth),N25,#41,planned
-Arc UI,Install snippet,https://uiarc.dev/components/install-snippet,Special components · AI,Pro,NEW (docs),N24,#24,planned
+Arc UI,Install snippet,https://uiarc.dev/components/install-snippet,Special components · AI,Pro,NEW (docs),N24,#24,built
 Arc UI,Data flow,https://uiarc.dev/components/data-flow,Special components · Illustrations,Pro,NEW (illustration),N21,#40,planned
 Arc UI,Payment flow,https://uiarc.dev/components/payment-flow,Special components · Illustrations,Pro,NEW (illustration),N21,#40,planned
 Arc UI,DNS resolution,https://uiarc.dev/components/dns-resolution,Special components · Illustrations,Pro,NEW (illustration),N21,#40,planned

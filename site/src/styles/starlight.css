@@ -1,0 +1,38 @@
+/* Starlight (docs, guides, compare) in the Oxyn chrome: monochrome greys from the tokens. */
+@import './chrome.css';
+@import './demo.css';
+
+:root,[data-theme='dark']{
+  --sl-color-accent-low:#1C1B1A;
+  --sl-color-accent:#B7B4AF;
+  --sl-color-accent-high:#F2EFEA;
+  --sl-color-white:#F2EFEA;
+  --sl-color-gray-1:#E4E1DC;
+  --sl-color-gray-2:#B7B4AF;
+  --sl-color-gray-3:#9B9893;
+  --sl-color-gray-4:#6A6763;
+  --sl-color-gray-5:#3D3B39;
+  --sl-color-gray-6:#1C1B1A;
+  --sl-color-black:#0B0B0C;
+  --sl-font:var(--oxyn-font-ui);
+  --sl-font-mono:var(--oxyn-font-mono);
+  --sl-nav-height:3.5rem;
+}
+:root[data-theme='light']{
+  --sl-color-accent-low:#EDEBE8;
+  --sl-color-accent:#3D3B39;
+  --sl-color-accent-high:#141312;
+  --sl-color-white:#141312;
+  --sl-color-gray-1:#22201E;
+  --sl-color-gray-2:#3D3B39;
+  --sl-color-gray-3:#6A6763;
+  --sl-color-gray-4:#9B9893;
+  --sl-color-gray-5:#D9D6D2;
+  --sl-color-gray-6:#F1EFEC;
+  --sl-color-gray-7:#F8F7F5;
+  --sl-color-black:#FFFFFF;
+}
+header.header{background:var(--site-glass);backdrop-filter:blur(12px);border-bottom-color:var(--site-line)}
+.sl-markdown-content oxyn-demo{margin:1.25rem 0}
+.sl-markdown-content .oxd *{margin-top:0}
+.topnav-in.sl .menubtn,.topnav-in.sl ~ .mobilemenu{display:none!important}

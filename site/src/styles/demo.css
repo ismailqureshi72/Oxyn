@@ -1,0 +1,86 @@
+/* Playground chrome: stage, controls panel, code. Monochrome; colour comes only from the
+   components themselves (status, risk, diff, agent identity). */
+
+oxyn-demo{display:block}
+.oxd{font-family:var(--oxyn-font-ui);color:var(--oxyn-color-fg-default);font-size:13px}
+.oxd-main{display:grid;grid-template-columns:minmax(0,1fr);gap:0}
+.oxd-full .oxd-main{grid-template-columns:minmax(0,1fr) 272px;border:1px solid var(--site-line);border-radius:14px 14px 0 0;overflow:hidden}
+.oxd-mini .oxd-main{border:1px solid var(--site-line);border-radius:12px;overflow:hidden}
+.oxd-stage{position:relative;display:flex;padding:28px;background:var(--site-stage);background-image:radial-gradient(var(--site-dot) 1px,transparent 1px);background-size:16px 16px;overflow:auto}
+.oxd-stage.center{align-items:center;justify-content:center}
+.oxd-stage.start{align-items:flex-start;justify-content:center}
+.oxd-stage.end{align-items:flex-end;justify-content:center}
+.oxd-mount{display:flex;justify-content:center;align-items:flex-start;max-width:100%;min-width:0}
+.oxd-stage.start .oxd-mount,.oxd-stage.end .oxd-mount{width:100%}
+.oxd-mini .oxd-stage{padding:20px}
+
+.oxd-panel{border-left:1px solid var(--site-line);background:var(--site-panel);padding:6px 0;overflow:auto;max-height:620px}
+.oxd-ph{display:flex;align-items:center;justify-content:space-between;padding:8px 14px 10px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--oxyn-color-fg-subtle)}
+.oxd-reset{all:unset;cursor:pointer;font-size:11.5px;letter-spacing:0;text-transform:none;font-weight:500;color:var(--oxyn-color-fg-muted);padding:3px 8px;border-radius:6px}
+.oxd-reset:hover{background:var(--oxyn-color-surface-hover);color:var(--oxyn-color-fg-default)}
+.oxd-row{display:flex;flex-direction:column;gap:6px;padding:8px 14px}
+.oxd-row+.oxd-row{border-top:1px solid var(--site-line-soft)}
+.oxd-l{font-size:12px;color:var(--oxyn-color-fg-muted);font-weight:500}
+.oxd-seg{display:flex;flex-wrap:wrap;gap:2px;padding:2px;border-radius:8px;background:var(--site-inset);width:max-content;max-width:100%}
+.oxd-seg button{all:unset;cursor:pointer;padding:4px 9px;border-radius:6px;font-size:12px;color:var(--oxyn-color-fg-muted);font-family:var(--oxyn-font-mono)}
+.oxd-seg button:hover{color:var(--oxyn-color-fg-default)}
+.oxd-seg button.on{background:var(--site-chip);color:var(--oxyn-color-fg-default);box-shadow:0 0 0 1px var(--site-line)}
+.oxd-seg button:focus-visible,.oxd-sw:focus-visible,.oxd-reset:focus-visible{outline:2px solid var(--oxyn-color-focus);outline-offset:2px}
+.oxd-select,.oxd-text{appearance:none;width:100%;box-sizing:border-box;height:30px;padding:0 10px;border-radius:8px;border:1px solid var(--site-line);background:var(--site-inset);color:var(--oxyn-color-fg-default);font:12px var(--oxyn-font-mono)}
+.oxd-select{background-image:linear-gradient(45deg,transparent 50%,currentColor 50%),linear-gradient(135deg,currentColor 50%,transparent 50%);background-position:calc(100% - 14px) 13px,calc(100% - 10px) 13px;background-size:4px 4px;background-repeat:no-repeat}
+.oxd-select:focus,.oxd-text:focus{outline:2px solid var(--oxyn-color-focus);outline-offset:1px}
+.oxd-sw{all:unset;cursor:pointer;position:relative;width:32px;height:18px;border-radius:99px;background:var(--site-inset);box-shadow:inset 0 0 0 1px var(--site-line)}
+.oxd-sw .oxd-knob{position:absolute;top:3px;left:3px;width:12px;height:12px;border-radius:50%;background:var(--oxyn-color-fg-subtle);transition:transform .16s ease,background .16s}
+.oxd-sw.on{background:var(--oxyn-color-fg-default)}
+.oxd-sw.on .oxd-knob{transform:translateX(14px);background:var(--oxyn-color-bg-base)}
+.oxd-range{display:flex;align-items:center;gap:10px}
+.oxd-range input{flex:1;accent-color:var(--oxyn-color-fg-default)}
+.oxd-range output{font:12px var(--oxyn-font-mono);color:var(--oxyn-color-fg-muted);min-width:42px;text-align:right}
+
+.oxd-code{border:1px solid var(--site-line);border-top:0;border-radius:0 0 14px 14px;background:var(--site-code);overflow:hidden}
+.oxd-ch{display:flex;align-items:center;justify-content:space-between;padding:6px 8px 6px 14px;border-bottom:1px solid var(--site-line-soft);font-size:11.5px;color:var(--oxyn-color-fg-subtle)}
+.oxd-copy,.copy-btn{all:unset;cursor:pointer;font-size:11.5px;padding:3px 9px;border-radius:6px;color:var(--oxyn-color-fg-muted);border:1px solid var(--site-line)}
+.oxd-copy:hover,.copy-btn:hover{color:var(--oxyn-color-fg-default);background:var(--oxyn-color-surface-hover)}
+.oxd-code pre{margin:0;padding:14px 16px;max-height:340px;overflow:auto;font:12.5px/1.6 var(--oxyn-font-mono);color:var(--oxyn-color-fg-muted);white-space:pre}
+
+/* Layout helpers used inside demos */
+.oxd-line{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+.oxd-col{display:flex;flex-direction:column;align-items:center;gap:22px}
+.oxd-stretch{align-items:stretch}
+.oxd-w320{width:320px;max-width:100%}.oxd-w360{width:360px;max-width:100%}.oxd-w420{width:420px;max-width:100%}
+.oxd-w480{width:480px;max-width:100%}.oxd-w520{width:520px;max-width:100%}.oxd-w560{width:560px;max-width:100%}
+.oxd-room-menu{min-height:240px}.oxd-room-menu-lg{min-height:420px}.oxd-room-pop{min-height:230px}.oxd-room-card{min-height:200px}
+.oxd-room-up{min-height:100%;display:flex;align-items:flex-end;justify-content:center;padding-top:8px}
+.oxd-pad-tip{padding:48px 70px}
+.oxd-prose{font-size:14px;line-height:1.9;color:var(--oxyn-color-fg-muted);margin:0 0 12px}
+.oxd-note,.oxd-status{font-size:13px;color:var(--oxyn-color-fg-muted)}
+.oxd-dot{color:var(--oxyn-color-fg-subtle)}
+.oxd-h24{height:24px;font-size:13px;color:var(--oxyn-color-fg-muted)}
+.oxd-msg{margin:0;font-size:13.5px;color:var(--oxyn-color-fg-muted)}
+.oxd-term{background:var(--oxyn-color-surface-sunken);border:1px solid var(--site-line);border-radius:10px;padding:12px 14px}
+.oxd-glyphs{display:grid;grid-template-columns:repeat(7,minmax(70px,1fr));gap:14px 10px;width:100%;max-width:640px}
+.oxd-glyph{display:flex;flex-direction:column;align-items:center;gap:6px}
+.oxd-glyph span:last-child{font:10.5px var(--oxyn-font-mono);color:var(--oxyn-color-fg-subtle)}
+.oxd-states{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px 14px;width:100%;max-width:640px}
+.oxd-state{display:flex;flex-direction:column;align-items:flex-start;gap:5px}
+.oxd-sl{font:10.5px var(--oxyn-font-mono);color:var(--oxyn-color-fg-subtle)}
+.oxd-msgbox{width:520px;max-width:100%;display:flex;flex-direction:column;gap:12px}
+.oxd-you{align-self:flex-end;max-width:80%;padding:9px 13px;border-radius:14px;background:var(--oxyn-color-surface-raised);font-size:14px}
+.oxd-bot{font-size:14.5px;line-height:1.6;min-height:96px}
+.oxd-sendbox{display:flex;align-items:center;gap:12px;width:440px;max-width:100%;padding:10px 10px 10px 16px;border:1px solid var(--site-line);border-radius:18px;background:var(--oxyn-color-surface-base)}
+.oxd-sendbox .oxd-ph{flex:1;padding:0;font-size:14px;letter-spacing:0;text-transform:none;font-weight:400;color:var(--oxyn-color-fg-subtle)}
+.oxd-composer{width:100%;max-width:720px;display:flex;flex-direction:column;justify-content:flex-end;min-height:400px}
+.oxd-turn{display:flex;gap:6px;padding:6px 4px;font-size:13px;color:var(--oxyn-color-fg-muted)}
+.oxd-turn b{color:var(--oxyn-color-fg-default);font-weight:600}
+.oxd-hov{align-items:center;background:var(--oxyn-color-surface-hover);border-radius:8px;min-height:30px;position:relative}
+.oxd-drop{position:relative;margin-top:12px;height:64px;border-radius:12px;background:var(--oxyn-color-surface-raised)}
+.oxd-ctxbox{display:flex;align-items:center;justify-content:center;width:420px;max-width:100%;height:90px;border:1px dashed var(--site-line);border-radius:10px;color:var(--oxyn-color-fg-subtle);font-size:13px}
+.oxd-modal-room{position:relative;width:560px;max-width:100%;min-height:420px}
+.oxd-missing{padding:20px;color:var(--oxyn-color-status-danger-fg)}
+
+@media (max-width:900px){
+  .oxd-full .oxd-main{grid-template-columns:minmax(0,1fr)}
+  .oxd-panel{border-left:0;border-top:1px solid var(--site-line);max-height:none}
+  .oxd-pad-tip{padding:40px 20px}
+  .oxd-glyphs{grid-template-columns:repeat(4,minmax(60px,1fr))}
+}

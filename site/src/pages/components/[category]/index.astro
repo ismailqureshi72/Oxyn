@@ -1,0 +1,27 @@
+---
+import Base from '../../../layouts/Base.astro';
+import Sidebar from '../../../components/Sidebar.astro';
+import Card from '../../../components/Card.astro';
+import { categories, demosIn, type Category } from '../../../lib/data';
+
+export function getStaticPaths() {
+  return categories.map((c) => ({ params: { category: c.slug }, props: { cat: c } }));
+}
+const { cat } = Astro.props as { cat: Category };
+const list = demosIn(cat.slug);
+const variants = list.reduce((n, d) => n + d.variants.length, 0);
+---
+<Base title={`${cat.name} components`} description={cat.blurb} type="Category">
+  <div class="shell no-toc">
+    <Sidebar current={`/components/${cat.slug}/`} />
+    <div class="content">
+      <nav class="crumbs" aria-label="Breadcrumb" data-pagefind-ignore><a href="/components/">Components</a><span>›</span><span>{cat.name}</span></nav>
+      <h1 class="title">{cat.name}</h1>
+      <p class="lede">{cat.blurb}</p>
+      <div class="meta-row"><span class="tag">{list.length} components</span><span class="tag">{variants} variant presets</span><span class="tag">Dioxus · GPUI</span></div>
+      <div class="grid-cards" style="margin-top:28px">
+        {list.map((d) => <Card demo={d} />)}
+      </div>
+    </div>
+  </div>
+</Base>

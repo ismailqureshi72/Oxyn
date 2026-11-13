@@ -1,0 +1,64 @@
+---
+import '../generated/oxyn-tokens.css';
+import '../generated/oxyn-components.css';
+import '../styles/chrome.css';
+import '../styles/site.css';
+import '../styles/demo.css';
+import SiteNav from '../components/SiteNav.astro';
+import Footer from '../components/Footer.astro';
+import SearchModal from '../components/SearchModal.astro';
+import { wasm, demos, categories } from '../lib/data';
+
+interface Props {
+  title: string;
+  description: string;
+  /** Pagefind result type: Component, Category, Page. */
+  type?: string;
+}
+const { title, description, type = 'Page' } = Astro.props;
+const path = Astro.url.pathname;
+const fullTitle = path === '/' ? title : `${title} · Oxyn`;
+---
+<!doctype html>
+<html lang="en" data-theme="dark" data-oxyn-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={new URL(path, Astro.site)} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta name="color-scheme" content="dark light" />
+    <!-- No favicon yet (brand assets pending): an empty icon stops the browser's /favicon.ico 404. -->
+    <link rel="icon" href="data:," />
+    <script is:inline>
+      (function () {
+        var d = document.documentElement;
+        var t = localStorage.getItem('starlight-theme') || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+        d.dataset.theme = t;
+        d.setAttribute('data-oxyn-theme', t);
+        if (localStorage.getItem('oxyn-announce') === 'closed') d.dataset.announce = 'hidden';
+        if (localStorage.getItem('oxyn-reduce-motion') === '1') d.setAttribute('data-oxyn-reduced', '');
+      })();
+    </script>
+    {wasm.js && <link rel="modulepreload" href={wasm.js} />}
+    <script is:inline define:vars={{ OXYN_WASM: wasm }}>window.OXYN_WASM = OXYN_WASM;</script>
+    <script is:inline src="/oxyn-demo.js" type="module"></script>
+    <script is:inline src="/site.js" defer></script>
+  </head>
+  <body class="site">
+    <a class="skip" href="#main">Skip to content</a>
+    <div class="announce" role="region" aria-label="Announcement" data-pagefind-ignore>
+      <span>Oxyn is in early development: {demos.length} components across {categories.length} categories, each live on its own page.</span>
+      <a href="/docs/live-demos/">How the demos work</a>
+      <button type="button" data-close-announce aria-label="Dismiss announcement">✕</button>
+    </div>
+    <header class="topnav" data-pagefind-ignore><SiteNav current={path} /></header>
+    <main id="main" data-pagefind-body data-pagefind-filter={`type:${type}`} data-pagefind-meta={`type:${type}`}>
+      <slot />
+    </main>
+    <Footer />
+    <SearchModal />
+  </body>
+</html>

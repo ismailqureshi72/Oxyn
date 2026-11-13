@@ -1,0 +1,43 @@
+---
+// A section that has no built items yet: what it will hold and when, from docs/parity/status.csv.
+import Base from '../layouts/Base.astro';
+import { parityItems, REPO } from '../lib/data';
+interface Props { title: string; section: string; lede: string; groups: [string, string][] }
+const { title, section, lede, groups } = Astro.props;
+const items = parityItems(section);
+const byPlan = new Map<string, number>();
+for (const r of items) byPlan.set(r.plan_pr || 'unscheduled', (byPlan.get(r.plan_pr || 'unscheduled') ?? 0) + 1);
+const plans = [...byPlan.entries()].sort((a, b) => parseInt(a[0].slice(1)) - parseInt(b[0].slice(1)));
+const built = items.filter((r) => r.status.startsWith('built')).length;
+---
+<Base title={title} description={lede}>
+  <div class="wrap content">
+    <h1 class="title">{title}</h1>
+    <p class="lede">{lede}</p>
+    <div class="meta-row">
+      <span class="tag">{items.length} planned</span>
+      <span class="tag">{built} built</span>
+      <a class="tag" href={`${REPO}/blob/main/docs/parity/status.csv`}>Parity tracker ↗</a>
+    </div>
+    <section class="block">
+      <h2>What this section will hold</h2>
+      <p class="sub">Built in the open, one plan PR at a time. Each item lands with a live page like the components have.</p>
+      <div class="planned">
+        {groups.map(([name, text]) => <div class="it"><b>{name}</b><small>{text}</small></div>)}
+      </div>
+    </section>
+    <section class="block">
+      <h2>Schedule</h2>
+      <p class="sub">Items per plan PR in <a href={`${REPO}/blob/main/docs/pr-plan.md`}>docs/pr-plan.md</a>.</p>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Plan PR</th><th>Items</th></tr></thead>
+        <tbody>{plans.map(([p, n]) => <tr><td><code>{p}</code></td><td>{n}</td></tr>)}</tbody>
+      </table></div>
+    </section>
+    <section class="block">
+      <h2>Available now</h2>
+      <p class="sub">The building blocks these will be assembled from are live today.</p>
+      <div class="cta"><a class="btn primary" href="/components/">Browse components</a><a class="btn" href="/guides/">Read the guides</a></div>
+    </section>
+  </div>
+</Base>
