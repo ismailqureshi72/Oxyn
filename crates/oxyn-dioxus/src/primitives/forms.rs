@@ -27,8 +27,9 @@ fn uid(prefix: &str, label: &str) -> String {
 }
 
 /// Switch: on / off for things that apply right away. Label and second line, at the start or
-/// across a settings row; the thumb stretches toward where it is going while pressed. Oxyn plus:
-/// `lg` size, a pending (applying) state with a spinner thumb, a "requires restart" note.
+/// across a settings row; the thumb stretches toward where it is going while pressed (pointer, or
+/// Space held down). Oxyn plus: `xs` (16 px IDE) and `lg` sizes, a pending (applying) state with a
+/// spinner thumb, a "requires restart" note, a hidden label and a form `name`.
 #[component]
 pub fn Switch(
     /// Label.
@@ -42,9 +43,15 @@ pub fn Switch(
     /// `start` (switch first) · `end` (settings row, switch at the end).
     #[props(default = "start".to_string())]
     placement: String,
-    /// `sm` · `md` · `lg`.
+    /// `xs` · `sm` · `md` · `lg`.
     #[props(default = "md".to_string())]
     size: String,
+    /// Keep the label for screen readers only (Arc: the label is the switch's name).
+    #[props(default)]
+    hide_label: bool,
+    /// Form field name (a hidden input carries `on` / `off`).
+    #[props(default)]
+    name: Option<String>,
     /// Disabled.
     #[props(default)]
     disabled: bool,
@@ -95,11 +102,18 @@ pub fn Switch(
                 onpointerdown: move |_| pressed.set(true),
                 onpointerup: move |_| pressed.set(false),
                 onpointerleave: move |_| pressed.set(false),
+                "aria-label": if hide_label { "{label}" },
                 onclick: move |e| { e.prevent_default(); flip() },
-                onkeydown: move |e: KeyboardEvent| if e.key() == Key::Enter { e.prevent_default(); flip() },
+                onkeydown: move |e: KeyboardEvent| {
+                    if e.key() == Key::Enter { e.prevent_default(); flip() }
+                    // Holding Space stretches the thumb until release (the click toggles).
+                    if e.key() == Key::Character(" ".into()) { pressed.set(true) }
+                },
+                onkeyup: move |e: KeyboardEvent| if e.key() == Key::Character(" ".into()) { pressed.set(false) },
                 span { class: "thumb", if busy { Spin { size: 10.0 } } }
             }
-            span { class: "txt",
+            if let Some(n) = name.clone() { input { r#type: "hidden", name: "{n}", value: if on { "on" } else { "off" } } }
+            span { class: if hide_label { "txt sr" } else { "txt" },
                 span { class: "lb", "{label}" }
                 if let Some(d) = description.clone() { span { class: "ds", id: "{id}-d", "{d}" } }
                 if restart_note && *changed.read() { span { class: "note", role: "status", "Requires restart" } }
@@ -109,8 +123,9 @@ pub fn Switch(
 }
 
 /// Checkbox: a real checkbox with a label and second line, the some-of-them state for Select
-/// all, an error, and a card row; the check draws itself and the dash grows from the middle.
-/// Oxyn plus: sizes, draw speed, a tri-state cycle.
+/// all, an error, and a card row; the fill scales in while the check draws, and switching to
+/// indeterminate morphs the same path into a dash. A full control-height hit box. Oxyn plus:
+/// sizes, draw speed, a tri-state cycle, a strike-through todo style and a bulk "approve all" row.
 #[component]
 pub fn Checkbox(
     /// Label.
@@ -124,9 +139,18 @@ pub fn Checkbox(
     /// Error text (also marks it invalid).
     #[props(default)]
     error: Option<String>,
-    /// `plain` · `card`.
+    /// `plain` · `card` · `todo` (strike-through when checked) · `bulk` (approve-all row).
     #[props(default = "plain".to_string())]
     variant: String,
+    /// Accessible name when there is no visible label (falls back to "Checkbox").
+    #[props(default)]
+    aria_label: Option<String>,
+    /// Form field name.
+    #[props(default)]
+    name: Option<String>,
+    /// Required.
+    #[props(default)]
+    required: bool,
     /// `sm` · `md` · `lg`.
     #[props(default = "md".to_string())]
     size: String,
@@ -155,19 +179,20 @@ pub fn Checkbox(
     rsx! {
         label { class: cls(&["oxyn-check", &variant, &size, cur.id(), if error.is_some() { "invalid" } else { "" }, if disabled { "disabled" } else { "" }]),
             style: "--draw:{draw:.0}ms",
-            input { id: "{id}", r#type: "checkbox", class: "native", checked: cur == Check::Checked, disabled,
+            input { id: "{id}", r#type: "checkbox", class: "native", checked: cur == Check::Checked, disabled, required,
+                name: if let Some(n) = &name { "{n}" },
+                "aria-label": if label.is_empty() { aria_label.clone().unwrap_or("Checkbox".into()) } else { String::new() },
                 "aria-checked": "{cur.aria()}", "aria-invalid": "{error.is_some()}",
                 "aria-describedby": if description.is_some() || error.is_some() { "{id}-d" },
                 onchange: move |_| { let n = v.peek().next(tri_state); v.set(n); on_change.call(n) },
             }
             span { class: "box", "aria-hidden": "true",
                 svg { view_box: "0 0 16 16", width: "100%", height: "100%",
-                    path { class: "tick", d: "M3.5 8.5 6.5 11.5 12.5 4.5", path_length: "1" }
-                    path { class: "dash", d: "M4 8h8", path_length: "1" }
+                    path { class: "mark", d: if cur == Check::Indeterminate { "M4 8 8 8 12 8" } else { "M3.5 8.5 6.5 11.5 12.5 4.5" }, path_length: "1" }
                 }
             }
             span { class: "txt",
-                span { class: "lb", "{label}" }
+                if !label.is_empty() { span { class: "lb", "{label}" } }
                 if let Some(e) = error.clone() { span { class: "ds err", id: "{id}-d", "{e}" } }
                 else if let Some(d) = description.clone() { span { class: "ds", id: "{id}-d", "{d}" } }
             }
@@ -175,9 +200,10 @@ pub fn Checkbox(
     }
 }
 
-/// Radio group: one tab stop, arrows move and select, one highlight glides to the chosen row while
-/// the new dot springs in. Oxyn plus: list / cards / inline layouts, descriptions,
-/// disabled-with-reason tooltips.
+/// Radio group: a fieldset whose legend names it; one tab stop, arrows move and select, one
+/// highlight glides to the chosen row while the new dot springs in and the old one shrinks away;
+/// a native radio `name` for forms. Oxyn plus: list / cards / inline / segmented layouts,
+/// descriptions, disabled-with-reason tooltips.
 #[component]
 pub fn RadioGroup(
     /// Group label.
@@ -187,14 +213,18 @@ pub fn RadioGroup(
     /// Selected value.
     #[props(default)]
     value: Option<String>,
-    /// `list` · `cards` · `inline`.
+    /// `list` · `cards` · `inline` · `segmented`.
     #[props(default = "list".to_string())]
     layout: String,
+    /// Native radio name for form submission (a hidden input carries the value).
+    #[props(default)]
+    name: Option<String>,
     /// Changed.
     #[props(default)]
     on_change: EventHandler<String>,
 ) -> Element {
     let mut m = use_signal(|| RadioModel::new(options.clone(), value.as_deref()));
+    let cur_value = m.read().value.clone().unwrap_or_default();
     let glide = use_glide();
     let sel = m.read().selected();
     let tab = m.read().tab_stop();
@@ -215,6 +245,7 @@ pub fn RadioGroup(
                 }
             },
             span { class: "legend", id: "{id}", "{label}" }
+            if let Some(n) = name.clone() { input { r#type: "hidden", name: "{n}", value: "{cur_value}" } }
             span { class: "{glide.class(\"hl\")}", style: "{glide.style()}", "aria-hidden": "true" }
             for (i, o) in options.iter().enumerate() {
                 {
@@ -334,8 +365,10 @@ pub fn SegmentedControl(
 }
 
 /// Select: one choice in the text field's look. Icons and a second line per option, a gliding
-/// highlight, type-ahead, a list that opens upward when there is no room, a chevron that turns.
-/// Oxyn plus: searchable, grouped options, async options with skeleton rows.
+/// highlight, type-ahead, a list that opens upward when there is no room, a chevron that turns;
+/// a later option rises in from below and an earlier one drops from above, while the real value
+/// sits in a visually hidden span. Oxyn plus: searchable, grouped options, async options with
+/// skeleton rows, and a native `<select>` renderer.
 #[component]
 pub fn Select(
     /// Options.
@@ -382,6 +415,9 @@ pub fn Select(
     /// Form field name.
     #[props(default)]
     name: Option<String>,
+    /// Oxyn plus: render a native `<select>` (mobile pickers, very long lists).
+    #[props(default)]
+    native: bool,
     /// Clock (type-ahead window).
     #[props(default)]
     now: ClockMs,
@@ -408,6 +444,25 @@ pub fn Select(
     let empty = st.value.is_none();
     let hl = st.highlighted();
     let vis = st.visible();
+    if native {
+        let cur = st.value.clone().unwrap_or_default();
+        return rsx! {
+            div { class: cls(&["oxyn-field oxyn-select native", &size, if error.is_some() { "invalid" } else { "" }, if disabled { "disabled" } else { "" }]),
+                if let Some(l) = label.clone() { label { class: "flabel", r#for: "{id}", "{l}" if optional { span { class: "opt", "Optional" } } } }
+                div { class: "control",
+                    select { id: "{id}", class: "in", disabled, required, name: if let Some(n) = &name { "{n}" },
+                        "aria-invalid": "{error.is_some()}",
+                        onchange: move |e: FormEvent| { let v = e.value(); let i = m.peek().options.iter().position(|o| o.value == v); if let Some(i) = i { let r = m.write().choose(i, now); if let Some(v) = r { on_change.call(v) } } },
+                        if cur.is_empty() { option { value: "", disabled: true, selected: true, "{placeholder}" } }
+                        for o in options.iter() { option { value: "{o.value}", disabled: o.disabled, selected: o.value == cur, "{o.label}" } }
+                    }
+                    span { class: "chev", Icon { name: "chevron", size: 12.0, stroke: 2.0 } }
+                }
+                if let Some(e) = error.clone() { div { class: "msg err", role: "alert", "{e}" } }
+                else if let Some(h) = hint.clone() { div { class: "msg", "{h}" } }
+            }
+        };
+    }
     let mut key = move |k: SelectKey| {
         let r = m.write().key(k, now);
         let pos = {
@@ -443,7 +498,8 @@ pub fn Select(
                     if let Some(k) = k { if k != SelectKey::Tab { e.prevent_default(); } key(k) }
                 },
                 if let Some(o) = st.selected() { if let Some(i) = o.icon.clone() { Icon { name: i, size: 14.0 } } }
-                span { class: "val", key: "{shown}", "data-move": if let Some((d, _)) = st.moved { if d == oxyn_core::primitives::select::ValueMove::Later { "later" } else { "earlier" } } else { "" }, "{shown}" }
+                span { class: "sr", "{shown}" }
+                span { class: "val", key: "{shown}", "aria-hidden": "true", "data-move": if let Some((d, _)) = st.moved { if d == oxyn_core::primitives::select::ValueMove::Later { "later" } else { "earlier" } } else { "" }, "{shown}" }
                 span { class: "chev", Icon { name: "chevron", size: 12.0, stroke: 2.0 } }
             }
             if let Some(n) = name { input { r#type: "hidden", name: "{n}", value: "{st.value.clone().unwrap_or_default()}" } }

@@ -1,4 +1,5 @@
-//! Core primitives for Dioxus (plan #23): buttons, display atoms, form controls and overlays.
+//! Core primitives for Dioxus (plan #23): buttons, display atoms, form controls and overlays;
+//! plan #25 adds form fields, pickers and flows (`fields`, `pickers`, `flows`).
 //!
 //! Logic lives in `oxyn_core::primitives`; these components hold that state in signals, map DOM
 //! events onto it and draw with `PRIMITIVES_CSS`. Motion runs in CSS with the motion-token
@@ -12,16 +13,22 @@ use dioxus::prelude::*;
 
 mod buttons;
 mod display;
+mod fields;
+mod flows;
 mod forms;
 mod overlays;
+mod pickers;
 
 pub use buttons::*;
 pub use display::*;
+pub use fields::*;
+pub use flows::*;
 pub use forms::*;
 pub use overlays::*;
+pub use pickers::*;
 
 /// Stylesheet for every primitive.
-pub const PRIMITIVES_CSS: &str = include_str!("primitives.css");
+pub const PRIMITIVES_CSS: &str = concat!(include_str!("primitives.css"), include_str!("forms.css"));
 
 /// A measured box relative to its container.
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
@@ -272,5 +279,76 @@ mod tests {
         assert!(h.contains("role=\"tooltip\"") && h.contains("aria-describedby"));
         assert!(h.contains("role=\"menu\"") && h.contains("menuitemcheckbox"));
         assert!(h.contains("row danger") && h.contains("hl-self"));
+    }
+
+    #[test]
+    fn form_fields_render_their_roles() {
+        use oxyn_core::primitives::combobox::ComboOption;
+        let h = render(|| {
+            rsx! {
+                TagInput { label: "Invite", value: vec!["sam@acme.dev".to_string()], validate: "email", max: Some(5) }
+                Combobox { options: vec![ComboOption::new("maya", "Maya Patel").avatar()], value: vec!["maya".to_string()], default_open: true }
+                MultiSelect { label: "Tools", options: vec![ComboOption::new("a", "Search"), ComboOption::new("b", "Shell")], value: vec!["a".to_string()] }
+                OtpInput { length: 6, separator: Some(0) }
+                PasswordField { label: "Password", value: "pw" }
+                PasswordStrength { label: "New password", value: "abcdefgH1!" }
+                InlineEdit { value: "Atlas", label: "Project name" }
+                PhoneInput { label: "Phone", value: "+447400123456", default_country: "US" }
+            }
+        });
+        assert!(h.contains("Remove sam@acme.dev"), "{h}");
+        assert!(h.contains("1/5"));
+        assert!(h.contains(r#"role="combobox""#) && h.contains(r#"aria-multiselectable="true""#));
+        assert!(h.contains("Tools") && h.contains(r#"aria-haspopup="listbox""#));
+        assert!(h.contains("Verification code, 6 digits") && h.contains("one-time-code"));
+        assert!(h.contains("Show password") && h.contains(r#"aria-pressed="false""#));
+        assert!(h.contains(r#"role="meter""#) && h.contains(r#"aria-valuetext="Strong""#));
+        assert!(h.contains("Project name: Atlas"));
+        assert!(h.contains("Country, United Kingdom +44") && h.contains("7400 123456"));
+    }
+
+    #[test]
+    fn pickers_render_grids_and_spinbuttons() {
+        use oxyn_core::primitives::dial::City;
+        let h = render(|| {
+            rsx! {
+                Calendar { value: Some("2026-11-18".to_string()), today: "2026-11-13", show_today: true }
+                DatePicker { label: "Due", value: Some("2026-11-20".to_string()), open: true }
+                DateRangePicker { default_open: true }
+                TimePicker { label: "At", value: Some("09:30".to_string()), open: true }
+                TimeDial { cities: vec![City::new("khi", "Karachi", "KHI", 300), City::new("lon", "London", "LON", 0)] }
+                DateReel {}
+            }
+        });
+        assert!(h.contains(r#"role="grid""#) && h.contains("Wednesday, November 18, 2026"));
+        assert!(h.contains(r#"aria-current="date""#));
+        assert!(h.contains(r#"aria-haspopup="dialog""#) && h.contains("Nov 20, 2026"));
+        assert!(h.contains("Last 30 days") && h.contains("Apply"));
+        assert!(h.contains("9:30 AM"));
+        assert!(h.contains(r#"role="slider""#) && h.contains("in Karachi"));
+        assert!(h.contains(r#"role="spinbutton""#) && h.contains("Today at 9:30 AM"));
+    }
+
+    #[test]
+    fn flows_render() {
+        use oxyn_core::primitives::{
+            filter_menu::FilterGroup,
+            questions::{Question, QuestionKind, QuestionOption},
+            stepper::{Step, StepField},
+        };
+        let h = render(|| {
+            rsx! {
+                FilterMenu { groups: vec![FilterGroup::new("s", "Status", &[("o", "Open")])], value: vec![("s".to_string(), "o".to_string())] }
+                StepperForm { steps: vec![Step::new("a", "Workspace", "Name it", vec![StepField::text("name", "Name")]), Step::review("Review")] }
+                DecisionCard { decisions: vec![Question::new("q", "Which?", QuestionKind::Single, vec![QuestionOption::new("a", "A").recommended(), QuestionOption::new("b", "B")])] }
+                ApprovalQuestions { questions: vec![Question::new("q", "How many?", QuestionKind::Multi, vec![QuestionOption::new("1", "One")])] }
+                SmartFormFill { prefill: true }
+            }
+        });
+        assert!(h.contains("Status: Open") && h.contains(r#"role="tree""#));
+        assert!(h.contains(r#"aria-current="step""#) && h.contains("Continue"));
+        assert!(h.contains("Recommended") && h.contains(r#"aria-keyshortcuts="1""#));
+        assert!(h.contains("Question 1 of 1") && h.contains(r#"role="checkbox""#));
+        assert!(h.contains("maya.patel@lumenlabs.io") && h.contains("Confidence"));
     }
 }
