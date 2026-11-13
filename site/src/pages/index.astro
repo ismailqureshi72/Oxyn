@@ -1,0 +1,76 @@
+---
+import Base from '../layouts/Base.astro';
+import OxynDemo from '../components/OxynDemo.astro';
+import Card from '../components/Card.astro';
+import { categories, demos, demosIn, REPO } from '../lib/data';
+
+const find = (s: string) => demos.find((d) => d.slug === s)!;
+const hero = find('composer');
+const states = find('status-indicator');
+const featured = ['approval-card', 'tool-call', 'subagent-tree', 'glyph-loader', 'model-picker', 'avatar'].map(find);
+const variants = demos.reduce((n, d) => n + d.variants.length, 0);
+const gpui = demos.filter((d) => d.gpui).length;
+---
+<Base title="Oxyn — agent-UI components for Rust" description="Composer, thinking, tool calls, approvals and checkpoints in every agent state, as Rust components for Dioxus and GPUI." type="Page">
+  <div class="wrap">
+    <section class="hero">
+      <div>
+        <h1>The agent-UI layer for Rust apps.</h1>
+        <p class="lede">Composer, thinking, tool calls, approvals and checkpoints, in every state an agent goes through. Written in Rust for Dioxus on the web and GPUI on the desktop.</p>
+        <div class="cta">
+          <a class="btn primary" href="/components/">Browse components</a>
+          <a class="btn" href="/docs/installation/">Install</a>
+          <a class="btn" href={REPO}>GitHub</a>
+        </div>
+        <div class="install copyable"><span class="p">$</span><code>cargo add oxyn-dioxus oxyn-core --git {REPO}</code><button class="copy-btn" type="button" data-copy={`cargo add oxyn-dioxus oxyn-core --git ${REPO}`}>Copy</button></div>
+        <div class="facts"><span><b>{demos.length}</b> components</span><span><b>{variants}</b> variant presets</span><span><b>{gpui}</b> also in GPUI</span><span><b>13</b> agent states</span><span>MIT</span></div>
+      </div>
+      <div class="hero-stage" aria-label="Live composer demo">
+        <OxynDemo slug={hero.slug} html={hero.variants[1].html} variant={1} />
+      </div>
+    </section>
+
+    <section class="band">
+      <h2>One agent state, every component</h2>
+      <p>Components read the same <code>AgentState</code> from <code>oxyn-core</code>: idle, composing, submitted, thinking, streaming, tool running, awaiting approval, queued, steering, stalled, done, error, cancelled. Here is the status indicator in all thirteen.</p>
+      <OxynDemo slug={states.slug} html={states.variants[3].html} variant={3} />
+    </section>
+
+    <section class="band">
+      <h2>Built for what agents do</h2>
+      <p>Not generic widgets with a spinner bolted on: approvals with risk tiers and countdowns, tool calls with live timers, sub-agent trees, checkpoints you can rewind.</p>
+      <div class="grid-cards">{featured.map((d) => <Card demo={d} showCategory={categories.find((c) => c.slug === d.category)?.name} />)}</div>
+    </section>
+
+    <section class="band">
+      <h2>Browse by category</h2>
+      <p>{categories.length} categories, from the composer to overlays.</p>
+      <div class="planned">
+        {categories.map((c) => (
+          <a class="it" href={`/components/${c.slug}/`} style="text-decoration:none">
+            <b>{c.name} <span>{demosIn(c.slug).length}</span></b>
+            <small>{c.blurb}</small>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="band two">
+      <div class="panel">
+        <h3>Two renderers, one model</h3>
+        <p>State machines, timing and copy live in <code>oxyn-core</code>, with no UI in it. <code>oxyn-dioxus</code> renders them for the web, <code>oxyn-gpui</code> for the desktop, so both behave the same.</p>
+        <pre>{`oxyn-core     AgentState, models, timing
+oxyn-tokens   colours, type, motion
+oxyn-dioxus   web components (this site)
+oxyn-gpui     desktop components`}</pre>
+      </div>
+      <div class="panel">
+        <h3>Real previews</h3>
+        <p>Every preview on this site is the Rust component: rendered to HTML at build time, then mounted live from one shared WebAssembly bundle when it scrolls into view. Controls change the real props.</p>
+        <pre>{`<oxyn-demo data-slug="approval-card">
+  …server-rendered Dioxus markup…
+</oxyn-demo>`}</pre>
+      </div>
+    </section>
+  </div>
+</Base>

@@ -1,0 +1,40 @@
+---
+import { categories, REPO } from '../lib/data';
+---
+<footer class="foot" data-pagefind-ignore>
+  <div class="foot-in">
+    <div>
+      <h4>Components</h4>
+      <ul>{categories.slice(0, 6).map((c) => <li><a href={`/components/${c.slug}/`}>{c.name}</a></li>)}</ul>
+    </div>
+    <div>
+      <h4>More components</h4>
+      <ul>{categories.slice(6).map((c) => <li><a href={`/components/${c.slug}/`}>{c.name}</a></li>)}<li><a href="/components/">All components</a></li></ul>
+    </div>
+    <div>
+      <h4>Learn</h4>
+      <ul>
+        <li><a href="/docs/">Docs</a></li>
+        <li><a href="/docs/installation/">Installation</a></li>
+        <li><a href="/guides/">Guides</a></li>
+        <li><a href="/compare/">Compare</a></li>
+        <li><a href="/motion/">Motion</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Project</h4>
+      <ul>
+        <li><a href={REPO}>GitHub</a></li>
+        <li><a href={`${REPO}/blob/main/LICENSE`}>Licence (MIT)</a></li>
+        <li><a href={`${REPO}/blob/main/CONTRIBUTING.md`}>Contributing</a></li>
+        <li><a href="/pricing/">Pricing</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot-base">
+    <span>© 2026 Oxyn · MIT core · Rust components for GPUI and Dioxus</span>
+    <span>
+      <label><input type="checkbox" data-reduce-motion /> Reduce motion</label>
+    </span>
+  </div>
+</footer>

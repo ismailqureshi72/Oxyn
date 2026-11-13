@@ -73,12 +73,12 @@
 
 /* ---------- Shared gliding highlight ---------- */
 .oxyn-bgroup,.oxyn-tray,.oxyn-radio,.oxyn-seg{position:relative}
-.hl,.oxyn-seg .pill{position:absolute;left:0;top:0;pointer-events:none;border-radius:6px;background:var(--oxyn-color-surface-hover);transition:transform var(--ox-snap) var(--ox-ease),width var(--ox-snap) var(--ox-ease),height var(--ox-snap) var(--ox-ease),opacity var(--ox-fast);z-index:0}
-.hl.jump,.oxyn-seg .pill.jump{transition:opacity var(--ox-fast)}
-.hl.appear{animation:oxyn-appear var(--ox-snap) var(--ox-ease)}
+.hl:not(.row),.oxyn-seg .pill{position:absolute;left:0;top:0;pointer-events:none;border-radius:6px;background:var(--oxyn-color-surface-hover);transition:transform var(--ox-snap) var(--ox-ease),width var(--ox-snap) var(--ox-ease),height var(--ox-snap) var(--ox-ease),opacity var(--ox-fast);z-index:0}
+.hl.jump:not(.row),.oxyn-seg .pill.jump{transition:opacity var(--ox-fast)}
+.hl.appear:not(.row){animation:oxyn-appear var(--ox-snap) var(--ox-ease)}
 @keyframes oxyn-appear{from{opacity:0;scale:.94}}
 .hl-self{background:var(--oxyn-color-surface-hover)}
-.hl.danger{background:var(--oxyn-color-status-danger-bg)}
+.hl.danger:not(.row){background:var(--oxyn-color-status-danger-bg)}
 .oxyn-bgroup .seg.hl-self,.oxyn-tray .tb.hl-self,.oxyn-menu .row.hl-self,.oxyn-select .list .row.hl-self{background:var(--oxyn-color-surface-hover)}
 .oxyn-tray.underline .tb.hl-self{background:none;box-shadow:inset 0 -2px 0 var(--oxyn-color-fg-default);border-radius:0}
 
@@ -257,10 +257,19 @@
 .oxyn-avatar .pres{position:absolute;right:-1px;bottom:-1px;width:var(--d);height:var(--d);border-radius:50%;box-shadow:0 0 0 2px var(--oxyn-color-bg-base);animation:oxyn-pop-in 214ms var(--ox-ease)}
 .oxyn-avatar .pres.online{background:var(--oxyn-color-status-success-fg)}.oxyn-avatar .pres.away{background:var(--oxyn-color-status-warning-fg)}.oxyn-avatar .pres.busy{background:var(--oxyn-color-status-danger-fg)}.oxyn-avatar .pres.offline{background:var(--oxyn-color-bg-base);box-shadow:0 0 0 2px var(--oxyn-color-bg-base),inset 0 0 0 1.5px var(--oxyn-color-fg-subtle)}
 .oxyn-avatar .model{position:absolute;right:-4px;top:-4px;min-width:14px;height:14px;padding:0 3px;border-radius:4px;background:var(--oxyn-color-fg-default);color:var(--oxyn-color-bg-base);font:700 8.5px/14px var(--ox-mono);text-align:center;box-shadow:0 0 0 2px var(--oxyn-color-bg-base)}
-.oxyn-avgroup{display:inline-flex;align-items:center}
-.oxyn-avgroup>.oxyn-avatar .face{box-shadow:0 0 0 2px var(--oxyn-color-bg-base)}
-.oxyn-avgroup>*+*{margin-left:calc(var(--s)*-.28)}
-.oxyn-avgroup .more{display:inline-flex;align-items:center;justify-content:center;height:var(--s);min-width:var(--s);padding:0 6px;border-radius:999px;background:var(--oxyn-color-surface-hover);color:var(--oxyn-color-fg-muted);font:600 calc(var(--s)*.34)/1 var(--ox-font);box-shadow:0 0 0 2px var(--oxyn-color-bg-base)}
+/* Group: each avatar overlaps the one before by --ov. The initials (or agent mark) of an overlapped
+   avatar are centred in the part that stays visible, so they are never cut. An avatar with an agent
+   ring gets its own room for the ring plus a cut-out behind it, so the ring never sits on a
+   neighbour's face. */
+.oxyn-avgroup{display:inline-flex;align-items:center;--ov:calc(var(--s)*.22)}
+.oxyn-avgroup>*+*{margin-left:calc(var(--ov)*-1)}
+.oxyn-avgroup>.oxyn-avatar{isolation:isolate}
+.oxyn-avgroup>.oxyn-avatar .face{box-sizing:border-box;box-shadow:0 0 0 2px var(--oxyn-color-bg-base)}
+.oxyn-avgroup>.oxyn-avatar:not(:last-child) .face{padding-right:calc(var(--ov) + 2px)}
+.oxyn-avgroup>.oxyn-avatar:not(.ring-none){margin-inline:calc((var(--o) - var(--s))/2)}
+.oxyn-avgroup>.oxyn-avatar:not(.ring-none):not(:first-child){margin-left:calc((var(--o) - var(--s))/2 - var(--ov))}
+.oxyn-avgroup>.oxyn-avatar:not(.ring-none)::before{content:"";position:absolute;left:50%;top:50%;width:calc(var(--o) + 4px);height:calc(var(--o) + 4px);transform:translate(-50%,-50%);border-radius:calc(var(--r) + (var(--o) - var(--s))/2 + 2px);background:var(--oxyn-color-bg-base);z-index:-1}
+.oxyn-avgroup .more{position:relative;display:inline-flex;align-items:center;justify-content:center;height:var(--s);min-width:var(--s);padding:0 6px;border-radius:999px;background:var(--oxyn-color-surface-hover);color:var(--oxyn-color-fg-muted);font:600 calc(var(--s)*.34)/1 var(--ox-font);box-shadow:0 0 0 2px var(--oxyn-color-bg-base)}
 
 /* ---------- Kbd / separator / spinner ---------- */
 .oxyn-kbd{display:inline-flex;align-items:center;gap:3px;vertical-align:middle}

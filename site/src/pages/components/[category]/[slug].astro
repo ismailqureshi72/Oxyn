@@ -1,0 +1,169 @@
+---
+import Base from '../../../layouts/Base.astro';
+import Sidebar from '../../../components/Sidebar.astro';
+import OxynDemo from '../../../components/OxynDemo.astro';
+import {
+  demos, categoryOf, demoUrl, props, specs, specSection, md, highlightRust, cssConst, REPO, type Demo,
+} from '../../../lib/data';
+
+export function getStaticPaths() {
+  return demos.map((d, i) => ({
+    params: { category: d.category, slug: d.slug },
+    props: { demo: d, prev: demos[i - 1] ?? null, next: demos[i + 1] ?? null },
+  }));
+}
+const { demo, prev, next } = Astro.props as { demo: Demo; prev: Demo | null; next: Demo | null };
+const cat = categoryOf(demo.category);
+const comps = demo.dioxus.split(',').map((s) => s.trim());
+const tables = comps.map((c) => ({ name: c, info: props[c] })).filter((t) => t.info);
+const spec = specs[demo.spec];
+const a11ySpec = specSection(demo.spec, 'Accessibility');
+const edgeSpec = specSection(demo.spec, 'Edge cases');
+const timing = specSection(demo.spec, 'Timing');
+const usage = `use oxyn_dioxus::{${comps.join(', ')}, ${cssConst(demo.source)}};`;
+const toc = [
+  ['preview', 'Preview'], ['install', 'Installation'], ['variants', 'Variants'], ['usage', 'Usage'],
+  ['props', 'Props'], ['keyboard', 'Keyboard'], ['accessibility', 'Accessibility'], ['responsive', 'Responsive'],
+  ...(timing ? [['timing', 'Timing']] : []), ['source', 'Source and spec'],
+];
+const sourceUrl = `${REPO}/blob/main/crates/oxyn-dioxus/src/${demo.source}`;
+const specUrl = `${REPO}/blob/main/docs/specs/${demo.spec}.md`;
+---
+<Base title={`${demo.name} — ${cat.name}`} description={demo.summary} type="Component">
+  <div class="shell">
+    <Sidebar current={demoUrl(demo)} />
+    <article class="content" data-pagefind-meta={`category:${cat.name}`}>
+      <nav class="crumbs" aria-label="Breadcrumb" data-pagefind-ignore>
+        <a href="/components/">Components</a><span>›</span><a href={`/components/${cat.slug}/`}>{cat.name}</a>
+      </nav>
+      <h1 class="title" data-pagefind-meta="title">{demo.name}</h1>
+      <p class="lede">{demo.summary}</p>
+      <div class="meta-row">
+        <span class="tag solid">Free · MIT</span>
+        <span class="tag">Dioxus <code>{demo.dioxus}</code></span>
+        {demo.gpui ? <span class="tag">GPUI <code>{demo.gpui}</code></span> : <span class="tag">GPUI: not yet</span>}
+        <span class="tag">{demo.variants.length} variants</span>
+        {demo.live && <span class="tag">Live clock</span>}
+      </div>
+
+      <div class="preview-head" id="preview">
+        <h2 class="h2">Preview</h2>
+        <span class="live" data-live-label>Rendered from Rust at build time · goes live when visible</span>
+      </div>
+      <OxynDemo slug={demo.slug} html={demo.html} controls />
+
+      <section class="block" id="install">
+        <h2>Installation</h2>
+        <p class="sub">Oxyn is not on crates.io yet; depend on the repository. Include the token stylesheet once and the component stylesheet constants.</p>
+        <div class="install copyable"><span class="p">$</span><code>cargo add oxyn-dioxus oxyn-core --git {REPO}</code><button class="copy-btn" type="button" data-copy={`cargo add oxyn-dioxus oxyn-core --git ${REPO}`}>Copy</button></div>
+        <div class="install copyable"><span class="p">rs</span><code>{usage}</code><button class="copy-btn" type="button" data-copy={usage}>Copy</button></div>
+      </section>
+
+      <section class="block" id="variants">
+        <h2>Variants</h2>
+        <p class="sub">Each preset is the same component with different props. They go live as you scroll.</p>
+        <div class="variants">
+          {demo.variants.map((v, i) => (
+            <div class="variant">
+              <OxynDemo slug={demo.slug} html={v.html} variant={i} />
+              <h3>{demo.slug}/{v.name}</h3>
+              <p>{v.note}</p>
+              <details>
+                <summary>Code</summary>
+                <pre><code set:html={highlightRust(v.code)} /></pre>
+              </details>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section class="block" id="usage">
+        <h2>Usage</h2>
+        <p class="sub">The code under the preview follows the controls. This is the default setup.</p>
+        <div class="oxd-code copyable" style="border-top:1px solid var(--site-line);border-radius:14px">
+          <div class="oxd-ch"><span>Dioxus · rust</span><button class="oxd-copy" type="button" data-copy-from="next">Copy</button></div>
+          <pre><code set:html={highlightRust(demo.code)} /></pre>
+        </div>
+      </section>
+
+      <section class="block" id="props">
+        <h2>Props</h2>
+        <p class="sub">Read from the component's Rust signature and doc comments in <a href={sourceUrl}><code>{demo.source}</code></a>.</p>
+        {tables.map((t) => (
+          <>
+            {tables.length > 1 && <h3 class="h2" style="font-size:15px;margin:22px 0 10px"><code>{t.name}</code></h3>}
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Name</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+                <tbody>
+                  {t.info.props.map((p) => (
+                    <tr>
+                      <td class="n"><code>{p.name}</code>{p.required && <span class="req">required</span>}</td>
+                      <td class="t"><code>{p.type}</code></td>
+                      <td>{p.default ? <code>{p.default}</code> : '—'}</td>
+                      <td>{p.doc}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
+        ))}
+      </section>
+
+      <section class="block" id="keyboard">
+        <h2>Keyboard</h2>
+        <div class="kbdlist">
+          {demo.keyboard.map(([k, what]) => (<><div class="keys">{k}</div><div>{what}</div></>))}
+        </div>
+      </section>
+
+      <section class="block" id="accessibility">
+        <h2>Accessibility</h2>
+        <ul class="notes">{demo.a11y.map((n) => <li>{n}</li>)}</ul>
+        {a11ySpec && (
+          <div class="fromspec">
+            <span class="lbl">From the spec</span>
+            <div class="prose" set:html={md(a11ySpec)} />
+          </div>
+        )}
+      </section>
+
+      <section class="block" id="responsive">
+        <h2>Responsive</h2>
+        <ul class="notes">{demo.responsive.map((n) => <li>{n}</li>)}</ul>
+        {edgeSpec && (
+          <div class="fromspec">
+            <span class="lbl">Edge cases (spec)</span>
+            <div class="prose" set:html={md(edgeSpec)} />
+          </div>
+        )}
+      </section>
+
+      {timing && (
+        <section class="block" id="timing">
+          <h2>Timing</h2>
+          <div class="prose" set:html={md(timing)} />
+        </section>
+      )}
+
+      <section class="block" id="source">
+        <h2>Source and spec</h2>
+        <ul class="notes">
+          <li>Dioxus source: <a href={sourceUrl}>crates/oxyn-dioxus/src/{demo.source}</a></li>
+          <li>Spec: <a href={specUrl}>docs/specs/{demo.spec}.md</a>{spec && ` — ${spec.title}`}</li>
+          <li>Demo: <a href={`${REPO}/tree/main/apps/gallery-dioxus-web/src/demos`}>apps/gallery-dioxus-web</a> (the preview above is this Rust code)</li>
+        </ul>
+      </section>
+
+      <nav class="pager" aria-label="Previous and next component" data-pagefind-ignore>
+        {prev && <a href={demoUrl(prev)}><small>Previous</small><b>{prev.name}</b></a>}
+        {next && <a class="next" href={demoUrl(next)}><small>Next</small><b>{next.name}</b></a>}
+      </nav>
+    </article>
+    <aside class="toc" aria-label="On this page" data-pagefind-ignore>
+      <h4>On this page</h4>
+      <ul>{toc.map(([id, label]) => <li><a href={`#${id}`}>{label}</a></li>)}</ul>
+    </aside>
+  </div>
+</Base>
