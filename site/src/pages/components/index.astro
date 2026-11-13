@@ -1,0 +1,24 @@
+---
+import Base from '../../layouts/Base.astro';
+import Sidebar from '../../components/Sidebar.astro';
+import Card from '../../components/Card.astro';
+import { categories, demos, demosIn } from '../../lib/data';
+---
+<Base title="Components" description={`${demos.length} Rust components for agent interfaces, for Dioxus and GPUI.`} type="Category">
+  <div class="shell no-toc">
+    <Sidebar />
+    <div class="content">
+      <h1 class="title">Components</h1>
+      <p class="lede">{demos.length} components for agent interfaces, written in Rust for Dioxus (web) and GPUI (desktop). Every card below is the real component, rendered from Rust.</p>
+      <div class="chips" data-pagefind-ignore>
+        {categories.map((c) => <a class="tag" href={`/components/${c.slug}/`}>{c.name} · {demosIn(c.slug).length}</a>)}
+      </div>
+      {categories.map((c) => (
+        <section>
+          <div class="cat-head"><h2>{c.name}</h2><a href={`/components/${c.slug}/`}>View {c.name.toLowerCase()} →</a></div>
+          <div class="grid-cards">{demosIn(c.slug).map((d) => <Card demo={d} />)}</div>
+        </section>
+      ))}
+    </div>
+  </div>
+</Base>

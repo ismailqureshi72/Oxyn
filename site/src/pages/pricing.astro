@@ -1,0 +1,50 @@
+---
+import Base from '../layouts/Base.astro';
+import { demos, REPO } from '../lib/data';
+---
+<Base title="Pricing" description="Oxyn's core is free and MIT licensed. Pro adds depth; prices are not decided yet.">
+  <div class="wrap content">
+    <h1 class="title">Free for the core. Pro for depth.</h1>
+    <p class="lede">Everything on this site today is free and MIT licensed. A Pro tier with more variants and whole category kits is planned; its prices are not decided yet, so none are shown.</p>
+    <div class="tiers">
+      <div class="tier main">
+        <h3>Free</h3>
+        <div class="price">$0 <small>MIT, forever</small></div>
+        <ul>
+          <li>All {demos.length} components on this site</li>
+          <li>Dioxus and GPUI renderers</li>
+          <li>Tokens: dark, light and high-contrast themes</li>
+          <li>Specs, source and live demos</li>
+        </ul>
+        <a class="btn primary" href="/docs/installation/">Get started</a>
+      </div>
+      <div class="tier">
+        <h3>Pro</h3>
+        <div class="price">— <small>price to be decided</small></div>
+        <ul>
+          <li>More variants per component</li>
+          <li>Category kits: coding, CRM, finance, app builder, video</li>
+          <li>Licence key for the CLI</li>
+        </ul>
+        <a class="btn" href={`${REPO}/blob/main/docs/vision.md`}>Read the plan</a>
+      </div>
+      <div class="tier">
+        <h3>Team</h3>
+        <div class="price">— <small>price to be decided</small></div>
+        <ul>
+          <li>Pro for several developers</li>
+          <li>Shared activations</li>
+        </ul>
+        <a class="btn" href={`${REPO}/issues`}>Ask on GitHub</a>
+      </div>
+    </div>
+    <section class="block">
+      <h2>Questions</h2>
+      <div class="kbdlist">
+        <div class="keys">Can I ship it in a commercial app?</div><div>Yes. The core is MIT.</div>
+        <div class="keys">Do I need an account?</div><div>No. Free components need nothing; Pro is planned around a licence key, without accounts.</div>
+        <div class="keys">When is Pro coming?</div><div>After the free library covers the parity plan. Follow the repository for news.</div>
+      </div>
+    </section>
+  </div>
+</Base>

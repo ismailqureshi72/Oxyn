@@ -1,0 +1,229 @@
+//! The demo catalogue: one entry per component page.
+
+use crate::{Control, Demo, Kind, Variant};
+
+mod approvals;
+mod buttons;
+mod checkpoints;
+mod composer;
+mod display;
+mod inputs;
+mod loaders;
+mod overlays;
+mod status_text;
+mod tools;
+
+/// A category of the Components section.
+pub struct Category {
+    /// URL slug.
+    pub slug: &'static str,
+    /// Name.
+    pub name: &'static str,
+    /// One line.
+    pub blurb: &'static str,
+}
+
+/// Categories in nav order.
+pub const CATEGORIES: [Category; 10] = [
+    Category {
+        slug: "composer",
+        name: "Composer",
+        blurb: "The prompt box and its parts: send and stop, model, effort, context and attachments.",
+    },
+    Category {
+        slug: "loaders",
+        name: "Loaders",
+        blurb: "One busy signal per region, driven by the agent state.",
+    },
+    Category {
+        slug: "status-text",
+        name: "Status text",
+        blurb: "Shimmering labels, cycling verbs, run timers and streamed text.",
+    },
+    Category {
+        slug: "tools",
+        name: "Tool calls & plans",
+        blurb: "What the agent is doing: tool calls, stacks, plans, steps and sub-agents.",
+    },
+    Category {
+        slug: "approvals",
+        name: "Approvals",
+        blurb: "The agent asks before it acts: risk, preview, decide with a key.",
+    },
+    Category {
+        slug: "checkpoints-git",
+        name: "Checkpoints",
+        blurb: "Rewind a run to any point; new attempts branch out of it.",
+    },
+    Category {
+        slug: "buttons",
+        name: "Buttons",
+        blurb: "Buttons, icon buttons, split buttons and the groups they sit in.",
+    },
+    Category {
+        slug: "inputs",
+        name: "Inputs",
+        blurb: "Switches, checkboxes, radios, segmented controls, selects, sliders and text fields.",
+    },
+    Category {
+        slug: "data-display",
+        name: "Data display",
+        blurb: "Badges, chips, avatars, keys, numbers and empty states.",
+    },
+    Category {
+        slug: "overlays",
+        name: "Overlays",
+        blurb: "Tooltips, popovers and menus.",
+    },
+];
+
+/// Every demo, in category order.
+pub fn catalog() -> Vec<Demo> {
+    let mut v = Vec::new();
+    v.extend(composer::demos());
+    v.extend(loaders::demos());
+    v.extend(status_text::demos());
+    v.extend(tools::demos());
+    v.extend(approvals::demos());
+    v.extend(checkpoints::demos());
+    v.extend(buttons::demos());
+    v.extend(inputs::demos());
+    v.extend(display::demos());
+    v.extend(overlays::demos());
+    v
+}
+
+pub(crate) fn sel(
+    key: &'static str,
+    label: &'static str,
+    opts: &[&'static str],
+    default: &'static str,
+) -> Control {
+    Control {
+        key,
+        label,
+        kind: Kind::Select(opts.to_vec()),
+        default,
+    }
+}
+
+pub(crate) fn tog(key: &'static str, label: &'static str, default: bool) -> Control {
+    Control {
+        key,
+        label,
+        kind: Kind::Toggle,
+        default: if default { "true" } else { "false" },
+    }
+}
+
+pub(crate) fn rng(
+    key: &'static str,
+    label: &'static str,
+    min: f64,
+    max: f64,
+    step: f64,
+    default: &'static str,
+) -> Control {
+    Control {
+        key,
+        label,
+        kind: Kind::Range(min, max, step),
+        default,
+    }
+}
+
+pub(crate) fn txt(key: &'static str, label: &'static str, default: &'static str) -> Control {
+    Control {
+        key,
+        label,
+        kind: Kind::Text,
+        default,
+    }
+}
+
+pub(crate) fn var(
+    name: &'static str,
+    note: &'static str,
+    set: &[(&'static str, &'static str)],
+) -> Variant {
+    Variant {
+        name,
+        note,
+        set: set.to_vec(),
+    }
+}
+
+/// Rust string literal.
+pub(crate) fn q(s: &str) -> String {
+    format!("{s:?}")
+}
+
+/// `prop: "value",` lines, skipping values equal to the default.
+pub(crate) struct Code {
+    name: String,
+    lines: Vec<String>,
+    pre: Vec<String>,
+}
+
+impl Code {
+    pub(crate) fn new(name: &str) -> Self {
+        Self {
+            name: name.into(),
+            lines: Vec::new(),
+            pre: Vec::new(),
+        }
+    }
+    /// A line before the `rsx!` (model setup).
+    pub(crate) fn pre(mut self, line: impl Into<String>) -> Self {
+        self.pre.push(line.into());
+        self
+    }
+    /// A raw prop line.
+    pub(crate) fn raw(mut self, prop: &str, value: impl Into<String>) -> Self {
+        self.lines.push(format!("{prop}: {}", value.into()));
+        self
+    }
+    /// A string prop, left out when it equals `default`.
+    pub(crate) fn s(self, prop: &str, value: &str, default: &str) -> Self {
+        if value == default {
+            self
+        } else {
+            self.raw(prop, q(value))
+        }
+    }
+    /// An optional string prop, left out when empty or `none`.
+    pub(crate) fn opt(self, prop: &str, value: &str) -> Self {
+        if value.is_empty() || value == "none" {
+            self
+        } else {
+            self.raw(prop, q(value))
+        }
+    }
+    /// A bool prop, left out when false.
+    pub(crate) fn b(self, prop: &str, value: bool) -> Self {
+        if value { self.raw(prop, "true") } else { self }
+    }
+    /// The finished snippet.
+    pub(crate) fn done(self) -> String {
+        let mut out = String::new();
+        for p in &self.pre {
+            out.push_str(p);
+            out.push('\n');
+        }
+        if !self.pre.is_empty() {
+            out.push('\n');
+        }
+        out.push_str("rsx! {\n");
+        if self.lines.is_empty() {
+            out.push_str(&format!("    {} {{}}\n", self.name));
+        } else {
+            out.push_str(&format!("    {} {{\n", self.name));
+            for l in &self.lines {
+                out.push_str(&format!("        {l},\n"));
+            }
+            out.push_str("    }\n");
+        }
+        out.push('}');
+        out
+    }
+}
