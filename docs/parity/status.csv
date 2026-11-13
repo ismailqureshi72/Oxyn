@@ -30,7 +30,7 @@ affectUI,Chat Composer,https://www.affectui.com/components/chat-composer,Compone
 affectUI,Checkbox,https://www.affectui.com/components/checkbox,Components · Inputs,Free,toggles,C1,#23,built
 affectUI,Cited Answer,https://www.affectui.com/components/cited-answer,Components · Chat,Pro,citations-sources,,#27,planned
 affectUI,Collaboration Stream,https://www.affectui.com/components/collaboration-stream,Components · Agents,Pro,"subagent-tree, messages",C6,#32,planned
-affectUI,Combobox,https://www.affectui.com/components/combobox,Components · Inputs,Pro,"composer-slash-mentions, genui-forms",C2,#25,planned
+affectUI,Combobox,https://www.affectui.com/components/combobox,Components · Inputs,Pro,combobox,C2,#25,built
 affectUI,Command Menu,https://www.affectui.com/components/command-menu,Components · Navigation,Pro,command-palette,,#26,planned
 affectUI,Comment Thread,https://www.affectui.com/components/comment-thread,Components · Chat,Free,review-card,C11,#39,planned
 affectUI,Comments Panel,https://www.affectui.com/components/comments-panel,Components · Chat,Pro,review-card,C11,#39,planned
@@ -40,8 +40,8 @@ affectUI,Context Map,https://www.affectui.com/components/context-map,Components 
 affectUI,Context Window,https://www.affectui.com/components/context-window,Components · Agents,Pro,composer-context-meter,,#28,built · close gaps
 affectUI,Cost Waterfall,https://www.affectui.com/components/cost-waterfall,Components · Agents,Pro,"trace-view, run-meter",,#32,planned
 affectUI,Data Table,https://www.affectui.com/components/data-table,Components · Data display,Pro,genui-blocks,C12,#34,planned
-affectUI,Date Range Picker,https://www.affectui.com/components/date-range-picker,Components · Inputs,Pro,genui-forms,C2,#25,planned
-affectUI,Decision Card,https://www.affectui.com/components/decision-card,Components · Agents,Pro,genui-forms,,#25,planned
+affectUI,Date Range Picker,https://www.affectui.com/components/date-range-picker,Components · Inputs,Pro,date-range-picker,C2,#25,built
+affectUI,Decision Card,https://www.affectui.com/components/decision-card,Components · Agents,Pro,decision-card,,#25,built
 affectUI,Decision Inbox,https://www.affectui.com/components/decision-inbox,Components · Feedback,Free,approvals,C5,#31,planned
 affectUI,Decision Tree,https://www.affectui.com/components/decision-tree,Components · Agents,Pro,plan-approval,C5,#31,planned
 affectUI,Delegate Board,https://www.affectui.com/components/delegate-board,Components · Agents,Pro,background-jobs,C6,#32,planned
@@ -54,7 +54,7 @@ affectUI,Empty State,https://www.affectui.com/components/empty-state,Components 
 affectUI,Experiment Card,https://www.affectui.com/components/experiment-card,Components · Data display,Pro,genui-blocks,C8,#33,planned
 affectUI,Fallback Chain,https://www.affectui.com/components/fallback-chain,Components · Agents,Pro,trace-view,C7,#32,planned
 affectUI,Fan-out Grid,https://www.affectui.com/components/fan-out-grid,Components · Agents,Pro,fanout-grid,,#32,planned
-affectUI,Filter Menu,https://www.affectui.com/components/filter-menu,Components · Inputs,Free,NEW,C2,#25,planned
+affectUI,Filter Menu,https://www.affectui.com/components/filter-menu,Components · Inputs,Free,filter-menu,C2,#25,built
 affectUI,Icon Button,https://www.affectui.com/components/icon-button,Components · Buttons,Free,icon-states,,#40,planned
 affectUI,Inline Diff,https://www.affectui.com/components/inline-diff,Components · Agents,Pro,diff-viewer,C8,#33,planned
 affectUI,Integration Picker,https://www.affectui.com/components/integration-picker,Components · Navigation,Pro,"mcp-plugin-list, plugin-icons",C10,#33,planned
@@ -65,7 +65,7 @@ affectUI,Memory Panel,https://www.affectui.com/components/memory-panel,Component
 affectUI,Message Actions,https://www.affectui.com/components/message-actions,Components · Chat,Free,"icon-states, message-bubble",,#40,planned
 affectUI,Model Picker,https://www.affectui.com/components/model-picker,Components · Chat,Pro,"composer-model-picker, composer-effort-control",,#28,built · close gaps
 affectUI,Notification Stack,https://www.affectui.com/components/notification-stack,Components · Feedback,Free,desktop-overlays,C3,#26,planned
-affectUI,OTP Input,https://www.affectui.com/components/otp-input,Components · Inputs,Free,genui-forms,C2,#25,planned
+affectUI,OTP Input,https://www.affectui.com/components/otp-input,Components · Inputs,Free,otp-input,C2,#25,built
 affectUI,Parallel Attempts,https://www.affectui.com/components/parallel-attempts,Components · Agents,Pro,fanout-grid,C8,#33,planned
 affectUI,Permission Request,https://www.affectui.com/components/permission-request,Components · Agents,Pro,"approval-card, permission-rules",,#28,built · close gaps
 affectUI,Plan vs Actual,https://www.affectui.com/components/plan-vs-actual,Components · Agents,Pro,"plan-todo, trace-view",C7,#32,planned
@@ -87,9 +87,9 @@ affectUI,Setup Guide,https://www.affectui.com/components/setup-guide,Components 
 affectUI,Skeleton,https://www.affectui.com/components/skeleton,Components · Feedback,Free,"skeletons, genui-skeletons",,#26,planned
 affectUI,Smart Recommendation,https://www.affectui.com/components/smart-recommendation,Components · Cards,Free,NEW,C5,#31,planned
 affectUI,Spinner,https://www.affectui.com/components/spinner,Components · Feedback,Free,"loader-vector, loaders",,#28,built · close gaps
-affectUI,Stepper Form,https://www.affectui.com/components/stepper-form,Components · Inputs,Pro,genui-forms,,#25,planned
+affectUI,Stepper Form,https://www.affectui.com/components/stepper-form,Components · Inputs,Pro,stepper-form,,#25,built
 affectUI,Switch,https://www.affectui.com/components/switch,Components · Inputs,Free,toggles,C1,#23,built
-affectUI,Tag Input,https://www.affectui.com/components/tag-input,Components · Inputs,Free,NEW,C2,#25,planned
+affectUI,Tag Input,https://www.affectui.com/components/tag-input,Components · Inputs,Free,tag-input,C2,#25,built
 affectUI,Text Area,https://www.affectui.com/components/text-area,Components · Inputs,Free,composer-input-shell,,#28,built · close gaps
 affectUI,Text Field,https://www.affectui.com/components/text-field,Components · Inputs,Free,text-field,C1,#23,built
 affectUI,Thinking Loader,https://www.affectui.com/components/thinking-loader,Components · Chat,Free,"loader-glyph, verb-cycler, text-shimmer",,#28,built · close gaps
@@ -213,28 +213,28 @@ Arc UI,Context menu,https://uiarc.dev/components/context-menu,Components · Menu
 Arc UI,User menu,https://uiarc.dev/components/user-menu,Components · Menus,Free,workspace-chrome.md (partial),,#27,planned
 Arc UI,Input,https://uiarc.dev/components/input,Components · Text fields,Free,composer-input-shell.md (partial),,#28,built · close gaps
 Arc UI,Textarea,https://uiarc.dev/components/textarea,Components · Text fields,Free,composer-input-shell.md (partial),,#28,built · close gaps
-Arc UI,Password field,https://uiarc.dev/components/password-field,Components · Text fields,Free,NEW,N2,#25,planned
-Arc UI,Password strength,https://uiarc.dev/components/password-strength,Components · Text fields,Free,NEW,N2,#25,planned
+Arc UI,Password field,https://uiarc.dev/components/password-field,Components · Text fields,Free,password-field,N2,#25,built
+Arc UI,Password strength,https://uiarc.dev/components/password-strength,Components · Text fields,Free,password-strength,N2,#25,built
 Arc UI,Search field,https://uiarc.dev/components/search-field,Components · Text fields,Free,command-palette.md (partial),,#26,planned
 Arc UI,Expanding search,https://uiarc.dev/components/expanding-search,Components · Text fields,Free,command-palette.md (partial),,#26,planned
-Arc UI,Inline edit,https://uiarc.dev/components/inline-edit,Components · Text fields,Free,NEW,N2,#25,planned
+Arc UI,Inline edit,https://uiarc.dev/components/inline-edit,Components · Text fields,Free,inline-edit,N2,#25,built
 Arc UI,Number field,https://uiarc.dev/components/number-field,Components · Special inputs,Free,composer-effort-control.md (partial),,#28,built · close gaps
 Arc UI,Money input,https://uiarc.dev/components/money-input,Components · Special inputs,Free,"run-meter.md (partial, budgets)",,#33,planned
-Arc UI,Phone input,https://uiarc.dev/components/phone-input,Components · Special inputs,Free,NEW,N2,#25,planned
+Arc UI,Phone input,https://uiarc.dev/components/phone-input,Components · Special inputs,Free,phone-input,N2,#25,built
 Arc UI,Scrub input,https://uiarc.dev/components/scrub-input,Components · Special inputs,Free,composer-effort-control.md (partial),,#28,built · close gaps
-Arc UI,Tag input,https://uiarc.dev/components/tag-input,Components · Special inputs,Free,NEW,N2,#25,planned
+Arc UI,Tag input,https://uiarc.dev/components/tag-input,Components · Special inputs,Free,tag-input,N2,#25,built
 Arc UI,Mention input,https://uiarc.dev/components/mention-input,Components · Special inputs,Free,composer-slash-mentions.md,,#27,planned
 Arc UI,Shortcut recorder,https://uiarc.dev/components/shortcut-recorder,Components · Special inputs,Free,command-palette.md (partial),,#26,planned
-Arc UI,Select,https://uiarc.dev/components/select,Components · Selects,Free,NEW (primitive),N2,#25,planned
+Arc UI,Select,https://uiarc.dev/components/select,Components · Selects,Free,select,N2,#25,built
 Arc UI,Combobox,https://uiarc.dev/components/combobox,Components · Selects,Free,composer-model-picker.md (partial),,#28,built · close gaps
-Arc UI,Multi-select,https://uiarc.dev/components/multi-select,Components · Selects,Free,NEW,N2,#25,planned
+Arc UI,Multi-select,https://uiarc.dev/components/multi-select,Components · Selects,Free,multi-select,N2,#25,built
 Arc UI,Morph select,https://uiarc.dev/components/morph-select,Components · Selects,Free,composer-model-picker.md (partial),,#28,built · close gaps
 Arc UI,Chip group,https://uiarc.dev/components/chip-group,Components · Selects,Free,composer-mode-switch.md (partial),,#27,planned
 Arc UI,Radio cards,https://uiarc.dev/components/radio-cards,Components · Toggles,Free,composer-permission-selector.md (partial),,#27,planned
 Arc UI,Billing toggle,https://uiarc.dev/components/billing-toggle,Components · Toggles,Free,NEW,N6,#31,planned
-Arc UI,Checkbox,https://uiarc.dev/components/checkbox,Components · Toggles,Free,NEW (primitive),N2,#25,planned
-Arc UI,Radio group,https://uiarc.dev/components/radio-group,Components · Toggles,Free,NEW (primitive),N2,#25,planned
-Arc UI,Switch,https://uiarc.dev/components/switch,Components · Toggles,Free,NEW (primitive),N2,#25,planned
+Arc UI,Checkbox,https://uiarc.dev/components/checkbox,Components · Toggles,Free,toggles,N2,#25,built
+Arc UI,Radio group,https://uiarc.dev/components/radio-group,Components · Toggles,Free,toggles,N2,#25,built
+Arc UI,Switch,https://uiarc.dev/components/switch,Components · Toggles,Free,toggles,N2,#25,built
 Arc UI,Segmented control,https://uiarc.dev/components/segmented-control,Components · Toggles,Free,composer-mode-switch.md,,#27,planned
 Arc UI,Rating,https://uiarc.dev/components/rating,Components · Toggles,Free,"message-bubble.md (partial, feedback)",,#27,planned
 Arc UI,Toggle group,https://uiarc.dev/components/toggle-group,Components · Toggles,Free,composer-tools-menu.md (partial),,#27,planned
@@ -243,10 +243,10 @@ Arc UI,Elastic slider,https://uiarc.dev/components/elastic-slider,Components · 
 Arc UI,Range histogram slider,https://uiarc.dev/components/range-histogram-slider,Components · Sliders,Free,NEW,N6,#31,planned
 Arc UI,Ruler slider,https://uiarc.dev/components/ruler-slider,Components · Sliders,Free,NEW,N6,#31,planned
 Arc UI,Window range,https://uiarc.dev/components/window-range,Components · Sliders,Pro,run-replay.md (partial),,#32,planned
-Arc UI,Calendar,https://uiarc.dev/components/calendar,Components · Pickers,Free,NEW,N5,#25,planned
-Arc UI,Date picker,https://uiarc.dev/components/date-picker,Components · Pickers,Free,NEW,N5,#25,planned
-Arc UI,Date range picker,https://uiarc.dev/components/date-range-picker,Components · Pickers,Free,NEW,N5,#25,planned
-Arc UI,Time picker,https://uiarc.dev/components/time-picker,Components · Pickers,Free,NEW,N5,#25,planned
+Arc UI,Calendar,https://uiarc.dev/components/calendar,Components · Pickers,Free,calendar,N5,#25,built
+Arc UI,Date picker,https://uiarc.dev/components/date-picker,Components · Pickers,Free,date-picker,N5,#25,built
+Arc UI,Date range picker,https://uiarc.dev/components/date-range-picker,Components · Pickers,Free,date-range-picker,N5,#25,built
+Arc UI,Time picker,https://uiarc.dev/components/time-picker,Components · Pickers,Free,time-picker,N5,#25,built
 Arc UI,Color picker,https://uiarc.dev/components/color-picker,Components · Pickers,Free,NEW (theme tokens),N4,#41,planned
 Arc UI,Emoji picker,https://uiarc.dev/components/emoji-picker,Components · Pickers,Pro,NEW,N6,#31,planned
 Arc UI,Rich text editor,https://uiarc.dev/components/rich-text-editor,Components · Editors,Free,composer-input-shell.md (partial),,#28,built · close gaps
@@ -394,7 +394,7 @@ Arc UI,Sign in,https://uiarc.dev/components/blocks/sign-in,None · None,Free,NEW
 Arc UI,Sign up form,https://uiarc.dev/components/blocks/signup-form,None · None,Free,NEW (auth),N13,#38,planned
 Arc UI,Onboarding illustration,https://uiarc.dev/components/blocks/onboarding-illustration,Blocks · Auth,Pro,NEW,N13,#38,planned
 Arc UI,OTP input,https://uiarc.dev/components/blocks/otp-input,Blocks · Auth,Free,NEW (auth),N13,#38,planned
-Arc UI,Multi-step form,https://uiarc.dev/components/blocks/multi-step-form,Blocks · Auth,Pro,genui-forms.md (partial),,#25,planned
+Arc UI,Multi-step form,https://uiarc.dev/components/blocks/multi-step-form,Blocks · Auth,Pro,multi-step-form,,#25,built
 Arc UI,Two-factor setup,https://uiarc.dev/components/blocks/two-factor-setup,Blocks · Auth,Pro,NEW (auth),N13,#38,planned
 Arc UI,Magic link,https://uiarc.dev/components/blocks/magic-link,Blocks · Auth,Pro,NEW (auth),N13,#38,planned
 Arc UI,Settings page,https://uiarc.dev/components/blocks/settings-page,Blocks · Settings,Pro,NEW (settings),N14,#38,planned
@@ -499,8 +499,8 @@ Arc UI,Now playing,https://uiarc.dev/components/now-playing,Special components �
 Arc UI,Voice recorder,https://uiarc.dev/components/voice-recorder,Special components · Audio and video,Pro,"composer-voice-input.md, voice-visualisers.md",,#27,planned
 Arc UI,Booking pill,https://uiarc.dev/components/booking-pill,Special components · Data,Pro,NEW,N17,#39,planned
 Arc UI,Activity rings,https://uiarc.dev/components/activity-rings,Special components · Data,Pro,NEW,N20,#35,planned
-Arc UI,Time dial,https://uiarc.dev/components/time-dial,Special components · Data,Pro,NEW,N5,#25,planned
-Arc UI,Date reel,https://uiarc.dev/components/date-reel,Special components · Data,Pro,NEW,N5,#25,planned
+Arc UI,Time dial,https://uiarc.dev/components/time-dial,Special components · Data,Pro,time-dial,N5,#25,built
+Arc UI,Date reel,https://uiarc.dev/components/date-reel,Special components · Data,Pro,date-reel,N5,#25,built
 Arc UI,Keycap keyboard,https://uiarc.dev/components/keycap-keyboard,Special components · Type,Pro,NEW,N20,#35,planned
 Arc UI,Slot text,https://uiarc.dev/components/slot-text,Special components · Type,Free,"status-text.md (partial, odometer/split-flap)",,#28,built · close gaps
 Arc UI,Sand text,https://uiarc.dev/components/sand-text,Special components · Type,Pro,NEW,N20,#35,planned
@@ -545,7 +545,7 @@ Arc UI,Generation stats,https://uiarc.dev/components/generation-stats,Special co
 Arc UI,AI translate,https://uiarc.dev/components/ai-translate,Special components · AI,Pro,NEW,N9,#33,planned
 Arc UI,TL;DR toggle,https://uiarc.dev/components/tldr-toggle,Special components · AI,Pro,NEW,N9,#33,planned
 Arc UI,Connector setup,https://uiarc.dev/components/connector-setup,Special components · AI,Pro,mcp-plugin-list.md (partial),,#33,planned
-Arc UI,Smart form fill,https://uiarc.dev/components/smart-form-fill,Special components · AI,Pro,genui-forms.md (partial),,#25,planned
+Arc UI,Smart form fill,https://uiarc.dev/components/smart-form-fill,Special components · AI,Pro,smart-form-fill,,#25,built
 Arc UI,Enrich column,https://uiarc.dev/components/enrich-column,Special components · AI,Pro,fanout-grid.md (partial),,#32,planned
 Arc UI,Ticket router,https://uiarc.dev/components/ticket-router,Special components · AI,Pro,NEW,N10,#33,planned
 Arc UI,Ask your data,https://uiarc.dev/components/ask-your-data,Special components · AI,Pro,genui-blocks.md (partial),,#34,planned
@@ -588,7 +588,7 @@ Beautiful UI,Task Rows,https://www.beautifului.dev/#task-rows,Components,Free (M
 Beautiful UI,Chat,https://www.beautifului.dev/#chat-composer,Components,Free (MIT),"messages, message-bubble, composer",,#27,planned
 Beautiful UI,Prompt Bar,https://www.beautifului.dev/#prompt-bar,Components,Free (MIT),NEW,,#31,planned
 Beautiful UI,Code Block,https://www.beautifului.dev/#code-block,Components,Free (MIT),"streaming-markdown, diff-viewer",,#27,planned
-Beautiful UI,Approval Card,https://www.beautifului.dev/#approval-card,Components,Free (MIT),"genui-forms, approval-card",,#25,planned
+Beautiful UI,Approval Card,https://www.beautifului.dev/#approval-card,Components,Free (MIT),"approval-questions, approval-card",,#25,built
 Beautiful UI,Recommendation Card,https://www.beautifului.dev/#recommendation-card,Components,Free (MIT),"citations-sources, approval-card",,#27,planned
 Beautiful UI,Diff Table,https://www.beautifului.dev/#diff-table,Components,Free (MIT),"genui-blocks, diff-viewer",,#34,planned
 Beautiful UI,Fine-tune Card,https://www.beautifului.dev/#fine-tune-card,Components,Free (MIT),NEW,,#31,planned

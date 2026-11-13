@@ -1,4 +1,4 @@
-**Status:** v1 — implemented (plan #23).
+**Status:** v1.1 — implemented (plan #23); Arc parity gaps closed in plan #25.
 
 # Spec: select
 
@@ -61,7 +61,7 @@ Source: `options` (icon, second line), `value`, `defaultValue`, `placeholder`, `
 `error`, `optional`, `size` sm / md / lg, `disabled`, `name`, `required`, `aria-label`, `onChange`.
 
 **Oxyn plus:** searchable filter, grouped options with headings, async options with skeleton rows,
-`required` validation message ("Choose an option").
+`required` validation message ("Choose an option"), `native` renderer.
 
 ## 7. Edge cases
 Long option lists scroll inside a 280 px list; the highlighted row scrolls into view. A value not in
@@ -77,7 +77,7 @@ hidden input carries `name` / value for forms. Esc returns without changing the 
 ```rust
 Select { options: Vec<SelectOption { value, label, icon, description, group, disabled }>, value,
          placeholder, label, hint, error, optional, required, size, disabled, searchable, loading,
-         up, open, name, now, on_change }
+         up, open, name, native, now, on_change }
 ```
 
 ## 10. Related components and references
