@@ -19,15 +19,15 @@ affectUI,AI Answer,https://www.affectui.com/components/ai-answer,Components · C
 affectUI,Approval Card,https://www.affectui.com/components/approval-card,Components · Agents,Pro,approval-card,,#28,built · close gaps
 affectUI,Approval Gates,https://www.affectui.com/components/approval-gates,Components · Agents,Pro,"approvals, approval-card",,#28,built · close gaps
 affectUI,Autonomy Dial,https://www.affectui.com/components/autonomy-dial,Components · Agents,Pro,"composer-permission-selector, permission-rules",C5,#31,planned
-affectUI,Avatar,https://www.affectui.com/components/avatar,Components · Data display,Free,icons,C4,#23,planned
+affectUI,Avatar,https://www.affectui.com/components/avatar,Components · Data display,Free,avatar,C4,#23,built
 affectUI,Away Summary,https://www.affectui.com/components/away-summary,Components · Agents,Pro,background-jobs,C5,#31,planned
-affectUI,Badge,https://www.affectui.com/components/badge,Components · Data display,Free,status-indicator,C4,#23,planned
+affectUI,Badge,https://www.affectui.com/components/badge,Components · Data display,Free,badges-chips,C4,#23,built
 affectUI,Billing Schedule,https://www.affectui.com/components/billing-schedule,Components · Inputs,Pro,NEW,C12,#34,planned
 affectUI,Breakdown Chart,https://www.affectui.com/components/breakdown-chart,Components · Data display,Pro,genui-blocks,,#34,planned
-affectUI,Button,https://www.affectui.com/components/button,Components · Buttons,Free,composer-send-control,C4,#23,planned
+affectUI,Button,https://www.affectui.com/components/button,Components · Buttons,Free,button,C4,#23,built
 affectUI,Change Summary,https://www.affectui.com/components/change-summary,Components · Data display,Free,genui-blocks,C12,#34,planned
 affectUI,Chat Composer,https://www.affectui.com/components/chat-composer,Components · Chat,Pro,"composer, composer-input-shell, composer-model-picker, composer-voice-input, composer-tools-menu, composer-attachments",,#28,built · close gaps
-affectUI,Checkbox,https://www.affectui.com/components/checkbox,Components · Inputs,Free,genui-forms,C1,#23,planned
+affectUI,Checkbox,https://www.affectui.com/components/checkbox,Components · Inputs,Free,toggles,C1,#23,built
 affectUI,Cited Answer,https://www.affectui.com/components/cited-answer,Components · Chat,Pro,citations-sources,,#27,planned
 affectUI,Collaboration Stream,https://www.affectui.com/components/collaboration-stream,Components · Agents,Pro,"subagent-tree, messages",C6,#32,planned
 affectUI,Combobox,https://www.affectui.com/components/combobox,Components · Inputs,Pro,"composer-slash-mentions, genui-forms",C2,#25,planned
@@ -50,7 +50,7 @@ affectUI,Diff Timeline,https://www.affectui.com/components/diff-timeline,Compone
 affectUI,Dropdown Menu,https://www.affectui.com/components/dropdown-menu,Components · Navigation,Free,composer-tools-menu,C3,#26,planned
 affectUI,Dropzone,https://www.affectui.com/components/dropzone,Components · Inputs,Pro,composer-attachments,,#28,built · close gaps
 affectUI,Email Draft,https://www.affectui.com/components/email-draft,Components · Cards,Free,genui-forms,C11,#39,planned
-affectUI,Empty State,https://www.affectui.com/components/empty-state,Components · Feedback,Free,NEW,C4,#23,planned
+affectUI,Empty State,https://www.affectui.com/components/empty-state,Components · Feedback,Free,display-atoms,C4,#23,built
 affectUI,Experiment Card,https://www.affectui.com/components/experiment-card,Components · Data display,Pro,genui-blocks,C8,#33,planned
 affectUI,Fallback Chain,https://www.affectui.com/components/fallback-chain,Components · Agents,Pro,trace-view,C7,#32,planned
 affectUI,Fan-out Grid,https://www.affectui.com/components/fan-out-grid,Components · Agents,Pro,fanout-grid,,#32,planned
@@ -75,23 +75,23 @@ affectUI,Progress Tracker,https://www.affectui.com/components/progress-tracker,C
 affectUI,Project Card,https://www.affectui.com/components/project-card,Components · Cards,Pro,NEW,C11,#39,planned
 affectUI,Prompt Library,https://www.affectui.com/components/prompt-library,Components · Inputs,Pro,composer-slash-mentions,C10,#33,planned
 affectUI,Rate Limit Planner,https://www.affectui.com/components/rate-limit-planner,Components · Agents,Pro,background-jobs,C9,#33,planned
-affectUI,Reaction Bar,https://www.affectui.com/components/reaction-bar,Components · Buttons,Free,icon-states,C4,#23,planned
+affectUI,Reaction Bar,https://www.affectui.com/components/reaction-bar,Components · Buttons,Free,number-ticker,C4,#23,built
 affectUI,Review Center,https://www.affectui.com/components/review-center,Components · Agents,Pro,"review-card, approvals",,#29,planned
 affectUI,Root Cause Tree,https://www.affectui.com/components/root-cause-tree,Components · Agents,Pro,trace-view,C7,#32,planned
 affectUI,Run Controls,https://www.affectui.com/components/run-controls,Components · Agents,Pro,"composer-send-control, composer-queue-stack, composer-mode-switch, composer-permission-selector, composer-context-meter",,#28,built · close gaps
 affectUI,Running Now,https://www.affectui.com/components/running-now,Components · Agents,Pro,"background-jobs, desktop-overlays",,#33,planned
 affectUI,Scheduled Runs,https://www.affectui.com/components/scheduled-runs,Components · Agents,Pro,background-jobs,C9,#33,planned
-affectUI,Segmented Control,https://www.affectui.com/components/segmented-control,Components · Navigation,Free,composer-mode-switch,C1,#23,planned
-affectUI,Select,https://www.affectui.com/components/select,Components · Inputs,Free,NEW,C1,#23,planned
+affectUI,Segmented Control,https://www.affectui.com/components/segmented-control,Components · Navigation,Free,segmented-control,C1,#23,built
+affectUI,Select,https://www.affectui.com/components/select,Components · Inputs,Free,select,C1,#23,built
 affectUI,Setup Guide,https://www.affectui.com/components/setup-guide,Components · Feedback,Pro,NEW,C11,#39,planned
 affectUI,Skeleton,https://www.affectui.com/components/skeleton,Components · Feedback,Free,"skeletons, genui-skeletons",,#26,planned
 affectUI,Smart Recommendation,https://www.affectui.com/components/smart-recommendation,Components · Cards,Free,NEW,C5,#31,planned
 affectUI,Spinner,https://www.affectui.com/components/spinner,Components · Feedback,Free,"loader-vector, loaders",,#28,built · close gaps
 affectUI,Stepper Form,https://www.affectui.com/components/stepper-form,Components · Inputs,Pro,genui-forms,,#25,planned
-affectUI,Switch,https://www.affectui.com/components/switch,Components · Inputs,Free,NEW,C1,#23,planned
+affectUI,Switch,https://www.affectui.com/components/switch,Components · Inputs,Free,toggles,C1,#23,built
 affectUI,Tag Input,https://www.affectui.com/components/tag-input,Components · Inputs,Free,NEW,C2,#25,planned
 affectUI,Text Area,https://www.affectui.com/components/text-area,Components · Inputs,Free,composer-input-shell,,#28,built · close gaps
-affectUI,Text Field,https://www.affectui.com/components/text-field,Components · Inputs,Free,NEW,C1,#23,planned
+affectUI,Text Field,https://www.affectui.com/components/text-field,Components · Inputs,Free,text-field,C1,#23,built
 affectUI,Thinking Loader,https://www.affectui.com/components/thinking-loader,Components · Chat,Free,"loader-glyph, verb-cycler, text-shimmer",,#28,built · close gaps
 affectUI,Thinking State,https://www.affectui.com/components/thinking-state,Components · Chat,Pro,"reasoning-block, elapsed-timer",,#27,planned
 affectUI,Tips Panel,https://www.affectui.com/components/tips-panel,Components · Cards,Free,NEW,C11,#39,planned
@@ -183,20 +183,20 @@ affectUI,Tab Overload,https://www.affectui.com/illustrations/tab-overload,Illust
 affectUI,Team Invite,https://www.affectui.com/illustrations/team-invite,Illustrations · Card illustrations,Free,NEW,I3,#40,planned
 affectUI,Voice Orb,https://www.affectui.com/illustrations/voice-orb,Illustrations · Product scenes,Pro,"voice-orb, live-voice",,#36,planned
 affectUI,World Map Continental,https://www.affectui.com/illustrations/world-map,Illustrations · Maps,Pro,NEW,I4,#40,planned
-affectUI,Blur Crossfade,https://www.affectui.com/motion/blur-crossfade,Motion · Transitions,Pro,text-reveal,M1,#23,planned
-affectUI,Gradient Floor,https://www.affectui.com/motion/gradient-floor,Motion · Backgrounds,Pro,border-beam,M1,#23,planned
-affectUI,Gradient Text,https://www.affectui.com/motion/gradient-text,Motion · Text,Pro,text-shimmer,M1,#23,planned
-affectUI,Grid Background,https://www.affectui.com/motion/grid-background,Motion · Backgrounds,Free,NEW,M1,#23,planned
-affectUI,Number Ticker,https://www.affectui.com/motion/number-ticker,Motion · Numbers,Free,"composer-context-meter, run-meter",M1,#23,planned
+affectUI,Blur Crossfade,https://www.affectui.com/motion/blur-crossfade,Motion · Transitions,Pro,text-reveal,M1,#35,planned
+affectUI,Gradient Floor,https://www.affectui.com/motion/gradient-floor,Motion · Backgrounds,Pro,border-beam,M1,#35,planned
+affectUI,Gradient Text,https://www.affectui.com/motion/gradient-text,Motion · Text,Pro,text-shimmer,M1,#35,planned
+affectUI,Grid Background,https://www.affectui.com/motion/grid-background,Motion · Backgrounds,Free,NEW,M1,#35,planned
+affectUI,Number Ticker,https://www.affectui.com/motion/number-ticker,Motion · Numbers,Free,number-ticker,M1,#23,built
 affectUI,Shimmer Loader,https://www.affectui.com/motion/shimmer-loader,Motion · Loaders,Free,"skeletons, text-shimmer",,#26,planned
 affectUI,Text Reveal,https://www.affectui.com/motion/text-reveal,Motion · Text,Free,text-reveal,,#28,built · close gaps
-affectUI,Tilt Card,https://www.affectui.com/motion/tilt-card,Motion · Hover,Pro,NEW,M1,#23,planned
-Arc UI,Button,https://uiarc.dev/components/button,Components · Buttons,Free,NEW (primitive),N1,#23,planned
-Arc UI,Action button,https://uiarc.dev/components/action-button,Components · Buttons,Free,NEW (primitive),N1,#23,planned
-Arc UI,Split button,https://uiarc.dev/components/split-button,Components · Buttons,Free,NEW (primitive),N1,#23,planned
-Arc UI,Button group,https://uiarc.dev/components/button-group,Components · Buttons,Free,NEW (primitive),N1,#23,planned
-Arc UI,Floating button group,https://uiarc.dev/components/floating-button-group,Components · Buttons,Free,NEW (primitive),N1,#23,planned
-Arc UI,Expanding button group,https://uiarc.dev/components/expanding-button-group,Components · Buttons,Free,NEW (primitive),N1,#23,planned
+affectUI,Tilt Card,https://www.affectui.com/motion/tilt-card,Motion · Hover,Pro,NEW,M1,#35,planned
+Arc UI,Button,https://uiarc.dev/components/button,Components · Buttons,Free,button,N1,#23,built
+Arc UI,Action button,https://uiarc.dev/components/action-button,Components · Buttons,Free,button,N1,#23,built
+Arc UI,Split button,https://uiarc.dev/components/split-button,Components · Buttons,Free,button-groups,N1,#23,built
+Arc UI,Button group,https://uiarc.dev/components/button-group,Components · Buttons,Free,button-groups,N1,#23,built
+Arc UI,Floating button group,https://uiarc.dev/components/floating-button-group,Components · Buttons,Free,button-groups,N1,#23,built
+Arc UI,Expanding button group,https://uiarc.dev/components/expanding-button-group,Components · Buttons,Free,button-groups,N1,#23,built
 Arc UI,Copy button,https://uiarc.dev/components/copy-button,Components · Buttons,Free,"message-bubble.md (partial, message actions)",,#27,planned
 Arc UI,Action swap,https://uiarc.dev/components/action-swap,Components · Buttons,Free,verb-cycler.md (partial),,#28,built · close gaps
 Arc UI,Icon morph,https://uiarc.dev/components/icon-morph,Components · Buttons,Free,icon-states.md,,#40,planned
@@ -208,8 +208,8 @@ Arc UI,Rise,https://uiarc.dev/components/theme-switch-rise,None · None,Free,NEW
 Arc UI,Hold to confirm,https://uiarc.dev/components/hold-to-confirm,Components · Gestures,Free,approval-card.md (partial),,#28,built · close gaps
 Arc UI,Swipe actions,https://uiarc.dev/components/swipe-actions,Components · Gestures,Free,NEW,N6,#31,planned
 Arc UI,Reactions,https://uiarc.dev/components/reactions,Components · Gestures,Free,"message-bubble.md (partial, feedback)",,#27,planned
-Arc UI,Dropdown menu,https://uiarc.dev/components/dropdown-menu,Components · Menus,Free,NEW (primitive),N1,#23,planned
-Arc UI,Context menu,https://uiarc.dev/components/context-menu,Components · Menus,Free,NEW (primitive),N1,#23,planned
+Arc UI,Dropdown menu,https://uiarc.dev/components/dropdown-menu,Components · Menus,Free,dropdown-menu,N1,#23,built
+Arc UI,Context menu,https://uiarc.dev/components/context-menu,Components · Menus,Free,dropdown-menu,N1,#23,built
 Arc UI,User menu,https://uiarc.dev/components/user-menu,Components · Menus,Free,workspace-chrome.md (partial),,#27,planned
 Arc UI,Input,https://uiarc.dev/components/input,Components · Text fields,Free,composer-input-shell.md (partial),,#28,built · close gaps
 Arc UI,Textarea,https://uiarc.dev/components/textarea,Components · Text fields,Free,composer-input-shell.md (partial),,#28,built · close gaps
@@ -268,7 +268,7 @@ Arc UI,Drawer,https://uiarc.dev/components/drawer,Components · Overlays,Free,si
 Arc UI,Bottom sheet,https://uiarc.dev/components/bottom-sheet,Components · Overlays,Free,NEW,N3,#26,planned
 Arc UI,Popover,https://uiarc.dev/components/popover,Components · Overlays,Free,desktop-overlays.md (partial),,#26,planned
 Arc UI,Hover card,https://uiarc.dev/components/hover-card,Components · Overlays,Free,citations-sources.md (partial),,#27,planned
-Arc UI,Tooltip,https://uiarc.dev/components/tooltip,Components · Overlays,Free,NEW (primitive),N1,#23,planned
+Arc UI,Tooltip,https://uiarc.dev/components/tooltip,Components · Overlays,Free,tooltip-popover,N1,#23,built
 Arc UI,Share access,https://uiarc.dev/components/share-access,Components · Overlays,Pro,NEW,N19,#35,planned
 Arc UI,Confirm popover,https://uiarc.dev/components/confirm-popover,Components · Overlays,Pro,approval-card.md (partial),,#28,built · close gaps
 Arc UI,Alert,https://uiarc.dev/components/alert,Components · Messages,Free,NEW,N3,#26,planned

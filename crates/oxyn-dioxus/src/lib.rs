@@ -8,6 +8,7 @@ mod approval;
 mod checkpoint;
 mod composer;
 mod glyph_loader;
+mod primitives;
 mod run;
 mod status_indicator;
 mod status_text;
@@ -25,6 +26,13 @@ pub use composer::{
 pub use glyph_loader::{GLYPH_LOADER_CSS, GlyphLoader, GlyphLoaderProps};
 /// Stylesheet for approvals and checkpoints.
 pub const HITL_CSS: &str = include_str!("hitl.css");
+pub use primitives::{
+    ActionButton, Avatar, AvatarGroup, Badge, Button, ButtonGroup, Bx, Checkbox, Chip,
+    DropdownMenu, EmptyState, EntityChip, ExpandingButtonGroup, FloatingButtonGroup, Glide,
+    IconButton, Kbd, Monogram, NumberTicker, PRIMITIVES_CSS, Popover, RadioGroup, ReactionBar,
+    SegmentedControl, Select, Separator, Slider, Spinner, SplitButton, Switch, TextField, Tooltip,
+    TooltipProvider, ValuePill, fill_from, presence_from, spoken_shortcut, use_glide,
+};
 pub use run::{
     PlanCard, PlanCardProps, RUN_CSS, StepTimeline, StepTimelineProps, SubagentTree,
     SubagentTreeProps, TodoList, TodoListProps, ToolCallRow, ToolCallRowProps, ToolStack,

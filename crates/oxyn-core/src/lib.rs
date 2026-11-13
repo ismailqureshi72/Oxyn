@@ -6,6 +6,7 @@
 //!   `docs/motion.md` §9.
 //! - [`ease`]: cubic-Bézier easing evaluation for the `motion::ease::*` tokens.
 //! - [`verbs`]: verb packs (present and past tense), the activity table and duration phrases.
+//! - [`primitives`]: buttons, display atoms, form controls and overlays (plan #23).
 //!
 //! Time is passed in, never read: hosts call `apply`/`tick`/`advance` with a monotonic
 //! [`ClockMs`] from their own clock (GPUI's frame time, `performance.now()` on the web). That keeps
@@ -31,6 +32,7 @@ pub mod composer;
 pub mod ease;
 pub mod indicator;
 pub mod loader;
+pub mod primitives;
 pub mod run;
 pub mod state;
 pub mod text;
