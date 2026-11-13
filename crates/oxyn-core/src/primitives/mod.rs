@@ -16,18 +16,39 @@
 //! - [`overlay`]: tooltip delay group, popover stack.
 //! - [`menu`]: dropdown menu (and context-menu mode).
 //!
+//! Forms (plan #25):
+//! - [`tags`]: tag input. [`combobox`]: combobox and multi-select. [`otp`]: one-time code.
+//! - [`password`]: password reveal helpers and the strength meter. [`inline_edit`]: rename in
+//!   place. [`phone`]: phone input with a country picker and E.164.
+//! - [`date`]: dates, the calendar, date picker, range picker and time list. [`dial`]: the time
+//!   dial and the date reel.
+//! - [`filter_menu`]: grouped filters. [`stepper`]: stepper / multi-step form.
+//!   [`questions`]: the decision card and paged approval questions. [`smart_fill`]: paste to fill.
+//!
 //! Behaviour follows the affectUI and Arc UI docs (rebuilt, no source used) and Beautiful UI's MIT
-//! atoms (button, entity chip + monogram, value pill; © 2026 Shane Levine).
+//! atoms (button, entity chip + monogram, value pill) and Approval Card (© 2026 Shane Levine).
 
 pub mod button;
+pub mod combobox;
+pub mod date;
+pub mod dial;
 pub mod display;
+pub mod filter_menu;
+pub mod inline_edit;
 pub mod menu;
 pub mod nav;
+pub mod otp;
 pub mod overlay;
+pub mod password;
+pub mod phone;
 pub mod placement;
+pub mod questions;
 pub mod segmented;
 pub mod select;
 pub mod slider;
+pub mod smart_fill;
+pub mod stepper;
+pub mod tags;
 pub mod text_field;
 pub mod ticker;
 pub mod toggle;
