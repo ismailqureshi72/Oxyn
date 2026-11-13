@@ -1,8 +1,9 @@
 //! Approvals: approval card and pager.
 
 use dioxus::prelude::*;
+use oxyn_core::primitives::questions::{Question, QuestionKind, QuestionOption};
 use oxyn_core::{ClockMs, approval::Decision};
-use oxyn_dioxus::{ApprovalCard, ApprovalPager};
+use oxyn_dioxus::{ApprovalCard, ApprovalPager, ApprovalQuestions, DecisionCard};
 
 use super::{Code, rng, sel, tog, var};
 use crate::{Align, Demo, Vals, data};
@@ -147,6 +148,146 @@ fn pager_code(v: &Vals) -> String {
         .done()
 }
 
+fn decisions(kind: &str) -> Vec<Question> {
+    let db = Question::new(
+        "cache",
+        "Where should the dashboard cache live?",
+        QuestionKind::Single,
+        vec![
+            QuestionOption::new("redis", "Redis").summary("Fastest; one more service to run"),
+            QuestionOption::new("pg", "Postgres table")
+                .summary("Uses what we have; ~40 ms slower")
+                .recommended(),
+            QuestionOption::new("edge", "Edge KV").summary("Global, eventually consistent"),
+            QuestionOption::new("none", "No cache").summary("Ship the query fix only"),
+        ],
+    )
+    .task("Speed up the usage dashboard");
+    let pick = Question::new(
+        "hero",
+        "Which hero image for the launch post?",
+        QuestionKind::Pick,
+        vec![
+            QuestionOption::new("a", "Moth over code").summary("Dark, on brand"),
+            QuestionOption::new("b", "Team at the board")
+                .recommended()
+                .summary("Warm, human"),
+            QuestionOption::new("c", "Product screenshot").summary("Plain, clear"),
+        ],
+    )
+    .task("Draft the launch post");
+    let appr = Question::new(
+        "deploy",
+        "Deploy the billing fix to production?",
+        QuestionKind::Approval,
+        vec![],
+    )
+    .facts(&[
+        ("Branch", "fix/proration"),
+        ("Changes", "+214 −38 in 6 files"),
+        ("Checks", "All 128 passed"),
+    ])
+    .task("Fix proration on upgrades");
+    match kind {
+        "pick" => vec![pick, db, appr],
+        "approval" => vec![appr, db],
+        _ => vec![db, pick, appr],
+    }
+}
+
+fn decision(v: &Vals, _: ClockMs) -> Element {
+    rsx! {
+        div { class: "oxd-w560",
+            DecisionCard {
+                decisions: decisions(v.s("kind")),
+                default_folded: v.b("folded"),
+                timeout_s: v.b("timeout").then_some(15),
+                always: v.b("always"),
+            }
+        }
+    }
+}
+
+fn decision_code(v: &Vals) -> String {
+    Code::new("DecisionCard")
+        .pre("let decisions = vec![")
+        .pre("    Question::new(\"cache\", \"Where should the cache live?\", QuestionKind::Single, vec![")
+        .pre("        QuestionOption::new(\"redis\", \"Redis\"),")
+        .pre("        QuestionOption::new(\"pg\", \"Postgres table\").recommended(),")
+        .pre("    ]).task(\"Speed up the dashboard\"),")
+        .pre("];")
+        .raw("decisions", "decisions")
+        .b("default_folded", v.b("folded"))
+        .raw("timeout_s", if v.b("timeout") { "Some(15)" } else { "None" })
+        .b("always", v.b("always"))
+        .raw("on_decide", "move |(id, answer)| agent.answer(id, answer)")
+        .raw("on_later", "move |_| composer.focus()")
+        .done()
+}
+
+fn flavours() -> Vec<Question> {
+    vec![
+        Question::new(
+            "count",
+            "How many flavors should we launch?",
+            QuestionKind::Single,
+            vec![
+                QuestionOption::new("3", "Three (core line)").recommended(),
+                QuestionOption::new("5", "Five (full case)"),
+                QuestionOption::new("1", "Just one hero"),
+            ],
+        ),
+        Question::new(
+            "mix",
+            "Which mix-ins should we stock?",
+            QuestionKind::Multi,
+            vec![
+                QuestionOption::new("choc", "Chocolate chips"),
+                QuestionOption::new("waffle", "Waffle bits"),
+                QuestionOption::new("sprinkles", "Sprinkles"),
+            ],
+        ),
+        Question::new(
+            "market",
+            "Which market do we enter first?",
+            QuestionKind::Single,
+            vec![
+                QuestionOption::new("trucks", "Food trucks"),
+                QuestionOption::new("grocery", "Grocery freezers"),
+                QuestionOption::new("shops", "Scoop shops"),
+            ],
+        ),
+    ]
+}
+
+fn questions(v: &Vals, _: ClockMs) -> Element {
+    rsx! {
+        div { class: "oxd-w480",
+            ApprovalQuestions {
+                questions: flavours(),
+                review: v.b("review"),
+                resettable: v.b("resettable"),
+                timeout_s: v.b("timeout").then_some(20),
+            }
+        }
+    }
+}
+
+fn questions_code(v: &Vals) -> String {
+    Code::new("ApprovalQuestions")
+        .pre("let questions = vec![")
+        .pre("    Question::new(\"count\", \"How many flavors should we launch?\", QuestionKind::Single, vec![")
+        .pre("        QuestionOption::new(\"3\", \"Three (core line)\"),")
+        .pre("        QuestionOption::new(\"5\", \"Five (full case)\"),")
+        .pre("    ]),")
+        .pre("];")
+        .raw("questions", "questions")
+        .b("review", v.b("review"))
+        .raw("timeout_s", if v.b("timeout") { "Some(20)" } else { "None" })
+        .raw("on_submitted", "move |answers: Vec<String>| agent.resume(answers)")
+        .done()
+}
+
 pub(crate) fn demos() -> Vec<Demo> {
     vec![
         Demo {
@@ -258,6 +399,119 @@ pub(crate) fn demos() -> Vec<Demo> {
             height: 300,
             align: Align::Start,
             live: true,
+        },
+        Demo {
+            slug: "decision-card",
+            name: "Decision card",
+            category: "approvals",
+            summary: "An agent's question in its own card above the composer: numbered options with one Recommended, tiles for a pick, Approve / Decline with facts, or your own words.",
+            dioxus: "DecisionCard",
+            gpui: "DecisionCardEl",
+            spec: "decision-card",
+            source: "primitives/flows.rs",
+            controls: vec![
+                sel(
+                    "kind",
+                    "First decision",
+                    &["decision", "pick", "approval"],
+                    "decision",
+                ),
+                tog("folded", "Folded", false),
+                tog("timeout", "Timeout (15 s)", false),
+                tog("always", "Always answer this way", false),
+            ],
+            variants: vec![
+                var("decision", "Numbered rows, one Recommended.", &[]),
+                var("pick", "Three tiles.", &[("kind", "pick")]),
+                var(
+                    "approval",
+                    "Approve or Decline with facts.",
+                    &[("kind", "approval")],
+                ),
+                var("folded", "Folded to one line.", &[("folded", "true")]),
+                var(
+                    "timeout",
+                    "Picks Recommended after 15 s (Oxyn plus).",
+                    &[("timeout", "true"), ("always", "true")],
+                ),
+            ],
+            render: decision,
+            code: decision_code,
+            keyboard: vec![
+                (
+                    "1 – 5",
+                    "Answer with that row at once; the next number goes into the field",
+                ),
+                ("Home / End", "First / last row"),
+                (
+                    "↑ / ↓ (← → on tiles)",
+                    "Move between rows; ↓ from the last row goes into the field",
+                ),
+                (
+                    "Enter / Space",
+                    "Answer with the focused row; in the field Enter sends your words",
+                ),
+                ("Esc", "Later: fold the card to one line"),
+            ],
+            a11y: vec![
+                "The card is a group named by the question; rows are a listbox with one tab stop.",
+                "Each row says its number key (aria-keyshortcuts); Later says Escape.",
+                "Answers and Later are announced politely with how many still wait.",
+            ],
+            responsive: vec![
+                "Takes the composer's width; long titles wrap to two lines then end in ….",
+                "Below 420 px tiles turn into rows; touch rows are 44 px.",
+            ],
+            height: 380,
+            align: Align::Center,
+            live: false,
+        },
+        Demo {
+            slug: "approval-questions",
+            name: "Approval questions",
+            category: "approvals",
+            summary: "Paged questions the agent asks before acting: an odometer counter, single choice that moves on by itself, multi-select, your own answer, Skip and Send.",
+            dioxus: "ApprovalQuestions",
+            gpui: "ApprovalQuestionsEl",
+            spec: "approval-questions",
+            source: "primitives/flows.rs",
+            controls: vec![
+                tog("review", "Review before send", false),
+                tog("resettable", "Start over after send", true),
+                tog("timeout", "Timeout (20 s)", false),
+            ],
+            variants: vec![
+                var("paged", "Three questions, 1 / 3.", &[]),
+                var(
+                    "review",
+                    "A review page before Send (Oxyn plus).",
+                    &[("review", "true")],
+                ),
+                var(
+                    "timeout",
+                    "Answers Recommended after 20 s (Oxyn plus).",
+                    &[("timeout", "true")],
+                ),
+            ],
+            render: questions,
+            code: questions_code,
+            keyboard: vec![
+                ("Enter", "Continue (Send on the last question)"),
+                (
+                    "Click / Space on an option",
+                    "Pick; single choice moves on after 480 ms",
+                ),
+                ("Esc", "Dismiss"),
+            ],
+            a11y: vec![
+                "Single choice is a radiogroup, multi-select a group of checkboxes; the counter is named “Question 1 of 3”.",
+                "The card is aria-live=polite so each new question is read.",
+                "Prev, Next and Dismiss are labelled icon buttons.",
+            ],
+            responsive: vec!["Fills its container up to 460 px; option rows wrap their text."],
+            height: 340,
+            align: Align::Center,
+            live: false,
         },
     ]
 }
