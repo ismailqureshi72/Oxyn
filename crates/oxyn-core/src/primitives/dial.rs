@@ -594,6 +594,11 @@ impl DateReel {
             HourCycle::H24 => (0..24).map(|h| format!("{h:02}")).collect(),
         }
     }
+    /// Rebuilds the reels for `v` after changing `minute_step`, `cycle` or `mode`.
+    pub fn rebuild(&mut self, v: (Date, TimeOfDay)) {
+        self.build(v);
+        self.committed = self.value();
+    }
     fn build(&mut self, (d, t): (Date, TimeOfDay)) {
         let d = d.clamp(self.min, self.max);
         let step = self.minute_step.clamp(1, 30) as usize;

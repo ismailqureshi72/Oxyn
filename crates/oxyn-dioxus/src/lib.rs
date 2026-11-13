@@ -33,6 +33,11 @@ pub use primitives::{
     SegmentedControl, Select, Separator, Slider, Spinner, SplitButton, Switch, TextField, Tooltip,
     TooltipProvider, ValuePill, fill_from, presence_from, spoken_shortcut, use_glide,
 };
+pub use primitives::{
+    ApprovalQuestions, Calendar, Combobox, DatePicker, DateRangePicker, DateReel, DecisionCard,
+    FilterMenu, InlineEdit, MultiSelect, OtpInput, PasswordField, PasswordStrength, PhoneInput,
+    SmartFormFill, StepperForm, TagInput, TimeDial, TimePicker,
+};
 pub use run::{
     PlanCard, PlanCardProps, RUN_CSS, StepTimeline, StepTimelineProps, SubagentTree,
     SubagentTreeProps, TodoList, TodoListProps, ToolCallRow, ToolCallRowProps, ToolStack,
