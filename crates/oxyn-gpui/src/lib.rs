@@ -7,6 +7,7 @@
 mod composer;
 mod glyph_loader;
 mod hitl;
+mod primitives;
 mod run;
 mod status_indicator;
 mod status_text;
@@ -14,6 +15,12 @@ mod status_text;
 pub use composer::{Composer, ComposerEvent};
 pub use glyph_loader::GlyphLoaderView;
 pub use hitl::{ApprovalCardEl, CheckpointLanesEl};
+pub use primitives::{
+    ActionButtonEl, AvatarEl, BadgeEl, ButtonEl, ButtonGroupEl, CheckboxEl, ChipEl, EmptyStateEl,
+    EntityChipEl, ExpandingGroupEl, IconButtonEl, KbdEl, MenuEl, MonogramEl, NumberTickerEl,
+    PopoverEl, RadioGroupEl, ReactionBarEl, SegmentedEl, SelectEl, SeparatorEl, SliderEl,
+    SpinnerEl, SplitButtonEl, SwitchEl, TextFieldEl, TooltipEl, ValuePillEl,
+};
 pub use run::{SubagentTreeEl, TodoChecklist, ToolCallRowEl};
 pub use status_indicator::{IndicatorSize, IndicatorVariant, StatusIndicator};
 pub use status_text::{RevealText, ShimmerText, TimerText, VerbCyclerView};

@@ -105,4 +105,17 @@ specified just as deeply. When we point at one component as an example, the stan
 | [icon-states.md](icon-states.md) | draft v0.1 |
 | [plugin-icons.md](plugin-icons.md) | draft v0.1 |
 | [animated-marks.md](animated-marks.md) | draft v0.1 |
+| [button.md](button.md) | v1 — implemented (plan #23): button, icon button, action button |
+| [button-groups.md](button-groups.md) | v1 — implemented (plan #23): split, joined, floating, expanding groups |
+| [badges-chips.md](badges-chips.md) | v1 — implemented (plan #23): badge, chip, value pill, entity chip + monogram |
+| [avatar.md](avatar.md) | v1 — implemented (plan #23): avatar with agent ring, avatar group |
+| [display-atoms.md](display-atoms.md) | v1 — implemented (plan #23): kbd, separator, spinner, empty state |
+| [number-ticker.md](number-ticker.md) | v1 — implemented (plan #23): number ticker, reaction bar |
+| [toggles.md](toggles.md) | v1 — implemented (plan #23): switch, checkbox, radio group |
+| [segmented-control.md](segmented-control.md) | v1 — implemented (plan #23) |
+| [select.md](select.md) | v1 — implemented (plan #23) |
+| [slider.md](slider.md) | v1 — implemented (plan #23) |
+| [text-field.md](text-field.md) | v1 — implemented (plan #23) |
+| [tooltip-popover.md](tooltip-popover.md) | v1 — implemented (plan #23): tooltip, popover |
+| [dropdown-menu.md](dropdown-menu.md) | v1 — implemented (plan #23): dropdown menu, context-menu mode |
 | Every other component in [../component-taxonomy.md](../component-taxonomy.md) | to write in V2.2 |
