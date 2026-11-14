@@ -1,5 +1,6 @@
 //! Core primitives for Dioxus (plan #23): buttons, display atoms, form controls and overlays;
-//! plan #25 adds form fields, pickers and flows (`fields`, `pickers`, `flows`).
+//! plan #25 adds form fields, pickers and flows (`fields`, `pickers`, `flows`); plan #26 adds
+//! surfaces (`surfaces`) and command / search components (`command`).
 //!
 //! Logic lives in `oxyn_core::primitives`; these components hold that state in signals, map DOM
 //! events onto it and draw with `PRIMITIVES_CSS`. Motion runs in CSS with the motion-token
@@ -12,23 +13,31 @@ use std::rc::Rc;
 use dioxus::prelude::*;
 
 mod buttons;
+mod command;
 mod display;
 mod fields;
 mod flows;
 mod forms;
 mod overlays;
 mod pickers;
+mod surfaces;
 
 pub use buttons::*;
+pub use command::*;
 pub use display::*;
 pub use fields::*;
 pub use flows::*;
 pub use forms::*;
 pub use overlays::*;
 pub use pickers::*;
+pub use surfaces::*;
 
 /// Stylesheet for every primitive.
-pub const PRIMITIVES_CSS: &str = concat!(include_str!("primitives.css"), include_str!("forms.css"));
+pub const PRIMITIVES_CSS: &str = concat!(
+    include_str!("primitives.css"),
+    include_str!("forms.css"),
+    include_str!("surfaces.css")
+);
 
 /// A measured box relative to its container.
 #[derive(Clone, Copy, Debug, Default, PartialEq)]

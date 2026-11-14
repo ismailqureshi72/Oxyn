@@ -1,4 +1,4 @@
-**Status:** draft v0.1 (2026-11-12).
+**Status:** v1 — palette, command menu and AI answers implemented (plan #26); notification centre stays a draft.
 
 # Spec: ⌘K command palette with AI answers & notification centre (`command-palette`, `notification-center`)
 
@@ -338,3 +338,20 @@ pub struct NotificationCenter<'a> {
 | affectUI Command Menu (Pro), Notification Stack (Free) (note 11) | catalogue presence | Study only (licensing.md) |
 | Cuelume [R110] | sound cue categories | MIT — portable with attribution (sounds re-made) |
 | Astryx Command Palette, Power Search (note 16 [R103]) | presence of primitives | Licence not recorded — study only until checked |
+
+## Plan #26 implementation
+Implemented in `oxyn-core::primitives::command` (`Command`, `Palette`, `PaletteKey`, `PaletteOutcome`,
+`search`, `score`, `highlight`) with `oxyn-dioxus::CommandPalette` and `oxyn-gpui::CommandPaletteEl`.
+The AI answer half is split into [ai-command.md](ai-command.md), [ai-search-bar.md](ai-search-bar.md)
+and [settings-command.md](settings-command.md); toasts and notices into [toaster.md](toaster.md)
+and [notification-stack.md](notification-stack.md).
+
+- **Arc UI Command palette (block):** every word must match (label anywhere, a word start in the
+  description or keywords, or letters in order); matched letters in medium weight; groups follow
+  their best match; ↑ ↓ wrap, Home / End, Tab / Shift+Tab jump sections, Enter runs, Escape clears
+  then closes; one gliding highlight (spring for the pointer, a jump for the keyboard).
+- **affectUI Command Menu:** `variant: "menu"` — tool logos, ⌘1–⌘5 on the first five suggestions,
+  an "esc" cap, a tray confirming what ran ("✓ Ran Summarize this thread") and an "Ask the
+  assistant" row when nothing matches.
+- **Oxyn plus:** scoped modes by prefix (`>` commands, `@` files, `#` threads) with a scope chip and
+  Backspace to leave it, recents, `elevated`, `max_height`, announced result counts.

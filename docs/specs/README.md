@@ -54,7 +54,7 @@ specified just as deeply. When we point at one component as an example, the stan
 | [border-beam.md](border-beam.md) | draft v0.1 |
 | [media-generation-placeholder.md](media-generation-placeholder.md) | draft v0.1 |
 | [media-analysis-scan.md](media-analysis-scan.md) | draft v0.1 |
-| [skeletons.md](skeletons.md) | draft v0.1 |
+| [skeletons.md](skeletons.md) | v1 — implemented (plan #26): skeleton, shimmer loader |
 | [messages.md](messages.md) | draft v0.1 — family E overview |
 | [message-bubble.md](message-bubble.md) | draft v0.1 |
 | [streaming-markdown.md](streaming-markdown.md) | draft v0.1 |
@@ -94,7 +94,7 @@ specified just as deeply. When we point at one component as an example, the stan
 | [terminal-tabs.md](terminal-tabs.md) | draft v0.1 |
 | [side-panels.md](side-panels.md) | draft v0.1 |
 | [mcp-plugin-list.md](mcp-plugin-list.md) | draft v0.1 |
-| [command-palette.md](command-palette.md) | draft v0.1 |
+| [command-palette.md](command-palette.md) | v1 — implemented (plan #26): palette, command menu, AI answers |
 | [desktop-overlays.md](desktop-overlays.md) | draft v0.1 |
 | [live-voice.md](live-voice.md) | draft v0.1 — family K overview |
 | [voice-orb.md](voice-orb.md) | draft v0.1 |
@@ -108,7 +108,7 @@ specified just as deeply. When we point at one component as an example, the stan
 | [button.md](button.md) | v1 — implemented (plan #23): button, icon button, action button |
 | [button-groups.md](button-groups.md) | v1 — implemented (plan #23): split, joined, floating, expanding groups |
 | [badges-chips.md](badges-chips.md) | v1 — implemented (plan #23): badge, chip, value pill, entity chip + monogram |
-| [avatar.md](avatar.md) | v1 — implemented (plan #23): avatar with agent ring, avatar group |
+| [avatar.md](avatar.md) | v1.1 — implemented (plan #23, Arc gaps closed in plan #26) |
 | [display-atoms.md](display-atoms.md) | v1 — implemented (plan #23): kbd, separator, spinner, empty state |
 | [number-ticker.md](number-ticker.md) | v1 — implemented (plan #23): number ticker, reaction bar |
 | [toggles.md](toggles.md) | v1.1 — implemented (plan #23, Arc gaps closed in plan #25): switch, checkbox, radio group |
@@ -116,8 +116,8 @@ specified just as deeply. When we point at one component as an example, the stan
 | [select.md](select.md) | v1.1 — implemented (plan #23, Arc gaps closed in plan #25) |
 | [slider.md](slider.md) | v1 — implemented (plan #23) |
 | [text-field.md](text-field.md) | v1 — implemented (plan #23) |
-| [tooltip-popover.md](tooltip-popover.md) | v1 — implemented (plan #23): tooltip, popover |
-| [dropdown-menu.md](dropdown-menu.md) | v1 — implemented (plan #23): dropdown menu, context-menu mode |
+| [tooltip-popover.md](tooltip-popover.md) | v1.1 — implemented (plan #23, gaps closed in plan #26) |
+| [dropdown-menu.md](dropdown-menu.md) | v1.1 — implemented (plan #23, gaps closed in plan #26) |
 | [tag-input.md](tag-input.md) | v1 — implemented (plan #25): tag input |
 | [combobox.md](combobox.md) | v1 — implemented (plan #25): combobox |
 | [multi-select.md](multi-select.md) | v1 — implemented (plan #25): multi-select |
@@ -126,6 +126,24 @@ specified just as deeply. When we point at one component as an example, the stan
 | [password-strength.md](password-strength.md) | v1 — implemented (plan #25): password strength |
 | [inline-edit.md](inline-edit.md) | v1 — implemented (plan #25): inline edit |
 | [phone-input.md](phone-input.md) | v1 — implemented (plan #25): phone input |
+| [dialog.md](dialog.md) | v1 — implemented (plan #26): dialog |
+| [sheet.md](sheet.md) | v1 — implemented (plan #26): side sheet |
+| [sheet-stack.md](sheet-stack.md) | v1 — implemented (plan #26): sheet stack |
+| [bottom-sheet.md](bottom-sheet.md) | v1 — implemented (plan #26): bottom sheet |
+| [toaster.md](toaster.md) | v1 — implemented (plan #26): toaster |
+| [notification-stack.md](notification-stack.md) | v1 — implemented (plan #26): notification stack |
+| [alert.md](alert.md) | v1 — implemented (plan #26): alert |
+| [card.md](card.md) | v1 — implemented (plan #26): card |
+| [scroll-area.md](scroll-area.md) | v1 — implemented (plan #26): scroll area with stick-to-bottom |
+| [pagination.md](pagination.md) | v1 — implemented (plan #26): pagination |
+| [skeleton-morph.md](skeleton-morph.md) | v1 — implemented (plan #26): skeleton morph |
+| [ai-command.md](ai-command.md) | v1 — implemented (plan #26): AI command |
+| [ai-search-bar.md](ai-search-bar.md) | v1 — implemented (plan #26): AI search bar |
+| [settings-command.md](settings-command.md) | v1 — implemented (plan #26): settings command |
+| [search-field.md](search-field.md) | v1 — implemented (plan #26): search field |
+| [expanding-search.md](expanding-search.md) | v1 — implemented (plan #26): expanding search |
+| [shortcut-recorder.md](shortcut-recorder.md) | v1 — implemented (plan #26): shortcut recorder and cheatsheet |
+| [control-center.md](control-center.md) | v1 — implemented (plan #26): control center |
 | [calendar.md](calendar.md) | v1 — implemented (plan #25): calendar |
 | [date-picker.md](date-picker.md) | v1 — implemented (plan #25): date picker |
 | [date-range-picker.md](date-range-picker.md) | v1 — implemented (plan #25): date range picker |

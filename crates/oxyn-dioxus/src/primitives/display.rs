@@ -230,6 +230,7 @@ pub fn Avatar(
 ) -> Element {
     let a = avatar;
     let mut loaded = use_signal(|| false);
+    let mut failed = use_signal(|| false);
     let m = a.monogram();
     let size = a.size;
     let r = a.radius();
@@ -280,8 +281,8 @@ pub fn Avatar(
                 } else {
                     span { class: "ini", "aria-hidden": "true", "{m.letters}" }
                 }
-                if let Some(src) = a.src.clone() {
-                    img { class: if *loaded.read() { "pic loaded" } else { "pic" }, src: "{src}", alt: "", onload: move |_| loaded.set(true) }
+                if let Some(src) = a.src.clone().filter(|_| !failed()) {
+                    img { class: if *loaded.read() { "pic loaded" } else { "pic" }, src: "{src}", alt: "", onload: move |_| loaded.set(true), onerror: move |_| failed.set(true) }
                 }
             }
             if let Some(p) = a.status { span { class: "pres {p.id()}", style: "--d:{a.dot()}px", "aria-hidden": "true" } }

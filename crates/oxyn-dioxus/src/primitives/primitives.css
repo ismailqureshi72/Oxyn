@@ -529,6 +529,8 @@
 .oxyn-popover.top .arw{bottom:-6px;left:16px;transform:rotate(225deg)}
 .oxyn-popover.right .arw{left:-6px;top:14px;transform:rotate(-45deg)}
 .oxyn-popover.left .arw{right:-6px;top:14px;transform:rotate(135deg)}
+.oxyn-popover.bottom.center .arw,.oxyn-popover.top.center .arw{left:calc(50% - 5px)}
+.oxyn-popover.bottom.end .arw,.oxyn-popover.top.end .arw{left:auto;right:16px}
 @supports (position-anchor:--a){.oxyn-popover{position-try-fallbacks:flip-block,flip-inline}}
 
 /* ---------- Reduced motion ---------- */

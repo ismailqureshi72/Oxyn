@@ -17,6 +17,9 @@ fn tooltip(v: &Vals, _: ClockMs) -> Element {
                 title: rich.then(|| "Run tests".to_string()),
                 shortcut: v.opt("shortcut"),
                 side: v.string("side"),
+                align: v.string("tip_align"),
+                offset: v.f("offset") as f32,
+                disabled: v.b("disabled"),
                 delay: v.f("delay") as u32,
                 open,
                 IconButton { icon: "search", label: "Search", variant: "secondary" }
@@ -58,6 +61,8 @@ fn popover(v: &Vals, _: ClockMs) -> Element {
                 width: Some(280.0),
                 arrow: v.b("arrow"),
                 mode: v.string("mode"),
+                modal: v.b("modal"),
+                collision_padding: v.f("padding") as f32,
                 TextField { label: "Link", value: "oxyn.dev/t/8f2a", copyable: true, size: "sm" }
             }
         }
@@ -89,6 +94,8 @@ fn popover_code(v: &Vals) -> String {
 fn menu(v: &Vals, now: ClockMs) -> Element {
     let items = if v.b("empty") {
         vec![]
+    } else if v.b("logos") {
+        data::menu_items_logos()
     } else {
         data::menu_items()
     };
@@ -165,6 +172,9 @@ pub(crate) fn demos() -> Vec<Demo> {
                 super::rng("delay", "Delay ms", 0.0, 1000.0, 100.0, "500"),
                 tog("rich", "Rich (title)", false),
                 tog("open", "Force open", true),
+                sel("tip_align", "Align", &["center", "start", "end"], "center"),
+                super::rng("offset", "Offset px", 0.0, 16.0, 1.0, "6"),
+                tog("disabled", "Disabled", false),
             ],
             variants: vec![
                 var("shortcut", "Label with its shortcut.", &[]),
@@ -217,9 +227,11 @@ pub(crate) fn demos() -> Vec<Demo> {
                     &["bottom", "top", "right", "left"],
                     "bottom",
                 ),
-                sel("align", "Align", &["start", "center", "end"], "start"),
+                sel("align", "Align", &["start", "center", "end"], "center"),
                 tog("arrow", "Arrow", true),
                 sel("mode", "Opens on", &["press", "hover"], "press"),
+                tog("modal", "Modal", false),
+                super::rng("padding", "Collision padding", 0.0, 24.0, 2.0, "10"),
             ],
             variants: vec![
                 var("press", "Opens on press.", &[]),
@@ -268,6 +280,7 @@ pub(crate) fn demos() -> Vec<Demo> {
                     "comfortable",
                 ),
                 tog("searchable", "Searchable", false),
+                tog("logos", "Tool logos", false),
                 tog("context", "Context-menu mode", false),
                 tog("empty", "Empty", false),
             ],
