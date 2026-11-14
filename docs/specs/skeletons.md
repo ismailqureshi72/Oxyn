@@ -1,4 +1,4 @@
-**Status:** draft v0.1 (2026-11-11).
+**Status:** v1 — implemented (plan #26): skeleton, shimmer loader and skeleton morph.
 
 # Spec: skeletons (messages, cards, tables, charts, code blocks)
 
@@ -230,3 +230,17 @@ skeleton) and source cards · family F tool cards · family C shimmer (same `shi
 
 Gaps: the "expected size" hint (rows, lines) depends on what each adapter can tell us before content
 arrives; not researched per protocol.
+
+## Plan #26 implementation
+`oxyn-core::primitives::skeleton` (`Shape`, `Sweep`, `Bone`, `line_widths`, `sheen_phase`, `Morph`,
+`timing`), `oxyn-dioxus::Skeleton`, `ShimmerLabel`, `SkeletonMorph` + `MorphBlock`,
+`oxyn-gpui::SkeletonEl` and `SkeletonMorphEl`. Morph details live in
+[skeleton-morph.md](skeleton-morph.md).
+
+- **Arc UI Skeleton:** text lines (1–6, last one shorter), optional avatar, a staggered pulse (`wave`).
+- **affectUI Skeleton + Shimmer Loader:** one sheen shared by every bone (`background-attachment:
+  fixed`, so all bones sweep in step), a reveal delay so fast loads never flash, a crossfade and
+  4 px rise into the content, and shimmering status text (`ShimmerLabel`).
+- **Oxyn plus:** shape presets (`text`, `message`, `tool-row`, `diff`, `card`, `table`, `form`),
+  sweep `shimmer` · `pulse` · `wave` · `none`, period and angle controls; reduced motion stops all
+  sweeps.
