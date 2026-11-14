@@ -9,6 +9,7 @@ mod chat;
 mod checkpoint;
 mod composer;
 mod glyph_loader;
+mod parity;
 mod primitives;
 mod run;
 mod shell;
@@ -40,6 +41,10 @@ pub use composer::{
 pub use glyph_loader::{GLYPH_LOADER_CSS, GlyphLoader, GlyphLoaderProps};
 /// Stylesheet for approvals and checkpoints.
 pub const HITL_CSS: &str = include_str!("hitl.css");
+pub use parity::{
+    AgentApprovals, ApprovalGates, ConfirmMorph, ConfirmPopover, HoldToConfirm, PermissionRequest,
+    gate_dot,
+};
 pub use primitives::{
     Accordion, AccordionItem, Breadcrumb, ChipGroup, CodeBlock, CopyButton, Dock, Drawer,
     EmptyPreset, ExpandableText, HoverCard, NotificationCenter, PageHeader, PaneView, PresenceDot,

@@ -76,6 +76,33 @@ pub fn ApprovalCard(
     /// Hold started / ended (Critical).
     #[props(default)]
     on_hold: EventHandler<bool>,
+    /// Shows an Edit button before Deny when set.
+    #[props(default)]
+    on_edit: Option<EventHandler<()>>,
+    /// Pointer or focus entered (`true`) or left the card: pauses the countdown.
+    #[props(default)]
+    on_hover: EventHandler<bool>,
+    /// Pager arrows: -1 previous, +1 next.
+    #[props(default)]
+    on_page: EventHandler<i32>,
+    /// Primary label ("Allow once").
+    #[props(default)]
+    approve_label: Option<String>,
+    /// Quiet label ("Deny").
+    #[props(default = "Deny".to_string())]
+    deny_label: String,
+    /// Edit label.
+    #[props(default = "Edit".to_string())]
+    edit_label: String,
+    /// Checkbox label.
+    #[props(default = "Always allow this action".to_string())]
+    always_label: String,
+    /// Icon in the 32 px header tile (an `Icon` name); risk picks one when unset.
+    #[props(default)]
+    icon: Option<String>,
+    /// Custom preview above the details (recipients, a diff).
+    #[props(default)]
+    children: Element,
 ) -> Element {
     let req = card.request.clone();
     let phase = card.phase(now);
@@ -130,6 +157,10 @@ pub fn ApprovalCard(
         .map(|p| format!("--fill:{:.0}%", p * 100.0))
         .unwrap_or_default();
     let hold = b.hold;
+    let allow_text = match (&approve_label, hold) {
+        (Some(l), false) => l.clone(),
+        _ => b.allow_label.clone(),
+    };
     let decide_allow = move |_| {
         if !hold {
             on_decide.call(if always {
@@ -145,9 +176,12 @@ pub fn ApprovalCard(
         div { class: "btns",
             if let Some((c, warn)) = countdown.clone() { span { class: if warn { "cd warn" } else { "cd" }, "aria-hidden": "true", "{c}" } }
             span { class: "sp" }
+            if let Some(ed) = on_edit {
+                button { class: "edit", r#type: "button", onclick: move |_| ed.call(()), Icon { name: "pencil", size: 13.0 } "{edit_label}" }
+            }
             button { class: if b.deny_default { "deny dflt" } else { "deny" }, r#type: "button", "aria-keyshortcuts": "Escape",
                 onclick: move |_| on_decide.call(Decision::Deny { reason: None }),
-                "Deny" if shortcuts { kbd { "Esc" } }
+                "{deny_label}" if shortcuts { kbd { "Esc" } }
             }
             if req.allow_session && r < Risk::Critical {
                 button { class: "sess", r#type: "button", disabled: b.allow_disabled, onclick: move |_| on_decide.call(Decision::AllowSession), "For this session" }
@@ -159,12 +193,13 @@ pub fn ApprovalCard(
                 onpointerup: move |_| if hold { on_hold.call(false) },
                 if b.allow_fill.is_some() { span { class: "fill" } }
                 if b.spinner { span { class: "ld" } }
-                span { class: "lb", "{b.allow_label}" }
+                span { class: "lb", "{allow_text}" }
                 if shortcuts && !hold { kbd { "⌘↵" } }
             }
         }
     };
     let preview = rsx! {
+        {children}
         if let Some(cmd) = req.command.clone() { pre { class: "cmd", "$ {cmd}" } }
         if let Some(a) = req.amount.clone() { div { class: "amt", "{a}" } }
         if !req.details.is_empty() {
@@ -178,23 +213,23 @@ pub fn ApprovalCard(
     };
     let head = rsx! {
         div { class: "hd",
-            span { class: "tile", Icon { name: if r >= Risk::High { "lock" } else { "hand" }, size: 16.0 } }
+            span { class: "tile", Icon { name: icon.clone().unwrap_or_else(|| if r >= Risk::High { "lock" } else { "hand" }.to_string()), size: 16.0 } }
             div { class: "ttl",
                 div { class: "tt", "{req.title}" }
                 if let Some(d) = req.description.clone() { div { class: "ds", "{d}" } }
             }
-            if let Some(p) = pager.clone() { span { class: "pager", button { r#type: "button", "‹" } "{p}" button { r#type: "button", "›" } } }
+            if let Some(p) = pager.clone() { span { class: "pager", button { r#type: "button", "aria-label": "Previous request", onclick: move |_| on_page.call(-1), "‹" } "{p}" button { r#type: "button", "aria-label": "Next request", onclick: move |_| on_page.call(1), "›" } } }
             {risk_badge(r)}
         }
     };
     let always_row = rsx! {
         if req.allow_always {
-            label { class: "always", input { r#type: "checkbox", checked: always } "Always allow this action" }
+            label { class: "always", input { r#type: "checkbox", checked: always } "{always_label}" }
         }
     };
     let batch_row = rsx! {
         if let Some(bt) = batch.clone() {
-            div { class: "batch", span { "{bt}" } span { class: "sp" } button { r#type: "button", onclick: move |_| on_decide.call(Decision::AllowOnce), "Allow all" } button { r#type: "button", class: "q", "Deny all" } }
+            div { class: "batch", span { "{bt}" } span { class: "sp" } button { r#type: "button", onclick: move |_| on_decide.call(Decision::AllowOnce), "Allow all" } button { r#type: "button", class: "q", onclick: move |_| on_decide.call(Decision::Deny { reason: None }), "Deny all" } }
         }
     };
     let cls = format!(
@@ -233,6 +268,19 @@ pub fn ApprovalCard(
         },
         _ => rsx! {
             div { class: "{cls}", role: "group", "aria-label": "{req.title}", "aria-busy": "{matches!(phase, CardPhase::Submitting(_))}",
+                tabindex: "-1",
+                onmouseenter: move |_| on_hover.call(true),
+                onmouseleave: move |_| on_hover.call(false),
+                onfocusin: move |_| on_hover.call(true),
+                onfocusout: move |_| on_hover.call(false),
+                onkeydown: move |e: KeyboardEvent| {
+                    let m = e.modifiers();
+                    match e.key() {
+                        Key::Escape => on_decide.call(Decision::Deny { reason: None }),
+                        Key::Enter if (m.meta() || m.ctrl()) && !hold => on_decide.call(Decision::AllowOnce),
+                        _ => {}
+                    }
+                },
                 if let Some(l) = req.label.clone() { div { class: "tray-label", "{l}" } }
                 div { class: "body",
                     {head}

@@ -11,6 +11,7 @@ mod forms;
 mod glyph_loader;
 mod hitl;
 mod navigation;
+mod parity;
 mod primitives;
 mod run;
 mod shell;
@@ -39,6 +40,10 @@ pub use navigation::{
     HoverCardEl, NotificationCenterEl, PageHeaderEl, RadioCardsEl, RatingEl, ReactionsEl,
     ReorderListEl, ResizableEl, TabsEl, TeamSwitcherEl, TocProgressEl, ToggleGroupEl, TreeViewEl,
     UserMenuEl,
+};
+pub use parity::{
+    Act, AgentApprovalsEl, ApprovalGatesEl, ApprovalPagerEl, ConfirmMorphEl, ConfirmPopoverEl,
+    HoldConfirmEl, PermissionRequestEl,
 };
 pub use primitives::{
     ActionButtonEl, AvatarEl, BadgeEl, ButtonEl, ButtonGroupEl, CheckboxEl, ChipEl, EmptyStateEl,
