@@ -221,7 +221,11 @@ impl PlanDraft {
     }
     /// The running step finished (`Err` fails it and stops the run).
     pub fn finish_step(&mut self, result: Result<(), String>, now: ClockMs) {
-        let Some(i) = self.steps.iter().position(|s| s.state == StepState::Running) else {
+        let Some(i) = self
+            .steps
+            .iter()
+            .position(|s| s.state == StepState::Running)
+        else {
             return;
         };
         let s = &mut self.steps[i];
