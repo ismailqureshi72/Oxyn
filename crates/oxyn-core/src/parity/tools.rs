@@ -839,7 +839,11 @@ mod tests {
         assert!(t.rows().iter().any(|x| x.more == Some(1)));
         t.more("root.users");
         // The users array is fully shown; the root (3 keys at one per page) still pages.
-        assert!(t.rows().iter().all(|x| x.more.is_none() || x.path != "root.users"));
+        assert!(
+            t.rows()
+                .iter()
+                .all(|x| x.more.is_none() || x.path != "root.users")
+        );
         t.more("root");
         t.more("root");
         assert!(t.rows().iter().all(|x| x.more.is_none()));
