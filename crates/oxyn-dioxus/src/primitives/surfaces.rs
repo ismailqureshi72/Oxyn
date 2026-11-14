@@ -457,6 +457,13 @@ pub fn SheetStack(
     let mut width = use_signal(|| 0.0f32);
     let mut last_y = use_signal(|| (0.0f32, 0.0f32));
     let changed = move || on_stack_change.call(m.peek().stack.ids().to_vec());
+    // Mounted sheets by id: after a pop, focus returns to the sheet that is now on top (the
+    // popped one held focus, so Escape would otherwise stop reaching the stack).
+    let mut nodes = use_signal(std::collections::HashMap::<String, Rc<MountedData>>::new);
+    let refocus = move || {
+        let id = m.peek().open().last().map(|p| p.id.clone());
+        focus(id.and_then(|id| nodes.peek().get(&id).cloned()));
+    };
     let st = m.read().clone();
     let w = width();
     let resolved = st
@@ -492,7 +499,7 @@ pub fn SheetStack(
             onpointerup: move |_| if m.peek().drag.active {
                 let (a, b) = *last_y.peek();
                 let pop = m.write().drag.release((a - b) * 60.0, sheet_h);
-                if pop { m.write().pop(); changed() }
+                if pop { m.write().pop(); changed(); refocus() }
             },
             if n > 0 {
                 div { class: "oxyn-scrim", onpointerdown: move |_| { m.write().close(); changed() } }
@@ -517,16 +524,16 @@ pub fn SheetStack(
                         div { key: "{page.id}", class: cls(&["oxyn-stack-sheet", if top { "top" } else { "under" }, if st.drag.active && top { "dragging" } else { "" }]),
                             style: "{tf};transform-origin:{origin};--dim:{lv.dim:.2};z-index:{10 + i}",
                             role: "dialog", "aria-modal": if top { "true" } else { "false" }, "aria-labelledby": "{tid}", "aria-hidden": if !top { "true" },
-                            inert: !top, tabindex: "-1",
-                            onmounted: move |e| if top { focus(Some(e.data())) },
-                            onkeydown: move |e: KeyboardEvent| if e.key() == Key::Escape { e.stop_propagation(); m.write().pop(); changed() },
+                            "inert": if !top { "true" }, tabindex: "-1",
+                            onmounted: { let pid = page.id.clone(); move |e: MountedEvent| { nodes.write().insert(pid.clone(), e.data()); if top { focus(Some(e.data())) } } },
+                            onkeydown: move |e: KeyboardEvent| if e.key() == Key::Escape { e.stop_propagation(); m.write().pop(); changed(); refocus() },
                             if resolved == StackMode::Sheet && dismissible {
                                 span { class: "grab", "aria-hidden": "true",
                                     onpointerdown: move |e| { let y = e.client_coordinates().y as f32; last_y.set((y, y)); m.write().drag.begin(y) } }
                             }
                             header { class: "sh",
                                 if let Some(b) = back.clone() {
-                                    button { class: "oxyn-btn ghost xs back", r#type: "button", "aria-label": "Back to {b}", onclick: move |_| { m.write().pop(); changed() },
+                                    button { class: "oxyn-btn ghost xs back", r#type: "button", "aria-label": "Back to {b}", onclick: move |_| { m.write().pop(); changed(); refocus() },
                                         Icon { name: "chevron-left", size: 13.0, stroke: 2.0 } span { "{b}" }
                                     }
                                 }
@@ -1060,7 +1067,7 @@ pub fn NotificationStack(
                     let pat = nt.pattern.clone().unwrap_or_default();
                     rsx! {
                         article { key: "{id}", class: cls(&["oxyn-notice", if front { "front" } else { "back" }, if out { "out" } else { "" }, if pat.is_empty() { "" } else { "pat" }, &format!("pat-{pat}")]),
-                            style: "--k:{k}", "aria-labelledby": "{tid}", "aria-hidden": if !front { "true" }, inert: !front,
+                            style: "--k:{k}", "aria-labelledby": "{tid}", "aria-hidden": if !front { "true" }, "inert": if !front { "true" },
                             div { class: "nh",
                                 if let Some(b) = nt.badge.clone() { span { class: "badge", "{b}" } }
                                 if front && st.len() > 1 { span { class: "count", "{st.position_label()}" } }
