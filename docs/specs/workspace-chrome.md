@@ -300,3 +300,80 @@ panel, corner tile) · [acting-indicator.md](acting-indicator.md) (agent-opened 
 | Zed panels / docks (note 03) | dock model familiarity for GPUI users | Mixed GPL / Apache by crate — study only unless the crate is Apache-2.0 (check per crate) |
 | Rune `SplitView` app shell (note 07) | an agent-chat split shell exists in Rust | MIT — portable with attribution; re-check before porting |
 | Warp (note 03) | — | AGPL — study only |
+
+## Plan #27 implementation — sidebars, app shells, Sidebar Nav and the harness
+
+Implemented in `oxyn-core::shell` (`Rail`, `NavSection`, `trail`, `parent_of`, `filter`, `shift`,
+`Inbox`, `fork_url`), `oxyn-dioxus::{Sidebar, SidebarRail, WorkspaceSidebar, InboxSidebar, AppShell,
+SidebarNav, Harness}` (styles in `SHELL_CSS`, bundled into `PRIMITIVES_CSS`) and
+`oxyn-gpui::{SidebarEl, RailShellEl, WorkspaceSidebarEl, InboxEl, AppShellEl, SidebarNavEl,
+HarnessEl}`. Behaviour follows Arc UI (Sidebar, Workspace sidebar, Sidebar rail, Inbox sidebar) and
+affectUI (App Shell Flat / Inset), rebuilt from their public docs with no source used. Sidebar Nav
+is a port of Beautiful UI's (MIT, © 2026 Shane Levine) without its paid Central Icons.
+
+### 27.1 Purpose
+The left edge of an app: where you are, where you can go, and room to fold it away.
+
+### 27.2 State machine
+```
+open ─[ / fold button / separator Enter / double-click─▶ rail ─same─▶ open
+drag x: x < snap (140) ─▶ rail · snap ≤ x < min ─▶ min · x > max ─▶ max · else width = x
+group row ─click─▶ expanded ⇄ collapsed     inbox move ─▶ last_move (Undo restores)
+```
+
+### 27.3 States table
+| Part | State | Shows | Keyboard | ARIA |
+|---|---|---|---|---|
+| Sidebar | open / rail | labels · icons + tooltips + unread dot | `[` | nav, `aria-expanded` on fold |
+| Rail separator | idle / drag / focus | hairline · accent line | ← → ±16 px, Enter | `separator` with value/text |
+| Workspace switcher | closed / open | menu of workspaces | Escape closes | menu button, `menuitemradio` |
+| Favourites | — | rows | Alt+↑/↓ reorder | announced |
+| New project | editing | field | Enter / Escape | described |
+| Inbox row | unread / starred / dragging | dot, bold · star · faded | S, E | full label |
+| Composer | open | grows from the corner | ⌘/Ctrl+Enter, Escape (draft) | dialog |
+| Sidebar Nav | active | sliding raised indicator | Tab, Enter | `aria-current` |
+| Harness | forked | “Forked · open” | — | polite status |
+
+### 27.4 Micro-interactions
+The sidebar width eases to the rail; nested groups drop in; the Sidebar Nav indicator slides with a
+slight overshoot; the inbox composer scales up from bottom-right; a drag target folder rings.
+
+### 27.5 Timing table
+| Transition | Duration | Easing | Reduced motion |
+|---|---|---|---|
+| Fold / expand | 220 ms | `--ox-ease` | instant |
+| Group open | 180 ms | `--ox-ease` | instant |
+| Indicator slide | 260 ms | `cubic-bezier(.3,1.3,.5,1)` | instant |
+| Composer grow | 220 ms | `--ox-ease` | instant |
+| Harness viewport | 260 ms | `--ox-ease` | instant |
+
+### 27.6 Variants
+Free: Sidebar (open, rail), Workspace sidebar, Sidebar rail, Inbox sidebar, App Shell Flat, App Shell
+Inset, Sidebar Nav.
+
+**Oxyn plus:** keyboard splitter with snap-to-rail, breadcrumb that follows the page, compact Sidebar
+Nav, harness viewports + dark canvas + Fork this, inbox Undo and row Move menu.
+
+### 27.7 Edge cases
+Dragging while the pointer leaves the shell ends the drag. Search with no match shows “Nothing
+matches”. A message moved to its own folder is ignored. The rail keeps a child page's parent row
+highlighted.
+
+### 27.8 Accessibility
+Every icon-only row has a label (with its count). Fold, moves, stars, reorders and forks are
+announced in polite regions. Focus stays on the control that changed.
+
+### 27.9 Props sketch
+```rust
+Sidebar { sections, active, collapsed, brand, user, height, on_select }
+SidebarRail { sections, active, collapsed, width, height, on_resize: EventHandler<u32>, children }
+WorkspaceSidebar { workspaces, favorites, projects, query, menu_open, collapsed, storage, on_navigate }
+InboxSidebar { inbox: Inbox, collapsed, composing, height }
+AppShell { variant: "flat" | "inset", title, sidebar, actions, height, children }
+SidebarNav { sections, active, compact, on_select }
+Harness { title, fork_href, viewport, dark, on_fork, children }
+```
+
+### 27.10 Related components and references
+`side-panels.md`, `terminal-tabs.md`, `ai-chat-screens.md`. Arc UI blocks (study only), affectUI
+screens (study only), Beautiful UI Sidebar Nav (MIT).

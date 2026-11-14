@@ -1,19 +1,26 @@
 //! The demo catalogue: one entry per component page.
 
-use crate::{Control, Demo, Kind, Variant};
+use dioxus::prelude::*;
+use oxyn_core::ClockMs;
+
+use crate::{Align, Control, Demo, Kind, Vals, Variant};
 
 mod approvals;
 mod buttons;
+mod chat;
 mod checkpoints;
 mod composer;
+mod composer_parts;
 mod display;
 mod feedback;
 mod forms;
 mod inputs;
 mod loaders;
+mod navigation;
 mod overlays;
 mod pickers;
 mod search;
+mod shells;
 mod status_text;
 mod surfaces;
 mod tools;
@@ -29,7 +36,7 @@ pub struct Category {
 }
 
 /// Categories in nav order.
-pub const CATEGORIES: [Category; 15] = [
+pub const CATEGORIES: [Category; 20] = [
     Category {
         slug: "composer",
         name: "Composer",
@@ -105,12 +112,39 @@ pub const CATEGORIES: [Category; 15] = [
         name: "Search & commands",
         blurb: "Command palettes, AI search, settings search, shortcut recording and pagination.",
     },
+    Category {
+        slug: "chat",
+        name: "Chat",
+        blurb: "Streaming answers, reasoning, sources and citations, feedback, threads, starter prompts and research runs.",
+    },
+    Category {
+        slug: "navigation",
+        name: "Navigation & layout",
+        blurb: "Tabs, breadcrumbs, accordions, resizable panes, drawers, trees, docks and reading progress.",
+    },
+    Category {
+        slug: "choice",
+        name: "Choice & feedback",
+        blurb: "Toggle groups, filter chips, radio cards, ratings, reactions and reorderable lists.",
+    },
+    Category {
+        slug: "chrome",
+        name: "App chrome",
+        blurb: "Account menus, workspace switchers, notification centers, hover cards, code blocks and empty states.",
+    },
+    Category {
+        slug: "shells",
+        name: "App shells & screens",
+        blurb: "Sidebars, icon rails, inbox and workspace sidebars, app shells, an AI side panel, terminal tabs, a demo harness and seven AI Chat screens.",
+    },
 ];
 
 /// Every demo, in category order.
 pub fn catalog() -> Vec<Demo> {
     let mut v = Vec::new();
     v.extend(composer::demos());
+    v.extend(composer_parts::demos());
+    v.extend(shells::demos());
     v.extend(loaders::demos());
     v.extend(status_text::demos());
     v.extend(tools::demos());
@@ -125,6 +159,8 @@ pub fn catalog() -> Vec<Demo> {
     v.extend(surfaces::demos());
     v.extend(feedback::demos());
     v.extend(search::demos());
+    v.extend(chat::demos());
+    v.extend(navigation::demos());
     v
 }
 
@@ -260,5 +296,47 @@ impl Code {
         }
         out.push('}');
         out
+    }
+}
+
+fn no_render(_: &Vals, _: ClockMs) -> Element {
+    rsx! {}
+}
+
+fn no_code(_: &Vals) -> String {
+    String::new()
+}
+
+/// A demo with its identity filled in; the rest comes from struct-update syntax.
+#[allow(clippy::too_many_arguments)]
+pub(crate) fn mk(
+    slug: &'static str,
+    name: &'static str,
+    category: &'static str,
+    summary: &'static str,
+    dioxus: &'static str,
+    gpui: &'static str,
+    spec: &'static str,
+    source: &'static str,
+) -> Demo {
+    Demo {
+        slug,
+        name,
+        category,
+        summary,
+        dioxus,
+        gpui,
+        spec,
+        source,
+        controls: vec![],
+        variants: vec![],
+        render: no_render,
+        code: no_code,
+        keyboard: vec![],
+        a11y: vec![],
+        responsive: vec![],
+        height: 320,
+        align: Align::Center,
+        live: false,
     }
 }

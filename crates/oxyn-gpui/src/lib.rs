@@ -4,17 +4,29 @@
 //! [`MotionClock`]; the host keeps the clock advanced and requests frames while
 //! [`MotionClock::next_frame_in`] says so.
 
+mod chat;
 mod composer;
+mod composer_parts;
 mod forms;
 mod glyph_loader;
 mod hitl;
+mod navigation;
 mod primitives;
 mod run;
+mod shell;
 mod status_indicator;
 mod status_text;
 mod surfaces;
 
+pub use chat::{
+    AnswerEl, ChatThreadEl, FeedbackEl, MarkdownEl, MessageEl, ReasoningEl, SourceCardsEl,
+    StartersEl, TraceEl,
+};
 pub use composer::{Composer, ComposerEvent};
+pub use composer_parts::{
+    DictationEl, MentionListEl, ModeSwitchEl, PermissionEl, QueueStackEl, SteeringEl, ToolsMenuEl,
+    VoiceRecorderEl,
+};
 pub use forms::{
     ApprovalQuestionsEl, CalendarEl, ComboboxEl, DatePickerEl, DateReelEl, DecisionCardEl,
     FilterMenuEl, InlineEditEl, OtpEl, PasswordFieldEl, PasswordStrengthEl, PhoneInputEl,
@@ -22,6 +34,12 @@ pub use forms::{
 };
 pub use glyph_loader::GlyphLoaderView;
 pub use hitl::{ApprovalCardEl, CheckpointLanesEl};
+pub use navigation::{
+    AccordionEl, BreadcrumbEl, ChipGroupEl, CodeBlockEl, CopyButtonEl, DockEl, ExpandableTextEl,
+    HoverCardEl, NotificationCenterEl, PageHeaderEl, RadioCardsEl, RatingEl, ReactionsEl,
+    ReorderListEl, ResizableEl, TabsEl, TeamSwitcherEl, TocProgressEl, ToggleGroupEl, TreeViewEl,
+    UserMenuEl,
+};
 pub use primitives::{
     ActionButtonEl, AvatarEl, BadgeEl, ButtonEl, ButtonGroupEl, CheckboxEl, ChipEl, EmptyStateEl,
     EntityChipEl, ExpandingGroupEl, IconButtonEl, KbdEl, MenuEl, MonogramEl, NumberTickerEl,
@@ -29,6 +47,10 @@ pub use primitives::{
     SpinnerEl, SplitButtonEl, SwitchEl, TextFieldEl, TooltipEl, ValuePillEl,
 };
 pub use run::{SubagentTreeEl, TodoChecklist, ToolCallRowEl};
+pub use shell::{
+    AiPanelEl, AppShellEl, ChatShellEl, HarnessEl, InboxEl, RailShellEl, SidebarEl, SidebarNavEl,
+    TermTabsEl, WorkspaceSidebarEl,
+};
 pub use status_indicator::{IndicatorSize, IndicatorVariant, StatusIndicator};
 pub use status_text::{RevealText, ShimmerText, TimerText, VerbCyclerView};
 pub use surfaces::{

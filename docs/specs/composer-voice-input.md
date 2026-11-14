@@ -1,4 +1,4 @@
-**Status:** draft v0.1 (2026-11-11).
+**Status:** v1 — implemented (plan #27); the draft below is kept as the design record.
 
 # Spec: composer voice input (mic · push-to-talk · dictation strip · voice-mode entry)
 
@@ -279,3 +279,112 @@ device picker (future) · question / approval card.
 | SPY UI voice visualiser [R136] | orb states idle / listening / thinking / speaking | Study only |
 | ElevenLabs UI, LiveKit Agents UI, OpenAI Realtime console, Gemini Live (research note 04) | voice-button states; visualisers driven by state + level; VAD vs push-to-talk toggle; mic + voice as two affordances | Not in sources.csv; licences not checked — study only |
 | Thinking orbs [R068] | Pro `orb` | Post is study only; the thinking-orbs package is MIT per licensing.md |
+
+
+## Plan #27 implementation — voice recorder
+
+Implemented in `oxyn-core::composer::parts`, `oxyn-dioxus::{VoiceRecorder}` (styles in `PARTS_CSS`, bundled into `PRIMITIVES_CSS`), `oxyn-gpui::{VoiceRecorderEl}`.
+
+### 27.1 Purpose
+Record a voice message from the composer and send it as an attachment (Arc UI Voice recorder, rebuilt from its behaviour; no source used).
+
+### 27.2 State machine
+```
+Idle ─mic─▶ Asking ─granted─▶ Recording ─pause─▶ Paused ─resume─▶ Recording
+Asking ─refused─▶ Denied (explains how to allow)
+Recording ─stop | max_s reached─▶ Review ─send─▶ Idle (on_send(ms))
+Review ─discard─▶ Idle
+```
+
+### 27.3 States table
+| State | Shows | Keyboard | ARIA |
+|---|---|---|---|
+| idle | mic button | Enter / Space | “Record voice message” |
+| recording | level bars, timer, pause, stop | Tab | bars `aria-hidden`; polite status |
+| near limit | timer counts down the last 10 s | — | announced once |
+| paused | frozen bars, resume | Enter | status “Paused” |
+| review | play, bars, length, discard, send | Tab | send names the length |
+| denied | note | — | `role=alert` |
+
+### 27.4 Micro-interactions
+Bars follow `levels(t, n, level)` and ease their height over 90 ms; the record dot blinks (1.2 s); the review row pops in (4 px rise); the timer uses tabular numerals so it never jitters.
+
+### 27.5 Timing table
+| Transition | Duration | Easing | Reduced motion |
+|---|---|---|---|
+| Bar height | 90 ms | linear | static |
+| Record dot | 1.2 s loop | ease-in-out | static |
+| Row in | 160–200 ms | `--ox-ease` | instant |
+
+All motion in the parts drops to 1 ms under `prefers-reduced-motion`, except `.oxyn-timer`.
+
+### 27.6 Variants
+Free: inline (in the composer row) and card; limit; pause; review.
+
+**Oxyn plus:** permission-denied state, start-in phases for demos, bar count.
+
+### 27.7 Edge cases
+Hitting `max_s` stops into review. Discard during recording keeps nothing. No audio is captured in the demo: `levels` is a deterministic meter.
+
+### 27.8 Accessibility
+Every control is a named button; bars are `aria-hidden`; a polite region announces start, pause, the limit and send.
+
+### 27.9 Props sketch
+```rust
+VoiceRecorder { now_ms: u64, max_s: u64, phase: "idle"|"recording"|"paused"|"review"|"denied", deny: bool, bars: usize,
+               variant: "inline"|"card", on_send: EventHandler<u64> }
+```
+
+### 27.10 Related components and references
+`composer-input-shell.md`, `composer-send-control.md`. Arc UI Voice recorder — behaviour only.
+
+
+## Plan #27 implementation — dictation button
+
+Implemented in `oxyn-core::composer::parts`, `oxyn-dioxus::{DictationButton}` (styles in `PARTS_CSS`, bundled into `PRIMITIVES_CSS`), `oxyn-gpui::{DictationEl}`.
+
+### 27.1 Purpose
+Speech to text into the message field (Arc UI Dictation button, rebuilt from its behaviour).
+
+### 27.2 State machine
+```
+Idle ─mic─▶ Listening (interim words grow at wpm) ─mic─▶ Idle (words inserted at the caret)
+Listening ─Escape─▶ Idle (interim dropped, “Dictation cancelled”)
+Listening ─fail─▶ Error (retry)
+```
+
+### 27.3 States table
+| State | Shows | Keyboard | ARIA |
+|---|---|---|---|
+| idle | field + mic | Enter on mic | “Dictate” |
+| listening | blinking mic, grey interim words | Escape cancels | “Stop dictation”; polite status |
+| error | message | — | `role=alert` |
+
+### 27.4 Micro-interactions
+Interim words appear muted until committed; the mic blinks while listening.
+
+### 27.5 Timing table
+| Transition | Duration | Easing | Reduced motion |
+|---|---|---|---|
+| Mic blink | 1 s steps | — | static |
+
+All motion in the parts drops to 1 ms under `prefers-reduced-motion`, except `.oxyn-timer`.
+
+### 27.6 Variants
+Free: field.
+
+**Oxyn plus:** pill variant (round mic beside the field), words-per-minute pacing, failure state.
+
+### 27.7 Edge cases
+`insert_dictation` adds spacing around the caret so words never fuse with existing text.
+
+### 27.8 Accessibility
+The field is a labelled textarea; interim text is `aria-hidden`; status changes are announced politely.
+
+### 27.9 Props sketch
+```rust
+DictationButton { now_ms, script, wpm: f32, value, fail: bool, placeholder, variant: "field"|"pill", on_change: EventHandler<String> }
+```
+
+### 27.10 Related components and references
+Arc UI Dictation button — behaviour only.

@@ -1,4 +1,4 @@
-**Status:** draft v0.1 (2026-11-11).
+**Status:** v1 — implemented (plan #27); the draft below is kept as the design record.
 
 # Spec: reasoning block (`reasoning-block`) — collapsible thinking
 
@@ -281,3 +281,58 @@ segments).
 | transitions.dev reasoning stream (two lines at a time) | [R132], note 17 | `stream-window` idea | Custom licence forbids competing kits — study only, no code |
 | Jules critic | note 03 | `critic` | Proprietary — idea only |
 | flohoeller decision tree | [R060] | `decision-tree` | Study only |
+
+
+## Plan #27 implementation — reasoning block and thinking traces
+
+Implemented in `oxyn-core::chat::reasoning` (`Reasoning`, `steps`, `preview`, `DisplayLevel`, `Trace`, `TraceKind`), `oxyn-dioxus::{ReasoningBlock, ThinkingTraces}`, `oxyn-gpui::{ReasoningEl, TraceEl}`.
+
+### 27.1 Purpose
+Show that the model is thinking and let the user read the reasoning afterwards (affectUI Thinking State, Arc UI Reasoning block, Beautiful UI Thinking).
+
+### 27.2 State machine
+```
+Thinking (shimmer, seconds, 2-line preview) ─finish─▶ Done “Thought for 7s” (folded; verbose stays open)
+Thinking ─Stop─▶ Stopped “Stopped after 7s”     Thinking ─error─▶ Error “Thinking interrupted” ─Retry─▶ Thinking
+Header ─Enter─▶ open / close full reasoning (steps from **Heading** lines)
+Trace rows: Pending ─▶ Active ─▶ Done | Failed (one per step_ms)
+```
+
+### 27.3 States table
+| State | Shows | Keyboard | ARIA |
+|---|---|---|---|
+| thinking | shimmer label, seconds, preview, Stop | Enter, Tab | region `aria-busy` |
+| done | “Thought for 7s” | Enter opens | `aria-expanded` |
+| stopped | “Stopped after 7s” | Enter | status |
+| error | alert, Retry | Enter | status “Thinking interrupted” |
+
+### 27.4 Micro-interactions
+Label swaps crossfade (100 ms out, 160 ms in with a 2 px rise); seconds roll in tabular numerals; preview lines fade as they arrive; the chevron rotates; trace rows rise in and their marks morph from dot to spinner to check.
+
+### 27.5 Timing table
+| Transition | Duration | Easing | Reduced motion |
+|---|---|---|---|
+| Label crossfade | 100 + 160 ms | ease-out | swap |
+| Open / close | 200 ms fade | ease-out | instant |
+| Trace row in | 200 ms | ease-out | instant |
+
+### 27.6 Variants
+Free: thinking, done, stopped, error; card and plain; copy reasoning.
+
+**Oxyn plus:** display levels (normal · thinking · verbose), model name label, Beautiful UI traces in four kinds with a failed row and pace control.
+
+### 27.7 Edge cases
+No seconds measured: “Thought”. Very long reasoning scrolls inside the message. Header height is fixed at 44 px so actions never shift layout.
+
+### 27.8 Accessibility
+Header is a real button with `aria-expanded`/`aria-controls`; status changes (not chunks or seconds) go to a polite region; the preview is `aria-hidden`; status always pairs an icon with words.
+
+### 27.9 Props sketch
+```rust
+ReasoningBlock { reasoning, status, seconds: Option<u64>, elapsed_ms, cps, model, variant: "card"|"plain",
+                level: "normal"|"thinking"|"verbose", open, error, on_stop, on_retry }
+ThinkingTraces { kind: "steps"|"reasoning"|"search"|"coding", rows: Vec<(String, String)>, elapsed_ms, step_ms, fail_at, open }
+```
+
+### 27.10 Related components and references
+`messages.md`, `tool-call.md`. affectUI Thinking State and Arc UI Reasoning block — behaviour only; Beautiful UI Thinking — MIT, © 2026 Shane Levine.
