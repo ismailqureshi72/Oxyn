@@ -194,7 +194,7 @@ fn person(name: &str, size: f32) -> AvatarModel {
 }
 
 fn avatar(v: &Vals, _: ClockMs) -> Element {
-    let size = v.f("size") as f32;
+    let size = AvatarModel::preset_size(v.s("preset")).unwrap_or(v.f("size") as f32);
     let mut a = if v.s("kind") == "agent" {
         agent_av(v.s("name"), size, v.s("state"))
     } else {
@@ -219,6 +219,10 @@ fn avatar(v: &Vals, _: ClockMs) -> Element {
     }
     if v.b("model") {
         a.model = Some("S".into());
+    }
+    if v.b("broken_src") && v.s("kind") == "person" {
+        // A photo that fails to load falls back to initials (Arc UI behaviour).
+        a.src = Some("/missing-avatar.png".into());
     }
     let gs = (size * 0.7).clamp(24.0, 40.0);
     let group = vec![
@@ -737,6 +741,13 @@ pub(crate) fn demos() -> Vec<Demo> {
                     "online",
                 ),
                 rng("size", "Size", 12.0, 96.0, 4.0, "48"),
+                sel(
+                    "preset",
+                    "Arc size",
+                    &["custom", "sm", "md", "lg", "xl"],
+                    "custom",
+                ),
+                tog("broken_src", "Photo fails to load", false),
                 tog("square", "Square", false),
                 tog("progress", "Progress ring", false),
                 tog("model", "Model badge", false),
