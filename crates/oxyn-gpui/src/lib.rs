@@ -6,6 +6,7 @@
 
 mod chat;
 mod composer;
+mod composer_parts;
 mod forms;
 mod glyph_loader;
 mod hitl;
@@ -21,6 +22,10 @@ pub use chat::{
     StartersEl, TraceEl,
 };
 pub use composer::{Composer, ComposerEvent};
+pub use composer_parts::{
+    DictationEl, MentionListEl, ModeSwitchEl, PermissionEl, QueueStackEl, SteeringEl, ToolsMenuEl,
+    VoiceRecorderEl,
+};
 pub use forms::{
     ApprovalQuestionsEl, CalendarEl, ComboboxEl, DatePickerEl, DateReelEl, DecisionCardEl,
     FilterMenuEl, InlineEditEl, OtpEl, PasswordFieldEl, PasswordStrengthEl, PhoneInputEl,
