@@ -264,3 +264,7 @@ MCP server list (connect flow).
 | Beautiful UI tool chips [R106] [R133] | chip summary pattern | MIT — may port with attribution |
 | Wensity AI Agent UI [R119] | per-tool verb/icon renderers | Pro tier — study only |
 | "Tool calls should look this good" post [R072] | motion quality bar | Study only |
+
+## Plan #28 parity (2026-11-14)
+
+Closed with [tool-call-card](tool-call-card.md) (open on error, capped code, group summary), [tool-call-transcript](tool-call-transcript.md) (approval / denied, list-table-JSON-text output, auto-collapsing group), [tool-chips](tool-chips.md), [json-viewer](json-viewer.md), [expandable-card](expandable-card.md) and the shared [tool-kind-map](tool-kind-map.md).

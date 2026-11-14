@@ -47,6 +47,9 @@ pub use parity::{
     ConfirmPopoverEl, CountdownEl, CounterEl, FleetEl, FlowStepperEl, HoldConfirmEl,
     OrchestratorEl, PermissionRequestEl, ReadinessEl, TaskRowsEl, TreeTableEl,
 };
+pub use parity::{
+    ExpandableCardEl, JsonViewerEl, LinkUnfurlEl, ToolCallCardEl, ToolCallEl, ToolChipsEl,
+};
 pub use primitives::{
     ActionButtonEl, AvatarEl, BadgeEl, BadgeSize, ButtonEl, ButtonGroupEl, CheckboxEl, ChipEl,
     EmptyStateEl, EntityChipEl, ExpandingGroupEl, IconButtonEl, KbdEl, MenuEl, MonogramEl,
