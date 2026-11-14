@@ -103,3 +103,10 @@ EntityChip { entity: EntityChip { name, monogram, image, status, card }, card_op
 `status-indicator.md` (agent-state colours), `avatar.md` (same monogram colours), `number-ticker.md`
 (count roll), `composer-slash-mentions.md` (mention chips). Licence: Beautiful UI value pill and
 entity chip ported under MIT with attribution in the module docs.
+
+## Plan #28 parity (2026-11-15)
+
+Arc UI Badge gaps closed:
+- **Sizes** now match Arc: `sm` 20 px / 11.5 px text / 5–6 px corners, `md` 24 px / 12 px / 6 px, `lg` 28 px / 14 px / 7 px. The leading icon is sized to the badge (12, 14 or 16 px). GPUI: `BadgeEl::size(BadgeSize::{Sm, Md, Lg})`.
+- **Rolling label** (`roll: bool`, off by default so static badges never animate on load): a changed label rises in 5 px with a 2 px blur over 240 ms; reduced motion swaps it with a 120 ms fade. GPUI: `BadgeEl::roll(t)` drives the same rise from the host's clock.
+- Not done: the width spring when the label changes (the pill resizes instantly), and the categorical `color` palette (teal, sky, orchid, …); the existing tones cover status.
