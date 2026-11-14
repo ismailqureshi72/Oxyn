@@ -5,6 +5,7 @@
 //! [`MotionClock::next_frame_in`] says so.
 
 mod composer;
+mod forms;
 mod glyph_loader;
 mod hitl;
 mod primitives;
@@ -13,6 +14,11 @@ mod status_indicator;
 mod status_text;
 
 pub use composer::{Composer, ComposerEvent};
+pub use forms::{
+    ApprovalQuestionsEl, CalendarEl, ComboboxEl, DatePickerEl, DateReelEl, DecisionCardEl,
+    FilterMenuEl, InlineEditEl, OtpEl, PasswordFieldEl, PasswordStrengthEl, PhoneInputEl,
+    RangePickerEl, SmartFillEl, StepperEl, TagInputEl, TimeDialEl, TimePickerEl,
+};
 pub use glyph_loader::GlyphLoaderView;
 pub use hitl::{ApprovalCardEl, CheckpointLanesEl};
 pub use primitives::{
