@@ -435,3 +435,7 @@ badge) · [composer-mode-switch.md](composer-mode-switch.md) (Plan → Agent) ·
   selector spec now says so.
 - Risk floors per kind and the destructive-verb list are proposals; the classifier is the app's.
 - No source documents a shield / hand glyph set (note 03 §1D); our glyphs are proposals.
+
+## Plan #28 parity (2026-11-14)
+
+Run-level approvals added: [approval-gates](approval-gates.md) (stack + decided list), [permission-request](permission-request.md) (once / timed / always with fold and revoke), [agent-approvals](agent-approvals.md) (tool-call queue, always-allow rules per agent or workspace, decision log). Destructive one-offs: [hold-to-confirm](hold-to-confirm.md), [confirm-morph](confirm-morph.md), [confirm-popover](confirm-popover.md).

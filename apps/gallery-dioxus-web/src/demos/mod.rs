@@ -18,6 +18,7 @@ mod inputs;
 mod loaders;
 mod navigation;
 mod overlays;
+mod parity_approvals;
 mod pickers;
 mod search;
 mod shells;
@@ -149,6 +150,7 @@ pub fn catalog() -> Vec<Demo> {
     v.extend(status_text::demos());
     v.extend(tools::demos());
     v.extend(approvals::demos());
+    v.extend(parity_approvals::demos());
     v.extend(checkpoints::demos());
     v.extend(buttons::demos());
     v.extend(inputs::demos());
