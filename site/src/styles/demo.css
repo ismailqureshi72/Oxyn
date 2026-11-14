@@ -84,3 +84,39 @@ oxyn-demo{display:block}
   .oxd-pad-tip{padding:40px 20px}
   .oxd-glyphs{grid-template-columns:repeat(4,minmax(60px,1fr))}
 }
+
+/* Plan #26 surfaces: a small app frame overlays open inside (contained), a phone frame, helpers. */
+.oxd-app{position:relative;width:640px;max-width:100%;height:400px;border-radius:14px;border:1px solid var(--site-line);background:var(--oxyn-color-bg-base);overflow:hidden;display:flex;flex-direction:column;font-family:var(--ox-font);color:var(--oxyn-color-fg-default)}
+.oxd-app-bar{display:flex;align-items:center;gap:6px;height:44px;padding:0 10px 0 14px;border-bottom:1px solid var(--oxyn-color-border-subtle);flex:none}
+.oxd-app-dot{width:9px;height:9px;border-radius:50%;background:var(--oxyn-color-surface-selected)}
+.oxd-app-title{margin-left:8px;font-size:12.5px;color:var(--oxyn-color-fg-muted)}
+.oxd-app-sp{flex:1}
+.oxd-app-body{display:flex;flex-direction:column;gap:12px;padding:20px 22px}
+.oxd-fl{height:10px;border-radius:5px;background:var(--oxyn-color-surface-raised)}
+.oxd-fl.w50{width:50%}.oxd-fl.w60{width:60%}.oxd-fl.w70{width:70%}.oxd-fl.w80{width:80%}.oxd-fl.w85{width:85%}.oxd-fl.w90{width:90%}
+.oxd-app-toast .oxd-app-body{gap:10px}
+.oxd-btnrow{display:flex;flex-wrap:wrap;gap:8px}
+.oxd-note{margin:0;font-size:12px;color:var(--oxyn-color-fg-subtle)}
+.oxd-kv{display:flex;flex-direction:column;border-radius:10px;background:var(--oxyn-color-surface-sunken);padding:2px 12px}
+.oxd-kv>div{display:flex;justify-content:space-between;gap:12px;padding:9px 0;font-size:13px}
+.oxd-kv>div+div{border-top:1px solid var(--oxyn-color-border-subtle)}
+.oxd-kv span{color:var(--oxyn-color-fg-muted)}.oxd-kv b{font-weight:500;text-align:right}
+.oxd-phone{position:relative;width:340px;max-width:100%;height:440px;border-radius:30px;border:1px solid var(--site-line);background:var(--oxyn-color-bg-base);overflow:hidden;font-family:var(--ox-font);color:var(--oxyn-color-fg-default)}
+.oxd-phone-bar{display:flex;align-items:center;padding:14px 22px 6px;font-size:12px;font-weight:600}
+.oxd-batt{width:22px;height:10px;border-radius:3px;border:1px solid var(--oxyn-color-fg-muted)}
+.oxd-phone-trig{padding:4px 22px}
+.oxd-chips{display:flex;flex-wrap:wrap;gap:6px}
+.oxd-chip{padding:5px 10px;border-radius:999px;border:1px solid var(--oxyn-color-border-default);font-size:12.5px;color:var(--oxyn-color-fg-muted)}
+.oxd-chip.on{background:var(--oxyn-color-fg-default);color:var(--oxyn-color-bg-base);border-color:transparent}
+.oxd-cards{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;width:620px;max-width:100%}
+.oxd-cards.rows{width:480px}
+.oxd-loaded{display:flex;flex-direction:column;gap:6px;font-size:13px;line-height:1.5}
+.oxd-loaded p{margin:0;color:var(--oxyn-color-fg-muted)}
+.oxd-loaded-h{display:flex;align-items:center;gap:8px}
+.oxd-av{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--oxyn-color-surface-selected);font-size:10.5px;font-weight:600}
+.oxd-av.lg{width:36px;height:36px;font-size:12px}
+.oxd-muted{color:var(--oxyn-color-fg-subtle)}
+.oxd-bars{display:flex;align-items:flex-end;gap:6px;height:72px;padding:6px;border-radius:10px;background:var(--oxyn-color-surface-sunken)}
+.oxd-bars span{flex:1;border-radius:4px 4px 0 0;background:var(--oxyn-color-fg-muted)}
+.oxd-xs-lane{width:440px;max-width:100%;display:flex;justify-content:center}
+.oxd-mini .oxd-app,.oxd-mini .oxd-phone{transform:scale(.5);transform-origin:top center;margin-bottom:-200px}

@@ -867,6 +867,24 @@ pub fn menu_items() -> Vec<MenuItem> {
     ]
 }
 
+/// Menu items with brand logos (affectUI `item.logo`) and a keep-open toggle.
+pub fn menu_items_logos() -> Vec<MenuItem> {
+    vec![
+        MenuItem::label("Send to"),
+        MenuItem::action("linear", "Create Linear issue")
+            .logo("L")
+            .shortcut("Mod+Shift+L"),
+        MenuItem::action("github", "Open GitHub issue").logo("GH"),
+        MenuItem::action("slack", "Share to Slack").logo("S"),
+        MenuItem::action("notion", "Save to Notion").logo("N"),
+        MenuItem::divider(),
+        MenuItem::checkbox("follow", "Follow thread", true),
+        MenuItem::action("pin", "Pin to sidebar")
+            .icon("star")
+            .keep_open(),
+    ]
+}
+
 /// Model options grouped by provider.
 pub fn model_options() -> Vec<SelectOption> {
     vec![
