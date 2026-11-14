@@ -111,17 +111,17 @@ affectUI,Agent / Permissions,https://www.affectui.com/screens/agent-permissions,
 affectUI,Agent / Schedules,https://www.affectui.com/screens/agent-schedules,Screens · App screens,Pro,background-jobs,S2,#37,planned
 affectUI,Agent / Skills,https://www.affectui.com/screens/agent-skills,Screens · App screens,Pro,mcp-plugin-list,S2,#37,planned
 affectUI,Agent / Tasks,https://www.affectui.com/screens/agent-tasks,Screens · App screens,Pro,background-jobs,S1,#37,planned
-affectUI,Agent / Thread,https://www.affectui.com/screens/agent-thread,Screens · App screens,Pro,"messages, message-bubble, streaming-markdown, tools",,#27,planned
+affectUI,Agent / Thread,https://www.affectui.com/screens/agent-thread,Screens · App screens,Pro,ai-chat-screens,,#27,built
 affectUI,Agent / Usage,https://www.affectui.com/screens/agent-usage,Screens · App screens,Pro,run-meter,S2,#37,planned
-affectUI,AI Chat / Agents,https://www.affectui.com/screens/agent-chat,Screens · App screens,Pro,"workspace-chrome, side-panels, subagent-tree",S3,#27,planned
-affectUI,AI Chat / Double Sidebar,https://www.affectui.com/screens/agent-chat-rail,Screens · App screens,Pro,"workspace-chrome, side-panels",S3,#27,planned
-affectUI,AI Chat / Overview,https://www.affectui.com/screens/assistant-overview,Screens · App screens,Pro,"workspace-chrome, run-meter",S3,#27,planned
-affectUI,AI Chat / Progress,https://www.affectui.com/screens/agent-chat-progress,Screens · App screens,Pro,"side-panels, plan-todo",S3,#27,planned
-affectUI,AI Chat / Run,https://www.affectui.com/screens/agent-run,Screens · App screens,Pro,"plan-todo, tools, approval-card",S3,#27,planned
-affectUI,AI Chat / Start,https://www.affectui.com/screens/assistant-home,Screens · App screens,Pro,"composer, workspace-chrome",S3,#27,planned
+affectUI,AI Chat / Agents,https://www.affectui.com/screens/agent-chat,Screens · App screens,Pro,ai-chat-screens,S3,#27,built
+affectUI,AI Chat / Double Sidebar,https://www.affectui.com/screens/agent-chat-rail,Screens · App screens,Pro,ai-chat-screens,S3,#27,built
+affectUI,AI Chat / Overview,https://www.affectui.com/screens/assistant-overview,Screens · App screens,Pro,ai-chat-screens,S3,#27,built
+affectUI,AI Chat / Progress,https://www.affectui.com/screens/agent-chat-progress,Screens · App screens,Pro,ai-chat-screens,S3,#27,built
+affectUI,AI Chat / Run,https://www.affectui.com/screens/agent-run,Screens · App screens,Pro,ai-chat-screens,S3,#27,built
+affectUI,AI Chat / Start,https://www.affectui.com/screens/assistant-home,Screens · App screens,Pro,ai-chat-screens,S3,#27,built
 affectUI,Analytics,https://www.affectui.com/screens/analytics,Screens · App screens,Pro,genui-blocks,S7,#39,planned
-affectUI,App Shell Flat,https://www.affectui.com/screens/app-shell-flat,Screens · App screens,Pro,"workspace-chrome, side-panels",,#27,planned
-affectUI,App Shell Inset,https://www.affectui.com/screens/app-shell,Screens · App screens,Pro,"workspace-chrome, side-panels",,#27,planned
+affectUI,App Shell Flat,https://www.affectui.com/screens/app-shell-flat,Screens · App screens,Pro,workspace-chrome,,#27,built
+affectUI,App Shell Inset,https://www.affectui.com/screens/app-shell,Screens · App screens,Pro,workspace-chrome,,#27,built
 affectUI,CRM,https://www.affectui.com/screens/crm,Screens · App screens,Pro,genui-blocks,S7,#39,planned
 affectUI,Evals,https://www.affectui.com/screens/evals,Screens · App screens,Pro,trace-view,S2,#37,planned
 affectUI,Folders / Detail,https://www.affectui.com/screens/folder,Screens · App screens,Pro,NEW,S7,#39,planned
@@ -355,7 +355,7 @@ Arc UI,Model arena,https://uiarc.dev/components/blocks/model-arena,Blocks · AI,
 Arc UI,Prompt studio,https://uiarc.dev/components/blocks/prompt-studio,Blocks · AI,Pro,NEW,N7,#33,planned
 Arc UI,Document extraction,https://uiarc.dev/components/blocks/document-extract,Blocks · AI,Pro,citations-sources,,#27,built
 Arc UI,Agent memory,https://uiarc.dev/components/blocks/agent-memory,Blocks · AI,Pro,NEW (memory receipts),N8,#33,planned
-Arc UI,AI side panel,https://uiarc.dev/components/blocks/ai-side-panel,Blocks · AI,Pro,side-panels.md,,#27,planned
+Arc UI,AI side panel,https://uiarc.dev/components/blocks/ai-side-panel,Blocks · AI,Pro,side-panels,,#27,built
 Arc UI,AI inline edit,https://uiarc.dev/components/blocks/ai-inline-edit,Blocks · AI,Pro,diff-viewer.md (partial),,#29,planned
 Arc UI,Research run,https://uiarc.dev/components/blocks/research-run,Blocks · AI,Pro,citations-sources,,#27,built
 Arc UI,AI insight card,https://uiarc.dev/components/blocks/ai-insight-card,Blocks · AI,Pro,genui-blocks.md (partial),,#34,planned
@@ -375,11 +375,11 @@ Arc UI,Knowledge base,https://uiarc.dev/components/blocks/knowledge-base,Blocks 
 Arc UI,Eval suite,https://uiarc.dev/components/blocks/eval-suite,Blocks · Agents,Pro,NEW,N7,#33,planned
 Arc UI,Agent builder,https://uiarc.dev/components/blocks/agent-builder,Blocks · Agents,Pro,NEW,N7,#33,planned
 Arc UI,Agent gallery,https://uiarc.dev/components/blocks/agent-gallery,Blocks · Agents,Pro,NEW,N7,#33,planned
-Arc UI,Sidebar,https://uiarc.dev/components/blocks/sidebar,Blocks · App shell,Pro,"workspace-chrome.md, side-panels.md",,#27,planned
-Arc UI,Workspace sidebar,https://uiarc.dev/components/blocks/workspace-sidebar,None · None,Pro,workspace-chrome.md,,#27,planned
-Arc UI,Sidebar rail,https://uiarc.dev/components/blocks/sidebar-rail,None · None,Pro,workspace-chrome.md,,#27,planned
+Arc UI,Sidebar,https://uiarc.dev/components/blocks/sidebar,Blocks · App shell,Pro,"workspace-chrome, side-panels",,#27,built
+Arc UI,Workspace sidebar,https://uiarc.dev/components/blocks/workspace-sidebar,None · None,Pro,workspace-chrome,,#27,built
+Arc UI,Sidebar rail,https://uiarc.dev/components/blocks/sidebar-rail,None · None,Pro,workspace-chrome,,#27,built
 Arc UI,Docs sidebar,https://uiarc.dev/components/blocks/docs-sidebar,None · None,Pro,NEW (site),N24,#24,built
-Arc UI,Inbox sidebar,https://uiarc.dev/components/blocks/inbox-sidebar,None · None,Pro,workspace-chrome.md (partial),,#27,planned
+Arc UI,Inbox sidebar,https://uiarc.dev/components/blocks/inbox-sidebar,None · None,Pro,workspace-chrome,,#27,built
 Arc UI,Page header,https://uiarc.dev/components/blocks/page-header,Blocks · App shell,Free,page-header,,#27,built
 Arc UI,Command palette,https://uiarc.dev/components/blocks/command-palette,Blocks · App shell,Free,command-palette,,#26,built
 Arc UI,Notification center,https://uiarc.dev/components/blocks/notification-center,Blocks · App shell,Free,notification-center,,#27,built
@@ -598,7 +598,7 @@ Beautiful UI,Records Table,https://www.beautifului.dev/#records-table,Components
 Beautiful UI,Filter Table,https://www.beautifului.dev/#filter-table,Components,Free (MIT),NEW,,#36,planned
 Beautiful UI,Flowchart,https://www.beautifului.dev/#flowchart,Components,Free (MIT),NEW,,#39,planned
 Beautiful UI,Insight Cards,https://www.beautifului.dev/#insight-cards,Components,Free (MIT),genui-blocks,,#34,planned
-Beautiful UI,Sidebar Nav,https://www.beautifului.dev/#sidebar-nav,Components,Free (MIT),"workspace-chrome, side-panels",,#27,planned
+Beautiful UI,Sidebar Nav,https://www.beautifului.dev/#sidebar-nav,Components,Free (MIT),workspace-chrome,,#27,built
 Beautiful UI,Search,https://www.beautifului.dev/#search,Components,Free (MIT),search-field,,#26,built
 Beautiful UI,Agent Screen,https://www.beautifului.dev/#agent-screen,Components,Free (MIT),"takeover-banner, acting-indicator, run-replay",,#37,planned
 X post,"#1 @pontusab ""first impressions matter""",https://x.com/pontusab/status/2119865335990141433,X videos,reference,NEW,,#38,planned
@@ -616,7 +616,7 @@ X post,#12 @zahragr8r Calendar dashboard,https://x.com/zahragr8r/status/21143200
 X post,"#13 @seanaiux clean dashboard, 3 videos",https://x.com/seanaiux/status/2115462341261402428,X videos,reference,NEW,,#35,planned
 X post,#14 @seanaiux clean dashboard,https://x.com/seanaiux/status/2115162868039442861,X videos,reference,NEW,,#39,planned
 X post,#15 @nutlope fontzz,https://x.com/nutlope/status/2116207994832838818,X videos,reference,NEW,,#39,planned
-X post,#16 @keviduk sidebar polish,https://x.com/keviduk/status/2116168166673924226,X videos,reference,NEW,,#27,planned
+X post,#16 @keviduk sidebar polish,https://x.com/keviduk/status/2116168166673924226,X videos,reference,workspace-chrome,,#27,built
 X post,#17 @driceroland blueprint.page,https://x.com/driceroland/status/2116116058549481657,X videos,reference,NEW,,#35,planned
 X post,#18 @seanaiux minimalist cards,https://x.com/seanaiux/status/2116240216751247393,X videos,reference,NEW,,#41,planned
 X post,#19 @david_visuals_ AI Chat Assistant (light),https://x.com/david_visuals_/status/2116174187375046735,X videos,reference,NEW,,#36,planned
@@ -644,7 +644,7 @@ X post,#41 @codycollier debloated X,https://x.com/codycollier/status/21197807760
 X post,#42 @componest workflow builder by @flohoeller,https://x.com/componest/status/2119811032340390130,X videos,reference,NEW,,#39,planned
 X post,#44 @flohoeller AI chat composer & overview,https://x.com/flohoeller/status/2119480887297638894,X videos,reference,NEW,,#28,planned
 X post,#45 @benchodev Genie menu by @imharshin,https://x.com/benchodev/status/2119527879960650057,X videos,reference,NEW,,#35,planned
-X post,#46 @_adamboyle sidebar transitions,https://x.com/_adamboyle/status/2119679881784991750,X videos,reference,NEW,,#27,planned
+X post,#46 @_adamboyle sidebar transitions,https://x.com/_adamboyle/status/2119679881784991750,X videos,reference,workspace-chrome,,#27,built
 X post,"#47 @desdivj ""Someone just booked a call""",https://x.com/desdivj/status/2119738295039250507,X videos,reference,NEW,,#39,planned
 X post,#48 @seanaiux dark/light switch,https://x.com/seanaiux/status/2119830876703879366,X videos,reference,NEW,,#35,planned
 X post,#49 @n___vc animated bento,https://x.com/n___vc/status/2119815118032871499,X videos,reference,NEW,,#31,planned
