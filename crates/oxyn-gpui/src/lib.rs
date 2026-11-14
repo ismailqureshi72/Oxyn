@@ -8,6 +8,7 @@ mod composer;
 mod forms;
 mod glyph_loader;
 mod hitl;
+mod navigation;
 mod primitives;
 mod run;
 mod status_indicator;
@@ -22,6 +23,12 @@ pub use forms::{
 };
 pub use glyph_loader::GlyphLoaderView;
 pub use hitl::{ApprovalCardEl, CheckpointLanesEl};
+pub use navigation::{
+    AccordionEl, BreadcrumbEl, ChipGroupEl, CodeBlockEl, CopyButtonEl, DockEl, ExpandableTextEl,
+    HoverCardEl, NotificationCenterEl, PageHeaderEl, RadioCardsEl, RatingEl, ReactionsEl,
+    ReorderListEl, ResizableEl, TabsEl, TeamSwitcherEl, TocProgressEl, ToggleGroupEl, TreeViewEl,
+    UserMenuEl,
+};
 pub use primitives::{
     ActionButtonEl, AvatarEl, BadgeEl, ButtonEl, ButtonGroupEl, CheckboxEl, ChipEl, EmptyStateEl,
     EntityChipEl, ExpandingGroupEl, IconButtonEl, KbdEl, MenuEl, MonogramEl, NumberTickerEl,
