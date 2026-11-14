@@ -33,9 +33,17 @@
 //!   [`search`]: search field, expanding search, shortcut recorder. [`control_center`]: quick
 //!   settings.
 //!
+//! Navigation and chrome (plan #27):
+//! - [`layout`]: tabs, breadcrumb, accordion, resizable panels + sidebar snap, hover-card intent,
+//!   tree view, reorderable list, toggle group, chip group, radio cards, rating, copy state,
+//!   expandable text, dock, table-of-contents progress, page-header fold, empty-state presets.
+//! - [`chrome`]: reactions with a picker, notification center, team switcher, user menu and the
+//!   code-block highlighter.
+//!
 //! Behaviour follows the affectUI and Arc UI docs (rebuilt, no source used) and Beautiful UI's MIT
 //! atoms (button, entity chip + monogram, value pill) and Approval Card (© 2026 Shane Levine).
 pub mod button;
+pub mod chrome;
 pub mod combobox;
 pub mod command;
 pub mod control_center;
@@ -45,6 +53,7 @@ pub mod display;
 pub mod feedback;
 pub mod filter_menu;
 pub mod inline_edit;
+pub mod layout;
 pub mod menu;
 pub mod modal;
 pub mod nav;
