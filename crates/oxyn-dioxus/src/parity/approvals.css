@@ -122,6 +122,8 @@
 .oxp-g-dh{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--oxyn-color-fg-muted);display:flex;gap:6px;margin-bottom:4px}
 .oxp-g-row,.oxp-aa-log,.oxp-aa-rule{display:flex;align-items:center;gap:8px;min-height:30px;padding:0 8px;border-radius:8px;font-size:12.5px;animation:oxp-in .24s ease-out}
 .oxp-g-row:hover,.oxp-aa-log:hover,.oxp-aa-rule:hover{background:var(--oxyn-color-surface-hover)}
+.oxp-aa-rule{flex-wrap:wrap;row-gap:2px;padding-block:5px}
+.oxp-aa-rule>svg,.oxp-aa-rule>.oxp-tag,.oxp-aa-rule>button,.oxp-g-row>svg,.oxp-aa-log>svg{flex:none}
 .oxp-g-dot{width:7px;height:7px;border-radius:50%;background:var(--oxyn-color-fg-subtle);flex:none}
 .oxp-g-row.approved .oxp-g-dot,.oxp-g-row.edited .oxp-g-dot,.oxp-g-dot.ok{background:var(--oxyn-color-status-success-fg)}
 .oxp-g-row.rejected .oxp-g-dot,.oxp-g-dot.no{background:var(--oxyn-color-status-danger-fg)}
