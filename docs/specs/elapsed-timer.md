@@ -236,3 +236,7 @@ cost waterfall (family F) · test runner and tool rows (family F).
 | Beautiful UI [R106]/[R133] (note 17) | elapsed counter beside a loader ("Churning 0.0s") | MIT per sources.csv — portable with attribution (verify) |
 | Arc UI (note 12) | tabular numerals in a reserved width; timer halts while waiting | Paid/unclear — study only |
 | affectUI Number Ticker (note 11) | per-digit flip | Paid — study only |
+
+## Plan #28 parity (2026-11-14)
+
+Related new components: [countdown](countdown.md) and [animated-counter](animated-counter.md).

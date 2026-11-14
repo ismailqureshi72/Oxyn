@@ -458,3 +458,7 @@ family J MCP list and terminal tabs.
 | Arc agent run card (note 12) | spring row enter, past-tense crossfade, fold-to-line at end | Paid — study only |
 | Beautiful UI Tool Chips / Task Rows [R106] [R133] | chip summaries, nested sub-steps, counts | MIT — may port with attribution |
 | Cost waterfall post [R030] | failed steps auto-expand | Study only |
+
+## Plan #28 parity (2026-11-14)
+
+New in plan #28: [tool-call-card](tool-call-card.md), [tool-call-transcript](tool-call-transcript.md), [tool-chips](tool-chips.md), [tool-kind-map](tool-kind-map.md).

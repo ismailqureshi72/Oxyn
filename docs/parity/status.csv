@@ -2,22 +2,22 @@ source,item,url,section,tier,oxyn_spec,batch,plan_pr,status
 affectUI,Agent Checkpoints,https://www.affectui.com/components/agent-checkpoints,Components · Agents,Pro,"checkpoint-timeline, checkpoints-git",,#28,built · close gaps
 affectUI,Agent Cursors,https://www.affectui.com/components/agent-cursors,Components · Agents,Pro,"acting-indicator, takeover-banner",C6,#32,planned
 affectUI,Agent Findings,https://www.affectui.com/components/agent-findings,Components · Agents,Pro,"fanout-grid, review-card",C6,#32,planned
-affectUI,Agent Fleet,https://www.affectui.com/components/agent-fleet,Components · Agents,Pro,"subagent-tree, background-jobs",,#28,built · close gaps
+affectUI,Agent Fleet,https://www.affectui.com/components/agent-fleet,Components · Agents,Pro,"subagent-tree, background-jobs",,#28,built
 affectUI,Agent Graph,https://www.affectui.com/components/agent-graph,Components · Agents,Pro,"subagent-tree, trace-view",C6,#32,planned
 affectUI,Agent Handoff,https://www.affectui.com/components/agent-handoff,Components · Agents,Pro,subagent-tree,C6,#32,planned
 affectUI,Agent Inbox,https://www.affectui.com/components/agent-inbox,Components · Agents,Pro,background-jobs,,#33,planned
 affectUI,Agent Lanes,https://www.affectui.com/components/agent-lanes,Components · Agents,Pro,"trace-view, background-jobs",C7,#32,planned
 affectUI,Agent Ledger,https://www.affectui.com/components/agent-ledger,Components · Agents,Pro,rollback-impact,,#31,planned
 affectUI,Agent Monitor,https://www.affectui.com/components/agent-monitor,Components · Agents,Pro,"acting-indicator, run-meter, tool-call, approval-card",C7,#32,planned
-affectUI,Agent Plan,https://www.affectui.com/components/agent-plan,Components · Agents,Pro,"plan-todo, plan-approval",,#28,built · close gaps
+affectUI,Agent Plan,https://www.affectui.com/components/agent-plan,Components · Agents,Pro,"plan-todo, plan-approval",,#28,built
 affectUI,Agent Queue,https://www.affectui.com/components/agent-queue,Components · Agents,Pro,background-jobs,C9,#33,planned
 affectUI,Agent Recap,https://www.affectui.com/components/agent-recap,Components · Agents,Pro,background-jobs,C5,#31,planned
 affectUI,Agent Steering,https://www.affectui.com/components/agent-steering,Components · Agents,Pro,composer-queue-stack,,#27,built
-affectUI,Agent Trail,https://www.affectui.com/components/agent-trail,Components · Agents,Pro,"plan-todo, status-indicator, elapsed-timer",,#28,built · close gaps
-affectUI,Agent Tree,https://www.affectui.com/components/agent-tree,Components · Agents,Pro,subagent-tree,,#28,built · close gaps
+affectUI,Agent Trail,https://www.affectui.com/components/agent-trail,Components · Agents,Pro,"plan-todo, status-indicator, elapsed-timer",,#28,built
+affectUI,Agent Tree,https://www.affectui.com/components/agent-tree,Components · Agents,Pro,subagent-tree,,#28,built
 affectUI,AI Answer,https://www.affectui.com/components/ai-answer,Components · Chat,Pro,citations-sources,,#27,built
-affectUI,Approval Card,https://www.affectui.com/components/approval-card,Components · Agents,Pro,approval-card,,#28,built · close gaps
-affectUI,Approval Gates,https://www.affectui.com/components/approval-gates,Components · Agents,Pro,"approvals, approval-card",,#28,built · close gaps
+affectUI,Approval Card,https://www.affectui.com/components/approval-card,Components · Agents,Pro,approval-card,,#28,built
+affectUI,Approval Gates,https://www.affectui.com/components/approval-gates,Components · Agents,Pro,"approvals, approval-card",,#28,built
 affectUI,Autonomy Dial,https://www.affectui.com/components/autonomy-dial,Components · Agents,Pro,"composer-permission-selector, permission-rules",C5,#31,planned
 affectUI,Avatar,https://www.affectui.com/components/avatar,Components · Data display,Free,avatar,C4,#23,built
 affectUI,Away Summary,https://www.affectui.com/components/away-summary,Components · Agents,Pro,background-jobs,C5,#31,planned
@@ -67,7 +67,7 @@ affectUI,Model Picker,https://www.affectui.com/components/model-picker,Component
 affectUI,Notification Stack,https://www.affectui.com/components/notification-stack,Components · Feedback,Free,notification-stack,C3,#26,built
 affectUI,OTP Input,https://www.affectui.com/components/otp-input,Components · Inputs,Free,otp-input,C2,#25,built
 affectUI,Parallel Attempts,https://www.affectui.com/components/parallel-attempts,Components · Agents,Pro,fanout-grid,C8,#33,planned
-affectUI,Permission Request,https://www.affectui.com/components/permission-request,Components · Agents,Pro,"approval-card, permission-rules",,#28,built · close gaps
+affectUI,Permission Request,https://www.affectui.com/components/permission-request,Components · Agents,Pro,"approval-card, permission-rules",,#28,built
 affectUI,Plan vs Actual,https://www.affectui.com/components/plan-vs-actual,Components · Agents,Pro,"plan-todo, trace-view",C7,#32,planned
 affectUI,Popover,https://www.affectui.com/components/popover,Components · Navigation,Free,tooltip-popover,C3,#26,built
 affectUI,Profile Menu,https://www.affectui.com/components/profile-menu,Components · Navigation,Free,workspace-chrome,C11,#39,planned
@@ -97,7 +97,7 @@ affectUI,Thinking State,https://www.affectui.com/components/thinking-state,Compo
 affectUI,Tips Panel,https://www.affectui.com/components/tips-panel,Components · Cards,Free,NEW,C11,#39,planned
 affectUI,Toaster,https://www.affectui.com/components/toaster,Components · Feedback,Pro,toaster,C3,#26,built
 affectUI,Tool Access Map,https://www.affectui.com/components/tool-access-map,Components · Agents,Pro,"mcp-plugin-list, plugin-icons",C10,#33,planned
-affectUI,Tool Call Card,https://www.affectui.com/components/tool-call-card,Components · Agents,Free,"tool-call, tools",,#28,built · close gaps
+affectUI,Tool Call Card,https://www.affectui.com/components/tool-call-card,Components · Agents,Free,"tool-call, tools",,#28,built
 affectUI,Tooltip,https://www.affectui.com/components/tooltip,Components · Feedback,Free,tooltip-popover,C3,#26,built
 affectUI,Trace Waterfall,https://www.affectui.com/components/trace-waterfall,Components · Agents,Pro,trace-view,,#32,planned
 affectUI,Usage Meter,https://www.affectui.com/components/usage-meter,Components · Data display,Pro,run-meter,,#33,planned
@@ -200,12 +200,12 @@ Arc UI,Expanding button group,https://uiarc.dev/components/expanding-button-grou
 Arc UI,Copy button,https://uiarc.dev/components/copy-button,Components · Buttons,Free,copy-button,,#27,built
 Arc UI,Action swap,https://uiarc.dev/components/action-swap,Components · Buttons,Free,verb-cycler.md (partial),,#28,built · close gaps
 Arc UI,Icon morph,https://uiarc.dev/components/icon-morph,Components · Buttons,Free,icon-states.md,,#40,planned
-Arc UI,Confirm morph,https://uiarc.dev/components/confirm-morph,Components · Buttons,Free,approval-card.md (partial),,#28,built · close gaps
+Arc UI,Confirm morph,https://uiarc.dev/components/confirm-morph,Components · Buttons,Free,approval-card.md (partial),,#28,built
 Arc UI,Theme switcher,https://uiarc.dev/components/theme-switch,Components · Buttons,Free,NEW (theme tokens),N4,#41,planned
 Arc UI,Eclipse,https://uiarc.dev/components/theme-switch-eclipse,None · None,Free,NEW (theme tokens),N4,#41,planned
 Arc UI,Split,https://uiarc.dev/components/theme-switch-split,None · None,Free,NEW (theme tokens),N4,#41,planned
 Arc UI,Rise,https://uiarc.dev/components/theme-switch-rise,None · None,Free,NEW (theme tokens),N4,#41,planned
-Arc UI,Hold to confirm,https://uiarc.dev/components/hold-to-confirm,Components · Gestures,Free,approval-card.md (partial),,#28,built · close gaps
+Arc UI,Hold to confirm,https://uiarc.dev/components/hold-to-confirm,Components · Gestures,Free,approval-card.md (partial),,#28,built
 Arc UI,Swipe actions,https://uiarc.dev/components/swipe-actions,Components · Gestures,Free,NEW,N6,#31,planned
 Arc UI,Reactions,https://uiarc.dev/components/reactions,Components · Gestures,Free,reactions,,#27,built
 Arc UI,Dropdown menu,https://uiarc.dev/components/dropdown-menu,Components · Menus,Free,dropdown-menu,N1,#23,built
@@ -260,7 +260,7 @@ Arc UI,Mega menu morph,https://uiarc.dev/components/mega-menu-morph,Components �
 Arc UI,Table of contents progress,https://uiarc.dev/components/toc-progress,Components · Navigation,Pro,toc-progress,,#27,built
 Arc UI,Scroll area,https://uiarc.dev/components/scroll-area,Components · Expand,Free,scroll-area,N3,#26,built
 Arc UI,Accordion,https://uiarc.dev/components/accordion,Components · Expand,Free,accordion,,#27,built
-Arc UI,Expandable card,https://uiarc.dev/components/expandable-card,Components · Expand,Free,tool-call.md (partial),,#28,built · close gaps
+Arc UI,Expandable card,https://uiarc.dev/components/expandable-card,Components · Expand,Free,tool-call.md (partial),,#28,built
 Arc UI,Resizable panels,https://uiarc.dev/components/resizable-panels,Components · Expand,Free,resizable-panels,,#27,built
 Arc UI,Expandable text,https://uiarc.dev/components/expandable-text,Components · Expand,Free,expandable-text,,#27,built
 Arc UI,Dialog,https://uiarc.dev/components/dialog,Components · Overlays,Free,dialog,N3,#26,built
@@ -270,7 +270,7 @@ Arc UI,Popover,https://uiarc.dev/components/popover,Components · Overlays,Free,
 Arc UI,Hover card,https://uiarc.dev/components/hover-card,Components · Overlays,Free,hover-card,,#27,built
 Arc UI,Tooltip,https://uiarc.dev/components/tooltip,Components · Overlays,Free,tooltip-popover,N1,#23,built
 Arc UI,Share access,https://uiarc.dev/components/share-access,Components · Overlays,Pro,NEW,N19,#35,planned
-Arc UI,Confirm popover,https://uiarc.dev/components/confirm-popover,Components · Overlays,Pro,approval-card.md (partial),,#28,built · close gaps
+Arc UI,Confirm popover,https://uiarc.dev/components/confirm-popover,Components · Overlays,Pro,approval-card.md (partial),,#28,built
 Arc UI,Alert,https://uiarc.dev/components/alert,Components · Messages,Free,alert,N3,#26,built
 Arc UI,Toast,https://uiarc.dev/components/toast,Components · Messages,Free,toaster,,#27,built
 Arc UI,Toast stack,https://uiarc.dev/components/toast-stack,Components · Messages,Free,toaster,,#27,built
@@ -279,13 +279,13 @@ Arc UI,Cookie consent,https://uiarc.dev/components/cookie-consent,Components · 
 Arc UI,Undo toast,https://uiarc.dev/components/undo-toast,Components · Messages,Pro,rollback-impact.md (partial),,#31,planned
 Arc UI,Progress,https://uiarc.dev/components/progress,Components · Progress,Free,run-meter.md (partial),,#33,planned
 Arc UI,Skeleton,https://uiarc.dev/components/skeleton,Components · Progress,Free,skeletons,,#26,built
-Arc UI,Stepper,https://uiarc.dev/components/stepper,Components · Progress,Free,plan-todo.md (partial),,#28,built · close gaps
-Arc UI,Countdown,https://uiarc.dev/components/countdown,Components · Progress,Free,elapsed-timer.md (partial),,#28,built · close gaps
+Arc UI,Stepper,https://uiarc.dev/components/stepper,Components · Progress,Free,plan-todo.md (partial),,#28,built
+Arc UI,Countdown,https://uiarc.dev/components/countdown,Components · Progress,Free,elapsed-timer.md (partial),,#28,built
 Arc UI,Usage meter,https://uiarc.dev/components/usage-meter,Components · Progress,Free,composer-context-meter.md (partial),,#28,built · close gaps
-Arc UI,Onboarding checklist,https://uiarc.dev/components/onboarding-checklist,Components · Progress,Free,plan-todo.md (partial),,#28,built · close gaps
+Arc UI,Onboarding checklist,https://uiarc.dev/components/onboarding-checklist,Components · Progress,Free,plan-todo.md (partial),,#28,built
 Arc UI,Avatar,https://uiarc.dev/components/avatar,Components · Avatars,Free,avatar,N3,#26,built
 Arc UI,Avatar group,https://uiarc.dev/components/avatar-group,Components · Avatars,Free,acting-indicator.md (partial),,#32,planned
-Arc UI,Badge,https://uiarc.dev/components/badge,Components · Avatars,Free,status-indicator.md (partial),,#28,built · close gaps
+Arc UI,Badge,https://uiarc.dev/components/badge,Components · Avatars,Free,status-indicator.md (partial),,#28,built
 Arc UI,Presence stack,https://uiarc.dev/components/presence-stack,Components · Avatars,Pro,acting-indicator.md (partial),,#32,planned
 Arc UI,Card,https://uiarc.dev/components/card,Components · Cards,Free,card,N3,#26,built
 Arc UI,Metric card,https://uiarc.dev/components/metric-card,Components · Cards,Free,run-meter.md (partial),,#33,planned
@@ -301,7 +301,7 @@ Arc UI,Slope chart,https://uiarc.dev/components/slope-chart,Components · Charts
 Arc UI,Sparkline,https://uiarc.dev/components/sparkline,Components · Charts,Free,run-meter.md (partial),,#33,planned
 Arc UI,Gauge,https://uiarc.dev/components/gauge,Components · Charts,Free,composer-context-meter.md (partial),,#28,built · close gaps
 Arc UI,Activity heatmap,https://uiarc.dev/components/activity-heatmap,Components · Charts,Free,NEW,N12,#34,planned
-Arc UI,Animated counter,https://uiarc.dev/components/animated-counter,Components · Charts,Free,elapsed-timer.md (partial),,#28,built · close gaps
+Arc UI,Animated counter,https://uiarc.dev/components/animated-counter,Components · Charts,Free,elapsed-timer.md (partial),,#28,built
 Arc UI,Ridgeline,https://uiarc.dev/components/ridgeline,Components · Charts,Free,"genui-blocks.md (partial, charts)",,#34,planned
 Arc UI,Treemap,https://uiarc.dev/components/treemap,Components · Charts,Free,"genui-blocks.md (partial, charts)",,#34,planned
 Arc UI,Split bar,https://uiarc.dev/components/split-bar,Components · Charts,Pro,composer-context-meter.md (partial),,#28,built · close gaps
@@ -313,13 +313,13 @@ Arc UI,Realtime stream,https://uiarc.dev/components/realtime-stream,Components �
 Arc UI,Race bar chart,https://uiarc.dev/components/race-bar-chart,Components · Advanced charts,Pro,"genui-blocks.md (partial, charts)",,#34,planned
 Arc UI,Data grid,https://uiarc.dev/components/data-grid,Components · Advanced charts,Pro,"genui-blocks.md (partial, tables)",,#34,planned
 Arc UI,Sortable data table,https://uiarc.dev/components/sortable-data-table,Components · Tables,Free,"genui-blocks.md (partial, tables)",,#34,planned
-Arc UI,Tree table,https://uiarc.dev/components/tree-table,Components · Tables,Free,subagent-tree.md (partial),,#28,built · close gaps
+Arc UI,Tree table,https://uiarc.dev/components/tree-table,Components · Tables,Free,subagent-tree.md (partial),,#28,built
 Arc UI,Tree view,https://uiarc.dev/components/tree-view,Components · Tables,Free,tree-view,,#27,built
 Arc UI,Reorderable list,https://uiarc.dev/components/reorderable-list,Components · Tables,Free,reorderable-list,,#27,built
 Arc UI,Filter toolbar,https://uiarc.dev/components/filter-toolbar,Components · Tables,Free,NEW,N6,#31,planned
 Arc UI,Code block,https://uiarc.dev/components/code-block,Components · Tables,Free,code-block,,#27,built
-Arc UI,JSON viewer,https://uiarc.dev/components/json-viewer,Components · Tables,Free,"tool-call.md (partial, I/O)",,#28,built · close gaps
-Arc UI,Timeline,https://uiarc.dev/components/timeline,Components · Activity,Free,checkpoint-timeline.md (partial),,#28,built · close gaps
+Arc UI,JSON viewer,https://uiarc.dev/components/json-viewer,Components · Tables,Free,"tool-call.md (partial, I/O)",,#28,built
+Arc UI,Timeline,https://uiarc.dev/components/timeline,Components · Activity,Free,checkpoint-timeline.md (partial),,#28,built
 Arc UI,Comment thread,https://uiarc.dev/components/comment-thread,Components · Activity,Free,review-card.md (partial),,#29,planned
 Arc UI,Chat thread,https://uiarc.dev/components/chat-thread,Components · Activity,Free,messages,,#27,built
 Arc UI,Image compare,https://uiarc.dev/components/image-compare,Components · Media,Free,"diff-viewer.md (partial, visual diff)",,#29,planned
@@ -365,11 +365,11 @@ Arc UI,AI search bar,https://uiarc.dev/components/blocks/ai-search-bar,Blocks ·
 Arc UI,AI setup wizard,https://uiarc.dev/components/blocks/ai-setup-wizard,Blocks · AI,Pro,mcp-plugin-list.md (partial),,#33,planned
 Arc UI,Call insights,https://uiarc.dev/components/blocks/call-insights,Blocks · AI,Pro,live-captions.md (partial),,#36,planned
 Arc UI,Lead scoring,https://uiarc.dev/components/blocks/lead-scoring,Blocks · AI,Pro,NEW (CRM),N10,#33,planned
-Arc UI,Agent run,https://uiarc.dev/components/blocks/agent-run,Blocks · Agents,Pro,"tool-call.md, plan-todo.md, diff-viewer.md, approval-card.md, pr-card.md",,#28,built · close gaps
+Arc UI,Agent run,https://uiarc.dev/components/blocks/agent-run,Blocks · Agents,Pro,"tool-call.md, plan-todo.md, diff-viewer.md, approval-card.md, pr-card.md",,#28,built
 Arc UI,Agent tasks,https://uiarc.dev/components/blocks/agent-tasks,Blocks · Agents,Pro,background-jobs.md,,#33,planned
-Arc UI,Agent approvals,https://uiarc.dev/components/blocks/agent-approvals,Blocks · Agents,Pro,"approvals.md, approval-card.md, permission-rules.md",,#28,built · close gaps
+Arc UI,Agent approvals,https://uiarc.dev/components/blocks/agent-approvals,Blocks · Agents,Pro,"approvals.md, approval-card.md, permission-rules.md",,#28,built
 Arc UI,Agent routines,https://uiarc.dev/components/blocks/agent-routines,Blocks · Agents,Pro,"background-jobs.md (partial, schedules)",,#33,planned
-Arc UI,Agent orchestrator,https://uiarc.dev/components/blocks/agent-orchestrator,Blocks · Agents,Pro,"subagent-tree.md, fanout-grid.md",,#28,built · close gaps
+Arc UI,Agent orchestrator,https://uiarc.dev/components/blocks/agent-orchestrator,Blocks · Agents,Pro,"subagent-tree.md, fanout-grid.md",,#28,built
 Arc UI,MCP servers,https://uiarc.dev/components/blocks/mcp-servers,Blocks · Agents,Pro,mcp-plugin-list.md,,#33,planned
 Arc UI,Knowledge base,https://uiarc.dev/components/blocks/knowledge-base,Blocks · Agents,Pro,NEW,N7,#33,planned
 Arc UI,Eval suite,https://uiarc.dev/components/blocks/eval-suite,Blocks · Agents,Pro,NEW,N7,#33,planned
@@ -431,7 +431,7 @@ Arc UI,Delivery tracker,https://uiarc.dev/components/blocks/delivery-tracker,Blo
 Arc UI,Product listing,https://uiarc.dev/components/blocks/product-listing,Blocks · Commerce,Pro,NEW (commerce),N17,#39,planned
 Arc UI,Product detail,https://uiarc.dev/components/blocks/product-detail,Blocks · Commerce,Pro,NEW (commerce),N17,#39,planned
 Arc UI,Seat map,https://uiarc.dev/components/blocks/seat-map,Blocks · Commerce,Pro,NEW,N17,#39,planned
-Arc UI,Activity feed,https://uiarc.dev/components/blocks/activity-feed,Blocks · Support,Pro,checkpoint-timeline.md (partial),,#28,built · close gaps
+Arc UI,Activity feed,https://uiarc.dev/components/blocks/activity-feed,Blocks · Support,Pro,checkpoint-timeline.md (partial),,#28,built
 Arc UI,Inbox triage,https://uiarc.dev/components/blocks/inbox-triage,Blocks · Support,Pro,NEW,N10,#33,planned
 Arc UI,Support conversation,https://uiarc.dev/components/blocks/support-conversation,Blocks · Support,Pro,messages,,#27,built
 Arc UI,Support widget,https://uiarc.dev/components/blocks/support-widget,Blocks · Support,Pro,takeover-banner.md (partial),,#32,planned
@@ -443,12 +443,12 @@ Arc UI,Week calendar,https://uiarc.dev/components/blocks/week-calendar,Blocks ·
 Arc UI,Availability picker,https://uiarc.dev/components/blocks/availability-picker,Blocks · Projects,Pro,NEW,N18,#39,planned
 Arc UI,Project board,https://uiarc.dev/components/blocks/project-board,Blocks · Projects,Pro,NEW,N18,#39,planned
 Arc UI,Gantt timeline,https://uiarc.dev/components/blocks/gantt-timeline,Blocks · Projects,Pro,NEW,N18,#39,planned
-Arc UI,Release readiness,https://uiarc.dev/components/blocks/release-readiness,Blocks · Projects,Pro,plan-todo.md (partial),,#28,built · close gaps
+Arc UI,Release readiness,https://uiarc.dev/components/blocks/release-readiness,Blocks · Projects,Pro,plan-todo.md (partial),,#28,built
 Arc UI,Kanban board,https://uiarc.dev/components/blocks/kanban-board,Blocks · Projects,Pro,NEW,N18,#39,planned
 Arc UI,Feedback board,https://uiarc.dev/components/blocks/feedback-board,Blocks · Projects,Pro,NEW,N18,#39,planned
 Arc UI,Month calendar,https://uiarc.dev/components/blocks/month-calendar,Blocks · Projects,Pro,NEW,N18,#39,planned
 Arc UI,Smart scheduler,https://uiarc.dev/components/blocks/smart-scheduler,Blocks · Projects,Pro,NEW,N18,#39,planned
-Arc UI,Task breakdown,https://uiarc.dev/components/blocks/task-breakdown,Blocks · Projects,Pro,plan-todo.md (partial),,#28,built · close gaps
+Arc UI,Task breakdown,https://uiarc.dev/components/blocks/task-breakdown,Blocks · Projects,Pro,plan-todo.md (partial),,#28,built
 Arc UI,Goal tracker,https://uiarc.dev/components/blocks/goal-tracker,Blocks · Projects,Pro,NEW,N18,#39,planned
 Arc UI,Hero section,https://uiarc.dev/components/blocks/hero-section,Blocks · Heroes,Free,NEW (site),N23,#41,planned
 Arc UI,Hero signup,https://uiarc.dev/components/blocks/hero-signup,Blocks · Heroes,Pro,NEW (site),N23,#41,planned
@@ -489,7 +489,7 @@ Arc UI,Wallet stack,https://uiarc.dev/components/wallet-stack,Special components
 Arc UI,Control center,https://uiarc.dev/components/control-center,Special components · Surfaces,Pro,control-center,,#26,built
 Arc UI,Holo card,https://uiarc.dev/components/holo-card,Special components · Surfaces,Pro,NEW,N19,#35,planned
 Arc UI,Card to article,https://uiarc.dev/components/card-to-article,Special components · Surfaces,Pro,NEW,N19,#35,planned
-Arc UI,Link unfurl,https://uiarc.dev/components/link-unfurl,Special components · Surfaces,Pro,"composer-attachments.md (partial, paste chips)",,#28,built · close gaps
+Arc UI,Link unfurl,https://uiarc.dev/components/link-unfurl,Special components · Surfaces,Pro,"composer-attachments.md (partial, paste chips)",,#28,built
 Arc UI,Product gallery,https://uiarc.dev/components/product-gallery,Special components · Galleries,Pro,NEW,N17,#39,planned
 Arc UI,Lightbox gallery,https://uiarc.dev/components/lightbox-gallery,Special components · Galleries,Pro,NEW,N17,#39,planned
 Arc UI,Photo grid,https://uiarc.dev/components/photo-grid,Special components · Galleries,Pro,NEW,N17,#39,planned
@@ -520,9 +520,9 @@ Arc UI,Image trail,https://uiarc.dev/components/image-trail,Special components �
 Arc UI,Gravity well,https://uiarc.dev/components/gravity-well,Special components · Cursor,Pro,NEW,N20,#35,planned
 Arc UI,Ink fluid,https://uiarc.dev/components/ink-fluid,Special components · Cursor,Pro,NEW,N20,#35,planned
 Arc UI,Cursor trail draw,https://uiarc.dev/components/cursor-trail-draw,Special components · Cursor,Pro,"acting-indicator.md (partial, cursor trail)",,#32,planned
-Arc UI,Agent status,https://uiarc.dev/components/agent-status,Special components · AI,Pro,"status-indicator.md, acting-indicator.md",,#28,built · close gaps
-Arc UI,Tool call,https://uiarc.dev/components/tool-call,Special components · AI,Pro,tool-call.md,,#28,built · close gaps
-Arc UI,Agent plan,https://uiarc.dev/components/agent-plan,Special components · AI,Pro,"plan-todo.md, plan-approval.md",,#28,built · close gaps
+Arc UI,Agent status,https://uiarc.dev/components/agent-status,Special components · AI,Pro,"status-indicator.md, acting-indicator.md",,#28,built
+Arc UI,Tool call,https://uiarc.dev/components/tool-call,Special components · AI,Pro,tool-call.md,,#28,built
+Arc UI,Agent plan,https://uiarc.dev/components/agent-plan,Special components · AI,Pro,"plan-todo.md, plan-approval.md",,#28,built
 Arc UI,Agent timeline,https://uiarc.dev/components/agent-timeline,Special components · AI,Pro,trace-view.md,,#32,planned
 Arc UI,Context window,https://uiarc.dev/components/context-window,Special components · AI,Pro,composer-context-meter.md,,#28,built · close gaps
 Arc UI,Reasoning block,https://uiarc.dev/components/reasoning-block,Special components · AI,Pro,reasoning-block,,#27,built
@@ -583,8 +583,8 @@ Arc UI,Reasoning tree,https://uiarc.dev/components/reasoning-tree,Special compon
 Beautiful UI,Loading State,https://www.beautifului.dev/#loading-state,Components,Free (MIT),"loaders, loader-glyph, loader-vector, elapsed-timer, text-shimmer",,#28,built · close gaps
 Beautiful UI,Thinking,https://www.beautifului.dev/#thinking-state,Components,Free (MIT),reasoning-block,,#27,built
 Beautiful UI,Streaming Text,https://www.beautifului.dev/#streaming-text,Components,Free (MIT),"text-reveal, streaming-markdown, citations-sources, message-bubble",,#28,built · close gaps
-Beautiful UI,Tool Chips,https://www.beautifului.dev/#tool-chips,Components,Free (MIT),"tool-call, tools, file-edit-chip",,#28,built · close gaps
-Beautiful UI,Task Rows,https://www.beautifului.dev/#task-rows,Components,Free (MIT),"plan-todo, background-jobs",,#28,built · close gaps
+Beautiful UI,Tool Chips,https://www.beautifului.dev/#tool-chips,Components,Free (MIT),"tool-call, tools, file-edit-chip",,#28,built
+Beautiful UI,Task Rows,https://www.beautifului.dev/#task-rows,Components,Free (MIT),"plan-todo, background-jobs",,#28,built
 Beautiful UI,Chat,https://www.beautifului.dev/#chat-composer,Components,Free (MIT),messages,,#27,built
 Beautiful UI,Prompt Bar,https://www.beautifului.dev/#prompt-bar,Components,Free (MIT),NEW,,#31,planned
 Beautiful UI,Code Block,https://www.beautifului.dev/#code-block,Components,Free (MIT),code-block,,#27,built

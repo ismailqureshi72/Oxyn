@@ -782,7 +782,40 @@ impl RenderOnce for ExpandingGroupEl {
 pub struct BadgeEl {
     badge: Badge,
     phase: f32,
+    size: BadgeSize,
+    roll: f32,
     theme: &'static Theme,
+}
+
+/// Badge size: 20, 24 or 28 px tall with 11.5, 12 or 14 px text.
+#[derive(Clone, Copy, Default, PartialEq, Eq)]
+pub enum BadgeSize {
+    /// 20 px.
+    #[default]
+    Sm,
+    /// 24 px.
+    Md,
+    /// 28 px.
+    Lg,
+}
+
+impl BadgeSize {
+    /// `sm` · `md` · `lg`; anything else is `sm`.
+    pub fn from_id(id: &str) -> Self {
+        match id {
+            "md" => Self::Md,
+            "lg" => Self::Lg,
+            _ => Self::Sm,
+        }
+    }
+    /// (height, horizontal padding, text size, corner radius) in px.
+    pub fn metrics(self) -> (f32, f32, f32, f32) {
+        match self {
+            Self::Sm => (20., 7., 11.5, 5.),
+            Self::Md => (24., 9., 12., 6.),
+            Self::Lg => (28., 11., 14., 7.),
+        }
+    }
 }
 
 impl BadgeEl {
@@ -791,8 +824,20 @@ impl BadgeEl {
         Self {
             badge,
             phase: 0.0,
+            size: BadgeSize::Sm,
+            roll: 1.0,
             theme: &Theme::DARK,
         }
+    }
+    /// Size (`sm` default).
+    pub fn size(mut self, size: BadgeSize) -> Self {
+        self.size = size;
+        self
+    }
+    /// Label swap progress 0..1: a new label rises in (4 px, fading) as this goes to 1.
+    pub fn roll(mut self, t: f32) -> Self {
+        self.roll = t.clamp(0.0, 1.0);
+        self
     }
     /// Live halo opacity this frame.
     pub fn halo(mut self, opacity: f32) -> Self {
@@ -813,21 +858,23 @@ impl RenderOnce for BadgeEl {
             Fill::Solid => (fg, c(t, ColorRole::BgBase), None),
             Fill::Mono => (alpha(bg, 0.0), fg, Some(c(t, ColorRole::BorderDefault))),
         };
+        let (h, pad, size, radius) = self.size.metrics();
+        let roll = self.roll;
         div()
             .flex()
             .flex_none()
             .items_center()
             .gap(px(5.))
-            .h(px(20.))
-            .px(px(7.))
+            .h(px(h))
+            .px(px(pad))
             .rounded(px(if b.pill || b.count.is_some() {
                 999.
             } else {
-                6.
+                radius
             }))
             .bg(bg)
             .text_color(fgc)
-            .text_size(px(11.5))
+            .text_size(px(size))
             .when_some(border, |d, x| d.border_1().border_color(x))
             .when(b.dot || b.live, |d| {
                 d.child(div().size(px(6.)).rounded_full().bg(fgc).when(b.live, |d| {
@@ -835,7 +882,13 @@ impl RenderOnce for BadgeEl {
                         .border_color(alpha(fgc, self.phase.clamp(0.0, 1.0)))
                 }))
             })
-            .child(b.text())
+            .child(
+                div()
+                    .relative()
+                    .top(px((1.0 - roll) * 4.0))
+                    .opacity(roll)
+                    .child(b.text()),
+            )
     }
 }
 

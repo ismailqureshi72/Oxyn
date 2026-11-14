@@ -28,8 +28,8 @@
 @property --oxyn-beam-a{syntax:"<angle>";inherits:false;initial-value:0deg}
 
 /* ---------- Layer, scrim, dialog ---------- */
-.oxyn-layer{position:fixed;inset:0;z-index:60;display:grid;grid-template-columns:100%;grid-template-rows:100%;min-width:0;place-items:center;font-family:var(--ox-font);color:var(--oxyn-color-fg-default)}
-.oxyn-layer.contained{position:absolute;border-radius:inherit;overflow:hidden}
+.oxyn-layer{position:fixed;inset:0;z-index:60;overflow:clip;display:grid;grid-template-columns:100%;grid-template-rows:100%;min-width:0;place-items:center;font-family:var(--ox-font);color:var(--oxyn-color-fg-default)}
+.oxyn-layer.contained{position:absolute;border-radius:inherit;overflow:hidden;overflow:clip}
 .oxyn-layer.floating{pointer-events:none}
 .oxyn-layer.floating>*{pointer-events:auto}
 .oxyn-scrim{position:absolute;inset:0;background:var(--oxyn-color-scrim,rgb(0 0 0/.5));backdrop-filter:blur(3px);animation:oxyn-scrim-in 200ms var(--ox-ease);transition:opacity var(--ox-base)}
@@ -528,6 +528,18 @@
 .oxyn-cc .chan{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 2px;border-bottom:1px solid var(--oxyn-color-border-subtle);font-size:13px}
 @media (max-width:360px){.oxyn-cc{padding:8px}.oxyn-cc .dial,.oxyn-cc .dial svg{width:150px;height:150px}}
 
+/* Sheets enter by transition from @starting-style where supported, so a close during the entry
+   reverses from where the sheet is instead of snapping (a keyframe entry overrides the close). */
+@supports (transition-behavior:allow-discrete){
+.oxyn-sheet:not(.dragging){animation:none;transition:transform 320ms var(--ox-ease)}
+.oxyn-layer.closing .oxyn-sheet:not(.dragging){transition-duration:220ms}
+.oxyn-bsheet{animation:none;transition:height 380ms cubic-bezier(.32,.72,0,1),transform 360ms var(--ox-ease)}
+@starting-style{
+.oxyn-sheet.right{transform:translateX(100%)}.oxyn-sheet.left{transform:translateX(-100%)}
+.oxyn-sheet.top{transform:translateY(-100%)}.oxyn-sheet.bottom{transform:translateY(100%)}
+.oxyn-bsheet{transform:translateY(100%)}
+}
+}
 @media (prefers-reduced-motion:reduce){
 .oxyn-dlg,.oxyn-cmd,.oxyn-cmd.pal,.oxyn-xsearch .panel,.oxyn-cc .detail{animation:oxyn-scrim-in 120ms!important}
 .oxyn-sheet,.oxyn-bsheet,.oxyn-stack-sheet,.oxyn-toast{animation:oxyn-scrim-in 120ms!important;transition:opacity 120ms!important}
