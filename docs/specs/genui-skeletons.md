@@ -1,4 +1,4 @@
-**Status:** draft v0.1 (2026-11-12).
+**Status:** draft v0.1 (2026-11-12); base skeleton shapes and sweeps implemented in plan #26.
 
 # Spec: generative UI skeletons (block × sweep matrix)
 
@@ -323,3 +323,8 @@ from B12) · [media-analysis-scan.md](media-analysis-scan.md) (scan-line) ·
 **Gaps.** Which adapters deliver structural props (columns, field lists, expected counts) before data
 is unresearched per protocol, so how often nodes reach `Shaped` early is unknown. The "one motion family
 per surface" rule is a proposal to validate in the Studio.
+
+## Plan #26 note
+The block shapes `message`, `tool-row`, `diff`, `card`, `table` and `form` and the `shimmer` /
+`pulse` / `wave` sweeps ship in `oxyn-core::primitives::skeleton` and `oxyn-dioxus::Skeleton`
+(see [skeletons.md](skeletons.md)); the full block × sweep matrix for generative UI is still a draft.

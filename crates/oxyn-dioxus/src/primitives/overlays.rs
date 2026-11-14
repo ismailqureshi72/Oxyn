@@ -198,11 +198,20 @@ pub fn Popover(
     /// `press` · `hover`.
     #[props(default = "press".to_string())]
     mode: String,
+    /// Modal: dims the page and blocks outside interaction (Arc `modal`).
+    #[props(default)]
+    modal: bool,
+    /// Minimum distance from the viewport edges px (Arc `collisionPadding`, 10).
+    #[props(default = 10.0)]
+    collision_padding: f32,
     /// Closed.
     #[props(default)]
     on_close: EventHandler<()>,
 ) -> Element {
     let mut is_open = use_signal(|| open);
+    // Only a popover the user opened gets the click-outside (or modal) layer; one that starts
+    // open must not cover the page (see `DropdownMenu`).
+    let mut armed = use_signal(|| false);
     let mut trig = use_signal(|| None::<Rc<MountedData>>);
     let mut intent = use_signal(|| 0i8); // 1 = opening, -1 = closing
     let hover = mode == "hover";
@@ -228,23 +237,23 @@ pub fn Popover(
     let w = width.map(|w| format!("width:{w}px")).unwrap_or_default();
     let o = *is_open.read();
     rsx! {
-        span { class: "oxyn-popwrap", style: "--off:{offset}px",
+        span { class: "oxyn-popwrap", style: "--off:{offset}px;--pad:{collision_padding}px",
             onpointerenter: move |_| if hover { intent.set(if *is_open.peek() { 0 } else { 1 }) },
             onpointerleave: move |_| if hover { intent.set(if *is_open.peek() { -1 } else { 0 }) },
             button { class: "oxyn-poptrig", r#type: "button", "aria-haspopup": "{role}", "aria-expanded": "{o}", "aria-controls": "{id}",
                 "aria-label": "{trigger_label}", style: "anchor-name:--{id}",
                 onmounted: move |e| trig.set(Some(e.data())),
-                onclick: move |_| if !hover { if *is_open.peek() { close(false) } else { is_open.set(true) } },
+                onclick: move |_| if !hover { if *is_open.peek() { close(false) } else { armed.set(true); is_open.set(true) } },
                 {trigger}
             }
             if *intent.read() == 1 { span { class: "oxyn-timer", style: "animation-duration:150ms", onanimationend: move |_| { is_open.set(true); intent.set(0) } } }
             if *intent.read() == -1 { span { class: "oxyn-timer", style: "animation-duration:300ms", onanimationend: move |_| { close(false); intent.set(0) } } }
             if o {
-                if !hover { div { class: "oxyn-backdrop", onpointerdown: move |_| close(false) } }
+                if !hover && *armed.read() { div { class: if modal { "oxyn-backdrop modal" } else { "oxyn-backdrop" }, onpointerdown: move |_| close(false) } }
                 div { id: "{id}", class: cls(&["oxyn-popover", &side, &align, if unstyled { "unstyled" } else { "" }, if arrow { "arrow" } else { "" }]),
-                    role: "{role}", "aria-label": if let Some(t) = &title { "{t}" } else { "{trigger_label}" },
+                    role: "{role}", "aria-modal": if modal { "true" }, "aria-label": if let Some(t) = &title { "{t}" } else { "{trigger_label}" },
                     style: "{w};position-anchor:--{id}", tabindex: "-1",
-                    onmounted: move |e| if focus_on_open { let d = e.data(); spawn(async move { let _ = d.set_focus(true).await; }); },
+                    onmounted: move |e| if focus_on_open && *armed.peek() { let d = e.data(); spawn(async move { let _ = d.set_focus(true).await; }); },
                     onkeydown: move |e: KeyboardEvent| if e.key() == Key::Escape { e.stop_propagation(); close(true) },
                     if arrow { span { class: "arw", "aria-hidden": "true" } }
                     if title.is_some() || description.is_some() {
@@ -359,6 +368,10 @@ pub fn DropdownMenu(
     let g1 = use_glide();
     let mut trig = use_signal(|| None::<Rc<MountedData>>);
     let mut point = use_signal(|| None::<(f64, f64)>);
+    // Only a menu the user opened gets the click-outside layer and takes focus. A menu that
+    // starts open (`open: true`, previews, review sheets) must not cover the page: it may be
+    // static HTML that never hydrates, or one of several on the same page.
+    let mut armed = use_signal(|| false);
     let st = m.read().clone();
     let glides = [g0, g1];
     let sync = move || {
@@ -395,11 +408,13 @@ pub fn DropdownMenu(
     let levels = st.depth() + 1;
     let panel = rsx! {
         if st.open {
-            div { class: "oxyn-backdrop", onpointerdown: move |_| { let o = m.write().close(false); outcome(o) },
-                oncontextmenu: move |e| { e.prevent_default(); let o = m.write().close(false); outcome(o) } }
+            if *armed.read() {
+                div { class: "oxyn-backdrop", onpointerdown: move |_| { let o = m.write().close(false); outcome(o) },
+                    oncontextmenu: move |e| { e.prevent_default(); let o = m.write().close(false); outcome(o) } }
+            }
             div { class: cls(&["oxyn-menu", &side, &align, &density, if context { "ctx" } else { "" }]), style: "{w};{pos}",
                 role: "menu", "aria-label": if let Some(t) = &title { "{t}" } else { "{trigger}" }, tabindex: "-1",
-                onmounted: move |e| { g0.set_root(e.data()); let d = e.data(); spawn(async move { let _ = d.set_focus(true).await; }); },
+                onmounted: move |e| { g0.set_root(e.data()); if *armed.peek() { let d = e.data(); spawn(async move { let _ = d.set_focus(true).await; }); } },
                 onkeydown: move |e: KeyboardEvent| if let Some(k) = menu_key(&e.key()) {
                     if k != MenuKey::Tab { e.prevent_default(); }
                     let o = m.write().key(k, now);
@@ -446,7 +461,8 @@ pub fn DropdownMenu(
                                                         if let Some(c) = checked {
                                                             if c { svg { class: if radio { "chk radio" } else { "chk" }, view_box: "0 0 16 16", width: "14", height: "14",
                                                                 if radio { circle { cx: "8", cy: "8", r: "3" } } else { path { d: "M3.5 8.5 6.5 11.5 12.5 4.5", path_length: "1" } } } }
-                                                        } else if let Some(ic) = it.icon.clone() { Icon { name: ic, size: 14.0 } }
+                                                        } else if let Some(lg) = it.logo.clone() { span { class: "logo", "aria-hidden": "true", "{lg}" } }
+                                                        else if let Some(ic) = it.icon.clone() { Icon { name: ic, size: 14.0 } }
                                                     }
                                                     span { class: "txt", span { class: "lb", "{it.label}" } if let Some(h) = it.hint.clone() { span { class: "ds", "{h}" } } }
                                                     if let Some(k) = keys { Keys { keys: k } }
@@ -482,14 +498,14 @@ pub fn DropdownMenu(
                     let c = e.client_coordinates();
                     point.set(Some((c.x, c.y)));
                     m.write().open_at(c.x as f32, c.y as f32, now, false);
-                    on_open_change.call(true);
+                    armed.set(true); on_open_change.call(true);
                 },
                 onkeydown: move |e: KeyboardEvent| if (e.key() == Key::F10 && e.modifiers().shift()) || e.key() == Key::ContextMenu {
                     e.prevent_default();
                     point.set(None);
                     m.write().open_menu(now, true, false);
                     sync();
-                    on_open_change.call(true);
+                    armed.set(true); on_open_change.call(true);
                 },
                 {children}
                 {panel}
@@ -501,10 +517,10 @@ pub fn DropdownMenu(
         span { class: "oxyn-ddwrap",
             button { class: "oxyn-btn secondary sm oxyn-ddtrig", r#type: "button", "aria-haspopup": "menu", "aria-expanded": "{o}",
                 onmounted: move |e| trig.set(Some(e.data())),
-                onclick: move |_| { let was = m.peek().open; if was { let x = m.write().close(false); outcome(x) } else { m.write().open_menu(now, false, false); on_open_change.call(true) } },
+                onclick: move |_| { let was = m.peek().open; if was { let x = m.write().close(false); outcome(x) } else { m.write().open_menu(now, false, false); armed.set(true); on_open_change.call(true) } },
                 onkeydown: move |e: KeyboardEvent| if !m.peek().open && matches!(e.key(), Key::ArrowDown | Key::ArrowUp | Key::Enter) || (!m.peek().open && e.key() == Key::Character(" ".into())) {
                     e.prevent_default();
-                    if let Some(k) = menu_key(&e.key()) { m.write().key(k, now); sync(); on_open_change.call(true); }
+                    if let Some(k) = menu_key(&e.key()) { m.write().key(k, now); sync(); armed.set(true); on_open_change.call(true); }
                 },
                 if let Some(i) = icon.clone() { Icon { name: i, size: 14.0 } }
                 span { class: "lb", "{trigger}" }

@@ -1,4 +1,4 @@
-**Status:** draft v0.1 (2026-11-12).
+**Status:** draft v0.1 (2026-11-12); web building blocks (dialog, sheets, control center, toaster) implemented in plan #26.
 
 # Spec: desktop overlays — tray popover, hotkey launcher, floating HUD, notch / island (`tray-popover`, `hotkey-launcher`, `floating-hud`, `island`)
 
@@ -318,3 +318,10 @@ content (needs-you > failed > working > done > meters).
 | Skiper UI Dynamic island [R104] (note 16) | generic island exists | Paid — study only |
 | SmoothUI (note 01) | generic island only | MIT per note 01, not yet in licensing.md — re-check before porting |
 | Platform window APIs (§2.2) | capability matrix | Platform facts — verify against current OS docs |
+
+## Plan #26 note
+The tray popover, launcher and HUD here are desktop shells; their web building blocks shipped in plan
+#26: [dialog.md](dialog.md) (incl. non-modal floating), [sheet.md](sheet.md),
+[sheet-stack.md](sheet-stack.md), [bottom-sheet.md](bottom-sheet.md),
+[control-center.md](control-center.md) and [toaster.md](toaster.md). GPUI renders each as an element
+the host places; a window-level portal and focus trap remain gaps.

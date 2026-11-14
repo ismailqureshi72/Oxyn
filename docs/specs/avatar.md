@@ -1,4 +1,4 @@
-**Status:** v1 — implemented (plan #23).
+**Status:** v1.1 — implemented (plan #23, Arc gaps closed in plan #26).
 
 # Spec: avatar with agent ring (and avatar group)
 
@@ -95,3 +95,9 @@ AvatarGroup { avatars, max: 4, total }
 ## 10. Related components and references
 `status-indicator.md` (same state words), `badges-chips.md` (monogram colours), `animated-marks.md`,
 `acting-indicator.md`. affectUI `/components/avatar`, Arc `/components/avatar` — behaviour only.
+
+## Plan #26 additions
+- Arc UI size presets via `Avatar::preset_size`: `sm` 28, `md` 40, `lg` 56, `xl` 88 px.
+- A photo that fails to load is removed and the initials stay (Arc "falls back to initials").
+- Presence `online` / `offline` (and Oxyn's `away` / `busy`) appends the state to the label; the dot
+  is decorative.

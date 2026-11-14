@@ -7,12 +7,15 @@ mod buttons;
 mod checkpoints;
 mod composer;
 mod display;
+mod feedback;
 mod forms;
 mod inputs;
 mod loaders;
 mod overlays;
 mod pickers;
+mod search;
 mod status_text;
+mod surfaces;
 mod tools;
 
 /// A category of the Components section.
@@ -26,7 +29,7 @@ pub struct Category {
 }
 
 /// Categories in nav order.
-pub const CATEGORIES: [Category; 12] = [
+pub const CATEGORIES: [Category; 15] = [
     Category {
         slug: "composer",
         name: "Composer",
@@ -87,6 +90,21 @@ pub const CATEGORIES: [Category; 12] = [
         name: "Overlays",
         blurb: "Tooltips, popovers and menus.",
     },
+    Category {
+        slug: "surfaces",
+        name: "Surfaces",
+        blurb: "Dialogs, sheets, stacked sheets, cards, scroll areas and quick settings.",
+    },
+    Category {
+        slug: "feedback",
+        name: "Feedback",
+        blurb: "Toasts, notice stacks, alerts and skeletons that turn into content.",
+    },
+    Category {
+        slug: "search",
+        name: "Search & commands",
+        blurb: "Command palettes, AI search, settings search, shortcut recording and pagination.",
+    },
 ];
 
 /// Every demo, in category order.
@@ -104,6 +122,9 @@ pub fn catalog() -> Vec<Demo> {
     v.extend(pickers::demos());
     v.extend(display::demos());
     v.extend(overlays::demos());
+    v.extend(surfaces::demos());
+    v.extend(feedback::demos());
+    v.extend(search::demos());
     v
 }
 
