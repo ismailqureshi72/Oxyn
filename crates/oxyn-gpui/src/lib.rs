@@ -4,6 +4,7 @@
 //! [`MotionClock`]; the host keeps the clock advanced and requests frames while
 //! [`MotionClock::next_frame_in`] says so.
 
+mod chat;
 mod composer;
 mod forms;
 mod glyph_loader;
@@ -15,6 +16,10 @@ mod status_indicator;
 mod status_text;
 mod surfaces;
 
+pub use chat::{
+    AnswerEl, ChatThreadEl, FeedbackEl, MarkdownEl, MessageEl, ReasoningEl, SourceCardsEl,
+    StartersEl, TraceEl,
+};
 pub use composer::{Composer, ComposerEvent};
 pub use forms::{
     ApprovalQuestionsEl, CalendarEl, ComboboxEl, DatePickerEl, DateReelEl, DecisionCardEl,
