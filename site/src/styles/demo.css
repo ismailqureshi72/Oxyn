@@ -134,8 +134,8 @@ oxyn-demo{display:block}
 .oxs-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:6px}
 .oxs-card{display:flex;flex-direction:column;gap:3px;padding:12px 14px;border-radius:10px;border:1px solid var(--oxyn-color-border-subtle);background:var(--oxyn-color-surface-raised);font-size:13px}
 .oxs-card small{color:var(--oxyn-color-fg-muted);font-size:12px}
-.oxs-center{flex:1;display:flex;align-items:center;justify-content:center;padding:24px}
-.oxs-pad{display:flex;flex-direction:column;gap:12px;padding:18px 20px}
+.oxs-center{flex:1;min-height:0;overflow:auto;display:flex;align-items:safe center;justify-content:center;padding:24px}
+.oxs-pad{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;gap:12px;padding:18px 20px}
 .oxs-h{margin:4px 0 0;font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--oxyn-color-fg-subtle)}
 .oxs-sh{margin:0 0 10px;font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--oxyn-color-fg-subtle)}
 .oxs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
@@ -149,3 +149,12 @@ oxyn-demo{display:block}
 .oxs-thread{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;gap:14px;padding:18px 20px}
 .oxs-bot{font-size:14px;line-height:1.6;max-width:620px}
 .oxs-comp{margin:0 16px 14px}
+/* Shell demos are wide: the controls move under the stage */
+.oxd-full .oxd-main:has(.oxs-frame,.oxyn-harness){grid-template-columns:minmax(0,1fr)}
+.oxd-full .oxd-main:has(.oxs-frame,.oxyn-harness) .oxd-panel{border-left:0;border-top:1px solid var(--site-line);max-height:none;display:flex;flex-wrap:wrap}
+.oxd-full .oxd-main:has(.oxs-frame,.oxyn-harness) .oxd-ph{flex:1 1 100%}
+.oxd-full .oxd-main:has(.oxs-frame,.oxyn-harness) .oxd-row{flex:1 1 220px;border-top:0}
+.oxd-mini .oxd-app.oxs-frame{transform:none;margin-bottom:0;zoom:.5;width:100%;max-width:100%}
+.oxd-mini .oxyn-harness{zoom:.5;width:100%;max-width:100%}
+.oxd-mini .oxd-stage:has(.oxs-frame,.oxyn-harness){overflow:hidden;align-items:center}
+.oxd-mini .oxd-stage:has(.oxs-frame,.oxyn-harness) .oxd-mount{width:100%;min-width:0}
