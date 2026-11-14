@@ -86,13 +86,13 @@ affectUI,Select,https://www.affectui.com/components/select,Components · Inputs,
 affectUI,Setup Guide,https://www.affectui.com/components/setup-guide,Components · Feedback,Pro,NEW,C11,#39,planned
 affectUI,Skeleton,https://www.affectui.com/components/skeleton,Components · Feedback,Free,skeletons,,#26,built
 affectUI,Smart Recommendation,https://www.affectui.com/components/smart-recommendation,Components · Cards,Free,NEW,C5,#31,planned
-affectUI,Spinner,https://www.affectui.com/components/spinner,Components · Feedback,Free,"loader-vector, loaders",,#28,built · close gaps
+affectUI,Spinner,https://www.affectui.com/components/spinner,Components · Feedback,Free,"loader-vector, loaders",,#28,built
 affectUI,Stepper Form,https://www.affectui.com/components/stepper-form,Components · Inputs,Pro,stepper-form,,#25,built
 affectUI,Switch,https://www.affectui.com/components/switch,Components · Inputs,Free,toggles,C1,#23,built
 affectUI,Tag Input,https://www.affectui.com/components/tag-input,Components · Inputs,Free,tag-input,C2,#25,built
 affectUI,Text Area,https://www.affectui.com/components/text-area,Components · Inputs,Free,composer-input-shell,,#28,built · close gaps
 affectUI,Text Field,https://www.affectui.com/components/text-field,Components · Inputs,Free,text-field,C1,#23,built
-affectUI,Thinking Loader,https://www.affectui.com/components/thinking-loader,Components · Chat,Free,"loader-glyph, verb-cycler, text-shimmer",,#28,built · close gaps
+affectUI,Thinking Loader,https://www.affectui.com/components/thinking-loader,Components · Chat,Free,"loader-glyph, verb-cycler, text-shimmer",,#28,built
 affectUI,Thinking State,https://www.affectui.com/components/thinking-state,Components · Chat,Pro,reasoning-block,,#27,built
 affectUI,Tips Panel,https://www.affectui.com/components/tips-panel,Components · Cards,Free,NEW,C11,#39,planned
 affectUI,Toaster,https://www.affectui.com/components/toaster,Components · Feedback,Pro,toaster,C3,#26,built
@@ -189,7 +189,7 @@ affectUI,Gradient Text,https://www.affectui.com/motion/gradient-text,Motion · T
 affectUI,Grid Background,https://www.affectui.com/motion/grid-background,Motion · Backgrounds,Free,NEW,M1,#35,planned
 affectUI,Number Ticker,https://www.affectui.com/motion/number-ticker,Motion · Numbers,Free,number-ticker,M1,#23,built
 affectUI,Shimmer Loader,https://www.affectui.com/motion/shimmer-loader,Motion · Loaders,Free,skeletons,,#26,built
-affectUI,Text Reveal,https://www.affectui.com/motion/text-reveal,Motion · Text,Free,text-reveal,,#28,built · close gaps
+affectUI,Text Reveal,https://www.affectui.com/motion/text-reveal,Motion · Text,Free,text-reveal,,#28,built
 affectUI,Tilt Card,https://www.affectui.com/motion/tilt-card,Motion · Hover,Pro,NEW,M1,#35,planned
 Arc UI,Button,https://uiarc.dev/components/button,Components · Buttons,Free,button,N1,#23,built
 Arc UI,Action button,https://uiarc.dev/components/action-button,Components · Buttons,Free,button,N1,#23,built
@@ -198,7 +198,7 @@ Arc UI,Button group,https://uiarc.dev/components/button-group,Components · Butt
 Arc UI,Floating button group,https://uiarc.dev/components/floating-button-group,Components · Buttons,Free,button-groups,N1,#23,built
 Arc UI,Expanding button group,https://uiarc.dev/components/expanding-button-group,Components · Buttons,Free,button-groups,N1,#23,built
 Arc UI,Copy button,https://uiarc.dev/components/copy-button,Components · Buttons,Free,copy-button,,#27,built
-Arc UI,Action swap,https://uiarc.dev/components/action-swap,Components · Buttons,Free,verb-cycler.md (partial),,#28,built · close gaps
+Arc UI,Action swap,https://uiarc.dev/components/action-swap,Components · Buttons,Free,verb-cycler.md (partial),,#28,built
 Arc UI,Icon morph,https://uiarc.dev/components/icon-morph,Components · Buttons,Free,icon-states.md,,#40,planned
 Arc UI,Confirm morph,https://uiarc.dev/components/confirm-morph,Components · Buttons,Free,approval-card.md (partial),,#28,built
 Arc UI,Theme switcher,https://uiarc.dev/components/theme-switch,Components · Buttons,Free,NEW (theme tokens),N4,#41,planned
@@ -325,10 +325,10 @@ Arc UI,Chat thread,https://uiarc.dev/components/chat-thread,Components · Activi
 Arc UI,Image compare,https://uiarc.dev/components/image-compare,Components · Media,Free,"diff-viewer.md (partial, visual diff)",,#29,planned
 Arc UI,Carousel,https://uiarc.dev/components/carousel,Components · Media,Free,NEW,N6,#31,planned
 Arc UI,Card stack,https://uiarc.dev/components/card-stack,Components · Media,Free,NEW,N6,#31,planned
-Arc UI,Text reveal,https://uiarc.dev/components/text-reveal,Components · Text effects,Free,text-reveal.md,,#28,built · close gaps
-Arc UI,In-view title,https://uiarc.dev/components/in-view-title,Components · Text effects,Free,text-reveal.md (partial),,#28,built · close gaps
-Arc UI,Text morph,https://uiarc.dev/components/text-morph,Components · Text effects,Free,verb-cycler.md (partial),,#28,built · close gaps
-Arc UI,Text shimmer,https://uiarc.dev/components/text-shimmer,Components · Text effects,Free,text-shimmer.md,,#28,built · close gaps
+Arc UI,Text reveal,https://uiarc.dev/components/text-reveal,Components · Text effects,Free,text-reveal.md,,#28,built
+Arc UI,In-view title,https://uiarc.dev/components/in-view-title,Components · Text effects,Free,text-reveal.md (partial),,#28,built
+Arc UI,Text morph,https://uiarc.dev/components/text-morph,Components · Text effects,Free,verb-cycler.md (partial),,#28,built
+Arc UI,Text shimmer,https://uiarc.dev/components/text-shimmer,Components · Text effects,Free,text-shimmer.md,,#28,built
 Arc UI,Metrics dashboard,https://uiarc.dev/components/blocks/metrics-dashboard,Blocks · Analytics,Pro,NEW (dashboard),N11,#34,planned
 Arc UI,KPI drilldown,https://uiarc.dev/components/blocks/kpi-drilldown,Blocks · Analytics,Pro,NEW (dashboard),N11,#34,planned
 Arc UI,Metric explorer,https://uiarc.dev/components/blocks/metric-explorer,Blocks · Analytics,Pro,run-meter.md (partial),,#33,planned
@@ -502,7 +502,7 @@ Arc UI,Activity rings,https://uiarc.dev/components/activity-rings,Special compon
 Arc UI,Time dial,https://uiarc.dev/components/time-dial,Special components · Data,Pro,time-dial,N5,#25,built
 Arc UI,Date reel,https://uiarc.dev/components/date-reel,Special components · Data,Pro,date-reel,N5,#25,built
 Arc UI,Keycap keyboard,https://uiarc.dev/components/keycap-keyboard,Special components · Type,Pro,NEW,N20,#35,planned
-Arc UI,Slot text,https://uiarc.dev/components/slot-text,Special components · Type,Free,"status-text.md (partial, odometer/split-flap)",,#28,built · close gaps
+Arc UI,Slot text,https://uiarc.dev/components/slot-text,Special components · Type,Free,"status-text.md (partial, odometer/split-flap)",,#28,built
 Arc UI,Sand text,https://uiarc.dev/components/sand-text,Special components · Type,Pro,NEW,N20,#35,planned
 Arc UI,Typewriter terminal,https://uiarc.dev/components/typewriter-terminal,Special components · Type,Pro,terminal-output.md,,#36,planned
 Arc UI,Stretch refresh,https://uiarc.dev/components/stretch-refresh,Special components · Loaders,Pro,NEW,N20,#35,planned
@@ -580,9 +580,9 @@ Arc UI,Mixture of experts,https://uiarc.dev/components/mixture-of-experts,Specia
 Arc UI,Speculative decoding,https://uiarc.dev/components/speculative-decoding,Special components · Illustrations,Pro,NEW (illustration),N21,#40,planned
 Arc UI,Prompt cache,https://uiarc.dev/components/prompt-cache,Special components · Illustrations,Pro,NEW (illustration),N21,#40,planned
 Arc UI,Reasoning tree,https://uiarc.dev/components/reasoning-tree,Special components · Illustrations,Pro,NEW (illustration),N21,#40,planned
-Beautiful UI,Loading State,https://www.beautifului.dev/#loading-state,Components,Free (MIT),"loaders, loader-glyph, loader-vector, elapsed-timer, text-shimmer",,#28,built · close gaps
+Beautiful UI,Loading State,https://www.beautifului.dev/#loading-state,Components,Free (MIT),"loaders, loader-glyph, loader-vector, elapsed-timer, text-shimmer",,#28,built
 Beautiful UI,Thinking,https://www.beautifului.dev/#thinking-state,Components,Free (MIT),reasoning-block,,#27,built
-Beautiful UI,Streaming Text,https://www.beautifului.dev/#streaming-text,Components,Free (MIT),"text-reveal, streaming-markdown, citations-sources, message-bubble",,#28,built · close gaps
+Beautiful UI,Streaming Text,https://www.beautifului.dev/#streaming-text,Components,Free (MIT),"text-reveal, streaming-markdown, citations-sources, message-bubble",,#28,built
 Beautiful UI,Tool Chips,https://www.beautifului.dev/#tool-chips,Components,Free (MIT),"tool-call, tools, file-edit-chip",,#28,built
 Beautiful UI,Task Rows,https://www.beautifului.dev/#task-rows,Components,Free (MIT),"plan-todo, background-jobs",,#28,built
 Beautiful UI,Chat,https://www.beautifului.dev/#chat-composer,Components,Free (MIT),messages,,#27,built

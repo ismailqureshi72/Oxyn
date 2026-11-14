@@ -471,3 +471,7 @@ rows and plan steps (family F) · run meter (family F) · voice captions (family
   desktop; this spec defines what both runtimes must expose.
 - Locale packs beyond the starter table need native-speaker authors.
 - Codex licence discrepancy (MIT vs Apache-2.0) must be resolved in licensing.md before the first port.
+
+## Plan #28 parity (2026-11-14)
+
+Odometer / reels: [slot-text](slot-text.md).

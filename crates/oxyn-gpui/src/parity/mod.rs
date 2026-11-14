@@ -15,6 +15,7 @@ use crate::hsla;
 
 mod approvals;
 mod run;
+mod text;
 mod tools;
 
 pub use approvals::{
@@ -26,6 +27,7 @@ pub use run::{
     ChecklistEl, CountdownEl, CounterEl, FleetEl, FlowStepperEl, OrchestratorEl, ReadinessEl,
     TaskRowsEl, TreeTableEl,
 };
+pub use text::{LoadingStateEl, ShimmerEl, SlotTextEl, ThinkingLoaderEl};
 pub use tools::{
     ExpandableCardEl, JsonViewerEl, LinkUnfurlEl, ToolCallCardEl, ToolCallEl, ToolChipsEl,
 };

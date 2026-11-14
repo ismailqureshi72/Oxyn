@@ -435,3 +435,7 @@ family F tool rows · family K voice orbs · family L animated marks.
 | thinking-orbs / Libraries.dev [R068] [R100] | 9 verb-named orb states, per-size tuning, light/dark flag | MIT (packages) — port with attribution |
 | MetalForge (research notes 02, 13) | shader orb/loader palette, live sliders | Paid — study only |
 | ittybitty Edge Glow (research note 02) | pauses offscreen, still frame under reduced motion | MIT per note 02 — confirm before porting |
+
+## Plan #28 parity (2026-11-14)
+
+New in plan #28: [thinking-loader](thinking-loader.md), [loading-state](loading-state.md). The affectUI Spinner row is covered by `Spinner` (size, label → role=status, currentColor).

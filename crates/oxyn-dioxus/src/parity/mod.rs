@@ -3,6 +3,7 @@
 
 mod approvals;
 mod run;
+mod text;
 mod tools;
 
 pub use approvals::{
@@ -13,6 +14,10 @@ pub use run::{
     ActivityFeed, AgentFleet, AgentOrchestrator, AgentPlan, AgentRun, AgentStatus, AgentTrail,
     AgentTree, AnimatedCounter, Countdown, FlowStepper, OnboardingChecklist, ReleaseReadiness,
     TaskBreakdown, TaskRows, TreeTable,
+};
+pub use text::{
+    ActionSwapButton, InViewTitle, LoadingState, SlotReels, Source, StreamingText, SweepText,
+    TextMorph, ThinkingLoader, WordReveal,
 };
 pub use tools::{
     ChipStep, DiffChip, ExpandableCard, JsonViewer, LinkUnfurl, RowOutput, ToolCall, ToolCallCard,
