@@ -16,8 +16,8 @@ affectUI,Agent Steering,https://www.affectui.com/components/agent-steering,Compo
 affectUI,Agent Trail,https://www.affectui.com/components/agent-trail,Components · Agents,Pro,"plan-todo, status-indicator, elapsed-timer",,#28,built · close gaps
 affectUI,Agent Tree,https://www.affectui.com/components/agent-tree,Components · Agents,Pro,subagent-tree,,#28,built · close gaps
 affectUI,AI Answer,https://www.affectui.com/components/ai-answer,Components · Chat,Pro,citations-sources,,#27,built
-affectUI,Approval Card,https://www.affectui.com/components/approval-card,Components · Agents,Pro,approval-card,,#28,built · close gaps
-affectUI,Approval Gates,https://www.affectui.com/components/approval-gates,Components · Agents,Pro,"approvals, approval-card",,#28,built · close gaps
+affectUI,Approval Card,https://www.affectui.com/components/approval-card,Components · Agents,Pro,approval-card,,#28,built
+affectUI,Approval Gates,https://www.affectui.com/components/approval-gates,Components · Agents,Pro,"approvals, approval-card",,#28,built
 affectUI,Autonomy Dial,https://www.affectui.com/components/autonomy-dial,Components · Agents,Pro,"composer-permission-selector, permission-rules",C5,#31,planned
 affectUI,Avatar,https://www.affectui.com/components/avatar,Components · Data display,Free,avatar,C4,#23,built
 affectUI,Away Summary,https://www.affectui.com/components/away-summary,Components · Agents,Pro,background-jobs,C5,#31,planned
@@ -67,7 +67,7 @@ affectUI,Model Picker,https://www.affectui.com/components/model-picker,Component
 affectUI,Notification Stack,https://www.affectui.com/components/notification-stack,Components · Feedback,Free,notification-stack,C3,#26,built
 affectUI,OTP Input,https://www.affectui.com/components/otp-input,Components · Inputs,Free,otp-input,C2,#25,built
 affectUI,Parallel Attempts,https://www.affectui.com/components/parallel-attempts,Components · Agents,Pro,fanout-grid,C8,#33,planned
-affectUI,Permission Request,https://www.affectui.com/components/permission-request,Components · Agents,Pro,"approval-card, permission-rules",,#28,built · close gaps
+affectUI,Permission Request,https://www.affectui.com/components/permission-request,Components · Agents,Pro,"approval-card, permission-rules",,#28,built
 affectUI,Plan vs Actual,https://www.affectui.com/components/plan-vs-actual,Components · Agents,Pro,"plan-todo, trace-view",C7,#32,planned
 affectUI,Popover,https://www.affectui.com/components/popover,Components · Navigation,Free,tooltip-popover,C3,#26,built
 affectUI,Profile Menu,https://www.affectui.com/components/profile-menu,Components · Navigation,Free,workspace-chrome,C11,#39,planned
@@ -200,12 +200,12 @@ Arc UI,Expanding button group,https://uiarc.dev/components/expanding-button-grou
 Arc UI,Copy button,https://uiarc.dev/components/copy-button,Components · Buttons,Free,copy-button,,#27,built
 Arc UI,Action swap,https://uiarc.dev/components/action-swap,Components · Buttons,Free,verb-cycler.md (partial),,#28,built · close gaps
 Arc UI,Icon morph,https://uiarc.dev/components/icon-morph,Components · Buttons,Free,icon-states.md,,#40,planned
-Arc UI,Confirm morph,https://uiarc.dev/components/confirm-morph,Components · Buttons,Free,approval-card.md (partial),,#28,built · close gaps
+Arc UI,Confirm morph,https://uiarc.dev/components/confirm-morph,Components · Buttons,Free,approval-card.md (partial),,#28,built
 Arc UI,Theme switcher,https://uiarc.dev/components/theme-switch,Components · Buttons,Free,NEW (theme tokens),N4,#41,planned
 Arc UI,Eclipse,https://uiarc.dev/components/theme-switch-eclipse,None · None,Free,NEW (theme tokens),N4,#41,planned
 Arc UI,Split,https://uiarc.dev/components/theme-switch-split,None · None,Free,NEW (theme tokens),N4,#41,planned
 Arc UI,Rise,https://uiarc.dev/components/theme-switch-rise,None · None,Free,NEW (theme tokens),N4,#41,planned
-Arc UI,Hold to confirm,https://uiarc.dev/components/hold-to-confirm,Components · Gestures,Free,approval-card.md (partial),,#28,built · close gaps
+Arc UI,Hold to confirm,https://uiarc.dev/components/hold-to-confirm,Components · Gestures,Free,approval-card.md (partial),,#28,built
 Arc UI,Swipe actions,https://uiarc.dev/components/swipe-actions,Components · Gestures,Free,NEW,N6,#31,planned
 Arc UI,Reactions,https://uiarc.dev/components/reactions,Components · Gestures,Free,reactions,,#27,built
 Arc UI,Dropdown menu,https://uiarc.dev/components/dropdown-menu,Components · Menus,Free,dropdown-menu,N1,#23,built
@@ -270,7 +270,7 @@ Arc UI,Popover,https://uiarc.dev/components/popover,Components · Overlays,Free,
 Arc UI,Hover card,https://uiarc.dev/components/hover-card,Components · Overlays,Free,hover-card,,#27,built
 Arc UI,Tooltip,https://uiarc.dev/components/tooltip,Components · Overlays,Free,tooltip-popover,N1,#23,built
 Arc UI,Share access,https://uiarc.dev/components/share-access,Components · Overlays,Pro,NEW,N19,#35,planned
-Arc UI,Confirm popover,https://uiarc.dev/components/confirm-popover,Components · Overlays,Pro,approval-card.md (partial),,#28,built · close gaps
+Arc UI,Confirm popover,https://uiarc.dev/components/confirm-popover,Components · Overlays,Pro,approval-card.md (partial),,#28,built
 Arc UI,Alert,https://uiarc.dev/components/alert,Components · Messages,Free,alert,N3,#26,built
 Arc UI,Toast,https://uiarc.dev/components/toast,Components · Messages,Free,toaster,,#27,built
 Arc UI,Toast stack,https://uiarc.dev/components/toast-stack,Components · Messages,Free,toaster,,#27,built
@@ -367,7 +367,7 @@ Arc UI,Call insights,https://uiarc.dev/components/blocks/call-insights,Blocks ·
 Arc UI,Lead scoring,https://uiarc.dev/components/blocks/lead-scoring,Blocks · AI,Pro,NEW (CRM),N10,#33,planned
 Arc UI,Agent run,https://uiarc.dev/components/blocks/agent-run,Blocks · Agents,Pro,"tool-call.md, plan-todo.md, diff-viewer.md, approval-card.md, pr-card.md",,#28,built · close gaps
 Arc UI,Agent tasks,https://uiarc.dev/components/blocks/agent-tasks,Blocks · Agents,Pro,background-jobs.md,,#33,planned
-Arc UI,Agent approvals,https://uiarc.dev/components/blocks/agent-approvals,Blocks · Agents,Pro,"approvals.md, approval-card.md, permission-rules.md",,#28,built · close gaps
+Arc UI,Agent approvals,https://uiarc.dev/components/blocks/agent-approvals,Blocks · Agents,Pro,"approvals.md, approval-card.md, permission-rules.md",,#28,built
 Arc UI,Agent routines,https://uiarc.dev/components/blocks/agent-routines,Blocks · Agents,Pro,"background-jobs.md (partial, schedules)",,#33,planned
 Arc UI,Agent orchestrator,https://uiarc.dev/components/blocks/agent-orchestrator,Blocks · Agents,Pro,"subagent-tree.md, fanout-grid.md",,#28,built · close gaps
 Arc UI,MCP servers,https://uiarc.dev/components/blocks/mcp-servers,Blocks · Agents,Pro,mcp-plugin-list.md,,#33,planned

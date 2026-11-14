@@ -311,3 +311,16 @@ rule) · [plan-approval.md](plan-approval.md) · [subagent-tree.md](subagent-tre
 
 ## Implementation (v0.2, plan #21)
 `oxyn-core::approval`: `Risk`, `Decision`, `ApprovalRequest` (title, description, tray label, details, command, amount, reasons, expiry), `ApprovalCard` (400 ms input guard, 600 ms arming for High, 1200 ms hold with 200 ms drain for Critical, Enter = safe default by tier, countdown paused while hovered or focused and warning in the last 10 s, spinner after 300 ms, resolved row and live-region text), `ApprovalQueue` (pager, batch for ≥ 2 requests ≤ Medium), `pattern_ladder` / `pattern_matches`. Dioxus `ApprovalCard` (inline with tray or in-card actions, footer, terminal, modal) and `ApprovalPager` (paged). GPUI `ApprovalCardEl` (inline). affectUI Approval Card parity: title, description, risk badge (gray / amber / red), details, tray label, always-allow checkbox, Edit, ⌘↵ / Esc, pausing countdown, morph to resolved row, `actions: tray | card`. Risk tokens now map low → neutral, medium → warning, high and critical → danger. Not built yet: PatternEditing, EditingArgs and ReasonEditing panes, Paging animation, Pro variants.
+
+## Plan #28 parity (2026-11-14)
+
+Gaps closed against affectUI Approval Card:
+- **Edit** button before Deny (`on_edit`, `edit_label`), custom `approve_label`, `deny_label`, `always_label`, and a custom header `icon`.
+- **Preview slot**: `children` render above the details (recipients, a diff).
+- **Keyboard on the card**: Escape denies, ⌘/Ctrl+Enter allows once (not for hold-to-allow).
+- **Pause while read**: `on_hover(bool)` fires on pointer and focus enter/leave so hosts call `set_hover` (the countdown pauses).
+- Pager arrows report `on_page(-1 | 1)`; the batch row's Deny all denies.
+- New demo controls: Edit button, Labels (default / custom); new variants `edit-custom`, `card-actions`.
+- GPUI: `ApprovalPagerEl` closes the pager gap.
+
+Related new components: [hold-to-confirm](hold-to-confirm.md), [confirm-morph](confirm-morph.md), [confirm-popover](confirm-popover.md), [approval-gates](approval-gates.md), [permission-request](permission-request.md), [agent-approvals](agent-approvals.md).

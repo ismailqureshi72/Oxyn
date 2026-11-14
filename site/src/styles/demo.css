@@ -158,3 +158,6 @@ oxyn-demo{display:block}
 .oxd-mini .oxyn-harness{zoom:.5;width:100%;max-width:100%}
 .oxd-mini .oxd-stage:has(.oxs-frame,.oxyn-harness){overflow:hidden;align-items:center}
 .oxd-mini .oxd-stage:has(.oxs-frame,.oxyn-harness) .oxd-mount{width:100%;min-width:0}
+/* plan #28 parity demo helpers */
+.oxp-demo-col{display:flex;flex-direction:column;align-items:center;gap:10px}
+.oxp-demo-pop{width:520px;max-width:100%;display:flex}.oxp-demo-pop.end{justify-content:flex-end}.oxp-demo-pop.center{justify-content:center}
