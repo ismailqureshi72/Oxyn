@@ -1,4 +1,4 @@
-**Status:** v1 — implemented (plan #23).
+**Status:** v1.1 — implemented (plan #23); Arc parity gaps closed in plan #25.
 
 # Spec: switch, checkbox, radio group
 
@@ -44,8 +44,9 @@ Disabled: ignores everything.
 
 ### 6. Variants
 Source: `label`, `description`, `placement` start / end, `size` sm / md; Arc `checked`,
-`defaultChecked`, `onCheckedChange`. **Oxyn plus:** `lg` size, pending (async apply) with roll-back,
-"requires restart" note.
+`defaultChecked`, `onCheckedChange`. **Oxyn plus:** `xs` and `lg` sizes, pending (async apply) with
+roll-back, "requires restart" note, hidden label, form `name`. Space held down stretches the thumb
+(Arc).
 
 ### 7. Edge cases
 Label click toggles (label wraps the control). `end` placement spans the row (settings lists). A
@@ -87,8 +88,10 @@ Check draw 240 ms (`dur.check.draw`) × `speed` (Oxyn plus); dash grow 240 ms; f
 80 ms. Reduced motion: drawn at once.
 
 ### 6. Variants
-Source: `label`, `description`, `indeterminate`, `error`, `variant` plain / card. **Oxyn plus:**
-sizes sm / md / lg, draw speed, tri-state cycle.
+Source: `label`, `description`, `indeterminate`, `error`, `variant` plain / card; Arc `name`,
+`required`, `aria-label` fallback. **Oxyn plus:** sizes sm / md / lg, draw speed, tri-state cycle,
+`todo` (strike-through on check), `bulk` (approve-all row). Tick ⇄ dash is one morphing path
+(200 ms `d` transition).
 
 ### 7. Edge cases
 Long labels wrap beside the box (box stays top-aligned). Error replaces the description in the same
@@ -126,8 +129,9 @@ Highlight glide `spring.snap` 214 ms; dot spring-in 214 ms; old dot shrink 120 m
 highlight and dot placed instantly; resizes never animate (Arc).
 
 ### 6. Variants
-Arc: a fieldset of radios with one gliding highlight. **Oxyn plus:** list / cards / inline renderers,
-descriptions per option, disabled-with-reason tooltips.
+Arc: a fieldset of radios with one gliding highlight, a `name` for form submission (hidden input).
+**Oxyn plus:** list / cards / inline / segmented renderers, descriptions per option,
+disabled-with-reason tooltips.
 
 ### 7. Edge cases
 No initial value: first enabled option is the tab stop and nothing is selected until the user acts.
@@ -138,7 +142,7 @@ All options disabled: no tab stop. Long descriptions wrap.
 disabled reasons exposed through `title`.
 
 ### 9. Props
-`RadioGroup { label, options: Vec<RadioOption { value, label, description, disabled: Option<reason> }>, value, layout: "list|cards|inline", on_change }`
+`RadioGroup { label, options: Vec<RadioOption { value, label, description, disabled: Option<reason> }>, value, layout: "list|cards|inline|segmented", name, on_change }`
 
 ## 10. Related components and references
 `segmented-control.md` (same keyboard semantics as radio kind), `genui-forms.md` (forms built from

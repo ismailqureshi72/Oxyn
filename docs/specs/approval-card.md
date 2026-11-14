@@ -286,6 +286,8 @@ impl ApprovalCard<'_> {
 
 ## 10. Related components and references
 **Related:** [approvals.md](approvals.md) (model, tiers, decisions, timeout, batching, audit) ·
+[approval-questions.md](approval-questions.md) (Beautiful UI's question-style Approval Card, plan #25) ·
+[decision-card.md](decision-card.md) ·
 [tool-call.md](tool-call.md) (host card, Approved flash, `Denied` row) · [tools.md](tools.md) (lifecycle,
 expand while awaiting approval) · [file-edit-chip.md](file-edit-chip.md) (first hunk) · family H diff
 viewer · [composer-permission-selector.md](composer-permission-selector.md) (mini chip, attention badge,

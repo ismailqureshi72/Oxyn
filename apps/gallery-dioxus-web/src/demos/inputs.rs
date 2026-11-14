@@ -26,6 +26,7 @@ fn switch(v: &Vals, _: ClockMs) -> Element {
                 disabled: v.b("disabled"),
                 pending: v.b("pending"),
                 restart_note: v.b("restart_note"),
+                hide_label: v.b("hide_label"),
             }
         }
     }
@@ -41,6 +42,7 @@ fn switch_code(v: &Vals) -> String {
         .b("disabled", v.b("disabled"))
         .b("pending", v.b("pending"))
         .b("restart_note", v.b("restart_note"))
+        .b("hide_label", v.b("hide_label"))
         .raw(
             "on_change",
             "move |on: bool| settings.write().auto_approve_reads = on",
@@ -61,6 +63,7 @@ fn checkbox(v: &Vals, _: ClockMs) -> Element {
                 size: v.string("size"),
                 tri_state: v.b("tri_state"),
                 disabled: v.b("disabled"),
+                required: v.b("required"),
             }
         }
     }
@@ -82,6 +85,7 @@ fn checkbox_code(v: &Vals) -> String {
         .s("variant", v.s("variant"), "plain")
         .s("size", v.s("size"), "md")
         .b("tri_state", v.b("tri_state"))
+        .b("required", v.b("required"))
         .b("disabled", v.b("disabled"))
         .raw("on_change", "move |c: Check| run_tests.set(c)")
         .done()
@@ -113,6 +117,7 @@ fn radio(v: &Vals, _: ClockMs) -> Element {
                 options: radio_options(v.b("disabled_option")),
                 value: v.opt("value"),
                 layout: v.string("layout"),
+                name: Some("mode".to_string()),
             }
         }
     }
@@ -211,7 +216,8 @@ fn select(v: &Vals, now: ClockMs) -> Element {
                 loading: v.b("loading"),
                 disabled: v.b("disabled"),
                 optional: v.b("optional"),
-                open: v.b("open"),
+                open: v.b("open") && !v.b("native"),
+                native: v.b("native"),
                 now,
             }
         }
@@ -239,6 +245,7 @@ fn select_code(v: &Vals) -> String {
         )
         .s("size", v.s("size"), "md")
         .b("searchable", v.b("searchable"))
+        .b("native", v.b("native"))
         .b("loading", v.b("loading"))
         .b("optional", v.b("optional"))
         .b("disabled", v.b("disabled"))
@@ -477,13 +484,19 @@ pub(crate) fn demos() -> Vec<Demo> {
                 ),
                 tog("checked", "Checked", true),
                 sel("placement", "Placement", &["start", "end"], "start"),
-                sel("size", "Size", &["sm", "md", "lg"], "md"),
+                sel("size", "Size", &["xs", "sm", "md", "lg"], "md"),
                 tog("pending", "Pending", false),
+                tog("hide_label", "Hide label", false),
                 tog("restart_note", "Restart note", false),
                 tog("disabled", "Disabled", false),
             ],
             variants: vec![
                 var("start", "Switch first, label after.", &[]),
+                var(
+                    "ide-xs",
+                    "16 px switch for dense IDE panels (Oxyn plus).",
+                    &[("size", "xs"), ("description", "")],
+                ),
                 var(
                     "settings-row",
                     "Label first, switch at the end of the row.",
@@ -552,15 +565,40 @@ pub(crate) fn demos() -> Vec<Demo> {
                     &["unchecked", "checked", "indeterminate"],
                     "checked",
                 ),
-                sel("variant", "Variant", &["plain", "card"], "plain"),
+                sel(
+                    "variant",
+                    "Variant",
+                    &["plain", "card", "todo", "bulk"],
+                    "plain",
+                ),
                 sel("size", "Size", &["sm", "md", "lg"], "md"),
                 tog("error", "Error", false),
                 tog("tri_state", "Tri-state cycle", false),
+                tog("required", "Required", false),
                 tog("disabled", "Disabled", false),
             ],
             variants: vec![
                 var("plain", "Label and second line.", &[]),
                 var("card", "A whole card row.", &[("variant", "card")]),
+                var(
+                    "todo",
+                    "Strikes the label through when done (Oxyn plus).",
+                    &[
+                        ("variant", "todo"),
+                        ("label", "Write the migration"),
+                        ("description", ""),
+                    ],
+                ),
+                var(
+                    "bulk",
+                    "An approve-all row over a list (Oxyn plus).",
+                    &[
+                        ("variant", "bulk"),
+                        ("value", "indeterminate"),
+                        ("label", "Approve all 4 edits"),
+                        ("description", ""),
+                    ],
+                ),
                 var(
                     "indeterminate",
                     "Some of them: Select all.",
@@ -606,7 +644,12 @@ pub(crate) fn demos() -> Vec<Demo> {
             spec: "toggles",
             source: "primitives/forms.rs",
             controls: vec![
-                sel("layout", "Layout", &["list", "cards", "inline"], "list"),
+                sel(
+                    "layout",
+                    "Layout",
+                    &["list", "cards", "inline", "segmented"],
+                    "list",
+                ),
                 sel("value", "Value", &["ask", "edits", "full"], "edits"),
                 tog("disabled_option", "Disable Full auto", true),
             ],
@@ -618,6 +661,11 @@ pub(crate) fn demos() -> Vec<Demo> {
                     &[("layout", "cards"), ("value", "ask")],
                 ),
                 var("inline", "One row.", &[("layout", "inline")]),
+                var(
+                    "segmented",
+                    "A segmented tray with one gliding pill (Oxyn plus).",
+                    &[("layout", "segmented")],
+                ),
             ],
             render: radio,
             code: radio_code,
@@ -711,6 +759,7 @@ pub(crate) fn demos() -> Vec<Demo> {
                 sel("size", "Size", &["sm", "md", "lg"], "md"),
                 tog("open", "Open", true),
                 tog("searchable", "Searchable", false),
+                tog("native", "Native renderer", false),
                 tog("loading", "Loading", false),
                 tog("error", "Error", false),
                 tog("optional", "Optional", false),
@@ -723,6 +772,11 @@ pub(crate) fn demos() -> Vec<Demo> {
                     "searchable",
                     "A filter field on top.",
                     &[("searchable", "true")],
+                ),
+                var(
+                    "native",
+                    "The platform's own select (Oxyn plus).",
+                    &[("native", "true"), ("open", "false")],
                 ),
                 var(
                     "error",

@@ -7,9 +7,11 @@ mod buttons;
 mod checkpoints;
 mod composer;
 mod display;
+mod forms;
 mod inputs;
 mod loaders;
 mod overlays;
+mod pickers;
 mod status_text;
 mod tools;
 
@@ -24,7 +26,7 @@ pub struct Category {
 }
 
 /// Categories in nav order.
-pub const CATEGORIES: [Category; 10] = [
+pub const CATEGORIES: [Category; 12] = [
     Category {
         slug: "composer",
         name: "Composer",
@@ -66,6 +68,16 @@ pub const CATEGORIES: [Category; 10] = [
         blurb: "Switches, checkboxes, radios, segmented controls, selects, sliders and text fields.",
     },
     Category {
+        slug: "forms",
+        name: "Forms",
+        blurb: "Tags, comboboxes, codes, passwords, phones, filters, steppers and paste-to-fill.",
+    },
+    Category {
+        slug: "pickers",
+        name: "Pickers",
+        blurb: "Calendars, dates, ranges, times, a time-zone dial and date reels.",
+    },
+    Category {
         slug: "data-display",
         name: "Data display",
         blurb: "Badges, chips, avatars, keys, numbers and empty states.",
@@ -88,6 +100,8 @@ pub fn catalog() -> Vec<Demo> {
     v.extend(checkpoints::demos());
     v.extend(buttons::demos());
     v.extend(inputs::demos());
+    v.extend(forms::demos());
+    v.extend(pickers::demos());
     v.extend(display::demos());
     v.extend(overlays::demos());
     v

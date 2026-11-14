@@ -111,11 +111,31 @@ specified just as deeply. When we point at one component as an example, the stan
 | [avatar.md](avatar.md) | v1 — implemented (plan #23): avatar with agent ring, avatar group |
 | [display-atoms.md](display-atoms.md) | v1 — implemented (plan #23): kbd, separator, spinner, empty state |
 | [number-ticker.md](number-ticker.md) | v1 — implemented (plan #23): number ticker, reaction bar |
-| [toggles.md](toggles.md) | v1 — implemented (plan #23): switch, checkbox, radio group |
+| [toggles.md](toggles.md) | v1.1 — implemented (plan #23, Arc gaps closed in plan #25): switch, checkbox, radio group |
 | [segmented-control.md](segmented-control.md) | v1 — implemented (plan #23) |
-| [select.md](select.md) | v1 — implemented (plan #23) |
+| [select.md](select.md) | v1.1 — implemented (plan #23, Arc gaps closed in plan #25) |
 | [slider.md](slider.md) | v1 — implemented (plan #23) |
 | [text-field.md](text-field.md) | v1 — implemented (plan #23) |
 | [tooltip-popover.md](tooltip-popover.md) | v1 — implemented (plan #23): tooltip, popover |
 | [dropdown-menu.md](dropdown-menu.md) | v1 — implemented (plan #23): dropdown menu, context-menu mode |
+| [tag-input.md](tag-input.md) | v1 — implemented (plan #25): tag input |
+| [combobox.md](combobox.md) | v1 — implemented (plan #25): combobox |
+| [multi-select.md](multi-select.md) | v1 — implemented (plan #25): multi-select |
+| [otp-input.md](otp-input.md) | v1 — implemented (plan #25): OTP input |
+| [password-field.md](password-field.md) | v1 — implemented (plan #25): password field |
+| [password-strength.md](password-strength.md) | v1 — implemented (plan #25): password strength |
+| [inline-edit.md](inline-edit.md) | v1 — implemented (plan #25): inline edit |
+| [phone-input.md](phone-input.md) | v1 — implemented (plan #25): phone input |
+| [calendar.md](calendar.md) | v1 — implemented (plan #25): calendar |
+| [date-picker.md](date-picker.md) | v1 — implemented (plan #25): date picker |
+| [date-range-picker.md](date-range-picker.md) | v1 — implemented (plan #25): date range picker |
+| [time-picker.md](time-picker.md) | v1 — implemented (plan #25): time picker |
+| [time-dial.md](time-dial.md) | v1 — implemented (plan #25): time dial |
+| [date-reel.md](date-reel.md) | v1 — implemented (plan #25): date reel |
+| [filter-menu.md](filter-menu.md) | v1 — implemented (plan #25): filter menu |
+| [stepper-form.md](stepper-form.md) | v1 — implemented (plan #25): stepper form |
+| [multi-step-form.md](multi-step-form.md) | v1 — implemented (plan #25): multi-step form |
+| [decision-card.md](decision-card.md) | v1 — implemented (plan #25): decision card |
+| [approval-questions.md](approval-questions.md) | v1 — implemented (plan #25): approval questions (Beautiful UI Approval Card port) |
+| [smart-form-fill.md](smart-form-fill.md) | v1 — implemented (plan #25): smart form fill |
 | Every other component in [../component-taxonomy.md](../component-taxonomy.md) | to write in V2.2 |
