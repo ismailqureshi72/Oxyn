@@ -62,7 +62,7 @@
 .oxyn-ap.modal{width:420px;background:var(--oxyn-color-surface-overlay);border:1px solid var(--oxyn-color-border-default);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px;box-shadow:0 24px 60px rgba(0,0,0,.45);position:relative;overflow:hidden}
 .oxyn-ap.modal .pv{margin:0}
 /* terminal */
-.oxyn-ap.term{font-family:var(--mono);font-size:12px;line-height:1.6;background:var(--oxyn-color-surface-sunken);border-radius:10px;padding:10px 12px;white-space:pre}
+.oxyn-ap.term{font-family:var(--mono);font-size:12px;line-height:1.6;background:var(--oxyn-color-surface-sunken);border-radius:10px;padding:10px 12px;white-space:pre-wrap;overflow-wrap:anywhere}
 .oxyn-ap.term .cmd{color:var(--oxyn-color-fg-default);font-weight:600}
 .oxyn-ap.term .opt{color:var(--oxyn-color-fg-muted)}.oxyn-ap.term .opt.sel{color:var(--oxyn-color-fg-default)}
 .oxyn-ap.term .dim{color:var(--oxyn-color-fg-subtle)}.oxyn-ap.term .warn{color:var(--oxyn-color-status-warning-fg)}
@@ -130,7 +130,7 @@
 .oxyn-cp.side .tx{flex:1;min-width:0}.oxyn-cp.side .mt{font-size:11.5px;color:var(--oxyn-color-fg-subtle)}
 .oxyn-cp .ln{font-family:var(--mono);font-size:11px;display:inline-flex;gap:4px}
 .oxyn-cp .ln .add{color:var(--oxyn-color-diff-add-fg)}.oxyn-cp .ln .del{color:var(--oxyn-color-diff-del-fg)}
-.oxyn-cp.term{font-family:var(--mono);font-size:12px;line-height:1.6;background:var(--oxyn-color-surface-sunken);border-radius:10px;padding:10px 12px;white-space:pre}
+.oxyn-cp.term{font-family:var(--mono);font-size:12px;line-height:1.6;background:var(--oxyn-color-surface-sunken);border-radius:10px;padding:10px 12px;white-space:pre-wrap;overflow-wrap:anywhere}
 .oxyn-cp.term .opt{color:var(--oxyn-color-fg-muted)}.oxyn-cp.term .opt.sel{color:var(--oxyn-color-fg-default)}.oxyn-cp.term .dim{color:var(--oxyn-color-fg-subtle)}
 /* toast */
 .oxyn-cp.toast{position:relative;overflow:hidden;display:inline-flex;align-items:center;gap:10px;height:38px;padding:0 12px;border-radius:10px;background:var(--oxyn-color-surface-overlay);border:1px solid var(--oxyn-color-border-default);box-shadow:0 10px 30px rgba(0,0,0,.35)}
