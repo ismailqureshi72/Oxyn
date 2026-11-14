@@ -7,6 +7,7 @@ use crate::{Align, Control, Demo, Kind, Vals, Variant};
 
 mod approvals;
 mod buttons;
+mod chat;
 mod checkpoints;
 mod composer;
 mod display;
@@ -33,7 +34,7 @@ pub struct Category {
 }
 
 /// Categories in nav order.
-pub const CATEGORIES: [Category; 18] = [
+pub const CATEGORIES: [Category; 19] = [
     Category {
         slug: "composer",
         name: "Composer",
@@ -110,6 +111,11 @@ pub const CATEGORIES: [Category; 18] = [
         blurb: "Command palettes, AI search, settings search, shortcut recording and pagination.",
     },
     Category {
+        slug: "chat",
+        name: "Chat",
+        blurb: "Streaming answers, reasoning, sources and citations, feedback, threads, starter prompts and research runs.",
+    },
+    Category {
         slug: "navigation",
         name: "Navigation & layout",
         blurb: "Tabs, breadcrumbs, accordions, resizable panes, drawers, trees, docks and reading progress.",
@@ -144,6 +150,7 @@ pub fn catalog() -> Vec<Demo> {
     v.extend(surfaces::demos());
     v.extend(feedback::demos());
     v.extend(search::demos());
+    v.extend(chat::demos());
     v.extend(navigation::demos());
     v
 }
