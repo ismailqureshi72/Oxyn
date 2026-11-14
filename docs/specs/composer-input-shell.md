@@ -264,3 +264,7 @@ question / approval card · voice strip · context meter · mode and model chips
 - Codex CLI (large-paste placeholder, `›` prompt, shell-mode glyph, effort ignition) and MonoCode (Composer Runner): **MIT**, port with attribution (research notes 03, 08).
 - Google Antigravity (placeholder copy, `[Pasted text #X +Y lines]`) and Claude desktop (ghost suggestion): proprietary, reference only (research notes 03, 08).
 - Arc UI chat composer (autosize to 6 lines): paid / unclear, study only (research notes 12).
+
+## Plan #28 parity (2026-11-14)
+
+Plan #28 chunk 4a: [text-area](text-area.md), [labeled-input](labeled-input.md), [labeled-textarea](labeled-textarea.md) and [ghost-text](ghost-text.md). GPUI text entry is now `ImeInput` (IME composition, selection, clipboard), used by the GPUI `Composer`.
