@@ -13,6 +13,7 @@ mod hitl;
 mod navigation;
 mod primitives;
 mod run;
+mod shell;
 mod status_indicator;
 mod status_text;
 mod surfaces;
@@ -46,6 +47,10 @@ pub use primitives::{
     SpinnerEl, SplitButtonEl, SwitchEl, TextFieldEl, TooltipEl, ValuePillEl,
 };
 pub use run::{SubagentTreeEl, TodoChecklist, ToolCallRowEl};
+pub use shell::{
+    AiPanelEl, AppShellEl, ChatShellEl, HarnessEl, InboxEl, RailShellEl, SidebarEl, SidebarNavEl,
+    TermTabsEl, WorkspaceSidebarEl,
+};
 pub use status_indicator::{IndicatorSize, IndicatorVariant, StatusIndicator};
 pub use status_text::{RevealText, ShimmerText, TimerText, VerbCyclerView};
 pub use surfaces::{
