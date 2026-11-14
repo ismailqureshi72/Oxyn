@@ -12,7 +12,7 @@ affectUI,Agent Monitor,https://www.affectui.com/components/agent-monitor,Compone
 affectUI,Agent Plan,https://www.affectui.com/components/agent-plan,Components · Agents,Pro,"plan-todo, plan-approval",,#28,built · close gaps
 affectUI,Agent Queue,https://www.affectui.com/components/agent-queue,Components · Agents,Pro,background-jobs,C9,#33,planned
 affectUI,Agent Recap,https://www.affectui.com/components/agent-recap,Components · Agents,Pro,background-jobs,C5,#31,planned
-affectUI,Agent Steering,https://www.affectui.com/components/agent-steering,Components · Agents,Pro,composer-queue-stack,,#27,planned
+affectUI,Agent Steering,https://www.affectui.com/components/agent-steering,Components · Agents,Pro,composer-queue-stack,,#27,built
 affectUI,Agent Trail,https://www.affectui.com/components/agent-trail,Components · Agents,Pro,"plan-todo, status-indicator, elapsed-timer",,#28,built · close gaps
 affectUI,Agent Tree,https://www.affectui.com/components/agent-tree,Components · Agents,Pro,subagent-tree,,#28,built · close gaps
 affectUI,AI Answer,https://www.affectui.com/components/ai-answer,Components · Chat,Pro,citations-sources,,#27,built
@@ -223,7 +223,7 @@ Arc UI,Money input,https://uiarc.dev/components/money-input,Components · Specia
 Arc UI,Phone input,https://uiarc.dev/components/phone-input,Components · Special inputs,Free,phone-input,N2,#25,built
 Arc UI,Scrub input,https://uiarc.dev/components/scrub-input,Components · Special inputs,Free,composer-effort-control.md (partial),,#28,built · close gaps
 Arc UI,Tag input,https://uiarc.dev/components/tag-input,Components · Special inputs,Free,tag-input,N2,#25,built
-Arc UI,Mention input,https://uiarc.dev/components/mention-input,Components · Special inputs,Free,composer-slash-mentions.md,,#27,planned
+Arc UI,Mention input,https://uiarc.dev/components/mention-input,Components · Special inputs,Free,composer-slash-mentions,,#27,built
 Arc UI,Shortcut recorder,https://uiarc.dev/components/shortcut-recorder,Components · Special inputs,Free,shortcut-recorder,,#26,built
 Arc UI,Select,https://uiarc.dev/components/select,Components · Selects,Free,select,N2,#25,built
 Arc UI,Combobox,https://uiarc.dev/components/combobox,Components · Selects,Free,composer-model-picker.md (partial),,#28,built · close gaps
@@ -496,7 +496,7 @@ Arc UI,Photo grid,https://uiarc.dev/components/photo-grid,Special components · 
 Arc UI,Cover flow,https://uiarc.dev/components/cover-flow,Special components · Galleries,Pro,NEW,N17,#39,planned
 Arc UI,Voice orb,https://uiarc.dev/components/voice-orb,Special components · Audio and video,Pro,"voice-orb.md, live-captions.md",,#36,planned
 Arc UI,Now playing,https://uiarc.dev/components/now-playing,Special components · Audio and video,Pro,NEW,N17,#39,planned
-Arc UI,Voice recorder,https://uiarc.dev/components/voice-recorder,Special components · Audio and video,Pro,"composer-voice-input.md, voice-visualisers.md",,#27,planned
+Arc UI,Voice recorder,https://uiarc.dev/components/voice-recorder,Special components · Audio and video,Pro,"composer-voice-input, voice-visualisers",,#27,built
 Arc UI,Booking pill,https://uiarc.dev/components/booking-pill,Special components · Data,Pro,NEW,N17,#39,planned
 Arc UI,Activity rings,https://uiarc.dev/components/activity-rings,Special components · Data,Pro,NEW,N20,#35,planned
 Arc UI,Time dial,https://uiarc.dev/components/time-dial,Special components · Data,Pro,time-dial,N5,#25,built
@@ -532,7 +532,7 @@ Arc UI,AI workflow,https://uiarc.dev/components/ai-workflow,Special components �
 Arc UI,Code suggestion,https://uiarc.dev/components/code-suggestion,Special components · AI,Pro,diff-viewer.md,,#29,planned
 Arc UI,Ghost text,https://uiarc.dev/components/ghost-text,Special components · AI,Pro,composer-input-shell.md (partial),,#28,built · close gaps
 Arc UI,Image generation,https://uiarc.dev/components/image-generation,Special components · AI,Pro,media-generation-placeholder.md,,#36,planned
-Arc UI,Dictation button,https://uiarc.dev/components/dictation-button,Special components · AI,Pro,composer-voice-input.md,,#27,planned
+Arc UI,Dictation button,https://uiarc.dev/components/dictation-button,Special components · AI,Pro,composer-voice-input,,#27,built
 Arc UI,Speech player,https://uiarc.dev/components/speech-player,Special components · AI,Pro,voice-control-bar.md (partial),,#36,planned
 Arc UI,Meeting summary,https://uiarc.dev/components/meeting-summary,Special components · AI,Pro,NEW,N9,#33,planned
 Arc UI,Reply draft,https://uiarc.dev/components/reply-draft,Special components · AI,Pro,NEW,N9,#33,planned

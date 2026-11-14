@@ -1,4 +1,4 @@
-**Status:** draft v0.1 (2026-11-11).
+**Status:** v1 — implemented (plan #27); the draft below is kept as the design record.
 
 # Spec: composer queue stack (queued messages · steer notes · lanes · stash)
 
@@ -273,3 +273,106 @@ component (steer target) · transcript user bubble (delivery target) · model pi
 | OpenCode AnimatedNumber (note 08) | odometer count roll | MIT — may port with attribution |
 | Conductor read-receipt fade (note 08) | queued message faded until read | Not in sources.csv; study only |
 | Kanban drag lift [R040] | lift / gap / settle choreography for reorder | Study only |
+
+
+## Plan #27 implementation — queue stack
+
+Implemented in `oxyn-core::composer::parts`, `oxyn-dioxus::{QueueStack}` (styles in `PARTS_CSS`, bundled into `PRIMITIVES_CSS`), `oxyn-gpui::{QueueStackEl}`.
+
+### 27.1 Purpose
+Hold messages typed while the agent works and send them in order.
+
+### 27.2 State machine
+```
+push ─▶ queued   turn_end (every turn_ms while busy, not paused) ─▶ first item sent
+send_now(id) ─▶ sent now (interrupts)   shift(id, ±1) ─▶ reordered   edit(id) ─Enter─▶ saved | Escape
+```
+
+### 27.3 States table
+| State | Shows | Keyboard | ARIA |
+|---|---|---|---|
+| queued | rows above the composer | Tab | list |
+| collapsed | “+n more” | Enter expands | — |
+| editing | inline field | Enter / Escape | labelled |
+| paused | paused note | — | polite status |
+
+### 27.4 Micro-interactions
+Rows pop in; the head row marks itself next while the agent runs.
+
+### 27.5 Timing table
+| Transition | Duration | Easing | Reduced motion |
+|---|---|---|---|
+| Row in | 180 ms | `--ox-ease` | instant |
+
+All motion in the parts drops to 1 ms under `prefers-reduced-motion`, except `.oxyn-timer`.
+
+### 27.6 Variants
+Free: queue, send now, remove.
+
+**Oxyn plus:** edit, Alt+↑/↓ reorder, pause, collapse after n rows.
+
+### 27.7 Edge cases
+Idle agent: the next item sends at once. Editing a row keeps its place.
+
+### 27.8 Accessibility
+A labelled list; sends, removals and moves are announced politely.
+
+### 27.9 Props sketch
+```rust
+QueueStack { items: Vec<String>, busy, turn_ms: u64, paused, max_rows: usize, on_send: EventHandler<(String, bool)> }
+```
+
+### 27.10 Related components and references
+`composer-send-control.md`.
+
+
+## Plan #27 implementation — agent steering
+
+Implemented in `oxyn-core::composer::parts`, `oxyn-dioxus::{AgentSteering}` (styles in `PARTS_CSS`, bundled into `PRIMITIVES_CSS`), `oxyn-gpui::{SteeringEl}`.
+
+### 27.1 Purpose
+Guide a running agent without stopping it (affectUI Agent Steering, rebuilt from its behaviour; no source used).
+
+### 27.2 State machine
+```
+Working(step k, every step_ms) ─note (Enter)─▶ Queued ─next step─▶ Picked up
+note (Ctrl/⌘+Enter or interrupt on) ─▶ Interrupting ─▶ Picked up now
+```
+
+### 27.3 States table
+| State | Shows | Keyboard | ARIA |
+|---|---|---|---|
+| working | current step, spinner | — | status |
+| queued note | “at next step” | — | polite |
+| picked up | check, time ago | — | announced |
+| interrupting | stop marker | — | announced |
+
+### 27.4 Micro-interactions
+Notes pop in and show “Waiting for next step” until picked up; the spinner turns.
+
+### 27.5 Timing table
+| Transition | Duration | Easing | Reduced motion |
+|---|---|---|---|
+| Note in | 160 ms | `--ox-ease` | instant |
+| Spinner | 0.8 s loop | linear | static |
+
+All motion in the parts drops to 1 ms under `prefers-reduced-motion`, except `.oxyn-timer`.
+
+### 27.6 Variants
+Free: notes at next step.
+
+**Oxyn plus:** interrupt toggle, Ctrl/⌘+Enter, earlier notes for demos.
+
+### 27.7 Edge cases
+Empty notes are ignored. Steps loop in the demo.
+
+### 27.8 Accessibility
+Interrupt is a toggle (`aria-pressed`); the current step is a status region.
+
+### 27.9 Props sketch
+```rust
+AgentSteering { now_ms, step_ms: u64, steps: Vec<String>, notes: Vec<(String, u64)>, interrupt: bool, on_steer: EventHandler<(String, bool)> }
+```
+
+### 27.10 Related components and references
+affectUI Agent Steering — behaviour only.
