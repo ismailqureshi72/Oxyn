@@ -27,6 +27,12 @@ pub use glyph_loader::{GLYPH_LOADER_CSS, GlyphLoader, GlyphLoaderProps};
 /// Stylesheet for approvals and checkpoints.
 pub const HITL_CSS: &str = include_str!("hitl.css");
 pub use primitives::{
+    Accordion, AccordionItem, Breadcrumb, ChipGroup, CodeBlock, CopyButton, Dock, Drawer,
+    EmptyPreset, ExpandableText, HoverCard, NotificationCenter, PageHeader, PaneView, PresenceDot,
+    Profile, RadioCards, Rating, Reactions, ReorderItem, ReorderableList, ResizablePanels, Tabs,
+    TeamSwitcher, TocProgress, TocSection, ToggleGroup, TreeView, UserMenu, WorkspaceTile,
+};
+pub use primitives::{
     ActionButton, Avatar, AvatarGroup, Badge, Button, ButtonGroup, Bx, Checkbox, Chip,
     DropdownMenu, EmptyState, EntityChip, ExpandingButtonGroup, FloatingButtonGroup, Glide,
     IconButton, Kbd, Monogram, NumberTicker, PRIMITIVES_CSS, Popover, RadioGroup, ReactionBar,
