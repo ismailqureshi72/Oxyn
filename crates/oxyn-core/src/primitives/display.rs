@@ -604,6 +604,16 @@ pub struct Avatar {
 }
 
 impl Avatar {
+    /// Arc UI size presets: `sm` 28, `md` 40, `lg` 56, `xl` 88 px (plan #26 gap).
+    pub fn preset_size(id: &str) -> Option<f32> {
+        match id {
+            "sm" => Some(28.0),
+            "md" => Some(40.0),
+            "lg" => Some(56.0),
+            "xl" => Some(88.0),
+            _ => None,
+        }
+    }
     /// A person.
     pub fn person(name: &str) -> Self {
         Self {
