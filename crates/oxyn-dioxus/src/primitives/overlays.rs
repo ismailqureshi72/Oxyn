@@ -198,6 +198,12 @@ pub fn Popover(
     /// `press` · `hover`.
     #[props(default = "press".to_string())]
     mode: String,
+    /// Modal: dims the page and blocks outside interaction (Arc `modal`).
+    #[props(default)]
+    modal: bool,
+    /// Minimum distance from the viewport edges px (Arc `collisionPadding`, 10).
+    #[props(default = 10.0)]
+    collision_padding: f32,
     /// Closed.
     #[props(default)]
     on_close: EventHandler<()>,
@@ -228,7 +234,7 @@ pub fn Popover(
     let w = width.map(|w| format!("width:{w}px")).unwrap_or_default();
     let o = *is_open.read();
     rsx! {
-        span { class: "oxyn-popwrap", style: "--off:{offset}px",
+        span { class: "oxyn-popwrap", style: "--off:{offset}px;--pad:{collision_padding}px",
             onpointerenter: move |_| if hover { intent.set(if *is_open.peek() { 0 } else { 1 }) },
             onpointerleave: move |_| if hover { intent.set(if *is_open.peek() { -1 } else { 0 }) },
             button { class: "oxyn-poptrig", r#type: "button", "aria-haspopup": "{role}", "aria-expanded": "{o}", "aria-controls": "{id}",
@@ -240,9 +246,9 @@ pub fn Popover(
             if *intent.read() == 1 { span { class: "oxyn-timer", style: "animation-duration:150ms", onanimationend: move |_| { is_open.set(true); intent.set(0) } } }
             if *intent.read() == -1 { span { class: "oxyn-timer", style: "animation-duration:300ms", onanimationend: move |_| { close(false); intent.set(0) } } }
             if o {
-                if !hover { div { class: "oxyn-backdrop", onpointerdown: move |_| close(false) } }
+                if !hover { div { class: if modal { "oxyn-backdrop modal" } else { "oxyn-backdrop" }, onpointerdown: move |_| close(false) } }
                 div { id: "{id}", class: cls(&["oxyn-popover", &side, &align, if unstyled { "unstyled" } else { "" }, if arrow { "arrow" } else { "" }]),
-                    role: "{role}", "aria-label": if let Some(t) = &title { "{t}" } else { "{trigger_label}" },
+                    role: "{role}", "aria-modal": if modal { "true" }, "aria-label": if let Some(t) = &title { "{t}" } else { "{trigger_label}" },
                     style: "{w};position-anchor:--{id}", tabindex: "-1",
                     onmounted: move |e| if focus_on_open { let d = e.data(); spawn(async move { let _ = d.set_focus(true).await; }); },
                     onkeydown: move |e: KeyboardEvent| if e.key() == Key::Escape { e.stop_propagation(); close(true) },
@@ -446,7 +452,8 @@ pub fn DropdownMenu(
                                                         if let Some(c) = checked {
                                                             if c { svg { class: if radio { "chk radio" } else { "chk" }, view_box: "0 0 16 16", width: "14", height: "14",
                                                                 if radio { circle { cx: "8", cy: "8", r: "3" } } else { path { d: "M3.5 8.5 6.5 11.5 12.5 4.5", path_length: "1" } } } }
-                                                        } else if let Some(ic) = it.icon.clone() { Icon { name: ic, size: 14.0 } }
+                                                        } else if let Some(lg) = it.logo.clone() { span { class: "logo", "aria-hidden": "true", "{lg}" } }
+                                                        else if let Some(ic) = it.icon.clone() { Icon { name: ic, size: 14.0 } }
                                                     }
                                                     span { class: "txt", span { class: "lb", "{it.label}" } if let Some(h) = it.hint.clone() { span { class: "ds", "{h}" } } }
                                                     if let Some(k) = keys { Keys { keys: k } }
