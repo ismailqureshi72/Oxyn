@@ -85,7 +85,7 @@
 @media (pointer:coarse){.oxyn-combo .list .row{min-height:44px}.oxyn-field .chip .rm{width:24px;height:24px}.oxyn-field .control .in{font-size:16px}}
 
 /* ---------- OTP ---------- */
-.oxyn-otp{display:inline-flex;flex-direction:column;gap:8px;font:13px var(--ox-font);color:var(--oxyn-color-fg-default);container-type:inline-size;max-width:100%}
+.oxyn-otp{display:inline-flex;flex-direction:column;gap:8px;width:calc(var(--n,6)*50px + 20px);font:13px var(--ox-font);color:var(--oxyn-color-fg-default);container-type:inline-size;max-width:100%}
 .oxyn-otp.center{align-items:center}
 .oxyn-otp .boxes{position:relative;display:flex;gap:6px;align-items:center}
 .oxyn-otp .real{position:absolute;inset:0;opacity:0;font-size:16px;caret-color:transparent;z-index:2;width:100%}
@@ -185,7 +185,7 @@
 .oxyn-phone .picker .empty{padding:12px;text-align:center;color:var(--oxyn-color-fg-subtle)}
 
 /* ---------- Calendar ---------- */
-.oxyn-cal{width:min(100%,328px);font:13px var(--ox-font);color:var(--oxyn-color-fg-default);container-type:inline-size}
+.oxyn-cal{width:328px;max-width:100%;font:13px var(--ox-font);color:var(--oxyn-color-fg-default);container-type:inline-size}
 .oxyn-cal .ch{display:flex;align-items:center;gap:4px;margin-bottom:6px}
 .oxyn-cal .ch .ct{flex:1;font-weight:600;animation:oxyn-roll-in-up 220ms var(--ox-ease)}
 .oxyn-cal .pg,.oxyn-cal .tdy{all:unset;display:inline-flex;align-items:center;justify-content:center;height:28px;min-width:28px;border-radius:7px;color:var(--oxyn-color-fg-muted);cursor:pointer}
@@ -320,7 +320,7 @@
 @container (max-width:360px){.oxyn-dial .cr{padding:5px 6px;gap:2px 6px}}
 
 /* ---------- Date reel ---------- */
-.oxyn-reel{display:flex;flex-direction:column;gap:12px;width:min(100%,420px);font:13px var(--ox-font);color:var(--oxyn-color-fg-default);container-type:inline-size;--row:34px}
+.oxyn-reel{display:flex;flex-direction:column;gap:12px;width:420px;max-width:100%;font:13px var(--ox-font);color:var(--oxyn-color-fg-default);container-type:inline-size;--row:34px}
 .oxyn-reel .rt{font-size:12px;font-weight:600;color:var(--oxyn-color-fg-muted);text-transform:uppercase;letter-spacing:.04em}
 .oxyn-reel .sum{display:flex;align-items:baseline;gap:8px}
 .oxyn-reel .sum .sv{font-size:17px;font-weight:600;animation:oxyn-label-in 200ms}
@@ -394,7 +394,7 @@
 .oxyn-stepper .card[data-dir="back"]{animation:oxyn-slide-r 260ms var(--ox-ease)}
 .oxyn-stepper fieldset{border:0;margin:0;padding:0;display:flex;flex-direction:column;gap:12px;min-width:0}
 .oxyn-stepper legend.hd{padding:0;font-size:16px;font-weight:600}
-.oxyn-stepper .dd{margin:-8px 0 0;color:var(--oxyn-color-fg-muted)}
+.oxyn-stepper .dd{margin:4px 0 0;color:var(--oxyn-color-fg-muted)}
 .oxyn-stepper .sf.shake{animation:oxyn-shake 360ms ease-out}
 .oxyn-stepper .plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px}
 .oxyn-stepper .plan{padding:12px;border-radius:10px;border:1px solid var(--oxyn-color-border-default);cursor:pointer;outline:none;transition:border-color var(--ox-snap) var(--ox-ease),box-shadow var(--ox-snap) var(--ox-ease)}
@@ -512,7 +512,7 @@
 .oxyn-aq.sent .ok{width:18px;height:18px;border-radius:50%;background:var(--oxyn-color-status-success-bg);color:var(--oxyn-color-status-success-fg);display:inline-flex;align-items:center;justify-content:center}
 
 /* ---------- Smart form fill ---------- */
-.oxyn-sff{width:min(100%,780px);padding:16px;border-radius:16px;border:1px solid var(--oxyn-color-border-default);background:var(--oxyn-color-surface-raised);font:13px var(--ox-font);color:var(--oxyn-color-fg-default);display:flex;flex-direction:column;gap:14px;container-type:inline-size}
+.oxyn-sff{width:780px;max-width:100%;padding:16px;border-radius:16px;border:1px solid var(--oxyn-color-border-default);background:var(--oxyn-color-surface-raised);font:13px var(--ox-font);color:var(--oxyn-color-fg-default);display:flex;flex-direction:column;gap:14px;container-type:inline-size}
 .oxyn-sff .st{font-size:15px;font-weight:600}
 .oxyn-sff .sd{color:var(--oxyn-color-fg-muted);font-size:12.5px}
 .oxyn-sff .cols{display:grid;grid-template-columns:1fr;gap:14px}

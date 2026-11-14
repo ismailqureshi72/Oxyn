@@ -76,6 +76,7 @@ fn MonthGrid(
         .find(|(c, _)| c.focused)
         .map(|(c, _)| c.date);
     let (dir, k) = slide.unwrap_or_default();
+    let _ = &k; // `key:` is compiled out in some rsx profiles
     rsx! {
         div { class: "mgrid", role: "grid", "aria-labelledby": "{id}-t", tabindex: if focusable { "0" } else { "-1" },
             "aria-activedescendant": if let Some(f) = focus { "{id}-{f.iso()}" },
