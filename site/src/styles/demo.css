@@ -120,3 +120,32 @@ oxyn-demo{display:block}
 .oxd-bars span{flex:1;border-radius:4px 4px 0 0;background:var(--oxyn-color-fg-muted)}
 .oxd-xs-lane{width:440px;max-width:100%;display:flex;justify-content:center}
 .oxd-mini .oxd-app,.oxd-mini .oxd-phone{transform:scale(.5);transform-origin:top center;margin-bottom:-200px}
+/* Plan #27 chunk 4: shells render inside the demo app frame */
+.oxd-app.oxs-frame{width:100%;max-width:1120px;height:auto}
+.oxs-body{display:flex;min-width:0;padding:10px;background:var(--oxyn-color-surface-sunken)}
+.oxs-body>*{flex:1;min-width:0}
+.oxs-row{display:flex;gap:0;width:100%;min-width:0;border:1px solid var(--oxyn-color-border-subtle);border-radius:12px;overflow:hidden;background:var(--oxyn-color-surface-base)}
+.oxs-row>.oxyn-sidebar{border:0;border-right:1px solid var(--oxyn-color-border-subtle);border-radius:0}
+.oxs-row.pad{padding:10px;gap:10px;align-items:flex-start}
+.oxs-row.pad>.oxyn-snav{flex:none}
+.oxs-page{flex:1;min-width:0;padding:22px 24px;display:flex;flex-direction:column;gap:10px}
+.oxs-page h3{margin:0;font-size:18px;font-weight:650;letter-spacing:-.01em}
+.oxs-page p{margin:0;color:var(--oxyn-color-fg-muted);font-size:13.5px;max-width:520px}
+.oxs-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:6px}
+.oxs-card{display:flex;flex-direction:column;gap:3px;padding:12px 14px;border-radius:10px;border:1px solid var(--oxyn-color-border-subtle);background:var(--oxyn-color-surface-raised);font-size:13px}
+.oxs-card small{color:var(--oxyn-color-fg-muted);font-size:12px}
+.oxs-center{flex:1;display:flex;align-items:center;justify-content:center;padding:24px}
+.oxs-pad{display:flex;flex-direction:column;gap:12px;padding:18px 20px}
+.oxs-h{margin:4px 0 0;font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--oxyn-color-fg-subtle)}
+.oxs-sh{margin:0 0 10px;font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--oxyn-color-fg-subtle)}
+.oxs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.oxs-agent{display:flex;align-items:flex-start;gap:10px;padding:12px;border-radius:10px;border:1px solid var(--oxyn-color-border-subtle);background:var(--oxyn-color-surface-raised)}
+.oxs-agent>div{display:flex;flex-direction:column;gap:2px;min-width:0;font-size:13px}
+.oxs-agent small,.oxs-recent small{color:var(--oxyn-color-fg-muted);font-size:12px}
+.oxs-recent{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;border:1px solid var(--oxyn-color-border-subtle);border-radius:10px;overflow:hidden}
+.oxs-recent li{display:flex;justify-content:space-between;gap:12px;padding:9px 12px;font-size:13px}
+.oxs-recent li+li{border-top:1px solid var(--oxyn-color-border-subtle)}
+.oxs-recent b{font-weight:500}
+.oxs-thread{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;gap:14px;padding:18px 20px}
+.oxs-bot{font-size:14px;line-height:1.6;max-width:620px}
+.oxs-comp{margin:0 16px 14px}

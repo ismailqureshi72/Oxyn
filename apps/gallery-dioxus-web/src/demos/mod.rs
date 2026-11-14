@@ -20,6 +20,7 @@ mod navigation;
 mod overlays;
 mod pickers;
 mod search;
+mod shells;
 mod status_text;
 mod surfaces;
 mod tools;
@@ -35,7 +36,7 @@ pub struct Category {
 }
 
 /// Categories in nav order.
-pub const CATEGORIES: [Category; 19] = [
+pub const CATEGORIES: [Category; 20] = [
     Category {
         slug: "composer",
         name: "Composer",
@@ -131,6 +132,11 @@ pub const CATEGORIES: [Category; 19] = [
         name: "App chrome",
         blurb: "Account menus, workspace switchers, notification centers, hover cards, code blocks and empty states.",
     },
+    Category {
+        slug: "shells",
+        name: "App shells & screens",
+        blurb: "Sidebars, icon rails, inbox and workspace sidebars, app shells, an AI side panel, terminal tabs, a demo harness and seven AI Chat screens.",
+    },
 ];
 
 /// Every demo, in category order.
@@ -138,6 +144,7 @@ pub fn catalog() -> Vec<Demo> {
     let mut v = Vec::new();
     v.extend(composer::demos());
     v.extend(composer_parts::demos());
+    v.extend(shells::demos());
     v.extend(loaders::demos());
     v.extend(status_text::demos());
     v.extend(tools::demos());
