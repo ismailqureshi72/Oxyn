@@ -14,6 +14,7 @@ use oxyn_tokens::{ColorRole, Theme};
 use crate::hsla;
 
 mod approvals;
+mod ime;
 mod run;
 mod text;
 mod tools;
@@ -22,6 +23,7 @@ pub use approvals::{
     AgentApprovalsEl, ApprovalGatesEl, ApprovalPagerEl, ConfirmMorphEl, ConfirmPopoverEl,
     HoldConfirmEl, PermissionRequestEl,
 };
+pub use ime::{ImeEvent, ImeInput, bind_ime_keys};
 pub use run::{
     ActivityFeedEl, AgentPlanEl, AgentRunEl, AgentStatusEl, AgentTrailEl, AgentTreeEl, BreakdownEl,
     ChecklistEl, CountdownEl, CounterEl, FleetEl, FlowStepperEl, OrchestratorEl, ReadinessEl,

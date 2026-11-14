@@ -3,6 +3,8 @@
 //! references. Behaviour-only rebuilds: nothing here is copied from those libraries.
 //!
 //! - [`confirm`]: confirm morph, hold to confirm, confirm popover (destructive buttons that ask).
+//! - [`edit`]: a text buffer with selection and IME composition (GPUI text entry).
+//! - [`input`]: text area rows and counter, changed-word rows, ghost-text autocomplete.
 //! - [`gates`]: approval gates, permission requests and the agent approvals block.
 //! - [`text`]: loaders and moving text (morph, slot reels, phases, action swap, streams).
 //! - [`tools`]: tool calls, the tool-kind map, JSON trees and link unfurls.
@@ -10,8 +12,10 @@
 //! Like the rest of the core, time is passed in as [`crate::ClockMs`]; nothing reads a clock.
 
 pub mod confirm;
+pub mod edit;
 pub mod fleet;
 pub mod gates;
+pub mod input;
 pub mod plan;
 pub mod text;
 pub mod tools;

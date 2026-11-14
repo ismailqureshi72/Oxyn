@@ -4,15 +4,16 @@
 //!
 //! It is an entity: create it with [`Composer::new`], feed it the agent state, attachments, usage
 //! and the shared clock time each frame, and listen for [`ComposerEvent`]s. Text editing is a
-//! single-line-wrapped draft with Enter / Shift+Enter / Backspace and `⌥.` / `⌥,` for effort; IME
-//! and selection come with the input handler in a follow-up PR.
+//! [`ImeInput`](crate::ImeInput) (IME composition, selection, clipboard, word moves) with
+//! Enter / Shift+Enter, and `⌥.` / `⌥,` for effort. The draft is one shaped line for now: a line
+//! break draws as a space until wrapped layout lands.
 
 use std::collections::HashMap;
 
 use gpui::{
-    App, Context, EventEmitter, FocusHandle, Focusable, FontWeight, Hsla, InteractiveElement,
-    IntoElement, KeyDownEvent, MouseButton, ParentElement, PathBuilder, Pixels, Point, Render,
-    SharedString, Styled, Window, canvas, div, point, prelude::*, px,
+    App, Context, Entity, EventEmitter, FocusHandle, Focusable, FontWeight, Hsla,
+    InteractiveElement, IntoElement, KeyDownEvent, MouseButton, ParentElement, PathBuilder, Pixels,
+    Point, Render, SharedString, Styled, Window, canvas, div, point, prelude::*, px,
 };
 use oxyn_core::{
     AgentState, ClockMs,
@@ -32,7 +33,10 @@ use oxyn_core::{
 };
 use oxyn_tokens::{ColorRole, Theme};
 
-use crate::{hsla, mix};
+use crate::{
+    hsla, mix,
+    parity::{ImeEvent, ImeInput},
+};
 
 /// What the composer tells its host.
 #[derive(Clone, Debug, PartialEq)]
@@ -74,6 +78,7 @@ enum Pop {
 /// The composer entity.
 pub struct Composer {
     focus: FocusHandle,
+    input: Entity<ImeInput>,
     theme: &'static Theme,
     agent: AgentState,
     now: ClockMs,
@@ -111,8 +116,24 @@ impl Focusable for Composer {
 impl Composer {
     /// A composer over `catalog`, starting on `model`.
     pub fn new(catalog: ModelCatalog, model: ModelSelection, cx: &mut Context<Self>) -> Self {
+        let input = cx.new(|cx| {
+            let mut i = ImeInput::new(cx, "");
+            i.set_multiline(true);
+            i.set_bare(true);
+            i
+        });
+        cx.subscribe(&input, |this, inp, ev: &ImeEvent, cx| {
+            match ev {
+                ImeEvent::Changed => this.draft = inp.read(cx).text().to_string(),
+                ImeEvent::Enter { modk } => this.enter(*modk, cx),
+                ImeEvent::Accepted { .. } | ImeEvent::Dismissed(_) => {}
+            }
+            cx.notify();
+        })
+        .detach();
         Self {
             focus: cx.focus_handle(),
+            input,
             theme: &Theme::DARK,
             agent: AgentState::Idle,
             now: ClockMs(0),
@@ -210,8 +231,32 @@ impl Composer {
     }
 
     /// The draft text.
-    pub fn set_text(&mut self, text: impl Into<String>) {
+    pub fn set_text(&mut self, text: impl Into<String>, cx: &mut Context<Self>) {
         self.draft = text.into();
+        let d = self.draft.clone();
+        self.input.update(cx, |i, cx| i.set_text(&d, cx));
+    }
+
+    /// Takes the draft and clears the field.
+    fn take_draft(&mut self, cx: &mut Context<Self>) -> String {
+        self.input.update(cx, |i, cx| i.set_text("", cx));
+        std::mem::take(&mut self.draft)
+    }
+
+    /// Enter (not Shift+Enter): the picker's choice while it is open, else send / queue / steer.
+    fn enter(&mut self, modk: bool, cx: &mut Context<Self>) {
+        if self.picker.open {
+            let rows = self.rows();
+            match self.picker.key(PickerKey::Enter, &rows) {
+                PickerEvent::Choose(s) => self.choose(s),
+                PickerEvent::Close => self.pop = None,
+                PickerEvent::None => {}
+            }
+            return;
+        }
+        let st = self.send_state();
+        let a = self.send.enter(&st, self.busy_action, modk, self.now);
+        self.dispatch(a, cx);
     }
 
     /// Frames are needed (an effect, a ring or a roll is moving).
@@ -347,14 +392,16 @@ impl Composer {
                 return;
             }
             SendAction::Answer => {
-                cx.emit(ComposerEvent::Answer(std::mem::take(&mut self.draft)));
+                let d = self.take_draft(cx);
+                cx.emit(ComposerEvent::Answer(d));
                 return;
             }
             SendAction::Accept | SendAction::Choose | SendAction::None => return,
         };
         let st = self.state();
+        let text = self.take_draft(cx);
         cx.emit(ComposerEvent::Submit {
-            text: std::mem::take(&mut self.draft),
+            text,
             attachments: self
                 .attachments
                 .iter()
@@ -394,15 +441,10 @@ impl Composer {
             return;
         }
         match k.key.as_str() {
+            // Typing, Backspace and Shift+Enter belong to the IME input; Enter reaches here only
+            // when the shell itself holds focus.
             "enter" if !k.modifiers.shift => {
-                let st = self.send_state();
-                let modk = k.modifiers.platform || k.modifiers.control;
-                let a = self.send.enter(&st, self.busy_action, modk, self.now);
-                self.dispatch(a, cx);
-            }
-            "enter" => self.draft.push('\n'),
-            "backspace" => {
-                self.draft.pop();
+                self.enter(k.modifiers.platform || k.modifiers.control, cx);
             }
             "escape" => {
                 if self.pop.is_some() {
@@ -418,14 +460,7 @@ impl Composer {
                 let agent = self.agent.clone();
                 self.effort.step(k.key == ".", &agent, &s, self.now);
             }
-            _ => {
-                if let Some(c) = k.key_char.as_deref()
-                    && !k.modifiers.control
-                    && !k.modifiers.platform
-                {
-                    self.draft.push_str(c);
-                }
-            }
+            _ => {}
         }
         cx.notify();
     }
@@ -487,7 +522,14 @@ impl Render for Composer {
         let support = self.support();
         let ev = self.effort.view(&support, now);
         let ctx = self.usage.clone().map(|u| (self.meter.view(&u, now), u));
-        let focused = self.focus.is_focused(window);
+        let placeholder = self.placeholder.text(&self.agent, self.busy_action, None);
+        self.input.update(cx, |i, _| i.set_placeholder(placeholder));
+        // The model picker takes keys while open; otherwise typing goes to the IME input.
+        let input_focus = self.input.read(cx).focus().clone();
+        if self.picker.open && input_focus.is_focused(window) {
+            window.focus(&self.focus, cx);
+        }
+        let focused = self.focus.contains_focused(window, cx);
         let accent = c(t, ColorRole::AccentSolid);
         let muted = c(t, ColorRole::FgMuted);
         let subtle = c(t, ColorRole::FgSubtle);
@@ -606,23 +648,14 @@ impl Render for Composer {
         });
 
         // Text.
-        let placeholder = self.placeholder.text(&self.agent, self.busy_action, None);
-        let caret_on = focused && (now.0 / 530).is_multiple_of(2);
-        let text_el = if self.draft.is_empty() {
-            div().text_color(subtle).child(placeholder)
-        } else {
-            div().child(SharedString::from(self.draft.clone()))
-        };
+        // Text: the IME input draws the draft, caret, selection and composition underline.
         let text_row = div()
             .flex()
             .items_end()
             .min_h(px(44.))
             .text_size(px(15.))
             .line_height(px(22.))
-            .child(text_el)
-            .when(caret_on, |d| {
-                d.child(div().w(px(1.5)).h(px(18.)).mb(px(2.)).bg(accent))
-            });
+            .child(self.input.clone());
 
         let hint = if let Some(d) = &self.disabled {
             Some(d.label())
@@ -1088,7 +1121,12 @@ impl Render for Composer {
             .on_mouse_down(
                 MouseButton::Left,
                 cx.listener(|this, _, window, cx| {
-                    window.focus(&this.focus, cx);
+                    if this.picker.open {
+                        window.focus(&this.focus, cx);
+                    } else {
+                        let f = this.input.read(cx).focus().clone();
+                        window.focus(&f, cx);
+                    }
                 }),
             )
             .relative()
