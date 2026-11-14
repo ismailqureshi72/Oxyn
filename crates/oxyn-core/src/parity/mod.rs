@@ -4,6 +4,7 @@
 //!
 //! - [`confirm`]: confirm morph, hold to confirm, confirm popover (destructive buttons that ask).
 //! - [`gates`]: approval gates, permission requests and the agent approvals block.
+//! - [`text`]: loaders and moving text (morph, slot reels, phases, action swap, streams).
 //! - [`tools`]: tool calls, the tool-kind map, JSON trees and link unfurls.
 //!
 //! Like the rest of the core, time is passed in as [`crate::ClockMs`]; nothing reads a clock.
@@ -12,6 +13,7 @@ pub mod confirm;
 pub mod fleet;
 pub mod gates;
 pub mod plan;
+pub mod text;
 pub mod tools;
 
 /// Smoothstep ease used for rewinds and fills (0..1 in, 0..1 out).

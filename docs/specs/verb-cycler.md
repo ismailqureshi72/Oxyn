@@ -236,3 +236,7 @@ plan steps (family F) · loaders (family B, `semantic-verb` pairing).
 | Motion Primitives, Magic UI, React Bits (note 02) | Text Scramble / Morph / Roll, Word Rotate, Split-Flap Text | licences not recorded in notes — study only |
 | Fancy Components [R138] | Scramble In, Text Rotate | MIT — portable with attribution |
 | pi-spinner (note 02) | verb packs as a product concept | licence not recorded — study only |
+
+## Plan #28 parity (2026-11-14)
+
+Related new components: [text-morph](text-morph.md), [action-swap](action-swap.md), [thinking-loader](thinking-loader.md).

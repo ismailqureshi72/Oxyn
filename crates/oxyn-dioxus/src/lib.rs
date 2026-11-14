@@ -42,6 +42,10 @@ pub use glyph_loader::{GLYPH_LOADER_CSS, GlyphLoader, GlyphLoaderProps};
 /// Stylesheet for approvals and checkpoints.
 pub const HITL_CSS: &str = include_str!("hitl.css");
 pub use parity::{
+    ActionSwapButton, InViewTitle, LoadingState, SlotReels, Source, StreamingText, SweepText,
+    TextMorph, ThinkingLoader, WordReveal,
+};
+pub use parity::{
     ActivityFeed, AgentApprovals, AgentFleet, AgentOrchestrator, AgentPlan, AgentRun, AgentStatus,
     AgentTrail, AgentTree, AnimatedCounter, ApprovalGates, ConfirmMorph, ConfirmPopover, Countdown,
     FlowStepper, HoldToConfirm, OnboardingChecklist, PermissionRequest, ReleaseReadiness,
