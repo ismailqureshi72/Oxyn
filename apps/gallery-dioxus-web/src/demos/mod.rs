@@ -10,6 +10,7 @@ mod buttons;
 mod chat;
 mod checkpoints;
 mod composer;
+mod composer_parts;
 mod display;
 mod feedback;
 mod forms;
@@ -136,6 +137,7 @@ pub const CATEGORIES: [Category; 19] = [
 pub fn catalog() -> Vec<Demo> {
     let mut v = Vec::new();
     v.extend(composer::demos());
+    v.extend(composer_parts::demos());
     v.extend(loaders::demos());
     v.extend(status_text::demos());
     v.extend(tools::demos());
