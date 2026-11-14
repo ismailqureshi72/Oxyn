@@ -10,6 +10,7 @@ pub mod context;
 pub mod effort;
 pub mod input;
 pub mod model;
+pub mod parts;
 pub mod send;
 
 use std::time::Duration;

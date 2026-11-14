@@ -26,6 +26,12 @@ pub use checkpoint::{
     CheckpointMarkerProps, RestoreToast, RestoreToastProps,
 };
 pub use composer::{
+    AgentSteering, AgentSteeringProps, DictationButton, DictationButtonProps, MentionInput,
+    MentionInputProps, ModeSwitch, ModeSwitchProps, PARTS_CSS, PermissionSelector,
+    PermissionSelectorProps, QueueStack, QueueStackProps, ToolsMenu, ToolsMenuProps, VoiceRecorder,
+    VoiceRecorderProps,
+};
+pub use composer::{
     AttachmentRow, AttachmentRowProps, COMPOSER_CSS, Composer, ComposerProps, ContextMeterChip,
     ContextMeterChipProps, DropZone, DropZoneProps, EffortChip, EffortChipProps, Icon, IconProps,
     ModelPicker, ModelPickerProps, SendButton, SendButtonProps, Submission,
