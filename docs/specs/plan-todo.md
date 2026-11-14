@@ -373,3 +373,7 @@ subagent-tree.md (owner colours) · run-meter.md (step durations, cost).
 | Beautiful UI Task Rows [R106] [R133] | capsules / list views, nested sub-steps, counts | MIT — may port with attribution |
 | Agent inbox board [R062]; metro-line pipeline [R038] | cards glide between columns; metro-line steps | Study only |
 | AI Elements Plan / Task / Queue (note 05 §5) | collapsible plan with streaming shimmer | Licence not recorded in licensing.md — study only until checked |
+
+## Plan #28 parity (2026-11-14)
+
+Closed with new components: [agent-plan](agent-plan.md) (edit, reorder, run, retry), [agent-trail](agent-trail.md), [task-rows](task-rows.md), [stepper](stepper.md), [onboarding-checklist](onboarding-checklist.md), [release-readiness](release-readiness.md), [task-breakdown](task-breakdown.md), [agent-run](agent-run.md).

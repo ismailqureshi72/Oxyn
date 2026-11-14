@@ -328,3 +328,7 @@ back a branch over changed files).
 
 ## Implementation (v0.2, plan #21)
 `oxyn-core::checkpoint` (lanes, head path, restore labels, `RestoreFlow` with 10 s undo window); Dioxus `CheckpointLanes`, `CheckpointMarker` (inline-marker, hover-revert), `CheckpointList` (side-list, terminal), `RestoreToast`; GPUI `CheckpointLanesEl`. Not built yet: preview popover and snapshot banner, impact sheet (rollback-impact.md), scrubber, Pro variants.
+
+## Plan #28 parity (2026-11-14)
+
+Agent Checkpoints (affectUI) gaps reviewed: the head path, cost total and stopped status are covered by the existing `CheckpointLanes` model (`checkpoint.rs`); new run views ([agent-trail](agent-trail.md), [activity-feed](activity-feed.md)) cover the trail and day-grouped timeline gaps. Remaining: per-checkpoint tool icon and a `format_cost` hook (listed in the PR).
