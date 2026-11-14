@@ -51,6 +51,8 @@ pub struct MenuItem {
     pub keep_open: bool,
     /// Second line (Oxyn plus in comfortable density).
     pub hint: Option<String>,
+    /// Brand logo text (affectUI `item.logo`; drawn as a small tile instead of the icon).
+    pub logo: Option<String>,
 }
 
 impl MenuItem {
@@ -66,6 +68,7 @@ impl MenuItem {
             disabled: false,
             keep_open: false,
             hint: None,
+            logo: None,
         }
     }
     /// A checkbox item (keeps the menu open).
@@ -110,6 +113,16 @@ impl MenuItem {
     /// With an icon.
     pub fn icon(mut self, i: &str) -> Self {
         self.icon = Some(i.into());
+        self
+    }
+    /// With a brand logo (plan #26 gap: affectUI `item.logo`).
+    pub fn logo(mut self, l: &str) -> Self {
+        self.logo = Some(l.into());
+        self
+    }
+    /// Keeps the menu open when activated (affectUI `item.keepOpen`).
+    pub fn keep_open(mut self) -> Self {
+        self.keep_open = true;
         self
     }
     /// With a shortcut.

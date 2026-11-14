@@ -25,17 +25,28 @@
 //! - [`filter_menu`]: grouped filters. [`stepper`]: stepper / multi-step form.
 //!   [`questions`]: the decision card and paged approval questions. [`smart_fill`]: paste to fill.
 //!
+//! Surfaces (plan #26):
+//! - [`modal`]: dialog, side sheet, sheet stack, bottom sheet. [`toast`]: toaster and
+//!   notification stack. [`scroll`]: scroll area with stick-to-bottom, pagination.
+//! - [`feedback`]: alert and card. [`skeleton`]: skeletons, shimmer loader, skeleton morph.
+//! - [`command`]: command palette / menu, AI command, AI search bar, settings command.
+//!   [`search`]: search field, expanding search, shortcut recorder. [`control_center`]: quick
+//!   settings.
+//!
 //! Behaviour follows the affectUI and Arc UI docs (rebuilt, no source used) and Beautiful UI's MIT
 //! atoms (button, entity chip + monogram, value pill) and Approval Card (© 2026 Shane Levine).
-
 pub mod button;
 pub mod combobox;
+pub mod command;
+pub mod control_center;
 pub mod date;
 pub mod dial;
 pub mod display;
+pub mod feedback;
 pub mod filter_menu;
 pub mod inline_edit;
 pub mod menu;
+pub mod modal;
 pub mod nav;
 pub mod otp;
 pub mod overlay;
@@ -43,12 +54,16 @@ pub mod password;
 pub mod phone;
 pub mod placement;
 pub mod questions;
+pub mod scroll;
+pub mod search;
 pub mod segmented;
 pub mod select;
+pub mod skeleton;
 pub mod slider;
 pub mod smart_fill;
 pub mod stepper;
 pub mod tags;
 pub mod text_field;
 pub mod ticker;
+pub mod toast;
 pub mod toggle;
