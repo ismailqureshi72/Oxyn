@@ -81,7 +81,7 @@ fn workspace(v: &Vals, _: ClockMs) -> Element {
     rsx! {
         {app_frame("Northwind", rsx! {
             div { key: "{k}", class: "oxs-row",
-                WorkspaceSidebar { menu_open: v.b("menu"), query: v.string("query"), collapsed: v.b("collapsed"), storage: v.f("storage") as f32 / 100.0, height: 500.0 }
+                WorkspaceSidebar { menu_open: v.b("menu"), query: if v.s("query") == "none" { String::new() } else { v.string("query") }, collapsed: v.b("collapsed"), storage: v.f("storage") as f32 / 100.0, height: 500.0 }
                 {page_body()}
             }
         })}
@@ -152,8 +152,8 @@ fn appshell(v: &Vals, _: ClockMs) -> Element {
     rsx! {
         {app_frame("Northline", rsx! {
             div { key: "{k}", style: "width:100%",
-                AppShell { variant: variant.clone(), height: 480.0,
-                    sidebar: rsx! { Sidebar { collapsed: railed, height: 480.0 } },
+                AppShell { variant: variant.clone(), height: 540.0,
+                    sidebar: rsx! { Sidebar { collapsed: railed, height: 540.0 } },
                     {page_body()}
                 }
             }
@@ -330,7 +330,7 @@ fn screen_el(sc: Screen, now: ClockMs, el: u64) -> Element {
             ChatShell { threads: threads(), active: 0, height: 540.0,
                 div { class: "oxs-center",
                     div { class: "oxd-w560",
-                        StarterPrompts { greeting: "Good afternoon, Ismail", description: Some(s("Ask anything, or start from a prompt. Atlas can read the repo, run commands and open PRs.")), prompts: starter_list(), count: 4, composer: true }
+                        StarterPrompts { greeting: "Good afternoon, Ismail", description: Some(s("Ask anything, or start from a prompt. Atlas can read the repo, run commands and open PRs.")), prompts: starter_list(), count: 2, composer: true }
                     }
                 }
             }
@@ -351,8 +351,8 @@ fn screen_el(sc: Screen, now: ClockMs, el: u64) -> Element {
                     ul { class: "oxs-recent",
                         for (t, m) in threads() { li { key: "{t}", b { "{t}" } small { "{m}" } } }
                     }
-                    {mini_comp("Ask across all agents…")}
                 }
+                {mini_comp("Ask across all agents…")}
             }
         },
         Screen::Agents => rsx! {
@@ -503,7 +503,7 @@ pub fn demos() -> Vec<Demo> {
         Demo {
             controls: vec![
                 tog("menu", "Switcher open", false),
-                sel("query", "Search", &["", "check", "zzz"], ""),
+                sel("query", "Search", &["none", "check", "zzz"], "none"),
                 tog("collapsed", "Icon rail", false),
                 rng("storage", "Storage %", 0.0, 100.0, 1.0, "38"),
             ],
@@ -683,7 +683,7 @@ pub fn demos() -> Vec<Demo> {
                 "Header actions are labelled icon buttons.",
             ],
             responsive: shell_resp.clone(),
-            height: 560,
+            height: 620,
             align: Align::Start,
             ..mk(
                 "app-shell",
@@ -892,7 +892,7 @@ pub fn demos() -> Vec<Demo> {
                 .iter()
                 .map(|sc| {
                     let id = sc.id();
-                    var(id, sc.title(), &[("screen", id)])
+                    var(id, sc.title(), &[("screen", id), ("finished", "true")])
                 })
                 .collect(),
             render: screens,

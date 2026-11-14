@@ -1,10 +1,10 @@
 /* App shells and screens (plan #27, chunk 4). Roots: .oxyn-sidebar .oxyn-railshell .oxyn-inbox .oxyn-appshell .oxyn-aipanel .oxyn-term .oxyn-snav .oxyn-chatshell .oxyn-harness */
 :is(.oxyn-sidebar,.oxyn-railshell,.oxyn-inbox,.oxyn-appshell,.oxyn-aipanel,.oxyn-term,.oxyn-snav,.oxyn-chatshell,.oxyn-harness){font-family:var(--ox-font);font-size:13px;line-height:1.45;color:var(--oxyn-color-fg-default);box-sizing:border-box;-webkit-font-smoothing:antialiased}
-:is(.oxyn-sidebar,.oxyn-railshell,.oxyn-inbox,.oxyn-appshell,.oxyn-aipanel,.oxyn-term,.oxyn-snav,.oxyn-chatshell,.oxyn-harness) *{box-sizing:border-box}
-:is(.oxyn-sidebar,.oxyn-railshell,.oxyn-inbox,.oxyn-appshell,.oxyn-aipanel,.oxyn-term,.oxyn-snav,.oxyn-chatshell,.oxyn-harness) :is(ul,ol,li){margin:0;padding:0;list-style:none}
-:is(.oxyn-sidebar,.oxyn-railshell,.oxyn-inbox,.oxyn-appshell,.oxyn-aipanel,.oxyn-term,.oxyn-snav,.oxyn-chatshell,.oxyn-harness) :is(h2,h3,h4,p){margin:0}
-:is(.oxyn-sidebar,.oxyn-railshell,.oxyn-inbox,.oxyn-appshell,.oxyn-aipanel,.oxyn-term,.oxyn-snav,.oxyn-chatshell,.oxyn-harness) :is(button,input,textarea){font:inherit;color:inherit}
-:is(.oxyn-sidebar,.oxyn-railshell,.oxyn-inbox,.oxyn-appshell,.oxyn-aipanel,.oxyn-term,.oxyn-snav,.oxyn-chatshell,.oxyn-harness) small{font-size:11.5px;color:var(--oxyn-color-fg-muted)}
+:where(.oxyn-sidebar,.oxyn-railshell,.oxyn-inbox,.oxyn-appshell,.oxyn-aipanel,.oxyn-term,.oxyn-snav,.oxyn-chatshell,.oxyn-harness) *{box-sizing:border-box}
+:where(.oxyn-sidebar,.oxyn-railshell,.oxyn-inbox,.oxyn-appshell,.oxyn-aipanel,.oxyn-term,.oxyn-snav,.oxyn-chatshell,.oxyn-harness) :where(ul,ol,li){margin:0;padding:0;list-style:none}
+:where(.oxyn-sidebar,.oxyn-railshell,.oxyn-inbox,.oxyn-appshell,.oxyn-aipanel,.oxyn-term,.oxyn-snav,.oxyn-chatshell,.oxyn-harness) :where(h2,h3,h4,p){margin:0}
+:where(.oxyn-sidebar,.oxyn-railshell,.oxyn-inbox,.oxyn-appshell,.oxyn-aipanel,.oxyn-term,.oxyn-snav,.oxyn-chatshell,.oxyn-harness) :where(button,input,textarea){font:inherit;color:inherit}
+:where(.oxyn-sidebar,.oxyn-railshell,.oxyn-inbox,.oxyn-appshell,.oxyn-aipanel,.oxyn-term,.oxyn-snav,.oxyn-chatshell,.oxyn-harness) small{font-size:11.5px;color:var(--oxyn-color-fg-muted)}
 .sh-sp{flex:1}
 
 /* Shared bits */
@@ -85,7 +85,8 @@
 .sh-top{display:flex;align-items:center;gap:8px;height:48px;padding:0 12px;border-bottom:1px solid var(--oxyn-color-border-subtle)}
 .sh-crumbs{display:flex;align-items:center;gap:6px;min-width:0;color:var(--oxyn-color-fg-muted);white-space:nowrap;overflow:hidden}
 .sh-crumbs li+li::before{content:"/";margin-right:6px;color:var(--oxyn-color-fg-subtle)}
-.sh-crumbs li.cur{color:var(--oxyn-color-fg-default);font-weight:550}
+.sh-crumbs li{flex:none}
+.sh-crumbs li.cur{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;color:var(--oxyn-color-fg-default);font-weight:550}
 .sh-w{margin-left:auto;font:11.5px/1 var(--ox-mono);color:var(--oxyn-color-fg-subtle);font-variant-numeric:tabular-nums}
 .sh-body{flex:1;min-height:0;overflow:auto;padding:16px}
 
@@ -248,7 +249,7 @@
 .oxyn-snav.compact{font-size:12.5px}
 
 /* Chat shell (affectUI AI Chat screens) */
-.oxyn-chatshell{display:flex;width:100%;overflow:hidden;border-radius:12px;border:1px solid var(--oxyn-color-border-subtle);background:var(--oxyn-color-surface-base)}
+.oxyn-chatshell{container-type:inline-size;display:flex;width:100%;overflow:hidden;border-radius:12px;border:1px solid var(--oxyn-color-border-subtle);background:var(--oxyn-color-surface-base)}
 .cs-rail{flex:none;width:56px;display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 0;background:var(--oxyn-color-surface-sunken);border-right:1px solid var(--oxyn-color-border-subtle)}
 .cs-rail .sh-logo{margin-bottom:8px}
 .cs-rail .sh-ib{width:34px;height:34px;border-radius:9px}
@@ -290,3 +291,6 @@
   :is(.oxyn-sidebar,.oxyn-railshell,.oxyn-inbox,.oxyn-aipanel,.oxyn-term,.oxyn-snav,.oxyn-harness) *{animation:none!important;transition:none!important}
   .oxyn-sidebar{transition:none}
 }
+
+/* Narrow chat shell with a details panel: the thread list folds away so the conversation keeps its width */
+@container (max-width:880px){.cs-list:has(~.cs-side){display:none}.cs-side{width:248px}}
