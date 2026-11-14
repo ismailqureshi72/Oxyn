@@ -5,7 +5,7 @@ interface Props { demo: Demo; showCategory?: string }
 const { demo, showCategory } = Astro.props;
 const v = demo.variants[0];
 ---
-<a class="card" href={demoUrl(demo)}>
+<a class="site-card" href={demoUrl(demo)}>
   <div class="poster" aria-hidden="true" inert>
     <OxynDemo slug={demo.slug} html={v.html} variant={0} />
   </div>
