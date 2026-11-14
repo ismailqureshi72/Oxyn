@@ -10,8 +10,8 @@ use oxyn_core::{
             HoldConfirm, MorphFace, PopoverAlign, PopoverPhase,
         },
         gates::{
-            AgentApprovals as AgentModel, Arg, Gate, GateDecision, GateKind, GateStatus, Gates, PermRisk,
-            PermissionRequest as PermModel, PreviewRow, Rule, RuleScope, Scope, ToolAsk,
+            AgentApprovals as AgentModel, Arg, Gate, GateDecision, GateKind, GateStatus, Gates,
+            PermRisk, PermissionRequest as PermModel, PreviewRow, Rule, RuleScope, Scope, ToolAsk,
         },
     },
 };

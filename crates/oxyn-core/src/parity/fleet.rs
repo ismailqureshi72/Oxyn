@@ -96,7 +96,12 @@ impl CrewAgent {
         self.children.iter_mut().find_map(|c| c.find_mut(id))
     }
     /// Flattened `(depth, agent)` rows, skipping the children of `folded` ids.
-    pub fn rows<'a>(&'a self, folded: &[String], depth: usize, out: &mut Vec<(usize, &'a CrewAgent)>) {
+    pub fn rows<'a>(
+        &'a self,
+        folded: &[String],
+        depth: usize,
+        out: &mut Vec<(usize, &'a CrewAgent)>,
+    ) {
         out.push((depth, self));
         if !folded.contains(&self.id) {
             for c in &self.children {
@@ -329,9 +334,11 @@ impl Feed {
     /// Visible events grouped by day label.
     pub fn groups(&self) -> Vec<(String, Vec<&FeedEvent>)> {
         let mut out: Vec<(String, Vec<&FeedEvent>)> = Vec::new();
-        for e in self.events.iter().filter(|e| {
-            e.day < self.range.max(1) && self.filter.is_none_or(|f| f == e.kind)
-        }) {
+        for e in self
+            .events
+            .iter()
+            .filter(|e| e.day < self.range.max(1) && self.filter.is_none_or(|f| f == e.kind))
+        {
             let l = Self::day_label(e.day);
             match out.last_mut() {
                 Some((d, v)) if *d == l => v.push(e),
@@ -439,7 +446,10 @@ impl TreeTable {
         };
         let mut l = Vec::new();
         leaves(r, &mut l);
-        let n = l.iter().filter(|x| self.selected.iter().any(|s| s == *x)).count();
+        let n = l
+            .iter()
+            .filter(|x| self.selected.iter().any(|s| s == *x))
+            .count();
         if n == 0 {
             Tri::Off
         } else if n == l.len() {
@@ -480,7 +490,10 @@ impl TreeTable {
             .collect();
         if let Some((c, asc)) = self.sort {
             v.sort_by(|a, b| {
-                let o = match (a.keys.get(c).copied().flatten(), b.keys.get(c).copied().flatten()) {
+                let o = match (
+                    a.keys.get(c).copied().flatten(),
+                    b.keys.get(c).copied().flatten(),
+                ) {
                     (Some(x), Some(y)) => x.total_cmp(&y),
                     _ => a.cells.get(c).cmp(&b.cells.get(c)),
                 };
@@ -586,11 +599,7 @@ pub fn group(x: f64, decimals: usize) -> String {
         out.push('.');
         out.push_str(&f);
     }
-    if x < 0.0 {
-        format!("−{out}")
-    } else {
-        out
-    }
+    if x < 0.0 { format!("−{out}") } else { out }
 }
 
 /// A release prerequisite.
@@ -635,7 +644,9 @@ impl Readiness {
     }
     /// Release enabled.
     pub fn can_release(&self) -> bool {
-        self.blockers() == 0 && self.release != StepState::Running && self.release != StepState::Done
+        self.blockers() == 0
+            && self.release != StepState::Running
+            && self.release != StepState::Done
     }
     /// Groups in first-seen order.
     pub fn groups(&self) -> Vec<String> {
