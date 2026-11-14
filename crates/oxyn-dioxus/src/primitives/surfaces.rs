@@ -460,10 +460,17 @@ pub fn SheetStack(
     // Mounted sheets by id: after a pop, focus returns to the sheet that is now on top (the
     // popped one held focus, so Escape would otherwise stop reaching the stack).
     let mut nodes = use_signal(std::collections::HashMap::<String, Rc<MountedData>>::new);
-    let refocus = move || {
-        let id = m.peek().open().last().map(|p| p.id.clone());
-        focus(id.and_then(|id| nodes.peek().get(&id).cloned()));
-    };
+    // The sheet below is still `inert` until the pop re-renders, so focus moves in an effect
+    // that runs after the DOM update rather than inside the handler.
+    let mut want_focus = use_signal(|| false);
+    use_effect(move || {
+        if want_focus() {
+            want_focus.set(false);
+            let id = m.peek().open().last().map(|p| p.id.clone());
+            focus(id.and_then(|id| nodes.peek().get(&id).cloned()));
+        }
+    });
+    let mut refocus = move || want_focus.set(true);
     let st = m.read().clone();
     let w = width();
     let resolved = st

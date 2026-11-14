@@ -15,6 +15,7 @@ use crate::hsla;
 
 mod approvals;
 mod run;
+mod tools;
 
 pub use approvals::{
     AgentApprovalsEl, ApprovalGatesEl, ApprovalPagerEl, ConfirmMorphEl, ConfirmPopoverEl,
@@ -24,6 +25,9 @@ pub use run::{
     ActivityFeedEl, AgentPlanEl, AgentRunEl, AgentStatusEl, AgentTrailEl, AgentTreeEl, BreakdownEl,
     ChecklistEl, CountdownEl, CounterEl, FleetEl, FlowStepperEl, OrchestratorEl, ReadinessEl,
     TaskRowsEl, TreeTableEl,
+};
+pub use tools::{
+    ExpandableCardEl, JsonViewerEl, LinkUnfurlEl, ToolCallCardEl, ToolCallEl, ToolChipsEl,
 };
 
 /// Button callback: the action id and the window.

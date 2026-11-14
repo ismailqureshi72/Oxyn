@@ -97,7 +97,7 @@ affectUI,Thinking State,https://www.affectui.com/components/thinking-state,Compo
 affectUI,Tips Panel,https://www.affectui.com/components/tips-panel,Components · Cards,Free,NEW,C11,#39,planned
 affectUI,Toaster,https://www.affectui.com/components/toaster,Components · Feedback,Pro,toaster,C3,#26,built
 affectUI,Tool Access Map,https://www.affectui.com/components/tool-access-map,Components · Agents,Pro,"mcp-plugin-list, plugin-icons",C10,#33,planned
-affectUI,Tool Call Card,https://www.affectui.com/components/tool-call-card,Components · Agents,Free,"tool-call, tools",,#28,built · close gaps
+affectUI,Tool Call Card,https://www.affectui.com/components/tool-call-card,Components · Agents,Free,"tool-call, tools",,#28,built
 affectUI,Tooltip,https://www.affectui.com/components/tooltip,Components · Feedback,Free,tooltip-popover,C3,#26,built
 affectUI,Trace Waterfall,https://www.affectui.com/components/trace-waterfall,Components · Agents,Pro,trace-view,,#32,planned
 affectUI,Usage Meter,https://www.affectui.com/components/usage-meter,Components · Data display,Pro,run-meter,,#33,planned
@@ -260,7 +260,7 @@ Arc UI,Mega menu morph,https://uiarc.dev/components/mega-menu-morph,Components �
 Arc UI,Table of contents progress,https://uiarc.dev/components/toc-progress,Components · Navigation,Pro,toc-progress,,#27,built
 Arc UI,Scroll area,https://uiarc.dev/components/scroll-area,Components · Expand,Free,scroll-area,N3,#26,built
 Arc UI,Accordion,https://uiarc.dev/components/accordion,Components · Expand,Free,accordion,,#27,built
-Arc UI,Expandable card,https://uiarc.dev/components/expandable-card,Components · Expand,Free,tool-call.md (partial),,#28,built · close gaps
+Arc UI,Expandable card,https://uiarc.dev/components/expandable-card,Components · Expand,Free,tool-call.md (partial),,#28,built
 Arc UI,Resizable panels,https://uiarc.dev/components/resizable-panels,Components · Expand,Free,resizable-panels,,#27,built
 Arc UI,Expandable text,https://uiarc.dev/components/expandable-text,Components · Expand,Free,expandable-text,,#27,built
 Arc UI,Dialog,https://uiarc.dev/components/dialog,Components · Overlays,Free,dialog,N3,#26,built
@@ -318,7 +318,7 @@ Arc UI,Tree view,https://uiarc.dev/components/tree-view,Components · Tables,Fre
 Arc UI,Reorderable list,https://uiarc.dev/components/reorderable-list,Components · Tables,Free,reorderable-list,,#27,built
 Arc UI,Filter toolbar,https://uiarc.dev/components/filter-toolbar,Components · Tables,Free,NEW,N6,#31,planned
 Arc UI,Code block,https://uiarc.dev/components/code-block,Components · Tables,Free,code-block,,#27,built
-Arc UI,JSON viewer,https://uiarc.dev/components/json-viewer,Components · Tables,Free,"tool-call.md (partial, I/O)",,#28,built · close gaps
+Arc UI,JSON viewer,https://uiarc.dev/components/json-viewer,Components · Tables,Free,"tool-call.md (partial, I/O)",,#28,built
 Arc UI,Timeline,https://uiarc.dev/components/timeline,Components · Activity,Free,checkpoint-timeline.md (partial),,#28,built
 Arc UI,Comment thread,https://uiarc.dev/components/comment-thread,Components · Activity,Free,review-card.md (partial),,#29,planned
 Arc UI,Chat thread,https://uiarc.dev/components/chat-thread,Components · Activity,Free,messages,,#27,built
@@ -489,7 +489,7 @@ Arc UI,Wallet stack,https://uiarc.dev/components/wallet-stack,Special components
 Arc UI,Control center,https://uiarc.dev/components/control-center,Special components · Surfaces,Pro,control-center,,#26,built
 Arc UI,Holo card,https://uiarc.dev/components/holo-card,Special components · Surfaces,Pro,NEW,N19,#35,planned
 Arc UI,Card to article,https://uiarc.dev/components/card-to-article,Special components · Surfaces,Pro,NEW,N19,#35,planned
-Arc UI,Link unfurl,https://uiarc.dev/components/link-unfurl,Special components · Surfaces,Pro,"composer-attachments.md (partial, paste chips)",,#28,built · close gaps
+Arc UI,Link unfurl,https://uiarc.dev/components/link-unfurl,Special components · Surfaces,Pro,"composer-attachments.md (partial, paste chips)",,#28,built
 Arc UI,Product gallery,https://uiarc.dev/components/product-gallery,Special components · Galleries,Pro,NEW,N17,#39,planned
 Arc UI,Lightbox gallery,https://uiarc.dev/components/lightbox-gallery,Special components · Galleries,Pro,NEW,N17,#39,planned
 Arc UI,Photo grid,https://uiarc.dev/components/photo-grid,Special components · Galleries,Pro,NEW,N17,#39,planned
@@ -521,7 +521,7 @@ Arc UI,Gravity well,https://uiarc.dev/components/gravity-well,Special components
 Arc UI,Ink fluid,https://uiarc.dev/components/ink-fluid,Special components · Cursor,Pro,NEW,N20,#35,planned
 Arc UI,Cursor trail draw,https://uiarc.dev/components/cursor-trail-draw,Special components · Cursor,Pro,"acting-indicator.md (partial, cursor trail)",,#32,planned
 Arc UI,Agent status,https://uiarc.dev/components/agent-status,Special components · AI,Pro,"status-indicator.md, acting-indicator.md",,#28,built
-Arc UI,Tool call,https://uiarc.dev/components/tool-call,Special components · AI,Pro,tool-call.md,,#28,built · close gaps
+Arc UI,Tool call,https://uiarc.dev/components/tool-call,Special components · AI,Pro,tool-call.md,,#28,built
 Arc UI,Agent plan,https://uiarc.dev/components/agent-plan,Special components · AI,Pro,"plan-todo.md, plan-approval.md",,#28,built
 Arc UI,Agent timeline,https://uiarc.dev/components/agent-timeline,Special components · AI,Pro,trace-view.md,,#32,planned
 Arc UI,Context window,https://uiarc.dev/components/context-window,Special components · AI,Pro,composer-context-meter.md,,#28,built · close gaps
@@ -583,7 +583,7 @@ Arc UI,Reasoning tree,https://uiarc.dev/components/reasoning-tree,Special compon
 Beautiful UI,Loading State,https://www.beautifului.dev/#loading-state,Components,Free (MIT),"loaders, loader-glyph, loader-vector, elapsed-timer, text-shimmer",,#28,built · close gaps
 Beautiful UI,Thinking,https://www.beautifului.dev/#thinking-state,Components,Free (MIT),reasoning-block,,#27,built
 Beautiful UI,Streaming Text,https://www.beautifului.dev/#streaming-text,Components,Free (MIT),"text-reveal, streaming-markdown, citations-sources, message-bubble",,#28,built · close gaps
-Beautiful UI,Tool Chips,https://www.beautifului.dev/#tool-chips,Components,Free (MIT),"tool-call, tools, file-edit-chip",,#28,built · close gaps
+Beautiful UI,Tool Chips,https://www.beautifului.dev/#tool-chips,Components,Free (MIT),"tool-call, tools, file-edit-chip",,#28,built
 Beautiful UI,Task Rows,https://www.beautifului.dev/#task-rows,Components,Free (MIT),"plan-todo, background-jobs",,#28,built
 Beautiful UI,Chat,https://www.beautifului.dev/#chat-composer,Components,Free (MIT),messages,,#27,built
 Beautiful UI,Prompt Bar,https://www.beautifului.dev/#prompt-bar,Components,Free (MIT),NEW,,#31,planned

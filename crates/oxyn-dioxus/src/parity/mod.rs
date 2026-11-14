@@ -3,6 +3,7 @@
 
 mod approvals;
 mod run;
+mod tools;
 
 pub use approvals::{
     AgentApprovals, ApprovalGates, ConfirmMorph, ConfirmPopover, HoldToConfirm, PermissionRequest,
@@ -12,4 +13,8 @@ pub use run::{
     ActivityFeed, AgentFleet, AgentOrchestrator, AgentPlan, AgentRun, AgentStatus, AgentTrail,
     AgentTree, AnimatedCounter, Countdown, FlowStepper, OnboardingChecklist, ReleaseReadiness,
     TaskBreakdown, TaskRows, TreeTable,
+};
+pub use tools::{
+    ChipStep, DiffChip, ExpandableCard, JsonViewer, LinkUnfurl, RowOutput, ToolCall, ToolCallCard,
+    ToolCallGroup, ToolCallList, ToolChips, ToolKindLegend,
 };
