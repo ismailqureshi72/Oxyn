@@ -342,3 +342,57 @@ pub struct StatusBar<'a> {
 | @FinnoTaylor pixel-tree [R004], HacktronAI growing tree [R038] | growth-as-reveal, ≈40–60 ms stagger | Study only |
 | Claude daltonized diff palette (note 08) | colour-blind swap | Proprietary — idea only |
 | Rune-kit Tree (note 07) | Rust tree widget exists | MIT — portable with attribution; re-check |
+
+## Plan #27 implementation — AI side panel
+
+Implemented in `oxyn-core::shell` (`PageEdit`, `EditPhase`, `word_diff`), `oxyn-dioxus::AiSidePanel`
+and `oxyn-gpui::AiPanelEl`. Behaviour follows Arc UI's AI side panel block, rebuilt from its public
+page; no source used.
+
+### 27.1 Purpose
+An assistant beside the page that proposes edits and changes nothing until you apply them.
+
+### 27.2 State machine
+```
+none ─ask─▶ streaming ─done─▶ proposed ─Apply─▶ applied ─Undo─▶ undone
+                                  └──Discard─▶ discarded        (any) ─ask─▶ streaming
+open ─Escape / close─▶ closed ─Assistant button─▶ open
+```
+
+### 27.3 States table
+| State | Shows | Keyboard | ARIA |
+|---|---|---|---|
+| empty | intro + suggestions | Tab | log |
+| streaming | answer with caret | — | `aria-busy` |
+| proposed | word diff, Apply / Discard | Enter | — |
+| applied | block tinted, Undo (focused) | Enter | polite “Applied” |
+| closed | Assistant button on the page | Enter | `aria-expanded=false` |
+
+### 27.4 Micro-interactions
+The panel slides in; the change card rises; the applied block flashes green and fades over 900 ms.
+
+### 27.5 Timing table
+| Transition | Duration | Easing | Reduced motion |
+|---|---|---|---|
+| Panel in | 240 ms | `--ox-ease` | instant |
+| Answer | 60 ms / word | — | full text |
+| Tint fade | 900 ms (held 1.4 s) | `--ox-ease` | none |
+
+### 27.6 Variants
+Free: docked panel, suggestions, ask.
+
+**Oxyn plus:** word diff, Apply / Discard / Undo, block tint, reopen button.
+
+### 27.7 Edge cases
+Asking again while a change is proposed replaces it. Undo restores the exact old text.
+
+### 27.8 Accessibility
+Complementary region labelled with the assistant's name; the thread is a polite log; Escape closes.
+
+### 27.9 Props sketch
+```rust
+AiSidePanel { now_ms, page: Vec<Block>, open, proposed, assistant, height, on_apply: EventHandler<String> }
+```
+
+### 27.10 Related components and references
+`workspace-chrome.md`, `diff-viewer.md`.

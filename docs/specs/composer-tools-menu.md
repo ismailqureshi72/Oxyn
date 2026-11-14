@@ -1,4 +1,4 @@
-**Status:** draft v0.1 (2026-11-11).
+**Status:** v1 — implemented (plan #27); the draft below is kept as the design record.
 
 # Spec: composer tools menu (the "+" button and its menu)
 
@@ -243,3 +243,56 @@ plugin list in workspace chrome · active-mode chips · context meter.
 - [R126] coss ui composer and menus. **MIT**: API shape portable with attribution.
 - Arc UI MCP servers block, command palette and morph select (status words, 100/160 ms cross-fade, tool discovery, 8-item search threshold, gliding highlight): paid / unclear, **study only** (research notes 12).
 - Claude Code desktop, Lovable, Zed, Verdent "+" menus; Conductor MCP status and per-server tool count; Le Chat mode exclusivity; Gemini unified "+": research notes 03, 04, 08. Claude, Lovable, Verdent, Conductor, Le Chat, Gemini are proprietary (reference only); Zed is mixed licence, study only by default.
+
+
+## Plan #27 implementation — tools menu
+
+Implemented in `oxyn-core::composer::parts`, `oxyn-dioxus::{ToolsMenu}` (styles in `PARTS_CSS`, bundled into `PRIMITIVES_CSS`), `oxyn-gpui::{ToolsMenuEl}`.
+
+### 27.1 Purpose
+Choose which tools the agent may use.
+
+### 27.2 State machine
+```
+Closed ─chip─▶ Open ─type─▶ filtered (`tool_groups(tools, q)`)
+toggle(tool): needs sign-in ─▶ Connect (on_connect) | else on ⇄ off
+group button ─▶ all on / all off (sign-in tools skipped)
+```
+
+### 27.3 States table
+| State | Shows | Keyboard | ARIA |
+|---|---|---|---|
+| closed | chip with count | Enter | `aria-haspopup` |
+| open | grouped switches, filter | Tab, Space, Escape | dialog, groups labelled |
+| empty filter | “No tools match” | — | — |
+| needs sign-in | Connect button | Enter | named |
+
+### 27.4 Micro-interactions
+Switch knobs slide (160 ms); the menu pops in.
+
+### 27.5 Timing table
+| Transition | Duration | Easing | Reduced motion |
+|---|---|---|---|
+| Knob | 160 ms | `--ox-ease` | instant |
+| Menu in | 160 ms | `--ox-ease` | instant |
+
+All motion in the parts drops to 1 ms under `prefers-reduced-motion`, except `.oxyn-timer`.
+
+### 27.6 Variants
+Free: grouped switches.
+
+**Oxyn plus:** filter, group toggles, sign-in connectors.
+
+### 27.7 Edge cases
+A filter that matches nothing shows an empty line, not an empty box.
+
+### 27.8 Accessibility
+Tools are `role=switch` with `aria-checked`; changes are announced politely.
+
+### 27.9 Props sketch
+```rust
+ToolsMenu { tools: Vec<Tool>, open, group_toggles, search, on_change: EventHandler<Vec<String>>, on_connect: EventHandler<String> }
+```
+
+### 27.10 Related components and references
+`composer-input-shell.md`.

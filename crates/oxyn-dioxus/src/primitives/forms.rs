@@ -308,6 +308,10 @@ pub fn SegmentedControl(
     /// Changed.
     #[props(default)]
     on_change: EventHandler<String>,
+    /// Plan #27 (Arc UI `onOptionIntent`): the pointer or focus reached a segment before it was
+    /// chosen, so the host can start loading what it shows.
+    #[props(default)]
+    on_option_intent: EventHandler<String>,
 ) -> Element {
     let mut m = use_signal(|| {
         let mut s = Segmented::new(options.clone(), value.as_deref());
@@ -352,6 +356,8 @@ pub fn SegmentedControl(
                             "aria-label": if o.label.is_empty() { o.icon.clone().unwrap_or_default() } else { String::new() },
                             onmounted: move |e| { glide.set_item(i, e.data()); if on { glide.go(Some(i), true) } },
                             onclick: move |_| { let r = m.write().select(i, ClockMs(0)); if let Some(v) = r { glide.go(Some(i), false); on_change.call(v) } },
+                            onpointerenter: { let v = o.value.clone(); move |_| if !on { on_option_intent.call(v.clone()) } },
+                            onfocus: { let v = o.value.clone(); move |_| if !on { on_option_intent.call(v.clone()) } },
                             if let Some(ic) = o.icon.clone() { Icon { name: ic, size: 14.0 } }
                             if !o.label.is_empty() { span { class: "lb", "data-text": "{o.label}", "{o.label}" } }
                             if let Some(c) = o.count { span { class: "cnt", key: "{c}", "{c}" } }

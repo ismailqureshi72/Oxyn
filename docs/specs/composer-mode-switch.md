@@ -1,4 +1,4 @@
-**Status:** draft v0.1 (2026-11-11).
+**Status:** v1 — implemented (plan #27); the draft below is kept as the design record.
 
 # Spec: composer mode switch (Ask / Plan / Agent + custom modes)
 
@@ -248,3 +248,55 @@ status bar / footer label (TUI); model picker (mode availability per model).
 - [R007] Cloudy "Work" chip and placeholder that flips while running; [R033] Devin composer — study only.
 - Arc UI text morph and chip-group glide (research 12) — paid / unclear, study only.
 - [R050] global shape cycle on one key (R) — study only; informs detented cycling feel.
+
+
+## Plan #27 implementation — mode switch
+
+Implemented in `oxyn-core::composer::parts`, `oxyn-dioxus::{ModeSwitch}` (styles in `PARTS_CSS`, bundled into `PRIMITIVES_CSS`), `oxyn-gpui::{ModeSwitchEl}`.
+
+### 27.1 Purpose
+Switch the agent between Ask, Plan and Agent from the composer.
+
+### 27.2 State machine
+```
+Idle: select(mode) ─▶ Applied::Now
+Busy: select(mode) ─▶ Applied::NextTurn (pending shown) ─turn_end─▶ applied
+Shift+Tab in the preview ─▶ cycle
+```
+
+### 27.3 States table
+| State | Shows | Keyboard | ARIA |
+|---|---|---|---|
+| idle | segments or chip | Tab, Enter | radiogroup / listbox |
+| pending | “from the next turn” note | — | polite status |
+| menu open | list with descriptions | Escape | listbox |
+
+### 27.4 Micro-interactions
+The selected segment slides (160 ms); the placeholder of the preview changes with the mode.
+
+### 27.5 Timing table
+| Transition | Duration | Easing | Reduced motion |
+|---|---|---|---|
+| Segment move | 160 ms | `--ox-ease` | instant |
+| Menu in | 160 ms | `--ox-ease` | instant |
+
+All motion in the parts drops to 1 ms under `prefers-reduced-motion`, except `.oxyn-timer`.
+
+### 27.6 Variants
+Free: segmented.
+
+**Oxyn plus:** menu variant, busy → next-turn change, composer preview.
+
+### 27.7 Edge cases
+Choosing the current mode is a no-op. A pending change can be replaced before the turn ends.
+
+### 27.8 Accessibility
+Segments are radios with `aria-checked`; the menu is a listbox; a queued change is announced.
+
+### 27.9 Props sketch
+```rust
+ModeSwitch { modes: Vec<Mode>, value, busy: bool, variant: "segmented"|"menu", preview: bool, on_change: EventHandler<(String, bool)> }
+```
+
+### 27.10 Related components and references
+`composer-permission-selector.md`.

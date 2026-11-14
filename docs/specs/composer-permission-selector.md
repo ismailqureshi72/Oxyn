@@ -1,4 +1,4 @@
-**Status:** draft v0.1 (2026-11-11).
+**Status:** v1 — implemented (plan #27); the draft below is kept as the design record.
 
 # Spec: composer permission / autonomy selector
 
@@ -293,3 +293,56 @@ references the "Bypass all" chip; secret redaction card.
 - [R049] secret redaction card ("Secrets stay out of the chat") — study only.
 - Research 05 ApprovalCard / RiskBadge / PermissionModeSwitcher / SandboxIndicator / RuleEditor component
   breakdown — our own synthesis; the inferred icon set (lock / hand / shield) is a proposal.
+
+
+## Plan #27 implementation — permission selector
+
+Implemented in `oxyn-core::composer::parts`, `oxyn-dioxus::{PermissionSelector}` (styles in `PARTS_CSS`, bundled into `PRIMITIVES_CSS`), `oxyn-gpui::{PermissionEl}`.
+
+### 27.1 Purpose
+Set how much the agent may do without asking.
+
+### 27.2 State machine
+```
+choose(id): risk > ceiling ─▶ Blocked (locked row, reason)
+            high risk ─▶ Confirm (alertdialog) ─yes─▶ Applied | ─no / Escape─▶ unchanged
+            otherwise ─▶ Applied
+```
+
+### 27.3 States table
+| State | Shows | Keyboard | ARIA |
+|---|---|---|---|
+| closed | chip with current preset | Enter opens | `aria-haspopup` |
+| open / cards | presets with risk | Tab, Enter | radiogroup, `aria-checked` |
+| locked | lock icon, muted | — | `aria-disabled` |
+| confirm | alertdialog | Escape cancels | `role=alertdialog` |
+
+### 27.4 Micro-interactions
+Rows pop in; the chip border tints by risk; the confirm rises in.
+
+### 27.5 Timing table
+| Transition | Duration | Easing | Reduced motion |
+|---|---|---|---|
+| Menu in | 160 ms | `--ox-ease` | instant |
+| Border tint | 200 ms | — | instant |
+
+All motion in the parts drops to 1 ms under `prefers-reduced-motion`, except `.oxyn-timer`.
+
+### 27.6 Variants
+Free: menu.
+
+**Oxyn plus:** cards variant, workspace ceiling, full-access confirm.
+
+### 27.7 Edge cases
+The current preset above a newly lowered ceiling stays selected but shows locked.
+
+### 27.8 Accessibility
+Risk is written in words beside the icon, never colour alone.
+
+### 27.9 Props sketch
+```rust
+PermissionSelector { presets: Vec<Preset>, value, ceiling: "low"|"medium"|"high", variant: "menu"|"cards", open: bool, on_change: EventHandler<String> }
+```
+
+### 27.10 Related components and references
+`approval-card.md`, `composer-mode-switch.md`.

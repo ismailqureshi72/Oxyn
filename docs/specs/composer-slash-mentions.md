@@ -1,4 +1,4 @@
-**Status:** draft v0.1 (2026-11-11).
+**Status:** v1 — implemented (plan #27); the draft below is kept as the design record.
 
 # Spec: slash commands, @mentions, $skills and #context (trigger popovers + inline tokens)
 
@@ -290,3 +290,55 @@ picker (`/model`) · command palette in workspace chrome · approval card (tool 
 - Zed typed `@` (symbols, diagnostics, threads, branch diffs): mixed licence, study only by default. Paradev inline command chips with argument fields; Kiro `#` steering; Claude, Cursor slash menus; Gemini / Raycast tool-forcing mentions; Dia / Notion context mentions: proprietary or unchecked, reference only (research notes 03, 04).
 - Arc UI command palette (matching rules, glide vs snap, live-region counts): paid / unclear, study only (research notes 12).
 - [R106] / [R133] Beautiful UI Prompt Bar (@ sources, / commands, model picker, dictation; Rounded / Pill). **MIT**, port with attribution.
+
+
+## Plan #27 implementation — mention input
+
+Implemented in `oxyn-core::composer::parts`, `oxyn-dioxus::{MentionInput}` (styles in `PARTS_CSS`, bundled into `PRIMITIVES_CSS`), `oxyn-gpui::{MentionListEl}`.
+
+### 27.1 Purpose
+Mention people, files and agents with `@` and run commands with `/` from the message field (Arc UI Mention input, rebuilt from its behaviour).
+
+### 27.2 State machine
+```
+Typing ─@ or / at a word start─▶ Open (query = token after trigger, ranked by `rank`)
+Open ─↑/↓─▶ move   Open ─Enter/Tab─▶ accept (`accept` replaces the token, adds a space) ─▶ Typing
+Open ─Escape | caret leaves token─▶ Typing
+```
+
+### 27.3 States table
+| State | Shows | Keyboard | ARIA |
+|---|---|---|---|
+| typing | field with pills preview | Enter sends | combobox |
+| open | grouped list (People, Files, Agents, Commands) | ↑ ↓ Enter Tab Escape | listbox, `aria-activedescendant` |
+| no match | “No one matches “@q”” or “No command matches” | Escape | count announced |
+
+### 27.4 Micro-interactions
+The list pops in with a 4 px rise; the active row highlights on hover and keys alike; accepted mentions render as pills.
+
+### 27.5 Timing table
+| Transition | Duration | Easing | Reduced motion |
+|---|---|---|---|
+| List in | 160 ms | `--ox-ease` | instant |
+| Row highlight | `--ox-fast` | — | instant |
+
+All motion in the parts drops to 1 ms under `prefers-reduced-motion`, except `.oxyn-timer`.
+
+### 27.6 Variants
+Free: `@` mentions with grouping.
+
+**Oxyn plus:** `/` commands only at a line start, upward opening for bottom composers, row limit, pill preview.
+
+### 27.7 Edge cases
+`/` mid-sentence is plain text. Prefix matches rank above substring matches. Unknown `@names` stay plain text.
+
+### 27.8 Accessibility
+Combobox pattern: `aria-expanded`, `aria-activedescendant`, options with `aria-selected`; result count in a polite region.
+
+### 27.9 Props sketch
+```rust
+MentionInput { suggestions: Vec<Suggestion>, commands: Vec<Suggestion>, value, limit: usize, placeholder, up: bool, on_submit: EventHandler<String> }
+```
+
+### 27.10 Related components and references
+Arc UI Mention input — behaviour only.

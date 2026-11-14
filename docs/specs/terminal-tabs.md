@@ -265,3 +265,52 @@ in that tab shows `AwaitingInput`-style amber with "Needs approval" text.
 | Multi-harness launcher logos (note 03, Paradev / Emdash) | agent picker in the new-tab menu | Reference only |
 | Codex CLI "You ran" wording (note 08 via terminal-output.md) | owner wording | MIT / Apache-2.0 — portable with attribution |
 | Warp tabs / blocks (note 03) | — | AGPL — study only |
+
+## Plan #27 implementation — terminal tabs
+
+Implemented in `oxyn-core::shell::TermTabs`, `oxyn-dioxus::TerminalTabs` and `oxyn-gpui::TermTabsEl`.
+
+### 27.1 Purpose
+Several shells in one pane, with a hint when a hidden one prints.
+
+### 27.2 State machine
+```
+add ─▶ new tab active   close(id) ─▶ neighbour active   select(id) ─▶ active, activity cleared
+output(id) on a background tab ─▶ activity   dblclick ─▶ renaming ─Enter / blur─▶ renamed │ Escape
+```
+
+### 27.3 States table
+| State | Shows | Keyboard | ARIA |
+|---|---|---|---|
+| active | joined to the output | ← → , Ctrl+Tab | `tab` selected |
+| activity | blue pulsing dot | — | “new output” in the name |
+| exited | exit code chip (green 0 / red) | — | text |
+| renaming | inline field | Enter / Escape | labelled |
+
+### 27.4 Micro-interactions
+Activity dots pulse; the prompt caret blinks.
+
+### 27.5 Timing table
+| Transition | Duration | Easing | Reduced motion |
+|---|---|---|---|
+| Activity pulse | 1.4 s loop | ease-in-out | static |
+| Caret | 1 s steps | — | static |
+
+### 27.6 Variants
+Free: tabs, add, close.
+
+**Oxyn plus:** rename, reorder, activity markers, exit codes, Ctrl+Tab cycling.
+
+### 27.7 Edge cases
+Closing the last tab shows “No terminals”. Renaming to blank keeps the old title.
+
+### 27.8 Accessibility
+`tablist` / `tab` / `tabpanel`, roving tabindex, labelled close buttons.
+
+### 27.9 Props sketch
+```rust
+TerminalTabs { now_ms, titles: Vec<String>, activity_ms: u64, height }
+```
+
+### 27.10 Related components and references
+`terminal-output.md`, `workspace-chrome.md`.
