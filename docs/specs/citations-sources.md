@@ -1,4 +1,4 @@
-**Status:** draft v0.1 (2026-11-11).
+**Status:** v1 — implemented (plan #27); the draft below is kept as the design record.
 
 # Spec: citations, sources, confidence, memory receipts, follow-ups, empty states
 
@@ -417,3 +417,64 @@ family K (voice suggestions).
 | supermemory memory-extraction visual | [R010] | `memory-receipt/glyph` | Study only |
 | praveenisomer ASCII globe | [R011] | `ascii-globe` | Study only |
 | Threadbear "Good night" greeting | [R053] | `time-greeting` | Study only |
+
+
+## Plan #27 implementation — source cards, AI / cited answer, context and recommendation cards, document extraction, research run
+
+Implemented in `oxyn-core::chat::sources` (`SourceCards`, `Slot`, `Claim`, `Provenance`, `grounding`, `ContextCard`, `Recommendation`, `Extraction`) and `chat::thread::ResearchRun`; `oxyn-dioxus::{SourceCards, SourceCitation, AiAnswer, ContextCards, RecommendationCard, DocumentExtraction, ResearchRun}`; `oxyn-gpui::{SourceCardsEl, AnswerEl}`.
+
+### 27.1 Purpose
+Show where an answer came from and how much to trust it: sources while searching and after, claims with provenance, the context an agent used, recommendations, extracted fields and long research runs.
+
+### 27.2 State machine
+```
+SourceCards: Searching(n of total, skeleton slots) ─▶ Done(n · 2.1s, stack after max) | Error(Retry) | Done(0) “No sources found”
+Citation press ─▶ highlight card 2.6 s (opens the stack when needed)
+AiAnswer: Searching ─▶ Streaming answer ─▶ Done (actions, follow-ups); cited: claims + grounding
+Extraction: Scanning(one field per step) ─▶ Review(pending n) ─review all─▶ Confirm
+Research: Planning ─▶ Searching ─▶ Reading ─▶ Writing ─▶ Done(report)
+Recommendation: Open ─Accept / Dismiss─▶ Resolved ─Undo─▶ Open
+```
+
+### 27.3 States table
+| State | Shows | Keyboard | ARIA |
+|---|---|---|---|
+| searching | spinner, count, skeletons | Tab | list `aria-busy` |
+| done | cards, stack | Enter opens | card names: n, title, domain |
+| highlighted | outlined card | — | outline, not colour only |
+| claim | text + chip / provenance pill | Tab | words + icon |
+| field review | amber border, Looks right | Tab | confidence label in % |
+
+### 27.4 Micro-interactions
+Cards rise 4 px in 180 ms as they arrive; skeletons pulse; hover lifts a card and shows its preview after hover; the favicon stack overlaps; grounding bar fills; extraction scan line sweeps; research favicons roll in.
+
+### 27.5 Timing table
+| Transition | Duration | Easing | Reduced motion |
+|---|---|---|---|
+| Card in | 180 ms | ease-out | instant |
+| Highlight | 2.6 s hold | — | same |
+| Preview | 160 ms | ease-out | instant |
+| Scan line | 400 ms per step | linear | static |
+
+### 27.6 Variants
+Free: source cards with stack, citations, AI answer with follow-ups.
+
+**Oxyn plus:** cited variant with provenance (sourced · inferred · unverified) and grounding meter; Beautiful UI Context Cards (pin, remove, token meter) and Recommendation Card (confidence band, impact, evidence, Undo); document extraction with threshold; research run timeline.
+
+### 27.7 Edge cases
+Zero sources shows “No sources found” with the query. Citations to missing sources render as plain chips. Stack opens when a citation points into it. Very long titles clamp to two lines.
+
+### 27.8 Accessibility
+Sources are a labelled list; a polite region announces status once; cards say they open a new tab; previews are tooltips; provenance and confidence are text, never colour alone.
+
+### 27.9 Props sketch
+```rust
+SourceCards { sources, status, total, query, duration_ms, max, elapsed_ms, step_ms, highlighted, error, expanded, children, on_retry }
+AiAnswer { question, answer, sources, claims, variant: "answer"|"cited", elapsed_ms, search_ms, follow_ups, on_follow_up }
+DocumentExtraction { document, fields: Vec<Field>, elapsed_ms, step_ms, threshold }
+ResearchRun { question, queries, sources, elapsed_ms }
+RecommendationCard { title, reason, confidence, impact, evidence }   ContextCards { cards, budget, layout }
+```
+
+### 27.10 Related components and references
+`streaming-markdown.md`, `hover-card.md`. Arc UI Source cards, AI answer, Document extraction, Research run and affectUI AI Answer / Cited Answer — behaviour only; Beautiful UI Context Cards and Recommendation Card — MIT, © 2026 Shane Levine.

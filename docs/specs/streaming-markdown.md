@@ -1,4 +1,4 @@
-**Status:** draft v0.1 (2026-11-11).
+**Status:** v1 — implemented (plan #27); the draft below is kept as the design record.
 
 # Spec: streaming markdown & code blocks (`markdown`, `code-block`)
 
@@ -353,3 +353,56 @@ conflicts) · family I (gen-UI blocks, charts from tables).
 
 **Gaps:** math layout on GPUI (no engine chosen); highlighter engine and grammar licences; whether
 GPUI's text system can apply per-line style runs cheaply enough for 2 000-line windows (V2.6 spike).
+
+
+## Plan #27 implementation — streaming markdown
+
+Implemented in `oxyn-core::chat::markdown` (`parse`, `inline`, `MarkdownStream`, `Pace`, `revealed_at`), `oxyn-dioxus::{StreamingMarkdown, Markdown}`, `oxyn-gpui::MarkdownEl`.
+
+### 27.1 Purpose
+Render an assistant reply while it arrives, so it reads like finished prose at every moment (Arc UI AI answer and Chat bodies, Beautiful UI StreamingText).
+
+### 27.2 State machine
+```
+Waiting (shimmer, first_token_ms) ─first token─▶ Streaming (reveal at cps, catch-up ≤ 1.2 s behind)
+Streaming ─all revealed─▶ Done      Streaming ─Stop─▶ Stopped (partial kept, note)
+Streaming ─drop─▶ Error (partial kept, Retry)
+```
+
+### 27.3 States table
+| State | Shows | Keyboard | ARIA |
+|---|---|---|---|
+| waiting | shimmer line | — | `aria-busy` |
+| streaming | blocks + caret | Tab to chips | `aria-busy` |
+| done | blocks | Tab | — |
+| stopped / error | partial + note | Retry | `role=alert` on error |
+
+### 27.4 Micro-interactions
+The last block fades in over 140 ms per chunk; no per-word motion. Unclosed `**`, backticks, `[1` and half table rows are held back so markup never flashes. Open code fences render through the code block with its own caret.
+
+### 27.5 Timing table
+| Transition | Duration | Easing | Reduced motion |
+|---|---|---|---|
+| Chunk fade | 140 ms | linear | none |
+| Caret blink | 1 s steps | — | static |
+| Shimmer | 1.6 s loop | linear | muted text |
+
+### 27.6 Variants
+Free: headings, lists, quotes, rules, tables, fenced code, inline code, links, citation chips.
+
+**Oxyn plus:** pace presets (calm · normal · fast · instant), first-token wait, stopped and error endings, `reveal: none`.
+
+### 27.7 Edge cases
+Very fast models reveal instantly (catch-up); very slow ones keep the caret. Tables wait for whole rows. Partial links render as text until the URL closes.
+
+### 27.8 Accessibility
+Container is `aria-busy` while streaming; caret `aria-hidden`; citation chips are buttons named “Source n”; error ending is `role=alert`.
+
+### 27.9 Props sketch
+```rust
+StreamingMarkdown { text, elapsed_ms: u64, cps: f32, first_token_ms: u64, phase: "streaming"|"stopped"|"error",
+                   caret: bool, reveal: "fade"|"none", active_cite: Option<u32>, on_cite: EventHandler<u32> }
+```
+
+### 27.10 Related components and references
+`code-block.md`, `citations-sources.md`, `message-bubble.md`. Arc UI AI answer — behaviour only; Beautiful UI StreamingText — MIT.

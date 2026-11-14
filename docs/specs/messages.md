@@ -1,4 +1,4 @@
-**Status:** draft v0.1 (2026-11-11).
+**Status:** v1 — implemented (plan #27); the draft below is kept as the design record.
 
 # Spec: messages & reasoning (family E overview — transcript, turns, jump-to-latest)
 
@@ -376,3 +376,58 @@ Related: [composer.md](composer.md) (fly-up, queue dispatch) · [text-reveal.md]
 | Renzo Bianchi "the exit is the confirmation" | [R079] | send → bubble handoff | Check source; study only |
 | Manus replay + "jump to live" | note 04 | `transcript/replay` | Proprietary — idea only |
 | flohoeller agent lanes | [R061] | `transcript/lanes` | Study only |
+
+
+## Plan #27 implementation — chat thread, starter prompts, AI chat and support conversation
+
+Implemented in `oxyn-core::chat::thread` (`group`, `ThreadItem`, `day_label`, `typing_label`, `starters_for`, `categories`, `SupportPhase`), `oxyn-dioxus::{ChatThread, StarterPrompts, AiChat, SupportConversation}`, `oxyn-gpui::{ChatThreadEl, StartersEl}`.
+
+### 27.1 Purpose
+The conversation surfaces: team threads with agents, the empty state with starters, the full AI chat block, and support chats that hand off to a person (Arc UI Chat thread, Starter prompts, AI chat, Support conversation; Beautiful UI Chat).
+
+### 27.2 State machine
+```
+Thread: messages grouped by author within 5 min, day separators; send ─▶ append (Sent) | Failed ─Retry─▶ Sent
+Reactions: chip toggles; picker opens on ☺, Escape closes
+Starters: category tab ─▶ filter; Shuffle ─▶ next seed (staggered); card ─▶ fills composer; Enter sends
+Support: Bot ─talk to a person─▶ Handoff(#n) ─▶ Human ─resolve─▶ Resolved (rating)
+```
+
+### 27.3 States table
+| State | Shows | Keyboard | ARIA |
+|---|---|---|---|
+| thread | groups, receipts, typing | Enter sends, Shift+Enter newline | `log` polite additions |
+| picker | emoji toolbar | Escape | `toolbar` |
+| starters loading | placeholder cards | — | hidden |
+| handoff | queue banner | — | log |
+
+### 27.4 Micro-interactions
+New groups rise in from their side; reaction chips pop and counts roll; typing dots bounce; starter cards crossfade with a 35 ms stagger; the support banner crossfades between phases.
+
+### 27.5 Timing table
+| Transition | Duration | Easing | Reduced motion |
+|---|---|---|---|
+| Message in | 220 ms | ease-out | fade |
+| Starter stagger | 160 ms + 35 ms | ease-out | instant |
+| Typing dots | 1.2 s loop | ease | static |
+
+### 27.6 Variants
+Free: grouped thread, reactions, receipts, typing, composer; starters with tabs and shuffle; AI chat.
+
+**Oxyn plus:** agent participants with identity hues, read-only transcript, failed-send Retry, starter loading state, support handoff with CSAT.
+
+### 27.7 Edge cases
+Empty categories are hidden. Messages from one author across midnight split at the day separator. Failed sends show only under your latest message.
+
+### 27.8 Accessibility
+Thread is `role=log` with polite additions; typing is a separate status; reaction chips say “👍 3, including you”; receipts list readers; starter cards include title, app and category.
+
+### 27.9 Props sketch
+```rust
+ChatThread { participants: Vec<(id, name, hue)>, me, messages: Vec<ChatMessage>, typing, read_by, now_ms, composer, height, on_send }
+StarterPrompts { greeting, description, prompts: Vec<Starter>, category_labels, count, loading, composer, on_submit }
+AiChat { elapsed_ms, reasoning, sources, height, children }   SupportConversation { phase, height }
+```
+
+### 27.10 Related components and references
+`message-bubble.md`, `reasoning-block.md`, `citations-sources.md`. Arc UI Chat thread / Starter prompts / AI chat / Support conversation — behaviour only; Beautiful UI Chat — MIT, © 2026 Shane Levine.

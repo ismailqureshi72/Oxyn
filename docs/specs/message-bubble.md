@@ -1,4 +1,4 @@
-**Status:** draft v0.1 (2026-11-11).
+**Status:** v1 — implemented (plan #27); the draft below is kept as the design record.
 
 # Spec: message bubble & message actions (`message`, `message-actions`)
 
@@ -370,3 +370,58 @@ Related: [messages.md](messages.md) · [streaming-markdown.md](streaming-markdow
 | Pi `/tree` session tree | note 03 | `branch-tree` | Licence not recorded — study only |
 | kushsolitary split-off ✓ | [R006] | `liquid-glass`, `copy-morph` | Study only |
 | Renzo Bianchi send exit | [R079] | Save & send fly | Check source; study only |
+
+
+## Plan #27 implementation — message bubble, actions and response feedback
+
+Implemented in `oxyn-core::chat::thread` (`Feedback`, `Thumb`, `FeedbackPhase`), `oxyn-dioxus::{MessageBubble, MessageActions, ResponseFeedback}`, `oxyn-gpui::{MessageEl, FeedbackEl}`.
+
+### 27.1 Purpose
+One turn of a conversation and what you can do with it: copy, regenerate, branch, rate (Arc UI Response feedback).
+
+### 27.2 State machine
+```
+Feedback: Idle ─👍─▶ Up (+ “What was good?” when positive reasons exist) ─👎─▶ Down (reasons + note)
+Form ─Submit─▶ Sending ─ok─▶ Thanks (1.6 s) ─▶ Closed (rating kept) | ─fail─▶ Error (Try again)
+Active thumb pressed ─▶ rating cleared;  Escape ─▶ panel closed, rating kept
+```
+
+### 27.3 States table
+| State | Shows | Keyboard | ARIA |
+|---|---|---|---|
+| idle | outline thumbs | Enter | `aria-pressed=false` |
+| rated | filled thumb | Enter clears | `aria-pressed=true`, `aria-expanded` |
+| form | chips, note, Skip / Submit | ⌘↵ submits, Escape | group “Reasons” |
+| thanks | drawn tick | — | status |
+| error | alert, Try again | Enter | alert |
+
+### 27.4 Micro-interactions
+Filled thumb fades over the outline; presses dip to .94; the panel rises in; the tick draws once in 280 ms; actions fade in on hover / focus within (always on touch).
+
+### 27.5 Timing table
+| Transition | Duration | Easing | Reduced motion |
+|---|---|---|---|
+| Thumb fill | 160 ms | linear | instant |
+| Panel | 200 ms | ease-out | fade |
+| Tick | 280 ms | ease-out | static |
+| Thanks hold | 1600 ms | — | same |
+
+### 27.6 Variants
+Free: user bubble, assistant prose, system note, tool row, actions, thumbs with reasons.
+
+**Oxyn plus:** flat transcript variant, failed send with Retry, attachments, edited marker, streaming body, failing-send demo.
+
+### 27.7 Edge cases
+Long user messages wrap at 80 % width. A reply still streaming hides its actions. Other in the reasons focuses the note.
+
+### 27.8 Accessibility
+Turns are articles named by author; thumbs are toggles named Good / Bad response; chips invert when selected; a polite region announces rating, sending, thanks and errors.
+
+### 27.9 Props sketch
+```rust
+MessageBubble { role: "user"|"assistant"|"system"|"tool", text, author, time, variant: "bubble"|"flat", elapsed_ms, actions, failed, edited, files, children }
+ResponseFeedback { negative, positive, allow_comment, rating, privacy_note, fail_send, disabled, leading, on_rating }
+```
+
+### 27.10 Related components and references
+`messages.md`, `copy-button.md`, `rating.md`. Arc UI Response feedback — behaviour only.
