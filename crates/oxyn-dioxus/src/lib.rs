@@ -11,6 +11,7 @@ mod composer;
 mod glyph_loader;
 mod primitives;
 mod run;
+mod shell;
 mod status_indicator;
 mod status_text;
 
@@ -67,6 +68,12 @@ pub use run::{
     PlanCard, PlanCardProps, RUN_CSS, StepTimeline, StepTimelineProps, SubagentTree,
     SubagentTreeProps, TodoList, TodoListProps, ToolCallRow, ToolCallRowProps, ToolStack,
     ToolStackProps,
+};
+pub use shell::{
+    AiSidePanel, AiSidePanelProps, AppShell, AppShellProps, ChatShell, ChatShellProps, Harness,
+    HarnessProps, InboxSidebar, InboxSidebarProps, SHELL_CSS, Sidebar, SidebarNav, SidebarNavProps,
+    SidebarProps, SidebarRail, SidebarRailProps, TerminalTabs, TerminalTabsProps, WorkspaceSidebar,
+    WorkspaceSidebarProps, sample_inbox, sample_page, sample_sections,
 };
 pub use status_indicator::{
     IndicatorSize, IndicatorVariant, STATUS_INDICATOR_CSS, StatusIndicator, StatusIndicatorProps,

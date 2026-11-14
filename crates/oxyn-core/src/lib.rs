@@ -35,6 +35,7 @@ pub mod indicator;
 pub mod loader;
 pub mod primitives;
 pub mod run;
+pub mod shell;
 pub mod state;
 pub mod text;
 mod time;
