@@ -1,4 +1,4 @@
-**Status:** v1 — implemented (plan #23).
+**Status:** v1.1 — implemented (plan #23, affectUI / Arc gaps closed in plan #26).
 
 # Spec: tooltip and popover
 
@@ -120,3 +120,10 @@ the trigger for hover mode) and returns on Esc. Esc stops propagation so only th
 `dropdown-menu.md` (menus use the same placement and dismissal), `desktop-overlays.md`, `button.md`
 (disabled reasons). affectUI `/components/tooltip`, `/components/popover`; Arc `/components/tooltip`,
 `/components/popover` — behaviour only.
+
+## Plan #26 additions
+- **Tooltip (affectUI):** the playground now exposes `align`, `offset` and `disabled` (all already
+  props). Shared delay group, keyboard focus and Escape as before.
+- **Popover (Arc UI):** `modal` dims the page behind a press-to-close backdrop and marks the panel
+  `aria-modal`; `collision_padding` (default 10 px) keeps the panel that far from the viewport
+  edges.

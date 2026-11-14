@@ -1,4 +1,4 @@
-**Status:** v1 — implemented (plan #23).
+**Status:** v1.1 — implemented (plan #23, affectUI gaps closed in plan #26).
 
 # Spec: dropdown menu (with gliding highlight) and context-menu mode
 
@@ -102,3 +102,10 @@ MenuItem::divider() · MenuItem::label(text)
 `command-palette.md`. Context menu (Arc) is this component's `context` mode. affectUI
 `/components/dropdown-menu`; Arc `/components/dropdown-menu`, `/components/context-menu` —
 behaviour only; Beautiful UI `glide-menu` — MIT with attribution.
+
+## Plan #26 additions
+- `MenuItem::logo` draws a brand tile (Linear, GitHub, Slack…) in place of the icon (affectUI
+  `item.logo`).
+- `MenuItem::keep_open` keeps the menu open after an action (affectUI `keepOpen`); checkbox items
+  already did.
+- The playground adds a "Tool logos" toggle.
