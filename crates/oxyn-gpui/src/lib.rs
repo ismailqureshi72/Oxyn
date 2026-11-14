@@ -42,14 +42,16 @@ pub use navigation::{
     UserMenuEl,
 };
 pub use parity::{
-    Act, AgentApprovalsEl, ApprovalGatesEl, ApprovalPagerEl, ConfirmMorphEl, ConfirmPopoverEl,
-    HoldConfirmEl, PermissionRequestEl,
+    Act, ActivityFeedEl, AgentApprovalsEl, AgentPlanEl, AgentRunEl, AgentStatusEl, AgentTrailEl,
+    AgentTreeEl, ApprovalGatesEl, ApprovalPagerEl, BreakdownEl, ChecklistEl, ConfirmMorphEl,
+    ConfirmPopoverEl, CountdownEl, CounterEl, FleetEl, FlowStepperEl, HoldConfirmEl,
+    OrchestratorEl, PermissionRequestEl, ReadinessEl, TaskRowsEl, TreeTableEl,
 };
 pub use primitives::{
-    ActionButtonEl, AvatarEl, BadgeEl, ButtonEl, ButtonGroupEl, CheckboxEl, ChipEl, EmptyStateEl,
-    EntityChipEl, ExpandingGroupEl, IconButtonEl, KbdEl, MenuEl, MonogramEl, NumberTickerEl,
-    PopoverEl, RadioGroupEl, ReactionBarEl, SegmentedEl, SelectEl, SeparatorEl, SliderEl,
-    SpinnerEl, SplitButtonEl, SwitchEl, TextFieldEl, TooltipEl, ValuePillEl,
+    ActionButtonEl, AvatarEl, BadgeEl, BadgeSize, ButtonEl, ButtonGroupEl, CheckboxEl, ChipEl,
+    EmptyStateEl, EntityChipEl, ExpandingGroupEl, IconButtonEl, KbdEl, MenuEl, MonogramEl,
+    NumberTickerEl, PopoverEl, RadioGroupEl, ReactionBarEl, SegmentedEl, SelectEl, SeparatorEl,
+    SliderEl, SpinnerEl, SplitButtonEl, SwitchEl, TextFieldEl, TooltipEl, ValuePillEl,
 };
 pub use run::{SubagentTreeEl, TodoChecklist, ToolCallRowEl};
 pub use shell::{
