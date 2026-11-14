@@ -43,7 +43,8 @@ pub const PRIMITIVES_CSS: &str = concat!(
     include_str!("forms.css"),
     include_str!("surfaces.css"),
     include_str!("navigation.css"),
-    include_str!("../chat/chat.css")
+    include_str!("../chat/chat.css"),
+    include_str!("../composer/parts.css")
 );
 
 /// A measured box relative to its container.

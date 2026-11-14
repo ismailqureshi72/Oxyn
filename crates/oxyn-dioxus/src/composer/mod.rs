@@ -7,6 +7,7 @@ mod context;
 mod effort;
 pub(crate) mod icons;
 mod model;
+mod parts;
 mod send;
 
 use std::{cell::RefCell, rc::Rc, time::Duration};
@@ -32,6 +33,12 @@ pub use context::{ContextMeterChip, ContextMeterChipProps};
 pub use effort::{EffortChip, EffortChipProps, tier_color};
 pub use icons::{Icon, IconProps};
 pub use model::{ModelPicker, ModelPickerProps};
+pub use parts::{
+    AgentSteering, AgentSteeringProps, DictationButton, DictationButtonProps, MentionInput,
+    MentionInputProps, ModeSwitch, ModeSwitchProps, PARTS_CSS, PermissionSelector,
+    PermissionSelectorProps, QueueStack, QueueStackProps, ToolsMenu, ToolsMenuProps, VoiceRecorder,
+    VoiceRecorderProps,
+};
 pub use send::{SendButton, SendButtonProps};
 
 use crate::{ElapsedTimer, GlyphLoader, VerbCycler};
