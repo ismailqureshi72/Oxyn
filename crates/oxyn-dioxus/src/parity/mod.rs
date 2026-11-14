@@ -2,6 +2,7 @@
 //! Beautiful UI, plus the X-post references. Styles ship in [`crate::PRIMITIVES_CSS`].
 
 mod approvals;
+mod input;
 mod run;
 mod text;
 mod tools;
@@ -10,6 +11,7 @@ pub use approvals::{
     AgentApprovals, ApprovalGates, ConfirmMorph, ConfirmPopover, HoldToConfirm, PermissionRequest,
     gate_dot,
 };
+pub use input::{GhostText, LabeledInput, LabeledTextarea, TextArea};
 pub use run::{
     ActivityFeed, AgentFleet, AgentOrchestrator, AgentPlan, AgentRun, AgentStatus, AgentTrail,
     AgentTree, AnimatedCounter, Countdown, FlowStepper, OnboardingChecklist, ReleaseReadiness,

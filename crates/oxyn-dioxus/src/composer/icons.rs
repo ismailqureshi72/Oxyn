@@ -129,6 +129,8 @@ pub fn path(name: &str) -> &'static str {
         "info" => "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 11v5M12 8h.01",
         "merge" => "M6 3v18M6 9a6 6 0 0 0 6 6h6M15 12l3 3-3 3",
         "download" => "M12 4v11M8 11l4 4 4-4M5 19h14",
+        "maximize" => "M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7",
+        "minimize" => "M4 14h6v6M20 10h-6V4M14 10l6-6M4 20l6-6",
         _ => "M12 12h.01",
     }
 }
