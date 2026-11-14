@@ -5,6 +5,7 @@
 //! component also ships its own small stylesheet as a constant (`STATUS_INDICATOR_CSS`).
 
 mod approval;
+mod chat;
 mod checkpoint;
 mod composer;
 mod glyph_loader;
@@ -14,6 +15,12 @@ mod status_indicator;
 mod status_text;
 
 pub use approval::{ApprovalCard, ApprovalCardProps, ApprovalPager, ApprovalPagerProps};
+pub use chat::{
+    AiAnswer, AiChat, CHAT_CSS, ChatThread, ContextCards, DocumentExtraction, Markdown,
+    MessageActions, MessageBubble, ReasoningBlock, RecommendationCard, ResearchRun,
+    ResponseFeedback, SourceCards, SourceCitation, StarterPrompts, StreamingMarkdown,
+    SupportConversation, ThinkingTraces,
+};
 pub use checkpoint::{
     CheckpointLanes, CheckpointLanesProps, CheckpointList, CheckpointListProps, CheckpointMarker,
     CheckpointMarkerProps, RestoreToast, RestoreToastProps,
