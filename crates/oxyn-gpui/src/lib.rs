@@ -12,6 +12,7 @@ mod primitives;
 mod run;
 mod status_indicator;
 mod status_text;
+mod surfaces;
 
 pub use composer::{Composer, ComposerEvent};
 pub use forms::{
@@ -30,6 +31,11 @@ pub use primitives::{
 pub use run::{SubagentTreeEl, TodoChecklist, ToolCallRowEl};
 pub use status_indicator::{IndicatorSize, IndicatorVariant, StatusIndicator};
 pub use status_text::{RevealText, ShimmerText, TimerText, VerbCyclerView};
+pub use surfaces::{
+    AiCommandEl, AiSearchBarEl, AlertEl, BottomSheetEl, CardEl, CommandPaletteEl, ControlCenterEl,
+    DialogEl, ExpandingSearchEl, NotificationStackEl, PaginationEl, ScrollAreaEl, SearchFieldEl,
+    SheetEl, SheetStackEl, ShortcutRecorderEl, SkeletonEl, SkeletonMorphEl, ToasterEl, dialog_size,
+};
 
 use gpui::{Hsla, Rgba};
 use oxyn_tokens::Color;
