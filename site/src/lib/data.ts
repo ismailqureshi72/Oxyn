@@ -184,9 +184,11 @@ const newSpecs = new Set(
 );
 export const newDemos = components.filter((d) => newSpecs.has(d.spec) || newSpecs.has(d.slug));
 export const motionDemos = ['text-shimmer', 'verb-cycler', 'text-reveal', 'number-ticker', 'glyph-loader'].map((s) => demos.find((d) => d.slug === s)!).filter(Boolean);
+/** Screens composed on the site from several components (no single Rust demo). */
+export const composedScreens = [{ name: 'Agent workspace', href: '/screens/agent-workspace/', summary: 'A complete AI agent app: threads, the agent thread and the work pane.' }];
 export const counts = {
   components: components.length,
-  screens: screens.length,
+  screens: screens.length + composedScreens.length,
   blocks: 0,
   illustrations: 0,
   motion: motionDemos.length,

@@ -1,0 +1,17 @@
+---
+import '../../../generated/oxyn-tokens.css';
+import '../../../generated/oxyn-components.css';
+import '../../../styles/chrome.css';
+import '../../../styles/site.css';
+import '../../../styles/demo.css';
+import Head from '../../../components/v2/Head.astro';
+import AgentWorkspace from '../../../components/v2/AgentWorkspace.astro';
+---
+<!doctype html>
+<html lang="en" data-theme="light" data-oxyn-theme="light">
+  <head><Head title="Agent workspace · full screen · Oxyn" description="A complete AI agent app composed from Oxyn components." /><meta name="robots" content="noindex" /></head>
+  <body class="site fullscreen">
+    <main id="main"><h1 class="sr-only">Agent workspace</h1><AgentWorkspace full /></main>
+    <a class="fs-back pill" href="/screens/agent-workspace/">← Agent workspace</a>
+  </body>
+</html>

@@ -1,7 +1,7 @@
 ---
 // The library's left sidebar: wordmark, search, site links, style, and the collapsible groups.
 import { icon } from './icons';
-import { components, screens, counts, demoUrl, isPro, motionDemos } from '../../lib/data';
+import { components, screens, counts, demoUrl, isPro, motionDemos, composedScreens } from '../../lib/data';
 interface Props { current?: string }
 const { current = '' } = Astro.props;
 const byName = [...components].sort((a, b) => a.name.localeCompare(b.name));
@@ -14,7 +14,7 @@ const nav = [
 const libActive = !current.startsWith('/docs') && !current.startsWith('/pricing');
 const groupsList = [
   { label: 'Components', href: '/components/', n: counts.components, items: byName.map((d) => [d.name, demoUrl(d), isPro(d)] as const) },
-  { label: 'Screens', href: '/screens/', n: counts.screens, items: screens.map((d) => [d.name, demoUrl(d), isPro(d)] as const) },
+  { label: 'Screens', href: '/screens/', n: counts.screens, items: [...composedScreens.map((c) => [c.name, c.href, false] as const), ...screens.map((d) => [d.name, demoUrl(d), isPro(d)] as const)] },
   { label: 'Blocks', href: '/blocks/', n: 0, items: [] },
   { label: 'Illustrations', href: '/illustrations/', n: 0, items: [] },
   { label: 'Motion', href: '/motion/', n: counts.motion, items: [...motionDemos.map((d) => [d.name, demoUrl(d), isPro(d)] as const), ['Motion tokens', '/motion/', false] as const] },
@@ -53,3 +53,21 @@ const groupsList = [
     ))}
   </div>
 </aside>
+<script is:inline>
+  // Keep the sidebar where it was across page loads; bring the current item into view only
+  // when it would be off screen.
+  (function () {
+    var sb = document.getElementById('lsb');
+    if (!sb) return;
+    var y = sessionStorage.getItem('oxyn-lsb-y');
+    if (y !== null) sb.scrollTop = +y;
+    var cur = sb.querySelector('.lsb-g li a[aria-current="page"]');
+    if (cur) {
+      var r = cur.getBoundingClientRect(), s = sb.getBoundingClientRect();
+      if (r.top < s.top + 8 || r.bottom > s.bottom - 8) sb.scrollTop += r.top - s.top - s.height / 2;
+    }
+    var save = function () { sessionStorage.setItem('oxyn-lsb-y', String(sb.scrollTop)); };
+    addEventListener('pagehide', save);
+    sb.addEventListener('click', save, true);
+  })();
+</script>

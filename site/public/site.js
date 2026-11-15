@@ -298,6 +298,16 @@ document.addEventListener('oxyn-demo-live', (e) => {
   const d = document.documentElement;
   // Library dropdown in the top bar: click or keyboard opens, outside click and Escape close.
   const dds = document.querySelectorAll('.tb-dd');
+  // Keep the menu inside the viewport: shift it left when it would run past the right edge.
+  const fit = (dd) => {
+    const m = dd.querySelector('.tb-menu');
+    if (!m) return;
+    m.style.left = '';
+    const r = m.getBoundingClientRect();
+    const over = r.right - (document.documentElement.clientWidth - 12);
+    if (over > 0) m.style.left = `${parseFloat(getComputedStyle(m).left) - over}px`;
+    if (r.left - Math.max(over, 0) < 12) m.style.left = `${parseFloat(getComputedStyle(m).left) + (12 - (r.left - Math.max(over, 0)))}px`;
+  };
   const closeDd = (dd) => { dd.classList.remove('open'); dd.querySelector('[data-dd]')?.setAttribute('aria-expanded', 'false'); };
   dds.forEach((dd) => {
     const btn = dd.querySelector('[data-dd]');
@@ -307,8 +317,9 @@ document.addEventListener('oxyn-demo-live', (e) => {
       const open = !dd.classList.contains('open');
       dd.classList.toggle('open', open);
       btn.setAttribute('aria-expanded', String(open));
+      if (open) fit(dd);
     });
-    dd.addEventListener('mouseenter', () => { if (matchMedia('(hover:hover)').matches && !dd.classList.contains('open')) { dd.classList.add('open'); dd.dataset.hoverOpen = '1'; btn.setAttribute('aria-expanded', 'true'); } });
+    dd.addEventListener('mouseenter', () => { if (matchMedia('(hover:hover)').matches && !dd.classList.contains('open')) { dd.classList.add('open'); dd.dataset.hoverOpen = '1'; btn.setAttribute('aria-expanded', 'true'); fit(dd); } });
     dd.addEventListener('mouseleave', () => { if (matchMedia('(hover:hover)').matches) { delete dd.dataset.hoverOpen; closeDd(dd); } });
     dd.addEventListener('focusout', (e) => { if (!dd.contains(e.relatedTarget)) closeDd(dd); });
   });
@@ -340,8 +351,10 @@ document.addEventListener('oxyn-demo-live', (e) => {
     else if (d.classList.contains('drawer-open') && e.target.closest('.lsb a')) d.classList.remove('drawer-open');
   });
   // Keep the current sidebar item in view.
-  const cur = document.querySelector('.lsb-g li a[aria-current="page"]');
-  if (cur) { const sb = document.querySelector('.lsb'); if (sb) sb.scrollTop = cur.offsetTop - sb.clientHeight / 2; }
+  // Page-to-page crossfade (cross-document view transitions): skipped under reduced motion.
+  addEventListener('pagereveal', (e) => {
+    if (e.viewTransition && (d.hasAttribute('data-oxyn-reduced') || matchMedia('(prefers-reduced-motion: reduce)').matches)) e.viewTransition.skipTransition();
+  });
 
   // Tabs (landing): roving tabindex, arrow keys, panels shown one at a time.
   document.querySelectorAll('[data-tabs]').forEach((box) => {

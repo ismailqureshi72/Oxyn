@@ -1,0 +1,26 @@
+---
+// A complete AI agent app composed from existing Oxyn components: threads on the left, the agent
+// thread in the middle, the run's work pane on the right. Each pane is the live Rust component.
+import OxynDemo from '../OxynDemo.astro';
+import { demos, demoUrl } from '../../lib/data';
+interface Props { full?: boolean }
+const { full = false } = Astro.props;
+const f = (s: string) => demos.find((d) => d.slug === s)!;
+const threads = f('thread-list');
+const chat = f('ai-chat');
+const trail = f('agent-trail');
+const cps = f('checkpoint-list');
+---
+<div class:list={['aw', { 'aw-full': full }]} data-theme-follow>
+  <header class="aw-bar">
+    <span class="aw-ws"><b>N</b>Northwind</span>
+    <span class="aw-crumb">Agents <span>›</span> Fix the flaky auth test</span>
+    <span class="aw-sp"></span>
+    <span class="aw-chip">Running · 3 tools</span>
+  </header>
+  <div class="aw-cols">
+    <section class="aw-pane aw-left" aria-label="Threads"><h2 class="aw-h"><a href={demoUrl(threads)}>Threads</a></h2><OxynDemo slug={threads.slug} html={threads.variants[0].html} variant={0} /></section>
+    <section class="aw-pane aw-mid" aria-label="Agent thread"><h2 class="aw-h"><a href={demoUrl(chat)}>Agent thread</a></h2><OxynDemo slug={chat.slug} html={chat.variants[0].html} variant={0} /></section>
+    <section class="aw-pane aw-right" aria-label="Work"><h2 class="aw-h"><a href={demoUrl(trail)}>Work</a></h2><OxynDemo slug={trail.slug} html={trail.variants[0].html} variant={0} /><h2 class="aw-h"><a href={demoUrl(cps)}>Checkpoints</a></h2><OxynDemo slug={cps.slug} html={cps.variants[0].html} variant={0} /></section>
+  </div>
+</div>
