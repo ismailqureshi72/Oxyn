@@ -2,6 +2,7 @@
 //! Beautiful UI, plus the X-post references. Styles ship in [`crate::PRIMITIVES_CSS`].
 
 mod approvals;
+mod chatfid;
 mod compose;
 mod diff;
 mod fidelity;
@@ -20,12 +21,14 @@ pub use approvals::{
     AgentApprovals, ApprovalGates, ConfirmMorph, ConfirmPopover, HoldToConfirm, PermissionRequest,
     gate_dot,
 };
+pub use chatfid::{AgentRunPanel, ModelPickerMenu};
 pub use compose::{
     AiComposer, MenuModel, ModelMenu, ModelPill, PillModel, RichTextEditor, RunControls,
 };
 pub use diff::{ChangeSummary, CodeSuggestion, DiffTable, DiffTimeline, DiffViewer, InlineDiff};
 pub use fidelity::{
-    AgentCommentThread, AgentOrb, ChatComposer, CommentsPanel, FileTypeIcon, Portrait, ThreadNote,
+    AgentCommentThread, AgentOrb, ChatComposer, CommentsPanel, FileTypeIcon, PhotoAvatar, Portrait,
+    ThreadNote,
 };
 pub use fields::{ElasticSlider, MorphSelect, NumberField, ScrubInput};
 pub use home::{
