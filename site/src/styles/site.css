@@ -53,11 +53,26 @@ html[data-announce="hidden"] .announce{display:none}
 .lp-soon{display:flex;flex-direction:column;align-items:center;gap:8px;padding:56px 20px;border:1px dashed var(--ln);border-radius:16px;text-align:center;color:var(--fg2);font-size:14px}
 .lp-soon b{color:var(--fg);font-size:16px;font-weight:600}
 .lp-soon .x-pill{margin-top:8px}
-.lp-screen{border:1px solid var(--ln);border-radius:16px;background:var(--fill);padding:22px;overflow:hidden}
-.lp-screen .oxd-full .oxd-main{grid-template-columns:minmax(0,1fr);border:0;border-radius:0}
+/* Landing "Complete screens": every tab fills one rounded frame with the live screen at 0.6x
+   (0.45x on phones), edge to edge, no inner scroll. site.js leaves these stages unzoomed. */
+.lp-screen{padding:0;container-type:inline-size;width:100%;overflow:clip;border:1px solid var(--ln);border-radius:16px;background:var(--fill)}
 .lp-screen .oxd-panel,.lp-screen .oxd-code{display:none}
-.lp-screen .oxd-stage{background:none;padding:0;min-height:0!important;border-radius:0}
-.lp-screen .oxd-app.oxs-frame,.lp-screen .oxyn-harness{min-width:0;max-width:none;width:100%}
+.lp-screen oxyn-demo,.lp-screen .oxd-root,.lp-screen .oxd,.lp-screen .oxd-main{display:block;width:100%}
+.lp-screen .oxd-stage{display:block;padding:0!important;border:0;border-radius:0;background:none;min-height:0!important;overflow:clip}
+.lp-screen .oxd-stage>.oxd-mount{zoom:.6!important;width:calc(100cqi / .6);height:calc(100cqi / .6 * .54);min-width:0;display:flex;overflow:clip}
+.lp-screen .oxd-mount>*{flex:1 1 auto;display:flex;flex-direction:column;width:100%;min-width:0!important;max-width:none!important;height:100%;margin:0!important;transform:none!important}
+.lp-screen .oxd-mount>*>*{flex:1 1 auto;min-height:0}
+.lp-screen .oxd-mount .oxs-frame,.lp-screen .oxd-mount .oxyn-harness{zoom:1!important;width:100%!important;min-width:0!important;max-width:none!important;height:100%;margin:0!important;border:0;border-radius:0;display:flex;flex-direction:column;box-shadow:none}
+.lp-screen .oxd-app-bar{display:none}
+.lp-screen .oxs-body{flex:1 1 auto;min-height:0;display:flex}
+.lp-screen .oxs-body>*{flex:1 1 auto;min-width:0;min-height:0;height:auto!important}
+.lp-screen .oxs-body>div:not([class]){display:flex;flex-direction:column}
+.lp-screen .oxs-body>div:not([class])>*{flex:1 1 auto;min-height:0;height:auto!important;max-height:none!important}
+.lp-screen .oxd-mount>div:not([class]):has(>.oxh-home){justify-content:safe center;align-items:center;padding:56px 80px;gap:18px}
+.lp-screen .oxd-mount>div:not([class])>.oxh-home{flex:none;width:100%;max-width:1180px}
+.lp-screen .oxd-t3{grid-template-columns:minmax(0,360px) minmax(0,1fr)!important;max-width:none!important;border:0!important;border-radius:0!important}
+.lp-screen .oxd-t3>div:first-child{border-right:1px solid var(--oxyn-color-border-default)}
+@media (max-width:700px){.lp-screen .oxd-stage>.oxd-mount{zoom:.45!important;width:calc(100cqi / .45);height:calc(100cqi / .45 * .75)}.lp-screen .oxd-mount>div:not([class]):has(>.oxh-home){padding:24px}}
 .x-mcp{display:grid;grid-template-columns:1fr 1fr;margin-top:28px;border:1px solid var(--ln);border-radius:16px;overflow:hidden;background:var(--pn)}
 .mcp-l{padding:28px;background:var(--fill);border-right:1px solid var(--ln);display:flex;flex-direction:column;gap:16px}
 .mcp-ask{align-self:flex-end;max-width:85%;padding:9px 14px;border-radius:14px;background:var(--pn);box-shadow:inset 0 0 0 1px var(--ln);font-size:14px}
