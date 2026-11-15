@@ -46,7 +46,7 @@ controls, a full spec, and (from #24) a page on the site. "Items" counts rows in
 | #29 | feat/site-v2 | Site in the affectUI interface: white landing page (promo strip, 44px top bar, hero with live ghost demos, tabbed card grid, screens, agent install panel, one-file cards, before/after compare, FAQ, footer); library shell (grey sidebar with groups and counts, white rounded main panel, no table of contents); component and screen pages in the reference order (preview toolbar, When to use / not, examples, API reference, keyboard, motion, Notes for AI, related, guides); 21 categories regrouped into 8 + Screens with redirects; screen full-view route | — | Ismail | |
 | #30 | feat/diff-review | Diff viewer (split, stacked, per-hunk actions), inline diff, diff table, change summary, diff timeline, code block, review card | 5 + specs | Ismail | |
 | #31 | feat/merge-conflict | 3-way merge conflict editor, conflict radar | specs | Khubaib | |
-| #32 | feat/fidelity-* | affectUI fidelity pass (side-by-side, every variant, everything clickable, coloured logos inside components, exact palette, overflow); chunk 1 `feat/fidelity-composer` = landing screens, Chat Composer family, comment thread / panel, run tree fork | — | Khubaib | in progress (GitHub #35) |
+| #32 | feat/fidelity-* | affectUI fidelity pass (side-by-side, every variant, everything clickable, coloured logos inside components, exact palette, overflow); chunk 1 `feat/fidelity-composer` = landing screens, Chat Composer family, comment thread / panel, run tree fork (GitHub #35, merged); chunk 2 `feat/fidelity-chat` = Chat Composer leftovers (plus list, sizes, meter, Clean / Classic), photo avatars, Model Picker, Run Controls (GitHub #36); later chunks = the rest of Chat, then Agents, Inputs … | — | Khubaib | in progress (GitHub #35 merged, #36 draft) |
 | #33 | feat/hitl-extras | Rollback impact sheet, checkpoint preview, decision inbox, autonomy dial, decision tree, recommendation card, selection actions, fine-tune card, away summary, agent recap, permission rules, swipe and review gestures | 24 | Ismail | |
 | #34 | feat/multi-agent | Agent graph, handoff, collaboration stream, agent cursors, delegate board, findings, agent lanes, plan vs actual, fallback chain, root cause tree, monitor, trace view, fan-out | 28 | Khubaib | |
 | #35 | feat/agent-ops | Parallel attempts, judge bracket, experiments, agent queue, scheduled runs, rate-limit planner, context map, tool access, integrations, memory, prompt library, writing tools, agent studio, provider keys, routing, run meter | 61 | Ismail | |
@@ -83,5 +83,14 @@ folded into the table above.
 > number is the plan number + 3 (plan #29 is GitHub #32). `parity/status.csv` follows the new plan numbers.
 >
 > **Numbering note (2026-11-15, plan #32):** plan #32 `feat/fidelity-*` (the affectUI fidelity pass) was
-> inserted after #31; hitl-extras is now #33 … release is #48. GitHub = plan + 3 still holds (plan #32 is
-> GitHub #35); `parity/status.csv` follows.
+> inserted after #31; hitl-extras is now #33 … release is #48. `parity/status.csv` follows.
+>
+> **Numbering note (2026-11-15, plan #32 chunk 2):** plan #32 spans several GitHub PRs, one per
+> chunk: chunk 1 = GitHub #35 (merged), chunk 2 = GitHub #36, and each later chunk takes the next free
+> number. So **GitHub = plan + 3 no longer holds** from here on: do not derive a plan's GitHub number
+> from its plan number. Record the actual PR number in the Status column when a PR opens.
+>
+> | Plan | Chunk | Branch | GitHub PR |
+> |---|---|---|---|
+> | #32 | 1 · landing, Chat Composer, comments, run tree fork | `feat/fidelity-composer` | #35 (merged) |
+> | #32 | 2 · composer leftovers, photo avatars, Model Picker, Run Controls | `feat/fidelity-chat` | #36 |

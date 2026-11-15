@@ -14,6 +14,7 @@ use oxyn_tokens::{ColorRole, Theme};
 use crate::hsla;
 
 mod approvals;
+mod chatfid;
 mod fidelity;
 mod fields;
 mod home;
@@ -28,6 +29,7 @@ pub use approvals::{
     AgentApprovalsEl, ApprovalGatesEl, ApprovalPagerEl, ConfirmMorphEl, ConfirmPopoverEl,
     HoldConfirmEl, PermissionRequestEl,
 };
+pub use chatfid::{AgentRunPanelEl, ModelPickerMenuEl};
 pub use fidelity::{AgentCommentThreadEl, ChatComposerEl, CommentsPanelEl, ThreadMsg, file_badge};
 pub use fields::{
     AiComposerEl, AvatarUploadEl, ContextFieldEl, ContextGridEl, ElasticSliderEl, FileDropzoneEl,

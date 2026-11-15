@@ -36,6 +36,9 @@ struct Pal {
     off_fg: Hsla,
     ok: Hsla,
     outer: Hsla,
+    c1: Hsla,
+    tray: Hsla,
+    wave: Hsla,
 }
 
 fn pal(t: &Theme) -> Pal {
@@ -59,6 +62,9 @@ fn pal(t: &Theme) -> Pal {
             off_fg: h(0x6B6B6E),
             ok: h(0x22A05B),
             outer: h(0x19191B),
+            c1: h(0x1C1C1E),
+            tray: h(0x161618),
+            wave: h(0x8AB8F0),
         }
     } else {
         Pal {
@@ -78,6 +84,9 @@ fn pal(t: &Theme) -> Pal {
             off_fg: h(0xA1A1AA),
             ok: h(0x16A34A),
             outer: h(0xF7F7F8),
+            c1: h(0xFFFFFF),
+            tray: h(0xF4F4F5),
+            wave: h(0x3D74D0),
         }
     }
 }
@@ -174,6 +183,40 @@ fn menu_row(
         .on_click(move |_, w, cx| on(w, cx))
 }
 
+fn plus_row(
+    id: &'static str,
+    lead: AnyElement,
+    title: &'static str,
+    hint: &'static str,
+    checked: bool,
+    p: Pal,
+    on: impl Fn(&mut Window, &mut App) + 'static,
+) -> impl IntoElement {
+    div()
+        .id(id)
+        .flex_none()
+        .flex()
+        .items_center()
+        .gap(px(12.))
+        .h(px(39.))
+        .px(px(10.))
+        .rounded(px(9.))
+        .cursor_pointer()
+        .hover(move |s| s.bg(p.hov))
+        .child(lead)
+        .child(div().text_size(px(16.)).text_color(p.fg).child(title))
+        .child(
+            div()
+                .flex_1()
+                .min_w_0()
+                .text_size(px(16.))
+                .text_color(p.ph)
+                .child(hint),
+        )
+        .when(checked, |d| d.child(div().text_color(p.fg).child("●")))
+        .on_click(move |_, w, cx| on(w, cx))
+}
+
 /// `chat-composer` (affectUI Chat Composer): field, + drop-up with file types and tools, the
 /// approval chip (orange **Unrestricted access** for Full), the model menu with coloured marks,
 /// mic → recording (trace, ✕ discard, ✓ keep), white send, and the folder / Connect apps tray.
@@ -196,12 +239,19 @@ pub struct ChatComposerEl {
     recording: Option<(String, Vec<f32>)>,
     open: Option<&'static str>,
     plan: bool,
+    classic: bool,
     act: Option<Act>,
     pick: Option<Pick>,
     theme: &'static Theme,
 }
 
 impl ChatComposerEl {
+    /// Classic style: the writing card inset on a darker band (Clean, the default, is one
+    /// continuous container with the tray under a hairline).
+    pub fn classic(mut self, on: bool) -> Self {
+        self.classic = on;
+        self
+    }
     /// A composer with its text and model list (the first is picked).
     pub fn new(text: impl Into<SharedString>, models: Vec<String>) -> Self {
         Self {
@@ -227,6 +277,7 @@ impl ChatComposerEl {
             recording: None,
             open: None,
             plan: false,
+            classic: false,
             act: None,
             pick: None,
             theme: &Theme::DARK,
@@ -294,19 +345,39 @@ impl ChatComposerEl {
     }
 }
 
-const ATTACH: [&str; 6] = [
-    "attach:pdf",
-    "attach:image",
-    "attach:sheet",
-    "attach:doc",
-    "attach:code",
-    "attach:folder",
+/// The plus menu, as affectUI: (act, glyph, label, hint); the Plugins group follows.
+const PLUS: [(&str, &str, &str, &str); 7] = [
+    ("attach:files", "⌇", "Files and folders", ""),
+    ("attach:claude", "", "Attach Claude", ""),
+    (
+        "attach:folder",
+        "▭",
+        "Work in a folder",
+        "Choose a folder for this chat",
+    ),
+    (
+        "tool:goal",
+        "◎",
+        "Goal",
+        "Set a goal to keep working toward",
+    ),
+    ("tool:plan", "◌", "Plan mode", "Turn on plan mode"),
+    ("tool:skill", "◉", "Record a skill", ""),
+    ("tool:draw", "∿", "Draw", "Sketch a drawing"),
 ];
-const TOOL: [(&str, &str, &str); 4] = [
-    ("tool:goal", "◎", "Goal"),
-    ("tool:plan", "◌", "Plan mode"),
-    ("tool:skill", "◉", "Record a skill"),
-    ("tool:draw", "∿", "Draw"),
+const PLUGINS: [(&str, FileKind, &str, &str); 2] = [
+    (
+        "attach:documents",
+        FileKind::Doc,
+        "Documents",
+        "Create and edit documents",
+    ),
+    (
+        "attach:pdf",
+        FileKind::Pdf,
+        "PDF",
+        "Read, create and verify PDFs",
+    ),
 ];
 
 impl RenderOnce for ChatComposerEl {
@@ -378,7 +449,7 @@ impl RenderOnce for ChatComposerEl {
         card = card.child(match &rec {
             Some((heard, _)) => {
                 div()
-                    .text_size(px(16.5))
+                    .text_size(px(17.))
                     .text_color(p.ph)
                     .child(if heard.is_empty() {
                         "Listening…".to_string()
@@ -387,7 +458,7 @@ impl RenderOnce for ChatComposerEl {
                     })
             }
             None => div()
-                .text_size(px(16.5))
+                .text_size(px(17.))
                 .text_color(if self.text.is_empty() { p.ph } else { p.fg })
                 .child(if self.text.is_empty() {
                     self.placeholder.clone()
@@ -436,15 +507,15 @@ impl RenderOnce for ChatComposerEl {
                     div()
                         .flex()
                         .items_center()
-                        .gap(px(3.))
-                        .h(px(32.))
-                        .px(px(8.))
+                        .gap(px(2.2))
+                        .h(px(34.))
+                        .px(px(10.))
                         .children(trace.iter().map(|l| {
                             div()
-                                .w(px(2.))
-                                .h(px((l * 16.).max(2.)))
-                                .rounded(px(1.))
-                                .bg(p.fg)
+                                .w(px(3.5))
+                                .h(px((l * 16.).max(3.5)))
+                                .rounded(px(2.))
+                                .bg(p.wave)
                         })),
                 )
                 .child(ibtn("discard", "✕", p, self.act.clone()))
@@ -494,58 +565,63 @@ impl RenderOnce for ChatComposerEl {
         // Menus.
         let open = self.open;
         if open == Some("plus") {
-            let mut m = menu_box(p).bottom(px(40.)).left(px(-4.)).right(px(-4.));
-            m = m.child(
-                div()
-                    .px(px(9.))
-                    .py(px(5.))
-                    .text_size(px(12.5))
-                    .text_color(p.ph)
-                    .child("Add files"),
-            );
-            m = m.child(div().flex().gap(px(4.)).children(
-                FileKind::ALL.into_iter().zip(ATTACH).map(|(k, id)| {
-                    let f = fire(id);
+            // A capped, scrolling list spanning the composer.
+            let mut list = div()
+                .id("cc-plus-list")
+                .flex()
+                .flex_col()
+                .max_h(px(144.))
+                .overflow_y_scroll()
+                .child(
                     div()
-                        .id(id)
-                        .flex_1()
-                        .flex()
-                        .flex_col()
-                        .items_center()
-                        .gap(px(6.))
-                        .py(px(8.))
-                        .rounded(px(10.))
-                        .cursor_pointer()
-                        .hover(move |s| s.bg(p.hov))
-                        .child(file_badge(k, 26.))
-                        .child(
-                            div()
-                                .text_size(px(12.))
-                                .text_color(p.label)
-                                .child(k.label()),
-                        )
-                        .on_click(move |_, w, cx| f(w, cx))
-                }),
-            ));
-            m = m.child(div().h(px(1.)).my(px(5.)).bg(p.line));
-            for (id, g, l) in TOOL {
+                        .px(px(9.))
+                        .py(px(6.))
+                        .text_size(px(14.))
+                        .text_color(p.ph)
+                        .child("Add"),
+                );
+            for (id, g, l, hint) in PLUS {
                 let f = fire(id);
                 let on = id == "tool:plan" && self.plan;
-                m = m.child(menu_row(
-                    id.into(),
+                let lead = if id == "attach:claude" {
+                    brand_mark("claude", 17., p.label)
+                        .unwrap_or_else(|| div().w(px(17.)).into_any_element())
+                } else {
                     div()
                         .w(px(18.))
-                        .text_color(p.label)
+                        .text_color(if id == "tool:draw" {
+                            hex("14B8A6")
+                        } else {
+                            p.label
+                        })
                         .child(g)
-                        .into_any_element(),
-                    l.into(),
-                    None,
-                    on,
-                    p,
-                    f,
-                ));
+                        .into_any_element()
+                };
+                list = list.child(plus_row(id, lead, l, hint, on, p, f));
+                if id == "attach:folder" {
+                    list = list.child(div().h(px(1.)).my(px(5.)).bg(p.line));
+                }
             }
-            bar = bar.child(m);
+            list = list.child(div().h(px(1.)).my(px(5.)).bg(p.line)).child(
+                div()
+                    .px(px(9.))
+                    .py(px(6.))
+                    .text_size(px(14.))
+                    .text_color(p.ph)
+                    .child("Plugins"),
+            );
+            for (id, k, l, hint) in PLUGINS {
+                let f = fire(id);
+                list = list.child(plus_row(id, file_badge(k, 17.), l, hint, false, p, f));
+            }
+            bar = bar.child(
+                menu_box(p)
+                    .bottom(px(60.))
+                    .left(px(-14.))
+                    .right(px(-13.))
+                    .p(px(6.))
+                    .child(list),
+            );
         }
         if open == Some("approval") {
             let mut m = menu_box(p).bottom(px(40.)).left(px(30.)).w(px(352.));
@@ -590,7 +666,12 @@ impl RenderOnce for ChatComposerEl {
             bar = bar.child(m);
         }
         if open == Some("model") {
-            let mut m = menu_box(p).bottom(px(40.)).right(px(30.)).w(px(236.));
+            let mut m = div()
+                .id("cc-model-list")
+                .flex()
+                .flex_col()
+                .max_h(px(234.))
+                .overflow_y_scroll();
             for (i, name) in self.models.iter().enumerate() {
                 let pk = pick.clone();
                 let lead = if name == "Auto" {
@@ -617,17 +698,38 @@ impl RenderOnce for ChatComposerEl {
                     },
                 ));
             }
-            bar = bar.child(m);
+            bar = bar.child(
+                menu_box(p)
+                    .bottom(px(40.))
+                    .right(px(30.))
+                    .w(px(316.))
+                    .p(px(6.))
+                    .child(m),
+            );
         }
         card = card.child(bar);
 
+        // Clean (affectUI default): one continuous container, the tray a darker band under a
+        // hairline; Classic: the card inset on the band.
+        let classic = self.classic;
+        let card = if classic {
+            card
+        } else {
+            card.border_0()
+                .bg(gpui::transparent_black())
+                .rounded(px(17.))
+        };
         let mut root = div()
             .relative()
-            .w(px(540.))
+            .w(px(680.))
             .flex()
             .flex_col()
-            .rounded(px(21.))
-            .when(self.tray, |d| d.bg(p.band).pt(px(3.)).px(px(3.)))
+            .when(classic, |d| {
+                d.rounded(px(22.)).bg(p.band).pt(px(12.)).px(px(12.))
+            })
+            .when(!classic, |d| {
+                d.rounded(px(18.)).border_1().border_color(p.line).bg(p.c1)
+            })
             .child(card);
         if self.tray {
             let mut tray = div()
@@ -635,10 +737,16 @@ impl RenderOnce for ChatComposerEl {
                 .flex()
                 .items_center()
                 .gap(px(4.))
-                .h(px(42.))
-                .px(px(9.))
-                .text_size(px(14.5))
-                .text_color(p.label);
+                .h(px(40.))
+                .px(px(7.))
+                .text_size(px(15.))
+                .text_color(p.label)
+                .when(!classic, |d| {
+                    d.border_t_1()
+                        .border_color(p.line)
+                        .bg(p.tray)
+                        .rounded_b(px(17.))
+                });
             if !self.folders.is_empty() {
                 tray = tray.child(
                     div()
@@ -736,12 +844,27 @@ impl RenderOnce for ChatComposerEl {
     }
 }
 
+/// A round avatar: a portrait photo of a fictional person (`seed` picks one of six), or the
+/// agent's orb for `None`.
 fn avatar(seed: Option<u8>, size: f32) -> AnyElement {
-    const BG: [u32; 6] = [0xE9B8A0, 0x9DBEE3, 0xBCA6E3, 0xA5CFB2, 0xE2C485, 0xCFA2AE];
-    let d = div().flex_none().size(px(size)).rounded_full();
     match seed {
-        Some(s) => d.bg(rgb(BG[s as usize % 6])).into_any_element(),
-        None => d.bg(rgb(0x4C7DFF)).into_any_element(),
+        Some(s) => {
+            let image = gpui::Image::from_bytes(
+                gpui::ImageFormat::Webp,
+                oxyn_core::parity::fidelity::avatar_webp(s).to_vec(),
+            );
+            gpui::img(gpui::ImageSource::Image(std::sync::Arc::new(image)))
+                .flex_none()
+                .size(px(size))
+                .rounded_full()
+                .into_any_element()
+        }
+        None => div()
+            .flex_none()
+            .size(px(size))
+            .rounded_full()
+            .bg(rgb(0x4C7DFF))
+            .into_any_element(),
     }
 }
 
@@ -1062,7 +1185,13 @@ impl RenderOnce for CommentsPanelEl {
                 })
                 .when_some(a, move |d, f| d.on_click(move |_, w, cx| f(id, w, cx)))
         };
-        let mut list = div().flex().flex_col();
+        // The list scrolls inside a 330 px cap (header, tabs and composer stay put).
+        let mut list = div()
+            .id("cp-list")
+            .flex()
+            .flex_col()
+            .max_h(px(330.))
+            .overflow_y_scroll();
         for i in view {
             let cm = &self.comments[i];
             let (cmd, rest) = split_command(&cm.text);
@@ -1091,7 +1220,7 @@ impl RenderOnce for CommentsPanelEl {
                         .flex()
                         .items_center()
                         .gap(px(8.))
-                        .child(avatar(Some(cm.avatar), 22.))
+                        .child(avatar(Some(cm.avatar), 24.))
                         .child(
                             div()
                                 .font_weight(FontWeight::SEMIBOLD)

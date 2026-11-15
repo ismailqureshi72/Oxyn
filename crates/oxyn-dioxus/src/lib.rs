@@ -57,7 +57,10 @@ pub use parity::{
     ActivityHeatmap, ActivityHome, AttachmentStrip, DocGrid, ExperimentGrid, PollingCost,
     RunModeMenu, ThreadList, TokenUsageChart,
 };
-pub use parity::{AgentCommentThread, AgentOrb, CommentsPanel, FileTypeIcon, Portrait, ThreadNote};
+pub use parity::{
+    AgentCommentThread, AgentOrb, AgentRunPanel, CommentsPanel, FileTypeIcon, ModelPickerMenu,
+    PhotoAvatar, Portrait, ThreadNote,
+};
 pub use parity::{
     AiComposer, AvatarUpload, ChatComposer, ContextField, ContextWindowGrid, CtxModel,
     ElasticSlider, FileDropzone, Gauge, MenuModel, ModelMenu, ModelPill, MorphSelect, NumberField,

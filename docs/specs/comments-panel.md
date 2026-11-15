@@ -12,9 +12,12 @@ are `/edit` instructions the agent can run. Pairs with [comment-thread.md](comme
 | Part | Behaviour |
 |---|---|
 | Header | Title, tabs All / Questions / Edits (Edits carries a count badge of open edits), a sort menu (Newest first / Oldest first), optional ✕ |
-| Comment | Portrait, name, time ("just now", "4min ago", "2h ago"), text with a leading `/Edit` greyed as a command; Resolve toggle (resolved comments dim) |
+| Comment | Round 24 px portrait photo (`PhotoAvatar`; `avatars: "drawn"` for the illustrated ones), name, time ("just now", "4min ago", "2h ago"), text with a leading `/Edit` greyed as a command; Resolve toggle (resolved comments dim) |
 | Edit run | `/edit` comments carry **Run edit** → spinner "Running…" (`run_ms`) → "✓ Edit applied" with Undo |
 | Composer | "Add a comment…"; the new comment lands on top as "just now" |
+
+## 2a. Scrolling
+The list scrolls inside a height cap (`max_list`, 330 px by default; 0 removes it) while the header, tabs and composer stay put, as affectUI does; it is focusable and shows the thin pill thumb (Oxyn's one scrollbar style; affectUI hides its thumb).
 
 ## 3. States
 | State | Looks | Leaves on |
@@ -35,6 +38,7 @@ are `/edit` instructions the agent can run. Pairs with [comment-thread.md](comme
 | all | All tab |
 | edits | Starts on Edits |
 | questions | Starts on Questions |
+| drawn-avatars | Oxyn extra: illustrated portraits, list at full height |
 
 ## 6. Keyboard and accessibility
 - Tabs are a `tablist` (←/→); the sort menu uses `menuitemradio`; Enter in the composer posts.
