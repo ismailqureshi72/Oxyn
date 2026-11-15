@@ -163,8 +163,10 @@
 .oxyn-rvc-text{margin:0;padding:10px 12px;border-radius:9px;background:var(--oxyn-color-surface-base);border:1px solid var(--oxyn-color-border-subtle);font-size:13.5px;line-height:1.6}
 .oxyn-rvc-ed{width:100%;padding:10px 12px;border-radius:9px;border:1px solid var(--oxyn-color-border-strong);background:var(--oxyn-color-surface-base);color:inherit;font:inherit;font-size:13.5px;line-height:1.6;resize:vertical;outline:none}
 .oxyn-rvc-flag{position:relative;border-bottom:1.5px dashed var(--oxyn-color-status-warning-fg);background:var(--oxyn-color-status-warning-bg);border-radius:3px 3px 0 0;padding:0 1px;cursor:help;outline:none}
-.oxyn-rvc-note{position:absolute;left:0;top:calc(100% + 6px);z-index:4;width:max-content;max-width:260px;padding:6px 9px;border-radius:8px;background:var(--oxyn-color-fg-default);color:var(--oxyn-color-bg-base);font-size:12px;line-height:1.45;opacity:0;pointer-events:none;transform:translateY(-2px);transition:opacity .14s,transform .14s}
-.oxyn-rvc-flag:hover .oxyn-rvc-note,.oxyn-rvc-flag:focus .oxyn-rvc-note,.oxyn-rvc-flag[data-open="true"] .oxyn-rvc-note{opacity:1;transform:none}
+/* Closed notes are display:none so they never widen the scroll area. */
+.oxyn-rvc-note{display:none;position:absolute;left:0;top:calc(100% + 6px);z-index:4;width:max-content;max-width:min(260px,calc(100vw - 48px));padding:6px 9px;border-radius:8px;background:var(--oxyn-color-fg-default);color:var(--oxyn-color-bg-base);font-size:12px;line-height:1.45;opacity:0;pointer-events:none;transform:translateY(-2px);transition:opacity .14s,transform .14s,display .14s allow-discrete}
+.oxyn-rvc-flag:hover .oxyn-rvc-note,.oxyn-rvc-flag:focus .oxyn-rvc-note,.oxyn-rvc-flag[data-open="true"] .oxyn-rvc-note{display:block;opacity:1;transform:none}
+@starting-style{.oxyn-rvc-flag:hover .oxyn-rvc-note,.oxyn-rvc-flag:focus .oxyn-rvc-note,.oxyn-rvc-flag[data-open="true"] .oxyn-rvc-note{opacity:0;transform:translateY(-2px)}}
 .oxyn-rvc-src{opacity:.7}
 .oxyn-rvc-file{border:1px solid var(--oxyn-color-border-subtle);border-radius:9px;overflow:clip}
 .oxyn-rvc-fh{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:5px 10px;border-bottom:1px solid var(--oxyn-color-border-subtle);background:var(--oxyn-color-surface-base)}
@@ -183,7 +185,7 @@
 .oxyn-rvc-stamp[data-w="Approved"]{color:var(--oxyn-color-status-success-fg)}
 .oxyn-rvc-stamp[data-w="Rejected"]{color:var(--oxyn-color-status-danger-fg)}
 .oxyn-rvc-keys{font-size:11.5px;color:var(--oxyn-color-fg-subtle)}
-@container (max-width:640px){.oxyn-rvc-body{grid-template-columns:minmax(0,1fr);grid-template-rows:auto 1fr;height:auto}.oxyn-rvc-q{max-height:156px;border-right:0;border-bottom:1px solid var(--oxyn-color-border-subtle)}.oxyn-rvc-acts .oxyn-diff-btn{flex:1;justify-content:center}.oxyn-rvc-keys{display:none}}
+@container (max-width:640px){.oxyn-rvc-body{grid-template-columns:minmax(0,1fr);grid-template-rows:auto 1fr;height:auto}.oxyn-rvc-item{overflow:visible}.oxyn-rvc-q{overflow:visible;border-right:0;border-bottom:1px solid var(--oxyn-color-border-subtle)}.oxyn-rvc-acts .oxyn-diff-btn{flex:1;justify-content:center}.oxyn-rvc-keys{display:none}}
 @container (max-width:420px){.oxyn-rvc-fc{display:none}.oxyn-rvc-acts .oxyn-diff-btn svg{display:none}.oxyn-rvc-item{padding:12px}}
 @media (prefers-reduced-motion:reduce){.oxyn-rvc *{animation:none!important;transition:none!important}}
 

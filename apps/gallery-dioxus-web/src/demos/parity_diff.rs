@@ -774,7 +774,7 @@ pub(crate) fn demos() -> Vec<Demo> {
                 tog("numbers", "Line numbers", true),
                 tog("minimap", "Minimap", true),
                 tog("comments", "Line comments", true),
-                tog("wrap", "Wrap", false),
+                tog("wrap", "Wrap", true),
                 tog("dim", "Focus dim", false),
             ],
             variants: vec![
@@ -873,6 +873,7 @@ pub(crate) fn demos() -> Vec<Demo> {
                 "Neighbouring single-word changes merge into phrases, so the paragraph reads as a few edits, not confetti.",
             ],
             responsive: vec!["Wraps like any paragraph; fills its column up to 640 px."],
+            align: Align::Start,
             height: 260,
             ..mk(
                 "inline-diff",
@@ -948,6 +949,7 @@ pub(crate) fn demos() -> Vec<Demo> {
                 "Removed values are struck through as well as tinted.",
             ],
             responsive: vec!["The table scrolls sideways inside its card below its natural width."],
+            align: Align::Start,
             height: 340,
             ..mk(
                 "diff-table",
@@ -1051,6 +1053,7 @@ pub(crate) fn demos() -> Vec<Demo> {
                 "Fills its container up to 720 px; long lines scroll sideways while line numbers and review bars stay pinned.",
                 "The folder hides below a 520 px card; below 440 px summaries hide and the footer stacks.",
             ],
+            align: Align::Start,
             height: 520,
             live: true,
             ..mk(
@@ -1183,6 +1186,7 @@ pub(crate) fn demos() -> Vec<Demo> {
             responsive: vec![
                 "Full width at a fixed aspect ratio; on touch a vertical swipe still scrolls the page.",
             ],
+            align: Align::Start,
             height: 520,
             ..mk(
                 "image-compare",
