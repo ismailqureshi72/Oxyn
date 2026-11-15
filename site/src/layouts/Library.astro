@@ -29,8 +29,8 @@ const path = Astro.url.pathname;
 <!doctype html>
 <html lang="en" data-theme="light" data-oxyn-theme="light">
   <head><Head title={`${title} · Oxyn`} description={description} /></head>
-  <body class="site lib">
-    <a class="skip" href="#main">Skip to content</a>
+  <body class="site x-lib">
+    <a class="x-skip" href="#main">Skip to content</a>
     <div class="lib-grid">
       <LibSidebar current={current ?? path} />
       <div class="lib-scrim" data-drawer-close aria-hidden="true"></div>
@@ -44,7 +44,7 @@ const path = Astro.url.pathname;
             <button class="iconbtn lbar-search" type="button" data-open-search aria-label="Search"><Fragment set:html={icon.search} /></button>
             <ThemeRadios />
             <GitHubStars />
-            <a class="pill pill-pro" href="/pricing/"><span aria-hidden="true">✦</span> Get Pro</a>
+            <a class="x-pill pill-pro" href="/pricing/"><span aria-hidden="true">✦</span> Get Pro</a>
             <a class="login" href="/pricing/#account" title="Accounts are not needed yet">Log In</a>
           </div>
           <main id="main" class="lcontent" data-pagefind-body data-pagefind-filter={`type:${type}`} data-pagefind-meta={meta ?? `type:${type}`}>

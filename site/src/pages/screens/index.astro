@@ -10,7 +10,7 @@ import { screens, composedScreens } from '../../lib/data';
     <LibTabs active="screens" />
     <div class="cgrid">
       {composedScreens.map((c) => (
-        <article class="cc cc-composed"><div class="cc-top"><span class="chip">Screen</span><span class="chip soft">Full app</span></div><div class="cc-prev cc-art" aria-hidden="true"><span></span><span></span><span></span></div><div class="cc-foot"><div class="cc-txt"><h3 class="cc-name"><a href={c.href}>{c.name}</a></h3><p>{c.summary}</p></div></div></article>
+        <article class="x-cc cc-composed"><div class="cc-top"><span class="x-chip">Screen</span><span class="x-chip soft">Full app</span></div><div class="cc-prev cc-art" aria-hidden="true"><span></span><span></span><span></span></div><div class="cc-foot"><div class="cc-txt"><h3 class="cc-name"><a href={c.href}>{c.name}</a></h3><p>{c.summary}</p></div></div></article>
       ))}
       {screens.map((d) => <CompCard demo={d} />)}
     </div>

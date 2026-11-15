@@ -34,15 +34,15 @@ const faq: [string, string][] = [
 ---
 <Base title="Oxyn — UI for AI agents, in Rust" description="Agent-UI components for Rust: runs, tool calls, approvals and chat, for Dioxus and GPUI." type="Page" promo>
   <section class="lp-hero">
-    <div class="ghost ghost-l" aria-hidden="true" inert><OxynDemo slug={ghostL.slug} html={ghostL.variants[0].html} variant={0} /></div>
-    <div class="ghost ghost-r" aria-hidden="true" inert><OxynDemo slug={ghostR.slug} html={ghostR.variants[0].html} variant={0} /></div>
+    <div class="x-ghost ghost-l" aria-hidden="true" inert><OxynDemo slug={ghostL.slug} html={ghostL.variants[0].html} variant={0} /></div>
+    <div class="x-ghost ghost-r" aria-hidden="true" inert><OxynDemo slug={ghostR.slug} html={ghostR.variants[0].html} variant={0} /></div>
     <div class="lp-hero-in">
       <a class="badge-pill" href="/components/"><b>{free} free</b><span>{free}+ components, screens &amp; variants →</span></a>
       <h1>Agent UI</h1>
       <p class="lp-lede">Rust components for agent runs, tool calls, approvals and chat – for Dioxus and GPUI.</p>
       <div class="lp-cta">
-        <a class="pill pill-black pill-lg" href="/components/">Browse library</a>
-        <a class="pill pill-grey pill-lg" href="/docs/installation/">Get started</a>
+        <a class="x-pill pill-black pill-lg" href="/components/">Browse library</a>
+        <a class="x-pill pill-grey pill-lg" href="/docs/installation/">Get started</a>
       </div>
     </div>
   </section>
@@ -58,11 +58,11 @@ const faq: [string, string][] = [
           {slugs ? (
             <div class="cgrid">{slugs.map((s) => <CompCard demo={find(s)} />)}</div>
           ) : (
-            <div class="lp-soon"><b>{l} are on the way.</b><span>They are planned in the parity tracker and land one plan PR at a time.</span><a class="pill pill-grey" href={`/${k}/`}>See what is planned</a></div>
+            <div class="lp-soon"><b>{l} are on the way.</b><span>They are planned in the parity tracker and land one plan PR at a time.</span><a class="x-pill pill-grey" href={`/${k}/`}>See what is planned</a></div>
           )}
         </div>
       ))}
-      <div class="lp-more"><a class="pill pill-grey" href="/components/">Explore all components</a></div>
+      <div class="lp-more"><a class="x-pill pill-grey" href="/components/">Explore all components</a></div>
     </div>
   </section>
 
@@ -78,19 +78,19 @@ const faq: [string, string][] = [
           <p class="lp-cap"><a href={demoUrl(d)}>{d.name}</a> – {d.summary}</p>
         </div>
       ))}
-      <div class="lp-more"><a class="pill pill-pro" href="/screens/"><span aria-hidden="true">✦</span> All {counts.screens} screens, free</a></div>
+      <div class="lp-more"><a class="x-pill pill-pro" href="/screens/"><span aria-hidden="true">✦</span> All {counts.screens} screens, free</a></div>
     </div>
   </section>
 
   <section class="lp-sec" aria-labelledby="h-built">
     <h2 id="h-built">Built for agents,<br />not just for copy and paste</h2>
-    <p class="lp-sub">Connect once – your agent finds and adds the right piece. <span class="muted">(The oxyn CLI and its MCP server are planned.)</span></p>
-    <div class="mcp">
+    <p class="lp-sub">Connect once – your agent finds and adds the right piece. <span class="x-muted">(The oxyn CLI and its MCP server are planned.)</span></p>
+    <div class="x-mcp">
       <div class="mcp-l" aria-label="Example agent session">
         <div class="mcp-ask">Add an approval step before the agent sends email</div>
         <ul class="mcp-steps">
-          <li><span class="ok"><Fragment set:html={icon.check} /></span><code>search_components</code><span class="muted">"approval"</span></li>
-          <li><span class="ok"><Fragment set:html={icon.check} /></span><code>get_component</code><span class="muted">approval-card</span></li>
+          <li><span class="ok"><Fragment set:html={icon.check} /></span><code>search_components</code><span class="x-muted">"approval"</span></li>
+          <li><span class="ok"><Fragment set:html={icon.check} /></span><code>get_component</code><span class="x-muted">approval-card</span></li>
           <li><span class="ok"><Fragment set:html={icon.check} /></span><code>oxyn add approval-card</code></li>
         </ul>
         <p class="mcp-done">Added <code>src/components/approval_card.rs</code> and wired it to the send step.</p>
@@ -98,8 +98,8 @@ const faq: [string, string][] = [
       <div class="mcp-r">
         <span class="mcp-lbl">Connect in one line</span>
         <div class="codeblk copyable"><div class="codeblk-h"><span>Terminal</span><button class="pill-copy" type="button" data-copy="oxyn mcp install" aria-label="Copy"><Fragment set:html={icon.copy} /></button></div><pre><code>oxyn mcp install</code></pre></div>
-        <p class="muted">Until the CLI ships, point your agent at a component page: each one ends with Notes for AI, and the toolbar opens it in Claude, ChatGPT or Cursor.</p>
-        <a class="pill pill-grey" href="/docs/installation/">Set up your editor</a>
+        <p class="x-muted">Until the CLI ships, point your agent at a component page: each one ends with Notes for AI, and the toolbar opens it in Claude, ChatGPT or Cursor.</p>
+        <a class="x-pill pill-grey" href="/docs/installation/">Set up your editor</a>
       </div>
     </div>
   </section>
@@ -108,7 +108,7 @@ const faq: [string, string][] = [
     <h2 id="h-file">One file per piece,<br />code you own</h2>
     <div class="trio">
       <div class="trio-c">
-        <div class="trio-p term" aria-hidden="true"><pre><span class="muted">$</span> oxyn add approval-card{'\n'}<span class="muted">✓ src/components/approval_card.rs</span>{'\n'}<span class="muted">✓ styles added to oxyn.css</span></pre></div>
+        <div class="trio-p term" aria-hidden="true"><pre><span class="x-muted">$</span> oxyn add approval-card{'\n'}<span class="x-muted">✓ src/components/approval_card.rs</span>{'\n'}<span class="x-muted">✓ styles added to oxyn.css</span></pre></div>
         <h3>One command, one file</h3>
         <p>The planned <code>oxyn add</code> copies a component's source into your project. Today, add the crate and import it.</p>
       </div>
@@ -123,7 +123,7 @@ const faq: [string, string][] = [
         <p>Every component reads the same tokens: light, dark and high contrast, with reduced motion respected.</p>
       </div>
     </div>
-    <div class="lp-more"><a class="pill pill-grey" href="/docs/">Learn more</a></div>
+    <div class="lp-more"><a class="x-pill pill-grey" href="/docs/">Learn more</a></div>
   </section>
 
   <section class="lp-sec" aria-labelledby="h-same">
@@ -136,7 +136,7 @@ const faq: [string, string][] = [
         <div class="lp-panel" role="tabpanel" id={`pc-${k}`} aria-labelledby={`tc-${k}`} hidden={i !== 0}>
           <div class="browser">
             <div class="browser-bar" aria-hidden="true"><i></i><i></i><i></i><span>app.example.com/{k}</span></div>
-            <div class="cmp" style="--pos:50%">
+            <div class="x-cmp" style="--pos:50%">
               <div class="cmp-before" aria-hidden="true">
                 {k === 'approval' && (
                   <div class="vibe"><p>The agent wants to run: <b>send_email</b></p><p>to: list-all@example.com</p><p>Approve?</p><div><button tabindex="-1">Yes</button> <button tabindex="-1">No</button></div></div>

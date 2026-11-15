@@ -20,7 +20,7 @@ const list = group ? inGroup(group.slug) : [];
 {to ? <Redirect to={to} /> : (
   <Library title={`${group!.name} components`} description={group!.blurb} type="Category" current="/components/">
     <div class="lidx">
-      <nav class="crumbs" aria-label="Breadcrumb"><a href="/components/">Components</a><span aria-hidden="true">›</span><span aria-current="page">{group!.name}</span></nav>
+      <nav class="x-crumbs" aria-label="Breadcrumb"><a href="/components/">Components</a><span aria-hidden="true">›</span><span aria-current="page">{group!.name}</span></nav>
       <h1 class="lidx-title">{group!.name}</h1>
       <p class="lede">{group!.blurb} {list.length} components.</p>
       <LibTabs active="components" />
