@@ -25,7 +25,10 @@ mod graphfid;
 mod handofffid;
 mod home;
 mod ime;
+mod lanesfid;
+mod ledgerfid;
 mod merge;
+mod monitorfid;
 mod review;
 mod run;
 mod text;
@@ -56,7 +59,10 @@ pub use home::{
     PollingCostEl, RunModeMenuEl, ThreadListEl, TokenUsageChartEl,
 };
 pub use ime::{ImeEvent, ImeInput, bind_ime_keys};
+pub use lanesfid::AgentLanesEl;
+pub use ledgerfid::AgentLedgerEl;
 pub use merge::{ConflictRadarEl, MergeAct, MergeConflictEl, RadarAct};
+pub use monitorfid::AgentMonitorEl;
 pub use review::{
     AiInlineEditEl, ChangeSummaryEl, CodeSuggestionEl, CommentThreadEl, DiffTableEl,
     DiffTimelineEl, DiffViewerEl, HunkAct, IdAct, ImageCompareEl, InlineDiffEl, ReviewCardEl,

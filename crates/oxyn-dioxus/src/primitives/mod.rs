@@ -67,6 +67,9 @@ pub const PRIMITIVES_CSS: &str = concat!(
     include_str!("../parity/cursorsfid.css"),
     include_str!("../parity/graphfid.css"),
     include_str!("../parity/handofffid.css"),
+    include_str!("../parity/lanesfid.css"),
+    include_str!("../parity/ledgerfid.css"),
+    include_str!("../parity/monitorfid.css"),
     include_str!("polish.css")
 );
 
