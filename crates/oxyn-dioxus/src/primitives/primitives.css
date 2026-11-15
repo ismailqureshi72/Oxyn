@@ -466,6 +466,7 @@
 
 /* ---------- Slider ---------- */
 .oxyn-slider{display:flex;flex-direction:column;gap:10px;font:13px var(--ox-font);color:var(--oxyn-color-fg-default);min-width:220px}
+.oxyn-slider .lane{display:contents}.oxyn-slider .lane.on{display:flex;align-items:center;gap:10px}.oxyn-slider.vertical .lane.on{flex-direction:column-reverse;align-items:stretch}.oxyn-slider .lane.on .track{flex:1}.oxyn-slider .lane-i{flex:none;display:grid;color:var(--oxyn-color-fg-muted)}
 .oxyn-slider .head{display:flex;align-items:baseline;gap:8px}.oxyn-slider .head .sp{flex:1}
 .oxyn-slider .val{font-variant-numeric:tabular-nums;color:var(--oxyn-color-fg-muted)}
 .oxyn-slider .tag{font:500 11px var(--ox-mono);padding:1px 6px;border-radius:5px;background:var(--oxyn-color-surface-hover);color:var(--oxyn-color-fg-muted)}

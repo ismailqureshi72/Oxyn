@@ -582,6 +582,12 @@ pub fn Slider(
     /// Committed (released / key up).
     #[props(default)]
     on_commit: EventHandler<Vec<f64>>,
+    /// Icon before the track (Arc `start`).
+    #[props(default)]
+    start: Option<String>,
+    /// Icon after the track (Arc `end`).
+    #[props(default)]
+    end: Option<String>,
 ) -> Element {
     let mut m = use_signal(|| slider.clone());
     let mut len = use_signal(|| 0.0f32);
@@ -631,6 +637,8 @@ pub fn Slider(
                     if let Some(t) = tag.clone() { span { class: "tag", "{t}" } }
                 }
             }
+            div { class: if start.is_some() || end.is_some() { "lane on" } else { "lane" },
+            if let Some(i) = start.clone() { span { class: "lane-i", Icon { name: i, size: 14.0 } } }
             div { class: "track",
                 onmounted: move |e| { root.set(Some(e.data())); measure(); },
                 onpointerdown: move |e: PointerEvent| {
@@ -683,6 +691,8 @@ pub fn Slider(
                         }
                     }
                 }
+            }
+            if let Some(i) = end.clone() { span { class: "lane-i", Icon { name: i, size: 14.0 } } }
             }
         }
     }

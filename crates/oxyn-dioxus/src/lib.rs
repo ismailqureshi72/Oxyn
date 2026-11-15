@@ -52,6 +52,11 @@ pub use parity::{
     TaskBreakdown, TaskRows, TreeTable, gate_dot,
 };
 pub use parity::{
+    AiComposer, AvatarUpload, ChatComposer, ContextField, ContextWindowGrid, CtxModel,
+    ElasticSlider, FileDropzone, Gauge, MenuModel, ModelMenu, ModelPill, MorphSelect, NumberField,
+    PillModel, RichTextEditor, RunControls, ScrubInput, SplitBar, UsageMeter,
+};
+pub use parity::{
     ChipStep, DiffChip, ExpandableCard, JsonViewer, LinkUnfurl, RowOutput, ToolCall, ToolCallCard,
     ToolCallGroup, ToolCallList, ToolChips, ToolKindLegend,
 };

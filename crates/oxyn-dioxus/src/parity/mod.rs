@@ -2,16 +2,26 @@
 //! Beautiful UI, plus the X-post references. Styles ship in [`crate::PRIMITIVES_CSS`].
 
 mod approvals;
+mod compose;
+mod fields;
 mod input;
+mod meters;
 mod run;
 mod text;
 mod tools;
+mod upload;
 
 pub use approvals::{
     AgentApprovals, ApprovalGates, ConfirmMorph, ConfirmPopover, HoldToConfirm, PermissionRequest,
     gate_dot,
 };
+pub use compose::{
+    AiComposer, ChatComposer, MenuModel, ModelMenu, ModelPill, PillModel, RichTextEditor,
+    RunControls,
+};
+pub use fields::{ElasticSlider, MorphSelect, NumberField, ScrubInput};
 pub use input::{GhostText, LabeledInput, LabeledTextarea, TextArea};
+pub use meters::{ContextField, ContextWindowGrid, CtxModel, Gauge, SplitBar, UsageMeter};
 pub use run::{
     ActivityFeed, AgentFleet, AgentOrchestrator, AgentPlan, AgentRun, AgentStatus, AgentTrail,
     AgentTree, AnimatedCounter, Countdown, FlowStepper, OnboardingChecklist, ReleaseReadiness,
@@ -25,3 +35,4 @@ pub use tools::{
     ChipStep, DiffChip, ExpandableCard, JsonViewer, LinkUnfurl, RowOutput, ToolCall, ToolCallCard,
     ToolCallGroup, ToolCallList, ToolChips, ToolKindLegend,
 };
+pub use upload::{AvatarUpload, FileDropzone};
