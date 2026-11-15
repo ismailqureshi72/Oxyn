@@ -11,8 +11,8 @@ affectUI,Agent Lanes,https://www.affectui.com/components/agent-lanes,Components 
 affectUI,Agent Ledger,https://www.affectui.com/components/agent-ledger,Components · Agents,Pro,"agent-ledger (exact, overnight batch B part 4), rollback-impact",,#32,built
 affectUI,Agent Monitor,https://www.affectui.com/components/agent-monitor,Components · Agents,Pro,"agent-monitor (exact, overnight batch B part 4), acting-indicator, run-meter, tool-call, approval-card",C7,#32,built
 affectUI,Agent Plan,https://www.affectui.com/components/agent-plan,Components · Agents,Pro,"plan-todo, plan-approval",,#28,built
-affectUI,Agent Queue,https://www.affectui.com/components/agent-queue,Components · Agents,Pro,background-jobs,C9,#35,planned
-affectUI,Agent Recap,https://www.affectui.com/components/agent-recap,Components · Agents,Pro,background-jobs,C5,#33,planned
+affectUI,Agent Queue,https://www.affectui.com/components/agent-queue,Components · Agents,Pro,"agent-queue (exact, overnight batch B part 4), background-jobs",C9,#32,built
+affectUI,Agent Recap,https://www.affectui.com/components/agent-recap,Components · Agents,Pro,"agent-recap (exact, overnight batch B part 4), background-jobs",C5,#32,built
 affectUI,Agent Sequence,https://www.affectui.com/components/agent-sequence,Components · Agents,Pro,"trace-view, subagent-tree",,#32,planned
 affectUI,Agent Steering,https://www.affectui.com/components/agent-steering,Components · Agents,Pro,composer-queue-stack,,#27,built
 affectUI,Agent Trail,https://www.affectui.com/components/agent-trail,Components · Agents,Pro,"plan-todo, status-indicator, elapsed-timer",,#28,built

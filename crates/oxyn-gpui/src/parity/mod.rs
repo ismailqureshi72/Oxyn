@@ -29,6 +29,8 @@ mod lanesfid;
 mod ledgerfid;
 mod merge;
 mod monitorfid;
+mod queuefid;
+mod recapfid;
 mod review;
 mod run;
 mod text;
@@ -63,6 +65,8 @@ pub use lanesfid::AgentLanesEl;
 pub use ledgerfid::AgentLedgerEl;
 pub use merge::{ConflictRadarEl, MergeAct, MergeConflictEl, RadarAct};
 pub use monitorfid::AgentMonitorEl;
+pub use queuefid::AgentQueueEl;
+pub use recapfid::AgentRecapEl;
 pub use review::{
     AiInlineEditEl, ChangeSummaryEl, CodeSuggestionEl, CommentThreadEl, DiffTableEl,
     DiffTimelineEl, DiffViewerEl, HunkAct, IdAct, ImageCompareEl, InlineDiffEl, ReviewCardEl,
