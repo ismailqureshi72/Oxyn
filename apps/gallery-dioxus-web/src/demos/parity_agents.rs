@@ -1,15 +1,15 @@
 //! Plan #32 (affectUI fidelity pass), overnight batch family B demos: the exact Agent Findings and
-//! Agent Inbox, each with every affectUI style and state; part 2: Agent Crew; part 3: Agent Cursors, Agent Graph, Agent Handoff and Agent Lanes; part 4: Agent Ledger, Agent Monitor, Agent Queue and Agent Recap.
+//! Agent Inbox, each with every affectUI style and state; part 2: Agent Crew; part 3: Agent Cursors, Agent Graph, Agent Handoff and Agent Lanes; part 4: Agent Ledger, Agent Monitor, Agent Queue, Agent Recap and Agent Sequence.
 
 use dioxus::prelude::*;
 use oxyn_core::ClockMs;
 use oxyn_dioxus::{
     AgentCrew, AgentCursors, AgentFindings, AgentGraph, AgentHandoff, AgentInbox, AgentLanes,
-    AgentLedger, AgentMonitor, AgentQueue, AgentRecap,
+    AgentLedger, AgentMonitor, AgentQueue, AgentRecap, AgentSequence,
 };
 
 use super::{Code, mk, sel, tog, var};
-use crate::{Demo, Vals};
+use crate::{Align, Demo, Vals};
 
 fn status(msg: Signal<String>) -> Element {
     rsx! { span { class: "oxd-status", style: "font-size:12px;color:var(--oxyn-color-fg-muted);min-height:16px", role: "status", "{msg}" } }
@@ -488,6 +488,42 @@ fn agent_recap_code(_: &Vals) -> String {
         .raw("on_action", "move |(id, which)| act(id, which)")
         .raw("on_undo", "move |id| undo(id)")
         .raw("on_redo", "move |id| redo(id)")
+        .done()
+}
+
+// ---------- Agent Sequence ----------
+
+fn agent_sequence(v: &Vals, now: ClockMs) -> Element {
+    let mut msg = use_signal(String::new);
+    let key = format!("{}{}{}", v.s("style"), v.s("state"), v.s("width"));
+    let (at, open, part): (Option<u64>, &str, &str) = match v.s("state") {
+        "settled" => (Some(15_000), "", ""),
+        "message" => (Some(15_000), "m11", ""),
+        "participant" => (Some(15_000), "", "research"),
+        _ => (None, "", ""),
+    };
+    let width = if v.s("width") == "narrow" {
+        "420px"
+    } else {
+        "800px"
+    };
+    rsx! {
+        div { "data-k": "{key}", key: "{key}", style: "width:{width};max-width:100%;margin:0 auto;display:flex;flex-direction:column;gap:8px",
+            AgentSequence { now, at, open: open.to_string(), open_participant: part.to_string(), style: cstyle(v),
+                on_select: move |id: Option<String>| msg.set(format!("onSelect({id:?})")) }
+            {status(msg)}
+        }
+    }
+}
+
+fn agent_sequence_code(_: &Vals) -> String {
+    Code::new("AgentSequence")
+        .raw("participants", "Some(run.participants())")
+        .raw("messages", "Some(run.messages())")
+        .raw("title", "run.title()")
+        .raw("running", "run.is_running()")
+        .raw("now", "clock.now()")
+        .raw("on_select", "move |id| inspect(id)")
         .done()
 }
 
@@ -1278,6 +1314,85 @@ pub(crate) fn demos() -> Vec<Demo> {
                 "AgentRecapEl",
                 "agent-recap",
                 "parity/recapfid.rs",
+            )
+        },
+        Demo {
+            controls: vec![
+                style(),
+                sel(
+                    "state",
+                    "State",
+                    &["live", "settled", "message", "participant"],
+                    "live",
+                ),
+                sel("width", "Width", &["wide", "narrow"], "wide"),
+            ],
+            variants: vec![
+                var(
+                    "live",
+                    "As affectUI ships it: the run plays out message by message – each arrow draws across with its tag, bars grow on the lifelines while participants work, the parallel and retried messages gather in labelled frames, then it loops.",
+                    &[],
+                ),
+                var(
+                    "settled",
+                    "The finished run: fifteen messages, one failure, every bar closed.",
+                    &[("state", "settled")],
+                ),
+                var(
+                    "message-card",
+                    "A message's card: sender to receiver, the label, Call or Reply, its frame, what went along and how long the answer took.",
+                    &[("state", "message")],
+                ),
+                var(
+                    "participant-card",
+                    "A participant's card: kind, Working or Idle, the model, what it does, and messages sent and received, tasks and busy time.",
+                    &[("state", "participant")],
+                ),
+                var(
+                    "narrow",
+                    "Under 560 px the chips drop to their marks and the time gutter narrows.",
+                    &[("width", "narrow"), ("state", "settled")],
+                ),
+                var(
+                    "classic",
+                    "Classic style: a white card, pill chips and tags, tinted frames.",
+                    &[("style", "classic"), ("state", "settled")],
+                ),
+            ],
+            render: agent_sequence,
+            code: agent_sequence_code,
+            keyboard: vec![
+                (
+                    "Tab",
+                    "To the participant chips, then into the message list",
+                ),
+                (
+                    "Enter / Space",
+                    "Opens the focused participant's or message's card",
+                ),
+                ("Escape", "Closes the open card"),
+            ],
+            a11y: vec![
+                "Messages are an ordered list; each is named \"Sender to Receiver: text, status, m:ss\" and says it opens a dialog.",
+                "Participants are buttons; cards are dialogs with a close button you can reach by Tab.",
+                "Colour never carries meaning alone: replies are dashed, failures say so and carry a cross, frames are labelled.",
+            ],
+            responsive: vec![
+                "800 px up to its container; the columns share the width.",
+                "Under 560 px the chips show only their marks and the time gutter and times shrink.",
+            ],
+            height: 720,
+            live: true,
+            align: Align::Start,
+            ..mk(
+                "agent-sequence",
+                "Agent Sequence",
+                "tools",
+                "One agent run as a sequence diagram – a column for you, each agent and each tool, every message an arrow between lifelines, calls solid and replies dashed, bars while a participant works, and parallel or retried messages in labelled frames.",
+                "AgentSequence",
+                "AgentSequenceEl",
+                "agent-sequence",
+                "parity/seqfid.rs",
             )
         },
     ]

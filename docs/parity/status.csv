@@ -13,7 +13,7 @@ affectUI,Agent Monitor,https://www.affectui.com/components/agent-monitor,Compone
 affectUI,Agent Plan,https://www.affectui.com/components/agent-plan,Components · Agents,Pro,"plan-todo, plan-approval",,#28,built
 affectUI,Agent Queue,https://www.affectui.com/components/agent-queue,Components · Agents,Pro,"agent-queue (exact, overnight batch B part 4), background-jobs",C9,#32,built
 affectUI,Agent Recap,https://www.affectui.com/components/agent-recap,Components · Agents,Pro,"agent-recap (exact, overnight batch B part 4), background-jobs",C5,#32,built
-affectUI,Agent Sequence,https://www.affectui.com/components/agent-sequence,Components · Agents,Pro,"trace-view, subagent-tree",,#32,planned
+affectUI,Agent Sequence,https://www.affectui.com/components/agent-sequence,Components · Agents,Pro,"agent-sequence (exact, overnight batch B part 4), trace-view, subagent-tree",,#32,built
 affectUI,Agent Steering,https://www.affectui.com/components/agent-steering,Components · Agents,Pro,composer-queue-stack,,#27,built
 affectUI,Agent Trail,https://www.affectui.com/components/agent-trail,Components · Agents,Pro,"plan-todo, status-indicator, elapsed-timer",,#28,built
 affectUI,Agent Tree,https://www.affectui.com/components/agent-tree,Components · Agents,Pro,subagent-tree,,#28,built
