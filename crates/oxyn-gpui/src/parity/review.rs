@@ -931,7 +931,7 @@ impl RenderOnce for CodeSuggestionEl {
 
 /// `ai-inline-edit`: a paragraph with a rewrite shown as accepted / rejected / pending changes.
 #[derive(IntoElement)]
-pub struct InlineEditEl {
+pub struct AiInlineEditEl {
     title: SharedString,
     before: String,
     after: String,
@@ -940,7 +940,7 @@ pub struct InlineEditEl {
     theme: &'static Theme,
 }
 
-impl InlineEditEl {
+impl AiInlineEditEl {
     /// A selection and its rewrite.
     pub fn new(
         title: impl Into<SharedString>,
@@ -968,7 +968,7 @@ impl InlineEditEl {
     }
 }
 
-impl RenderOnce for InlineEditEl {
+impl RenderOnce for AiInlineEditEl {
     fn render(self, _: &mut Window, _: &mut App) -> impl IntoElement {
         let t = self.theme;
         let ch = rewrite_chunks(&self.before, &self.after);
