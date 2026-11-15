@@ -156,4 +156,13 @@ specified just as deeply. When we point at one component as an example, the stan
 | [decision-card.md](decision-card.md) | v1 — implemented (plan #25): decision card |
 | [approval-questions.md](approval-questions.md) | v1 — implemented (plan #25): approval questions (Beautiful UI Approval Card port) |
 | [smart-form-fill.md](smart-form-fill.md) | v1 — implemented (plan #25): smart form fill |
+| [inline-diff.md](inline-diff.md) | built v0.1 (plan #30) |
+| [change-summary.md](change-summary.md) | built v0.1 (plan #30) |
+| [diff-table.md](diff-table.md) | built v0.1 (plan #30) |
+| [diff-timeline.md](diff-timeline.md) | built v0.1 (plan #30) |
+| [code-suggestion.md](code-suggestion.md) | built v0.1 (plan #30) |
+| [ai-inline-edit.md](ai-inline-edit.md) | built v0.1 (plan #30) |
+| [image-compare.md](image-compare.md) | built v0.1 (plan #30) |
+| [comment-thread.md](comment-thread.md) | built v0.1 (plan #30) |
+| [review-center.md](review-center.md) | built v0.1 (plan #30) |
 | Every other component in [../component-taxonomy.md](../component-taxonomy.md) | to write in V2.2 |

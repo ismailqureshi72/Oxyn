@@ -76,7 +76,7 @@ affectUI,Project Card,https://www.affectui.com/components/project-card,Component
 affectUI,Prompt Library,https://www.affectui.com/components/prompt-library,Components · Inputs,Pro,composer-slash-mentions,C10,#34,planned
 affectUI,Rate Limit Planner,https://www.affectui.com/components/rate-limit-planner,Components · Agents,Pro,background-jobs,C9,#34,planned
 affectUI,Reaction Bar,https://www.affectui.com/components/reaction-bar,Components · Buttons,Free,number-ticker,C4,#23,built
-affectUI,Review Center,https://www.affectui.com/components/review-center,Components · Agents,Pro,"review-card, approvals",,#30,planned
+affectUI,Review Center,https://www.affectui.com/components/review-center,Components · Agents,Pro,"review-center, review-card",,#30,built
 affectUI,Root Cause Tree,https://www.affectui.com/components/root-cause-tree,Components · Agents,Pro,trace-view,C7,#33,planned
 affectUI,Run Controls,https://www.affectui.com/components/run-controls,Components · Agents,Pro,"composer-send-control, composer-queue-stack, composer-mode-switch, composer-permission-selector, composer-context-meter",,#28,built
 affectUI,Running Now,https://www.affectui.com/components/running-now,Components · Agents,Pro,"background-jobs, desktop-overlays",,#34,planned
@@ -320,9 +320,9 @@ Arc UI,Filter toolbar,https://uiarc.dev/components/filter-toolbar,Components · 
 Arc UI,Code block,https://uiarc.dev/components/code-block,Components · Tables,Free,code-block,,#27,built
 Arc UI,JSON viewer,https://uiarc.dev/components/json-viewer,Components · Tables,Free,"tool-call.md (partial, I/O)",,#28,built
 Arc UI,Timeline,https://uiarc.dev/components/timeline,Components · Activity,Free,checkpoint-timeline.md (partial),,#28,built
-Arc UI,Comment thread,https://uiarc.dev/components/comment-thread,Components · Activity,Free,review-card.md (partial),,#30,planned
+Arc UI,Comment thread,https://uiarc.dev/components/comment-thread,Components · Activity,Free,comment-thread,,#30,built
 Arc UI,Chat thread,https://uiarc.dev/components/chat-thread,Components · Activity,Free,messages,,#27,built
-Arc UI,Image compare,https://uiarc.dev/components/image-compare,Components · Media,Free,"diff-viewer.md (partial, visual diff)",,#30,planned
+Arc UI,Image compare,https://uiarc.dev/components/image-compare,Components · Media,Free,image-compare,,#30,built
 Arc UI,Carousel,https://uiarc.dev/components/carousel,Components · Media,Free,NEW,N6,#32,planned
 Arc UI,Card stack,https://uiarc.dev/components/card-stack,Components · Media,Free,NEW,N6,#32,planned
 Arc UI,Text reveal,https://uiarc.dev/components/text-reveal,Components · Text effects,Free,text-reveal.md,,#28,built
@@ -356,7 +356,7 @@ Arc UI,Prompt studio,https://uiarc.dev/components/blocks/prompt-studio,Blocks ·
 Arc UI,Document extraction,https://uiarc.dev/components/blocks/document-extract,Blocks · AI,Pro,citations-sources,,#27,built
 Arc UI,Agent memory,https://uiarc.dev/components/blocks/agent-memory,Blocks · AI,Pro,NEW (memory receipts),N8,#34,planned
 Arc UI,AI side panel,https://uiarc.dev/components/blocks/ai-side-panel,Blocks · AI,Pro,side-panels,,#27,built
-Arc UI,AI inline edit,https://uiarc.dev/components/blocks/ai-inline-edit,Blocks · AI,Pro,diff-viewer.md (partial),,#30,planned
+Arc UI,AI inline edit,https://uiarc.dev/components/blocks/ai-inline-edit,Blocks · AI,Pro,"ai-inline-edit, diff-viewer",,#30,built
 Arc UI,Research run,https://uiarc.dev/components/blocks/research-run,Blocks · AI,Pro,citations-sources,,#27,built
 Arc UI,AI insight card,https://uiarc.dev/components/blocks/ai-insight-card,Blocks · AI,Pro,genui-blocks.md (partial),,#35,planned
 Arc UI,Catch up,https://uiarc.dev/components/blocks/catch-up,Blocks · AI,Pro,NEW,N9,#34,planned
@@ -529,7 +529,7 @@ Arc UI,Reasoning block,https://uiarc.dev/components/reasoning-block,Special comp
 Arc UI,Source cards,https://uiarc.dev/components/source-cards,Special components · AI,Pro,citations-sources,,#27,built
 Arc UI,Model card,https://uiarc.dev/components/model-card,Special components · AI,Pro,NEW,N7,#34,planned
 Arc UI,AI workflow,https://uiarc.dev/components/ai-workflow,Special components · AI,Pro,NEW (workflow builder),N10,#34,planned
-Arc UI,Code suggestion,https://uiarc.dev/components/code-suggestion,Special components · AI,Pro,diff-viewer.md,,#30,planned
+Arc UI,Code suggestion,https://uiarc.dev/components/code-suggestion,Special components · AI,Pro,"code-suggestion, diff-viewer",,#30,built
 Arc UI,Ghost text,https://uiarc.dev/components/ghost-text,Special components · AI,Pro,composer-input-shell.md (partial),,#28,built
 Arc UI,Image generation,https://uiarc.dev/components/image-generation,Special components · AI,Pro,media-generation-placeholder.md,,#37,planned
 Arc UI,Dictation button,https://uiarc.dev/components/dictation-button,Special components · AI,Pro,composer-voice-input,,#27,built
