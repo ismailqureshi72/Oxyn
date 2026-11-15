@@ -1269,7 +1269,7 @@ pub fn ModelPill(
                 onmounted: move |e| trig.set(Some(e.data())),
                 onclick: move |_| { open.set(!open()); sub.set(""); hi.set(0); focus(list()) },
                 onkeydown: keys,
-                span { key: "{cur.id}m", class: "oxk-pmark", "data-p": "{cur.provider}", if crate::brand::has_brand(&cur.provider) { crate::brand::BrandIcon { name: cur.provider.clone(), size: 12.0 } } else { "{mark(&cur.provider)}" } }
+                span { key: "{cur.id}m", class: "oxk-pmark", "data-p": "{cur.provider}", if crate::brand::has_brand(&cur.provider) { crate::brand::BrandIcon { name: cur.provider.clone(), size: 12.0, coloured: true } } else { "{mark(&cur.provider)}" } }
                 span { key: "{cur.id}", class: "oxk-pname", "{cur.name}" }
                 span { class: "oxk-eff", "{e_now.label()}" }
                 Icon { name: "chevron", size: 10.0 }
@@ -1283,7 +1283,7 @@ pub fn ModelPill(
                                 if let Some(mi) = models.iter().position(|m| &m.id == r) {
                                     button { key: "{r}", class: "oxk-mi tall", role: "menuitemradio", r#type: "button", "aria-checked": "{chosen() == mi}", "data-hi": "{hi() == ri}",
                                         onmouseenter: move |_| hi.set(ri), onclick: move |_| pick(mi),
-                                        span { class: "oxk-pmark", "data-p": "{models[mi].provider}", if crate::brand::has_brand(&models[mi].provider) { crate::brand::BrandIcon { name: models[mi].provider.clone(), size: 12.0 } } else { "{mark(&models[mi].provider)}" } }
+                                        span { class: "oxk-pmark", "data-p": "{models[mi].provider}", if crate::brand::has_brand(&models[mi].provider) { crate::brand::BrandIcon { name: models[mi].provider.clone(), size: 12.0, coloured: true } } else { "{mark(&models[mi].provider)}" } }
                                         span { class: "oxk-col", span { class: "oxk-on", "{models[mi].name}" } span { class: "oxk-oh", "{models[mi].blurb}" } }
                                         if chosen() == mi { Icon { name: "check", size: 11.0 } }
                                     }

@@ -126,7 +126,7 @@ pub fn AgentPlan(
                                     button { class: "oxr-lnk", r#type: "button", onclick: { let id = s.id.clone(); move |_| on_retry.call(id.clone()) }, "Retry from here" } }
                             }
                         }
-                        if let Some(t) = s.tool.clone() { span { class: "oxr-tool", crate::brand::BrandIcon { name: t.clone(), size: 11.0 } "{t}" } }
+                        if let Some(t) = s.tool.clone() { span { class: "oxr-tool", crate::brand::BrandIcon { name: t.clone(), size: 11.0, coloured: true } "{t}" } }
                         if let Some(tm) = s.timer(now) { span { class: "oxr-time", "{tm}" } }
                         if edit && n > 1 { button { class: "oxr-x", r#type: "button", "aria-label": "Remove step {i + 1}", onclick: move |_| on_remove.call(i), Icon { name: "x", size: 12.0 } } }
                     }
@@ -180,7 +180,7 @@ pub fn AgentTrail(
                         {mark(s.state)}
                         div { class: "oxr-body",
                             div { class: "oxr-line",
-                                if let Some(t) = s.tool.clone() { span { class: "oxr-tool", crate::brand::BrandIcon { name: t.clone(), size: 11.0 } "{t}" } }
+                                if let Some(t) = s.tool.clone() { span { class: "oxr-tool", crate::brand::BrandIcon { name: t.clone(), size: 11.0, coloured: true } "{t}" } }
                                 span { class: "oxr-title", "{s.title}" }
                                 if let Some(b) = s.badge() { span { class: "oxr-badge {s.state.id()}", "{b}" } }
                                 span { class: "oxr-sp" }
@@ -645,7 +645,7 @@ pub fn AgentOrchestrator(
             div { class: "oxr-lanes",
                 for l in model.lanes.iter() {
                     div { class: "oxr-lane", "data-state": l.state.id(),
-                        div { class: "oxr-line", {mark(l.state)} if crate::brand::has_brand(&l.title) { span { class: "oxr-bmk", crate::brand::BrandIcon { name: l.title.clone(), size: 12.0 } } } span { class: "oxr-title", "{l.title}" } span { class: "oxr-sp" } span { class: "oxr-dim oxr-small oxr-site", if crate::brand::has_brand(&l.worker) { crate::brand::BrandIcon { name: l.worker.clone(), size: 11.0 } } "{l.worker}" } }
+                        div { class: "oxr-line", {mark(l.state)} if crate::brand::has_brand(&l.title) { span { class: "oxr-bmk", crate::brand::BrandIcon { name: l.title.clone(), size: 12.0, coloured: true } } } span { class: "oxr-title", "{l.title}" } span { class: "oxr-sp" } span { class: "oxr-dim oxr-small oxr-site", if crate::brand::has_brand(&l.worker) { crate::brand::BrandIcon { name: l.worker.clone(), size: 11.0, coloured: true } } "{l.worker}" } }
                         div { class: "oxr-dim oxr-small oxr-clip", "{l.instruction}" }
                         div { class: "oxr-bar", span { style: "width:{l.progress * 100.0}%" } }
                         if let Some(r) = l.result.clone() { div { class: "oxr-small", "{r}" } }
@@ -804,7 +804,7 @@ pub fn ActivityFeed(
                             div { class: "oxr-body",
                                 button { class: "oxr-evb", r#type: "button", "aria-expanded": "{feed.expanded.contains(&e.id)}", disabled: e.detail.is_none(),
                                     onclick: { let id = e.id.clone(); move |_| on_toggle.call(id.clone()) },
-                                    if crate::brand::has_brand(&e.actor) { span { class: "oxr-bmk", crate::brand::BrandIcon { name: e.actor.clone(), size: 12.0 } } } b { "{e.actor}" } " {e.action} " span { class: "oxr-tgt", "{e.target}" }
+                                    if crate::brand::has_brand(&e.actor) { span { class: "oxr-bmk", crate::brand::BrandIcon { name: e.actor.clone(), size: 12.0, coloured: true } } } b { "{e.actor}" } " {e.action} " span { class: "oxr-tgt", "{e.target}" }
                                     span { class: "oxr-sp" }
                                     span { class: "oxr-time", "{e.time}" }
                                 }
