@@ -4,6 +4,7 @@
 //! [`MotionClock`]; the host keeps the clock advanced and requests frames while
 //! [`MotionClock::next_frame_in`] says so.
 
+mod brand;
 mod chat;
 mod composer;
 mod composer_parts;
@@ -11,6 +12,7 @@ mod forms;
 mod glyph_loader;
 mod hitl;
 mod navigation;
+mod parity;
 mod primitives;
 mod run;
 mod shell;
@@ -18,6 +20,7 @@ mod status_indicator;
 mod status_text;
 mod surfaces;
 
+pub use brand::{BrandAssets, brand_icon, brand_path};
 pub use chat::{
     AnswerEl, ChatThreadEl, FeedbackEl, MarkdownEl, MessageEl, ReasoningEl, SourceCardsEl,
     StartersEl, TraceEl,
@@ -40,11 +43,31 @@ pub use navigation::{
     ReorderListEl, ResizableEl, TabsEl, TeamSwitcherEl, TocProgressEl, ToggleGroupEl, TreeViewEl,
     UserMenuEl,
 };
+pub use parity::{
+    Act, ActivityFeedEl, AgentApprovalsEl, AgentPlanEl, AgentRunEl, AgentStatusEl, AgentTrailEl,
+    AgentTreeEl, ApprovalGatesEl, ApprovalPagerEl, BreakdownEl, ChecklistEl, ConfirmMorphEl,
+    ConfirmPopoverEl, CountdownEl, CounterEl, FleetEl, FlowStepperEl, HoldConfirmEl,
+    OrchestratorEl, PermissionRequestEl, ReadinessEl, TaskRowsEl, TreeTableEl,
+};
+pub use parity::{
+    ActivityHeatmapEl, ActivityHomeEl, AttachmentStripEl, DocGridEl, ExperimentGridEl,
+    PollingCostEl, RunModeMenuEl, ThreadListEl, TokenUsageChartEl,
+};
+pub use parity::{
+    AiComposerEl, AvatarUploadEl, ChatComposerEl, ContextFieldEl, ContextGridEl, ElasticSliderEl,
+    FileDropzoneEl, GaugeEl, ModelMenuEl, ModelPillEl, MorphSelectEl, NumberFieldEl, Pick,
+    RichTextEl, RunControlsEl, ScrubInputEl, SplitBarEl, UsageMeterEl,
+};
+pub use parity::{
+    ExpandableCardEl, JsonViewerEl, LinkUnfurlEl, ToolCallCardEl, ToolCallEl, ToolChipsEl,
+};
+pub use parity::{ImeEvent, ImeInput, bind_ime_keys};
+pub use parity::{LoadingStateEl, ShimmerEl, SlotTextEl, ThinkingLoaderEl};
 pub use primitives::{
-    ActionButtonEl, AvatarEl, BadgeEl, ButtonEl, ButtonGroupEl, CheckboxEl, ChipEl, EmptyStateEl,
-    EntityChipEl, ExpandingGroupEl, IconButtonEl, KbdEl, MenuEl, MonogramEl, NumberTickerEl,
-    PopoverEl, RadioGroupEl, ReactionBarEl, SegmentedEl, SelectEl, SeparatorEl, SliderEl,
-    SpinnerEl, SplitButtonEl, SwitchEl, TextFieldEl, TooltipEl, ValuePillEl,
+    ActionButtonEl, AvatarEl, BadgeEl, BadgeSize, ButtonEl, ButtonGroupEl, CheckboxEl, ChipEl,
+    EmptyStateEl, EntityChipEl, ExpandingGroupEl, IconButtonEl, KbdEl, MenuEl, MonogramEl,
+    NumberTickerEl, PopoverEl, RadioGroupEl, ReactionBarEl, SegmentedEl, SelectEl, SeparatorEl,
+    SliderEl, SpinnerEl, SplitButtonEl, SwitchEl, TextFieldEl, TooltipEl, ValuePillEl,
 };
 pub use run::{SubagentTreeEl, TodoChecklist, ToolCallRowEl};
 pub use shell::{

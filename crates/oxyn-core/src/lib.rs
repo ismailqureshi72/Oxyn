@@ -26,6 +26,7 @@
 //! ```
 
 pub mod approval;
+pub mod brand;
 pub mod chat;
 pub mod checkpoint;
 pub mod clock;
@@ -33,6 +34,7 @@ pub mod composer;
 pub mod ease;
 pub mod indicator;
 pub mod loader;
+pub mod parity;
 pub mod primitives;
 pub mod run;
 pub mod shell;

@@ -84,3 +84,7 @@ Combobox { options: Vec<ComboOption { value, label, hint, group, icon, avatar, k
 ## 10. Related components and references
 `multi-select.md` (button trigger, same model), `select.md` (single value, no search by default),
 `tag-input.md` (free entry). affectUI `/components/combobox` — behaviour only.
+
+## Parity: Arc UI · Combobox (plan #28)
+Covered by the existing `Combobox`: search and select without leaving the field, ↓/↑ open the list then move through enabled options (wrapping), Enter selects, Escape closes and discards the query, an empty-state row ("No matches", `empty_text`), the chosen label in the field while searching, a clear button, and a list whose height follows filtering. Single (`multiple: false`) and multi-select both build on it.
+Gap: none for the Arc behaviour list; the label-rise blur on choose is a 160 ms fade in Oxyn.

@@ -45,7 +45,18 @@ pub const PRIMITIVES_CSS: &str = concat!(
     include_str!("navigation.css"),
     include_str!("../chat/chat.css"),
     include_str!("../composer/parts.css"),
-    include_str!("../shell/shell.css")
+    include_str!("../shell/shell.css"),
+    include_str!("../parity/approvals.css"),
+    include_str!("../parity/run.css"),
+    include_str!("../parity/tools.css"),
+    include_str!("../parity/text.css"),
+    include_str!("../parity/input.css"),
+    include_str!("../parity/fields.css"),
+    include_str!("../parity/meters.css"),
+    include_str!("../parity/home.css"),
+    include_str!("../parity/upload.css"),
+    include_str!("../parity/compose.css"),
+    include_str!("polish.css")
 );
 
 /// A measured box relative to its container.

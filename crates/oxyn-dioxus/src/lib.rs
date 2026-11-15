@@ -5,10 +5,12 @@
 //! component also ships its own small stylesheet as a constant (`STATUS_INDICATOR_CSS`).
 
 mod approval;
+mod brand;
 mod chat;
 mod checkpoint;
 mod composer;
 mod glyph_loader;
+mod parity;
 mod primitives;
 mod run;
 mod shell;
@@ -16,6 +18,7 @@ mod status_indicator;
 mod status_text;
 
 pub use approval::{ApprovalCard, ApprovalCardProps, ApprovalPager, ApprovalPagerProps};
+pub use brand::{BrandIcon, BrandIconProps, has_brand};
 pub use chat::{
     AiAnswer, AiChat, CHAT_CSS, ChatThread, ContextCards, DocumentExtraction, Markdown,
     MessageActions, MessageBubble, ReasoningBlock, RecommendationCard, ResearchRun,
@@ -40,6 +43,30 @@ pub use composer::{
 pub use glyph_loader::{GLYPH_LOADER_CSS, GlyphLoader, GlyphLoaderProps};
 /// Stylesheet for approvals and checkpoints.
 pub const HITL_CSS: &str = include_str!("hitl.css");
+pub use parity::{
+    ActionSwapButton, InViewTitle, LoadingState, SlotReels, Source, StreamingText, SweepText,
+    TextMorph, ThinkingLoader, WordReveal,
+};
+pub use parity::{
+    ActivityFeed, AgentApprovals, AgentFleet, AgentOrchestrator, AgentPlan, AgentRun, AgentStatus,
+    AgentTrail, AgentTree, AnimatedCounter, ApprovalGates, ConfirmMorph, ConfirmPopover, Countdown,
+    FlowStepper, HoldToConfirm, OnboardingChecklist, PermissionRequest, ReleaseReadiness,
+    TaskBreakdown, TaskRows, TreeTable, gate_dot,
+};
+pub use parity::{
+    ActivityHeatmap, ActivityHome, AttachmentStrip, DocGrid, ExperimentGrid, PollingCost,
+    RunModeMenu, ThreadList, TokenUsageChart,
+};
+pub use parity::{
+    AiComposer, AvatarUpload, ChatComposer, ContextField, ContextWindowGrid, CtxModel,
+    ElasticSlider, FileDropzone, Gauge, MenuModel, ModelMenu, ModelPill, MorphSelect, NumberField,
+    PillModel, RichTextEditor, RunControls, ScrubInput, SplitBar, UsageMeter,
+};
+pub use parity::{
+    ChipStep, DiffChip, ExpandableCard, JsonViewer, LinkUnfurl, RowOutput, ToolCall, ToolCallCard,
+    ToolCallGroup, ToolCallList, ToolChips, ToolKindLegend,
+};
+pub use parity::{GhostText, LabeledInput, LabeledTextarea, TextArea};
 pub use primitives::{
     Accordion, AccordionItem, Breadcrumb, ChipGroup, CodeBlock, CopyButton, Dock, Drawer,
     EmptyPreset, ExpandableText, HoverCard, NotificationCenter, PageHeader, PaneView, PresenceDot,

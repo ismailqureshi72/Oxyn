@@ -57,6 +57,8 @@
     }
     try {
       await navigator.clipboard.writeText(text);
+      // Component copy buttons show their own feedback; only the site's text buttons swap label.
+      if (!b.matches('.oxd-copy, .copy-btn')) return;
       const old = b.textContent;
       b.textContent = 'Copied';
       setTimeout(() => (b.textContent = old), 1400);
@@ -181,7 +183,9 @@
   dlg.addEventListener('click', (e) => { if (e.target === dlg) close(); });
   document.addEventListener('click', (e) => { if (e.target.closest('[data-open-search]')) open(); });
   document.addEventListener('keydown', (e) => {
-    const typing = /INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName) || document.activeElement?.isContentEditable;
+    const a = document.activeElement;
+    // Custom editors (role=textbox, e.g. the rich-text editor) take '/' as text too.
+    const typing = /INPUT|TEXTAREA|SELECT/.test(a?.tagName) || a?.isContentEditable || a?.getAttribute('role') === 'textbox';
     if ((e.key === 'k' && (e.metaKey || e.ctrlKey)) || (e.key === '/' && !typing)) {
       e.preventDefault();
       dlg.classList.contains('open') ? close() : open();
@@ -193,3 +197,66 @@ document.addEventListener('oxyn-demo-live', (e) => {
   const l = document.querySelector('[data-live-label]');
   if (l) { l.textContent = 'Live · Dioxus → WASM'; l.classList.add('on'); }
 });
+
+(() => {
+  // Fit wide demos into their stage: zoom down (never up, never below 42%) so a preview never
+  // needs a scrollbar just because the column is narrower than the component.
+  const fitStage = (stage) => {
+    const m = stage.querySelector(':scope > .oxd-mount');
+    if (!m || stage.closest('.site-card')) return;
+    m.style.zoom = '';
+    const cs = getComputedStyle(stage);
+    const avail = stage.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+    const need = Math.max(m.scrollWidth, ...[...m.children].map((c) => c.scrollWidth));
+    if (avail > 0 && need > avail + 1) m.style.zoom = String(Math.max(0.42, Math.floor((avail / need) * 1000) / 1000));
+  };
+  if ('ResizeObserver' in window) {
+    const ro = new ResizeObserver((es) => es.forEach((e) => fitStage(e.target.closest('.oxd-stage') || e.target)));
+    const watch = (root) => root.querySelectorAll('.oxd-stage').forEach((s) => {
+      if (s.dataset.fit) return;
+      s.dataset.fit = '1';
+      ro.observe(s);
+      fitStage(s);
+    });
+    watch(document);
+    new MutationObserver((ms) => ms.forEach((m) => {
+      const d = m.target.closest && m.target.closest('oxyn-demo');
+      if (d) requestAnimationFrame(() => { d.querySelectorAll('.oxd-stage').forEach((s) => { delete s.dataset.fit; }); watch(d); });
+    })).observe(document.body, { subtree: true, attributes: true, attributeFilter: ['data-state'] });
+  }
+})();
+
+(() => {
+  // Keep demo menus and popovers on screen: anything floating that opens past the viewport
+  // edge (a phone, a demo near the edge) is shifted back inside, never resized. Works through
+  // the stage zoom (shift is divided by the element's effective zoom).
+  const FLOAT = '.oxyn-popover,.oxyn-pop,.oxyn-menu,.oxk-menu,.oxk-mmenu,.oxyn-drp .panel,.hc-card,.oxp-aa-menu,.oxf-mssurf,.oxyn-ctx-pop,.oxyn-ef-menu,.oxyn-xsearch .panel,.um-pnl,.ws-menu,[role=menu],[role=listbox]:not(.oxyn-layer *):not([class*="list"]),[role=tooltip]';
+  const PAD = 8;
+  let queued = false, mo = null;
+  const place = (el) => {
+    if (el.dataset.kiv) { el.style.translate = el.dataset.kivOrig || ''; delete el.dataset.kiv; delete el.dataset.kivOrig; }
+    const cs = getComputedStyle(el);
+    if (cs.position !== 'absolute' && cs.position !== 'fixed') return;
+    const r = el.getBoundingClientRect();
+    if (!r.width || !r.height) return;
+    const vw = document.documentElement.clientWidth;
+    let dx = 0;
+    if (r.width > vw - 2 * PAD || r.left < PAD) dx = PAD - r.left;
+    else if (r.right > vw - PAD) dx = vw - PAD - r.right;
+    if (Math.abs(dx) < 1) return;
+    const z = el.currentCSSZoom || 1;
+    const t = cs.translate && cs.translate !== 'none' ? cs.translate.split(' ') : null;
+    el.dataset.kivOrig = el.style.translate || '';
+    el.dataset.kiv = '1';
+    el.style.translate = t ? `calc(${t[0]} + ${dx / z}px) ${t[1] || '0px'}` : `${dx / z}px 0px`;
+  };
+  const run = () => {
+    queued = false;
+    document.querySelectorAll('oxyn-demo').forEach((d) => d.querySelectorAll(FLOAT).forEach(place));
+    if (mo) mo.takeRecords();
+  };
+  const queue = () => { if (!queued) { queued = true; requestAnimationFrame(run); } };
+  mo = new MutationObserver((ms) => { if (ms.some((m) => m.target.closest && m.target.closest('oxyn-demo'))) { queue(); setTimeout(queue, 260); } });
+  mo.observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ['class', 'style', 'open', 'data-state', 'aria-expanded'] });
+  addEventListener('resize', queue);
+})();

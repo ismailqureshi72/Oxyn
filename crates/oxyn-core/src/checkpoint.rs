@@ -55,6 +55,9 @@ pub struct Checkpoint {
     pub cost_cents: Option<u32>,
     /// No file changes: chat-only marker (◇).
     pub chat_only: bool,
+    /// Raw name of the tool that made it (`Edit`, `Bash`, `mcp__github__create_pr`), for the
+    /// per-checkpoint icon.
+    pub tool: Option<String>,
 }
 
 impl Checkpoint {
@@ -71,7 +74,28 @@ impl Checkpoint {
             lines: (0, 0),
             cost_cents: None,
             chat_only: false,
+            tool: None,
         }
+    }
+
+    /// Builder: the tool that made it.
+    pub fn tool(mut self, name: &str) -> Self {
+        self.tool = Some(name.into());
+        self
+    }
+
+    /// Builder: run cost so far, cents.
+    pub fn cost(mut self, cents: u32) -> Self {
+        self.cost_cents = Some(cents);
+        self
+    }
+
+    /// Icon name for the tool that made it, through the standard tool-kind map (`edit`,
+    /// `prompt`, `search`, …), or `None` when no tool is recorded.
+    pub fn tool_icon(&self) -> Option<&'static str> {
+        self.tool
+            .as_deref()
+            .map(|t| crate::parity::tools::ToolKindMap::standard().kind(t).icon())
     }
 
     /// Builder: status.
@@ -295,6 +319,37 @@ impl RestoreFlow {
     }
 }
 
+/// Default cost formatter: `$0.42`, `$12.30`, `$1.2k`, and `<$0.01` for a spend under a cent
+/// that rounded to zero.
+pub fn format_cost(cents: u32) -> String {
+    match cents {
+        0 => "<$0.01".into(),
+        c if c >= 100_000 => {
+            let k = c as f64 / 100_000.0;
+            if k >= 10.0 {
+                format!("${k:.0}k")
+            } else {
+                format!("${k:.1}k")
+            }
+        }
+        c => format!("${}.{:02}", c / 100, c % 100),
+    }
+}
+
+/// What a checkpoint's own step cost: its running cost minus its parent's (cents), when both
+/// are known.
+pub fn step_cost(cps: &[Checkpoint], i: usize) -> Option<u32> {
+    let c = cps.get(i)?;
+    let own = c.cost_cents?;
+    let parent = c
+        .parent
+        .as_deref()
+        .and_then(|p| cps.iter().find(|x| x.id == p))
+        .and_then(|p| p.cost_cents)
+        .unwrap_or(0);
+    Some(own.saturating_sub(parent))
+}
+
 /// Header: "Checkpoints · 5 · 2 attempts · $0.42".
 pub fn header(cps: &[Checkpoint]) -> String {
     let attempts = lanes(cps, None)
@@ -307,7 +362,7 @@ pub fn header(cps: &[Checkpoint]) -> String {
         s.push_str(&format!(" · {attempts} attempts"));
     }
     if let Some(c) = cps.iter().filter_map(|c| c.cost_cents).max() {
-        s.push_str(&format!(" · ${}.{:02}", c / 100, c % 100));
+        s.push_str(&format!(" · {}", format_cost(c)));
     }
     s
 }
@@ -315,6 +370,28 @@ pub fn header(cps: &[Checkpoint]) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn tool_icons_and_costs() {
+        let a = Checkpoint::new("a", None, "Read", 1).tool("Read").cost(12);
+        let b = Checkpoint::new("b", Some("a"), "Edit", 2)
+            .tool("apply_patch")
+            .cost(42);
+        let n = Checkpoint::new("n", Some("b"), "Chat", 3);
+        assert_eq!(a.tool_icon(), Some(crate::run::ToolKind::Read.icon()));
+        assert_eq!(b.tool_icon(), Some(crate::run::ToolKind::Edit.icon()));
+        assert_eq!(n.tool_icon(), None);
+        let cps = vec![a, b, n];
+        assert_eq!(step_cost(&cps, 0), Some(12));
+        assert_eq!(step_cost(&cps, 1), Some(30));
+        assert_eq!(step_cost(&cps, 2), None);
+        assert_eq!(format_cost(42), "$0.42");
+        assert_eq!(format_cost(1230), "$12.30");
+        assert_eq!(format_cost(0), "<$0.01");
+        assert_eq!(format_cost(123_456), "$1.2k");
+        assert_eq!(format_cost(2_500_000), "$25k");
+        assert!(header(&cps).ends_with("$0.42"));
+    }
 
     fn run() -> Vec<Checkpoint> {
         vec![

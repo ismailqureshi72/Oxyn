@@ -473,12 +473,12 @@ pub fn SourceCards(
                                 li { key: "c{i}", class: cls(&["sc", if highlighted == Some(n) { "is-hl" } else { "" }]),
                                     onpointerenter: move |_| hover.set(Some(i)), onpointerleave: move |_| hover.set(None),
                                     a { href: "{src.url}", target: "_blank", rel: "noreferrer", "aria-label": "{src.card_label(n)}", onfocus: move |_| hover.set(Some(i)), onblur: move |_| hover.set(None),
-                                        div { class: "sh", span { class: "fav", "{dom.chars().next().unwrap_or('•').to_uppercase()}" } span { class: "dom", "{dom}" } span { class: "num", "{n}" } }
+                                        div { class: "sh", span { class: "fav", if crate::brand::has_brand(&dom) { crate::brand::BrandIcon { name: dom.clone(), size: 10.0 } } else { "{dom.chars().next().unwrap_or('•').to_uppercase()}" } } span { class: "dom", "{dom}" } span { class: "num", "{n}" } }
                                         div { class: "stt", "{src.title}" }
                                     }
                                     if hover() == Some(i) && src.snippet.is_some() {
                                         div { class: "spv", role: "tooltip",
-                                            div { class: "sh", span { class: "fav", "{dom.chars().next().unwrap_or('•').to_uppercase()}" } span { class: "dom", {src.site.clone().unwrap_or(dom.clone())} } if let Some(p) = &src.published { span { class: "pub", "{p}" } } }
+                                            div { class: "sh", span { class: "fav", if crate::brand::has_brand(&dom) { crate::brand::BrandIcon { name: dom.clone(), size: 10.0 } } else { "{dom.chars().next().unwrap_or('•').to_uppercase()}" } } span { class: "dom", {src.site.clone().unwrap_or(dom.clone())} } if let Some(p) = &src.published { span { class: "pub", "{p}" } } }
                                             div { class: "stt", "{src.title}" }
                                             p { {src.snippet.clone().unwrap_or_default()} }
                                         }
@@ -493,7 +493,7 @@ pub fn SourceCards(
                             rsx! {
                                 li { key: "stack-{from}", class: "sc stack",
                                     button { r#type: "button", "aria-expanded": "false", "aria-label": "Show {more} more sources", onclick: move |_| open.set(true),
-                                        div { class: "favs", for (j, r) in rest.iter().take(4).enumerate() { span { key: "{j}", class: "fav", style: "--j:{j}", "{r.domain().chars().next().unwrap_or('•').to_uppercase()}" } } }
+                                        div { class: "favs", for (j, r) in rest.iter().take(4).enumerate() { span { key: "{j}", class: "fav", style: "--j:{j}", if crate::brand::has_brand(&r.domain()) { crate::brand::BrandIcon { name: r.domain(), size: 10.0 } } else { "{r.domain().chars().next().unwrap_or('•').to_uppercase()}" } } } }
                                         div { class: "stt", "+{more} more" }
                                     }
                                 }
@@ -881,7 +881,7 @@ pub fn StarterPrompts(
                         button { key: "{seed}-{cat}-{k}", class: "stc", r#type: "button", style: "--k:{k}",
                             "aria-label": format!("{}{}, {}", s.title, s.app.as_ref().map(|a| format!(", {a}")).unwrap_or_default(), label_of(&s.category)),
                             onclick: { let s = s.clone(); move |_| { draft.set(s.prompt.clone()); live.set(format!("Picked {}", s.title)) } },
-                            span { class: "stk", {label_of(&s.category)} if let Some(a) = &s.app { " · {a}" } }
+                            span { class: "stk", {label_of(&s.category)} if let Some(a) = &s.app { " · " if crate::brand::has_brand(a) { crate::brand::BrandIcon { name: a.clone(), size: 11.0 } } " {a}" } }
                             span { class: "stt", "{s.title}" }
                             span { class: "stp", "{s.prompt}" }
                         }

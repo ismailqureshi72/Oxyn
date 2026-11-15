@@ -53,16 +53,29 @@ fn tone_code(id: &str) -> String {
     }
 }
 
-fn badge(v: &Vals, _: ClockMs) -> Element {
-    let tone = Tone::from_id(v.s("tone")).unwrap_or(Tone::Neutral);
-    let mut b = BadgeModel::new(v.s("label"), tone);
+fn badge(v: &Vals, now: ClockMs) -> Element {
+    let roll = v.b("roll");
+    let (label, tone) = if roll {
+        // Cycle the label so the roll is visible: queued, running, passed.
+        [
+            ("Queued", Tone::Queued),
+            ("Running", Tone::Working),
+            ("Passed", Tone::Success),
+        ][(now.0 / 1600 % 3) as usize]
+    } else {
+        (
+            v.s("label"),
+            Tone::from_id(v.s("tone")).unwrap_or(Tone::Neutral),
+        )
+    };
+    let mut b = BadgeModel::new(label, tone);
     b.fill = fill(v.s("fill"));
     b.live = v.b("live");
     b.dot = v.b("dot");
     if v.b("count") {
         b.count = Some(128);
     }
-    rsx! { Badge { badge: b, size: v.string("size"), icon: v.opt("icon") } }
+    rsx! { Badge { badge: b, size: v.string("size"), icon: v.opt("icon"), roll } }
 }
 
 fn badge_code(v: &Vals) -> String {
@@ -83,10 +96,15 @@ fn badge_code(v: &Vals) -> String {
     if v.b("count") {
         c = c.pre("badge.count = Some(128); // shows 99+");
     }
-    c.raw("badge", "badge")
+    let c = c
+        .raw("badge", "badge")
         .s("size", v.s("size"), "sm")
-        .opt("icon", v.s("icon"))
-        .done()
+        .opt("icon", v.s("icon"));
+    if v.b("roll") {
+        c.raw("roll", "true // a new label rises in").done()
+    } else {
+        c.done()
+    }
 }
 
 fn chip(v: &Vals, _: ClockMs) -> Element {
@@ -534,9 +552,20 @@ pub(crate) fn demos() -> Vec<Demo> {
                 tog("live", "Live dot", true),
                 tog("dot", "Dot", false),
                 tog("count", "Count", false),
+                tog("roll", "Roll label changes", false),
             ],
             variants: vec![
                 var("live", "Pulses while something runs.", &[]),
+                var(
+                    "roll-lg",
+                    "Large, the label rolls as the status changes.",
+                    &[
+                        ("size", "lg"),
+                        ("roll", "true"),
+                        ("live", "false"),
+                        ("dot", "true"),
+                    ],
+                ),
                 var(
                     "dot-success",
                     "Leading dot.",
@@ -592,7 +621,7 @@ pub(crate) fn demos() -> Vec<Demo> {
             ],
             height: 160,
             align: Align::Center,
-            live: false,
+            live: true,
         },
         Demo {
             slug: "chip",

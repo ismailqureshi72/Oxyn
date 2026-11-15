@@ -49,6 +49,9 @@ fn marked(label: &str, ranges: &[(usize, usize)]) -> Element {
 }
 
 fn logo(text: &str) -> Element {
+    if crate::brand::has_brand(text) {
+        return rsx! { span { class: "logo brand", "aria-hidden": "true", crate::brand::BrandIcon { name: text.to_string(), size: 13.0 } } };
+    }
     rsx! { span { class: "logo", "aria-hidden": "true", "{text}" } }
 }
 
@@ -1520,7 +1523,7 @@ pub fn ControlCenter(
     let circ = std::f32::consts::TAU * r;
     rsx! {
         div { class: "oxyn-cc", role: "group", "aria-label": "{label}",
-            div { class: "grid", inert: st.detail.is_some(), "aria-hidden": if st.detail.is_some() { "true" },
+            div { class: "grid", "inert": if st.detail.is_some() { "true" }, "aria-hidden": if st.detail.is_some() { "true" },
                 {tile("focus", "moon", "Focus", st.focus.is_some(), st.focus_label(), Some(Detail::Focus))}
                 {tile("notifications", "bell", "Notifications", st.notifications(), st.notifications_label(), Some(Detail::Notifications))}
                 {tile("presenting", "monitor", "Presenting", st.presenting, if st.presenting { "On".into() } else { "Off".into() }, None)}
