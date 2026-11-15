@@ -84,10 +84,16 @@
 .oxyn-cp .rows{list-style:none;margin:0;padding:4px 8px 8px}
 .oxyn-cp .row{display:flex;align-items:center;gap:8px;height:36px;padding-right:6px;border-radius:8px}
 .oxyn-cp .row:hover{background:var(--oxyn-color-surface-hover)}
-.oxyn-cp .row.off{opacity:.45}
+.oxyn-cp .row.off>:not(.lane){opacity:.45}
+.oxyn-cp .row.off .lane .dot{opacity:.55}
 .oxyn-cp .lane{flex:none}
 .oxyn-cp .lane .ln{stroke:var(--oxyn-color-border-strong);stroke-width:1.5}
 .oxyn-cp .lane .ln.on{stroke:var(--oxyn-color-fg-default)}
+.oxyn-cp .lane .dr{stroke-dasharray:1;stroke-dashoffset:1;animation:oxcp-draw .42s cubic-bezier(.4,0,.2,1) var(--d,0ms) forwards}
+.oxyn-cp .lane .dot{transform-box:fill-box;transform-origin:center;animation:oxcp-dot .3s cubic-bezier(.2,.8,.2,1) var(--d,0ms) both}
+@keyframes oxcp-draw{to{stroke-dashoffset:0}}
+@keyframes oxcp-dot{from{transform:scale(.2);opacity:0}}
+@media (prefers-reduced-motion:reduce){.oxyn-cp .lane .dr{animation:none;stroke-dashoffset:0}.oxyn-cp .lane .dot{animation:none}}
 .oxyn-cp .lane .dot{fill:var(--oxyn-color-surface-raised);stroke:var(--oxyn-color-fg-muted);stroke-width:1.5}
 .oxyn-cp .row.path .lane .dot{stroke:var(--oxyn-color-fg-default);fill:var(--oxyn-color-fg-default)}
 .oxyn-cp .lane .dot.failed{stroke:var(--oxyn-color-status-danger-fg);fill:var(--oxyn-color-status-danger-fg)}

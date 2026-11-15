@@ -129,6 +129,19 @@ pub struct CheckpointRow {
     pub time: String,
     /// Accessible name.
     pub aria: String,
+    /// The lane line above this row's dot (from its parent in the same lane, or the fork curve
+    /// that started this lane); `Some(on_path)` when drawn. `None` on the first checkpoint, so
+    /// nothing sticks up above a root.
+    pub up: Option<bool>,
+    /// The lane line below this row's dot (towards its next checkpoint in the same lane);
+    /// `None` at the end of a lane, so a failed attempt simply stops.
+    pub down: Option<bool>,
+    /// Lanes that pass this row on their way from a fork to their first checkpoint, or between
+    /// two checkpoints of the same lane: `(lane, on_path)`.
+    pub through: Vec<(usize, bool)>,
+    /// Lanes that fork from this row's dot (a new attempt starting from this checkpoint):
+    /// `(lane, on_path)`. Draw a curve from this dot down into the lane.
+    pub forks: Vec<(usize, bool)>,
 }
 
 /// `0:42`, `1:05`, `1:02:33`.
@@ -192,6 +205,10 @@ pub fn lanes(cps: &[Checkpoint], head: Option<&str>) -> Vec<CheckpointRow> {
             branch_from: parent_lane.filter(|p| *p != lane),
             on_path,
             current,
+            up: None,
+            down: None,
+            through: vec![],
+            forks: vec![],
             time: format_at(c.at),
             aria: format!(
                 "{}, attempt {}, {status}{}",
@@ -206,6 +223,28 @@ pub fn lanes(cps: &[Checkpoint], head: Option<&str>) -> Vec<CheckpointRow> {
                 }
             ),
         });
+    }
+    // Edges: every checkpoint joins its parent, in the parent's lane (a straight segment) or
+    // from the parent's dot into a new lane (a fork curve), passing the rows in between.
+    for i in 0..out.len() {
+        let Some(p) = cps[i]
+            .parent
+            .as_ref()
+            .and_then(|pid| cps[..i].iter().position(|o| &o.id == pid))
+        else {
+            continue;
+        };
+        let lane = out[i].lane;
+        let on = out[i].on_path;
+        if out[p].lane == lane {
+            out[p].down = Some(on);
+        } else {
+            out[p].forks.push((lane, on));
+        }
+        for row in out.iter_mut().take(i).skip(p + 1) {
+            row.through.push((lane, on));
+        }
+        out[i].up = Some(on);
     }
     out
 }
@@ -418,6 +457,14 @@ mod tests {
             "Tests failing – 4 of 12, attempt 1, failed, left behind"
         );
         assert_eq!(r[3].time, "2:49");
+        // The new attempt forks from c2's dot and runs past the failed c3; nothing above c1.
+        assert_eq!(r[0].up, None);
+        assert_eq!(r[1].forks, vec![(1, true)]);
+        assert_eq!(r[1].down, Some(false));
+        assert_eq!(r[2].through, vec![(1, true)]);
+        assert_eq!(r[2].down, None);
+        assert_eq!(r[3].up, Some(true));
+        assert_eq!(r[3].down, None);
         assert_eq!(header(&run()), "4 checkpoints · 2 attempts");
     }
 

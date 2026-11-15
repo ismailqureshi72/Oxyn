@@ -78,14 +78,18 @@ pub fn CheckpointLanes(
                         let cls = format!("row {st}{}{}", if r.on_path { " path" } else { " off" }, if r.current { " cur" } else { "" });
                         rsx! {
                             li { class: "{cls}", "aria-current": if r.current { "step" } else { "false" }, "aria-label": "{r.aria}", tabindex: if r.current { "0" } else { "-1" },
-                                svg { class: "lane", width: "{gutter}", height: "36", view_box: "0 0 {gutter} 36",
-                                    for l in 0..n_lanes {
-                                        if l == r.lane || r.branch_from == Some(l) {
-                                            line { x1: "{9 + l * 18}", y1: "0", x2: "{9 + l * 18}", y2: if l == r.lane { "36" } else { "8" }, class: if r.on_path && l == r.lane { "ln on" } else { "ln" } }
-                                        }
+                                svg { class: "lane", width: "{gutter}", height: "36", view_box: "0 0 {gutter} 36", style: "--d:{r.index * 70}ms",
+                                    for (l, on) in r.through.iter().copied() {
+                                        line { x1: "{9 + l * 18}", y1: "0", x2: "{9 + l * 18}", y2: "36", "pathLength": "1", class: if on { "ln dr on" } else { "ln dr" } }
                                     }
-                                    if let Some(f) = r.branch_from {
-                                        path { d: "M{9 + f * 18} 6 C {9 + f * 18} 18, {9 + r.lane * 18} 6, {9 + r.lane * 18} 18", class: if r.on_path { "ln on" } else { "ln" }, fill: "none" }
+                                    if let Some(on) = r.up {
+                                        line { x1: "{9 + r.lane * 18}", y1: "0", x2: "{9 + r.lane * 18}", y2: "18", "pathLength": "1", class: if on { "ln dr on" } else { "ln dr" } }
+                                    }
+                                    if let Some(on) = r.down {
+                                        line { x1: "{9 + r.lane * 18}", y1: "18", x2: "{9 + r.lane * 18}", y2: "36", "pathLength": "1", class: if on { "ln dr on" } else { "ln dr" } }
+                                    }
+                                    for (l, on) in r.forks.iter().copied() {
+                                        path { d: "M{9 + r.lane * 18} 18 C {9 + r.lane * 18} 31, {9 + l * 18} 23, {9 + l * 18} 36", "pathLength": "1", class: if on { "ln dr on" } else { "ln dr" }, fill: "none" }
                                     }
                                     circle { cx: "{9 + r.lane * 18}", cy: "18", r: if r.current { "5" } else { "4" }, class: "dot {st}" }
                                 }
