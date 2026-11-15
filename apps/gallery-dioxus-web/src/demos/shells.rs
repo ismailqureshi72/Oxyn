@@ -330,7 +330,7 @@ fn screen_el(sc: Screen, now: ClockMs, el: u64) -> Element {
             ChatShell { threads: threads(), active: 0, height: 540.0,
                 div { class: "oxs-center",
                     div { class: "oxd-w560",
-                        StarterPrompts { greeting: "Good afternoon, Ismail", description: Some(s("Ask anything, or start from a prompt. Atlas can read the repo, run commands and open PRs.")), prompts: starter_list(), count: 2, composer: true }
+                        StarterPrompts { greeting: "Good afternoon, Alex", description: Some(s("Ask anything, or start from a prompt. Atlas can read the repo, run commands and open PRs.")), prompts: starter_list(), count: 2, composer: true }
                     }
                 }
             }

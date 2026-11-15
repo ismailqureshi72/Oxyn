@@ -6,7 +6,7 @@ component, screen, block, illustration, motion item and site feature. Oxyn match
 then adds more variants and more user controls. The components from the X posts we collected are in
 scope too. More sources will be added here as they come in.
 
-Agreed with Ismail and Khubaib on 2026-11-12.
+Agreed by the maintainers on 2026-11-12.
 
 | Source | Items | What it is | How we use it |
 |---|---|---|---|

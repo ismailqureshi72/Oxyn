@@ -311,7 +311,7 @@ fn starters() -> Vec<Starter> {
 }
 
 fn starters_demo(v: &Vals, _: ClockMs) -> Element {
-    rsx! { div { class: "oxd-w560", StarterPrompts { greeting: "What are we working on, Ismail?", description: Some(s("Pick a starter or ask anything. Atlas can read the repo, run commands and open PRs.")), prompts: starters(), count: v.u("count"), loading: v.b("loading"), composer: v.b("composer") } } }
+    rsx! { div { class: "oxd-w560", StarterPrompts { greeting: "What are we working on, Alex?", description: Some(s("Pick a starter or ask anything. Atlas can read the repo, run commands and open PRs.")), prompts: starters(), count: v.u("count"), loading: v.b("loading"), composer: v.b("composer") } } }
 }
 
 fn starters_code(v: &Vals) -> String {
@@ -333,7 +333,7 @@ fn thread_demo(v: &Vals, _: ClockMs) -> Element {
     let day = 86_400_000u64;
     let t0 = 20 * day + 9 * 3_600_000;
     let parts = vec![
-        (s("me"), s("Ismail"), String::new()),
+        (s("me"), s("Alex Rivera"), String::new()),
         (s("sam"), s("Sam"), s("blue")),
         (s("atlas"), s("Atlas"), s("violet")),
     ];
@@ -379,7 +379,7 @@ fn thread_demo(v: &Vals, _: ClockMs) -> Element {
 
 fn thread_code(v: &Vals) -> String {
     Code::new("ChatThread")
-        .raw("participants", "vec![(\"me\".into(), \"Ismail\".into(), String::new()), (\"atlas\".into(), \"Atlas\".into(), \"violet\".into())]")
+        .raw("participants", "vec![(\"me\".into(), \"Alex Rivera\".into(), String::new()), (\"atlas\".into(), \"Atlas\".into(), \"violet\".into())]")
         .raw("me", q("me"))
         .raw("messages", "messages")
         .b("composer", v.b("composer"))
