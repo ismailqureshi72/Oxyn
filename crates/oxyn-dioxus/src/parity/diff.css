@@ -202,6 +202,9 @@
 .oxyn-dtl{width:100%;display:flex;flex-direction:column;gap:10px}
 .oxyn-dtl-rail{display:flex;gap:0;overflow-x:auto;padding:2px 2px 6px;scrollbar-width:thin;outline:none}
 .oxyn-dtl-node{position:relative;flex:1 0 120px;display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto auto;column-gap:8px;padding:10px 10px 8px 0;border:0;background:transparent;color:inherit;font:inherit;text-align:left;cursor:pointer}
+/* Narrow: revisions share the rail (labels ellipsize) before it scrolls. */
+.oxyn-dtl{container-type:inline-size}
+@container (max-width:520px){.oxyn-dtl-node{flex:1 1 0;min-width:72px}}
 .oxyn-dtl-node::before{content:"";position:absolute;left:0;right:0;top:15px;height:2px;background:var(--oxyn-color-border-default)}
 .oxyn-dtl-node:first-child::before{left:6px}.oxyn-dtl-node:last-child::before{right:auto;width:8px}
 .oxyn-dtl-node[data-role="in"]::before,.oxyn-dtl-node[data-role="to"]::before{background:var(--oxyn-color-fg-default)}
@@ -249,5 +252,5 @@
 .oxyn-sug-shim{background:linear-gradient(90deg,var(--oxyn-color-fg-muted) 0%,var(--oxyn-color-fg-default) 50%,var(--oxyn-color-fg-muted) 100%);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:oxyn-sug-shim 1.6s linear infinite}
 @keyframes oxyn-sug-shim{from{background-position:100% 0}to{background-position:-100% 0}}
 @container (max-width:520px){.oxyn-sug-dir{display:none}}
-@container (max-width:440px){.oxyn-sug-ln{grid-template-columns:30px 14px minmax(0,1fr)}.oxyn-sug-code{font-size:12px}.oxyn-sug-sum{display:none}.oxyn-sug-bar{padding-left:44px}.oxyn-sug-ft{flex-direction:column;align-items:stretch}.oxyn-sug-ft .oxyn-diff-btn{justify-content:center}}
+@container (max-width:440px){.oxyn-sug-src{white-space:pre-wrap;overflow-wrap:anywhere}.oxyn-sug-ln{grid-template-columns:30px 14px minmax(0,1fr)}.oxyn-sug-code{font-size:12px}.oxyn-sug-sum{display:none}.oxyn-sug-bar{padding-left:44px}.oxyn-sug-ft{flex-direction:column;align-items:stretch}.oxyn-sug-ft .oxyn-diff-btn{justify-content:center}}
 @media (prefers-reduced-motion:reduce){.oxyn-sug-shim{animation:none;color:var(--oxyn-color-fg-muted)}.oxyn-sug-spin{animation:none}}

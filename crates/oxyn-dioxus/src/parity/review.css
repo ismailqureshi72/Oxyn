@@ -130,7 +130,7 @@
 .oxyn-rvc-tabs button{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 9px;border:0;border-radius:6px;background:transparent;color:var(--oxyn-color-fg-muted);font:inherit;font-size:12px;cursor:pointer}
 .oxyn-rvc-tabs button[aria-selected="true"]{background:var(--oxyn-color-surface-raised);color:var(--oxyn-color-fg-default);box-shadow:0 0 0 1px var(--oxyn-color-border-default)}
 .oxyn-rvc-cnt{display:inline-block;font-variant-numeric:tabular-nums;font-size:11px;color:var(--oxyn-color-fg-muted);animation:oxyn-cmt-roll .24s ease-out}
-.oxyn-rvc-body{display:grid;grid-template-columns:260px minmax(0,1fr);height:480px}
+.oxyn-rvc-body{display:grid;grid-template-columns:260px minmax(0,1fr);min-height:480px}
 .oxyn-rvc-q{list-style:none;margin:0;padding:6px;border-right:1px solid var(--oxyn-color-border-subtle);background:var(--oxyn-color-surface-sunken);overflow:auto;scrollbar-width:thin}
 .oxyn-rvc-row{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto;column-gap:8px;width:100%;padding:7px 10px;border:0;border-radius:8px;background:transparent;color:inherit;font:inherit;text-align:left;cursor:pointer;position:relative;animation:oxyn-cmt-in .24s ease-out}
 .oxyn-rvc-row:hover{background:var(--oxyn-color-surface-hover)}
@@ -212,5 +212,7 @@
 .oxyn-rvk-loc{font-size:11.5px;color:var(--oxyn-color-fg-muted)}
 .oxyn-rvk-body{padding:0 14px 12px;display:flex;flex-direction:column;gap:8px;animation:oxyn-diff-in .2s ease-out}
 .oxyn-rvk-body p{margin:0;font-size:13px;color:var(--oxyn-color-fg-muted);line-height:1.55}
+/* Review snippets wrap: they are short and sit in narrow cards. */
+.oxyn-rvc-diff .oxyn-diff-src,.oxyn-rvk-fix .oxyn-diff-src{white-space:pre-wrap;overflow-wrap:anywhere}
 .oxyn-rvk-fix{border:1px solid var(--oxyn-color-border-subtle);border-radius:8px;overflow:clip;font-family:var(--oxyn-font-mono);font-size:12px;line-height:20px}
 .oxyn-rvk-acts{display:flex;gap:6px}

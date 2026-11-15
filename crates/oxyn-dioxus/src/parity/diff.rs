@@ -755,7 +755,7 @@ pub fn DiffTimeline(
                 span { class: "oxyn-diff-stat", span { class: "a", "+{diff.added}" } span { class: "r", "−{diff.removed}" } }
             }
             for k in [format!("{from}-{to}-{layout}")] {
-                DiffViewer { key: "{k}", files: vec![diff.clone()], layout: layout.clone(), file_list: false, minimap: false, comments: false, switcher: false, title: path.clone(), mode: ReviewMode::Applied }
+                DiffViewer { key: "{k}", files: vec![diff.clone()], layout: layout.clone(), file_list: false, minimap: false, comments: false, switcher: false, wrap: true, title: path.clone(), mode: ReviewMode::Applied }
             }
         }
     }
