@@ -15,6 +15,8 @@
 //! - [`text`]: loaders and moving text (morph, slot reels, phases, action swap, streams).
 //! - [`diff`]: line and word diffs, hunk review, change summaries, table and revision diffs,
 //!   code suggestions, inline edits, image compare, comment threads and the review center.
+//! - [`merge`]: the 3-way merge-conflict editor (markers, picks, result, keymap) and Conflict
+//!   Radar (agents on parallel branches, overlapping edits, picks and merge order).
 //! - [`tools`]: tool calls, the tool-kind map, JSON trees and link unfurls.
 //!
 //! Like the rest of the core, time is passed in as [`crate::ClockMs`]; nothing reads a clock.
@@ -28,6 +30,7 @@ pub mod fleet;
 pub mod gates;
 pub mod home;
 pub mod input;
+pub mod merge;
 pub mod meters;
 pub mod plan;
 pub mod text;

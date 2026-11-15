@@ -1,4 +1,4 @@
-**Status:** draft v0.1 (2026-11-11).
+**Status:** built v0.2 (2026-11-15, plan #31); draft v0.1 (2026-11-11). §12 lists what shipped and where it differs from the proposal.
 
 # Spec: 3-way merge-conflict editor (`merge-conflict`)
 
@@ -428,3 +428,59 @@ chip state, pane labels) · [review-card.md](review-card.md) · [file-edit-chip.
 | Zed multibuffer review (note 03) | per-hunk keep / reject interaction | Mixed licence by crate — study only |
 | git conflict-marker format | marker lines `<<<<<<<` `|||||||` `=======` `>>>>>>>` are a file format we parse; no git code used | format only, no code ported |
 | "Current / Incoming" wording | common editor vocabulary; ours is written in-house in `MergeLabels` | not from our research notes; no code or assets used |
+
+## 12. Implemented (plan #31, 2026-11-15)
+Dioxus `MergeConflict` / GPUI `MergeConflictEl` over `oxyn_core::parity::merge` (`parse_markers`,
+`MergeFile`, `Merge`, `Pick`, `merge_key`). Styles: `merge.css`, classes `oxyn-mrg-*`.
+
+**Model.** `parse_markers` reads git marker files (`<<<<<<<`, optional `|||||||` base section from
+`merge.conflictStyle = diff3`, `=======`, `>>>>>>>`; exactly seven marker characters, so `========`
+is content) into clean and conflict segments, and reports a stray or unclosed marker with its line.
+`Merge` keeps per-file picks, the focused conflict, the marked (staged) files, the phase
+(`Open` → `ConfirmAbort` → `Aborted`, or `Completed`) and one undo stack for picks, reopens and marks.
+`Pick` is `Ours` · `Theirs` · `Both { theirs_first }` (lines identical on both sides are written
+once) · `Base` · `Agent` · `Manual(lines)`. A manual edit that still contains a marker keeps the
+conflict open ("⚑ markers left"). `mark_blocker` / `complete_blocker` return the reason a button is
+disabled ("1 conflict left", "2 markers left", "1 file not marked resolved").
+
+**Layouts (variants built).**
+| Variant | Built as |
+|---|---|
+| `merge-conflict/three-pane` | Ours · Base · Theirs input panes aligned per segment (one grid row per segment, so a 1-line side and a 3-line side stay level), editable Result below |
+| `merge-conflict/result-center` | Ours · Result · Theirs; each side cell has a Take button that pushes it into the middle |
+| `merge-conflict/inline-stacked` | One column: each open conflict stacks its sides above its actions in the Result |
+| two-way | `show_base = false` hides the base pane (the base still powers Keep base when present) |
+| multi-file | File strip with per-file counts, Mark resolved per file, then Complete merge |
+| editor labels | `labels = "editor"` switches Ours / Theirs to Current / Incoming everywhere |
+Not built yet (gaps): `card`, the Pro list in §7 beyond `result-center` and `two-way`, the agent
+"Resolve all" run with streaming suggestions (suggestions arrive ready on the conflict), binary /
+rename / modify-delete file kinds, `Stale`, `Offline`, `Verifying` and minimap.
+
+**Per conflict.** Accept ours, Accept theirs, Accept both (ours first), Theirs first, Keep base (only
+when the file has a base), Accept suggestion (with the rationale and the agent's own confidence
+label, never coloured as a verification), Edit (a textarea over the region with a live marker
+count; Apply with ⌘/Ctrl+Enter, Esc cancels) and Reopen. Hovering or focusing an Accept button
+previews the result in place (dashed, 62 % opacity) without committing. Resolved regions take a
+low-chroma success edge and a text tag (`ours`, `theirs`, `both`, `base`, `agent`, `edited`); in the
+input panes the side that was not taken is struck through.
+
+**Keyboard (as built; supersedes the §9 proposal).** Alt+↓ / `]` next unresolved (wraps), Alt+↑ /
+`[` previous, Alt+1 ours, Alt+2 theirs, Alt+3 both, Alt+4 base, Alt+5 agent suggestion, Alt+R
+reopen, E edit, ⌘/Ctrl+Z undo, ⌘/Ctrl+Shift+Enter mark resolved. Digits are read from the physical
+key (`code`), so Option+1 works on macOS. Abort has no shortcut. The keymap lives in the core
+(`merge_key`) so GPUI hosts get the same bindings.
+
+**Accessibility (as built).** Region labelled "Merge conflicts: <theirs> into <ours>"; panes and
+conflicts are labelled groups; actions are a toolbar with `aria-keyshortcuts`; the progress bar is a
+`progressbar`; a polite live region reads `Merge::announce()` ("Conflict 2 of 3 in
+src/auth/session.rs, resolved, took theirs. 1 left."); Abort confirms inline as an `alertdialog`.
+
+**Responsive (as built).** The root is a size container. Under 600 px the three-pane inputs become tabs
+above one column (Ours · Base · Theirs); result-center becomes Ours · Result · Theirs tabs under 760 px, opening on Result; under 480 px the gutter narrows,
+action buttons go two per row and Mark resolved spans the footer. Lines wrap; panes never scroll.
+Clean runs longer than `fold_after` (default 6) fold to "⋯ n unchanged lines".
+
+**Oxyn plus over the reference set:** Keep base, Theirs-first order, hover preview, undo across
+picks / reopens / marks, multi-file staging with Complete merge, Current/Incoming labels, a fold
+threshold control and the shared core keymap.
+

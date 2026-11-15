@@ -35,7 +35,7 @@ affectUI,Command Menu,https://www.affectui.com/components/command-menu,Component
 affectUI,Comment Thread,https://www.affectui.com/components/comment-thread,Components · Chat,Free,review-card,C11,#40,planned
 affectUI,Comments Panel,https://www.affectui.com/components/comments-panel,Components · Chat,Pro,review-card,C11,#40,planned
 affectUI,Compact Breakdown,https://www.affectui.com/components/compact-breakdown,Components · Data display,Pro,genui-blocks,C12,#35,planned
-affectUI,Conflict Radar,https://www.affectui.com/components/conflict-radar,Components · Agents,Pro,"merge-conflict, git-chips",C8,#34,planned
+affectUI,Conflict Radar,https://www.affectui.com/components/conflict-radar,Components · Agents,Pro,"conflict-radar, merge-conflict",C8,#31,built
 affectUI,Context Map,https://www.affectui.com/components/context-map,Components · Agents,Pro,composer-context-meter,C9,#34,planned
 affectUI,Context Window,https://www.affectui.com/components/context-window,Components · Agents,Pro,composer-context-meter,,#28,built
 affectUI,Cost Waterfall,https://www.affectui.com/components/cost-waterfall,Components · Agents,Pro,"trace-view, run-meter",,#33,planned
@@ -652,3 +652,4 @@ X post,#50 @micka_design Fluid Functionalism sharp,https://x.com/micka_design/st
 X post,#51 @AdiKodez footer,https://x.com/AdiKodez/status/2119362052993306706,X videos,reference,NEW,,#42,planned
 X post,#52 @omarships agently,https://x.com/omarships/status/2119588761608827253,X videos,reference,NEW,,#38,planned
 X post,#53 @waynesutton quoting @mikeysee Threadbear (2 photos),https://x.com/waynesutton/status/2119683627936321896,X videos,reference,"thread-list, activity-home, activity-heatmap",,#28,built
+Oxyn,3-way merge conflict editor,docs/specs/merge-conflict.md,Components · Agents,Pro,merge-conflict,,#31,built

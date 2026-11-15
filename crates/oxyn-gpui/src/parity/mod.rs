@@ -17,6 +17,7 @@ mod approvals;
 mod fields;
 mod home;
 mod ime;
+mod merge;
 mod review;
 mod run;
 mod text;
@@ -36,6 +37,7 @@ pub use home::{
     PollingCostEl, RunModeMenuEl, ThreadListEl, TokenUsageChartEl,
 };
 pub use ime::{ImeEvent, ImeInput, bind_ime_keys};
+pub use merge::{ConflictRadarEl, MergeAct, MergeConflictEl, RadarAct};
 pub use review::{
     AiInlineEditEl, ChangeSummaryEl, CodeSuggestionEl, CommentThreadEl, DiffTableEl,
     DiffTimelineEl, DiffViewerEl, HunkAct, IdAct, ImageCompareEl, InlineDiffEl, ReviewCardEl,
