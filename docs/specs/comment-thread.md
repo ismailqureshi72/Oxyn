@@ -83,4 +83,5 @@ Arc UI review thread above stays as `CommentThread`.
   agent answers, a shimmering "Thinking…" comes first (shared clock), then its message.
 - **Variants:** default, details (status folded open), people-only.
 - **Keyboard:** Enter posts, Shift + Enter breaks a line; the status line is a button with `aria-expanded`.
-- **API:** Dioxus `AgentCommentThread` (`ThreadNote`, `AgentOrb`, `Portrait`) / GPUI `AgentCommentThreadEl` (`ThreadMsg`).
+- **Avatars:** round 24 px portrait photos of fictional people (generated, no real person; six WebP files, 72 px, about 1 KB each, `avatar_webp` / `PhotoAvatar`), as affectUI shows photos; `avatars: "drawn"` keeps the illustrated `Portrait` (Oxyn extra). The agent keeps its gradient orb.
+- **API:** Dioxus `AgentCommentThread` (`ThreadNote`, `AgentOrb`, `PhotoAvatar`, `Portrait`) / GPUI `AgentCommentThreadEl` (`ThreadMsg`).

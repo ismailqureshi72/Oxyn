@@ -375,3 +375,86 @@ mod tests {
         assert_eq!(ago(130), "2h ago");
     }
 }
+
+/// Levels (0..1) for affectUI's recording meter: `n` capsules that sit as dots when quiet and
+/// stretch with the voice. Most bars rest as dots; a few rise per frame (frames every 110 ms).
+pub fn meter_levels(t_ms: u64, n: usize) -> Vec<f32> {
+    let f = t_ms / 110;
+    // Words and pauses: a pause frame keeps every bar a dot.
+    let speaking = !(f / 6).wrapping_mul(2_654_435_761).is_multiple_of(4) && t_ms > 300;
+    (0..n as u64)
+        .map(|i| {
+            if !speaking {
+                return 0.0;
+            }
+            let h = (f.wrapping_mul(97).wrapping_add(i.wrapping_mul(131)))
+                .wrapping_mul(2_246_822_519)
+                % 100;
+            // A soft hump around the middle of the row, the rest mostly dots.
+            let mid = 1.0 - ((i as f32 - n as f32 / 2.0).abs() / (n as f32 / 2.0)).min(1.0);
+            let v = h as f32 / 100.0 * (0.35 + 0.65 * mid);
+            if v < 0.32 { 0.0 } else { v.min(1.0) }
+        })
+        .collect()
+}
+
+/// Six portrait photos of fictional people (generated, no real person), 72 px WebP, for the
+/// comment avatars. `seed` wraps.
+pub fn avatar_webp(seed: u8) -> &'static [u8] {
+    const A: [&[u8]; 6] = [
+        include_bytes!("../../assets/avatars/avatar-0.webp"),
+        include_bytes!("../../assets/avatars/avatar-1.webp"),
+        include_bytes!("../../assets/avatars/avatar-2.webp"),
+        include_bytes!("../../assets/avatars/avatar-3.webp"),
+        include_bytes!("../../assets/avatars/avatar-4.webp"),
+        include_bytes!("../../assets/avatars/avatar-5.webp"),
+    ];
+    A[seed as usize % A.len()]
+}
+
+/// The avatar photo as a `data:image/webp;base64,…` URI.
+pub fn avatar_data_uri(seed: u8) -> String {
+    const T: &[u8; 64] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    let b = avatar_webp(seed);
+    let mut s = String::with_capacity(23 + b.len() * 4 / 3 + 4);
+    s.push_str("data:image/webp;base64,");
+    for c in b.chunks(3) {
+        let n = (u32::from(c[0]) << 16)
+            | (u32::from(*c.get(1).unwrap_or(&0)) << 8)
+            | u32::from(*c.get(2).unwrap_or(&0));
+        s.push(T[(n >> 18) as usize & 63] as char);
+        s.push(T[(n >> 12) as usize & 63] as char);
+        s.push(if c.len() > 1 {
+            T[(n >> 6) as usize & 63] as char
+        } else {
+            '='
+        });
+        s.push(if c.len() > 2 {
+            T[n as usize & 63] as char
+        } else {
+            '='
+        });
+    }
+    s
+}
+
+#[cfg(test)]
+mod fidelity2_tests {
+    use super::*;
+
+    #[test]
+    fn meter_rests_as_dots_and_rises() {
+        assert!(meter_levels(0, 16).iter().all(|v| *v == 0.0));
+        let any = (0..80u64).any(|k| meter_levels(400 + k * 110, 16).iter().any(|v| *v > 0.5));
+        assert!(any);
+        assert_eq!(meter_levels(5_000, 16).len(), 16);
+    }
+
+    #[test]
+    fn avatars_are_webp_data_uris() {
+        assert_eq!(&avatar_webp(0)[..4], b"RIFF");
+        let u = avatar_data_uri(7);
+        assert!(u.starts_with("data:image/webp;base64,UklGR"));
+        assert_eq!((u.len() - 23) % 4, 0);
+    }
+}

@@ -512,8 +512,8 @@ pub(crate) fn demos() -> Vec<Demo> {
             live: true,
         },
         Demo {
-            slug: "model-picker",
-            name: "Model picker",
+            slug: "model-switcher",
+            name: "Model switcher",
             category: "composer",
             summary: "The model menu of an agent app: providers, favourites and recents, search, capability badges, a model that needs a key or is rate limited, Auto routing and a change that waits for the next turn.",
             dioxus: "ModelPicker",
