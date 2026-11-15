@@ -11,9 +11,9 @@ use oxyn_core::{
     },
 };
 use oxyn_dioxus::{
-    AiComposer, AvatarUpload, ChatComposer, ContextField, ContextWindowGrid, CtxModel,
-    ElasticSlider, FileDropzone, Gauge, MenuModel, ModelMenu, ModelPill, MorphSelect, NumberField,
-    PillModel, RichTextEditor, RunControls, ScrubInput, SplitBar, UsageMeter,
+    AiComposer, AvatarUpload, ContextField, ContextWindowGrid, CtxModel, ElasticSlider,
+    FileDropzone, Gauge, MenuModel, ModelMenu, ModelPill, MorphSelect, NumberField, PillModel,
+    RichTextEditor, RunControls, ScrubInput, SplitBar, UsageMeter,
 };
 
 use super::{Code, mk, rng, sel, tog, txt, var};
@@ -601,30 +601,6 @@ fn ai_composer_code(_: &Vals) -> String {
 }
 
 // ---------- chat composer ----------
-
-fn chat_composer(v: &Vals, now: ClockMs) -> Element {
-    let mut msg = use_signal(String::new);
-    rsx! {
-        div { style: "width:560px;max-width:100%;display:flex;flex-direction:column;gap:6px;min-height:260px;justify-content:center",
-            ChatComposer { now, folders: if v.b("folders") { vec!["oxyn".into(), "website".into(), "research".into()] } else { vec![] },
-                folder: if v.b("in_folder") { Some("oxyn".to_string()) } else { None },
-                load_ms: v.f("load") as u64,
-                on_send: move |(t, m): (String, String)| msg.set(format!("onSend({t:?}, {{ model: {m:?} }})")),
-                on_folder_change: move |f: Option<String>| msg.set(format!("onFolderChange({f:?})")),
-                on_apps_change: move |a: Vec<String>| msg.set(format!("onAppsChange({a:?})")) }
-            {status(msg)}
-        }
-    }
-}
-
-fn chat_composer_code(_: &Vals) -> String {
-    Code::new("ChatComposer")
-        .raw("folders", "vec![\"oxyn\".into(), \"website\".into()]")
-        .raw("now", "clock.now()")
-        .raw("on_send", "move |(text, model)| send(text, model)")
-        .raw("on_apps_change", "move |ids| save_connections(ids)")
-        .done()
-}
 
 // ---------- run controls ----------
 
@@ -1543,53 +1519,6 @@ pub fn demos() -> Vec<Demo> {
                 "AiComposer",
                 "AiComposerEl",
                 "ai-composer",
-                "parity/compose.rs",
-            )
-        },
-        Demo {
-            controls: vec![
-                tog("folders", "Folder picker", true),
-                tog("in_folder", "Start in a folder", false),
-                rng(
-                    "load",
-                    "Approval loading (ms)",
-                    300.0,
-                    3000.0,
-                    100.0,
-                    "1300",
-                ),
-            ],
-            variants: vec![
-                var(
-                    "default",
-                    "Dictate to see grey words; connect apps; request approval.",
-                    &[],
-                ),
-                var(
-                    "folder",
-                    "Working in a folder (pick it again to leave).",
-                    &[("in_folder", "true")],
-                ),
-                var("nofolders", "No folder picker.", &[("folders", "false")]),
-            ],
-            render: chat_composer,
-            code: chat_composer_code,
-            keyboard: vec![("Enter", "Send"), ("Shift + Enter", "New line")],
-            a11y: vec![
-                "Menus use menuitemradio / menuitemcheckbox with aria-checked.",
-                "Dictation text is aria-live=polite.",
-            ],
-            responsive: vec!["The row under the card wraps."],
-            height: 300,
-            live: true,
-            ..mk(
-                "chat-composer",
-                "Chat composer",
-                "composer",
-                "A prompt card with a model picker, voice input whose transcript appears word by word, a folder picker, an apps menu with connection switches and a Request approval button with a loading state.",
-                "ChatComposer",
-                "ChatComposerEl",
-                "chat-composer",
                 "parity/compose.rs",
             )
         },

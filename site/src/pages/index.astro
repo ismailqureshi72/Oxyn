@@ -7,7 +7,7 @@ import { mark, brands } from '../components/v2/brands';
 import { demos, counts, screens, inGroup, demoUrl, REPO } from '../lib/data';
 
 const find = (s: string) => demos.find((d) => d.slug === s)!;
-const ghostL = find('approval-card');
+const ghostL = demos.find((d) => d.slug === 'chat-composer') ?? find('approval-card');
 const ghostR = find('agent-plan');
 const tabSets: [string, string, string[] | null][] = [
   ['components', 'Components', ['approval-card', 'tool-call', 'agent-plan', 'model-picker', 'thinking-loader', 'context-meter']],

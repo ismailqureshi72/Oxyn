@@ -677,7 +677,7 @@ pub fn ToolsMenu(
                                     let t = all[i].clone();
                                     rsx! {
                                         div { key: "{t.id}", class: cls(&["tl-row", if t.needs_auth { "auth" } else { "" }]),
-                                            span { class: "tl-l", if crate::brand::has_brand(&t.label) { crate::brand::BrandIcon { name: t.label.clone(), size: 13.0 } } "{t.label}" }
+                                            span { class: "tl-l", if crate::brand::has_brand(&t.label) { crate::brand::BrandIcon { name: t.label.clone(), size: 13.0, coloured: true } } "{t.label}" }
                                             if t.needs_auth {
                                                 button { class: "oxyn-btn secondary xs", r#type: "button", onclick: { let id = t.id.clone(); move |_| on_connect.call(id.clone()) }, Icon { name: "plug", size: 12.0 } "Connect" }
                                             } else {

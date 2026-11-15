@@ -50,6 +50,19 @@ export const demos = demosJson.demos as Demo[];
 export const props = propsJson as Record<string, { file: string; doc: string; props: Prop[] }>;
 export const specs = specsJson as Record<string, { title: string; sections: Record<string, string> }>;
 export const parity = parityJson as Record<string, string>[];
+// Parity names: a demo that rebuilds an affectUI item takes affectUI's own name ("Chat Composer",
+// "Comment Thread") and its tier, so the sidebar and pages read like the reference (Pro items carry
+// the bolt badge; everything stays free and MIT here).
+const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+const affect = new Map<string, Record<string, string>>();
+for (const r of parity) if (r.source === 'affectUI' && !affect.has(norm(r.item))) affect.set(norm(r.item), r);
+const proSlugs = new Set<string>();
+for (const d of demos) {
+  const r = affect.get(norm(d.name));
+  if (!r) continue;
+  d.name = r.item;
+  if (r.tier === 'Pro') proSlugs.add(d.slug);
+}
 export const wasm = wasmJson as { js: string | null; wasm: string | null; bytes: number };
 export const motion = motionJson as Record<string, any>;
 
@@ -195,7 +208,7 @@ export const counts = {
   variants: demos.reduce((n, d) => n + d.variants.length, 0),
 };
 /** Pro markers: nothing is Pro yet (everything here is free and MIT). */
-export const isPro = (_d: Demo) => false;
+export const isPro = (d: Demo) => proSlugs.has(d.slug);
 
 const firstPara = (s: string | null) => {
   if (!s) return '';

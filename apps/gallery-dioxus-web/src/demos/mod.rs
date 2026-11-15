@@ -20,6 +20,7 @@ mod navigation;
 mod overlays;
 mod parity_approvals;
 mod parity_diff;
+mod parity_fidelity;
 mod parity_fields;
 mod parity_home;
 mod parity_input;
@@ -151,6 +152,7 @@ pub const CATEGORIES: [Category; 20] = [
 /// Every demo, in category order.
 pub fn catalog() -> Vec<Demo> {
     let mut v = Vec::new();
+    v.extend(parity_fidelity::demos());
     v.extend(composer::demos());
     v.extend(composer_parts::demos());
     v.extend(shells::demos());

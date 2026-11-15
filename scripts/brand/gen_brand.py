@@ -18,7 +18,23 @@ for e in si_data:
     si_hex[e.get("slug") or si_slug(e["title"])] = e["hex"]
 
 # id, title, source, file, hex, aliases, kind
-L = "lobe"; S = "si"
+L = "lobe"; S = "si"; O = "oxyn"
+# Marks drawn by Oxyn (MIT) from basic shapes: Slack has no permissive file (removed from Simple Icons).
+def _slack(fill):
+    import math
+    cols = ["#36C5F0", "#2EB67D", "#ECB22E", "#E01E5A"]
+    out = []
+    for k in range(4):
+        f = f' fill="{cols[k]}"' if fill else ""
+        out.append(f'<g transform="rotate({90*k} 12 12)"><rect x="7.6" y="1" width="4.2" height="10.4" rx="2.1"{f}></rect><path d="M12.8 1h2.1a2.1 2.1 0 012.1 2.1 2.1 2.1 0 01-2.1 2.1h-2.1z"{f}></path></g>')
+    return "".join(out)
+OWN = {"slack": _slack(False)}
+OWN_COLOURED = {
+  "slack": _slack(True),
+  "gmail": '<path d="M1.5 6.6 6 9.9V20H3a1.5 1.5 0 01-1.5-1.5z" fill="#4285F4"></path><path d="M22.5 6.6 18 9.9V20h3a1.5 1.5 0 001.5-1.5z" fill="#34A853"></path><path d="M6 9.9 12 14.3l6-4.4V5l-6 4.4L6 5z" fill="#EA4335"></path><path d="M1.5 6.6v-1c0-1.7 1.9-2.6 3.3-1.6L6 5v4.9z" fill="#C5221F"></path><path d="M22.5 6.6v-1c0-1.7-1.9-2.6-3.3-1.6L18 5v4.9z" fill="#FBBC04"></path>',
+  "googledrive": '<path d="M8 3 1 15l3.5 6 7-12z" fill="#00AC47"></path><path d="M8 3h8l7 12h-7z" fill="#FFBA00"></path><path d="M4.5 21h15l3.5-6H8z" fill="#2684FC"></path>',
+  "clickup": '<defs><linearGradient id="oxyn-cu-a" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8930FD"></stop><stop offset="1" stop-color="#49CCF9"></stop></linearGradient><linearGradient id="oxyn-cu-b" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#FF02F0"></stop><stop offset="1" stop-color="#FFC800"></stop></linearGradient></defs><path d="M2 18.439l3.69-2.828c1.961 2.56 4.044 3.739 6.363 3.739 2.307 0 4.33-1.166 6.203-3.704L22 18.405C19.298 22.065 15.941 24 12.053 24 8.178 24 4.788 22.078 2 18.439z" fill="url(#oxyn-cu-b)"></path><path d="M12.04 6.15l-6.568 5.66-3.036-3.52L12.055 0l9.543 8.296-3.05 3.509z" fill="url(#oxyn-cu-a)"></path>',
+}
 ICONS = [
   ("openai", "OpenAI", L, "openai", "000000", ["gpt", "chatgpt", "o1", "o3", "o4"], "ai"),
   ("anthropic", "Anthropic", L, "anthropic", "191919", [], "ai"),
@@ -71,9 +87,19 @@ ICONS = [
   ("typescript", "TypeScript", S, "typescript", None, ["ts"], "integration"),
   ("react", "React", S, "react", None, [], "integration"),
   ("nextdotjs", "Next.js", S, "nextdotjs", None, ["next.js", "nextjs"], "integration"),
+  ("v0", "v0", L, "v0", "000000", ["v0.dev"], "ai"),
+  ("clickup", "ClickUp", S, "clickup", None, [], "integration"),
+  ("dropbox", "Dropbox", S, "dropbox", None, [], "integration"),
+  ("slack", "Slack", O, "slack", "4A154B", [], "integration"),
 ]
 
+# Full-colour versions (`COLOURED`): Lobe Icons' own -color files, and marks drawn by Oxyn from
+# basic shapes in the official colours where no permissive multi-colour file exists.
+COLOUR_LOBE = {"claude": "claude-color", "gemini": "gemini-color", "google": "google-color", "figma": "figma-color"}
+
 def body(src, f):
+    if src == O:
+        return "0 0 24 24", OWN[f], "nonzero"
     t = open(f"{B}/{'lobe/icons' if src == L else 'si/icons'}/{f}.svg").read()
     vb = re.search(r'viewBox="([^"]+)"', t).group(1)
     inner = re.search(r"<svg[^>]*>(.*)</svg>", t, re.S).group(1)
@@ -106,6 +132,8 @@ out = ['//! Brand and model marks, inlined from permissively licensed icon sets 
        '    SimpleIcons,',
        '    /// Lobe Icons (`@lobehub/icons-static-svg`), MIT.',
        '    LobeIcons,',
+       '    /// Drawn by Oxyn from basic shapes in the official colours (MIT).',
+       '    Oxyn,',
        '}',
        '',
        '/// What a mark stands for.',
@@ -166,7 +194,7 @@ for (i, title, src, vb, inner, rule, hx, al, kind) in rows:
     out.append("    BrandIcon {")
     out.append(f'        id: "{i}",')
     out.append(f'        title: "{title}",')
-    out.append(f'        source: BrandSource::{"LobeIcons" if src == L else "SimpleIcons"},')
+    out.append(f'        source: BrandSource::{ {L: "LobeIcons", S: "SimpleIcons", O: "Oxyn"}[src] },')
     out.append(f'        kind: BrandKind::{ {"ai":"Ai","company":"Company","integration":"Integration"}[kind] },')
     out.append(f'        view_box: "{vb}",')
     out.append(f'        body: {rs(inner)},')
@@ -175,6 +203,40 @@ for (i, title, src, vb, inner, rule, hx, al, kind) in rows:
     out.append("        aliases: &[" + ", ".join(f'"{a}"' for a in al) + "],")
     out.append("    },")
 out.append("];")
+# Full-colour bodies.
+def colour_body(i):
+    if i in OWN_COLOURED: return OWN_COLOURED[i]
+    t = open(f"{B}/lobe/icons/{COLOUR_LOBE[i]}.svg").read()
+    inner = re.search(r"<svg[^>]*>(.*)</svg>", t, re.S).group(1)
+    return re.sub(r"<title>.*?</title>", "", inner, flags=re.S).strip()
+out.append("")
+out.append("/// Full-colour marks (id, inner SVG with its own fills) for brands whose logo has more than one")
+out.append("/// colour: Lobe Icons' `-color` files, and Gmail, Google Drive, Slack and ClickUp drawn by Oxyn")
+out.append("/// from basic shapes in the official colours. [`BrandIcon::svg_full`] uses them.")
+out.append("pub const COLOURED: &[(&str, &str)] = &[")
+for i in list(COLOUR_LOBE) + list(OWN_COLOURED):
+    out.append(f'    ("{i}", {rs(colour_body(i))}),')
+out.append("];")
+out.append('''
+impl BrandIcon {
+    /// The full-colour inner SVG when the mark has more than one colour.
+    pub fn coloured_body(&self) -> Option<&'static str> {
+        COLOURED.iter().find(|(i, _)| *i == self.id).map(|(_, b)| *b)
+    }
+    /// The mark as it should look in colour: the multi-colour version when there is one, else the
+    /// brand colour (near-black marks keep `currentColor` so they read on dark themes).
+    pub fn svg_full(&self) -> String {
+        match self.coloured_body() {
+            Some(b) => format!(
+                "<svg xmlns=\\"http://www.w3.org/2000/svg\\" viewBox=\\"{}\\">{}</svg>",
+                self.view_box, b
+            ),
+            None if self.display_hex().is_some() => self.svg(true),
+            None => self.svg(false),
+        }
+    }
+}
+''')
 out.append('''
 fn norm(s: &str) -> String {
     s.trim()

@@ -235,7 +235,7 @@ document.addEventListener('oxyn-demo-live', (e) => {
   // needs a scrollbar just because the column is narrower than the component.
   const fitStage = (stage) => {
     const m = stage.querySelector(':scope > .oxd-mount');
-    if (!m || stage.closest('.site-card')) return;
+    if (!m || stage.closest('.site-card, .lp-screen')) return;
     m.style.zoom = '';
     const cs = getComputedStyle(stage);
     const avail = stage.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
@@ -401,6 +401,12 @@ document.addEventListener('oxyn-demo-live', (e) => {
       b.setAttribute('aria-expanded', String(show));
       b.setAttribute('aria-label', show ? 'Hide controls' : 'Show controls');
     });
+    // Component style: Clean (one surface) or Classic (inset card); components read it from CSS.
+    const cs = [...w.querySelectorAll('[data-cstyle]')].filter((b) => b.tagName === 'BUTTON');
+    cs.forEach((b) => b.addEventListener('click', () => {
+      cs.forEach((x) => x.setAttribute('aria-checked', String(x === b)));
+      pv.dataset.cstyle = b.dataset.cstyle;
+    }));
     w.querySelector('[data-pv-reset]')?.addEventListener('click', () => {
       const r = pv.querySelector('.oxd-reset');
       if (r) r.click();
