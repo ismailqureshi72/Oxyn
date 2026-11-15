@@ -784,10 +784,10 @@ fn umenu(v: &Vals, _: ClockMs) -> Element {
     rsx! {
         div { class: "oxd-app", style: "height:440px",
             div { class: "oxd-app-bar", span { class: "oxd-app-dot" } span { class: "oxd-app-dot" } span { class: "oxd-app-dot" } span { class: "oxd-app-title", "Atlas" } span { class: "oxd-app-sp" }
-                if !up { UserMenu { name: "Ismail Qureshi", email: "ismail@oxyn.dev", plan: Some(s("Pro")), items: items.clone(), show_name: v.b("show_name"), show_theme: v.b("theme"), show_status: v.b("status"), usage: if v.b("usage") { Some((312.0, 500.0)) } else { None }, open: v.b("open") } }
+                if !up { UserMenu { name: "Alex Rivera", email: "alex@example.com", plan: Some(s("Pro")), items: items.clone(), show_name: v.b("show_name"), show_theme: v.b("theme"), show_status: v.b("status"), usage: if v.b("usage") { Some((312.0, 500.0)) } else { None }, open: v.b("open") } }
             }
             div { class: "oxd-app-body", style: "flex:1;justify-content:flex-end",
-                if up { UserMenu { name: "Ismail Qureshi", email: "ismail@oxyn.dev", plan: Some(s("Pro")), items, show_name: true, show_theme: v.b("theme"), show_status: v.b("status"), usage: if v.b("usage") { Some((312.0, 500.0)) } else { None }, side: "up", align: "start", open: v.b("open") } }
+                if up { UserMenu { name: "Alex Rivera", email: "alex@example.com", plan: Some(s("Pro")), items, show_name: true, show_theme: v.b("theme"), show_status: v.b("status"), usage: if v.b("usage") { Some((312.0, 500.0)) } else { None }, side: "up", align: "start", open: v.b("open") } }
             }
         }
     }
@@ -795,8 +795,8 @@ fn umenu(v: &Vals, _: ClockMs) -> Element {
 
 fn umenu_code(v: &Vals) -> String {
     Code::new("UserMenu")
-        .raw("name", q("Ismail Qureshi"))
-        .raw("email", q("ismail@oxyn.dev"))
+        .raw("name", q("Alex Rivera"))
+        .raw("email", q("alex@example.com"))
         .raw("plan", "Some(\"Pro\".into())")
         .raw(
             "items",
@@ -877,7 +877,7 @@ fn notes() -> Vec<Note> {
             "n3",
             "Maya",
             "mentioned you in #platform",
-            "@ismail can you check the sandbox quota before Friday?",
+            "@alex can you check the sandbox quota before Friday?",
             "Today",
             "1h",
         )

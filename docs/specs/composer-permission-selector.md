@@ -68,7 +68,7 @@ Rules:
    Tiers 3–4 are reachable only through the open list + confirm. No shortcut can enable Bypass.
 4. "Always allow `<prefix>`" on an approval card adds a **rule**; it never changes the level. Rules and
    level are shown together in the popover ("Ask · 3 rules").
-5. **Bypass never skips Critical requests** (decided by Ismail, 2026-11-12). Deploys, payments,
+5. **Bypass never skips Critical requests** (maintainer decision, 2026-11-12). Deploys, payments,
    credentials and other Critical-tier requests still show a press-and-hold approval card
    (`bypass_includes_critical = false`, not configurable in the free core). See [approvals.md](approvals.md).
 5. Policy-managed limits (org / workspace) cap the selectable max; capped rows are disabled-with-reason.

@@ -227,8 +227,8 @@ fn select(v: &Vals, now: ClockMs) -> Element {
 fn select_code(v: &Vals) -> String {
     Code::new("Select")
         .pre("let options = vec![")
-        .pre("    SelectOption::new(\"swift\", \"Ember Swift 2\").desc(\"Fastest · $1 / Mtok\").icon(\"bolt\").group(\"Ember\"),")
-        .pre("    SelectOption::new(\"deep\", \"Ember Deep 2\").desc(\"Deepest · $5 / Mtok\").icon(\"brain\").group(\"Ember\"),")
+        .pre("    SelectOption::new(\"swift\", \"Claude Haiku 5\").desc(\"Fastest · $1 / Mtok\").icon(\"bolt\").group(\"Anthropic\"),")
+        .pre("    SelectOption::new(\"deep\", \"Claude Opus 5\").desc(\"Deepest · $5 / Mtok\").icon(\"brain\").group(\"Anthropic\"),")
         .pre("    SelectOption::new(\"q7\", \"Local Q 7B\").desc(\"Free · on device\").icon(\"bolt\").group(\"On device\"),")
         .pre("];")
         .raw("options", "options")

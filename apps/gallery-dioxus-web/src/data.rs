@@ -163,15 +163,15 @@ pub fn catalog() -> ModelCatalog {
         };
     ModelCatalog {
         providers: vec![
-            ("ember".into(), "Ember".into()),
-            ("slate".into(), "Slate".into()),
+            ("anthropic".into(), "Anthropic".into()),
+            ("openai".into(), "OpenAI".into()),
             ("local".into(), "On device".into()),
         ],
         models: vec![
             m(
                 "ember/swift-2",
-                "ember",
-                "Ember Swift 2",
+                "anthropic",
+                "Claude Haiku 5",
                 true,
                 200_000,
                 Tier3::Fast,
@@ -180,8 +180,8 @@ pub fn catalog() -> ModelCatalog {
             ),
             m(
                 "ember/deep-2",
-                "ember",
-                "Ember Deep 2",
+                "anthropic",
+                "Claude Opus 5",
                 true,
                 1_000_000,
                 Tier3::Slow,
@@ -190,8 +190,8 @@ pub fn catalog() -> ModelCatalog {
             ),
             m(
                 "slate/one",
-                "slate",
-                "Slate One",
+                "openai",
+                "GPT-6",
                 false,
                 128_000,
                 Tier3::Medium,
@@ -200,8 +200,8 @@ pub fn catalog() -> ModelCatalog {
             ),
             m(
                 "slate/vision",
-                "slate",
-                "Slate Vision",
+                "openai",
+                "GPT-6 Vision",
                 true,
                 256_000,
                 Tier3::Medium,
@@ -883,11 +883,11 @@ pub fn menu_items_logos() -> Vec<MenuItem> {
     vec![
         MenuItem::label("Send to"),
         MenuItem::action("linear", "Create Linear issue")
-            .logo("L")
+            .logo("linear")
             .shortcut("Mod+Shift+L"),
-        MenuItem::action("github", "Open GitHub issue").logo("GH"),
+        MenuItem::action("github", "Open GitHub issue").logo("github"),
         MenuItem::action("slack", "Share to Slack").logo("S"),
-        MenuItem::action("notion", "Save to Notion").logo("N"),
+        MenuItem::action("notion", "Save to Notion").logo("notion"),
         MenuItem::divider(),
         MenuItem::checkbox("follow", "Follow thread", true),
         MenuItem::action("pin", "Pin to sidebar")
@@ -899,18 +899,18 @@ pub fn menu_items_logos() -> Vec<MenuItem> {
 /// Model options grouped by provider.
 pub fn model_options() -> Vec<SelectOption> {
     vec![
-        SelectOption::new("swift", "Ember Swift 2")
+        SelectOption::new("swift", "Claude Haiku 5")
             .desc("Fastest · $1 / Mtok")
             .icon("bolt")
-            .group("Ember"),
-        SelectOption::new("deep", "Ember Deep 2")
+            .group("Anthropic"),
+        SelectOption::new("deep", "Claude Opus 5")
             .desc("Deepest · $5 / Mtok")
             .icon("brain")
-            .group("Ember"),
-        SelectOption::new("one", "Slate One")
+            .group("Anthropic"),
+        SelectOption::new("one", "GPT-6")
             .desc("Balanced · needs a key")
             .icon("spark")
-            .group("Slate"),
+            .group("OpenAI"),
         SelectOption::new("q7", "Local Q 7B")
             .desc("Free · on device")
             .icon("bolt")
