@@ -227,8 +227,8 @@ fn select(v: &Vals, now: ClockMs) -> Element {
 fn select_code(v: &Vals) -> String {
     Code::new("Select")
         .pre("let options = vec![")
-        .pre("    SelectOption::new(\"swift\", \"Ember Swift 2\").desc(\"Fastest · $1 / Mtok\").icon(\"bolt\").group(\"Ember\"),")
-        .pre("    SelectOption::new(\"deep\", \"Ember Deep 2\").desc(\"Deepest · $5 / Mtok\").icon(\"brain\").group(\"Ember\"),")
+        .pre("    SelectOption::new(\"swift\", \"Claude Haiku 5\").desc(\"Fastest · $1 / Mtok\").icon(\"bolt\").group(\"Anthropic\"),")
+        .pre("    SelectOption::new(\"deep\", \"Claude Opus 5\").desc(\"Deepest · $5 / Mtok\").icon(\"brain\").group(\"Anthropic\"),")
         .pre("    SelectOption::new(\"q7\", \"Local Q 7B\").desc(\"Free · on device\").icon(\"bolt\").group(\"On device\"),")
         .pre("];")
         .raw("options", "options")
@@ -319,7 +319,8 @@ fn slider(v: &Vals, _: ClockMs) -> Element {
     };
     rsx! {
         div { class: if kind == "vertical" { "" } else { "oxd-w420" },
-            Slider { slider: m, label, format, decimals, show_value: v.b("show_value"), tag, thumb_labels: thumbs }
+            Slider { slider: m, label, format, decimals, show_value: v.b("show_value"), tag, thumb_labels: thumbs,
+                start: v.b("icons").then(|| "minus".to_string()), end: v.b("icons").then(|| "plus".to_string()) }
         }
     }
 }
@@ -823,6 +824,7 @@ pub(crate) fn demos() -> Vec<Demo> {
                     "detents",
                 ),
                 tog("tag", "Cost tag", true),
+                tog("icons", "Start and end icons", false),
                 tog("show_value", "Show value", true),
                 tog("disabled", "Disabled", false),
             ],
@@ -831,6 +833,11 @@ pub(crate) fn demos() -> Vec<Demo> {
                 var("single", "Temperature with marks.", &[("kind", "single")]),
                 var("range", "Two thumbs for a budget.", &[("kind", "range")]),
                 var("vertical", "Vertical volume.", &[("kind", "vertical")]),
+                var(
+                    "icons",
+                    "Start and end content around the track (Arc start / end).",
+                    &[("kind", "single"), ("icons", "true")],
+                ),
             ],
             render: slider,
             code: slider_code,

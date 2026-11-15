@@ -73,3 +73,7 @@ Slider { slider: Slider { values, min, max, step, large_step, marks: Vec<Mark { 
 ## 10. Related components and references
 `composer-effort-control.md` (named levels), `number-ticker.md` (readout roll). Arc
 `/components/slider` — behaviour only.
+
+## Parity: Arc UI · Slider (plan #28)
+Covered: one value or a range with two thumbs (`Slider::range`), `min_steps_between`, `large_step` (PageUp/PageDown and Shift+arrow), labelled and clickable marks, a formatted readout and spoken value (`format`, `thumb_labels`), the value bubble over an active thumb, the strain toward a refused key at a limit, and (new in plan #28) `start` / `end` icons around the track.
+Gap: released drags do not carry momentum before snapping (the thumb snaps at once); the rubber-band variant lives in [elastic-slider.md](elastic-slider.md).

@@ -8,7 +8,7 @@ use gpui::{
 use oxyn_core::{
     ClockMs,
     approval::{ApprovalCard, CardPhase, Risk},
-    checkpoint::{Checkpoint, CheckpointStatus, format_at, lanes},
+    checkpoint::{Checkpoint, CheckpointStatus, format_at, format_cost, lanes, step_cost},
 };
 use oxyn_tokens::{ColorRole, Theme};
 
@@ -308,6 +308,14 @@ impl RenderOnce for CheckpointLanesEl {
                             .child(cp.title.clone()),
                     )
                     .child(div().flex_1())
+                    .when_some(step_cost(&self.checkpoints, r.index), |d, sc| {
+                        d.child(
+                            div()
+                                .text_size(px(11.5))
+                                .text_color(c(t, ColorRole::FgMuted))
+                                .child(format!("+{}", format_cost(sc))),
+                        )
+                    })
                     .child(
                         div()
                             .text_size(px(11.5))

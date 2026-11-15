@@ -32,11 +32,19 @@ pub fn Badge(
     /// `sm` · `md` · `lg`.
     #[props(default = "sm".to_string())]
     size: String,
-    /// Leading icon.
+    /// Leading icon, sized to the badge (12, 14 or 16 px).
     #[props(default)]
     icon: Option<String>,
+    /// Roll the label: a changed label rises in with a short blur (keyed on the text).
+    #[props(default)]
+    roll: bool,
 ) -> Element {
     let b = badge;
+    let icon_px = match size.as_str() {
+        "lg" => 16.0,
+        "md" => 14.0,
+        _ => 12.0,
+    };
     let (fg, bg) = b.tone.roles();
     let style = format!("--fg:{};--bg:{}", color_var(fg), color_var(bg));
     let round = b.count.is_some();
@@ -53,8 +61,12 @@ pub fn Badge(
     rsx! {
         span { class: "{class}", style: "{style}", role: if b.live { "status" } else { "" }, "aria-label": "{aria}",
             if b.dot || b.live { span { class: if b.live { "dot live" } else { "dot" }, "aria-hidden": "true" } }
-            if let Some(i) = icon { Icon { name: i, size: 11.0, stroke: 2.0 } }
-            span { "aria-hidden": "true", "{text}" }
+            if let Some(i) = icon { Icon { name: i, size: icon_px, stroke: 2.0 } }
+            if roll {
+                for k in std::iter::once(text.clone()) { span { key: "{k}", class: "lbl roll", "aria-hidden": "true", "{k}" } }
+            } else {
+                span { "aria-hidden": "true", "{text}" }
+            }
         }
     }
 }
@@ -206,6 +218,8 @@ pub fn EntityChip(
             onkeydown: move |k: KeyboardEvent| if k.key() == Key::Escape { open.set(false) },
             if let Some(src) = e.image.clone() {
                 img { class: "img", src: "{src}", alt: "" }
+            } else if crate::brand::has_brand(&e.name) {
+                span { class: "bmk", crate::brand::BrandIcon { name: e.name.clone(), size: 12.0 } }
             } else {
                 Monogram { monogram: e.monogram.clone(), size: 16.0 }
             }
@@ -286,7 +300,7 @@ pub fn Avatar(
                 }
             }
             if let Some(p) = a.status { span { class: "pres {p.id()}", style: "--d:{a.dot()}px", "aria-hidden": "true" } }
-            if let Some(md) = a.model.clone() { span { class: "model", "aria-hidden": "true", "{md}" } }
+            if let Some(md) = a.model.clone() { span { class: "model", "aria-hidden": "true", if crate::brand::has_brand(&md) { crate::brand::BrandIcon { name: md.clone(), size: 10.0 } } else { "{md}" } } }
         }
     }
 }

@@ -6,7 +6,8 @@ use dioxus::prelude::*;
 use oxyn_core::{
     ClockMs,
     checkpoint::{
-        Checkpoint, CheckpointKind, CheckpointStatus, RestoreAction, RestoreFlow, header, lanes,
+        Checkpoint, CheckpointKind, CheckpointStatus, RestoreAction, RestoreFlow, format_cost,
+        header, lanes, step_cost,
     },
 };
 
@@ -35,8 +36,29 @@ pub fn CheckpointLanes(
     /// Rewind pressed.
     #[props(default)]
     on_rewind: EventHandler<String>,
+    /// Show the tool that made each checkpoint as an icon before its title.
+    #[props(default = true)]
+    tool_icons: bool,
+    /// Show what each step cost (`+$0.11`) beside its time.
+    #[props(default = true)]
+    step_costs: bool,
+    /// Cost formatter, cents in (default `format_cost`: `$0.42`, `$1.2k`).
+    #[props(default)]
+    format: Option<Callback<u32, String>>,
 ) -> Element {
     let rows = lanes(&checkpoints, head.as_deref());
+    let fmt = move |c: u32| match format {
+        Some(f) => f.call(c),
+        None => format_cost(c),
+    };
+    let head_txt = match checkpoints.iter().filter_map(|c| c.cost_cents).max() {
+        Some(c) => {
+            let base = header(&checkpoints);
+            let cut = base.rfind(" · ").unwrap_or(base.len());
+            format!("{} · {}", &base[..cut], fmt(c))
+        }
+        None => header(&checkpoints),
+    };
     let n_lanes = rows.iter().map(|r| r.lane).max().unwrap_or(0) + 1;
     let gutter = 18 * n_lanes + 8;
     rsx! {
@@ -45,7 +67,7 @@ pub fn CheckpointLanes(
                 span { class: "t", "Checkpoints" }
                 if let Some(t) = task { span { class: "task", "· {t}" } }
                 span { class: "sp" }
-                span { class: "n", "aria-live": "polite", "{header(&checkpoints)}" }
+                span { class: "n", "aria-live": "polite", "{head_txt}" }
             }
             ol { class: "rows", style: "--g:{gutter}px",
                 for r in rows {
@@ -67,6 +89,13 @@ pub fn CheckpointLanes(
                                     }
                                     circle { cx: "{9 + r.lane * 18}", cy: "18", r: if r.current { "5" } else { "4" }, class: "dot {st}" }
                                 }
+                                if tool_icons {
+                                    if let Some(ic) = c.tool_icon() {
+                                        span { class: "ti", title: "{c.tool.clone().unwrap_or_default()}", "aria-hidden": "true", Icon { name: ic, size: 12.0 } }
+                                    } else {
+                                        span { class: "ti none", "aria-hidden": "true" }
+                                    }
+                                }
                                 span { class: if c.status == CheckpointStatus::Running { "tt shim" } else { "tt" }, "{c.title}" }
                                 if c.status == CheckpointStatus::Failed { span { class: "badge failed", "Failed" } }
                                 if c.status == CheckpointStatus::Stopped { span { class: "badge", "Stopped" } }
@@ -74,6 +103,9 @@ pub fn CheckpointLanes(
                                 span { class: "sp" }
                                 span { class: "meta",
                                     if c.files == 1 { span { class: "files", "1 file" } } else if c.files > 1 { span { class: "files", "{c.files} files" } }
+                                    if step_costs {
+                                        if let Some(sc) = step_cost(&checkpoints, r.index) { span { class: "cost", "+{fmt(sc)}" } }
+                                    }
                                     span { class: "du", "{r.time}" }
                                 }
                                 if !r.current && c.status != CheckpointStatus::Running {

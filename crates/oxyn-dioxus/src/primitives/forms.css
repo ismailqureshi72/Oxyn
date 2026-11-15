@@ -328,7 +328,8 @@
 .oxyn-reel .wheels{position:relative;display:flex;justify-content:center;gap:4px;height:calc(var(--row)*5);overflow:hidden;border-radius:12px;background:var(--oxyn-color-surface-sunken);-webkit-mask:linear-gradient(transparent,#000 30%,#000 70%,transparent);mask:linear-gradient(transparent,#000 30%,#000 70%,transparent)}
 .oxyn-reel .lens{position:absolute;left:6px;right:6px;top:50%;height:var(--row);translate:0 -50%;border-radius:8px;background:var(--oxyn-color-surface-raised);box-shadow:0 0 0 1px var(--oxyn-color-border-default),0 1px 3px rgb(0 0 0/.15);pointer-events:none}
 .oxyn-reel .reel{position:relative;flex:0 1 auto;min-width:48px;height:100%;perspective:600px;touch-action:pan-x;cursor:grab;outline:none}
-.oxyn-reel .reel:first-of-type{min-width:110px}
+/* The day wheel carries labels like "Wed, Sep 30"; it needs the room or it runs into the hour. */
+.oxyn-reel .reel[aria-label="Day"]{min-width:128px}.oxyn-reel .reel[aria-label="Month"]{min-width:96px}
 .oxyn-reel .reel:focus-visible .ent.cur{color:var(--oxyn-color-fg-default);text-decoration:underline;text-underline-offset:4px}
 .oxyn-reel .drum{position:absolute;inset:0;transform-style:preserve-3d;transition:transform var(--dur,320ms) cubic-bezier(.2,.9,.25,1)}
 .oxyn-reel .reel.drag .drum{transition:none;cursor:grabbing}

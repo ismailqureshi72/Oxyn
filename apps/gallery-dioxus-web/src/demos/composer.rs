@@ -218,7 +218,7 @@ fn effort(v: &Vals, now: ClockMs) -> Element {
     let view = ec.view(&data::levels(), now);
     rsx! {
         div { class: "oxd-room-up",
-            EffortChip { view, support: data::levels(), variant: v.string("variant"), open: v.b("open"), model: "Ember Swift 2" }
+            EffortChip { view, support: data::levels(), variant: v.string("variant"), open: v.b("open"), model: "Claude Haiku 5" }
         }
     }
 }
@@ -249,7 +249,7 @@ fn context(v: &Vals, now: ClockMs) -> Element {
     let view = m.view(&u, now);
     rsx! {
         div { class: "oxd-room-up",
-            ContextMeterChip { view, usage: u, variant: v.string("variant"), open: v.b("open"), model: "Ember Swift 2" }
+            ContextMeterChip { view, usage: u, variant: v.string("variant"), open: v.b("open"), model: "Claude Haiku 5" }
         }
     }
 }
@@ -261,7 +261,7 @@ fn context_code(v: &Vals) -> String {
         .raw("view", "view")
         .raw("usage", "usage.clone()")
         .s("variant", v.s("variant"), "ring")
-        .raw("model", q("Ember Swift 2"))
+        .raw("model", q("Claude Haiku 5"))
         .raw("on_compact", "move |_| agent.compact()")
         .done()
 }
@@ -557,7 +557,7 @@ pub(crate) fn demos() -> Vec<Demo> {
                 ("Type", "Search"),
             ],
             a11y: vec![
-                "The pill is a button with aria-haspopup=listbox and a full name (\"Model: Ember Swift 2. Change model\").",
+                "The pill is a button with aria-haspopup=listbox and a full name (\"Model: Claude Haiku 5. Change model\").",
                 "Search is a combobox controlling a listbox; unavailable models are aria-disabled with the reason.",
                 "Capability badges have text alternatives, never colour only.",
             ],

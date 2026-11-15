@@ -19,6 +19,8 @@ fn card(v: &Vals, now: ClockMs) -> Element {
             actions: v.string("actions"),
             shortcuts: v.b("shortcuts"),
             always: v.b("always"),
+            edit: v.b("edit"),
+            labels: v.string("labels"),
             now,
         }
     }
@@ -36,6 +38,8 @@ fn LiveApproval(
     actions: String,
     shortcuts: bool,
     always: bool,
+    edit: bool,
+    labels: String,
     now: ClockMs,
 ) -> Element {
     let start = now;
@@ -90,6 +94,12 @@ fn LiveApproval(
                 actions,
                 shortcuts,
                 always,
+                on_edit: if edit { Some(EventHandler::new(|_| {})) } else { None },
+                on_hover: move |h: bool| card.write().set_hover(h, now),
+                approve_label: (labels == "custom").then(|| "Send now".to_string()),
+                deny_label: if labels == "custom" { "Not yet".to_string() } else { "Deny".to_string() },
+                always_label: if labels == "custom" { "Always allow sends to this list".to_string() } else { "Always allow this action".to_string() },
+                icon: (labels == "custom").then(|| "mail".to_string()),
                 on_decide: move |d: Decision| {
                     if card.write().press(d, now).is_ok() {
                         pressed.set(Some(now.0));
@@ -320,12 +330,24 @@ pub(crate) fn demos() -> Vec<Demo> {
                 ),
                 sel("actions", "Buttons", &["tray", "card"], "tray"),
                 tog("countdown", "Countdown (60 s)", true),
+                tog("edit", "Edit button", false),
+                sel("labels", "Labels", &["default", "custom"], "default"),
                 tog("shortcuts", "Key hints", true),
                 tog("always", "Always allow ticked", false),
                 tog("holding", "Holding (critical)", true),
             ],
             variants: vec![
                 var("inline", "Medium risk with a countdown.", &[]),
+                var(
+                    "edit-custom",
+                    "Edit before Deny, custom labels and icon.",
+                    &[("edit", "true"), ("labels", "custom")],
+                ),
+                var(
+                    "card-actions",
+                    "Buttons inside the card, Edit shown.",
+                    &[("actions", "card"), ("edit", "true")],
+                ),
                 var(
                     "high-arming",
                     "High risk: Allow arms first, Deny is the default.",

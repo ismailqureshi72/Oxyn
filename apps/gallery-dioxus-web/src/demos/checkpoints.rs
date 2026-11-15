@@ -18,7 +18,8 @@ fn lanes(v: &Vals, _: ClockMs) -> Element {
     let head = v.opt("head");
     rsx! {
         div { class: "oxd-w560",
-            CheckpointLanes { checkpoints: cps, head, task: Some("Add Stripe checkout".to_string()) }
+            CheckpointLanes { checkpoints: cps, head, task: Some("Add Stripe checkout".to_string()), tool_icons: v.b("tools"), step_costs: v.b("costs"),
+                format: if v.s("currency") == "credits" { Some(Callback::new(|c: u32| format!("{} cr", c * 10))) } else { None } }
         }
     }
 }
@@ -35,6 +36,15 @@ fn lanes_code(v: &Vals) -> String {
         .raw("checkpoints", "checkpoints");
     if let Some(h) = v.opt("head") {
         c = c.raw("head", q(&h));
+    }
+    if !v.b("tools") {
+        c = c.raw("tool_icons", "false");
+    }
+    if v.s("currency") == "credits" {
+        c = c.raw(
+            "format",
+            "Some(Callback::new(|cents: u32| format!(\"{} cr\", cents * 10)))",
+        );
     }
     c.raw("task", q("Add Stripe checkout"))
         .raw("on_rewind", "move |id: String| agent.rewind_to(id)")
@@ -152,6 +162,14 @@ pub(crate) fn demos() -> Vec<Demo> {
             controls: vec![
                 tog("rewound", "Rewound once (two attempts)", true),
                 sel("head", "Head", &["none", "c2", "c4", "c5", "c6"], "none"),
+                tog("tools", "Tool icon per checkpoint", true),
+                tog("costs", "Step cost", true),
+                sel(
+                    "currency",
+                    "Cost format",
+                    &["dollars", "credits"],
+                    "dollars",
+                ),
             ],
             variants: vec![
                 var("rewound", "Attempt two running after a rewind.", &[]),
@@ -159,6 +177,11 @@ pub(crate) fn demos() -> Vec<Demo> {
                     "single",
                     "One attempt, failing tests.",
                     &[("rewound", "false")],
+                ),
+                var(
+                    "credits",
+                    "A custom cost formatter (credits), no tool icons.",
+                    &[("currency", "credits"), ("tools", "false")],
                 ),
             ],
             render: lanes,

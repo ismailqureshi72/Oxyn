@@ -254,3 +254,7 @@ cadence) · family D border beams (same band maths along a path) · skeleton swe
 | affectUI Shimmer Loader (note 11) | shared sweep across blocks | Paid — study only |
 | prompt-kit, Motion Primitives, Magic UI, React Bits, GradientDeck (note 02) | market scan of 1–3 shimmers each; React Bits' many-knob shiny text | licences not recorded in our notes — study only |
 | Cue wordmark [R029] | rainbow sweep for brand moments | Study only |
+
+## Plan #28 parity (2026-11-14)
+
+Arc UI behaviour (active, pass duration, label rise) is [shimmer-label](shimmer-label.md).

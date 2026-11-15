@@ -28,12 +28,12 @@ fn commands() -> Vec<Command> {
             .keywords(&["tldr"]),
         Command::new("issue", "Create Linear issue")
             .group("Suggestions")
-            .logo("L")
+            .logo("linear")
             .suggested()
             .hint("Linear"),
         Command::new("pr", "Open pull request")
             .group("Suggestions")
-            .logo("GH")
+            .logo("github")
             .suggested()
             .hint("GitHub"),
         Command::new("slack", "Share to #eng-agents")
@@ -43,7 +43,7 @@ fn commands() -> Vec<Command> {
             .hint("Slack"),
         Command::new("doc", "Draft release notes")
             .group("Suggestions")
-            .logo("N")
+            .logo("notion")
             .suggested()
             .hint("Notion"),
         Command::new("new", "New thread")

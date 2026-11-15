@@ -304,3 +304,7 @@ approvals family G ([../component-taxonomy.md](../component-taxonomy.md)).
 | Threadbear [R053] | Hibernating as a state | Study only |
 | Pixel tree [R004], metro pipeline [R038] | Pro `growth`, `metro` | Study only |
 | affectUI Agent Tree (note 11) | name only (Pro, code gated) | Paid — study only |
+
+## Plan #28 parity (2026-11-14)
+
+Closed with [agent-tree](agent-tree.md) (branch cost roll-up, folding, needs-you / failed windows), [agent-fleet](agent-fleet.md), [agent-orchestrator](agent-orchestrator.md) and [tree-table](tree-table.md).

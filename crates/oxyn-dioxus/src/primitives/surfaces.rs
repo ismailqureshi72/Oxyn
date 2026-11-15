@@ -457,6 +457,20 @@ pub fn SheetStack(
     let mut width = use_signal(|| 0.0f32);
     let mut last_y = use_signal(|| (0.0f32, 0.0f32));
     let changed = move || on_stack_change.call(m.peek().stack.ids().to_vec());
+    // Mounted sheets by id: after a pop, focus returns to the sheet that is now on top (the
+    // popped one held focus, so Escape would otherwise stop reaching the stack).
+    let mut nodes = use_signal(std::collections::HashMap::<String, Rc<MountedData>>::new);
+    // The sheet below is still `inert` until the pop re-renders, so focus moves in an effect
+    // that runs after the DOM update rather than inside the handler.
+    let mut want_focus = use_signal(|| false);
+    use_effect(move || {
+        if want_focus() {
+            want_focus.set(false);
+            let id = m.peek().open().last().map(|p| p.id.clone());
+            focus(id.and_then(|id| nodes.peek().get(&id).cloned()));
+        }
+    });
+    let mut refocus = move || want_focus.set(true);
     let st = m.read().clone();
     let w = width();
     let resolved = st
@@ -492,7 +506,7 @@ pub fn SheetStack(
             onpointerup: move |_| if m.peek().drag.active {
                 let (a, b) = *last_y.peek();
                 let pop = m.write().drag.release((a - b) * 60.0, sheet_h);
-                if pop { m.write().pop(); changed() }
+                if pop { m.write().pop(); changed(); refocus() }
             },
             if n > 0 {
                 div { class: "oxyn-scrim", onpointerdown: move |_| { m.write().close(); changed() } }
@@ -517,16 +531,16 @@ pub fn SheetStack(
                         div { key: "{page.id}", class: cls(&["oxyn-stack-sheet", if top { "top" } else { "under" }, if st.drag.active && top { "dragging" } else { "" }]),
                             style: "{tf};transform-origin:{origin};--dim:{lv.dim:.2};z-index:{10 + i}",
                             role: "dialog", "aria-modal": if top { "true" } else { "false" }, "aria-labelledby": "{tid}", "aria-hidden": if !top { "true" },
-                            inert: !top, tabindex: "-1",
-                            onmounted: move |e| if top { focus(Some(e.data())) },
-                            onkeydown: move |e: KeyboardEvent| if e.key() == Key::Escape { e.stop_propagation(); m.write().pop(); changed() },
+                            "inert": if !top { "true" }, tabindex: "-1",
+                            onmounted: { let pid = page.id.clone(); move |e: MountedEvent| { nodes.write().insert(pid.clone(), e.data()); if top { focus(Some(e.data())) } } },
+                            onkeydown: move |e: KeyboardEvent| if e.key() == Key::Escape { e.stop_propagation(); m.write().pop(); changed(); refocus() },
                             if resolved == StackMode::Sheet && dismissible {
                                 span { class: "grab", "aria-hidden": "true",
                                     onpointerdown: move |e| { let y = e.client_coordinates().y as f32; last_y.set((y, y)); m.write().drag.begin(y) } }
                             }
                             header { class: "sh",
                                 if let Some(b) = back.clone() {
-                                    button { class: "oxyn-btn ghost xs back", r#type: "button", "aria-label": "Back to {b}", onclick: move |_| { m.write().pop(); changed() },
+                                    button { class: "oxyn-btn ghost xs back", r#type: "button", "aria-label": "Back to {b}", onclick: move |_| { m.write().pop(); changed(); refocus() },
                                         Icon { name: "chevron-left", size: 13.0, stroke: 2.0 } span { "{b}" }
                                     }
                                 }
@@ -1060,7 +1074,7 @@ pub fn NotificationStack(
                     let pat = nt.pattern.clone().unwrap_or_default();
                     rsx! {
                         article { key: "{id}", class: cls(&["oxyn-notice", if front { "front" } else { "back" }, if out { "out" } else { "" }, if pat.is_empty() { "" } else { "pat" }, &format!("pat-{pat}")]),
-                            style: "--k:{k}", "aria-labelledby": "{tid}", "aria-hidden": if !front { "true" }, inert: !front,
+                            style: "--k:{k}", "aria-labelledby": "{tid}", "aria-hidden": if !front { "true" }, "inert": if !front { "true" },
                             div { class: "nh",
                                 if let Some(b) = nt.badge.clone() { span { class: "badge", "{b}" } }
                                 if front && st.len() > 1 { span { class: "count", "{st.position_label()}" } }
@@ -1444,8 +1458,15 @@ pub fn ScrollArea(
     let (ft, fb, fl, fr) = fades(&mm, fade);
     let vert = orientation != "horizontal";
     let horiz = orientation != "vertical";
-    let (tl, to) = thumb(mm.top, mm.height, mm.view_h, (height - 8.0).max(8.0));
-    let (hl, ho) = thumb(mm.left, mm.width, mm.view_w, (width - 8.0).max(8.0));
+    // Both bars showing: each track stops short of the other so the thumbs never cross in the
+    // corner. Track lengths follow the measured viewport (the box shrinks with max-width:100%).
+    let show_y = vert && (e.top || e.bottom);
+    let show_x = horiz && (e.left || e.right);
+    let corner = if show_x && show_y { 12.0 } else { 0.0 };
+    let vh = if mm.view_h > 0.0 { mm.view_h } else { height };
+    let vw = if mm.view_w > 0.0 { mm.view_w } else { width };
+    let (tl, to) = thumb(mm.top, mm.height, mm.view_h, (vh - 8.0 - corner).max(8.0));
+    let (hl, ho) = thumb(mm.left, mm.width, mm.view_w, (vw - 8.0 - corner).max(8.0));
     let sb = scrollbars.clone();
     let st = stick();
     let n = shown_n();
@@ -1457,7 +1478,7 @@ pub fn ScrollArea(
         .map(|s| format!(";scroll-snap-type:{s}"))
         .unwrap_or_default();
     rsx! {
-        div { class: cls(&["oxyn-scroll", &orientation, &format!("sb-{sb}"), if hot() > 0 { "active" } else { "" }]),
+        div { class: cls(&["oxyn-scroll", &orientation, &format!("sb-{sb}"), if hot() > 0 { "active" } else { "" }, if corner > 0.0 { "corner" } else { "" }]),
             style: "width:{width}px;max-width:100%;height:{height}px;--ft:{ft:.1}px;--fb:{fb:.1}px;--fl:{fl:.1}px;--fr:{fr:.1}px;--hide:{hide_delay}ms",
             div { class: "vp", tabindex: "0", role: if label.is_some() { "region" }, "aria-label": if let Some(l) = &label { "{l}" },
                 style: "overflow-x:{ox};overflow-y:{oy}{snap_s}",
@@ -1484,18 +1505,18 @@ pub fn ScrollArea(
                 {children}
             }
             if fade > 0.0 { span { class: "fd", "aria-hidden": "true" } }
-            if vert && e.top || vert && e.bottom {
+            if show_y {
                 div { class: "trk y", "aria-hidden": "true",
                     onpointerdown: move |ev| {
                         let at = ev.element_coordinates().y as f32;
                         let m0 = *met.peek();
-                        let target = oxyn_core::primitives::scroll::page_toward(m0.top, m0.height, m0.view_h, (height - 8.0).max(8.0), at);
+                        let target = oxyn_core::primitives::scroll::page_toward(m0.top, m0.height, m0.view_h, (vh - 8.0 - corner).max(8.0), at);
                         if let Some(d) = vp.peek().clone() { spawn(async move { let _ = d.scroll(dioxus::html::geometry::PixelsVector2D::new(m0.left as f64, target as f64), ScrollBehavior::Smooth).await; }); }
                     },
                     span { class: "th", style: "height:{tl:.1}px;transform:translateY({to:.1}px)" }
                 }
             }
-            if horiz && (e.left || e.right) {
+            if show_x {
                 div { class: "trk x", "aria-hidden": "true",
                     span { class: "th", style: "width:{hl:.1}px;transform:translateX({ho:.1}px)" }
                 }

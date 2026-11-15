@@ -292,3 +292,7 @@ the last line after typing) · streaming markdown, message bubble, citations (fa
 | @AdiKodez [R051] | word blur-in numbers | Study only |
 | transitions.dev [R132] | "streaming text resolves through a soft cross-blur" (note 17) | custom licence forbids competing kits — study only, no code |
 | Arc UI (note 12) | recommends text-stream for answers, shimmer for status | Paid/unclear — study only |
+
+## Plan #28 parity (2026-11-14)
+
+Closed with [word-reveal](word-reveal.md) (word / char, capped stagger, delay, once) and [in-view-title](in-view-title.md).
