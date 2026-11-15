@@ -137,12 +137,13 @@
   .oxgr-panel{height:var(--nh)}
   .oxgr-links[data-l="wide"]{display:none}
   .oxgr-links[data-l="narrow"]{display:block}
-  .oxgr-slot{left:var(--nx);top:var(--ny)}
+  .oxgr-slot{left:clamp(26px,var(--nx),calc(100% - 26px));top:var(--ny)}
   .oxgr-n{width:var(--tn);height:var(--tn)}
   .oxgr-full,.oxgr-sub{display:none}
   .oxgr-short{display:inline}
   .oxgr-lbl b{font-size:11.5px}
-  .oxgr-slot[data-open="true"]{position:static}
+  .oxgr-slot[data-open="true"]{position:static;animation:none;transform:none}
+  .oxgr-slot[data-open="true"]>.oxgr-n{left:clamp(26px,var(--nx),calc(100% - 26px));top:var(--ny)}
   .oxgr-card,.oxgr-card[data-side],.oxgr-card[data-v]{position:absolute;left:8px;right:8px;top:auto;bottom:8px;width:auto}
   .oxgr-legend{flex-wrap:wrap;gap:10px}
 }

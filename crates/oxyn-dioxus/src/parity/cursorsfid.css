@@ -168,4 +168,7 @@
 :is([data-cstyle="classic"] .oxcu:not([data-style="clean"]),.oxcu[data-style="classic"]) .oxcu-tab[aria-selected="true"]{box-shadow:0 1px 3px rgba(16,16,20,.12)}
 :is([data-cstyle="classic"] .oxcu:not([data-style="clean"]),.oxcu[data-style="classic"]) .oxcu-flag{border-radius:7px}
 
+/* Narrow: compact flags (name only) and a suggestion window that stays inside the card. After the base rules so it wins. */
+@container (max-width:520px){.oxcu-fc,.oxcu-fl2{display:none}.oxcu-flag{padding:4px 7px}.oxcu-swin{max-width:min(260px,62cqw)}}
+
 @media (prefers-reduced-motion:reduce){.oxcu *{animation:none!important;transition:none!important}}
