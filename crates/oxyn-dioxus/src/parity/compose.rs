@@ -698,7 +698,7 @@ pub fn ChatComposer(
                                 for (i, m) in models.iter().enumerate() {
                                     button { key: "{m}", class: "oxk-mi", role: "menuitemradio", "aria-checked": "{model() == i}", r#type: "button",
                                         onclick: move |_| { model.set(i); open.set("") },
-                                        span { class: "oxk-on", "{m}" } if model() == i { Icon { name: "check", size: 11.0 } }
+                                        span { class: "oxk-on", if crate::brand::has_brand(m) { crate::brand::BrandIcon { name: m.clone(), size: 13.0 } } "{m}" } if model() == i { Icon { name: "check", size: 11.0 } }
                                     }
                                 }
                             }
@@ -758,7 +758,7 @@ pub fn ChatComposer(
                         onclick: move |_| open.set(if open() == "apps" { "" } else { "apps" }),
                         span { class: "oxk-marks",
                             for (id, name) in apps.iter().take(3) {
-                                span { key: "{id}", class: "oxk-appmark", "data-on": "{conn().contains(id)}", "{name.chars().next().unwrap_or('?')}" }
+                                span { key: "{id}", class: "oxk-appmark", "data-on": "{conn().contains(id)}", if crate::brand::has_brand(name) { crate::brand::BrandIcon { name: name.clone(), size: 10.0 } } else { "{name.chars().next().unwrap_or('?')}" } }
                             }
                         }
                         "Connect apps"
@@ -772,7 +772,7 @@ pub fn ChatComposer(
                                     rsx! {
                                         button { key: "{id}", class: "oxk-mi", role: "menuitemcheckbox", "aria-checked": "{on}", r#type: "button",
                                             onclick: move |_| { let mut c = conn.write(); if let Some(p) = c.iter().position(|x| *x == id2) { c.remove(p); } else { c.push(id2.clone()); } on_apps_change.call(c.clone()); },
-                                            span { class: "oxk-appmark", "data-on": "{on}", "{name.chars().next().unwrap_or('?')}" }
+                                            span { class: "oxk-appmark", "data-on": "{on}", if crate::brand::has_brand(name) { crate::brand::BrandIcon { name: name.clone(), size: 10.0 } } else { "{name.chars().next().unwrap_or('?')}" } }
                                             span { class: "oxk-on", "{name}" }
                                             span { class: if on { "oxk-sw on" } else { "oxk-sw" }, span {} }
                                         }
@@ -1450,7 +1450,7 @@ pub fn ModelPill(
                 onmounted: move |e| trig.set(Some(e.data())),
                 onclick: move |_| { open.set(!open()); sub.set(""); hi.set(0); focus(list()) },
                 onkeydown: keys,
-                span { key: "{cur.id}m", class: "oxk-pmark", "data-p": "{cur.provider}", "{mark(&cur.provider)}" }
+                span { key: "{cur.id}m", class: "oxk-pmark", "data-p": "{cur.provider}", if crate::brand::has_brand(&cur.provider) { crate::brand::BrandIcon { name: cur.provider.clone(), size: 12.0 } } else { "{mark(&cur.provider)}" } }
                 span { key: "{cur.id}", class: "oxk-pname", "{cur.name}" }
                 span { class: "oxk-eff", "{e_now.label()}" }
                 Icon { name: "chevron", size: 10.0 }
@@ -1464,7 +1464,7 @@ pub fn ModelPill(
                                 if let Some(mi) = models.iter().position(|m| &m.id == r) {
                                     button { key: "{r}", class: "oxk-mi tall", role: "menuitemradio", r#type: "button", "aria-checked": "{chosen() == mi}", "data-hi": "{hi() == ri}",
                                         onmouseenter: move |_| hi.set(ri), onclick: move |_| pick(mi),
-                                        span { class: "oxk-pmark", "data-p": "{models[mi].provider}", "{mark(&models[mi].provider)}" }
+                                        span { class: "oxk-pmark", "data-p": "{models[mi].provider}", if crate::brand::has_brand(&models[mi].provider) { crate::brand::BrandIcon { name: models[mi].provider.clone(), size: 12.0 } } else { "{mark(&models[mi].provider)}" } }
                                         span { class: "oxk-col", span { class: "oxk-on", "{models[mi].name}" } span { class: "oxk-oh", "{models[mi].blurb}" } }
                                         if chosen() == mi { Icon { name: "check", size: 11.0 } }
                                     }

@@ -635,7 +635,7 @@ pub fn AgentOrchestrator(
     rsx! {
         section { class: "oxr-orch",
             header { class: "oxr-hd", h3 { "{model.goal}" } }
-            div { class: "oxr-lead", span { class: "oxr-av", "L" } span { class: "oxr-title", "{model.lead}" } span { class: "oxr-badge", "{phase}" }
+            div { class: "oxr-lead", span { class: "oxr-av", if crate::brand::has_brand(&model.lead) { crate::brand::BrandIcon { name: model.lead.clone(), size: 13.0 } } else { "L" } } span { class: "oxr-title", "{model.lead}" } span { class: "oxr-badge", "{phase}" }
                 span { class: "oxr-sp" }
                 span { class: "oxr-dim oxr-small", "Parallel" }
                 div { class: "oxp-seg", role: "radiogroup", "aria-label": "Concurrency",
@@ -645,7 +645,7 @@ pub fn AgentOrchestrator(
             div { class: "oxr-lanes",
                 for l in model.lanes.iter() {
                     div { class: "oxr-lane", "data-state": l.state.id(),
-                        div { class: "oxr-line", {mark(l.state)} span { class: "oxr-title", "{l.title}" } span { class: "oxr-sp" } span { class: "oxr-dim oxr-small", "{l.worker}" } }
+                        div { class: "oxr-line", {mark(l.state)} if crate::brand::has_brand(&l.title) { span { class: "oxr-bmk", crate::brand::BrandIcon { name: l.title.clone(), size: 12.0 } } } span { class: "oxr-title", "{l.title}" } span { class: "oxr-sp" } span { class: "oxr-dim oxr-small oxr-site", if crate::brand::has_brand(&l.worker) { crate::brand::BrandIcon { name: l.worker.clone(), size: 11.0 } } "{l.worker}" } }
                         div { class: "oxr-dim oxr-small oxr-clip", "{l.instruction}" }
                         div { class: "oxr-bar", span { style: "width:{l.progress * 100.0}%" } }
                         if let Some(r) = l.result.clone() { div { class: "oxr-small", "{r}" } }
@@ -804,7 +804,7 @@ pub fn ActivityFeed(
                             div { class: "oxr-body",
                                 button { class: "oxr-evb", r#type: "button", "aria-expanded": "{feed.expanded.contains(&e.id)}", disabled: e.detail.is_none(),
                                     onclick: { let id = e.id.clone(); move |_| on_toggle.call(id.clone()) },
-                                    b { "{e.actor}" } " {e.action} " span { class: "oxr-tgt", "{e.target}" }
+                                    if crate::brand::has_brand(&e.actor) { span { class: "oxr-bmk", crate::brand::BrandIcon { name: e.actor.clone(), size: 12.0 } } } b { "{e.actor}" } " {e.action} " span { class: "oxr-tgt", "{e.target}" }
                                     span { class: "oxr-sp" }
                                     span { class: "oxr-time", "{e.time}" }
                                 }

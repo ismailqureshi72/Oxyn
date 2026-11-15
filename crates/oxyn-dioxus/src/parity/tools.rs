@@ -630,12 +630,12 @@ pub fn LinkUnfurl(
                         match l.state.clone() {
                             UnfurlState::Loading => rsx! { span { class: "oxt-ulink loading", Icon { name: "link", size: 11.0 } span { class: "oxr-shim", "{l.host()}" } } },
                             UnfurlState::Plain => rsx! { span { class: "oxt-ulink", Icon { name: "link", size: 11.0 } "{l.url}" } },
-                            UnfurlState::Inline(p) => rsx! { button { class: "oxt-ulink on", r#type: "button", onclick: move |_| on_toggle.call(i), span { class: "oxt-fav", "{p.site.chars().next().unwrap_or('·')}" } "{p.title}" } },
+                            UnfurlState::Inline(p) => rsx! { button { class: "oxt-ulink on", r#type: "button", onclick: move |_| on_toggle.call(i), span { class: "oxt-fav", if crate::brand::has_brand(&p.site) { crate::brand::BrandIcon { name: p.site.clone(), size: 11.0 } } else { "{p.site.chars().next().unwrap_or('·')}" } } "{p.title}" } },
                             UnfurlState::Card(p) => rsx! {
                                 div { class: "oxt-ucard",
                                     if p.image { div { class: "oxt-uimg", "aria-hidden": "true" } }
                                     div { class: "oxt-ubody",
-                                        div { class: "oxt-usite", span { class: "oxt-fav", "{p.site.chars().next().unwrap_or('·')}" } "{p.site}" }
+                                        div { class: "oxt-usite", span { class: "oxt-fav", if crate::brand::has_brand(&p.site) { crate::brand::BrandIcon { name: p.site.clone(), size: 11.0 } } else { "{p.site.chars().next().unwrap_or('·')}" } } "{p.site}" }
                                         div { class: "oxt-utitle", "{p.title}" }
                                         div { class: "oxr-dim oxr-small", "{p.description}" }
                                     }

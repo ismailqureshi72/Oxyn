@@ -26,6 +26,7 @@
 //! ```
 
 pub mod approval;
+pub mod brand;
 pub mod chat;
 pub mod checkpoint;
 pub mod clock;
