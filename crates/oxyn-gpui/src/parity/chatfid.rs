@@ -133,12 +133,13 @@ impl Default for ModelPickerMenuEl {
 }
 
 impl ModelPickerMenuEl {
-    /// A picker over `models` (the second chosen and the first lit, as affectUI's demo).
+    /// A picker over `models` (the second chosen and nothing pointed, as affectUI's demo opens:
+    /// the chosen row shows only its check and blue dashes).
     pub fn new(models: Vec<PickerModel>) -> Self {
         Self {
             chosen: usize::from(models.len() > 1),
             models,
-            lit: 0,
+            lit: usize::MAX,
             open: true,
             thinking: false,
             web: false,
@@ -150,7 +151,7 @@ impl ModelPickerMenuEl {
             theme: &Theme::DARK,
         }
     }
-    /// Chosen and lit rows, open.
+    /// Chosen and pointed rows (`usize::MAX` for none), open.
     pub fn state(mut self, chosen: usize, lit: usize, open: bool) -> Self {
         self.chosen = chosen;
         self.lit = lit;
@@ -265,7 +266,7 @@ impl RenderOnce for ModelPickerMenuEl {
         let p = pal(self.theme);
         let n = self.models.len().max(1);
         let cur = self.models[self.chosen.min(n - 1)].clone();
-        let lit = self.models[self.lit.min(n - 1)].clone();
+        let lit = self.models[if self.lit < n { self.lit } else { self.chosen }.min(n - 1)].clone();
         let classic = self.classic;
         let head = |s: &'static str| -> SharedString {
             if classic {
@@ -399,7 +400,7 @@ impl RenderOnce for ModelPickerMenuEl {
                                 .gap(px(6.))
                                 .text_size(px(13.))
                                 .font_weight(FontWeight::SEMIBOLD)
-                                .text_color(if is_lit { p.fg } else { p.label })
+                                .text_color(p.fg)
                                 .child(m.name.clone())
                                 .when(i == self.chosen, |d| {
                                     d.child(
@@ -430,9 +431,10 @@ impl RenderOnce for ModelPickerMenuEl {
                         .child("Varies"),
                 )
             } else {
-                row.child(dashes(m.speed, is_lit, classic, p))
-                    .child(dashes(m.quality, is_lit, classic, p))
-                    .child(dashes(m.cost, is_lit, classic, p))
+                let blue = is_lit || i == self.chosen;
+                row.child(dashes(m.speed, blue, classic, p))
+                    .child(dashes(m.quality, blue, classic, p))
+                    .child(dashes(m.cost, blue, classic, p))
             };
             menu = menu.child(row);
         }

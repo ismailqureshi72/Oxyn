@@ -71,6 +71,9 @@ pub use parity::{
     DiffViewer, ImageCompare, InlineDiff, ReviewCard, ReviewCenter,
 };
 pub use parity::{
+    AnswerCard, CitedAnswerCard, MessageActionBar, ThinkingPanel, ThinkingPill, WritingAssistant,
+};
+pub use parity::{
     ChipStep, DiffChip, ExpandableCard, JsonViewer, LinkUnfurl, RowOutput, ToolCall, ToolCallCard,
     ToolCallGroup, ToolCallList, ToolChips, ToolKindLegend,
 };

@@ -67,6 +67,10 @@ pub use parity::{
     DiffTimelineEl, DiffViewerEl, HunkAct, IdAct, ImageCompareEl, InlineDiffEl, ReviewCardEl,
     ReviewCenterEl,
 };
+pub use parity::{
+    AnswerCardEl, CitedAnswerEl, MessageActionsEl, ThinkingPanelEl, ThinkingPillEl,
+    WritingAssistantEl,
+};
 pub use parity::{ConflictRadarEl, MergeAct, MergeConflictEl, RadarAct};
 pub use parity::{
     ExpandableCardEl, JsonViewerEl, LinkUnfurlEl, ToolCallCardEl, ToolCallEl, ToolChipsEl,
