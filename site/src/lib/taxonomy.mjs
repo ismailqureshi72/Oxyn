@@ -52,6 +52,8 @@ export const MOVED = [
   ['/components/chat/model-menu/', '/components/chat/model-picker/'],
   ['/components/composer/model-menu/', '/components/chat/model-picker/'],
   ['/components/chat/run-controls/', '/components/agents/run-controls/'],
+  ['/components/feedback/thinking-loader/', '/components/chat/thinking-loader/'],
+  ['/components/loaders/thinking-loader/', '/components/chat/thinking-loader/'],
 ];
 
 /** Whole app frames: these get screen pages (/screens/<slug>/) and a full-viewport view. */

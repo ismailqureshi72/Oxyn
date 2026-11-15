@@ -170,4 +170,10 @@ specified just as deeply. When we point at one component as an example, the stan
 | [comments-panel.md](comments-panel.md) | built v0.1 (plan #32) |
 | [model-picker.md](model-picker.md) | built v0.1 (plan #32, chunk 2) |
 | [run-controls.md](run-controls.md) | built v0.2 (plan #32, chunk 2; v0.1 plan #28) |
+| [ai-answer.md](ai-answer.md) | built v0.1 (plan #32, overnight batch, family A) |
+| [cited-answer.md](cited-answer.md) | built v0.1 (plan #32, overnight batch, family A) |
+| [message-actions.md](message-actions.md) | built v0.1 (plan #32, overnight batch, family A) |
+| [thinking-state.md](thinking-state.md) | built v0.1 (plan #32, overnight batch, family A) |
+| [writing-assistant.md](writing-assistant.md) | built v0.1 (plan #32, overnight batch, family A) |
+| [thinking-loader.md](thinking-loader.md) | built v0.2 (plan #32, overnight batch, family A; v0.1 plan #28) |
 | Every other component in [../component-taxonomy.md](../component-taxonomy.md) | to write in V2.2 |
