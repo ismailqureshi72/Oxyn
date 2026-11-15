@@ -1,9 +1,9 @@
 //! Plan #32 (affectUI fidelity pass), overnight batch family B demos: the exact Agent Findings and
-//! Agent Inbox, each with every affectUI style and state; part 2: Agent Crew; part 3: Agent Cursors and Agent Graph.
+//! Agent Inbox, each with every affectUI style and state; part 2: Agent Crew; part 3: Agent Cursors, Agent Graph and Agent Handoff.
 
 use dioxus::prelude::*;
 use oxyn_core::ClockMs;
-use oxyn_dioxus::{AgentCrew, AgentCursors, AgentFindings, AgentGraph, AgentInbox};
+use oxyn_dioxus::{AgentCrew, AgentCursors, AgentFindings, AgentGraph, AgentHandoff, AgentInbox};
 
 use super::{Code, mk, sel, tog, var};
 use crate::{Demo, Vals};
@@ -230,6 +230,57 @@ fn agent_graph_code(_: &Vals) -> String {
         )
         .raw("now", "clock.now()")
         .raw("on_select", "move |id| show(id)")
+        .done()
+}
+
+// ---------- Agent Handoff ----------
+
+fn agent_handoff(v: &Vals, now: ClockMs) -> Element {
+    let mut msg = use_signal(String::new);
+    let key = format!(
+        "{}{}{}{}",
+        v.s("style"),
+        v.s("run"),
+        v.s("open"),
+        v.s("width")
+    );
+    let at = match v.s("run") {
+        "settled" => Some(18_000),
+        "handing" => Some(8_000),
+        _ => None,
+    };
+    let (open, item) = match v.s("open") {
+        "card" => ("h-winback-1", ""),
+        "lost" => ("h-winback-1", "h-winback-1/quotes"),
+        _ => ("", ""),
+    };
+    let width = if v.s("width") == "narrow" {
+        "380px"
+    } else {
+        "788px"
+    };
+    rsx! {
+        div { "data-k": "{key}", key: "{key}", style: "width:{width};max-width:100%;display:flex;flex-direction:column;gap:8px",
+            AgentHandoff { now, at, open: open.to_string(), open_item: item.to_string(), style: cstyle(v),
+                on_assign: move |(t, a): (String, String)| msg.set(format!("onAssign({t:?}, {a:?})")),
+                on_restore: move |(h, i): (String, String)| msg.set(format!("onRestore({h:?}, {i:?})")) }
+            {status(msg)}
+        }
+    }
+}
+
+fn agent_handoff_code(_: &Vals) -> String {
+    Code::new("AgentHandoff")
+        .raw(
+            "scene",
+            "Some(HandoffScene { agents: agents(), handoffs: handoffs(), tasks: tasks() })",
+        )
+        .raw("now", "clock.now()")
+        .raw("on_assign", "move |(task, agent)| assign(task, agent)")
+        .raw(
+            "on_restore",
+            "move |(handoff, item)| restore(handoff, item)",
+        )
         .done()
 }
 
@@ -526,6 +577,81 @@ pub(crate) fn demos() -> Vec<Demo> {
                 "AgentGraphEl",
                 "agent-graph",
                 "parity/graphfid.rs",
+            )
+        },
+        Demo {
+            controls: vec![
+                style(),
+                sel("run", "Run", &["live", "handing", "settled"], "live"),
+                sel("open", "Open", &["none", "card", "lost"], "none"),
+                sel("width", "Width", &["wide", "narrow"], "wide"),
+            ],
+            variants: vec![
+                var(
+                    "default",
+                    "As affectUI ships it: the Researcher picks up the next task, hands it to the Writer and on to the Reviewer – a light runs along the lines, the card drops into its column and the costs tick up.",
+                    &[],
+                ),
+                var(
+                    "handing-on",
+                    "Frozen just after a handoff: the new card on top of the column, \"With Writer\" and the Writer drafting.",
+                    &[("run", "handing")],
+                ),
+                var(
+                    "card-open",
+                    "A handoff card open in place: everything that went along, and the lost item struck through.",
+                    &[("run", "settled"), ("open", "card")],
+                ),
+                var(
+                    "lost-item",
+                    "The lost item open: why it got lost, and Add back.",
+                    &[("run", "settled"), ("open", "lost")],
+                ),
+                var(
+                    "stacked",
+                    "Below 620 px the relay stacks into one column: an agent, its handoff, the next agent.",
+                    &[("width", "narrow"), ("run", "settled")],
+                ),
+                var(
+                    "classic",
+                    "Classic style: visible borders, crisper corners and the column header in a filled band.",
+                    &[("style", "classic"), ("run", "settled")],
+                ),
+            ],
+            render: agent_handoff,
+            code: agent_handoff_code,
+            keyboard: vec![
+                (
+                    "Tab",
+                    "Through the waiting tasks, the agents (while a task is picked up) and the handed-over items",
+                ),
+                (
+                    "Enter / Space",
+                    "Opens a card or an agent's task; on a lost item: shows why, and Add back",
+                ),
+                ("Esc", "Drops a picked-up card, then closes what is open"),
+            ],
+            a11y: vec![
+                "Tasks can be given to an agent without dragging: double-click a card, then click an agent to its right.",
+                "Each column and each handoff's items are labelled lists; cards and lost items are buttons with aria-expanded.",
+                "Status is never colour alone: a spinner, a dot or a triangle beside the words.",
+            ],
+            responsive: vec![
+                "Below about 760 px the status shows as an icon only.",
+                "Below 620 px the relay stacks into one column – an agent, its handoff, the next agent.",
+                "Cards keep their size; the columns fade out at the bottom instead of scrolling.",
+            ],
+            height: 560,
+            live: true,
+            ..mk(
+                "agent-handoff",
+                "Agent Handoff",
+                "tools",
+                "A task passed from agent to agent like a relay – at every handoff what went along to the next one, what got lost on the way, and a light running down the line as the card drops in.",
+                "AgentHandoff",
+                "AgentHandoffEl",
+                "agent-handoff",
+                "parity/handofffid.rs",
             )
         },
         Demo {

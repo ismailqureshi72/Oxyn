@@ -5,7 +5,7 @@ affectUI,Agent Cursors,https://www.affectui.com/components/agent-cursors,Compone
 affectUI,Agent Findings,https://www.affectui.com/components/agent-findings,Components · Agents,Pro,"agent-findings (exact, overnight batch B), fanout-grid, review-card",C6,#32,built
 affectUI,Agent Fleet,https://www.affectui.com/components/agent-fleet,Components · Agents,Pro,"subagent-tree, background-jobs",,#28,built
 affectUI,Agent Graph,https://www.affectui.com/components/agent-graph,Components · Agents,Pro,"agent-graph (exact, overnight batch B part 3), subagent-tree, trace-view",C6,#32,built
-affectUI,Agent Handoff,https://www.affectui.com/components/agent-handoff,Components · Agents,Pro,subagent-tree,C6,#34,planned
+affectUI,Agent Handoff,https://www.affectui.com/components/agent-handoff,Components · Agents,Pro,"agent-handoff (exact, overnight batch B part 3), subagent-tree",C6,#32,built
 affectUI,Agent Inbox,https://www.affectui.com/components/agent-inbox,Components · Agents,Pro,"agent-inbox (exact, overnight batch B), background-jobs",,#32,built
 affectUI,Agent Lanes,https://www.affectui.com/components/agent-lanes,Components · Agents,Pro,"trace-view, background-jobs",C7,#34,planned
 affectUI,Agent Ledger,https://www.affectui.com/components/agent-ledger,Components · Agents,Pro,rollback-impact,,#33,planned

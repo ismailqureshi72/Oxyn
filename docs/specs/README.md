@@ -181,4 +181,5 @@ specified just as deeply. When we point at one component as an example, the stan
 | [agent-crew.md](agent-crew.md) | built v0.1 (plan #32, overnight batch, family B part 2) |
 | [agent-cursors.md](agent-cursors.md) | built v0.1 (plan #32, overnight batch, family B part 3) |
 | [agent-graph.md](agent-graph.md) | built v0.1 (plan #32, overnight batch, family B part 3) |
+| [agent-handoff.md](agent-handoff.md) | built v0.1 (plan #32, overnight batch, family B part 3) |
 | Every other component in [../component-taxonomy.md](../component-taxonomy.md) | to write in V2.2 |

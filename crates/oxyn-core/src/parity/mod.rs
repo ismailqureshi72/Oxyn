@@ -25,6 +25,7 @@
 //! - [`cursorsfid`]: fidelity batch, family B part 3: Agent Cursors document, pointers,
 //!   suggestions, comments and the demo loop.
 //! - [`graphfid`]: fidelity batch, family B part 3: Agent Graph nodes, calls, orbit layout, links.
+//! - [`handofffid`]: fidelity batch, family B part 3: Agent Handoff relay, items, tasks, assign.
 //! - [`answers`]: fidelity batch, family A: AI Answer markup and streaming, Cited Answer
 //!   sentences and quotes, Message Actions, Thinking Loader phases, Thinking State steps and the
 //!   Writing Assistant's sample writer and dictation.
@@ -46,6 +47,7 @@ pub mod fields;
 pub mod fleet;
 pub mod gates;
 pub mod graphfid;
+pub mod handofffid;
 pub mod home;
 pub mod input;
 pub mod merge;

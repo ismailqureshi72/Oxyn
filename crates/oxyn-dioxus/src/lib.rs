@@ -61,7 +61,7 @@ pub use parity::{
     AgentCommentThread, AgentOrb, AgentRunPanel, CommentsPanel, FileTypeIcon, ModelPickerMenu,
     PhotoAvatar, Portrait, ThreadNote,
 };
-pub use parity::{AgentCrew, AgentCursors, AgentFindings, AgentGraph, AgentInbox};
+pub use parity::{AgentCrew, AgentCursors, AgentFindings, AgentGraph, AgentHandoff, AgentInbox};
 pub use parity::{
     AiComposer, AvatarUpload, ChatComposer, ContextField, ContextWindowGrid, CtxModel,
     ElasticSlider, FileDropzone, Gauge, MenuModel, ModelMenu, ModelPill, MorphSelect, NumberField,
