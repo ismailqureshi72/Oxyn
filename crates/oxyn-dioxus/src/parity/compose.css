@@ -196,6 +196,7 @@
 .oxk-pillbtn{align-self:flex-start;display:inline-flex;align-items:center;gap:7px;height:32px;padding:0 10px 0 5px;border:1px solid var(--oxyn-color-border-default);border-radius:999px;background:var(--oxyn-color-surface-base);color:var(--oxyn-color-fg-default);font:inherit;font-size:12.5px;cursor:pointer;transition:width .3s}
 .oxk-pillbtn:hover{border-color:var(--oxyn-color-border-strong)}
 .oxk-pmark{flex:none;width:22px;height:22px;display:grid;place-items:center;border-radius:50%;background:var(--oxyn-color-fg-default);color:var(--oxyn-color-bg-base);font-size:10.5px;font-weight:650;animation:oxk-fade .2s}
+.oxk-pmark:has(>svg){background:var(--oxyn-color-surface-sunken);box-shadow:inset 0 0 0 1px var(--oxyn-color-border-subtle);color:var(--oxyn-color-fg-default)}
 .oxk-pname{font-weight:500;animation:oxk-fade .2s}
 @keyframes oxk-fade{from{opacity:0}}
 .oxk-pmenu{position:absolute;top:38px;left:0;z-index:30;width:300px;padding:4px;border:1px solid var(--oxyn-color-border-default);border-radius:14px;background:var(--oxyn-color-surface-raised);box-shadow:0 14px 34px rgba(0,0,0,.22);outline:none;animation:oxk-in .16s}

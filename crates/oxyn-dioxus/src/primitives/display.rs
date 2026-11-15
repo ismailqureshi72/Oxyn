@@ -219,7 +219,7 @@ pub fn EntityChip(
             if let Some(src) = e.image.clone() {
                 img { class: "img", src: "{src}", alt: "" }
             } else if crate::brand::has_brand(&e.name) {
-                span { class: "bmk", crate::brand::BrandIcon { name: e.name.clone(), size: 12.0 } }
+                span { class: "bmk", crate::brand::BrandIcon { name: e.name.clone(), size: 12.0, coloured: true } }
             } else {
                 Monogram { monogram: e.monogram.clone(), size: 16.0 }
             }

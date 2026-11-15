@@ -50,7 +50,7 @@ fn marked(label: &str, ranges: &[(usize, usize)]) -> Element {
 
 fn logo(text: &str) -> Element {
     if crate::brand::has_brand(text) {
-        return rsx! { span { class: "logo brand", "aria-hidden": "true", crate::brand::BrandIcon { name: text.to_string(), size: 13.0 } } };
+        return rsx! { span { class: "logo brand", "aria-hidden": "true", crate::brand::BrandIcon { name: text.to_string(), size: 13.0, coloured: true } } };
     }
     rsx! { span { class: "logo", "aria-hidden": "true", "{text}" } }
 }
