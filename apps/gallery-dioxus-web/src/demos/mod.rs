@@ -18,6 +18,7 @@ mod inputs;
 mod loaders;
 mod navigation;
 mod overlays;
+mod parity_agents;
 mod parity_answers;
 mod parity_approvals;
 mod parity_diff;
@@ -155,6 +156,7 @@ pub fn catalog() -> Vec<Demo> {
     let mut v = Vec::new();
     v.extend(parity_fidelity::demos());
     v.extend(parity_answers::demos());
+    v.extend(parity_agents::demos());
     v.extend(composer::demos());
     v.extend(composer_parts::demos());
     v.extend(shells::demos());

@@ -13,6 +13,7 @@ use oxyn_tokens::{ColorRole, Theme};
 
 use crate::hsla;
 
+mod agentsfid;
 mod answers;
 mod approvals;
 mod chatfid;
@@ -26,6 +27,7 @@ mod run;
 mod text;
 mod tools;
 
+pub use agentsfid::{AgentFindingsEl, AgentInboxEl};
 pub use answers::{
     AnswerCardEl, CitedAnswerEl, MessageActionsEl, ThinkingPanelEl, ThinkingPillEl,
     WritingAssistantEl,

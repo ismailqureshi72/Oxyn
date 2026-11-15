@@ -1,6 +1,7 @@
 //! Parity components (plan #28): the pieces that close the gaps against affectUI, Arc UI and
 //! Beautiful UI, plus the X-post references. Styles ship in [`crate::PRIMITIVES_CSS`].
 
+mod agentsfid;
 mod answers;
 mod approvals;
 mod chatfid;
@@ -18,6 +19,7 @@ mod text;
 mod tools;
 mod upload;
 
+pub use agentsfid::{AgentFindings, AgentInbox};
 pub use answers::{
     AnswerCard, CitedAnswerCard, MessageActionBar, ThinkingPanel, ThinkingPill, WritingAssistant,
 };

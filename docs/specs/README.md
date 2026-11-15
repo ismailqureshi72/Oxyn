@@ -176,4 +176,6 @@ specified just as deeply. When we point at one component as an example, the stan
 | [thinking-state.md](thinking-state.md) | built v0.1 (plan #32, overnight batch, family A) |
 | [writing-assistant.md](writing-assistant.md) | built v0.1 (plan #32, overnight batch, family A) |
 | [thinking-loader.md](thinking-loader.md) | built v0.2 (plan #32, overnight batch, family A; v0.1 plan #28) |
+| [agent-findings.md](agent-findings.md) | built v0.1 (plan #32, overnight batch, family B) |
+| [agent-inbox.md](agent-inbox.md) | built v0.1 (plan #32, overnight batch, family B) |
 | Every other component in [../component-taxonomy.md](../component-taxonomy.md) | to write in V2.2 |
