@@ -2,12 +2,17 @@
 import Library from '../../layouts/Library.astro';
 import LibTabs from '../../components/v2/LibTabs.astro';
 import CompCard from '../../components/v2/CompCard.astro';
-import { screens } from '../../lib/data';
+import { screens, composedScreens } from '../../lib/data';
 ---
 <Library title="Screens" description={`${screens.length} whole app frames for agent products, built from the components.`} type="Category">
   <div class="lidx">
     <h1 class="lidx-title">Complete screens – whole app frames built from the components.</h1>
     <LibTabs active="screens" />
-    <div class="cgrid">{screens.map((d) => <CompCard demo={d} />)}</div>
+    <div class="cgrid">
+      {composedScreens.map((c) => (
+        <article class="cc cc-composed"><div class="cc-top"><span class="chip">Screen</span><span class="chip soft">Full app</span></div><div class="cc-prev cc-art" aria-hidden="true"><span></span><span></span><span></span></div><div class="cc-foot"><div class="cc-txt"><h3 class="cc-name"><a href={c.href}>{c.name}</a></h3><p>{c.summary}</p></div></div></article>
+      ))}
+      {screens.map((d) => <CompCard demo={d} />)}
+    </div>
   </div>
 </Library>

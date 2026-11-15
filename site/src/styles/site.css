@@ -441,3 +441,57 @@ oxyn-demo:has([role=menu],[role=listbox],[role=dialog],.oxyn-pop,.oxyn-popover,.
 oxyn-demo:focus-within,oxyn-demo:has(.oxyn-layer:not(.contained)){z-index:45}
 /* A demo in use paints above the sticky library bar and index tabs too. */
 .lpanel:has(oxyn-demo:focus-within) .lbar,.lpanel:has(oxyn-demo .oxyn-layer:not(.contained)) .lbar{z-index:30}
+
+/* ── Plan #29 feedback round ────────────────────────────────────────── */
+/* Page-to-page: only the main panel crossfades; sidebar, library bar and top bar stay put. */
+@view-transition{navigation:auto}
+.lsb{view-transition-name:oxyn-lsb}
+.lbar{view-transition-name:oxyn-lbar}
+.tb{view-transition-name:oxyn-tb}
+::view-transition-old(root),::view-transition-new(root){animation-duration:180ms;animation-timing-function:ease}
+::view-transition-group(oxyn-lsb),::view-transition-group(oxyn-lbar),::view-transition-group(oxyn-tb){animation:none}
+::view-transition-old(oxyn-lsb),::view-transition-old(oxyn-lbar),::view-transition-old(oxyn-tb){display:none}
+::view-transition-new(oxyn-lsb),::view-transition-new(oxyn-lbar),::view-transition-new(oxyn-tb){animation:none}
+@media (prefers-reduced-motion:reduce){@view-transition{navigation:none}}
+@media (max-width:900px){.lsb{view-transition-name:none}}
+
+/* Sidebar groups: headings read as headings, items as an indented grey list. */
+.lsb-g{margin-top:10px}
+.lsb-g summary{height:32px}
+.lsb-g summary a{font-size:13px;font-weight:650;letter-spacing:-.005em}
+.lsb-g summary .n{font-size:11.5px;font-weight:450}
+.lsb-g ul{margin:2px 0 4px 14px;padding-left:6px;border-left:1px solid var(--ln)}
+.lsb-g li a{height:30px;padding:0 10px;font-size:14px;font-weight:400;color:var(--fg2)}
+.lsb-g li a[aria-current="page"]{color:var(--fg);font-weight:500}
+
+/* Library menu: never past the viewport; scrolls inside when short. */
+.tb-menu{width:min(520px,calc(100vw - 24px));max-height:calc(100vh - 64px);overflow:auto}
+
+/* Composed screen card art */
+.cc-art{display:grid;grid-template-columns:1fr 2fr 1.3fr;gap:8px;padding:18px}
+.cc-art span{border-radius:8px;background:var(--pn);box-shadow:inset 0 0 0 1px var(--ln)}
+
+/* Agent workspace (composed full app) */
+.aw{display:flex;flex-direction:column;width:100%;border:1px solid var(--oxyn-color-border-subtle);border-radius:14px;background:var(--oxyn-color-surface-sunken);overflow:hidden;color:var(--oxyn-color-fg-default);font-family:var(--oxyn-font-ui)}
+.aw-bar{display:flex;align-items:center;gap:12px;height:44px;padding:0 14px;border-bottom:1px solid var(--oxyn-color-border-subtle);background:var(--oxyn-color-surface-base);font-size:13px}
+.aw-ws{display:inline-flex;align-items:center;gap:8px;font-weight:600}
+.aw-ws b{display:grid;place-items:center;width:22px;height:22px;border-radius:6px;background:var(--oxyn-color-fg-default);color:var(--oxyn-color-bg-base);font-size:11px}
+.aw-crumb{color:var(--oxyn-color-fg-muted)}
+.aw-crumb span{margin:0 4px;color:var(--oxyn-color-fg-subtle)}
+.aw-sp{flex:1}
+.aw-chip{font-size:12px;padding:3px 9px;border-radius:999px;background:var(--oxyn-color-surface-hover);color:var(--oxyn-color-fg-muted)}
+.aw-cols{display:grid;grid-template-columns:minmax(240px,300px) minmax(0,1fr) minmax(280px,380px);gap:8px;padding:8px;min-height:640px}
+.aw-pane{min-width:0;display:flex;flex-direction:column;border:1px solid var(--oxyn-color-border-subtle);border-radius:12px;background:var(--oxyn-color-surface-base);overflow:hidden}
+.aw-h{margin:0;padding:10px 14px 0;font-size:11.5px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--oxyn-color-fg-subtle)}
+.aw-h a{text-decoration:none;color:inherit}
+.aw-h a:hover{color:var(--oxyn-color-fg-default)}
+.aw .oxd-mini .oxd-main{border:0;border-radius:0}
+.aw .oxd-stage{background:none!important;border:0!important;padding:10px!important;min-height:0!important;align-items:flex-start!important;justify-content:stretch}
+.aw .oxd-mount{width:100%}
+.aw-mid oxyn-demo{flex:1}
+.aw-full{border:0;border-radius:0;min-height:100vh}
+.aw-full .aw-cols{flex:1;min-height:calc(100vh - 44px)}
+.pv.aw-prev{border:1px solid var(--ln);border-radius:16px;background:var(--fill);padding:16px}
+.pv.aw-prev .aw{zoom:.62}
+@media (max-width:1280px){.pv.aw-prev .aw{zoom:.5}}
+@media (max-width:900px){.aw-cols{grid-template-columns:1fr}.pv.aw-prev .aw{zoom:1}.aw-full .aw-cols{min-height:0}}
