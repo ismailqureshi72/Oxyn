@@ -137,6 +137,11 @@
   .oxct-body{border-radius:22px;corner-shape:squircle}
 }
 @container (max-width:460px){
+  /* narrow: menus hang from the whole bar, not their chip, so they never leave the composer */
+  .oxcc-bar{position:relative}
+  .oxcc-bar .oxcc-wrap{position:static}
+  .oxcc-models{width:min(316px,100%)}
+  .oxcc-appr{width:min(352px,100%)}
   .oxcc-chip .oxcc-cl{max-width:120px}
   .oxcc-plus .oxcc-md{display:none}
   .oxcc-ta,.oxcc-heard{font-size:16px}
