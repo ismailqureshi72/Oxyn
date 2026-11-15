@@ -441,3 +441,8 @@ pub struct DiffLine {
 | VS Code / JetBrains / GitHub (note 05 §3) | conflict hand-off conventions | Not in licensing.md — study only |
 | affectUI Inline Diff, HextaUI Diff Review (notes 11, 16) | exist as paid components; nothing taken | Paid — study only |
 | Wensity UI diff renderer [R119] | per-step diff renderer idea | Unclear — study only |
+
+## 12. Implemented (plan #30, 2026-11-15)
+`oxyn_core::parity::diff` (`diff_lines`, `word_diff`, `hunks`, `FileDiff`, `Review`), Dioxus `DiffViewer`, GPUI `DiffViewerEl`.
+- Built: `unified`, `split` (hatched fillers) and `stacked` layouts with a radio-group switcher; Proposed (Accept / Reject) and Applied (Keep / Undo) vocabularies; decisions per hunk, per file and for all, with an undo stack and Restore; live `+N −N` that drops rejected hunks; file list with status letters, review progress glyphs (○ ◐ ●) and Viewed checkboxes that collapse the file; "Show N hidden lines" gaps; word highlights on paired lines (skipped above 70 % changed); change styles `background`, `markers`, `bars`; draft line comments (gutter "+", `c`) sent together with ⌘↵; minimap marks with the current hunk outlined; `focus_dim`; keys j / k, [ / ], y / x, c, z, ⌘↵; hidden "Added:" / "Removed:" text and a polite live region.
+- Not yet: streaming write head and follow (§2.6), large-file thresholds (§2.5), range comments, moved-block detection, the `terminal` variant, minimap click-to-jump.

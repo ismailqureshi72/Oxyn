@@ -63,6 +63,10 @@ pub use parity::{
     PillModel, RichTextEditor, RunControls, ScrubInput, SplitBar, UsageMeter,
 };
 pub use parity::{
+    AiInlineEdit, ChangeSummary, CodeSuggestion, CommentThread, DiffTable, DiffTimeline,
+    DiffViewer, ImageCompare, InlineDiff, ReviewCard, ReviewCenter,
+};
+pub use parity::{
     ChipStep, DiffChip, ExpandableCard, JsonViewer, LinkUnfurl, RowOutput, ToolCall, ToolCallCard,
     ToolCallGroup, ToolCallList, ToolChips, ToolKindLegend,
 };
