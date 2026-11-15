@@ -48,6 +48,11 @@ pub use parity::{
     OrchestratorEl, PermissionRequestEl, ReadinessEl, TaskRowsEl, TreeTableEl,
 };
 pub use parity::{
+    AiComposerEl, AvatarUploadEl, ChatComposerEl, ContextFieldEl, ContextGridEl, ElasticSliderEl,
+    FileDropzoneEl, GaugeEl, ModelMenuEl, ModelPillEl, MorphSelectEl, NumberFieldEl, Pick,
+    RichTextEl, RunControlsEl, ScrubInputEl, SplitBarEl, UsageMeterEl,
+};
+pub use parity::{
     ExpandableCardEl, JsonViewerEl, LinkUnfurlEl, ToolCallCardEl, ToolCallEl, ToolChipsEl,
 };
 pub use parity::{ImeEvent, ImeInput, bind_ime_keys};

@@ -2,6 +2,10 @@
 //! Arc UI and Beautiful UI components listed in `docs/parity/status.csv`, plus the X-post
 //! references. Behaviour-only rebuilds: nothing here is copied from those libraries.
 //!
+//! - [`compose`]: AI composer triggers, the rich-text block editor, run controls, effort levels.
+//! - [`fields`]: number field, scrub input, elastic slider and morph select.
+//! - [`meters`]: gauge, usage meter, split bar and both context windows.
+//! - [`upload`]: dropzone rows, accept and size checks, and the avatar cropper.
 //! - [`confirm`]: confirm morph, hold to confirm, confirm popover (destructive buttons that ask).
 //! - [`edit`]: a text buffer with selection and IME composition (GPUI text entry).
 //! - [`input`]: text area rows and counter, changed-word rows, ghost-text autocomplete.
@@ -11,14 +15,18 @@
 //!
 //! Like the rest of the core, time is passed in as [`crate::ClockMs`]; nothing reads a clock.
 
+pub mod compose;
 pub mod confirm;
 pub mod edit;
+pub mod fields;
 pub mod fleet;
 pub mod gates;
 pub mod input;
+pub mod meters;
 pub mod plan;
 pub mod text;
 pub mod tools;
+pub mod upload;
 
 /// Smoothstep ease used for rewinds and fills (0..1 in, 0..1 out).
 pub fn smooth(t: f32) -> f32 {

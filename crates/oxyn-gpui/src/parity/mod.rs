@@ -14,6 +14,7 @@ use oxyn_tokens::{ColorRole, Theme};
 use crate::hsla;
 
 mod approvals;
+mod fields;
 mod ime;
 mod run;
 mod text;
@@ -22,6 +23,11 @@ mod tools;
 pub use approvals::{
     AgentApprovalsEl, ApprovalGatesEl, ApprovalPagerEl, ConfirmMorphEl, ConfirmPopoverEl,
     HoldConfirmEl, PermissionRequestEl,
+};
+pub use fields::{
+    AiComposerEl, AvatarUploadEl, ChatComposerEl, ContextFieldEl, ContextGridEl, ElasticSliderEl,
+    FileDropzoneEl, GaugeEl, ModelMenuEl, ModelPillEl, MorphSelectEl, NumberFieldEl, Pick,
+    RichTextEl, RunControlsEl, ScrubInputEl, SplitBarEl, UsageMeterEl,
 };
 pub use ime::{ImeEvent, ImeInput, bind_ime_keys};
 pub use run::{
