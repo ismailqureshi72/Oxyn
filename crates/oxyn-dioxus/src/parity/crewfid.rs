@@ -516,7 +516,7 @@ pub fn AgentCrew(
                 if needs > 0 { span { class: "oxcw-cnt", "data-k": "needs", "{needs} needs you" } }
                 span { class: "oxcw-cnt", "{all} agents" }
             }
-            div { key: "{pk}", class: "oxcw-tree", role: "tree", "aria-label": "{title_now}",
+            div { key: "{pk}", "data-project": "{pk}", class: "oxcw-tree", role: "tree", "aria-label": "{title_now}",
                 style: "--wh:{wh2}px;--nh:{nh2}px",
                 onkeydown: move |e: KeyboardEvent| {
                     let n = n_slots;
@@ -537,30 +537,30 @@ pub fn AgentCrew(
                 },
                 svg { class: "oxcw-lines", "data-l": "wide", width: "{WIDE}", height: "{wh}", "aria-hidden": "true",
                     for (i, d, col) in paths_w.iter().cloned() {
-                        path { key: "{i}", class: "oxcw-ln", d: "{d}", "data-c": "{col}", "pathLength": "1" }
+                        path { key: "{i}", "data-i": "{i}", class: "oxcw-ln", d: "{d}", "data-c": "{col}", "pathLength": "1" }
                     }
                     for (k, d, up, delay, col) in light_w.iter().cloned() {
-                        g { key: "{k}", class: "oxcw-lt", "data-c": "{col}", "data-up": "{up}", style: "animation-delay:{delay}ms",
+                        g { key: "{k}", "data-k": "{k}", class: "oxcw-lt", "data-c": "{col}", "data-up": "{up}", style: "animation-delay:{delay}ms",
                             path { class: "oxcw-glow", d: "{d}", "pathLength": "1", style: "animation-delay:{delay}ms" }
                             path { class: "oxcw-core", d: "{d}", "pathLength": "1", style: "animation-delay:{delay}ms" }
                         }
                     }
                     for (i, (x, y), _, col) in knobs.iter().cloned() {
-                        circle { key: "k{i}", class: "oxcw-knob", "data-c": "{col}", cx: "{x}", cy: "{y}", r: "3" }
+                        circle { key: "k{i}", "data-i": "{i}", class: "oxcw-knob", "data-c": "{col}", cx: "{x}", cy: "{y}", r: "3" }
                     }
                 }
                 svg { class: "oxcw-lines", "data-l": "narrow", width: "64", height: "{nh}", "aria-hidden": "true",
                     for (i, d, col) in paths_n.iter().cloned() {
-                        path { key: "{i}", class: "oxcw-ln", d: "{d}", "data-c": "{col}", "pathLength": "1" }
+                        path { key: "{i}", "data-i": "{i}", class: "oxcw-ln", d: "{d}", "data-c": "{col}", "pathLength": "1" }
                     }
                     for (k, d, up, delay, col) in light_n.iter().cloned() {
-                        g { key: "{k}", class: "oxcw-lt", "data-c": "{col}", "data-up": "{up}",
+                        g { key: "{k}", "data-k": "{k}", class: "oxcw-lt", "data-c": "{col}", "data-up": "{up}",
                             path { class: "oxcw-glow", d: "{d}", "pathLength": "1", style: "animation-delay:{delay}ms" }
                             path { class: "oxcw-core", d: "{d}", "pathLength": "1", style: "animation-delay:{delay}ms" }
                         }
                     }
                     for (i, _, (x, y), col) in knobs.iter().cloned() {
-                        circle { key: "k{i}", class: "oxcw-knob", "data-c": "{col}", cx: "{x}", cy: "{y}", r: "3" }
+                        circle { key: "k{i}", "data-i": "{i}", class: "oxcw-knob", "data-c": "{col}", cx: "{x}", cy: "{y}", r: "3" }
                     }
                 }
                 for s in slots.iter().cloned() {
@@ -609,7 +609,7 @@ pub fn AgentCrew(
                                         }
                                     },
                                     if let Some((fk, ew, en, delay)) = floor {
-                                        i { key: "{fk}", class: "oxcw-floor", "data-ew": "{ew}", "data-en": "{en}", style: "animation-delay:{delay}ms" }
+                                        i { key: "{fk}", "data-k": "{fk}", class: "oxcw-floor", "data-ew": "{ew}", "data-en": "{en}", style: "animation-delay:{delay}ms" }
                                     }
                                     div { class: "oxcw-top",
                                         PixelMark { mask: s.mark, active: c.state == CrewState::Active }
