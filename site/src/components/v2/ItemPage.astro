@@ -6,6 +6,7 @@ import OxynDemo from '../OxynDemo.astro';
 import ThemeRadios from './ThemeRadios.astro';
 import CompCard from './CompCard.astro';
 import { icon } from './icons';
+import { mark } from './brands';
 import {
   groupOf, demoUrl, props, specSection, md, highlightRust, cssConst, installLine, whenToUse, whenNotToUse,
   related, keyChips, notesForAi, guidesFor, isScreen, REPO, type Demo,
@@ -27,9 +28,9 @@ const site = 'https://ui.oxyn.workers.dev';
 const url = demoUrl(demo);
 const prompt = `Add the ${demo.name} component from Oxyn (Rust, Dioxus) to my app. Docs: ${site}${url}`;
 const ai = [
-  ['Claude', `https://claude.ai/new?q=${encodeURIComponent(prompt)}`],
-  ['ChatGPT', `https://chatgpt.com/?q=${encodeURIComponent(prompt)}`],
-  ['Cursor', `https://cursor.com/link/prompt?text=${encodeURIComponent(prompt)}`],
+  ['Claude', 'claude', `https://claude.ai/new?q=${encodeURIComponent(prompt)}`],
+  ['ChatGPT', 'chatgpt', `https://chatgpt.com/?q=${encodeURIComponent(prompt)}`],
+  ['Cursor', 'cursor', `https://cursor.com/link/prompt?text=${encodeURIComponent(prompt)}`],
 ];
 const propNames = tables.flatMap((t) => t.info.props.filter((p) => p.required).map((p) => p.name));
 const rel = related(demo, 4);
@@ -66,8 +67,8 @@ const kind = screen ? 'screen' : 'component';
           )}
           {screen && <a class="iconbtn" href={`${url}full/`} aria-label="Open full screen" title="Open full screen"><Fragment set:html={icon.arrowUpRight} /></a>}
           <span class="pv-div" aria-hidden="true"></span>
-          {ai.map(([l, h]) => <a class="aibtn" href={h} target="_blank" rel="noopener" title={`Open in ${l}`}>{l}</a>)}
-          <a class="aibtn x-mcp" href="/docs/installation/" title="MCP server (planned with the oxyn CLI)">MCP</a>
+          {ai.map(([l, id, h]) => <a class="aibtn x-aibtn-logo" href={h} target="_blank" rel="noopener" title={`Open in ${l}`} aria-label={`Open in ${l}`}><Fragment set:html={mark(id)} /></a>)}
+          <a class="aibtn x-aibtn-mcp" href="/docs/installation/" title="MCP server (planned with the oxyn CLI)"><Fragment set:html={mark('mcp')} />MCP</a>
           <button class="x-pill pill-black pill-sm" type="button" data-copy-from="pv">Copy</button>
         </div>
       </div>

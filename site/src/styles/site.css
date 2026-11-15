@@ -233,7 +233,16 @@ html[data-sidebar="hidden"] .lbar-open{display:inline-grid}
 .pv-div{width:1px;height:18px;background:var(--ln);margin:0 6px}
 .aibtn{display:inline-flex;align-items:center;height:26px;padding:0 9px;border-radius:999px;font-size:12px;font-weight:500;color:var(--fg2);text-decoration:none}
 .aibtn:hover{background:var(--hov);color:var(--fg)}
-.aibtn.x-mcp{box-shadow:inset 0 0 0 1px var(--ln);margin:0 4px 0 2px}
+.aibtn.x-aibtn-mcp{gap:5px;box-shadow:inset 0 0 0 1px var(--ln);margin:0 4px 0 2px}
+.aibtn.x-aibtn-logo{width:28px;padding:0;justify-content:center}
+/* Brand marks in their own colours; near-black marks sit on a light chip in dark mode. */
+.x-brand{display:inline-grid;place-items:center;flex:none;width:18px;height:18px;border-radius:5px;line-height:0}
+.x-brand svg{width:15px;height:15px;display:block}
+[data-theme="dark"] .x-brand[data-dark]{background:#F4F4F5;box-shadow:0 0 0 1px rgb(255 255 255/.1)}
+[data-theme="dark"] .x-brand[data-dark] svg{width:13px;height:13px}
+.x-bn{display:inline-flex;align-items:center;gap:4px;vertical-align:-3px;white-space:nowrap}
+.x-agents{list-style:none;margin:2px 0 4px;padding:0;display:flex;flex-wrap:wrap;gap:6px}
+.x-agents li{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 10px 0 6px;border-radius:999px;box-shadow:inset 0 0 0 1px var(--ln);background:var(--bg,transparent);font-size:12.5px;color:var(--fg)}
 .pvr .pill-black{margin-left:2px}
 .pv-live{margin:8px 2px 0;font-size:12px;color:var(--fg3)}
 .pv-live.on{color:var(--fg2)}
