@@ -21,6 +21,12 @@ use crate::color_var;
 pub const STATUS_TEXT_CSS: &str = r#"
 .oxyn-sh{font-family:var(--oxyn-typography-ui-font-family,system-ui);white-space:pre}
 .oxyn-sh.band{-webkit-background-clip:text;background-clip:text;color:transparent}
+.oxyn-sh.sweep{background-image:linear-gradient(90deg,var(--sh-b) 0%,var(--sh-b) 38%,var(--sh-c) 50%,var(--sh-b) 62%,var(--sh-b) 100%);background-size:280% 100%;background-repeat:no-repeat;background-position:100% 0;-webkit-background-clip:text;background-clip:text;color:transparent;animation:oxyn-sh-sweep var(--sh-d,2s) linear infinite}
+@keyframes oxyn-sh-sweep{from{background-position:100% 0}to{background-position:0% 0}}
+@media (prefers-reduced-motion:reduce){.oxyn-sh.sweep{animation:none;background:none;color:var(--sh-b)}}
+@media (prefers-reduced-motion:no-preference){
+html .shim,html .oxc-shim,html .oxk-shim,html .oxr-shim{background-image:linear-gradient(90deg,var(--oxyn-color-fg-muted) 0%,var(--oxyn-color-fg-muted) 38%,var(--oxyn-color-fg-default) 50%,var(--oxyn-color-fg-muted) 62%,var(--oxyn-color-fg-muted) 100%);background-size:280% 100%;background-repeat:no-repeat;animation:oxyn-sh-sweep 2s linear infinite}
+}
 .oxyn-vc{display:inline-grid;vertical-align:bottom;overflow:hidden;white-space:pre}
 .oxyn-vc>span{grid-area:1/1;will-change:opacity,transform,filter}
 .oxyn-vc .dots>span{display:inline-block}
@@ -112,9 +118,31 @@ pub fn TextShimmer(
             }
         };
     }
+    // Sweep and calm: one soft band carried by CSS (smooth at any frame rate, aligned to the real
+    // text width) while the run is going; the engine still decides start, fade and stall.
+    if matches!(v, ShimmerVariant::Sweep | ShimmerVariant::Calm)
+        && e.busy()
+        && !reduced
+        && matches!(paint, ShimmerPaint::Band { .. })
+    {
+        let (k, dur) = if v == ShimmerVariant::Calm {
+            (0.6, "2.8s")
+        } else {
+            (0.9, "2s")
+        };
+        let top = mix(&base, &crest, k);
+        return rsx! {
+            span { class: "oxyn-sh sweep", "aria-busy": "{busy}", style: "font-size:{size}px;--sh-b:{base};--sh-c:{top};--sh-d:{dur}", "{text}" }
+        };
+    }
     let (class, style) = match paint {
-        ShimmerPaint::None => ("oxyn-sh", format!("color:{base}")),
-        ShimmerPaint::Uniform(i) => ("oxyn-sh", format!("color:{}", mix(&base, &crest, i))),
+        // `background-image:none` clears a band left inline by the previous frame (the renderer
+        // patches style properties rather than replacing the attribute).
+        ShimmerPaint::None => ("oxyn-sh", format!("color:{base};background-image:none")),
+        ShimmerPaint::Uniform(i) => (
+            "oxyn-sh",
+            format!("color:{};background-image:none", mix(&base, &crest, i)),
+        ),
         ShimmerPaint::Band {
             centre,
             half_width: hw,

@@ -5,6 +5,7 @@ import specsJson from '../generated/specs.json';
 import parityJson from '../generated/parity.json';
 import wasmJson from '../generated/wasm.json';
 import motionJson from '../generated/motion.json';
+import { GROUPS, groupSlugOf, isScreen, pageUrl } from './taxonomy.mjs';
 
 export type Control = {
   key: string;
@@ -54,7 +55,7 @@ export const motion = motionJson as Record<string, any>;
 
 export const demosIn = (cat: string) => demos.filter((d) => d.category === cat);
 export const categoryOf = (slug: string) => categories.find((c) => c.slug === slug)!;
-export const demoUrl = (d: Demo) => `/components/${d.category}/${d.slug}/`;
+export const demoUrl = (d: Demo) => pageUrl(d) as string;
 
 /** Section of a spec whose heading starts with one of `names`. */
 export function specSection(spec: string, ...names: string[]): string | null {
@@ -164,3 +165,108 @@ export function installLine(d: Demo): string {
 export function parityItems(section: string) {
   return parity.filter((r) => r.source === 'affectUI' && r.section.startsWith(section));
 }
+
+// ── Library v2 (plan #29): eight categories + screens, affectUI-style pages ─────────────────
+export type Group = { slug: string; name: string; blurb: string };
+export const groups = GROUPS as Group[];
+export const screens = demos.filter((d) => isScreen(d));
+export const components = demos.filter((d) => !isScreen(d));
+export const groupOf = (d: Demo) => groups.find((g) => g.slug === groupSlugOf(d))!;
+// Within a category, the agent-specific parts come first (approvals before status text).
+const CAT_ORDER = ['approvals', 'tools', 'checkpoints-git', 'composer', 'chat', 'status-text'];
+const rank = (d: Demo) => { const i = CAT_ORDER.indexOf(d.category); return i < 0 ? CAT_ORDER.length : i; };
+export const inGroup = (g: string) => components.filter((d) => groupSlugOf(d) === g).sort((a, b) => rank(a) - rank(b));
+export { isScreen };
+/** Newest components: the ones the latest parity plan built (docs/parity/status.csv). */
+const latestPlan = parity.filter((r) => r.status.startsWith("built")).reduce((m, r) => Math.max(m, parseInt((r.plan_pr || '#0').slice(1)) || 0), 0);
+const newSpecs = new Set(
+  parity.filter((r) => r.plan_pr === `#${latestPlan}` && r.status.startsWith('built')).flatMap((r) => (r.oxyn_spec || '').split(',').map((x) => x.trim())),
+);
+export const newDemos = components.filter((d) => newSpecs.has(d.spec) || newSpecs.has(d.slug));
+export const motionDemos = ['text-shimmer', 'verb-cycler', 'text-reveal', 'number-ticker', 'glyph-loader'].map((s) => demos.find((d) => d.slug === s)!).filter(Boolean);
+/** Screens composed on the site from several components (no single Rust demo). */
+export const composedScreens = [{ name: 'Agent workspace', href: '/screens/agent-workspace/', summary: 'A complete AI agent app: threads, the agent thread and the work pane.' }];
+export const counts = {
+  components: components.length,
+  screens: screens.length + composedScreens.length,
+  blocks: 0,
+  illustrations: 0,
+  motion: motionDemos.length,
+  variants: demos.reduce((n, d) => n + d.variants.length, 0),
+};
+/** Pro markers: nothing is Pro yet (everything here is free and MIT). */
+export const isPro = (_d: Demo) => false;
+
+const firstPara = (s: string | null) => {
+  if (!s) return '';
+  const para = s.split(/\n\s*\n/)[0];
+  return para.split('\n').filter((l) => !/^\s*[-*] /.test(l)).join(' ').trim();
+};
+const plain = (s: string) => s.replace(/\*\*([^*]+)\*\*/g, '$1').replace(/`([^`]+)`/g, '$1').replace(/\[([^\]]+)\]\([^)]+\)/g, '$1').replace(/\s*\([^)]*§[^)]*\)/g, '');
+
+/** "When to use": the spec's Purpose, split into short points. */
+export function whenToUse(d: Demo): string[] {
+  const p = plain(firstPara(specSection(d.spec, 'Purpose')));
+  const sentences = (p || d.summary).split(/(?<=[.!?])\s+(?=[A-Z])/).map((x) => x.trim()).filter(Boolean);
+  return sentences.slice(0, 4);
+}
+
+/** Related components named in the spec's Related section; same-category neighbours fill up. */
+export function related(d: Demo, n = 4): Demo[] {
+  const sec = specSection(d.spec, 'Related') ?? '';
+  const names = [...sec.matchAll(/([a-z0-9-]+)\.md/g)].map((m) => m[1]);
+  const out: Demo[] = [];
+  for (const nm of names) {
+    const hit = demos.find((x) => x.slug !== d.slug && (x.spec === nm || x.slug === nm || 'composer-' + x.slug === nm));
+    if (hit && !out.includes(hit)) out.push(hit);
+    if (out.length >= n) return out;
+  }
+  const pool = isScreen(d) ? screens : inGroup(groupSlugOf(d));
+  for (const x of pool) {
+    if (x.slug !== d.slug && !out.includes(x)) out.push(x);
+    if (out.length >= n) break;
+  }
+  return out;
+}
+
+/** "When not to use": the jobs that a related component does directly (from their summaries). */
+export function whenNotToUse(d: Demo): { text: string; demo: Demo }[] {
+  return related(d, 3).map((r) => ({ text: r.summary.split(/[.:–;]/)[0].trim(), demo: r }));
+}
+
+/** Keys of a keyboard row as chips: "Shift + Enter" → ["Shift", "Enter"]. Alternatives split on " / ". */
+export function keyChips(k: string): string[][] {
+  return k.split(/\s+\/\s+|,\s+/).map((alt) => alt.split(/\s*\+\s*/).map((x) => x.trim()).filter(Boolean));
+}
+
+/** Notes for coding agents, built only from what the component ships. */
+export function notesForAi(d: Demo, propNames: string[]): string[] {
+  const comps = d.dioxus.split(',').map((s) => s.trim());
+  const out = [
+    `Import ${comps.map((c) => '`' + c + '`').join(', ')} from \`oxyn_dioxus\` and include \`${cssConst(d.source)}\` plus the token stylesheet once.`,
+    d.gpui ? `A GPUI version exists: \`${d.gpui}\` in \`oxyn_gpui\`.` : 'There is no GPUI version yet; use the Dioxus component.',
+  ];
+  if (propNames.length) out.push(`Props to set first: ${propNames.slice(0, 6).map((p) => '`' + p + '`').join(', ')}.`);
+  if (d.live) out.push('It reads a clock (`now`) for live timers; pass one clock for the whole page rather than one per component.');
+  out.push(`Behaviour is specified in docs/specs/${d.spec}.md; follow it rather than restyling states by hand.`);
+  return out;
+}
+
+export const GUIDES = [
+  { href: '/guides/agent-activity/', title: 'Show what your agent is doing', blurb: 'Status, tool calls and plans while a run is going.', for: ['agents', 'feedback'] },
+  { href: '/guides/approvals/', title: 'Ask before acting', blurb: 'Approval cards, risk tiers, countdowns and what happens after.', for: ['agents', 'cards'] },
+  { href: '/guides/composer/', title: 'Build a composer', blurb: 'Send and stop, queue and steer, models, effort and attachments.', for: ['chat', 'inputs', 'buttons'] },
+];
+export const DOC_CARDS = [
+  { href: '/docs/installation/', title: 'Installation', blurb: 'Add the crates and the stylesheets.' },
+  { href: '/docs/theming/', title: 'Theming and tokens', blurb: 'Light, dark and high-contrast from one token set.' },
+  { href: '/docs/accessibility/', title: 'Accessibility', blurb: 'Labels, focus and announcements across the library.' },
+];
+export function guidesFor(d: Demo) {
+  const g = isScreen(d) ? 'chat' : groupSlugOf(d);
+  const hits = GUIDES.filter((x) => x.for.includes(g));
+  return hits.length ? hits : DOC_CARDS;
+}
+
+export const endLine = () =>
+  `Oxyn · ${counts.components} components · ${counts.screens} screens · ${counts.variants} variant presets · Dioxus and GPUI`;

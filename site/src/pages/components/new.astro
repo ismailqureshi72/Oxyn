@@ -1,0 +1,13 @@
+---
+import Library from '../../layouts/Library.astro';
+import LibTabs from '../../components/v2/LibTabs.astro';
+import CompCard from '../../components/v2/CompCard.astro';
+import { newDemos } from '../../lib/data';
+---
+<Library title="New components" description={`${newDemos.length} components added in the latest plan.`} type="Category" current="/components/">
+  <div class="lidx">
+    <h1 class="lidx-title">New in the library – the components the latest plan added.</h1>
+    <LibTabs active="new" />
+    <div class="cgrid">{newDemos.map((d) => <CompCard demo={d} />)}</div>
+  </div>
+</Library>

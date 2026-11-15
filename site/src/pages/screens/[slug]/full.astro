@@ -1,0 +1,26 @@
+---
+// A screen on its own, filling the viewport (the "Open full screen" link of a screen page).
+import '../../../generated/oxyn-tokens.css';
+import '../../../generated/oxyn-components.css';
+import '../../../styles/chrome.css';
+import '../../../styles/site.css';
+import '../../../styles/demo.css';
+import Head from '../../../components/v2/Head.astro';
+import OxynDemo from '../../../components/OxynDemo.astro';
+import { screens, demoUrl, type Demo } from '../../../lib/data';
+export function getStaticPaths() {
+  return screens.map((d) => ({ params: { slug: d.slug }, props: { demo: d } }));
+}
+const { demo } = Astro.props as { demo: Demo };
+---
+<!doctype html>
+<html lang="en" data-theme="light" data-oxyn-theme="light">
+  <head><Head title={`${demo.name} · full screen · Oxyn`} description={demo.summary} /><meta name="robots" content="noindex" /></head>
+  <body class="site fullscreen">
+    <main id="main" class="fs-main">
+      <h1 class="sr-only">{demo.name}</h1>
+      <OxynDemo slug={demo.slug} html={demo.html} />
+    </main>
+    <a class="fs-back x-pill" href={demoUrl(demo)}>← {demo.name}</a>
+  </body>
+</html>

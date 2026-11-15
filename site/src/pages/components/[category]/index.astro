@@ -1,27 +1,30 @@
 ---
-import Base from '../../../layouts/Base.astro';
-import Sidebar from '../../../components/Sidebar.astro';
-import Card from '../../../components/Card.astro';
-import { categories, demosIn, type Category } from '../../../lib/data';
+import Library from '../../../layouts/Library.astro';
+import LibTabs from '../../../components/v2/LibTabs.astro';
+import CompCard from '../../../components/v2/CompCard.astro';
+import Redirect from '../../../components/v2/Redirect.astro';
+import { groups, inGroup, categories, type Group } from '../../../lib/data';
+import { redirects } from '../../../lib/taxonomy.mjs';
 
 export function getStaticPaths() {
-  return categories.map((c) => ({ params: { category: c.slug }, props: { cat: c } }));
+  const real = groups.map((g) => ({ params: { category: g.slug }, props: { group: g, to: null } }));
+  const moved = (redirects([], categories) as [string, string][]).map(([from, to]) => ({
+    params: { category: from.split('/')[2] },
+    props: { group: null, to },
+  }));
+  return [...real, ...moved];
 }
-const { cat } = Astro.props as { cat: Category };
-const list = demosIn(cat.slug);
-const variants = list.reduce((n, d) => n + d.variants.length, 0);
+const { group, to } = Astro.props as { group: Group | null; to: string | null };
+const list = group ? inGroup(group.slug) : [];
 ---
-<Base title={`${cat.name} components`} description={cat.blurb} type="Category">
-  <div class="shell no-toc">
-    <Sidebar current={`/components/${cat.slug}/`} />
-    <div class="content">
-      <nav class="crumbs" aria-label="Breadcrumb" data-pagefind-ignore><a href="/components/">Components</a><span>›</span><span>{cat.name}</span></nav>
-      <h1 class="title">{cat.name}</h1>
-      <p class="lede">{cat.blurb}</p>
-      <div class="meta-row"><span class="tag">{list.length} components</span><span class="tag">{variants} variant presets</span><span class="tag">Dioxus · GPUI</span></div>
-      <div class="grid-cards" style="margin-top:28px">
-        {list.map((d) => <Card demo={d} />)}
-      </div>
+{to ? <Redirect to={to} /> : (
+  <Library title={`${group!.name} components`} description={group!.blurb} type="Category" current="/components/">
+    <div class="lidx">
+      <nav class="x-crumbs" aria-label="Breadcrumb"><a href="/components/">Components</a><span aria-hidden="true">›</span><span aria-current="page">{group!.name}</span></nav>
+      <h1 class="lidx-title">{group!.name}</h1>
+      <p class="lede">{group!.blurb} {list.length} components.</p>
+      <LibTabs active="components" />
+      <div class="cgrid">{list.map((d) => <CompCard demo={d} />)}</div>
     </div>
-  </div>
-</Base>
+  </Library>
+)}

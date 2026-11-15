@@ -1,0 +1,73 @@
+---
+// The library's left sidebar: wordmark, search, site links, style, and the collapsible groups.
+import { icon } from './icons';
+import { components, screens, counts, demoUrl, isPro, motionDemos, composedScreens } from '../../lib/data';
+interface Props { current?: string }
+const { current = '' } = Astro.props;
+const byName = [...components].sort((a, b) => a.name.localeCompare(b.name));
+const nav = [
+  ['Library', '/components/', icon.library],
+  ['Docs', '/docs/', icon.docs],
+  ['Design System', '/docs/theming/', icon.design],
+  ['Pricing', '/pricing/', icon.pricing],
+];
+const libActive = !current.startsWith('/docs') && !current.startsWith('/pricing');
+const groupsList = [
+  { label: 'Components', href: '/components/', n: counts.components, items: byName.map((d) => [d.name, demoUrl(d), isPro(d)] as const) },
+  { label: 'Screens', href: '/screens/', n: counts.screens, items: [...composedScreens.map((c) => [c.name, c.href, false] as const), ...screens.map((d) => [d.name, demoUrl(d), isPro(d)] as const)] },
+  { label: 'Blocks', href: '/blocks/', n: 0, items: [] },
+  { label: 'Illustrations', href: '/illustrations/', n: 0, items: [] },
+  { label: 'Motion', href: '/motion/', n: counts.motion, items: [...motionDemos.map((d) => [d.name, demoUrl(d), isPro(d)] as const), ['Motion tokens', '/motion/', false] as const] },
+];
+---
+<aside class="lsb" id="lsb" aria-label="Library" data-pagefind-ignore>
+  <div class="lsb-top">
+    <a class="wm" href="/" aria-label="Oxyn home">oxyn</a>
+    <button class="iconbtn lsb-hide" type="button" data-sidebar-toggle aria-label="Hide sidebar" title="Hide sidebar"><Fragment set:html={icon.panel} /></button>
+    <button class="iconbtn lsb-close" type="button" data-drawer-close aria-label="Close menu"><Fragment set:html={icon.close} /></button>
+  </div>
+  <button class="lsb-search" type="button" data-open-search aria-label="Search (Command K)"><Fragment set:html={icon.search} /><span>Search…</span><kbd data-mod-k>⌘K</kbd></button>
+  <nav class="lsb-nav" aria-label="Site">
+    {nav.map(([l, h, i]) => (
+      <a href={h} aria-current={(l === 'Library' ? libActive : current.startsWith(h)) ? 'page' : undefined}><Fragment set:html={i} />{l}</a>
+    ))}
+  </nav>
+  <div class="lsb-style">
+    <span>Style</span>
+    <button type="button" class="style-pill" aria-disabled="true" title="One style today; more come with the Studio">Default</button>
+  </div>
+  <div class="lsb-groups">
+    {groupsList.map((g) => (
+      <details class="lsb-g" open={g.items.length > 0 && g.items.length < 400}>
+        <summary><a href={g.href}>{g.label}</a>{g.n != null && <span class="n">{g.n}</span>}<span class="chev"><Fragment set:html={icon.chevron} /></span></summary>
+        {g.items.length > 0 ? (
+          <ul>
+            {g.items.map(([name, href, pro]) => (
+              <li><a href={href} aria-current={current === href ? 'page' : undefined}><span>{name}</span>{pro && <span class="pro" title="Pro"><Fragment set:html={icon.bolt} /></span>}</a></li>
+            ))}
+          </ul>
+        ) : (
+          <p class="lsb-empty">Planned – <a href={g.href}>see what is coming</a></p>
+        )}
+      </details>
+    ))}
+  </div>
+</aside>
+<script is:inline>
+  // Keep the sidebar where it was across page loads; bring the current item into view only
+  // when it would be off screen.
+  (function () {
+    var sb = document.getElementById('lsb');
+    if (!sb) return;
+    var y = sessionStorage.getItem('oxyn-lsb-y');
+    if (y !== null) sb.scrollTop = +y;
+    var cur = sb.querySelector('.lsb-g li a[aria-current="page"]');
+    if (cur) {
+      var r = cur.getBoundingClientRect(), s = sb.getBoundingClientRect();
+      if (r.top < s.top + 8 || r.bottom > s.bottom - 8) sb.scrollTop += r.top - s.top - s.height / 2;
+    }
+    var save = function () { sessionStorage.setItem('oxyn-lsb-y', String(sb.scrollTop)); };
+    addEventListener('pagehide', save);
+    sb.addEventListener('click', save, true);
+  })();
+</script>

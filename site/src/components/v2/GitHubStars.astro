@@ -1,0 +1,7 @@
+---
+import { icon } from './icons';
+import { starCount } from './meta';
+import { REPO } from '../../lib/data';
+const n = await starCount();
+---
+<a class="gh-link" href={REPO} aria-label={n == null ? 'Oxyn on GitHub' : `Oxyn on GitHub, ${n} stars`}><Fragment set:html={icon.github} />{n != null && <span>{n.toLocaleString('en-US')}</span>}</a>
