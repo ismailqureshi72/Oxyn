@@ -24,6 +24,7 @@ mod queuefid;
 mod recapfid;
 mod review;
 mod run;
+mod seqfid;
 mod text;
 mod tools;
 mod upload;
@@ -68,6 +69,7 @@ pub use run::{
     AgentTree, AnimatedCounter, Countdown, FlowStepper, OnboardingChecklist, ReleaseReadiness,
     TaskBreakdown, TaskRows, TreeTable,
 };
+pub use seqfid::AgentSequence;
 pub use text::{
     ActionSwapButton, InViewTitle, LoadingState, SlotReels, Source, StreamingText, SweepText,
     TextMorph, ThinkingLoader, WordReveal,
