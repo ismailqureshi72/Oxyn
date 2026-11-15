@@ -3,6 +3,7 @@ import Base from '../layouts/Base.astro';
 import OxynDemo from '../components/OxynDemo.astro';
 import CompCard from '../components/v2/CompCard.astro';
 import { icon } from '../components/v2/icons';
+import { mark, brands } from '../components/v2/brands';
 import { demos, counts, screens, inGroup, demoUrl, REPO } from '../lib/data';
 
 const find = (s: string) => demos.find((d) => d.slug === s)!;
@@ -22,6 +23,12 @@ const compareTabs = [
   ['chat', 'Agent chat', find('reasoning-block')],
 ] as const;
 const free = counts.components + counts.screens;
+const agents = ['claude-code', 'cursor', 'codex', 'windsurf', 'github-copilot', 'gemini-cli', 'zed', 'cline', 'opencode', 'amp'];
+// Brand names in running text get their mark in front (the name stays as text).
+const named = (s: string) =>
+  s
+    .replace(/</g, '&lt;')
+    .replace(/\b(Claude|ChatGPT|Cursor|MCP)\b/g, (n) => `<span class="x-bn">${mark(n === 'MCP' ? 'mcp' : n.toLowerCase())}${n}</span>`);
 const faq: [string, string][] = [
   ['What is Oxyn?', 'A library of agent-interface components written in Rust: composer, status, tool calls, plans, approvals, checkpoints and the everyday parts around them. Each one is a Dioxus component for the web, and many also have a GPUI version for the desktop.'],
   ['Which frameworks does it support?', 'Dioxus (web, and anything Dioxus renders to) and GPUI (desktop). Both read the same models and state machines from oxyn-core, so a component behaves the same in each.'],
@@ -98,7 +105,11 @@ const faq: [string, string][] = [
       <div class="mcp-r">
         <span class="mcp-lbl">Connect in one line</span>
         <div class="codeblk copyable"><div class="codeblk-h"><span>Terminal</span><button class="pill-copy" type="button" data-copy="oxyn mcp install" aria-label="Copy"><Fragment set:html={icon.copy} /></button></div><pre><code>oxyn mcp install</code></pre></div>
-        <p class="x-muted">Until the CLI ships, point your agent at a component page: each one ends with Notes for AI, and the toolbar opens it in Claude, ChatGPT or Cursor.</p>
+        <span class="mcp-lbl">Works with your agent</span>
+        <ul class="x-agents" aria-label="Agents that can use Oxyn">
+          {agents.map((id) => <li title={brands[id].title}><Fragment set:html={mark(id)} /><span>{brands[id].title}</span></li>)}
+        </ul>
+        <p class="x-muted" set:html={named('Until the CLI ships, point your agent at a component page: each one ends with Notes for AI, and the toolbar opens it in Claude, ChatGPT or Cursor.')}></p>
         <a class="x-pill pill-grey" href="/docs/installation/">Set up your editor</a>
       </div>
     </div>
@@ -165,7 +176,7 @@ const faq: [string, string][] = [
     <h2 id="h-faq">Questions, answered</h2>
     <div class="faq">
       {faq.map(([q, a], i) => (
-        <details open={i === 0}><summary>{q}<span class="chev" aria-hidden="true"><Fragment set:html={icon.down} /></span></summary><p>{a}</p></details>
+        <details open={i === 0}><summary>{q}<span class="chev" aria-hidden="true"><Fragment set:html={icon.down} /></span></summary><p set:html={named(a)}></p></details>
       ))}
     </div>
     <p class="lp-cap">More in the <a href="/docs/">docs</a> or on <a href={REPO}>GitHub</a>.</p>

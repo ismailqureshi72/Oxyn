@@ -20,7 +20,9 @@ owner's brand guidelines when you ship them.
 ### Lobe Icons (AI model and provider marks)
 
 - Used for: OpenAI, Anthropic, Claude, Gemini, Meta, Mistral AI, DeepSeek, xAI, Grok, Cohere,
-  Perplexity, Ollama, Hugging Face, Qwen, Groq, Kimi, Cursor, AWS, Zapier.
+  Perplexity, Ollama, Hugging Face, Qwen, Groq, Kimi, Cursor, AWS, Zapier. On the website
+  (`site/src/components/v2/brands.ts`, coloured variants): Claude, ChatGPT (OpenAI mark), Cursor,
+  Model Context Protocol, Claude Code, Codex, GitHub Copilot, Gemini CLI (Gemini mark), OpenCode, Amp.
 - Source: https://github.com/lobehub/lobe-icons (`@lobehub/icons-static-svg` 1.102.0)
 - License: MIT
 
@@ -50,7 +52,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 - Used for: Google, GitHub, GitLab, Linear, Figma, Vercel, Notion, Stripe, PostgreSQL, Supabase,
   Jira, Gmail, Google Drive, Google Calendar, Discord, Sentry, Cloudflare, Docker, Zoom, Shopify,
   Intercom, HubSpot, Resend, Redis, Airtable, Netlify, npm, Rust, Python, TypeScript, React,
-  Next.js. Brand colours come from its metadata.
+  Next.js. On the website, in their brand colours: Windsurf, Zed, Cline. Brand colours come from
+  its metadata.
 - Source: https://github.com/simple-icons/simple-icons (`simple-icons` 16.37.0)
 - License: CC0 1.0 Universal (public domain dedication). See https://github.com/simple-icons/simple-icons/blob/develop/DISCLAIMER.md.
 
