@@ -1,9 +1,9 @@
 //! Plan #32 (affectUI fidelity pass), overnight batch family B demos: the exact Agent Findings and
-//! Agent Inbox, each with every affectUI style and state.
+//! Agent Inbox, each with every affectUI style and state; part 2: Agent Crew.
 
 use dioxus::prelude::*;
 use oxyn_core::ClockMs;
-use oxyn_dioxus::{AgentFindings, AgentInbox};
+use oxyn_dioxus::{AgentCrew, AgentFindings, AgentInbox};
 
 use super::{Code, mk, sel, tog, var};
 use crate::{Demo, Vals};
@@ -73,10 +73,149 @@ fn agent_inbox_code(v: &Vals) -> String {
         .done()
 }
 
+// ---------- Agent Crew ----------
+
+fn agent_crew(v: &Vals, now: ClockMs) -> Element {
+    let mut msg = use_signal(String::new);
+    let key = format!(
+        "{}{}{}{}{}",
+        v.s("style"),
+        v.s("project"),
+        v.s("run"),
+        v.b("open"),
+        v.s("width")
+    );
+    let width = if v.s("width") == "narrow" {
+        "380px"
+    } else {
+        "760px"
+    };
+    let at = (v.s("run") == "settled").then_some(26_500);
+    let open = if v.b("open") {
+        match v.s("project") {
+            "launch" => "editor",
+            "postgres" => "pg-lead",
+            _ => "lead",
+        }
+    } else {
+        ""
+    };
+    rsx! {
+        div { "data-k": "{key}", key: "{key}", style: "width:{width};max-width:100%;display:flex;flex-direction:column;gap:8px",
+            AgentCrew { now, project: v.string("project"), at, open: open.to_string(), style: cstyle(v),
+                on_steer: move |(id, a, m): (String, String, String)| msg.set(if m.is_empty() { format!("onSteer({id:?}, {a:?})") } else { format!("onSteer({id:?}, {a:?}, {m:?})") }),
+                on_project: move |id: String| msg.set(format!("onProjectChange({id:?})")) }
+            {status(msg)}
+        }
+    }
+}
+
+fn agent_crew_code(_: &Vals) -> String {
+    Code::new("AgentCrew")
+        .raw("root", "Some(crew())")
+        .raw("handoffs", "handoffs()")
+        .raw("projects", "projects()")
+        .raw("now", "clock.now()")
+        .raw(
+            "on_steer",
+            "move |(agent, action, message)| steer(agent, action, message)",
+        )
+        .raw("on_project", "move |id| switch_to(id)")
+        .done()
+}
+
 /// Family B demos.
 pub(crate) fn demos() -> Vec<Demo> {
     let style = || sel("style", "Style", &["clean", "classic"], "clean");
     vec![
+        Demo {
+            controls: vec![
+                style(),
+                sel(
+                    "project",
+                    "Project",
+                    &["checkout", "launch", "postgres"],
+                    "checkout",
+                ),
+                sel("run", "Run", &["live", "settled"], "live"),
+                tog("open", "Lead details open", false),
+                sel("width", "Width", &["wide", "narrow"], "wide"),
+            ],
+            variants: vec![
+                var(
+                    "default",
+                    "As affectUI ships it: a lead and three sub-agents with their helpers; handoffs run along the connectors and light up the card they reach, contexts fill, and the lead ends up asking you to merge.",
+                    &[],
+                ),
+                var(
+                    "working-details",
+                    "The lead's details while it works: task, model, usage, tools, last handoff and Message / Pause / Stop.",
+                    &[("open", "true")],
+                ),
+                var(
+                    "needs-you",
+                    "The run settled with the lead waiting: \"1 needs you\" in the header and Message / Decline / Approve in its details.",
+                    &[("run", "settled"), ("open", "true")],
+                ),
+                var(
+                    "launch",
+                    "Another project from the switcher: the launch post crew (Editor, Researcher, Writer with its Fact checker, SEO).",
+                    &[("project", "launch")],
+                ),
+                var(
+                    "narrow",
+                    "Narrow: every level indented, the cards as wide as there is room.",
+                    &[("width", "narrow"), ("run", "settled")],
+                ),
+                var(
+                    "classic",
+                    "Classic style: elevated cards, a grey footer band and filled badges.",
+                    &[("style", "classic"), ("run", "settled")],
+                ),
+            ],
+            render: agent_crew,
+            code: agent_crew_code,
+            keyboard: vec![
+                (
+                    "Tab",
+                    "Into the crew – one stop for all cards – then the project switcher",
+                ),
+                ("← → ↑ ↓", "Walk the cards"),
+                ("Home / End", "The lead, the last card"),
+                ("Enter / Space", "Open or close the card's details"),
+                (
+                    "Esc",
+                    "Close the message field, then the details – focus goes back to the card",
+                ),
+                (
+                    "↑ ↓ Enter",
+                    "In the project switcher: pick a project; Esc closes it",
+                ),
+            ],
+            a11y: vec![
+                "A tree; every card is named with its status, activity and context – \"Coder: Working, Editing cart.ts, context 38%\" – and says it opens a dialog.",
+                "The details are a dialog named after the agent; close, steering buttons and the message field are reachable by Tab.",
+                "The project switcher is a button with a listbox; the current project is marked as selected.",
+                "A polite live region reads each handoff and each steering action – \"Lead handed to Coder: Guard empty carts\", \"Paused Coder\".",
+            ],
+            responsive: vec![
+                "Wide (760 px): sub-agents side by side under the lead; narrower: every level indented.",
+                "Rows are fixed, so a changing activity or context never moves a card or a connector.",
+                "Long names, activities and tasks end in … with the full text on hover.",
+            ],
+            height: 600,
+            live: true,
+            ..mk(
+                "agent-crew",
+                "Agent Crew",
+                "tools",
+                "A lead and its sub-agents as one live tree of cards – what each does now, how full its context is, its tools and the last thing it was handed; handoffs run as a light along the connectors, a click opens the details with steering, and a switcher swaps projects.",
+                "AgentCrew",
+                "AgentCrewEl",
+                "agent-crew",
+                "parity/crewfid.rs",
+            )
+        },
         Demo {
             controls: vec![
                 style(),

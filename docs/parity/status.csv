@@ -1,5 +1,6 @@
 source,item,url,section,tier,oxyn_spec,batch,plan_pr,status
 affectUI,Agent Checkpoints,https://www.affectui.com/components/agent-checkpoints,Components · Agents,Pro,"checkpoint-timeline, checkpoints-git",,#28,built
+affectUI,Agent Crew,https://www.affectui.com/components/agent-crew,Components · Agents,Pro,"agent-crew (exact, overnight batch B part 2), subagent-tree",,#32,built
 affectUI,Agent Cursors,https://www.affectui.com/components/agent-cursors,Components · Agents,Pro,"acting-indicator, takeover-banner",C6,#34,planned
 affectUI,Agent Findings,https://www.affectui.com/components/agent-findings,Components · Agents,Pro,"agent-findings (exact, overnight batch B), fanout-grid, review-card",C6,#32,built
 affectUI,Agent Fleet,https://www.affectui.com/components/agent-fleet,Components · Agents,Pro,"subagent-tree, background-jobs",,#28,built
@@ -12,6 +13,7 @@ affectUI,Agent Monitor,https://www.affectui.com/components/agent-monitor,Compone
 affectUI,Agent Plan,https://www.affectui.com/components/agent-plan,Components · Agents,Pro,"plan-todo, plan-approval",,#28,built
 affectUI,Agent Queue,https://www.affectui.com/components/agent-queue,Components · Agents,Pro,background-jobs,C9,#35,planned
 affectUI,Agent Recap,https://www.affectui.com/components/agent-recap,Components · Agents,Pro,background-jobs,C5,#33,planned
+affectUI,Agent Sequence,https://www.affectui.com/components/agent-sequence,Components · Agents,Pro,"trace-view, subagent-tree",,#32,planned
 affectUI,Agent Steering,https://www.affectui.com/components/agent-steering,Components · Agents,Pro,composer-queue-stack,,#27,built
 affectUI,Agent Trail,https://www.affectui.com/components/agent-trail,Components · Agents,Pro,"plan-todo, status-indicator, elapsed-timer",,#28,built
 affectUI,Agent Tree,https://www.affectui.com/components/agent-tree,Components · Agents,Pro,subagent-tree,,#28,built
