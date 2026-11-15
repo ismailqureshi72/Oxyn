@@ -17,6 +17,7 @@ mod agentsfid;
 mod answers;
 mod approvals;
 mod chatfid;
+mod crewfid;
 mod fidelity;
 mod fields;
 mod home;
@@ -37,6 +38,7 @@ pub use approvals::{
     HoldConfirmEl, PermissionRequestEl,
 };
 pub use chatfid::{AgentRunPanelEl, ModelPickerMenuEl};
+pub use crewfid::AgentCrewEl;
 pub use fidelity::{AgentCommentThreadEl, ChatComposerEl, CommentsPanelEl, ThreadMsg, file_badge};
 pub use fields::{
     AiComposerEl, AvatarUploadEl, ContextFieldEl, ContextGridEl, ElasticSliderEl, FileDropzoneEl,
