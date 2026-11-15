@@ -5,6 +5,7 @@
 //! component also ships its own small stylesheet as a constant (`STATUS_INDICATOR_CSS`).
 
 mod approval;
+mod brand;
 mod chat;
 mod checkpoint;
 mod composer;
@@ -17,6 +18,7 @@ mod status_indicator;
 mod status_text;
 
 pub use approval::{ApprovalCard, ApprovalCardProps, ApprovalPager, ApprovalPagerProps};
+pub use brand::{BrandIcon, BrandIconProps, has_brand};
 pub use chat::{
     AiAnswer, AiChat, CHAT_CSS, ChatThread, ContextCards, DocumentExtraction, Markdown,
     MessageActions, MessageBubble, ReasoningBlock, RecommendationCard, ResearchRun,

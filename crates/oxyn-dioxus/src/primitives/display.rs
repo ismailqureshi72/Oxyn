@@ -218,6 +218,8 @@ pub fn EntityChip(
             onkeydown: move |k: KeyboardEvent| if k.key() == Key::Escape { open.set(false) },
             if let Some(src) = e.image.clone() {
                 img { class: "img", src: "{src}", alt: "" }
+            } else if crate::brand::has_brand(&e.name) {
+                span { class: "bmk", crate::brand::BrandIcon { name: e.name.clone(), size: 12.0 } }
             } else {
                 Monogram { monogram: e.monogram.clone(), size: 16.0 }
             }
@@ -298,7 +300,7 @@ pub fn Avatar(
                 }
             }
             if let Some(p) = a.status { span { class: "pres {p.id()}", style: "--d:{a.dot()}px", "aria-hidden": "true" } }
-            if let Some(md) = a.model.clone() { span { class: "model", "aria-hidden": "true", "{md}" } }
+            if let Some(md) = a.model.clone() { span { class: "model", "aria-hidden": "true", if crate::brand::has_brand(&md) { crate::brand::BrandIcon { name: md.clone(), size: 10.0 } } else { "{md}" } } }
         }
     }
 }

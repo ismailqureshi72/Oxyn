@@ -1587,7 +1587,17 @@ impl RenderOnce for ModelPillEl {
                             .items_center()
                             .justify_center()
                             .text_size(px(10.5))
-                            .child(mark),
+                            .map(|d| {
+                                match crate::brand::brand_icon(
+                                    &self.provider,
+                                    12.,
+                                    c(t, ColorRole::BgBase),
+                                    false,
+                                ) {
+                                    Some(icon) => d.child(icon),
+                                    None => d.child(mark),
+                                }
+                            }),
                     )
                     .child(div().font_weight(FontWeight::MEDIUM).child(self.name))
                     .child(muted(t, self.effort.label()))

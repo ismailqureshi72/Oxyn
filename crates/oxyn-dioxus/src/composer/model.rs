@@ -40,6 +40,9 @@ fn Mark(provider: String, #[props(default = 14.0)] size: f32) -> Element {
         .map(|c| c.to_ascii_uppercase())
         .unwrap_or('?');
     let fs = size * 0.62;
+    if crate::brand::has_brand(&provider) {
+        return rsx! { span { class: "oxyn-mark brand", style: "width:{size}px;height:{size}px", crate::brand::BrandIcon { name: provider.clone(), size } } };
+    }
     rsx! {
         span { class: "oxyn-mark", style: "width:{size}px;height:{size}px;background:{c};font-size:{fs}px", "{initial}" }
     }

@@ -4,6 +4,7 @@
 //! [`MotionClock`]; the host keeps the clock advanced and requests frames while
 //! [`MotionClock::next_frame_in`] says so.
 
+mod brand;
 mod chat;
 mod composer;
 mod composer_parts;
@@ -19,6 +20,7 @@ mod status_indicator;
 mod status_text;
 mod surfaces;
 
+pub use brand::{BrandAssets, brand_icon, brand_path};
 pub use chat::{
     AnswerEl, ChatThreadEl, FeedbackEl, MarkdownEl, MessageEl, ReasoningEl, SourceCardsEl,
     StartersEl, TraceEl,
