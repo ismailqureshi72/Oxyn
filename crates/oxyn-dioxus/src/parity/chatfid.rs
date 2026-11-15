@@ -123,6 +123,9 @@ pub fn ModelPickerMenu(
     let mut chosen = use_signal(move || first);
     let mut lit = use_signal(|| 0usize);
     let mut open = use_signal(move || default_open);
+    // The click-away scrim only follows a menu the user opened: a menu that starts open (as on
+    // a docs page) must not cover the page and swallow its first click.
+    let mut veil = use_signal(|| false);
     let mut think = use_signal(move || thinking);
     let mut web = use_signal(move || web_search);
     let mut eff = use_signal(move || Effort::from_id(&effort));
@@ -136,6 +139,7 @@ pub fn ModelPickerMenu(
     let tray = tray_values(&pointed, think(), eff());
     let mut set_open = move |o: bool| {
         open.set(o);
+        veil.set(o);
         on_open_change.call(o);
         if o {
             lit.set(chosen());
@@ -214,7 +218,7 @@ pub fn ModelPickerMenu(
                         Icon { name: "up", size: 15.0, stroke: 2.0 } }
                 }
                 if open() {
-                    div { class: "oxmq-scrim", onclick: move |_| set_open(false) }
+                    if veil() { div { class: "oxmq-scrim", onclick: move |_| set_open(false) } }
                     div { class: "oxmq-menu", role: "dialog", "aria-label": "Model settings", tabindex: "-1",
                         onmounted: move |e| menu.set(Some(e.data())),
                         div { class: "oxmq-head", "aria-hidden": "true",

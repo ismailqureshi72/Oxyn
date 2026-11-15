@@ -476,8 +476,8 @@ fn model_picker(v: &Vals, _: ClockMs) -> Element {
         v.b("open")
     );
     rsx! {
-        div { style: "width:362px;max-width:100%;min-height:520px;display:flex;flex-direction:column;gap:10px;padding-top:24px",
-            ModelPickerMenu { key: "{key}", marks: v.string("marks"), thinking: v.b("thinking"), web_search: v.b("web"), default_open: v.b("open"),
+        div { key: "{key}", style: "width:362px;max-width:100%;min-height:520px;display:flex;flex-direction:column;gap:10px;padding-top:24px",
+            ModelPickerMenu { marks: v.string("marks"), thinking: v.b("thinking"), web_search: v.b("web"), default_open: v.b("open"),
                 style: if v.s("style") == "classic" { "classic".to_string() } else { String::new() },
                 on_change: move |id: String| msg.set(format!("onChange({id:?})")),
                 on_thinking_change: move |on: bool| msg.set(format!("onThinkingChange({on})")),
@@ -561,8 +561,8 @@ fn run_controls(v: &Vals, now: ClockMs) -> Element {
         v.b("menu")
     );
     rsx! {
-        div { style: "width:520px;max-width:100%;display:flex;flex-direction:column;gap:8px;padding-top:12px",
-            AgentRunPanel { key: "{key}", turns: run_turns(), now,
+        div { key: "{key}", style: "width:520px;max-width:100%;display:flex;flex-direction:column;gap:8px;padding-top:12px",
+            AgentRunPanel { turns: run_turns(), now,
                 queue: if v.b("queued") { vec!["Add an upgrade note for self-hosted teams".to_string()] } else { vec![] },
                 autoplay: st != "idle", stopped_at: if st == "stopped" { Some(29) } else { None }, elapsed: if st == "done" { 60_000 } else { 0 },
                 mode: v.string("mode"), permission: v.string("permission"), menu_open: v.b("menu"),
