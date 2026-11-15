@@ -11,6 +11,7 @@ mod cursorsfid;
 mod diff;
 mod fidelity;
 mod fields;
+mod graphfid;
 mod home;
 mod input;
 mod merge;
@@ -41,6 +42,7 @@ pub use fidelity::{
     ThreadNote,
 };
 pub use fields::{ElasticSlider, MorphSelect, NumberField, ScrubInput};
+pub use graphfid::AgentGraph;
 pub use home::{
     ActivityHeatmap, ActivityHome, AttachmentStrip, DocGrid, ExperimentGrid, PollingCost,
     RunModeMenu, ThreadList, TokenUsageChart,

@@ -21,6 +21,7 @@ mod crewfid;
 mod cursorsfid;
 mod fidelity;
 mod fields;
+mod graphfid;
 mod home;
 mod ime;
 mod merge;
@@ -47,6 +48,7 @@ pub use fields::{
     GaugeEl, ModelMenuEl, ModelPillEl, MorphSelectEl, NumberFieldEl, Pick, RichTextEl,
     RunControlsEl, ScrubInputEl, SplitBarEl, UsageMeterEl,
 };
+pub use graphfid::AgentGraphEl;
 pub use home::{
     ActivityHeatmapEl, ActivityHomeEl, AttachmentStripEl, DocGridEl, ExperimentGridEl,
     PollingCostEl, RunModeMenuEl, ThreadListEl, TokenUsageChartEl,

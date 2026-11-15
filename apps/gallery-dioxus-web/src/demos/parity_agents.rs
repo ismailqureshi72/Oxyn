@@ -1,9 +1,9 @@
 //! Plan #32 (affectUI fidelity pass), overnight batch family B demos: the exact Agent Findings and
-//! Agent Inbox, each with every affectUI style and state; part 2: Agent Crew; part 3: Agent Cursors.
+//! Agent Inbox, each with every affectUI style and state; part 2: Agent Crew; part 3: Agent Cursors and Agent Graph.
 
 use dioxus::prelude::*;
 use oxyn_core::ClockMs;
-use oxyn_dioxus::{AgentCrew, AgentCursors, AgentFindings, AgentInbox};
+use oxyn_dioxus::{AgentCrew, AgentCursors, AgentFindings, AgentGraph, AgentInbox};
 
 use super::{Code, mk, sel, tog, var};
 use crate::{Demo, Vals};
@@ -184,6 +184,52 @@ fn agent_cursors_code(v: &Vals) -> String {
         .raw("on_reject", "move |s| reject(s)")
         .raw("on_accept_all", "move |_| accept_all()")
         .raw("on_resolve", "move |c| resolve(c)")
+        .done()
+}
+
+// ---------- Agent Graph ----------
+
+fn agent_graph(v: &Vals, now: ClockMs) -> Element {
+    let mut msg = use_signal(String::new);
+    let key = format!(
+        "{}{}{}{}",
+        v.s("style"),
+        v.s("run"),
+        v.s("open"),
+        v.s("width")
+    );
+    let at = match v.s("run") {
+        "needs-you" => Some(15_000),
+        "early" => Some(7_000),
+        _ => None,
+    };
+    let open = match v.s("open") {
+        "lead" => "lead",
+        "writer" => "writer",
+        _ => "",
+    };
+    let width = if v.s("width") == "narrow" {
+        "380px"
+    } else {
+        "756px"
+    };
+    rsx! {
+        div { "data-k": "{key}", key: "{key}", style: "width:{width};max-width:100%;display:flex;flex-direction:column;gap:8px",
+            AgentGraph { now, at, open: open.to_string(), style: cstyle(v),
+                on_select: move |id: String| msg.set(if id.is_empty() { "onSelect(null)".into() } else { format!("onSelect({id:?})") }) }
+            {status(msg)}
+        }
+    }
+}
+
+fn agent_graph_code(_: &Vals) -> String {
+    Code::new("AgentGraph")
+        .raw(
+            "scene",
+            "Some(GraphScene { nodes: nodes(), edges: edges(), calls: recent_calls() })",
+        )
+        .raw("now", "clock.now()")
+        .raw("on_select", "move |id| show(id)")
         .done()
 }
 
@@ -412,6 +458,74 @@ pub(crate) fn demos() -> Vec<Demo> {
                 "AgentFindingsEl",
                 "agent-findings",
                 "parity/agentsfid.rs",
+            )
+        },
+        Demo {
+            controls: vec![
+                style(),
+                sel("run", "Run", &["live", "early", "needs-you"], "live"),
+                sel("open", "Card", &["none", "lead", "writer"], "none"),
+                sel("width", "Width", &["wide", "narrow"], "wide"),
+            ],
+            variants: vec![
+                var(
+                    "default",
+                    "As affectUI ships it: the lead in the middle, four agents around it and seven tools plus you on the outer orbit; every call runs a pulse out and its answer back, agents breathe, finish, fail and wait for you.",
+                    &[],
+                ),
+                var(
+                    "card",
+                    "The lead's card: status, what it does, its latest calls with spinners and times, its cost and calls in the last minute.",
+                    &[("run", "early"), ("open", "lead")],
+                ),
+                var(
+                    "needs-you",
+                    "Settled with the Writer waiting (amber, \"Writer needs you\") and the Coder failed (red, \"Coder failed\"); two agents done.",
+                    &[("run", "needs-you"), ("open", "writer")],
+                ),
+                var(
+                    "narrow",
+                    "Narrow: taller than wide, smaller nodes, short labels, no model line; the card docks to the bottom.",
+                    &[("width", "narrow"), ("run", "needs-you")],
+                ),
+                var(
+                    "classic",
+                    "Classic style: blue links that grow thicker with traffic, the bar on a grey band, the \"Busier link\" legend.",
+                    &[("style", "classic"), ("run", "early")],
+                ),
+            ],
+            render: agent_graph,
+            code: agent_graph_code,
+            keyboard: vec![
+                (
+                    "Tab",
+                    "Between the \"needs you\" / \"failed\" chips and the nodes; a focused node lights up its neighbourhood",
+                ),
+                ("Enter / Space", "Opens or closes the focused node's card"),
+                ("Esc", "Closes the card and returns focus to its node"),
+            ],
+            a11y: vec![
+                "Every node is a button named with its name, kind, status, what it does and its calls in the last minute; aria-expanded says whether its card is open.",
+                "The card is a dialog; its close button takes focus, Esc closes it.",
+                "A visually hidden list gives the same picture as text: every node, its status, whom it called how often and its cost.",
+                "The chips sit in a polite live region; status is never colour alone – a badge and a line under the name.",
+            ],
+            responsive: vec![
+                "The layout is computed for a wide and a narrow box with x as a share of the width, so it fits its container.",
+                "Below 520 px the graph turns taller than wide, nodes shrink, labels use short names and the card docks to the bottom.",
+                "Labels and the outer orbit stay inside the panel – nothing is cut off and nothing scrolls.",
+            ],
+            height: 600,
+            live: true,
+            ..mk(
+                "agent-graph",
+                "Agent Graph",
+                "tools",
+                "Agents and the tools they call as a living network – a pulse along the link for every call and its answer, agents that breathe while they work and turn amber when they need you, and a card with each node's latest calls.",
+                "AgentGraph",
+                "AgentGraphEl",
+                "agent-graph",
+                "parity/graphfid.rs",
             )
         },
         Demo {
