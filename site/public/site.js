@@ -235,7 +235,7 @@ document.addEventListener('oxyn-demo-live', (e) => {
   // needs a scrollbar just because the column is narrower than the component.
   const fitStage = (stage) => {
     const m = stage.querySelector(':scope > .oxd-mount');
-    if (!m || stage.closest('.site-card')) return;
+    if (!m || stage.closest('.site-card, .lp-screen')) return;
     m.style.zoom = '';
     const cs = getComputedStyle(stage);
     const avail = stage.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
