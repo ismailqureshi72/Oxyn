@@ -401,6 +401,12 @@ document.addEventListener('oxyn-demo-live', (e) => {
       b.setAttribute('aria-expanded', String(show));
       b.setAttribute('aria-label', show ? 'Hide controls' : 'Show controls');
     });
+    // Component style: Clean (one surface) or Classic (inset card); components read it from CSS.
+    const cs = [...w.querySelectorAll('[data-cstyle]')].filter((b) => b.tagName === 'BUTTON');
+    cs.forEach((b) => b.addEventListener('click', () => {
+      cs.forEach((x) => x.setAttribute('aria-checked', String(x === b)));
+      pv.dataset.cstyle = b.dataset.cstyle;
+    }));
     w.querySelector('[data-pv-reset]')?.addEventListener('click', () => {
       const r = pv.querySelector('.oxd-reset');
       if (r) r.click();

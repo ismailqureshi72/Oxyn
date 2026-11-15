@@ -31,6 +31,7 @@ const ai = [
   ['Claude', 'claude', `https://claude.ai/new?q=${encodeURIComponent(prompt)}`],
   ['ChatGPT', 'chatgpt', `https://chatgpt.com/?q=${encodeURIComponent(prompt)}`],
   ['Cursor', 'cursor', `https://cursor.com/link/prompt?text=${encodeURIComponent(prompt)}`],
+  ['v0', 'v0', `https://v0.app/chat?q=${encodeURIComponent(prompt)}`],
 ];
 const propNames = tables.flatMap((t) => t.info.props.filter((p) => p.required).map((p) => p.name));
 const rel = related(demo, 4);
@@ -60,6 +61,10 @@ const kind = screen ? 'screen' : 'component';
           <button type="button" role="tab" aria-selected="false" data-pv="code"><Fragment set:html={icon.code} />Code</button>
         </div>
         <div class="pvr">
+          <div class="x-cstyle" role="radiogroup" aria-label="Component style">
+            <button type="button" role="radio" aria-checked="false" data-cstyle="classic" aria-label="Classic style" title="Classic style"><span class="sw sw-classic" aria-hidden="true"></span></button>
+            <button type="button" role="radio" aria-checked="true" data-cstyle="clean" aria-label="Clean style" title="Clean style"><span class="sw sw-clean" aria-hidden="true"></span></button>
+          </div>
           <ThemeRadios scope="preview" />
           <button class="iconbtn" type="button" data-pv-reset aria-label="Reset the preview" title="Reset"><Fragment set:html={icon.reset} /></button>
           {demo.controls.length > 0 && (
@@ -69,10 +74,10 @@ const kind = screen ? 'screen' : 'component';
           <span class="pv-div" aria-hidden="true"></span>
           {ai.map(([l, id, h]) => <a class="aibtn x-aibtn-logo" href={h} target="_blank" rel="noopener" title={`Open in ${l}`} aria-label={`Open in ${l}`}><Fragment set:html={mark(id)} /></a>)}
           <a class="aibtn x-aibtn-mcp" href="/docs/installation/" title="MCP server (planned with the oxyn CLI)"><Fragment set:html={mark('mcp')} />MCP</a>
-          <button class="x-pill pill-black pill-sm" type="button" data-copy-from="pv">Copy</button>
+          <button class="x-pill pill-black pill-sm x-copy" type="button" data-copy-from="pv"><Fragment set:html={icon.copy} />Copy</button>
         </div>
       </div>
-      <div class:list={['pv', { 'pv-screen': screen }]} data-view="preview" data-controls="hidden">
+      <div class:list={['pv', { 'pv-screen': screen }]} data-view="preview" data-controls="hidden" data-cstyle="clean">
         <OxynDemo slug={demo.slug} html={demo.html} controls />
       </div>
       <p class="pv-live" data-live-label data-pagefind-ignore>Rendered from Rust at build time · goes live when visible</p>
