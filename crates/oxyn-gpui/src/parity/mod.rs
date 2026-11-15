@@ -22,6 +22,7 @@ mod cursorsfid;
 mod fidelity;
 mod fields;
 mod graphfid;
+mod handofffid;
 mod home;
 mod ime;
 mod merge;
@@ -49,6 +50,7 @@ pub use fields::{
     RunControlsEl, ScrubInputEl, SplitBarEl, UsageMeterEl,
 };
 pub use graphfid::AgentGraphEl;
+pub use handofffid::AgentHandoffEl;
 pub use home::{
     ActivityHeatmapEl, ActivityHomeEl, AttachmentStripEl, DocGridEl, ExperimentGridEl,
     PollingCostEl, RunModeMenuEl, ThreadListEl, TokenUsageChartEl,

@@ -12,6 +12,7 @@ mod diff;
 mod fidelity;
 mod fields;
 mod graphfid;
+mod handofffid;
 mod home;
 mod input;
 mod merge;
@@ -43,6 +44,7 @@ pub use fidelity::{
 };
 pub use fields::{ElasticSlider, MorphSelect, NumberField, ScrubInput};
 pub use graphfid::AgentGraph;
+pub use handofffid::AgentHandoff;
 pub use home::{
     ActivityHeatmap, ActivityHome, AttachmentStrip, DocGrid, ExperimentGrid, PollingCost,
     RunModeMenu, ThreadList, TokenUsageChart,
