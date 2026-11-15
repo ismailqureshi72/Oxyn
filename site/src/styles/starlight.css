@@ -35,8 +35,20 @@
 header.header{background:var(--site-glass);backdrop-filter:blur(12px);border-bottom-color:var(--site-line)}
 .sl-markdown-content oxyn-demo{margin:1.25rem 0}
 .sl-markdown-content .oxd *{margin-top:0}
-.topnav-in.sl .menubtn,.topnav-in.sl ~ .mobilemenu{display:none!important}
 .tb-in.sl{height:100%;padding:0;max-width:none}
 header.header .tb-in.sl .tb-links>a,header.header .tb-ddbtn{font-size:14px}
 header.header{padding-block:0}
 .tb-in.sl .wm{color:var(--sl-color-white)}
+/* Docs in the library look: grey page and sidebar, content on a white rounded panel. */
+:root{--sl-color-bg-sidebar:var(--pg)}
+.page{background:var(--pg)}
+.sidebar-pane{background:var(--pg);border-inline-end:0}
+.sidebar-content a[aria-current='page'],.sidebar-content a[aria-current='page']:hover{background:var(--pn);color:var(--fg);font-weight:500;box-shadow:var(--shadow)}
+.sidebar-content a{border-radius:8px}
+@media (min-width:50rem){
+  .main-frame>div{margin:8px 8px 8px 0;background:var(--pn);border:1px solid var(--ln);border-radius:14px;min-height:calc(100vh - var(--sl-nav-height) - 16px)}
+  .content-panel+.content-panel{border-top-color:var(--ln2)}
+}
+header.header{background:var(--pn)}
+.tb-in.sl .tb-menubtn,.tb-in.sl ~ .mobilemenu{display:none!important}
+@media (max-width:49.99rem){.page{background:var(--pn)}}
