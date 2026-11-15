@@ -20,6 +20,7 @@
 //! - [`fidelity`]: the affectUI fidelity pass (plan #32): the exact Chat Composer's approval
 //!   modes, attachment kinds and recording trace; Comment Thread and Comments Panel.
 //! - [`chatfid`]: fidelity chunk 2: Model Picker rows and tray, Run Controls turns and phases.
+//! - [`agentsfid`]: fidelity batch, family B: Agent Findings progress and feed, Agent Inbox tasks.
 //! - [`answers`]: fidelity batch, family A: AI Answer markup and streaming, Cited Answer
 //!   sentences and quotes, Message Actions, Thinking Loader phases, Thinking State steps and the
 //!   Writing Assistant's sample writer and dictation.
@@ -27,6 +28,7 @@
 //!
 //! Like the rest of the core, time is passed in as [`crate::ClockMs`]; nothing reads a clock.
 
+pub mod agentsfid;
 pub mod answers;
 pub mod chatfid;
 pub mod compose;
