@@ -1,0 +1,33 @@
+---
+// Everything both layouts put in <head>: meta, the theme boot script and the demo runtime.
+import { wasm } from '../../lib/data';
+interface Props { title: string; description: string }
+const { title, description } = Astro.props;
+const path = Astro.url.pathname;
+---
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>{title}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={new URL(path, Astro.site)} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta name="color-scheme" content="light dark" />
+<!-- No favicon yet (brand assets pending): an empty icon stops the browser's /favicon.ico 404. -->
+<link rel="icon" href="data:," />
+<script is:inline>
+  (function () {
+    var d = document.documentElement;
+    // Light by default (as the library is designed); a choice made on the site is kept.
+    var t = localStorage.getItem('starlight-theme') === 'dark' ? 'dark' : 'light';
+    d.dataset.theme = t;
+    d.setAttribute('data-oxyn-theme', t);
+    if (localStorage.getItem('oxyn-announce') === 'closed') d.dataset.announce = 'hidden';
+    if (localStorage.getItem('oxyn-reduce-motion') === '1') d.setAttribute('data-oxyn-reduced', '');
+    if (localStorage.getItem('oxyn-sidebar') === 'hidden') d.dataset.sidebar = 'hidden';
+  })();
+</script>
+{wasm.js && <link rel="modulepreload" href={wasm.js} />}
+<script is:inline define:vars={{ OXYN_WASM: wasm }}>window.OXYN_WASM = OXYN_WASM;</script>
+<script is:inline src="/oxyn-demo.js" type="module"></script>
+<script is:inline src="/site.js" defer></script>

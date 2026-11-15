@@ -1,6 +1,25 @@
 // @ts-check
 import starlight from '@astrojs/starlight';
 import { defineConfig } from 'astro/config';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { redirects } from './src/lib/taxonomy.mjs';
+
+// Moved URLs (plan #29 regrouped 21 categories into 8 + Screens): the pages also ship as
+// meta-refresh stubs, and the Worker answers them with a 301 from dist/_redirects.
+const movedUrls = {
+  name: 'oxyn-redirects',
+  hooks: {
+    'astro:build:done': ({ dir }) => {
+      const gen = path.resolve(path.dirname(fileURLToPath(import.meta.url)), 'src/generated/demos.json');
+      if (!fs.existsSync(gen)) return;
+      const { demos, categories } = JSON.parse(fs.readFileSync(gen, 'utf8'));
+      const lines = redirects(demos, categories).map(([from, to]) => `${from} ${to} 301`);
+      fs.writeFileSync(new URL('_redirects', dir), lines.join('\n') + '\n');
+    },
+  },
+};
 
 // Static site: Astro pages for the component gallery, Starlight for docs and guides.
 // Search is one Pagefind index over every page (built after `astro build`, see package.json),
@@ -10,10 +29,12 @@ export default defineConfig({
   output: 'static',
   trailingSlash: 'ignore',
   integrations: [
+    movedUrls,
     starlight({
       title: 'Oxyn',
       description: 'Agent-UI components for Rust: GPUI and Dioxus.',
       pagefind: false,
+      tableOfContents: false,
       disable404Route: true,
       customCss: ['./src/generated/oxyn-tokens.css', './src/generated/oxyn-components.css', './src/styles/starlight.css'],
       components: {

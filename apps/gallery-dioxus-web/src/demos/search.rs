@@ -150,10 +150,10 @@ fn answer() -> ScriptedAnswer {
         sources: vec![
             Source::new("doc-retries", "Webhook retries").mark("D"),
             Source::new("doc-idem", "Idempotency keys").mark("D"),
-            Source::new("iss-912", "AUTH-912").mark("L"),
+            Source::new("iss-912", "AUTH-912").mark("Linear"),
         ],
         actions: vec![
-            AiAction::new("lin", "Create issue in Linear", "Created ENG-2481").mark("L"),
+            AiAction::new("lin", "Create issue in Linear", "Created ENG-2481").mark("Linear"),
             AiAction::new("slack", "Reply to Acme in Slack", "Draft saved to #acme-support").mark("S"),
         ],
     }

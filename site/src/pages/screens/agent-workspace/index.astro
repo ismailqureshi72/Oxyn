@@ -1,0 +1,37 @@
+---
+import Library from '../../../layouts/Library.astro';
+import AgentWorkspace from '../../../components/v2/AgentWorkspace.astro';
+import CompCard from '../../../components/v2/CompCard.astro';
+import { icon } from '../../../components/v2/icons';
+import { demos } from '../../../lib/data';
+const parts = ['thread-list', 'ai-chat', 'agent-trail', 'checkpoint-list'].map((s) => demos.find((d) => d.slug === s)!);
+---
+<Library title="Agent workspace — Screens" description="A complete AI agent app: threads, the agent thread and the run's work pane, composed from Oxyn components." type="Component" meta="category:Screens">
+  <article class="x-art">
+    <nav class="x-crumbs" aria-label="Breadcrumb" data-pagefind-ignore><a href="/screens/">Screens</a><span aria-hidden="true">›</span><span aria-current="page">Agent workspace</span></nav>
+    <h1 class="art-title" data-pagefind-meta="title">Agent workspace</h1>
+    <p class="art-lede">A complete AI agent app for desktop and web: threads grouped by what needs you, the agent thread with thinking, sources and the composer, and a work pane with the run's steps and checkpoints. Every pane is a live Oxyn component.</p>
+    <div class="pvwrap" id="preview">
+      <div class="pvbar" data-pagefind-ignore>
+        <div class="x-seg" role="tablist" aria-label="Preview"><button type="button" role="tab" aria-selected="true" data-pv="preview"><Fragment set:html={icon.eye} />Preview</button></div>
+        <div class="pvr"><a class="x-pill pill-black pill-sm" href="/screens/agent-workspace/full/"><Fragment set:html={icon.arrowUpRight} />Open full screen</a></div>
+      </div>
+      <div class="pv pv-screen aw-prev" data-view="preview"><AgentWorkspace /></div>
+    </div>
+    <section class="sec" id="when-to-use">
+      <h2>When to use</h2>
+      <ul class="bul">
+        <li>A starting point for a coding or operations agent product where people follow several runs at once.</li>
+        <li>To see how the thread list, the chat block, the agent trail and checkpoints fit together on one screen.</li>
+      </ul>
+    </section>
+    <section class="sec" id="when-not-to-use">
+      <h2>When not to use</h2>
+      <ul class="bul"><li>A single chat with no background runs: use <a href="/screens/ai-chat-screens/">AI chat screens</a> instead.</li></ul>
+    </section>
+    <section class="sec" id="composed-from">
+      <h2>Composed from</h2>
+      <div class="cgrid two">{parts.map((d) => <CompCard demo={d} />)}</div>
+    </section>
+  </article>
+</Library>

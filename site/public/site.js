@@ -4,19 +4,42 @@
   const isMac = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
   document.querySelectorAll('[data-mod-k]').forEach((k) => (k.textContent = isMac ? '⌘K' : 'Ctrl K'));
 
-  // Theme: one switch for the gallery and the Starlight docs (same storage key as Starlight).
+  // Theme: one switch for the site and the Starlight docs (same storage key as Starlight).
+  // Radio pairs: [data-theme-scope="page"] sets the site; "preview" sets only the preview below it.
+  const syncRadios = (root, t) => root.querySelectorAll('[data-set-theme]').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.setTheme === t)));
   const setTheme = (t) => {
     d.dataset.theme = t;
     d.setAttribute('data-oxyn-theme', t);
     localStorage.setItem('starlight-theme', t);
-    document.querySelectorAll('[data-theme-toggle]').forEach((b) =>
-      b.setAttribute('aria-label', t === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'),
-    );
+    document.querySelectorAll('[data-theme-scope="page"]').forEach((g) => syncRadios(g, t));
+    document.querySelectorAll('[data-theme-scope="preview"]').forEach((g) => {
+      const pv = g.closest('.pvwrap')?.querySelector('.pv');
+      if (pv && !pv.dataset.themeSet) syncRadios(g, t);
+    });
   };
-  setTheme(d.dataset.theme === 'light' ? 'light' : 'dark');
+  setTheme(d.dataset.theme === 'dark' ? 'dark' : 'light');
   document.addEventListener('click', (e) => {
-    const t = e.target.closest('[data-theme-toggle]');
-    if (t) setTheme(d.dataset.theme === 'light' ? 'dark' : 'light');
+    const b = e.target.closest('[data-set-theme]');
+    if (b) {
+      const g = b.closest('[data-theme-scope]');
+      const t = b.dataset.setTheme;
+      if (g?.dataset.themeScope === 'preview') {
+        const pv = g.closest('.pvwrap')?.querySelector('.pv');
+        if (pv) { pv.dataset.theme = t; pv.setAttribute('data-oxyn-theme', t); pv.dataset.themeSet = '1'; }
+        syncRadios(g, t);
+      } else setTheme(t);
+      return;
+    }
+    if (e.target.closest('[data-theme-toggle]')) setTheme(d.dataset.theme === 'light' ? 'dark' : 'light');
+  });
+  // Arrow keys move within a radio pair.
+  document.addEventListener('keydown', (e) => {
+    const b = e.target.closest?.('[data-set-theme]');
+    if (!b || !/Arrow(Left|Right|Up|Down)/.test(e.key)) return;
+    e.preventDefault();
+    const sib = [...b.parentElement.querySelectorAll('[data-set-theme]')].find((x) => x !== b);
+    sib.focus();
+    sib.click();
   });
 
   // Announcement bar.
@@ -51,14 +74,23 @@
     const b = e.target.closest('[data-copy],[data-copy-from]');
     if (!b) return;
     let text = b.dataset.copy;
-    if (!text) {
-      const host = b.closest('.oxd-code, .copyable') || b.parentElement.parentElement;
-      text = host.querySelector('pre, code')?.innerText ?? '';
+    if (!text && b.dataset.copyFrom === 'pv') {
+      text = b.closest('.pvwrap')?.querySelector('.oxd-code pre')?.innerText ?? '';
+    } else if (!text) {
+      const host = b.closest('.codeblk, .oxd-code, .copyable') || b.parentElement.parentElement;
+      text = host.querySelector('pre')?.innerText ?? host.querySelector('code')?.innerText ?? '';
     }
     try {
       await navigator.clipboard.writeText(text);
       // Component copy buttons show their own feedback; only the site's text buttons swap label.
-      if (!b.matches('.oxd-copy, .copy-btn')) return;
+      if (b.matches('.cc-copy, .pill-copy')) {
+        b.classList.add('done');
+        const lbl = b.getAttribute('aria-label');
+        b.setAttribute('aria-label', 'Copied');
+        setTimeout(() => { b.classList.remove('done'); b.setAttribute('aria-label', lbl); }, 1400);
+        return;
+      }
+      if (!b.matches('.oxd-copy, .copy-btn, .pill-black')) return;
       const old = b.textContent;
       b.textContent = 'Copied';
       setTimeout(() => (b.textContent = old), 1400);
@@ -259,4 +291,127 @@ document.addEventListener('oxyn-demo-live', (e) => {
   mo = new MutationObserver((ms) => { if (ms.some((m) => m.target.closest && m.target.closest('oxyn-demo'))) { queue(); setTimeout(queue, 260); } });
   mo.observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ['class', 'style', 'open', 'data-state', 'aria-expanded'] });
   addEventListener('resize', queue);
+})();
+
+// ── Plan #29: library shell, landing tabs, preview toolbar, compare ──────────────────────────
+(function () {
+  const d = document.documentElement;
+  // Library dropdown in the top bar: click or keyboard opens, outside click and Escape close.
+  const dds = document.querySelectorAll('.tb-dd');
+  // Keep the menu inside the viewport: shift it left when it would run past the right edge.
+  const fit = (dd) => {
+    const m = dd.querySelector('.tb-menu');
+    if (!m) return;
+    m.style.left = '';
+    const r = m.getBoundingClientRect();
+    const over = r.right - (document.documentElement.clientWidth - 12);
+    if (over > 0) m.style.left = `${parseFloat(getComputedStyle(m).left) - over}px`;
+    if (r.left - Math.max(over, 0) < 12) m.style.left = `${parseFloat(getComputedStyle(m).left) + (12 - (r.left - Math.max(over, 0)))}px`;
+  };
+  const closeDd = (dd) => { dd.classList.remove('open'); dd.querySelector('[data-dd]')?.setAttribute('aria-expanded', 'false'); };
+  dds.forEach((dd) => {
+    const btn = dd.querySelector('[data-dd]');
+    btn?.addEventListener('click', () => {
+      // A menu the pointer opened on hover stays open on the click that follows.
+      if (dd.dataset.hoverOpen) { delete dd.dataset.hoverOpen; return; }
+      const open = !dd.classList.contains('open');
+      dd.classList.toggle('open', open);
+      btn.setAttribute('aria-expanded', String(open));
+      if (open) fit(dd);
+    });
+    dd.addEventListener('mouseenter', () => { if (matchMedia('(hover:hover)').matches && !dd.classList.contains('open')) { dd.classList.add('open'); dd.dataset.hoverOpen = '1'; btn.setAttribute('aria-expanded', 'true'); fit(dd); } });
+    dd.addEventListener('mouseleave', () => { if (matchMedia('(hover:hover)').matches) { delete dd.dataset.hoverOpen; closeDd(dd); } });
+    dd.addEventListener('focusout', (e) => { if (!dd.contains(e.relatedTarget)) closeDd(dd); });
+  });
+  document.addEventListener('click', (e) => dds.forEach((dd) => { if (!dd.contains(e.target)) closeDd(dd); }));
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    dds.forEach((dd) => { if (dd.classList.contains('open')) { closeDd(dd); dd.querySelector('[data-dd]')?.focus(); } });
+    if (d.classList.contains('drawer-open')) setDrawer(false);
+  });
+
+  // Sidebar: hide/show on desktop (remembered), a drawer on phones.
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('[data-sidebar-toggle]') && !matchMedia('(max-width:900px)').matches) {
+      const hidden = d.dataset.sidebar !== 'hidden';
+      if (hidden) d.dataset.sidebar = 'hidden'; else delete d.dataset.sidebar;
+      localStorage.setItem('oxyn-sidebar', hidden ? 'hidden' : 'shown');
+      (hidden ? document.querySelector('.lbar-open') : document.querySelector('.lsb-hide'))?.focus();
+    }
+  });
+  const setDrawer = (open) => {
+    d.classList.toggle('drawer-open', open);
+    document.querySelectorAll('[data-drawer-open]').forEach((b) => b.setAttribute('aria-expanded', String(open)));
+    if (open) document.querySelector('.lsb-search')?.focus();
+    else document.querySelector('[data-drawer-open]')?.focus();
+  };
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('[data-drawer-open]')) setDrawer(true);
+    else if (e.target.closest('[data-drawer-close]')) setDrawer(false);
+    else if (d.classList.contains('drawer-open') && e.target.closest('.lsb a')) d.classList.remove('drawer-open');
+  });
+  // Keep the current sidebar item in view.
+  // Page-to-page crossfade (cross-document view transitions): skipped under reduced motion.
+  addEventListener('pagereveal', (e) => {
+    if (e.viewTransition && (d.hasAttribute('data-oxyn-reduced') || matchMedia('(prefers-reduced-motion: reduce)').matches)) e.viewTransition.skipTransition();
+  });
+
+  // Tabs (landing): roving tabindex, arrow keys, panels shown one at a time.
+  document.querySelectorAll('[data-tabs]').forEach((box) => {
+    const tabs = [...box.querySelectorAll(':scope > [role="tablist"] [role="tab"]')];
+    const pick = (t, focus) => {
+      tabs.forEach((x) => {
+        const on = x === t;
+        x.setAttribute('aria-selected', String(on));
+        x.tabIndex = on ? 0 : -1;
+        const p = document.getElementById(x.getAttribute('aria-controls'));
+        if (p) p.hidden = !on;
+      });
+      if (focus) t.focus();
+    };
+    tabs.forEach((t, i) => {
+      t.addEventListener('click', () => pick(t));
+      t.addEventListener('keydown', (e) => {
+        const n = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+        if (n) { e.preventDefault(); pick(tabs[(i + n + tabs.length) % tabs.length], true); }
+        if (e.key === 'Home') { e.preventDefault(); pick(tabs[0], true); }
+        if (e.key === 'End') { e.preventDefault(); pick(tabs[tabs.length - 1], true); }
+      });
+    });
+  });
+
+  // Preview toolbar: Preview/Code, controls fold-out, reset.
+  document.querySelectorAll('.pvwrap').forEach((w) => {
+    const pv = w.querySelector('.pv');
+    const tabs = [...w.querySelectorAll('[data-pv]')];
+    tabs.forEach((t, i) => {
+      t.addEventListener('click', () => {
+        tabs.forEach((x) => { x.setAttribute('aria-selected', String(x === t)); x.tabIndex = x === t ? 0 : -1; });
+        pv.dataset.view = t.dataset.pv;
+      });
+      t.tabIndex = i === 0 ? 0 : -1;
+      t.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { e.preventDefault(); const o = tabs[1 - i]; o.focus(); o.click(); }
+      });
+    });
+    w.querySelector('[data-pv-controls]')?.addEventListener('click', (e) => {
+      const b = e.currentTarget;
+      const show = pv.dataset.controls !== 'shown';
+      pv.dataset.controls = show ? 'shown' : 'hidden';
+      b.setAttribute('aria-expanded', String(show));
+      b.setAttribute('aria-label', show ? 'Hide controls' : 'Show controls');
+    });
+    w.querySelector('[data-pv-reset]')?.addEventListener('click', () => {
+      const r = pv.querySelector('.oxd-reset');
+      if (r) r.click();
+      else { const demo = pv.querySelector('oxyn-demo'); if (demo) { demo.dataset.state = ''; demo.mountLive?.(); } }
+    });
+  });
+
+  // Before/after compare.
+  document.querySelectorAll('.x-cmp').forEach((c) => {
+    const r = c.querySelector('.cmp-range');
+    const set = () => c.style.setProperty('--pos', `${r.value}%`);
+    r?.addEventListener('input', set);
+  });
 })();
