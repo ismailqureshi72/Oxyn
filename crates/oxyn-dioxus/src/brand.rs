@@ -1,7 +1,8 @@
 //! Brand and model marks (`oxyn_core::brand`): Lobe Icons (MIT) for AI models and providers,
 //! Simple Icons (CC0) for companies and integrations. Monochrome (`currentColor`) by default per
 //! the colour rule; `coloured` fills the brand colour (near-black marks keep the text colour so
-//! they read on the dark theme).
+//! they read on the dark theme); marks with more than one colour (Gmail, Slack, Google Drive,
+//! ClickUp, Claude, Gemini, Figma) draw their full-colour version.
 
 use dioxus::prelude::*;
 use oxyn_core::brand::brand;
@@ -34,6 +35,21 @@ pub fn BrandIcon(
             .unwrap_or('?');
         return rsx! { span { class: "oxyn-brand oxyn-brand-ini", "aria-hidden": "true", "{i}" } };
     };
+    // Multi-colour marks (Gmail, Slack, Google, Claude…) carry their own fills.
+    if coloured && let Some(body) = b.coloured_body() {
+        return rsx! {
+            svg {
+                class: "oxyn-brand",
+                width: "{size}",
+                height: "{size}",
+                view_box: "{b.view_box}",
+                "aria-hidden": "true",
+                "data-brand": "{b.id}",
+                "data-coloured": "true",
+                dangerous_inner_html: "{body}",
+            }
+        };
+    }
     let fill = match (coloured, b.display_hex()) {
         (true, Some(h)) => format!("#{h}"),
         _ => "currentColor".to_string(),

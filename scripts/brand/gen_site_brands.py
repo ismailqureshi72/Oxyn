@@ -10,6 +10,7 @@ MARKS = [
     ("claude", "Claude", "lobe", "claude-color", None),
     ("chatgpt", "ChatGPT", "lobe", "openai", "000000"),
     ("cursor", "Cursor", "lobe", "cursor", "000000"),
+    ("v0", "v0", "lobe", "v0", "000000"),
     ("mcp", "Model Context Protocol", "lobe", "mcp", "000000"),
     ("claude-code", "Claude Code", "lobe", "claudecode-color", None),
     ("codex", "Codex", "lobe", "codex-color", None),
