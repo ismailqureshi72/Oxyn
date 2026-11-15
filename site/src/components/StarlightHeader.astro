@@ -1,20 +1,16 @@
 ---
-import SiteNav from './SiteNav.astro';
+import TopBar from './v2/TopBar.astro';
 import SearchModal from './SearchModal.astro';
 const path = Astro.url.pathname;
 ---
-<div data-pagefind-ignore style="display:contents"><SiteNav current={path} inStarlight /></div>
+<div data-pagefind-ignore style="display:contents"><TopBar current={path} inStarlight /></div>
 <SearchModal />
 <script is:inline src="/site.js" defer></script>
 <script is:inline>
-  // Starlight sets data-theme; mirror it onto data-oxyn-theme for the token stylesheet.
+  // Starlight sets data-theme; the site defaults to light and mirrors it onto data-oxyn-theme.
   (function () {
-    var t = localStorage.getItem('starlight-theme') || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+    var t = localStorage.getItem('starlight-theme') === 'dark' ? 'dark' : 'light';
     document.documentElement.dataset.theme = t;
     document.documentElement.setAttribute('data-oxyn-theme', t);
   })();
 </script>
-<style is:global>
-  .topnav-in.sl { height: 100%; padding: 0; max-width: none; }
-  .topnav-in.sl .navlinks { margin-left: 8px; }
-</style>

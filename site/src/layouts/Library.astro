@@ -1,0 +1,60 @@
+---
+// The library shell: grey page, left sidebar, white rounded main panel with a slim bar, the
+// counts line at the end of the panel and the shared footer outside it.
+import '../generated/oxyn-tokens.css';
+import '../generated/oxyn-components.css';
+import '../styles/chrome.css';
+import '../styles/site.css';
+import '../styles/demo.css';
+import Head from '../components/v2/Head.astro';
+import LibSidebar from '../components/v2/LibSidebar.astro';
+import ThemeRadios from '../components/v2/ThemeRadios.astro';
+import GitHubStars from '../components/v2/GitHubStars.astro';
+import Footer from '../components/v2/Footer.astro';
+import SearchModal from '../components/SearchModal.astro';
+import { icon } from '../components/v2/icons';
+import { endLine } from '../lib/data';
+
+interface Props {
+  title: string;
+  description: string;
+  type?: string;
+  /** Sidebar item to mark as current (defaults to this page). */
+  current?: string;
+  meta?: string;
+}
+const { title, description, type = 'Page', current, meta } = Astro.props;
+const path = Astro.url.pathname;
+---
+<!doctype html>
+<html lang="en" data-theme="light" data-oxyn-theme="light">
+  <head><Head title={`${title} · Oxyn`} description={description} /></head>
+  <body class="site lib">
+    <a class="skip" href="#main">Skip to content</a>
+    <div class="lib-grid">
+      <LibSidebar current={current ?? path} />
+      <div class="lib-scrim" data-drawer-close aria-hidden="true"></div>
+      <div class="lib-col">
+        <div class="lpanel">
+          <div class="lbar" data-pagefind-ignore>
+            <button class="iconbtn lbar-open" type="button" data-sidebar-toggle aria-label="Show sidebar" title="Show sidebar"><Fragment set:html={icon.panel} /></button>
+            <button class="iconbtn lbar-drawer" type="button" data-drawer-open aria-controls="lsb" aria-expanded="false" aria-label="Open menu"><Fragment set:html={icon.menu} /></button>
+            <a class="wm lbar-wm" href="/">oxyn</a>
+            <span class="lbar-sp"></span>
+            <button class="iconbtn lbar-search" type="button" data-open-search aria-label="Search"><Fragment set:html={icon.search} /></button>
+            <ThemeRadios />
+            <GitHubStars />
+            <a class="pill pill-pro" href="/pricing/"><span aria-hidden="true">✦</span> Get Pro</a>
+            <a class="login" href="/pricing/#account" title="Accounts are not needed yet">Log In</a>
+          </div>
+          <main id="main" class="lcontent" data-pagefind-body data-pagefind-filter={`type:${type}`} data-pagefind-meta={meta ?? `type:${type}`}>
+            <slot />
+          </main>
+          <div class="lend" data-pagefind-ignore><span>{endLine()}</span></div>
+        </div>
+        <Footer />
+      </div>
+    </div>
+    <SearchModal />
+  </body>
+</html>

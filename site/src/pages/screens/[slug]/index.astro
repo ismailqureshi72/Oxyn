@@ -1,0 +1,9 @@
+---
+import ItemPage from '../../../components/v2/ItemPage.astro';
+import { screens, type Demo } from '../../../lib/data';
+export function getStaticPaths() {
+  return screens.map((d) => ({ params: { slug: d.slug }, props: { demo: d } }));
+}
+const { demo } = Astro.props as { demo: Demo };
+---
+<ItemPage demo={demo} />
