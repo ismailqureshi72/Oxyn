@@ -12,7 +12,7 @@ use oxyn_core::{
         compose::dictated,
         fidelity::{
             Approval, Attachment, EditRun, FileKind, PanelComment, PanelFilter, ago, attach,
-            is_edit, open_edits, panel_view, split_command, waveform,
+            avatar_data_uri, is_edit, meter_levels, open_edits, panel_view, split_command,
         },
     },
 };
@@ -67,6 +67,9 @@ pub fn FileTypeIcon(
     /// Size px.
     #[props(default = 20.0)]
     size: f32,
+    /// Text lines on the page instead of the badge (the plugin marks in the plus menu).
+    #[props(default)]
+    plain: bool,
 ) -> Element {
     let k = FileKind::parse(&kind).unwrap_or(FileKind::Doc);
     let c = format!("#{}", k.hex());
@@ -88,7 +91,11 @@ pub fn FileTypeIcon(
             svg { class: "oxfi", width: "{size}", height: "{size}", view_box: "0 0 24 24", "aria-hidden": "true",
                 path { d: "M6 2.5h8.5L20 8v12a1.5 1.5 0 0 1-1.5 1.5h-12A1.5 1.5 0 0 1 5 20V4A1.5 1.5 0 0 1 6 2.5z", fill: "{c}" }
                 path { d: "M14.5 2.5V7a1 1 0 0 0 1 1H20z", fill: "#fff", opacity: ".45" }
-                text { x: "12.5", y: "17.2", text_anchor: "middle", font_size: if k == FileKind::Code { "5.6" } else { "5" }, font_weight: "700", fill: "#fff", font_family: "ui-sans-serif,system-ui,sans-serif", "{k.badge()}" }
+                if plain {
+                    path { d: "M8.5 12.5h7M8.5 15.5h7M8.5 18.5h4.5", stroke: "#fff", stroke_width: "1.5", stroke_linecap: "round", opacity: ".95" }
+                } else {
+                    text { x: "12.5", y: "17.2", text_anchor: "middle", font_size: if k == FileKind::Code { "5.6" } else { "5" }, font_weight: "700", fill: "#fff", font_family: "ui-sans-serif,system-ui,sans-serif", "{k.badge()}" }
+                }
             }
         },
     }
@@ -138,6 +145,26 @@ pub fn Portrait(
     }
 }
 
+/// A round photo avatar (generated portraits of fictional people, `seed` picks one of six), or
+/// the drawn [`Portrait`] when `drawn`.
+#[component]
+pub fn PhotoAvatar(
+    /// Portrait seed.
+    seed: u8,
+    /// Size px.
+    #[props(default = 24.0)]
+    size: f32,
+    /// Draw the illustrated portrait instead of the photo.
+    #[props(default)]
+    drawn: bool,
+) -> Element {
+    if drawn {
+        return rsx! { Portrait { seed, size } };
+    }
+    let src = avatar_data_uri(seed);
+    rsx! { img { class: "oxpa", src: "{src}", width: "{size}", height: "{size}", alt: "", draggable: "false" } }
+}
+
 /// The agent's gradient orb avatar.
 #[component]
 pub fn AgentOrb(
@@ -184,32 +211,48 @@ fn default_apps() -> Vec<(String, String)> {
     .to_vec()
 }
 
-const TOOLS: [(&str, &str, &str, &str); 4] = [
+/// The plus menu's "Add" group: key (`onAttach` value), label, hint shown after the label.
+const PLUS: [(&str, &str, &str); 7] = [
+    ("files", "Files and folders", ""),
+    ("claude", "Attach Claude", ""),
     (
-        "goal",
-        "target",
-        "Goal",
-        "Set a goal to keep working toward",
+        "folder",
+        "Work in a folder",
+        "Choose a folder for this chat",
     ),
-    ("plan", "bulb", "Plan mode", "Turn on plan mode"),
-    (
-        "skill",
-        "record",
-        "Record a skill",
-        "Teach it a repeatable task",
-    ),
-    ("draw", "scribble", "Draw", "Sketch a drawing"),
+    ("goal", "Goal", "Set a goal to keep working toward"),
+    ("plan", "Plan mode", "Turn on plan mode"),
+    ("skill", "Record a skill", ""),
+    ("draw", "Draw", "Sketch a drawing"),
 ];
 
-/// Chat Composer (affectUI): a large message field; a row with **+** (a drop-up spanning the
-/// composer: PDF, Image, Spreadsheet, Document, Code and Folder with file-type icons, which add
-/// attachment chips, then Goal, Plan mode, Record a skill and Draw), the approval chip (Request
+/// The plus menu's "Plugins" group.
+const PLUGINS: [(&str, &str, &str); 2] = [
+    ("documents", "Documents", "Create and edit documents"),
+    ("pdf", "PDF", "Read, create and verify PDFs"),
+];
+
+fn plus_icon(key: &str) -> Element {
+    match key {
+        "files" => rsx! { Icon { name: "clip", size: 17.0 } },
+        "claude" => rsx! { BrandIcon { name: "claude".to_string(), size: 17.0, coloured: true } },
+        "folder" => rsx! { Icon { name: "folder", size: 17.0 } },
+        "goal" => rsx! { Glyph { name: "target".to_string(), size: 17.0 } },
+        "plan" => rsx! { Glyph { name: "bulb".to_string(), size: 17.0 } },
+        "skill" => rsx! { Glyph { name: "record".to_string(), size: 17.0 } },
+        _ => rsx! { Glyph { name: "scribble".to_string(), size: 17.0 } },
+    }
+}
+
+/// Chat Composer (affectUI): a large message field; a row with **+** (a capped, scrolling drop-up
+/// list spanning the composer: Files and folders, Attach Claude, Work in a folder · Goal, Plan
+/// mode, Record a skill, Draw · Plugins: Documents, PDF), the approval chip (Request
 /// approval, Approve for me, or the orange **Unrestricted access**), the **Auto** model menu with
 /// coloured brand marks, the mic (recording mode: a live trace, the words arriving in grey, ✕ to
 /// discard and ✓ to keep them) and a white send button. Under it, the tray: a blue folder for
 /// "Work in a folder" and "Connect apps" with coloured Gmail, Slack and ClickUp marks and a check
-/// menu. `style` picks Clean (inset card) or Classic (one surface); empty follows the nearest
-/// `data-cstyle`.
+/// menu. `style` picks Clean (one continuous container, the tray under a hairline) or Classic
+/// (an inset card on a darker band); empty follows the nearest `data-cstyle`.
 #[component]
 pub fn ChatComposer(
     /// Placeholder.
@@ -263,8 +306,8 @@ pub fn ChatComposer(
     /// Model picked.
     #[props(default)]
     on_model_change: EventHandler<String>,
-    /// Plus menu entry picked (`pdf`, `image`, `sheet`, `doc`, `code`, `folder`, `goal`, `plan`,
-    /// `skill`, `draw`).
+    /// Plus menu entry picked: `files`, `claude`, `folder` (also opens the folder picker),
+    /// `goal`, `plan` (toggles plan mode), `skill`, `draw`, `documents` or `pdf`.
     #[props(default)]
     on_attach: EventHandler<String>,
     /// Approval mode picked.
@@ -302,7 +345,7 @@ pub fn ChatComposer(
     let menu = open();
     let heard = rec().map(|t| dictated(&dictation, now.since(t).as_millis() as u64, 190));
     let trace = rec()
-        .map(|t| waveform(now.since(t).as_millis() as u64, 30))
+        .map(|t| meter_levels(now.since(t).as_millis() as u64, 16))
         .unwrap_or_default();
     let can_send = !draft().trim().is_empty() || !atts().is_empty();
     let cur = names.peek().get(model()).cloned().unwrap_or_default();
@@ -409,43 +452,53 @@ pub fn ChatComposer(
                             }
                         }
                         if menu == "plus" {
-                            div { class: "oxcc-menu oxcc-plus", role: "menu", "aria-label": "Add", onclick: move |e| e.stop_propagation(),
-                                div { class: "oxcc-mh", "Add files" }
-                                div { class: "oxcc-tiles",
-                                    for k in FileKind::ALL {
-                                        button { key: "{k.key()}", class: "oxcc-tile", role: "menuitem", r#type: "button",
-                                            onclick: move |_| { attach(&mut atts.write(), k); on_attach.call(k.key().to_string()); close(); live.set(format!("{} added.", k.label())) },
-                                            FileTypeIcon { kind: k.key().to_string(), size: 26.0 }
-                                            span { "{k.label()}" }
-                                        }
-                                    }
-                                }
-                                div { class: "oxcc-sep", role: "separator" }
-                                div { class: "oxcc-tools",
-                                    for (key, g, label, hint) in TOOLS {
+                            div { class: "oxcc-menu oxcc-plus", role: "menu", "aria-label": "Add to the chat", onclick: move |e| e.stop_propagation(),
+                                div { class: "oxcc-scroll",
+                                    div { class: "oxcc-mh", "Add" }
+                                    for (key, label, hint) in PLUS {
                                         button { key: "{key}", class: "oxcc-mi", role: if key == "plan" { "menuitemcheckbox" } else { "menuitem" }, r#type: "button",
                                             "aria-checked": if key == "plan" { Some(plan().to_string()) } else { None },
                                             "data-tool": "{key}",
-                                            onclick: move |_| { on_attach.call(key.to_string()); if key == "plan" { let p = !plan(); plan.set(p); live.set(if p { "Plan mode on.".into() } else { "Plan mode off.".into() }) } else { close() } },
-                                            span { class: "oxcc-mic", Glyph { name: g.to_string(), size: 16.0 } }
-                                            span { class: "oxcc-ml", span { class: "oxcc-mt", "{label}" } span { class: "oxcc-md", "{hint}" } }
+                                            onclick: move |_| {
+                                                on_attach.call(key.to_string());
+                                                match key {
+                                                    "plan" => { let p = !plan(); plan.set(p); live.set(if p { "Plan mode on.".into() } else { "Plan mode off.".into() }) }
+                                                    "folder" => { open.set("folder".into()); }
+                                                    "files" => { attach(&mut atts.write(), FileKind::Doc); close(); live.set("File added.".into()) }
+                                                    _ => close(),
+                                                }
+                                            },
+                                            span { class: "oxcc-mic", {plus_icon(key)} }
+                                            span { class: "oxcc-mt", "{label}" }
+                                            if !hint.is_empty() { span { class: "oxcc-md", "{hint}" } }
                                             if key == "plan" { span { class: if plan() { "oxcc-sw on" } else { "oxcc-sw" }, span {} } }
                                         }
+                                        if key == "folder" { div { class: "oxcc-sep", role: "separator" } }
                                     }
-                                }
-                                if !tray {
                                     div { class: "oxcc-sep", role: "separator" }
-                                    div { class: "oxcc-mh", "Apps" }
-                                    for (id, name) in apps.iter() {
-                                        {
-                                            let id2 = id.clone();
-                                            let on = conn().contains(id);
-                                            rsx! {
-                                                button { key: "{id}", class: "oxcc-mi", role: "menuitemcheckbox", "aria-checked": "{on}", r#type: "button",
-                                                    onclick: move |_| { let mut c = conn.write(); if let Some(p) = c.iter().position(|x| *x == id2) { c.remove(p); } else { c.push(id2.clone()); } on_apps_change.call(c.clone()); },
-                                                    span { class: "oxcc-mic", BrandIcon { name: name.clone(), size: 16.0, coloured: true, fallback: true } }
-                                                    span { class: "oxcc-mt", "{name}" }
-                                                    if on { span { class: "oxcc-ck", Icon { name: "check", size: 14.0, stroke: 2.0 } } }
+                                    div { class: "oxcc-mh", "Plugins" }
+                                    for (key, label, hint) in PLUGINS {
+                                        button { key: "{key}", class: "oxcc-mi", role: "menuitem", r#type: "button", "data-tool": "{key}",
+                                            onclick: move |_| { on_attach.call(key.to_string()); close(); live.set(format!("{label} plugin added.")) },
+                                            span { class: "oxcc-mic", FileTypeIcon { kind: if key == "pdf" { "pdf".to_string() } else { "doc".to_string() }, size: 17.0, plain: true } }
+                                            span { class: "oxcc-mt", "{label}" }
+                                            span { class: "oxcc-md", "{hint}" }
+                                        }
+                                    }
+                                    if !tray {
+                                        div { class: "oxcc-sep", role: "separator" }
+                                        div { class: "oxcc-mh", "Apps" }
+                                        for (id, name) in apps.iter() {
+                                            {
+                                                let id2 = id.clone();
+                                                let on = conn().contains(id);
+                                                rsx! {
+                                                    button { key: "{id}", class: "oxcc-mi", role: "menuitemcheckbox", "aria-checked": "{on}", r#type: "button",
+                                                        onclick: move |_| { let mut c = conn.write(); if let Some(p) = c.iter().position(|x| *x == id2) { c.remove(p); } else { c.push(id2.clone()); } on_apps_change.call(c.clone()); },
+                                                        span { class: "oxcc-mic", BrandIcon { name: name.clone(), size: 16.0, coloured: true, fallback: true } }
+                                                        span { class: "oxcc-mt", "{name}" }
+                                                        if on { span { class: "oxcc-ck", Icon { name: "check", size: 14.0, stroke: 2.0 } } }
+                                                    }
                                                 }
                                             }
                                         }
@@ -489,7 +542,7 @@ pub fn ChatComposer(
                         if rec().is_some() {
                             div { class: "oxcc-trace", "aria-hidden": "true",
                                 for (i, l) in trace.iter().enumerate() {
-                                    span { key: "{i}", class: if *l < 0.08 { "dot" } else { "bar" }, style: "--h:{(l * 16.0).max(2.0):.1}px" }
+                                    span { key: "{i}", style: "height:{(l * 16.0).max(3.5):.1}px" }
                                 }
                             }
                             button { class: "oxcc-rb", r#type: "button", "aria-label": "Discard recording", onclick: move |e| { e.stop_propagation(); rec.set(None); live.set("Recording discarded.".into()) }, Icon { name: "x", size: 15.0, stroke: 1.8 } }
@@ -502,7 +555,8 @@ pub fn ChatComposer(
                                     Icon { name: "chevron", size: 13.0 }
                                 }
                                 if menu == "model" {
-                                    div { class: "oxcc-menu oxcc-models", role: "listbox", "aria-label": "Model", onclick: move |e| e.stop_propagation(),
+                                    div { class: "oxcc-menu oxcc-models", role: "listbox", "aria-label": "Select a model", onclick: move |e| e.stop_propagation(),
+                                        div { class: "oxcc-scroll",
                                         for (i, m) in names().into_iter().enumerate() {
                                             button { key: "{m}", class: "oxcc-mi", role: "option", "aria-selected": "{model() == i}", r#type: "button",
                                                 onclick: { let m = m.clone(); move |_| { model.set(i); on_model_change.call(m.clone()); close(); live.set(format!("{m} selected.")) } },
@@ -510,6 +564,7 @@ pub fn ChatComposer(
                                                 span { class: "oxcc-mt", "{m}" }
                                                 if model() == i { span { class: "oxcc-ck", Icon { name: "check", size: 14.0, stroke: 2.0 } } }
                                             }
+                                        }
                                         }
                                     }
                                 }
@@ -654,6 +709,9 @@ pub fn AgentCommentThread(
     /// Fold the first status line open at the start.
     #[props(default)]
     open: bool,
+    /// `photo` (portrait photos, as affectUI) or `drawn` (illustrated portraits).
+    #[props(default = "photo".to_string())]
+    avatars: String,
     /// Shared clock (thinking delay).
     now: ClockMs,
     /// A reply was posted.
@@ -714,7 +772,7 @@ pub fn AgentCommentThread(
                 for (i, m) in shown.into_iter().enumerate() {
                     article { key: "{i}", class: "oxct-m",
                         div { class: "oxct-who",
-                            match m.avatar { Some(s) => rsx! { Portrait { seed: s, size: 24.0 } }, None => rsx! { AgentOrb { size: 24.0 } } }
+                            match m.avatar { Some(s) => rsx! { PhotoAvatar { seed: s, size: 24.0, drawn: avatars == "drawn" } }, None => rsx! { AgentOrb { size: 24.0 } } }
                             b { "{m.author}" }
                             span { class: "oxct-sp" }
                             time { class: "oxct-t", "{ago(m.minutes)}" }
@@ -785,6 +843,12 @@ pub fn CommentsPanel(
     /// How long an edit runs, ms.
     #[props(default = 1_200)]
     run_ms: u64,
+    /// `photo` (portrait photos, as affectUI) or `drawn` (illustrated portraits).
+    #[props(default = "photo".to_string())]
+    avatars: String,
+    /// The list's height cap in px; the list scrolls inside it (0: no cap).
+    #[props(default = 330.0)]
+    max_list: f32,
     /// Shared clock (edit runs).
     now: ClockMs,
     /// An edit ran (comment id).
@@ -872,7 +936,8 @@ pub fn CommentsPanel(
                     }
                 }
             }
-            div { class: "oxcp-list", role: "log", "aria-live": "polite",
+            div { class: "oxcp-list", role: "log", "aria-live": "polite", tabindex: "0", "aria-label": "Comment list",
+                style: if max_list > 0.0 { format!("max-height:{max_list}px") } else { String::new() },
                 if view.is_empty() { p { class: "oxcp-empty", "Nothing here yet" } }
                 for i in view {
                     {
@@ -883,7 +948,7 @@ pub fn CommentsPanel(
                         rsx! {
                             article { key: "{id}", class: if c.resolved { "oxcp-c done" } else { "oxcp-c" },
                                 div { class: "oxcp-who",
-                                    Portrait { seed: c.avatar, size: 22.0 }
+                                    PhotoAvatar { seed: c.avatar, size: 24.0, drawn: avatars == "drawn" }
                                     b { "{c.author}" }
                                     time { class: "oxcp-t", "{ago(c.minutes)}" }
                                     span { class: "oxcp-sp" }
@@ -912,7 +977,7 @@ pub fn CommentsPanel(
                 }
             }
             div { class: "oxcp-comp",
-                Portrait { seed: me2().1, size: 22.0 }
+                PhotoAvatar { seed: me2().1, size: 24.0, drawn: avatars == "drawn" }
                 input { class: "oxcp-in", value: "{draft}", placeholder: "Add a comment or /edit…", "aria-label": "Add a comment",
                     oninput: move |e| draft.set(e.value()),
                     onkeydown: move |e: KeyboardEvent| if e.key() == Key::Enter { e.prevent_default(); add() },
