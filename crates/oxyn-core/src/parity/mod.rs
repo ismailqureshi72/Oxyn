@@ -13,12 +13,15 @@
 //! - [`input`]: text area rows and counter, changed-word rows, ghost-text autocomplete.
 //! - [`gates`]: approval gates, permission requests and the agent approvals block.
 //! - [`text`]: loaders and moving text (morph, slot reels, phases, action swap, streams).
+//! - [`diff`]: line and word diffs, hunk review, change summaries, table and revision diffs,
+//!   code suggestions, inline edits, image compare, comment threads and the review center.
 //! - [`tools`]: tool calls, the tool-kind map, JSON trees and link unfurls.
 //!
 //! Like the rest of the core, time is passed in as [`crate::ClockMs`]; nothing reads a clock.
 
 pub mod compose;
 pub mod confirm;
+pub mod diff;
 pub mod edit;
 pub mod fields;
 pub mod fleet;

@@ -56,6 +56,8 @@ pub const PRIMITIVES_CSS: &str = concat!(
     include_str!("../parity/home.css"),
     include_str!("../parity/upload.css"),
     include_str!("../parity/compose.css"),
+    include_str!("../parity/diff.css"),
+    include_str!("../parity/review.css"),
     include_str!("polish.css")
 );
 

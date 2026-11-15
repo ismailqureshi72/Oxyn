@@ -17,6 +17,7 @@ mod approvals;
 mod fields;
 mod home;
 mod ime;
+mod review;
 mod run;
 mod text;
 mod tools;
@@ -35,6 +36,11 @@ pub use home::{
     PollingCostEl, RunModeMenuEl, ThreadListEl, TokenUsageChartEl,
 };
 pub use ime::{ImeEvent, ImeInput, bind_ime_keys};
+pub use review::{
+    AiInlineEditEl, ChangeSummaryEl, CodeSuggestionEl, CommentThreadEl, DiffTableEl,
+    DiffTimelineEl, DiffViewerEl, HunkAct, IdAct, ImageCompareEl, InlineDiffEl, ReviewCardEl,
+    ReviewCenterEl,
+};
 pub use run::{
     ActivityFeedEl, AgentPlanEl, AgentRunEl, AgentStatusEl, AgentTrailEl, AgentTreeEl, BreakdownEl,
     ChecklistEl, CountdownEl, CounterEl, FleetEl, FlowStepperEl, OrchestratorEl, ReadinessEl,

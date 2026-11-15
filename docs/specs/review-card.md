@@ -290,3 +290,6 @@ approvals (apply / post).
 | Test-runner fix card [R037] | fix popover over the failing file | Study only |
 | affectUI Agent Findings, Review Center (note 11) | names only | Paid — study only |
 | signoff-ui DiffReview [R107] | per-hunk apply model for fix previews | MIT — port with attribution |
+
+## 12. Implemented (plan #30, 2026-11-15)
+Dioxus `ReviewCard` / GPUI `ReviewCardEl` over `oxyn_core::parity::diff::{Finding, Severity, review_verdict}`: verdict (Looks good / Worth a look / Changes requested) from the open findings, counts by severity, findings with file:line, detail and a two-line suggested fix, Apply fix / Dismiss / Reopen, and a Show nits toggle. The queue form of review is [review-center.md](review-center.md).
