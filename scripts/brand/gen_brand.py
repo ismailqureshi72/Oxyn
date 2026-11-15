@@ -91,6 +91,10 @@ ICONS = [
   ("clickup", "ClickUp", S, "clickup", None, [], "integration"),
   ("dropbox", "Dropbox", S, "dropbox", None, [], "integration"),
   ("slack", "Slack", O, "slack", "4A154B", [], "integration"),
+  ("wikipedia", "Wikipedia", S, "wikipedia", None, [], "company"),
+  ("airbnb", "Airbnb", S, "airbnb", None, [], "company"),
+  ("x", "X", S, "x", None, ["twitter"], "company"),
+  ("bookingdotcom", "Booking.com", S, "bookingdotcom", None, ["booking", "booking.com"], "company"),
 ]
 
 # Full-colour versions (`COLOURED`): Lobe Icons' own -color files, and marks drawn by Oxyn from
