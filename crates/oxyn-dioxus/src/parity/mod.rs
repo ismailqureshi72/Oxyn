@@ -7,6 +7,7 @@ mod diff;
 mod fields;
 mod home;
 mod input;
+mod merge;
 mod meters;
 mod review;
 mod run;
@@ -29,6 +30,7 @@ pub use home::{
     RunModeMenu, ThreadList, TokenUsageChart,
 };
 pub use input::{GhostText, LabeledInput, LabeledTextarea, TextArea};
+pub use merge::{ConflictRadar, MergeConflict};
 pub use meters::{ContextField, ContextWindowGrid, CtxModel, Gauge, SplitBar, UsageMeter};
 pub use review::{AiInlineEdit, CommentThread, ImageCompare, ReviewCard, ReviewCenter};
 pub use run::{
