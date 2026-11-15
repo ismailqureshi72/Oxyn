@@ -1,0 +1,11 @@
+---
+// Light / dark as a two-button radio group. `scope="page"` switches the site; `scope="preview"`
+// switches only the preview next to it.
+import { icon } from './icons';
+interface Props { scope?: 'page' | 'preview'; label?: string }
+const { scope = 'page', label = scope === 'page' ? 'Theme' : 'Preview theme' } = Astro.props;
+---
+<div class="theme-radios" role="radiogroup" aria-label={label} data-theme-scope={scope}>
+  <button type="button" role="radio" aria-checked="true" data-set-theme="light" aria-label="Light" title="Light"><Fragment set:html={icon.sun} /></button>
+  <button type="button" role="radio" aria-checked="false" data-set-theme="dark" aria-label="Dark" title="Dark"><Fragment set:html={icon.moon} /></button>
+</div>

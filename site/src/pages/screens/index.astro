@@ -1,0 +1,13 @@
+---
+import Library from '../../layouts/Library.astro';
+import LibTabs from '../../components/v2/LibTabs.astro';
+import CompCard from '../../components/v2/CompCard.astro';
+import { screens } from '../../lib/data';
+---
+<Library title="Screens" description={`${screens.length} whole app frames for agent products, built from the components.`} type="Category">
+  <div class="lidx">
+    <h1 class="lidx-title">Complete screens – whole app frames built from the components.</h1>
+    <LibTabs active="screens" />
+    <div class="cgrid">{screens.map((d) => <CompCard demo={d} />)}</div>
+  </div>
+</Library>

@@ -1,0 +1,29 @@
+---
+// A library card: category and variants pills, the live mini demo on a grey panel, name,
+// one-line description and a copy button (copies the install line).
+import OxynDemo from '../OxynDemo.astro';
+import { icon } from './icons';
+import { demoUrl, groupOf, isScreen, installLine, type Demo } from '../../lib/data';
+interface Props { demo: Demo; headingLevel?: 2 | 3 }
+const { demo, headingLevel = 3 } = Astro.props;
+const v = demo.variants[0];
+const g = isScreen(demo) ? { name: 'Screen', slug: '' } : groupOf(demo);
+const H = headingLevel === 2 ? 'h2' : 'h3';
+const install = installLine(demo);
+---
+<article class="cc">
+  <div class="cc-top">
+    {g.slug ? <a class="chip" href={`/components/${g.slug}/`}>{g.name}</a> : <a class="chip" href="/screens/">{g.name}</a>}
+    <span class="chip soft">{demo.variants.length} {demo.variants.length === 1 ? 'variant' : 'variants'}</span>
+  </div>
+  <div class="cc-prev" aria-hidden="true" inert>
+    <OxynDemo slug={demo.slug} html={v.html} variant={0} />
+  </div>
+  <div class="cc-foot">
+    <div class="cc-txt">
+      <H class="cc-name"><a href={demoUrl(demo)}>{demo.name}</a></H>
+      <p>{demo.summary}</p>
+    </div>
+    <button class="cc-copy" type="button" data-copy={install} aria-label={`Copy install command for ${demo.name}`} title="Copy install command"><Fragment set:html={icon.copy} /></button>
+  </div>
+</article>

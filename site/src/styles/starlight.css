@@ -16,7 +16,7 @@
   --sl-color-black:#0B0B0C;
   --sl-font:var(--oxyn-font-ui);
   --sl-font-mono:var(--oxyn-font-mono);
-  --sl-nav-height:3.5rem;
+  --sl-nav-height:2.75rem;
 }
 :root[data-theme='light']{
   --sl-color-accent-low:#EDEBE8;
@@ -36,3 +36,7 @@ header.header{background:var(--site-glass);backdrop-filter:blur(12px);border-bot
 .sl-markdown-content oxyn-demo{margin:1.25rem 0}
 .sl-markdown-content .oxd *{margin-top:0}
 .topnav-in.sl .menubtn,.topnav-in.sl ~ .mobilemenu{display:none!important}
+.tb-in.sl{height:100%;padding:0;max-width:none}
+header.header .tb-in.sl .tb-links>a,header.header .tb-ddbtn{font-size:14px}
+header.header{padding-block:0}
+.tb-in.sl .wm{color:var(--sl-color-white)}

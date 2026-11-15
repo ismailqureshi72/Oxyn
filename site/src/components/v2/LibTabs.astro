@@ -1,0 +1,22 @@
+---
+// The sticky filter row of the library index pages.
+import { counts, newDemos } from '../../lib/data';
+interface Props { active: 'components' | 'screens' | 'blocks' | 'illustrations' | 'motion' | 'new' }
+const { active } = Astro.props;
+const tabs = [
+  ['components', 'Components', '/components/', counts.components],
+  ['screens', 'Screens', '/screens/', counts.screens],
+  ['blocks', 'Blocks', '/blocks/', 0],
+  ['illustrations', 'Illustrations', '/illustrations/', 0],
+  ['motion', 'Motion', '/motion/', counts.motion],
+  ['new', 'New', '/components/new/', newDemos.length],
+] as const;
+---
+<div class="ltabs" data-pagefind-ignore>
+  <nav class="ltabs-in" aria-label="Library sections">
+    {tabs.map(([k, l, h, n]) => (
+      <a href={h} aria-current={active === k ? 'page' : undefined} class:list={{ isnew: k === 'new' }}>{l}{n != null && <span>{n}</span>}</a>
+    ))}
+  </nav>
+  <div class="ltabs-style"><span>Style</span><button type="button" class="style-pill" aria-disabled="true" title="One style today; more come with the Studio">Default</button></div>
+</div>

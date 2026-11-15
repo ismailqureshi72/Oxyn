@@ -1,0 +1,203 @@
+---
+// One component or screen page, laid out like the reference: breadcrumb, title, lede, install,
+// the preview toolbar and panel, then the reference sections in a fixed order.
+import Library from '../../layouts/Library.astro';
+import OxynDemo from '../OxynDemo.astro';
+import ThemeRadios from './ThemeRadios.astro';
+import CompCard from './CompCard.astro';
+import { icon } from './icons';
+import {
+  groupOf, demoUrl, props, specSection, md, highlightRust, cssConst, installLine, whenToUse, whenNotToUse,
+  related, keyChips, notesForAi, guidesFor, isScreen, REPO, type Demo,
+} from '../../lib/data';
+
+interface Props { demo: Demo }
+const { demo } = Astro.props;
+const screen = isScreen(demo);
+const g = screen ? null : groupOf(demo);
+const comps = demo.dioxus.split(',').map((s) => s.trim());
+const tables = comps.map((c) => ({ name: c, info: props[c] })).filter((t) => t.info);
+const a11ySpec = specSection(demo.spec, 'Accessibility');
+const edgeSpec = specSection(demo.spec, 'Responsive', 'Edge cases');
+const motionSpec = specSection(demo.spec, 'Micro-interactions');
+const timing = specSection(demo.spec, 'Timing');
+const usage = `use oxyn_dioxus::{${comps.join(', ')}, ${cssConst(demo.source)}};`;
+const install = installLine(demo);
+const site = 'https://ui.oxyn.workers.dev';
+const url = demoUrl(demo);
+const prompt = `Add the ${demo.name} component from Oxyn (Rust, Dioxus) to my app. Docs: ${site}${url}`;
+const ai = [
+  ['Claude', `https://claude.ai/new?q=${encodeURIComponent(prompt)}`],
+  ['ChatGPT', `https://chatgpt.com/?q=${encodeURIComponent(prompt)}`],
+  ['Cursor', `https://cursor.com/link/prompt?text=${encodeURIComponent(prompt)}`],
+];
+const propNames = tables.flatMap((t) => t.info.props.filter((p) => p.required).map((p) => p.name));
+const rel = related(demo, 4);
+const notRel = whenNotToUse(demo);
+const guides = guidesFor(demo);
+const sourceUrl = `${REPO}/blob/main/crates/oxyn-dioxus/src/${demo.source}`;
+const specUrl = `${REPO}/blob/main/docs/specs/${demo.spec}.md`;
+const kind = screen ? 'screen' : 'component';
+---
+<Library title={`${demo.name} — ${screen ? 'Screens' : g!.name}`} description={demo.summary} type="Component" meta={`category:${screen ? 'Screens' : g!.name}`}>
+  <article class="art">
+    <nav class="crumbs" aria-label="Breadcrumb" data-pagefind-ignore>
+      {screen ? (
+        <><a href="/screens/">Screens</a><span aria-hidden="true">›</span><span aria-current="page">{demo.name}</span></>
+      ) : (
+        <><a href="/components/">Components</a><span aria-hidden="true">›</span><a href={`/components/${g!.slug}/`}>{g!.name}</a><span aria-hidden="true">›</span><span aria-current="page">{demo.name}</span></>
+      )}
+    </nav>
+    <h1 class="art-title" data-pagefind-meta="title">{demo.name}</h1>
+    <p class="art-lede">{demo.summary}</p>
+    <div class="install-pill copyable"><code>{install}</code><button class="pill-copy" type="button" data-copy={install} aria-label="Copy install command"><Fragment set:html={icon.copy} /></button></div>
+
+    <div class="pvwrap copyable" id="preview">
+      <div class="pvbar" data-pagefind-ignore>
+        <div class="seg" role="tablist" aria-label="Preview or code">
+          <button type="button" role="tab" aria-selected="true" data-pv="preview"><Fragment set:html={icon.eye} />Preview</button>
+          <button type="button" role="tab" aria-selected="false" data-pv="code"><Fragment set:html={icon.code} />Code</button>
+        </div>
+        <div class="pvr">
+          <ThemeRadios scope="preview" />
+          <button class="iconbtn" type="button" data-pv-reset aria-label="Reset the preview" title="Reset"><Fragment set:html={icon.reset} /></button>
+          {demo.controls.length > 0 && (
+            <button class="iconbtn" type="button" data-pv-controls aria-expanded="false" aria-label="Show controls" title="Controls"><Fragment set:html={icon.sliders} /></button>
+          )}
+          {screen && <a class="iconbtn" href={`${url}full/`} aria-label="Open full screen" title="Open full screen"><Fragment set:html={icon.arrowUpRight} /></a>}
+          <span class="pv-div" aria-hidden="true"></span>
+          {ai.map(([l, h]) => <a class="aibtn" href={h} target="_blank" rel="noopener" title={`Open in ${l}`}>{l}</a>)}
+          <a class="aibtn mcp" href="/docs/installation/" title="MCP server (planned with the oxyn CLI)">MCP</a>
+          <button class="pill pill-black pill-sm" type="button" data-copy-from="pv">Copy</button>
+        </div>
+      </div>
+      <div class:list={['pv', { 'pv-screen': screen }]} data-view="preview" data-controls="hidden">
+        <OxynDemo slug={demo.slug} html={demo.html} controls />
+      </div>
+      <p class="pv-live" data-live-label data-pagefind-ignore>Rendered from Rust at build time · goes live when visible</p>
+    </div>
+
+    <section class="sec" id="when-to-use">
+      <h2>When to use</h2>
+      <ul class="bul">{whenToUse(demo).map((t) => <li>{t}</li>)}</ul>
+    </section>
+
+    <section class="sec" id="when-not-to-use">
+      <h2>When not to use</h2>
+      {notRel.length ? (
+        <ul class="bul">{notRel.map((r) => <li>{r.text}: use <a href={demoUrl(r.demo)}>{r.demo.name}</a> instead.</li>)}</ul>
+      ) : (
+        <p class="muted">The spec names no alternative for this {kind}; see the related {kind}s below.</p>
+      )}
+    </section>
+
+    <section class="sec" id="installation">
+      <h2>Installation</h2>
+      <p class="muted">{demo.name} is free and MIT. Oxyn is not on crates.io yet, so depend on the repository, then import the {kind} and its stylesheet. The <code>oxyn add</code> CLI that copies one file into your project is planned.</p>
+      <div class="codeblk copyable"><div class="codeblk-h"><span>Terminal</span><button class="pill-copy" type="button" data-copy={`cargo add oxyn-dioxus oxyn-core --git ${REPO}`} aria-label="Copy"><Fragment set:html={icon.copy} /></button></div><pre><code>cargo add oxyn-dioxus oxyn-core --git {REPO}</code></pre></div>
+      <div class="codeblk copyable"><div class="codeblk-h"><span>Rust</span><button class="pill-copy" type="button" data-copy={usage} aria-label="Copy"><Fragment set:html={icon.copy} /></button></div><pre><code>{usage}</code></pre></div>
+    </section>
+
+    <section class="sec" id="usage">
+      <h2>Usage</h2>
+      <div class="codeblk copyable"><div class="codeblk-h"><span>Dioxus · rust</span><button class="pill-copy" type="button" data-copy-from="next" aria-label="Copy"><Fragment set:html={icon.copy} /></button></div><pre><code set:html={highlightRust(demo.code)} /></pre></div>
+    </section>
+
+    {demo.variants.length > 0 && (
+      <section class="sec" id="examples">
+        <h2>Examples</h2>
+        {demo.variants.map((v, i) => (
+          <div class="ex">
+            <h3>{v.name.replace(/-/g, ' ').replace(/^./, (c) => c.toUpperCase())}</h3>
+            {v.note && <p class="muted">{v.note}</p>}
+            <div class="ex-prev"><OxynDemo slug={demo.slug} html={v.html} variant={i} /></div>
+            <details class="ex-code"><summary>Code</summary><pre><code set:html={highlightRust(v.code)} /></pre></details>
+          </div>
+        ))}
+      </section>
+    )}
+
+    <section class="sec" id="api">
+      <h2>API reference</h2>
+      {tables.map((t) => (
+        <>
+          <h3 class="mono">{t.name}</h3>
+          <div class="ptable-wrap">
+            <table class="ptable">
+              <thead><tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+              <tbody>
+                {t.info.props.map((p) => (
+                  <tr>
+                    <td class="n"><code>{p.name}</code>{p.required && <span class="req">required</span>}</td>
+                    <td class="t"><code>{p.type}</code></td>
+                    <td class="d">{p.default ? <code>{p.default}</code> : '—'}</td>
+                    <td>{p.doc || '—'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      ))}
+      <p class="muted small">Read from the Rust signature and doc comments in <a href={sourceUrl}><code>{demo.source}</code></a>.</p>
+    </section>
+
+    {demo.keyboard.length > 0 && (
+      <section class="sec" id="keyboard">
+        <h2>Keyboard interactions</h2>
+        <div class="ptable-wrap">
+          <table class="ptable kbt">
+            <thead><tr><th>Key</th><th>Action</th></tr></thead>
+            <tbody>
+              {demo.keyboard.map(([k, what]) => (
+                <tr><td class="keys">{keyChips(k).map((alt, ai) => (<>{ai > 0 && <span class="or">or</span>}{alt.map((key) => <kbd>{key}</kbd>)}</>))}</td><td>{what}</td></tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    )}
+
+    <section class="sec" id="accessibility">
+      <h2>Accessibility</h2>
+      <ul class="bul">{demo.a11y.map((n) => <li>{n}</li>)}</ul>
+      {a11ySpec && <details class="fromspec"><summary>From the spec</summary><div class="prose" set:html={md(a11ySpec)} /></details>}
+    </section>
+
+    {(motionSpec || timing) && (
+      <section class="sec" id="motion">
+        <h2>Motion &amp; interaction</h2>
+        {motionSpec && <div class="prose" set:html={md(motionSpec)} />}
+        {timing && <details class="fromspec"><summary>Timing</summary><div class="prose" set:html={md(timing)} /></details>}
+      </section>
+    )}
+
+    <section class="sec" id="responsive">
+      <h2>Responsive behaviour</h2>
+      <ul class="bul">{demo.responsive.map((n) => <li>{n}</li>)}</ul>
+      {edgeSpec && <details class="fromspec"><summary>Edge cases (spec)</summary><div class="prose" set:html={md(edgeSpec)} /></details>}
+    </section>
+
+    <section class="sec" id="notes-for-ai">
+      <h2>Notes for AI</h2>
+      <ul class="bul" set:html={notesForAi(demo, propNames).map((n) => `<li>${md(n).replace(/^<p>|<\/p>$/g, '')}</li>`).join('')} />
+      <p class="muted small">Source: <a href={sourceUrl}>crates/oxyn-dioxus/src/{demo.source}</a> · Spec: <a href={specUrl}>docs/specs/{demo.spec}.md</a></p>
+    </section>
+
+    {rel.length > 0 && (
+      <section class="sec" id="related">
+        <h2>Related</h2>
+        <div class="cgrid two">{rel.map((d) => <CompCard demo={d} />)}</div>
+      </section>
+    )}
+
+    <section class="sec" id="guides">
+      <h2>Guides</h2>
+      <div class="gcards">
+        {guides.map((x) => (
+          <a class="gcard" href={x.href}><span class="chip soft">{'for' in x ? 'Guide' : 'Docs'}</span><b>{x.title}</b><small>{x.blurb}</small><span class="arr" aria-hidden="true"><Fragment set:html={icon.arrowDownRight} /></span></a>
+        ))}
+      </div>
+    </section>
+  </article>
+</Library>

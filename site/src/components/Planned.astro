@@ -1,19 +1,21 @@
 ---
 // A section that has no built items yet: what it will hold and when, from docs/parity/status.csv.
-import Base from '../layouts/Base.astro';
+import Library from '../layouts/Library.astro';
+import LibTabs from './v2/LibTabs.astro';
 import { parityItems, REPO } from '../lib/data';
-interface Props { title: string; section: string; lede: string; groups: [string, string][] }
-const { title, section, lede, groups } = Astro.props;
+interface Props { title: string; section: string; lede: string; groups: [string, string][]; tab: 'blocks' | 'illustrations' }
+const { title, section, lede, groups, tab } = Astro.props;
 const items = parityItems(section);
 const byPlan = new Map<string, number>();
 for (const r of items) byPlan.set(r.plan_pr || 'unscheduled', (byPlan.get(r.plan_pr || 'unscheduled') ?? 0) + 1);
 const plans = [...byPlan.entries()].sort((a, b) => parseInt(a[0].slice(1)) - parseInt(b[0].slice(1)));
 const built = items.filter((r) => r.status.startsWith('built')).length;
 ---
-<Base title={title} description={lede}>
-  <div class="wrap content">
-    <h1 class="title">{title}</h1>
+<Library title={title} description={lede}>
+  <div class="lidx">
+    <h1 class="lidx-title">{title}</h1>
     <p class="lede">{lede}</p>
+    <LibTabs active={tab} />
     <div class="meta-row">
       <span class="tag">{items.length} planned</span>
       <span class="tag">{built} built</span>
@@ -40,4 +42,4 @@ const built = items.filter((r) => r.status.startsWith('built')).length;
       <div class="cta"><a class="btn primary" href="/components/">Browse components</a><a class="btn" href="/guides/">Read the guides</a></div>
     </section>
   </div>
-</Base>
+</Library>

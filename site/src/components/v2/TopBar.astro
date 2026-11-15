@@ -1,0 +1,51 @@
+---
+// The ~44px sticky top bar of the landing page, pricing and the docs.
+import ThemeRadios from './ThemeRadios.astro';
+import GitHubStars from './GitHubStars.astro';
+import { icon } from './icons';
+import { counts, groups, inGroup } from '../../lib/data';
+interface Props { current?: string; inStarlight?: boolean }
+const { current = '', inStarlight = false } = Astro.props;
+const lib = [
+  ['Components', '/components/', `${counts.components}`, 'Agent, chat and everyday parts'],
+  ['Screens', '/screens/', `${counts.screens}`, 'Whole app frames'],
+  ['Blocks', '/blocks/', 'soon', 'Larger page sections'],
+  ['Illustrations', '/illustrations/', 'soon', 'Spot art for empty states'],
+  ['Motion', '/motion/', 'tokens', 'Durations, easings and springs'],
+];
+---
+<div class:list={['tb-in', { sl: inStarlight }]}>
+  <a class="wm" href="/" aria-label="Oxyn home">oxyn</a>
+  <nav class="tb-links" aria-label="Site">
+    <div class="tb-dd">
+      <button type="button" class="tb-ddbtn" aria-expanded="false" aria-haspopup="true" aria-controls="tb-lib" data-dd>Library <Fragment set:html={icon.down} /></button>
+      <div class="tb-menu" id="tb-lib" role="group" aria-label="Library">
+        <div class="tb-menu-col">
+          {lib.map(([l, h, n, d]) => (
+            <a href={h}><b>{l} <span>{n}</span></b><small>{d}</small></a>
+          ))}
+        </div>
+        <div class="tb-menu-col cats">
+          <span class="tb-menu-h">Categories</span>
+          {groups.map((g) => <a href={`/components/${g.slug}/`} class="row">{g.name} <span>{inGroup(g.slug).length}</span></a>)}
+        </div>
+      </div>
+    </div>
+    <a href="/docs/" aria-current={current.startsWith('/docs') ? 'page' : undefined}>Docs</a>
+    <a href="/pricing/" aria-current={current.startsWith('/pricing') ? 'page' : undefined}>Pricing</a>
+  </nav>
+  <div class="tb-r">
+    <ThemeRadios />
+    <GitHubStars />
+    <a class="login" href="/pricing/#account" title="Accounts are not needed yet">Log In</a>
+    <a class="pill pill-black" href="/components/">Browse library</a>
+    <button class="iconbtn tb-menubtn" type="button" data-menu-toggle aria-expanded="false" aria-controls="mobilemenu" aria-label="Menu"><Fragment set:html={icon.menu} /></button>
+  </div>
+</div>
+<nav class="mobilemenu" id="mobilemenu" aria-label="Site menu" data-pagefind-ignore>
+  {lib.map(([l, h]) => <a href={h}>{l}</a>)}
+  <a href="/docs/">Docs</a>
+  <a href="/guides/">Guides</a>
+  <a href="/pricing/">Pricing</a>
+  <button type="button" class="mm-search" data-open-search>Search…</button>
+</nav>

@@ -1,7 +1,8 @@
 ---
-import Base from '../layouts/Base.astro';
-import OxynDemo from '../components/OxynDemo.astro';
-import { demos, motion, parityItems, demoUrl, REPO } from '../lib/data';
+import Library from '../layouts/Library.astro';
+import LibTabs from '../components/v2/LibTabs.astro';
+import CompCard from '../components/v2/CompCard.astro';
+import { motion, parityItems, motionDemos, REPO } from '../lib/data';
 
 // Resolve {dur.step.80}-style references in the motion tokens.
 const get = (p: string) => p.split('.').reduce((o: any, k) => o?.[k], motion);
@@ -28,27 +29,20 @@ const eases = Object.keys(motion.ease ?? {}).filter((k) => !k.startsWith('$')).s
 const easeRows = rows('ease', eases);
 const springs = Object.keys(motion.spring ?? {}).filter((k) => !k.startsWith('$')).slice(0, 6);
 const springRows = rows('spring', springs);
-const live = ['text-shimmer', 'verb-cycler', 'text-reveal', 'number-ticker', 'glyph-loader'].map((s) => demos.find((d) => d.slug === s)!);
+const live = motionDemos;
 const planned = parityItems('Motion');
 ---
-<Base title="Motion" description="Oxyn's motion system: durations, easings and springs as tokens, and the motion components that use them.">
-  <div class="wrap content">
-    <h1 class="title">Motion</h1>
+<Library title="Motion" description="Oxyn's motion system: durations, easings and springs as tokens, and the motion components that use them.">
+  <div class="lidx">
+    <h1 class="lidx-title">Motion</h1>
     <p class="lede">Every animation in Oxyn reads its timing from one token file, <code>tokens/oxyn.motion.json</code>, so web and desktop move the same way. Everything here respects reduced motion: the OS setting, or the switch in the footer.</p>
     <div class="meta-row"><span class="tag">{live.length} motion components live</span><span class="tag">{planned.length} motion items in the parity plan</span><a class="tag" href={`${REPO}/blob/main/docs/motion.md`}>docs/motion.md ↗</a></div>
+    <LibTabs active="motion" />
 
     <section class="block">
       <h2>Live</h2>
       <p class="sub">Text and number motion, driven by a shared clock.</p>
-      <div class="variants">
-        {live.map((d) => (
-          <div class="variant">
-            <OxynDemo slug={d.slug} html={d.variants[0].html} variant={0} />
-            <h3><a href={demoUrl(d)}>{d.name}</a></h3>
-            <p>{d.variants[0].note}</p>
-          </div>
-        ))}
-      </div>
+      <div class="cgrid">{live.map((d) => <CompCard demo={d} />)}</div>
     </section>
 
     <section class="block">
@@ -69,4 +63,4 @@ const planned = parityItems('Motion');
       </section>
     )}
   </div>
-</Base>
+</Library>
