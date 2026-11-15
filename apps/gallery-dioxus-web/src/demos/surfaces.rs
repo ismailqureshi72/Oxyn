@@ -390,7 +390,7 @@ fn scroll_area(v: &Vals, _: ClockMs) -> Element {
     };
     rsx! {
         ScrollArea {
-            orientation: orient,
+            orientation: orient.clone(),
             fade: v.f("fade") as f32,
             scrollbars: v.string("scrollbars"),
             hide_delay: v.u("hide_delay") as u32,
@@ -409,7 +409,7 @@ fn scroll_area(v: &Vals, _: ClockMs) -> Element {
                 }
             }
             if kind == "list" {
-                div { class: "list",
+                div { class: "list", style: if orient == "both" { "min-width:560px" } else { "" },
                     for (i, (f, n)) in [("auth/session.ts", "+42 −8"), ("api/client.ts", "+17 −3"), ("auth/session.test.ts", "+64"), ("CHANGELOG.md", "+2"), ("api/retry.ts", "+11 −11"), ("auth/token.ts", "+3 −1"), ("README.md", "+1"), ("package.json", "+1 −1"), ("api/types.ts", "+6"), ("auth/index.ts", "+2 −2"), ("e2e/login.spec.ts", "+28"), ("tsconfig.json", "+1")].iter().enumerate() {
                         div { key: "{i}", class: "li", span { "{f}" } span { "{n}" } }
                     }
@@ -420,19 +420,30 @@ fn scroll_area(v: &Vals, _: ClockMs) -> Element {
 }
 
 fn scroll_area_code(v: &Vals) -> String {
+    let kind = v.s("content");
+    let orient = if kind == "strip" {
+        "horizontal"
+    } else {
+        v.s("orientation")
+    };
     let c = Code::new("ScrollArea")
-        .s("orientation", v.s("orientation"), "vertical")
+        .s("orientation", orient, "vertical")
         .raw("fade", format!("{:.0}.0", v.f("fade")))
         .s("scrollbars", v.s("scrollbars"), "auto")
-        .raw("height", "260.0");
-    let c = if v.s("content") == "transcript" {
-        c.b("stick_to_bottom", v.b("stick"))
+        .raw("height", if kind == "strip" { "140.0" } else { "260.0" });
+    let c = match kind {
+        "transcript" => c
+            .b("stick_to_bottom", v.b("stick"))
             .raw("lines", "transcript()")
-            .b("stream", v.b("stream"))
-    } else {
-        c.raw("FileList", "{}")
+            .b("stream", v.b("stream")),
+        "strip" => c
+            .raw("snap", "Some(\"x mandatory\".into())")
+            .raw("RunStrip", "{}"),
+        _ => c.raw("FileList", "{}"),
     };
-    c.done().replace("FileList: {},", "FileList {}")
+    c.done()
+        .replace("FileList: {},", "FileList {}")
+        .replace("RunStrip: {},", "RunStrip {}")
 }
 
 fn modes() -> Vec<FocusMode> {

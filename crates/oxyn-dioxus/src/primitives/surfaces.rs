@@ -1458,8 +1458,15 @@ pub fn ScrollArea(
     let (ft, fb, fl, fr) = fades(&mm, fade);
     let vert = orientation != "horizontal";
     let horiz = orientation != "vertical";
-    let (tl, to) = thumb(mm.top, mm.height, mm.view_h, (height - 8.0).max(8.0));
-    let (hl, ho) = thumb(mm.left, mm.width, mm.view_w, (width - 8.0).max(8.0));
+    // Both bars showing: each track stops short of the other so the thumbs never cross in the
+    // corner. Track lengths follow the measured viewport (the box shrinks with max-width:100%).
+    let show_y = vert && (e.top || e.bottom);
+    let show_x = horiz && (e.left || e.right);
+    let corner = if show_x && show_y { 12.0 } else { 0.0 };
+    let vh = if mm.view_h > 0.0 { mm.view_h } else { height };
+    let vw = if mm.view_w > 0.0 { mm.view_w } else { width };
+    let (tl, to) = thumb(mm.top, mm.height, mm.view_h, (vh - 8.0 - corner).max(8.0));
+    let (hl, ho) = thumb(mm.left, mm.width, mm.view_w, (vw - 8.0 - corner).max(8.0));
     let sb = scrollbars.clone();
     let st = stick();
     let n = shown_n();
@@ -1471,7 +1478,7 @@ pub fn ScrollArea(
         .map(|s| format!(";scroll-snap-type:{s}"))
         .unwrap_or_default();
     rsx! {
-        div { class: cls(&["oxyn-scroll", &orientation, &format!("sb-{sb}"), if hot() > 0 { "active" } else { "" }]),
+        div { class: cls(&["oxyn-scroll", &orientation, &format!("sb-{sb}"), if hot() > 0 { "active" } else { "" }, if corner > 0.0 { "corner" } else { "" }]),
             style: "width:{width}px;max-width:100%;height:{height}px;--ft:{ft:.1}px;--fb:{fb:.1}px;--fl:{fl:.1}px;--fr:{fr:.1}px;--hide:{hide_delay}ms",
             div { class: "vp", tabindex: "0", role: if label.is_some() { "region" }, "aria-label": if let Some(l) = &label { "{l}" },
                 style: "overflow-x:{ox};overflow-y:{oy}{snap_s}",
@@ -1498,18 +1505,18 @@ pub fn ScrollArea(
                 {children}
             }
             if fade > 0.0 { span { class: "fd", "aria-hidden": "true" } }
-            if vert && e.top || vert && e.bottom {
+            if show_y {
                 div { class: "trk y", "aria-hidden": "true",
                     onpointerdown: move |ev| {
                         let at = ev.element_coordinates().y as f32;
                         let m0 = *met.peek();
-                        let target = oxyn_core::primitives::scroll::page_toward(m0.top, m0.height, m0.view_h, (height - 8.0).max(8.0), at);
+                        let target = oxyn_core::primitives::scroll::page_toward(m0.top, m0.height, m0.view_h, (vh - 8.0 - corner).max(8.0), at);
                         if let Some(d) = vp.peek().clone() { spawn(async move { let _ = d.scroll(dioxus::html::geometry::PixelsVector2D::new(m0.left as f64, target as f64), ScrollBehavior::Smooth).await; }); }
                     },
                     span { class: "th", style: "height:{tl:.1}px;transform:translateY({to:.1}px)" }
                 }
             }
-            if horiz && (e.left || e.right) {
+            if show_x {
                 div { class: "trk x", "aria-hidden": "true",
                     span { class: "th", style: "width:{hl:.1}px;transform:translateX({ho:.1}px)" }
                 }

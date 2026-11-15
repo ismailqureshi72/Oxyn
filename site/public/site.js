@@ -225,3 +225,38 @@ document.addEventListener('oxyn-demo-live', (e) => {
     })).observe(document.body, { subtree: true, attributes: true, attributeFilter: ['data-state'] });
   }
 })();
+
+(() => {
+  // Keep demo menus and popovers on screen: anything floating that opens past the viewport
+  // edge (a phone, a demo near the edge) is shifted back inside, never resized. Works through
+  // the stage zoom (shift is divided by the element's effective zoom).
+  const FLOAT = '.oxyn-popover,.oxyn-pop,.oxyn-menu,.oxk-menu,.oxk-mmenu,.oxyn-drp .panel,.hc-card,.oxp-aa-menu,.oxf-mssurf,.oxyn-ctx-pop,.oxyn-ef-menu,.oxyn-xsearch .panel,.um-pnl,.ws-menu,[role=menu],[role=listbox]:not(.oxyn-layer *):not([class*="list"]),[role=tooltip]';
+  const PAD = 8;
+  let queued = false, mo = null;
+  const place = (el) => {
+    if (el.dataset.kiv) { el.style.translate = el.dataset.kivOrig || ''; delete el.dataset.kiv; delete el.dataset.kivOrig; }
+    const cs = getComputedStyle(el);
+    if (cs.position !== 'absolute' && cs.position !== 'fixed') return;
+    const r = el.getBoundingClientRect();
+    if (!r.width || !r.height) return;
+    const vw = document.documentElement.clientWidth;
+    let dx = 0;
+    if (r.width > vw - 2 * PAD || r.left < PAD) dx = PAD - r.left;
+    else if (r.right > vw - PAD) dx = vw - PAD - r.right;
+    if (Math.abs(dx) < 1) return;
+    const z = el.currentCSSZoom || 1;
+    const t = cs.translate && cs.translate !== 'none' ? cs.translate.split(' ') : null;
+    el.dataset.kivOrig = el.style.translate || '';
+    el.dataset.kiv = '1';
+    el.style.translate = t ? `calc(${t[0]} + ${dx / z}px) ${t[1] || '0px'}` : `${dx / z}px 0px`;
+  };
+  const run = () => {
+    queued = false;
+    document.querySelectorAll('oxyn-demo').forEach((d) => d.querySelectorAll(FLOAT).forEach(place));
+    if (mo) mo.takeRecords();
+  };
+  const queue = () => { if (!queued) { queued = true; requestAnimationFrame(run); } };
+  mo = new MutationObserver((ms) => { if (ms.some((m) => m.target.closest && m.target.closest('oxyn-demo'))) { queue(); setTimeout(queue, 260); } });
+  mo.observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ['class', 'style', 'open', 'data-state', 'aria-expanded'] });
+  addEventListener('resize', queue);
+})();
