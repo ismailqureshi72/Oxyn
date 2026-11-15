@@ -19,10 +19,12 @@
 //!   Radar (agents on parallel branches, overlapping edits, picks and merge order).
 //! - [`fidelity`]: the affectUI fidelity pass (plan #32): the exact Chat Composer's approval
 //!   modes, attachment kinds and recording trace; Comment Thread and Comments Panel.
+//! - [`chatfid`]: fidelity chunk 2: Model Picker rows and tray, Run Controls turns and phases.
 //! - [`tools`]: tool calls, the tool-kind map, JSON trees and link unfurls.
 //!
 //! Like the rest of the core, time is passed in as [`crate::ClockMs`]; nothing reads a clock.
 
+pub mod chatfid;
 pub mod compose;
 pub mod confirm;
 pub mod diff;

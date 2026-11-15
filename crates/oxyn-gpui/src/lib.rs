@@ -53,7 +53,10 @@ pub use parity::{
     ActivityHeatmapEl, ActivityHomeEl, AttachmentStripEl, DocGridEl, ExperimentGridEl,
     PollingCostEl, RunModeMenuEl, ThreadListEl, TokenUsageChartEl,
 };
-pub use parity::{AgentCommentThreadEl, CommentsPanelEl, ThreadMsg, file_badge};
+pub use parity::{
+    AgentCommentThreadEl, AgentRunPanelEl, CommentsPanelEl, ModelPickerMenuEl, ThreadMsg,
+    file_badge,
+};
 pub use parity::{
     AiComposerEl, AvatarUploadEl, ChatComposerEl, ContextFieldEl, ContextGridEl, ElasticSliderEl,
     FileDropzoneEl, GaugeEl, ModelMenuEl, ModelPillEl, MorphSelectEl, NumberFieldEl, Pick,
