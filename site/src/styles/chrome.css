@@ -49,6 +49,8 @@ a.x-chip:hover{color:var(--fg);background:var(--chip2)}
 /* ── Top bar (landing, pricing, docs) ───────────────────────────────── */
 .x-tb{position:sticky;top:0;z-index:60;background:var(--pn);border-bottom:1px solid var(--ln)}
 .tb-in{display:flex;align-items:center;gap:26px;height:44px;max-width:1280px;margin:0 auto;padding:0 20px}
+.page-white .x-tb{border-bottom-color:transparent}
+.page-white .tb-in{height:56px;max-width:1120px}
 .tb-links{display:flex;align-items:center;gap:22px}
 .tb-links>a,.tb-ddbtn{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:4px;font-size:14px;color:var(--fg2);text-decoration:none}
 .tb-links>a:hover,.tb-ddbtn:hover,.tb-links>a[aria-current="page"]{color:var(--fg)}
