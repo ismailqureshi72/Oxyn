@@ -7,14 +7,14 @@ import { demos } from '../../../lib/data';
 const parts = ['thread-list', 'ai-chat', 'agent-trail', 'checkpoint-list'].map((s) => demos.find((d) => d.slug === s)!);
 ---
 <Library title="Agent workspace — Screens" description="A complete AI agent app: threads, the agent thread and the run's work pane, composed from Oxyn components." type="Component" meta="category:Screens">
-  <article class="art">
-    <nav class="crumbs" aria-label="Breadcrumb" data-pagefind-ignore><a href="/screens/">Screens</a><span aria-hidden="true">›</span><span aria-current="page">Agent workspace</span></nav>
+  <article class="x-art">
+    <nav class="x-crumbs" aria-label="Breadcrumb" data-pagefind-ignore><a href="/screens/">Screens</a><span aria-hidden="true">›</span><span aria-current="page">Agent workspace</span></nav>
     <h1 class="art-title" data-pagefind-meta="title">Agent workspace</h1>
     <p class="art-lede">A complete AI agent app for desktop and web: threads grouped by what needs you, the agent thread with thinking, sources and the composer, and a work pane with the run's steps and checkpoints. Every pane is a live Oxyn component.</p>
     <div class="pvwrap" id="preview">
       <div class="pvbar" data-pagefind-ignore>
-        <div class="seg" role="tablist" aria-label="Preview"><button type="button" role="tab" aria-selected="true" data-pv="preview"><Fragment set:html={icon.eye} />Preview</button></div>
-        <div class="pvr"><a class="pill pill-black pill-sm" href="/screens/agent-workspace/full/"><Fragment set:html={icon.arrowUpRight} />Open full screen</a></div>
+        <div class="x-seg" role="tablist" aria-label="Preview"><button type="button" role="tab" aria-selected="true" data-pv="preview"><Fragment set:html={icon.eye} />Preview</button></div>
+        <div class="pvr"><a class="x-pill pill-black pill-sm" href="/screens/agent-workspace/full/"><Fragment set:html={icon.arrowUpRight} />Open full screen</a></div>
       </div>
       <div class="pv pv-screen aw-prev" data-view="preview"><AgentWorkspace /></div>
     </div>

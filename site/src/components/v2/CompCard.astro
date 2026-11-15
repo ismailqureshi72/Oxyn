@@ -11,10 +11,10 @@ const g = isScreen(demo) ? { name: 'Screen', slug: '' } : groupOf(demo);
 const H = headingLevel === 2 ? 'h2' : 'h3';
 const install = installLine(demo);
 ---
-<article class="cc">
+<article class="x-cc">
   <div class="cc-top">
-    {g.slug ? <a class="chip" href={`/components/${g.slug}/`}>{g.name}</a> : <a class="chip" href="/screens/">{g.name}</a>}
-    <span class="chip soft">{demo.variants.length} {demo.variants.length === 1 ? 'variant' : 'variants'}</span>
+    {g.slug ? <a class="x-chip" href={`/components/${g.slug}/`}>{g.name}</a> : <a class="x-chip" href="/screens/">{g.name}</a>}
+    <span class="x-chip soft">{demo.variants.length} {demo.variants.length === 1 ? 'variant' : 'variants'}</span>
   </div>
   <div class="cc-prev" aria-hidden="true" inert>
     <OxynDemo slug={demo.slug} html={v.html} variant={0} />

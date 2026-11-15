@@ -409,7 +409,7 @@ document.addEventListener('oxyn-demo-live', (e) => {
   });
 
   // Before/after compare.
-  document.querySelectorAll('.cmp').forEach((c) => {
+  document.querySelectorAll('.x-cmp').forEach((c) => {
     const r = c.querySelector('.cmp-range');
     const set = () => c.style.setProperty('--pos', `${r.value}%`);
     r?.addEventListener('input', set);

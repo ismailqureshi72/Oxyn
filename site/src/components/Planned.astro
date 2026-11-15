@@ -17,9 +17,9 @@ const built = items.filter((r) => r.status.startsWith('built')).length;
     <p class="lede">{lede}</p>
     <LibTabs active={tab} />
     <div class="meta-row">
-      <span class="tag">{items.length} planned</span>
-      <span class="tag">{built} built</span>
-      <a class="tag" href={`${REPO}/blob/main/docs/parity/status.csv`}>Parity tracker ↗</a>
+      <span class="x-tag">{items.length} planned</span>
+      <span class="x-tag">{built} built</span>
+      <a class="x-tag" href={`${REPO}/blob/main/docs/parity/status.csv`}>Parity tracker ↗</a>
     </div>
     <section class="block">
       <h2>What this section will hold</h2>
@@ -39,7 +39,7 @@ const built = items.filter((r) => r.status.startsWith('built')).length;
     <section class="block">
       <h2>Available now</h2>
       <p class="sub">The building blocks these will be assembled from are live today.</p>
-      <div class="cta"><a class="btn primary" href="/components/">Browse components</a><a class="btn" href="/guides/">Read the guides</a></div>
+      <div class="cta"><a class="x-btn primary" href="/components/">Browse components</a><a class="x-btn" href="/guides/">Read the guides</a></div>
     </section>
   </div>
 </Library>
