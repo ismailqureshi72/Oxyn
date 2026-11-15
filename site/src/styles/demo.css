@@ -163,3 +163,19 @@ oxyn-demo{display:block}
 /* plan #28 parity demo helpers */
 .oxp-demo-col{display:flex;flex-direction:column;align-items:center;gap:10px}
 .oxp-demo-pop{width:520px;max-width:100%;display:flex}.oxp-demo-pop.end{justify-content:flex-end}.oxp-demo-pop.center{justify-content:center}
+/* Polish (chunk 7): tighter stage padding on phones so components get the room. */
+@media (max-width:600px){.oxd-stage{padding:16px 12px}.oxd-mini .oxd-stage{padding:14px 10px}.oxd-pad-tip{padding:36px 12px}}
+/* Polish (chunk 7): the stage no longer scrolls or clips. Wide components zoom to fit
+   (site.js), tall ones grow the stage, and menus, popovers and cards that open past the edge
+   stay whole (the demo rises above the page chrome while it is in use). */
+.oxd-stage{overflow:visible}
+.oxd-full .oxd-main,.oxd-mini .oxd-main{overflow:visible}
+.oxd-mini .oxd-stage{border-radius:11px}
+.oxd-full .oxd-stage{border-radius:13px 0 0 0}
+.oxd-full .oxd-panel{border-radius:0 13px 0 0}
+.oxd-full .oxd-main:has(.oxs-frame,.oxyn-harness) .oxd-stage{border-radius:13px 13px 0 0}
+.oxd-full .oxd-main:has(.oxs-frame,.oxyn-harness) .oxd-panel{border-radius:0}
+@media (max-width:900px){.oxd-full .oxd-stage{border-radius:13px 13px 0 0}.oxd-full .oxd-panel{border-radius:0}}
+.oxd-mini .oxd-stage:has(.oxs-frame,.oxyn-harness){overflow:hidden}
+/* Shell frames keep a desktop width on phones and zoom to fit, instead of squeezing their panes. */
+.oxd-full .oxd-app.oxs-frame,.oxd-full .oxyn-harness{min-width:760px}
