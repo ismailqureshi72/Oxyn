@@ -163,7 +163,9 @@ specified just as deeply. When we point at one component as an example, the stan
 | [code-suggestion.md](code-suggestion.md) | built v0.1 (plan #30) |
 | [ai-inline-edit.md](ai-inline-edit.md) | built v0.1 (plan #30) |
 | [image-compare.md](image-compare.md) | built v0.1 (plan #30) |
-| [comment-thread.md](comment-thread.md) | built v0.1 (plan #30) |
+| [comment-thread.md](comment-thread.md) | built v0.1 (plan #30); affectUI Comment Thread added (plan #32) |
 | [review-center.md](review-center.md) | built v0.1 (plan #30) |
 | [conflict-radar.md](conflict-radar.md) | built v0.1 (plan #31) |
+| [chat-composer.md](chat-composer.md) | built v0.2 (plan #32 fidelity: exact affectUI Chat Composer) |
+| [comments-panel.md](comments-panel.md) | built v0.1 (plan #32) |
 | Every other component in [../component-taxonomy.md](../component-taxonomy.md) | to write in V2.2 |
