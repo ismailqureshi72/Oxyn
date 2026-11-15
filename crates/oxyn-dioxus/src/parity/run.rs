@@ -126,7 +126,7 @@ pub fn AgentPlan(
                                     button { class: "oxr-lnk", r#type: "button", onclick: { let id = s.id.clone(); move |_| on_retry.call(id.clone()) }, "Retry from here" } }
                             }
                         }
-                        if let Some(t) = s.tool.clone() { span { class: "oxr-tool", "{t}" } }
+                        if let Some(t) = s.tool.clone() { span { class: "oxr-tool", crate::brand::BrandIcon { name: t.clone(), size: 11.0 } "{t}" } }
                         if let Some(tm) = s.timer(now) { span { class: "oxr-time", "{tm}" } }
                         if edit && n > 1 { button { class: "oxr-x", r#type: "button", "aria-label": "Remove step {i + 1}", onclick: move |_| on_remove.call(i), Icon { name: "x", size: 12.0 } } }
                     }
@@ -180,7 +180,7 @@ pub fn AgentTrail(
                         {mark(s.state)}
                         div { class: "oxr-body",
                             div { class: "oxr-line",
-                                if let Some(t) = s.tool.clone() { span { class: "oxr-tool", "{t}" } }
+                                if let Some(t) = s.tool.clone() { span { class: "oxr-tool", crate::brand::BrandIcon { name: t.clone(), size: 11.0 } "{t}" } }
                                 span { class: "oxr-title", "{s.title}" }
                                 if let Some(b) = s.badge() { span { class: "oxr-badge {s.state.id()}", "{b}" } }
                                 span { class: "oxr-sp" }
