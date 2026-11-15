@@ -168,4 +168,6 @@ specified just as deeply. When we point at one component as an example, the stan
 | [conflict-radar.md](conflict-radar.md) | built v0.1 (plan #31) |
 | [chat-composer.md](chat-composer.md) | built v0.2 (plan #32 fidelity: exact affectUI Chat Composer) |
 | [comments-panel.md](comments-panel.md) | built v0.1 (plan #32) |
+| [model-picker.md](model-picker.md) | built v0.1 (plan #32, chunk 2) |
+| [run-controls.md](run-controls.md) | built v0.2 (plan #32, chunk 2; v0.1 plan #28) |
 | Every other component in [../component-taxonomy.md](../component-taxonomy.md) | to write in V2.2 |
