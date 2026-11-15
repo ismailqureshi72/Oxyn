@@ -59,6 +59,11 @@ pub use parity::{
     RichTextEl, RunControlsEl, ScrubInputEl, SplitBarEl, UsageMeterEl,
 };
 pub use parity::{
+    AiInlineEditEl, ChangeSummaryEl, CodeSuggestionEl, CommentThreadEl, DiffTableEl,
+    DiffTimelineEl, DiffViewerEl, HunkAct, IdAct, ImageCompareEl, InlineDiffEl, ReviewCardEl,
+    ReviewCenterEl,
+};
+pub use parity::{
     ExpandableCardEl, JsonViewerEl, LinkUnfurlEl, ToolCallCardEl, ToolCallEl, ToolChipsEl,
 };
 pub use parity::{ImeEvent, ImeInput, bind_ime_keys};

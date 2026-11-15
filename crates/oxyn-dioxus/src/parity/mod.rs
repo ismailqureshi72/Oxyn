@@ -3,10 +3,12 @@
 
 mod approvals;
 mod compose;
+mod diff;
 mod fields;
 mod home;
 mod input;
 mod meters;
+mod review;
 mod run;
 mod text;
 mod tools;
@@ -20,6 +22,7 @@ pub use compose::{
     AiComposer, ChatComposer, MenuModel, ModelMenu, ModelPill, PillModel, RichTextEditor,
     RunControls,
 };
+pub use diff::{ChangeSummary, CodeSuggestion, DiffTable, DiffTimeline, DiffViewer, InlineDiff};
 pub use fields::{ElasticSlider, MorphSelect, NumberField, ScrubInput};
 pub use home::{
     ActivityHeatmap, ActivityHome, AttachmentStrip, DocGrid, ExperimentGrid, PollingCost,
@@ -27,6 +30,7 @@ pub use home::{
 };
 pub use input::{GhostText, LabeledInput, LabeledTextarea, TextArea};
 pub use meters::{ContextField, ContextWindowGrid, CtxModel, Gauge, SplitBar, UsageMeter};
+pub use review::{AiInlineEdit, CommentThread, ImageCompare, ReviewCard, ReviewCenter};
 pub use run::{
     ActivityFeed, AgentFleet, AgentOrchestrator, AgentPlan, AgentRun, AgentStatus, AgentTrail,
     AgentTree, AnimatedCounter, Countdown, FlowStepper, OnboardingChecklist, ReleaseReadiness,
