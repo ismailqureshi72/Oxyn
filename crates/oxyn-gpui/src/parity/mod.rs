@@ -18,6 +18,7 @@ mod answers;
 mod approvals;
 mod chatfid;
 mod crewfid;
+mod cursorsfid;
 mod fidelity;
 mod fields;
 mod home;
@@ -39,6 +40,7 @@ pub use approvals::{
 };
 pub use chatfid::{AgentRunPanelEl, ModelPickerMenuEl};
 pub use crewfid::AgentCrewEl;
+pub use cursorsfid::AgentCursorsEl;
 pub use fidelity::{AgentCommentThreadEl, ChatComposerEl, CommentsPanelEl, ThreadMsg, file_badge};
 pub use fields::{
     AiComposerEl, AvatarUploadEl, ContextFieldEl, ContextGridEl, ElasticSliderEl, FileDropzoneEl,

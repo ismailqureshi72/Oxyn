@@ -165,7 +165,7 @@ impl Default for AgentCrewEl {
     fn default() -> Self {
         Self {
             root: crew_at("checkout", 9_500).0,
-            title: "Fix the checkout crash".into(),
+            title: "Stop the payment page crash".into(),
             elapsed: 9_500,
             open: None,
             classic: false,

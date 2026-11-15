@@ -7,6 +7,7 @@ mod approvals;
 mod chatfid;
 mod compose;
 mod crewfid;
+mod cursorsfid;
 mod diff;
 mod fidelity;
 mod fields;
@@ -33,6 +34,7 @@ pub use compose::{
     AiComposer, MenuModel, ModelMenu, ModelPill, PillModel, RichTextEditor, RunControls,
 };
 pub use crewfid::AgentCrew;
+pub use cursorsfid::AgentCursors;
 pub use diff::{ChangeSummary, CodeSuggestion, DiffTable, DiffTimeline, DiffViewer, InlineDiff};
 pub use fidelity::{
     AgentCommentThread, AgentOrb, ChatComposer, CommentsPanel, FileTypeIcon, PhotoAvatar, Portrait,

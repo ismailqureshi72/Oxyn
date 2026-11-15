@@ -57,7 +57,7 @@ pub use parity::{
     AgentCommentThreadEl, AgentRunPanelEl, CommentsPanelEl, ModelPickerMenuEl, ThreadMsg,
     file_badge,
 };
-pub use parity::{AgentCrewEl, AgentFindingsEl, AgentInboxEl};
+pub use parity::{AgentCrewEl, AgentCursorsEl, AgentFindingsEl, AgentInboxEl};
 pub use parity::{
     AiComposerEl, AvatarUploadEl, ChatComposerEl, ContextFieldEl, ContextGridEl, ElasticSliderEl,
     FileDropzoneEl, GaugeEl, ModelMenuEl, ModelPillEl, MorphSelectEl, NumberFieldEl, Pick,

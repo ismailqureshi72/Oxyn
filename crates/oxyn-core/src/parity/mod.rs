@@ -22,6 +22,8 @@
 //! - [`chatfid`]: fidelity chunk 2: Model Picker rows and tray, Run Controls turns and phases.
 //! - [`agentsfid`]: fidelity batch, family B: Agent Findings progress and feed, Agent Inbox tasks.
 //! - [`crewfid`]: fidelity batch, family B part 2: Agent Crew tree, handoffs, steering, projects.
+//! - [`cursorsfid`]: fidelity batch, family B part 3: Agent Cursors document, pointers,
+//!   suggestions, comments and the demo loop.
 //! - [`answers`]: fidelity batch, family A: AI Answer markup and streaming, Cited Answer
 //!   sentences and quotes, Message Actions, Thinking Loader phases, Thinking State steps and the
 //!   Writing Assistant's sample writer and dictation.
@@ -35,6 +37,7 @@ pub mod chatfid;
 pub mod compose;
 pub mod confirm;
 pub mod crewfid;
+pub mod cursorsfid;
 pub mod diff;
 pub mod edit;
 pub mod fidelity;

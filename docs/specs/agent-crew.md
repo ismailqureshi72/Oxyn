@@ -37,7 +37,7 @@ connectors and light up the card they reach; a click opens the agent's details w
 ## 4. Variants
 | Variant | What differs |
 |---|---|
-| default | Live run, Fix the checkout crash |
+| default | Live run, Stop the payment page crash |
 | working-details | Lead's details while it works (Message / Pause / Stop) |
 | needs-you | Settled with the lead waiting (Message / Decline / Approve, "1 needs you") |
 | launch | The launch post crew from the switcher |
@@ -46,9 +46,9 @@ connectors and light up the card they reach; a click opens the agent's details w
 
 ## 5. Keyboard and accessibility
 A tree with one tab stop; arrows walk the cards, Home/End go to the lead and the last card; cards are treeitems named
-"Coder: Working, Editing cart.ts, context 38%" with aria-haspopup="dialog" and aria-expanded. The details are a dialog
+"Coder: Working, Editing basket.ts, context 38%" with aria-haspopup="dialog" and aria-expanded. The details are a dialog
 whose close button takes focus. The switcher is a button with a listbox (↑ ↓ Enter, Esc). A polite live region reads
-each handoff ("Lead handed to Coder: Guard empty carts, add tests") and each steering action ("Paused Coder").
+each handoff ("Lead handed to Coder: Handle empty baskets, cover with tests") and each steering action ("Paused Coder").
 
 ## 6. Responsive
 Wide at 760 px; below that every level is indented and cards take the remaining width. Rows are fixed, so changing
