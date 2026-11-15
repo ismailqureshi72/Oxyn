@@ -230,6 +230,14 @@ html[data-sidebar="hidden"] .lbar-open{display:inline-grid}
 .pvr{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
 .pvr .iconbtn svg{width:15px;height:15px}
 .pvr .iconbtn[aria-expanded="true"]{background:var(--chip);color:var(--fg)}
+.x-cstyle{display:inline-flex;gap:2px;margin-right:4px}
+.x-cstyle button{all:unset;cursor:pointer;width:26px;height:26px;display:grid;place-items:center;border-radius:8px}
+.x-cstyle button[aria-checked="true"]{background:var(--chip)}
+.x-cstyle button:focus-visible{outline:2px solid var(--oxyn-color-focus)}
+.x-cstyle .sw{width:12px;height:12px;border-radius:4px;box-sizing:border-box}
+.x-cstyle .sw-classic{border:2px solid #F97316;background:color-mix(in srgb,#F97316 22%,transparent)}
+.x-cstyle .sw-clean{background:#3B82F6}
+.x-copy{gap:6px}.x-copy svg{width:13px;height:13px}
 .pv-div{width:1px;height:18px;background:var(--ln);margin:0 6px}
 .aibtn{display:inline-flex;align-items:center;height:26px;padding:0 9px;border-radius:999px;font-size:12px;font-weight:500;color:var(--fg2);text-decoration:none}
 .aibtn:hover{background:var(--hov);color:var(--fg)}
@@ -259,7 +267,7 @@ html[data-sidebar="hidden"] .lbar-open{display:inline-grid}
 .pv[data-view="code"] .oxd-stage,.pv[data-view="code"] .oxd-panel{display:none!important}
 .pv[data-view="code"] .oxd-code{display:block;border:1px solid var(--ln);border-radius:16px}
 .pv[data-view="code"] .oxd-code pre{max-height:560px}
-.pv[data-theme="dark"] .oxd-stage{background:#0D0D0E;border-color:#2A2A2D!important}
+.pv[data-theme="dark"] .oxd-stage{background:#1F1F21;border-color:#2A2A2D!important}
 .pv[data-theme="light"] .oxd-stage{background:#FAFAFA;border-color:#E6E6E8!important}
 
 .sec{margin-top:52px}
@@ -504,3 +512,4 @@ oxyn-demo:focus-within,oxyn-demo:has(.oxyn-layer:not(.contained)){z-index:45}
 .pv.aw-prev .aw{zoom:.62}
 @media (max-width:1280px){.pv.aw-prev .aw{zoom:.5}}
 @media (max-width:900px){.aw-cols{grid-template-columns:1fr}.pv.aw-prev .aw{zoom:1}.aw-full .aw-cols{min-height:0}}
+@supports (corner-shape:squircle){.pv .oxd-stage{border-radius:24px!important;corner-shape:squircle}}
