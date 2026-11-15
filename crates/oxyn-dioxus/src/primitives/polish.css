@@ -1,0 +1,29 @@
+/* Polish (plan #28 chunk 7): brand marks, thin pill scrollbars, icon-button feedback. */
+.oxyn-brand{display:inline-block;flex:none;vertical-align:-0.125em}
+.oxyn-brand-ini{display:inline-grid;place-items:center;width:1em;height:1em;font-weight:650;font-size:.8em}
+/* Thin pill scrollbars: a rounded thumb only, no track, shown only where content really scrolls. */
+:where([class*="oxyn-"],[class*="oxyn-"] *){scrollbar-width:thin;scrollbar-color:var(--oxyn-color-border-strong,rgb(128 128 128/.4)) transparent}
+@supports selector(::-webkit-scrollbar){
+  :where([class*="oxyn-"],[class*="oxyn-"] *){scrollbar-width:auto;scrollbar-color:auto}
+  :where([class*="oxyn-"],[class*="oxyn-"] *)::-webkit-scrollbar{width:10px;height:10px;background:transparent}
+  :where([class*="oxyn-"],[class*="oxyn-"] *)::-webkit-scrollbar-track,:where([class*="oxyn-"],[class*="oxyn-"] *)::-webkit-scrollbar-corner{background:transparent}
+  :where([class*="oxyn-"],[class*="oxyn-"] *)::-webkit-scrollbar-thumb{border:3px solid transparent;border-radius:999px;background:var(--oxyn-color-border-strong,rgb(128 128 128/.4)) padding-box}
+  :where([class*="oxyn-"],[class*="oxyn-"] *)::-webkit-scrollbar-thumb:hover{background-color:var(--oxyn-color-fg-subtle)}
+  :where([class*="oxyn-"],[class*="oxyn-"] *)::-webkit-scrollbar-button{display:none;width:0;height:0}
+}
+/* Buttons keep their label on one line and never squeeze below it. */
+.oxyn-btn{flex-shrink:0;white-space:nowrap}
+/* Icon-only buttons that confirm with a check keep their size; text feedback lives in the status region. */
+.oxyn-copy.io{min-width:30px;width:auto}
+.oxyn-copy.io.sm{min-width:26px;height:26px}
+/* Brand marks inside existing slots */
+.oxyn-mark.brand{background:none!important;color:var(--oxyn-color-fg-default)}
+.oxyn-entity .bmk{display:inline-grid;place-items:center;width:16px;height:16px;border-radius:50%;background:var(--oxyn-color-surface-raised);color:var(--oxyn-color-fg-default)}
+.oxyn-avatar .model:has(.oxyn-brand){display:grid;place-items:center;padding:0;width:14px}
+.oxyn-cmd .logo.brand,.oxyn-aisearch .logo.brand,.oxyn-menu .lead .logo.brand{background:none;color:var(--oxyn-color-fg-default)}
+.oxr-bmk{display:inline-flex;align-items:center;color:var(--oxyn-color-fg-default);margin-right:5px;vertical-align:-2px}
+.oxr-site{display:inline-flex;align-items:center;gap:5px}
+.oxk-on{display:inline-flex;align-items:center;gap:7px}
+.oxk-appmark:has(.oxyn-brand){color:var(--oxyn-color-fg-default)}
+.oxc-starters .stk .oxyn-brand{vertical-align:-1px}
+.tl-l{display:inline-flex;align-items:center;gap:7px}

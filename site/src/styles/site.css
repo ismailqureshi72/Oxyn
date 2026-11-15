@@ -181,3 +181,22 @@ td .req{font-size:10.5px;color:var(--oxyn-color-fg-subtle);margin-left:6px;text-
   .hero{grid-template-columns:1fr;padding-top:36px}.hero h1{font-size:38px}
   .variants,.two,.tiers{grid-template-columns:1fr}.foot-in{grid-template-columns:1fr 1fr}}
 html[data-oxyn-reduced] *{animation-duration:1ms!important;transition-duration:1ms!important}
+
+/* ── Polish (chunk 7): thin pill scrollbars, demo stacking ──────────── */
+:root{--site-thumb:rgb(242 239 234 / .18);--site-thumb-hover:rgb(242 239 234 / .32)}
+[data-theme="light"]{--site-thumb:rgb(20 19 18 / .2);--site-thumb-hover:rgb(20 19 18 / .36)}
+*{scrollbar-width:thin;scrollbar-color:var(--site-thumb) transparent}
+@supports selector(::-webkit-scrollbar){
+  *{scrollbar-width:auto;scrollbar-color:auto}
+  ::-webkit-scrollbar{width:10px;height:10px;background:transparent}
+  ::-webkit-scrollbar-track,::-webkit-scrollbar-corner{background:transparent}
+  ::-webkit-scrollbar-thumb{border:3px solid transparent;border-radius:999px;background:var(--site-thumb) padding-box}
+  ::-webkit-scrollbar-thumb:hover{background-color:var(--site-thumb-hover)}
+  ::-webkit-scrollbar-button{display:none;width:0;height:0}
+  .install code::-webkit-scrollbar{display:none}
+}
+/* Demos stack above the sidebar and table of contents; the demo being used (focus inside, or a
+   layer open) rises above the sticky top nav too, so its menus and sheets are never covered. */
+oxyn-demo{position:relative;z-index:1}
+oxyn-demo:focus-within,oxyn-demo:has(.oxyn-layer:not(.contained)){z-index:45}
+.side:not(.oxd-root *),.toc{z-index:0}
