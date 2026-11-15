@@ -17,6 +17,8 @@
 //!   code suggestions, inline edits, image compare, comment threads and the review center.
 //! - [`merge`]: the 3-way merge-conflict editor (markers, picks, result, keymap) and Conflict
 //!   Radar (agents on parallel branches, overlapping edits, picks and merge order).
+//! - [`fidelity`]: the affectUI fidelity pass (plan #32): the exact Chat Composer's approval
+//!   modes, attachment kinds and recording trace; Comment Thread and Comments Panel.
 //! - [`tools`]: tool calls, the tool-kind map, JSON trees and link unfurls.
 //!
 //! Like the rest of the core, time is passed in as [`crate::ClockMs`]; nothing reads a clock.
@@ -25,6 +27,7 @@ pub mod compose;
 pub mod confirm;
 pub mod diff;
 pub mod edit;
+pub mod fidelity;
 pub mod fields;
 pub mod fleet;
 pub mod gates;
