@@ -326,7 +326,7 @@ pub fn handoff_hops(root: &CrewCard, from: &str, to: &str) -> Vec<(usize, bool)>
     hops
 }
 
-/// "Lead handed to Coder: Guard empty carts".
+/// "Lead handed to Coder: Handle empty baskets".
 pub fn handoff_said(root: &CrewCard, h: &CrewHandoff) -> String {
     let flat = root.flatten();
     let name = |id: &str| {
@@ -350,9 +350,9 @@ pub struct CrewProject {
 /// The demo projects.
 pub fn crew_projects() -> Vec<CrewProject> {
     [
-        ("checkout", "Fix the checkout crash"),
-        ("launch", "Write the launch post"),
-        ("postgres", "Migrate to Postgres 17"),
+        ("checkout", "Stop the payment page crash"),
+        ("launch", "Draft the launch article"),
+        ("postgres", "Move to Postgres 17"),
     ]
     .iter()
     .map(|(i, n)| CrewProject {
@@ -397,7 +397,7 @@ fn base(project: &str) -> CrewCard {
                 "Editor",
                 "Claude Opus",
                 200_000,
-                "Write the launch post for Pulse 2.0 and get it fact-checked",
+                "Draft the launch article for Atlas 4 and get it fact-checked",
                 &[("notion", "Notion"), ("slack", "Slack")],
             );
             let res = mk(
@@ -477,7 +477,7 @@ fn base(project: &str) -> CrewCard {
                 "Lead",
                 "Claude Opus",
                 200_000,
-                "Fix the checkout crash on empty carts, get it reviewed and merged",
+                "Stop the payment page crashing on empty baskets, get it reviewed and shipped",
                 &[("linear", "Linear"), ("github", "GitHub")],
             );
             let mut res = mk(
@@ -485,7 +485,7 @@ fn base(project: &str) -> CrewCard {
                 "Researcher",
                 "Claude Sonnet",
                 200_000,
-                "Find where empty carts crash the checkout",
+                "Find where empty baskets break the payment page",
                 &[("linear", "Linear"), ("notion", "Notion")],
             );
             res.children.push(mk(
@@ -501,7 +501,7 @@ fn base(project: &str) -> CrewCard {
                 "Coder",
                 "Claude Sonnet",
                 200_000,
-                "Guard empty carts in cart.ts and add tests",
+                "Handle empty baskets in basket.ts and cover them with tests",
                 &[("github", "GitHub"), ("vercel", "Vercel")],
             );
             coder.children.push(mk(
@@ -517,7 +517,7 @@ fn base(project: &str) -> CrewCard {
                 "Test runner",
                 "",
                 64_000,
-                "Run the checkout suite",
+                "Run the payment suite",
                 &[],
             ));
             let mut rev = mk(
@@ -525,7 +525,7 @@ fn base(project: &str) -> CrewCard {
                 "Reviewer",
                 "Claude Opus",
                 200_000,
-                "Review PR #482 and the test run",
+                "Review PR #317 and the test run",
                 &[("github", "GitHub")],
             );
             rev.children.push(mk(
@@ -608,7 +608,7 @@ fn script(project: &str) -> Vec<Beat> {
                         D,
                         "Draft ready",
                         0.55,
-                        Some(("Fact checker", "38%, not 40%")),
+                        Some(("Fact checker", "27%, not 30%")),
                     ),
                     (
                         "seo",
@@ -619,7 +619,7 @@ fn script(project: &str) -> Vec<Beat> {
                     ),
                 ],
                 vec![
-                    ("facts", "writer", "38%, not 40%"),
+                    ("facts", "writer", "27%, not 30%"),
                     ("editor", "seo", "Title and slug"),
                 ],
             ),
@@ -706,16 +706,16 @@ fn script(project: &str) -> Vec<Beat> {
                     (
                         "research",
                         A,
-                        "Tracing cart.ts",
+                        "Tracing basket.ts",
                         0.31,
-                        Some(("Lead", "Find where empty carts crash")),
+                        Some(("Lead", "Find where empty baskets break")),
                     ),
                     (
                         "web",
                         A,
                         "Searching docs",
                         0.22,
-                        Some(("Researcher", "Empty cart crash reports")),
+                        Some(("Researcher", "Empty basket crash reports")),
                     ),
                     ("coder", I, "Waiting for work", 0.06, None),
                     ("lint", I, "Idle", 0.03, None),
@@ -750,24 +750,24 @@ fn script(project: &str) -> Vec<Beat> {
                         A,
                         "Reading the root cause",
                         0.26,
-                        Some(("Researcher", "Root cause: cart.ts:142")),
+                        Some(("Researcher", "Root cause: basket.ts:87")),
                     ),
                 ],
-                vec![("research", "lead", "Root cause: cart.ts:142")],
+                vec![("research", "lead", "Root cause: basket.ts:87")],
             ),
             (
                 9500,
                 vec![
-                    ("lead", A, "Watching the patch", 0.29, None),
+                    ("lead", A, "Following the fix", 0.29, None),
                     (
                         "coder",
                         A,
-                        "Editing cart.ts",
+                        "Editing basket.ts",
                         0.38,
-                        Some(("Lead", "Guard empty carts, add tests")),
+                        Some(("Lead", "Handle empty baskets, cover with tests")),
                     ),
                 ],
-                vec![("lead", "coder", "Guard empty carts, add tests")],
+                vec![("lead", "coder", "Handle empty baskets, cover with tests")],
             ),
             (
                 12500,
@@ -776,12 +776,12 @@ fn script(project: &str) -> Vec<Beat> {
                     (
                         "lint",
                         A,
-                        "Linting cart.ts",
+                        "Linting basket.ts",
                         0.3,
-                        Some(("Coder", "Lint cart.ts")),
+                        Some(("Coder", "Lint basket.ts")),
                     ),
                 ],
-                vec![("coder", "lint", "Lint cart.ts")],
+                vec![("coder", "lint", "Lint basket.ts")],
             ),
             (14500, vec![("lint", D, "All clean", 0.47, None)], vec![]),
             (
@@ -799,10 +799,10 @@ fn script(project: &str) -> Vec<Beat> {
                         A,
                         "182/214 passing",
                         0.55,
-                        Some(("Coder", "Run the checkout suite")),
+                        Some(("Coder", "Run the payment suite")),
                     ),
                 ],
-                vec![("coder", "tests", "Run the checkout suite")],
+                vec![("coder", "tests", "Run the payment suite")],
             ),
             (
                 19500,
@@ -811,7 +811,7 @@ fn script(project: &str) -> Vec<Beat> {
                     (
                         "coder",
                         A,
-                        "Opening PR #482",
+                        "Opening PR #317",
                         0.86,
                         Some(("Test runner", "214/214 passing")),
                     ),
@@ -821,21 +821,21 @@ fn script(project: &str) -> Vec<Beat> {
             (
                 22500,
                 vec![
-                    ("coder", D, "Opened PR #482", 0.86, None),
+                    ("coder", D, "Opened PR #317", 0.86, None),
                     (
                         "review",
                         A,
                         "Checking the tests",
                         0.2,
-                        Some(("Coder", "Review PR #482")),
+                        Some(("Coder", "Review PR #317")),
                     ),
                 ],
-                vec![("coder", "review", "Review PR #482")],
+                vec![("coder", "review", "Review PR #317")],
             ),
             (
                 25500,
                 vec![
-                    ("review", D, "Approved PR #482", 0.47, None),
+                    ("review", D, "Approved PR #317", 0.47, None),
                     (
                         "docs",
                         A,
@@ -846,14 +846,14 @@ fn script(project: &str) -> Vec<Beat> {
                     (
                         "lead",
                         W,
-                        "Merge PR #482?",
+                        "Ship PR #317?",
                         0.33,
-                        Some(("Reviewer", "Approved – ready to merge")),
+                        Some(("Reviewer", "Looks good – ready to ship")),
                     ),
                 ],
                 vec![
                     ("review", "docs", "Write the release note"),
-                    ("review", "lead", "Approved – ready to merge"),
+                    ("review", "lead", "Looks good – ready to ship"),
                 ],
             ),
             (28500, vec![("docs", D, "Note written", 0.35, None)], vec![]),
