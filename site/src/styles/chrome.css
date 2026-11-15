@@ -47,7 +47,7 @@ a.chip:hover{color:var(--fg);background:var(--chip2)}
 .style-pill::after{content:"";width:8px;height:8px;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--fg3)}
 
 /* ── Top bar (landing, pricing, docs) ───────────────────────────────── */
-.tb{position:sticky;top:0;z-index:60;background:var(--site-glass);backdrop-filter:saturate(1.4) blur(12px);-webkit-backdrop-filter:saturate(1.4) blur(12px);border-bottom:1px solid var(--ln)}
+.tb{position:sticky;top:0;z-index:60;background:var(--pn);border-bottom:1px solid var(--ln)}
 .tb-in{display:flex;align-items:center;gap:26px;height:44px;max-width:1280px;margin:0 auto;padding:0 20px}
 .tb-links{display:flex;align-items:center;gap:22px}
 .tb-links>a,.tb-ddbtn{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:4px;font-size:14px;color:var(--fg2);text-decoration:none}
