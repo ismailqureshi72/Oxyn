@@ -81,7 +81,7 @@ specified just as deeply. When we point at one component as an example, the stan
 | [checkpoint-timeline.md](checkpoint-timeline.md) | draft v0.1 |
 | [rollback-impact.md](rollback-impact.md) | draft v0.1 |
 | [diff-viewer.md](diff-viewer.md) | draft v0.1 |
-| [merge-conflict.md](merge-conflict.md) | draft v0.1 |
+| [merge-conflict.md](merge-conflict.md) | built v0.2 (plan #31) |
 | [git-chips.md](git-chips.md) | draft v0.1 |
 | [pr-card.md](pr-card.md) | draft v0.1 |
 | [review-card.md](review-card.md) | draft v0.1 |
@@ -165,4 +165,5 @@ specified just as deeply. When we point at one component as an example, the stan
 | [image-compare.md](image-compare.md) | built v0.1 (plan #30) |
 | [comment-thread.md](comment-thread.md) | built v0.1 (plan #30) |
 | [review-center.md](review-center.md) | built v0.1 (plan #30) |
+| [conflict-radar.md](conflict-radar.md) | built v0.1 (plan #31) |
 | Every other component in [../component-taxonomy.md](../component-taxonomy.md) | to write in V2.2 |
