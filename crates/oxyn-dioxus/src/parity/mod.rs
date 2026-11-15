@@ -15,8 +15,11 @@ mod graphfid;
 mod handofffid;
 mod home;
 mod input;
+mod lanesfid;
+mod ledgerfid;
 mod merge;
 mod meters;
+mod monitorfid;
 mod review;
 mod run;
 mod text;
@@ -50,8 +53,11 @@ pub use home::{
     RunModeMenu, ThreadList, TokenUsageChart,
 };
 pub use input::{GhostText, LabeledInput, LabeledTextarea, TextArea};
+pub use lanesfid::AgentLanes;
+pub use ledgerfid::AgentLedger;
 pub use merge::{ConflictRadar, MergeConflict};
 pub use meters::{ContextField, ContextWindowGrid, CtxModel, Gauge, SplitBar, UsageMeter};
+pub use monitorfid::AgentMonitor;
 pub use review::{AiInlineEdit, CommentThread, ImageCompare, ReviewCard, ReviewCenter};
 pub use run::{
     ActivityFeed, AgentFleet, AgentOrchestrator, AgentPlan, AgentRun, AgentStatus, AgentTrail,

@@ -1,0 +1,75 @@
+/* affectUI fidelity pass, overnight batch, family B part 4 (plan #32): Agent Ledger (oxlg-).
+   Clean is the default; Classic follows data-cstyle or data-style. 640 px up to its container;
+   below 480 px the before → after moves to its own line and Undo / Redo become round icons. */
+[data-oxyn-theme="light"]{
+  --oxlg-card:#FFFFFF;--oxlg-line:#E9E9EC;--oxlg-div:#F1F1F2;--oxlg-fg:#18181B;--oxlg-fg2:#3F3F46;--oxlg-mute:#71717A;--oxlg-faint:#A1A1AA;
+  --oxlg-hover:#F6F6F7;--oxlg-info:#2563EB;--oxlg-infobg:#EEF4FF;--oxlg-infopill:#DCE8FD;--oxlg-warn:#B45309;--oxlg-warnbg:#FFF6E9;--oxlg-warnpill:#FDEBD0;
+  --oxlg-band:#F4F4F5;--oxlg-tile:#FFFFFF;--oxlg-sh:0 1px 2px rgba(16,16,20,.04),0 4px 14px rgba(16,16,20,.04);
+}
+[data-oxyn-theme="dark"],[data-oxyn-theme="hc-dark"]{
+  --oxlg-card:#1C1C1E;--oxlg-line:rgba(255,255,255,.12);--oxlg-div:rgba(255,255,255,.07);--oxlg-fg:#FAFAFA;--oxlg-fg2:#D4D4D8;--oxlg-mute:rgba(255,255,255,.52);--oxlg-faint:rgba(255,255,255,.36);
+  --oxlg-hover:rgba(255,255,255,.05);--oxlg-info:#4FB0FE;--oxlg-infobg:rgba(79,176,254,.10);--oxlg-infopill:rgba(79,176,254,.18);--oxlg-warn:#F5B454;--oxlg-warnbg:rgba(245,166,35,.09);--oxlg-warnpill:rgba(245,166,35,.18);
+  --oxlg-band:#232326;--oxlg-tile:#26262A;--oxlg-sh:0 1px 2px rgba(0,0,0,.5),0 6px 18px rgba(0,0,0,.3);
+}
+.oxlg{position:relative;width:640px;max-width:100%;container-type:inline-size;color:var(--oxlg-fg);font-size:13px;line-height:1.35;-webkit-font-smoothing:antialiased}
+.oxlg *{box-sizing:border-box}
+.oxlg-sp{flex:1}
+.oxlg-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.oxlg-bar{display:flex;align-items:center;gap:8px;height:28px;margin-bottom:12px;padding:0 1px;white-space:nowrap}
+.oxlg-ic{display:grid;color:var(--oxlg-info)}
+.oxlg-ttl{font-size:13.5px;font-weight:600}
+.oxlg-agent{color:var(--oxlg-mute);overflow:hidden;text-overflow:ellipsis}
+.oxlg-cnt{color:var(--oxlg-mute);font-size:12px;font-variant-numeric:tabular-nums}
+.oxlg-cnt b{color:var(--oxlg-fg);font-weight:600}
+.oxlg-list{display:flex;flex-direction:column;margin:0;padding:4px 6px;list-style:none;border:1px solid var(--oxlg-line);border-radius:10px;background:var(--oxlg-card);overflow:clip}
+.oxlg-row{position:relative;display:flex;align-items:center;gap:10px;height:56px;padding:0 10px;border-radius:8px;animation:oxlg-in .32s cubic-bezier(.22,1,.36,1) both;transition:background-color .16s}
+.oxlg-row+.oxlg-row::before{content:"";position:absolute;top:0;left:52px;right:10px;border-top:1px solid var(--oxlg-div)}
+.oxlg-row:hover{background:var(--oxlg-hover)}
+.oxlg-row:is([data-flag="self"],[data-flag="also"]){background:var(--oxlg-infobg)}
+.oxlg-row[data-flag="kept"]{background:var(--oxlg-warnbg)}
+.oxlg-row:is([data-flag]:not([data-flag=""]),:hover)::before,.oxlg-row:is([data-flag]:not([data-flag=""]),:hover)+.oxlg-row::before{opacity:0}
+@keyframes oxlg-in{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.oxlg-tile{display:grid;place-items:center;flex:none;width:32px;height:32px;border:1px solid var(--oxlg-line);border-radius:8px;background:var(--oxlg-tile);color:var(--oxlg-fg);transition:filter .2s,opacity .2s}
+.oxlg-txt{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
+.oxlg-l1,.oxlg-l2{display:flex;align-items:baseline;gap:6px;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.oxlg-l1 b{font-weight:500;color:var(--oxlg-fg)}
+.oxlg-l1 span{color:var(--oxlg-fg2);overflow:hidden;text-overflow:ellipsis}
+.oxlg-l2{gap:6px;color:var(--oxlg-mute);font-size:12px}
+.oxlg-l2 s{color:var(--oxlg-faint);text-decoration-color:currentColor}
+.oxlg-to{color:var(--oxlg-faint)}
+.oxlg-after{color:var(--oxlg-fg2);overflow:hidden;text-overflow:ellipsis}
+.oxlg-slot{position:relative;display:flex;align-items:center;justify-content:flex-end;flex:none;min-width:96px;height:28px;color:var(--oxlg-mute);font-size:12px;white-space:nowrap}
+.oxlg-time{transition:opacity .12s}
+.oxlg-btn{position:absolute;right:0;top:50%;display:inline-flex;align-items:center;gap:4px;height:24px;padding:0 8px;border:0;border-radius:7px;background:var(--oxlg-hover);color:var(--oxlg-fg2);font:inherit;font-size:12.5px;cursor:pointer;opacity:0;transform:translateY(-50%);transition:opacity .12s,background-color .12s,color .12s}
+.oxlg-row:hover .oxlg-btn,.oxlg-btn:focus-visible{opacity:1}
+.oxlg-row:hover .oxlg-time,.oxlg-row:focus-within .oxlg-time{opacity:0}
+.oxlg-btn[data-on="true"],.oxlg-btn:hover{background:var(--oxlg-infopill);color:var(--oxlg-info);opacity:1}
+.oxlg-row[data-flag="self"] .oxlg-time{opacity:0}
+.oxlg-btn:focus-visible{outline:2px solid var(--oxlg-info);outline-offset:1px}
+.oxlg-pill{display:inline-flex;align-items:center;gap:4px;height:20px;padding:0 7px;border-radius:6px;font-size:11.5px;font-weight:500;animation:oxlg-pop .16s ease both}
+.oxlg-pill[data-k="also"]{background:var(--oxlg-infopill);color:var(--oxlg-info)}
+.oxlg-pill[data-k="kept"]{background:var(--oxlg-warnpill);color:var(--oxlg-warn)}
+@keyframes oxlg-pop{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:none}}
+/* undone */
+.oxlg-row[data-gone="true"] .oxlg-tile{filter:grayscale(1);opacity:.55}
+.oxlg-row[data-gone="true"] .oxlg-l1,.oxlg-row[data-gone="true"] .oxlg-l2{opacity:.55;text-decoration:line-through;text-decoration-color:var(--oxlg-faint)}
+
+@container (max-width:480px){
+  .oxlg-row{height:64px}
+  .oxlg-sys{display:none}
+  .oxlg-slot{min-width:30px}
+  .oxlg-bl{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+  .oxlg-btn{width:26px;padding:0;justify-content:center;border-radius:50%}
+  .oxlg-pill{padding:0 6px}
+  .oxlg-agent{display:none}
+}
+@media (hover:none){.oxlg-btn{opacity:1}.oxlg-time{opacity:0}}
+
+/* Classic: the header in its own band, the list a raised card */
+:is([data-cstyle="classic"] .oxlg:not([data-style="clean"]),.oxlg[data-style="classic"]){padding:6px;border:1px solid var(--oxlg-line);border-radius:14px;background:var(--oxlg-band)}
+:is([data-cstyle="classic"] .oxlg:not([data-style="clean"]),.oxlg[data-style="classic"]) .oxlg-bar{height:34px;margin:0;padding:0 10px}
+:is([data-cstyle="classic"] .oxlg:not([data-style="clean"]),.oxlg[data-style="classic"]) .oxlg-list{border-radius:10px;box-shadow:var(--oxlg-sh)}
+:is([data-cstyle="classic"] .oxlg:not([data-style="clean"]),.oxlg[data-style="classic"]) .oxlg-tile{border-radius:50%}
+:is([data-cstyle="classic"] .oxlg:not([data-style="clean"]),.oxlg[data-style="classic"]) .oxlg-btn{border:1px solid var(--oxlg-line);background:var(--oxlg-card)}
+
+@media (prefers-reduced-motion:reduce){.oxlg *{animation:none!important;transition:none!important}}

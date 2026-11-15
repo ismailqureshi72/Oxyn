@@ -59,6 +59,7 @@ pub use parity::{
 };
 pub use parity::{
     AgentCrewEl, AgentCursorsEl, AgentFindingsEl, AgentGraphEl, AgentHandoffEl, AgentInboxEl,
+    AgentLanesEl, AgentLedgerEl, AgentMonitorEl,
 };
 pub use parity::{
     AiComposerEl, AvatarUploadEl, ChatComposerEl, ContextFieldEl, ContextGridEl, ElasticSliderEl,

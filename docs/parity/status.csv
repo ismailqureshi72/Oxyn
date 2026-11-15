@@ -7,9 +7,9 @@ affectUI,Agent Fleet,https://www.affectui.com/components/agent-fleet,Components 
 affectUI,Agent Graph,https://www.affectui.com/components/agent-graph,Components · Agents,Pro,"agent-graph (exact, overnight batch B part 3), subagent-tree, trace-view",C6,#32,built
 affectUI,Agent Handoff,https://www.affectui.com/components/agent-handoff,Components · Agents,Pro,"agent-handoff (exact, overnight batch B part 3), subagent-tree",C6,#32,built
 affectUI,Agent Inbox,https://www.affectui.com/components/agent-inbox,Components · Agents,Pro,"agent-inbox (exact, overnight batch B), background-jobs",,#32,built
-affectUI,Agent Lanes,https://www.affectui.com/components/agent-lanes,Components · Agents,Pro,"trace-view, background-jobs",C7,#34,planned
-affectUI,Agent Ledger,https://www.affectui.com/components/agent-ledger,Components · Agents,Pro,rollback-impact,,#33,planned
-affectUI,Agent Monitor,https://www.affectui.com/components/agent-monitor,Components · Agents,Pro,"acting-indicator, run-meter, tool-call, approval-card",C7,#34,planned
+affectUI,Agent Lanes,https://www.affectui.com/components/agent-lanes,Components · Agents,Pro,"agent-lanes (exact, overnight batch B part 3), trace-view, background-jobs",C7,#32,built
+affectUI,Agent Ledger,https://www.affectui.com/components/agent-ledger,Components · Agents,Pro,"agent-ledger (exact, overnight batch B part 4), rollback-impact",,#32,built
+affectUI,Agent Monitor,https://www.affectui.com/components/agent-monitor,Components · Agents,Pro,"agent-monitor (exact, overnight batch B part 4), acting-indicator, run-meter, tool-call, approval-card",C7,#32,built
 affectUI,Agent Plan,https://www.affectui.com/components/agent-plan,Components · Agents,Pro,"plan-todo, plan-approval",,#28,built
 affectUI,Agent Queue,https://www.affectui.com/components/agent-queue,Components · Agents,Pro,background-jobs,C9,#35,planned
 affectUI,Agent Recap,https://www.affectui.com/components/agent-recap,Components · Agents,Pro,background-jobs,C5,#33,planned

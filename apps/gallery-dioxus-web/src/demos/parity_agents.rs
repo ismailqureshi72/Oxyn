@@ -1,9 +1,12 @@
 //! Plan #32 (affectUI fidelity pass), overnight batch family B demos: the exact Agent Findings and
-//! Agent Inbox, each with every affectUI style and state; part 2: Agent Crew; part 3: Agent Cursors, Agent Graph and Agent Handoff.
+//! Agent Inbox, each with every affectUI style and state; part 2: Agent Crew; part 3: Agent Cursors, Agent Graph, Agent Handoff and Agent Lanes; part 4: Agent Ledger and Agent Monitor.
 
 use dioxus::prelude::*;
 use oxyn_core::ClockMs;
-use oxyn_dioxus::{AgentCrew, AgentCursors, AgentFindings, AgentGraph, AgentHandoff, AgentInbox};
+use oxyn_dioxus::{
+    AgentCrew, AgentCursors, AgentFindings, AgentGraph, AgentHandoff, AgentInbox, AgentLanes,
+    AgentLedger, AgentMonitor,
+};
 
 use super::{Code, mk, sel, tog, var};
 use crate::{Demo, Vals};
@@ -281,6 +284,130 @@ fn agent_handoff_code(_: &Vals) -> String {
             "on_restore",
             "move |(handoff, item)| restore(handoff, item)",
         )
+        .done()
+}
+
+// ---------- Agent Lanes ----------
+
+fn agent_lanes(v: &Vals, now: ClockMs) -> Element {
+    let mut msg = use_signal(String::new);
+    let key = format!(
+        "{}{}{}{}",
+        v.s("style"),
+        v.s("run"),
+        v.s("open"),
+        v.s("width")
+    );
+    let at = match v.s("run") {
+        "settled" => Some(9_000),
+        _ => None,
+    };
+    let open = match v.s("open") {
+        "summary" => "scan",
+        "decision" => "keys",
+        _ => "",
+    };
+    let width = if v.s("width") == "narrow" {
+        "380px"
+    } else {
+        "760px"
+    };
+    rsx! {
+        div { "data-k": "{key}", key: "{key}", style: "width:{width};max-width:100%;display:flex;flex-direction:column;gap:8px",
+            AgentLanes { now, at, open: open.to_string(), style: cstyle(v),
+                on_approve: move |id: String| msg.set(format!("onApprove({id:?})")),
+                on_reject: move |id: String| msg.set(format!("onReject({id:?})")),
+                on_open: move |id: String| msg.set(format!("onOpen({id:?})")) }
+            {status(msg)}
+        }
+    }
+}
+
+fn agent_lanes_code(_: &Vals) -> String {
+    Code::new("AgentLanes")
+        .raw("scene", "Some(LaneScene { agents: agents(), tasks: tasks(), now: clock.ms(), span: 30 * 60_000 })")
+        .raw("now", "clock.now()")
+        .raw("on_approve", "move |id| approve(id)")
+        .raw("on_reject", "move |id| reject(id)")
+        .raw("on_open", "move |id| open(id)")
+        .done()
+}
+
+// ---------- Agent Ledger ----------
+
+fn agent_ledger(v: &Vals, now: ClockMs) -> Element {
+    let mut msg = use_signal(String::new);
+    let key = format!("{}{}{}", v.s("style"), v.s("state"), v.s("width"));
+    let (at, point) = match v.s("state") {
+        "settled" => (Some(9_000), None),
+        "pointed" => (Some(9_000), Some("price".to_string())),
+        "undone" => (Some(19_000), None),
+        _ => (None, None),
+    };
+    let width = if v.s("width") == "narrow" {
+        "380px"
+    } else {
+        "640px"
+    };
+    rsx! {
+        div { "data-k": "{key}", key: "{key}", style: "width:{width};max-width:100%;display:flex;flex-direction:column;gap:8px",
+            AgentLedger { now, at, point_at: point, style: cstyle(v),
+                on_undo: move |ids: Vec<String>| msg.set(format!("onUndo({ids:?})")),
+                on_redo: move |ids: Vec<String>| msg.set(format!("onRedo({ids:?})")) }
+            {status(msg)}
+        }
+    }
+}
+
+fn agent_ledger_code(_: &Vals) -> String {
+    Code::new("AgentLedger")
+        .raw("entries", "Some(changes())")
+        .raw("undone", "undone()")
+        .raw("agent", "\"Release agent\".into()")
+        .raw("now", "clock.now()")
+        .raw("clock", "clock.ms()")
+        .raw("on_undo", "move |ids| revert(ids)")
+        .raw("on_redo", "move |ids| reapply(ids)")
+        .done()
+}
+
+// ---------- Agent Monitor ----------
+
+fn agent_monitor(v: &Vals, now: ClockMs) -> Element {
+    let mut msg = use_signal(String::new);
+    let key = format!("{}{}", v.s("style"), v.s("state"));
+    let (at, failed, folded, open) = match v.s("state") {
+        "running" => (Some(5_200), false, false, ""),
+        "waiting" => (Some(10_200), false, false, ""),
+        "finished" => (Some(19_000), false, false, ""),
+        "details" => (Some(19_000), false, false, "build"),
+        "failed" => (None, true, false, ""),
+        "folded" => (Some(19_000), false, true, ""),
+        _ => (None, false, false, ""),
+    };
+    rsx! {
+        div { "data-k": "{key}", key: "{key}", style: "width:340px;max-width:100%;display:flex;flex-direction:column;gap:8px",
+            AgentMonitor { now, at, failed, default_folded: folded, open: open.to_string(), style: cstyle(v),
+                on_allow: move |_| msg.set("onAllow()".into()),
+                on_decline: move |_| msg.set("onDecline()".into()),
+                on_pause: move |p: bool| msg.set(if p { "onPause()".into() } else { "onResume()".into() }),
+                on_cancel: move |_| msg.set("onCancel()".into()),
+                on_retry: move |_| msg.set("onRetry()".into()),
+                on_open_log: move |_| msg.set("onOpenLog()".into()) }
+            {status(msg)}
+        }
+    }
+}
+
+fn agent_monitor_code(_: &Vals) -> String {
+    Code::new("AgentMonitor")
+        .raw("scene", "Some(run.scene())")
+        .raw("now", "clock.now()")
+        .raw("on_allow", "move |_| run.allow()")
+        .raw("on_decline", "move |_| run.decline()")
+        .raw("on_pause", "move |paused| run.pause(paused)")
+        .raw("on_cancel", "move |_| run.cancel()")
+        .raw("on_open_log", "move |_| open_trace()")
         .done()
 }
 
@@ -704,6 +831,224 @@ pub(crate) fn demos() -> Vec<Demo> {
                 "AgentInboxEl",
                 "agent-inbox",
                 "parity/agentsfid.rs",
+            )
+        },
+        Demo {
+            controls: vec![
+                style(),
+                sel("run", "Run", &["live", "settled"], "live"),
+                sel("open", "Open", &["none", "summary", "decision"], "none"),
+                sel("width", "Width", &["wide", "narrow"], "wide"),
+            ],
+            variants: vec![
+                var(
+                    "default",
+                    "As affectUI ships it: four agents over the last half hour on a fast clock – running blocks grow into now, a draft hands over to the Reviewer along a dashed curve, the window slides and old blocks fade out at the left.",
+                    &[],
+                ),
+                var(
+                    "summary",
+                    "A finished block clicked: the dark summary – who, state, how long and what got done.",
+                    &[("run", "settled"), ("open", "summary")],
+                ),
+                var(
+                    "decision",
+                    "The waiting block's decision: the ask, Reject and Approve (Approve turns it into a running block).",
+                    &[("run", "settled"), ("open", "decision")],
+                ),
+                var(
+                    "narrow",
+                    "Below 520 px the names column shrinks to the avatars.",
+                    &[("width", "narrow"), ("run", "settled")],
+                ),
+                var(
+                    "classic",
+                    "Classic style: outlined blocks, round avatar tiles, a clearer grid and a filled bar.",
+                    &[("style", "classic"), ("run", "settled")],
+                ),
+            ],
+            render: agent_lanes,
+            code: agent_lanes_code,
+            keyboard: vec![
+                ("Tab", "From block to block, lane by lane"),
+                (
+                    "Enter",
+                    "Opens a block's summary, or the decision on a waiting one",
+                ),
+                ("Esc", "Closes the decision or the summary"),
+            ],
+            a11y: vec![
+                "Every lane is a list labelled with the agent's name; every block is a button naming the agent, task, state and time.",
+                "A waiting block controls its decision (aria-expanded), a labelled dialog with Approve focused when you open it.",
+                "How many tasks need someone is announced politely when it changes.",
+            ],
+            responsive: vec![
+                "Fills its container up to 760 px.",
+                "Below 520 px the names column shrinks to the avatars and every other tick label drops.",
+            ],
+            height: 420,
+            live: true,
+            ..mk(
+                "agent-lanes",
+                "Agent Lanes",
+                "tools",
+                "Where every agent is right now – a live timeline with a lane per agent, tasks growing into now, hand-offs drawn between agents and approvals right on the block.",
+                "AgentLanes",
+                "AgentLanesEl",
+                "agent-lanes",
+                "parity/lanesfid.rs",
+            )
+        },
+        Demo {
+            controls: vec![
+                style(),
+                sel(
+                    "state",
+                    "State",
+                    &["live", "settled", "pointed", "undone"],
+                    "live",
+                ),
+                sel("width", "Width", &["wide", "narrow"], "wide"),
+            ],
+            variants: vec![
+                var(
+                    "default",
+                    "As affectUI ships it: changes land at the top one by one, then the price change's Undo is pointed at and taken – the coupon and the deals go with it, the sent email can't.",
+                    &[],
+                ),
+                var(
+                    "pointed",
+                    "Pointing at Undo: the change and what builds on it light up – Also undone in blue, Can't undo in amber.",
+                    &[("state", "pointed")],
+                ),
+                var(
+                    "undone",
+                    "After the undo: the chain struck through, logos grey, Undone in the slot and Redo on hover; the header counts what was undone.",
+                    &[("state", "undone")],
+                ),
+                var(
+                    "narrow",
+                    "Below 480 px the system name drops and Undo / Redo become round icon buttons.",
+                    &[("width", "narrow"), ("state", "settled")],
+                ),
+                var(
+                    "classic",
+                    "Classic style: the header in its own band and the list a raised card.",
+                    &[("style", "classic"), ("state", "settled")],
+                ),
+            ],
+            render: agent_ledger,
+            code: agent_ledger_code,
+            keyboard: vec![
+                (
+                    "Tab",
+                    "Moves through Undo and Redo; focusing Undo shows what goes with it",
+                ),
+                ("Enter / Space", "Undoes or redoes the focused change"),
+            ],
+            a11y: vec![
+                "The ledger is an ordered list labelled with its title, newest first.",
+                "Undo is named with the change and how many build on it; Redo with the change.",
+                "Before → after is plain text and the arrow is read as \"to\"; what was undone is announced.",
+            ],
+            responsive: vec![
+                "640 px up to its container.",
+                "Below 480 px the system name drops and Undo / Redo shrink to round icon buttons.",
+                "On touch screens Undo and Redo show on every row in place of the time.",
+            ],
+            height: 600,
+            live: true,
+            ..mk(
+                "agent-ledger",
+                "Agent Ledger",
+                "tools",
+                "Everything an agent changed in your systems, each change with an undo – before and after per row, and pointing at Undo shows what would go with it and what can't be taken back.",
+                "AgentLedger",
+                "AgentLedgerEl",
+                "agent-ledger",
+                "parity/ledgerfid.rs",
+            )
+        },
+        Demo {
+            controls: vec![
+                style(),
+                sel(
+                    "state",
+                    "State",
+                    &[
+                        "live", "running", "waiting", "finished", "details", "failed", "folded",
+                    ],
+                    "live",
+                ),
+            ],
+            variants: vec![
+                var(
+                    "default",
+                    "As affectUI ships it: steps roll through the well with a clock and the bill so far, finished ones drop into the list, the card stops to ask before publishing (Enter allows, Esc declines), then finishes green.",
+                    &[],
+                ),
+                var(
+                    "waiting",
+                    "Needs you: the exact command in the well, Decline and Allow in the foot.",
+                    &[("state", "waiting")],
+                ),
+                var(
+                    "details",
+                    "A finished step clicked: when it started, how long it took, its share of the run and what it touched.",
+                    &[("state", "details")],
+                ),
+                var(
+                    "failed",
+                    "Failed: the step in red, what went wrong and Try again.",
+                    &[("state", "failed")],
+                ),
+                var(
+                    "folded",
+                    "Folded into the small bar with the tools it used and how long it took.",
+                    &[("state", "folded")],
+                ),
+                var(
+                    "classic",
+                    "Classic style: rounder card, bordered tiles and the controls on a tray.",
+                    &[("style", "classic"), ("state", "running")],
+                ),
+            ],
+            render: agent_monitor,
+            code: agent_monitor_code,
+            keyboard: vec![
+                (
+                    "Tab",
+                    "Fold away, the finished steps, then the controls in the foot",
+                ),
+                ("Enter", "While it waits and the card has focus: Allow"),
+                (
+                    "Esc",
+                    "While it waits: Decline; with step details open, closes them",
+                ),
+                (
+                    "Enter / Space",
+                    "On a step: opens its details (focus moves to Close)",
+                ),
+            ],
+            a11y: vec![
+                "The card is a region named with the agent, its state and the current step; folded, the bar is one button with the same name.",
+                "The time strip is one image labelled with every step and its time; finished steps are a list of buttons with aria-expanded.",
+                "A step's details are a labelled dialog; the ask is announced when the card starts waiting.",
+            ],
+            responsive: vec![
+                "A 340 px card that shrinks with its container; labels and the command ellipsize.",
+            ],
+            height: 480,
+            live: true,
+            ..mk(
+                "agent-monitor",
+                "Agent Monitor",
+                "tools",
+                "One agent at work as a card – the current step with a clock and the bill so far, a time strip, the finished steps with each tool's logo, the exact command when it needs an OK, and a fold into a small bar.",
+                "AgentMonitor",
+                "AgentMonitorEl",
+                "agent-monitor",
+                "parity/monitorfid.rs",
             )
         },
     ]

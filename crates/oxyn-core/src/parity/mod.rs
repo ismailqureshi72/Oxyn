@@ -26,6 +26,9 @@
 //!   suggestions, comments and the demo loop.
 //! - [`graphfid`]: fidelity batch, family B part 3: Agent Graph nodes, calls, orbit layout, links.
 //! - [`handofffid`]: fidelity batch, family B part 3: Agent Handoff relay, items, tasks, assign.
+//! - [`lanesfid`]: fidelity batch, family B part 3: Agent Lanes tasks, window, hand-offs, counts.
+//! - [`ledgerfid`]: fidelity batch, family B part 4: Agent Ledger changes, undo chains, demo.
+//! - [`monitorfid`]: fidelity batch, family B part 4: Agent Monitor states, steps, strip, demo.
 //! - [`answers`]: fidelity batch, family A: AI Answer markup and streaming, Cited Answer
 //!   sentences and quotes, Message Actions, Thinking Loader phases, Thinking State steps and the
 //!   Writing Assistant's sample writer and dictation.
@@ -50,8 +53,11 @@ pub mod graphfid;
 pub mod handofffid;
 pub mod home;
 pub mod input;
+pub mod lanesfid;
+pub mod ledgerfid;
 pub mod merge;
 pub mod meters;
+pub mod monitorfid;
 pub mod plan;
 pub mod text;
 pub mod tools;
