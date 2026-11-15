@@ -4,6 +4,7 @@
 mod approvals;
 mod compose;
 mod diff;
+mod fidelity;
 mod fields;
 mod home;
 mod input;
@@ -20,10 +21,12 @@ pub use approvals::{
     gate_dot,
 };
 pub use compose::{
-    AiComposer, ChatComposer, MenuModel, ModelMenu, ModelPill, PillModel, RichTextEditor,
-    RunControls,
+    AiComposer, MenuModel, ModelMenu, ModelPill, PillModel, RichTextEditor, RunControls,
 };
 pub use diff::{ChangeSummary, CodeSuggestion, DiffTable, DiffTimeline, DiffViewer, InlineDiff};
+pub use fidelity::{
+    AgentCommentThread, AgentOrb, ChatComposer, CommentsPanel, FileTypeIcon, Portrait, ThreadNote,
+};
 pub use fields::{ElasticSlider, MorphSelect, NumberField, ScrubInput};
 pub use home::{
     ActivityHeatmap, ActivityHome, AttachmentStrip, DocGrid, ExperimentGrid, PollingCost,
