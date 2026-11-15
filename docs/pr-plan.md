@@ -43,24 +43,25 @@ controls, a full spec, and (from #24) a page on the site. "Items" counts rows in
 | #26 | feat/primitives-surfaces | Dialog, sheet, sheet stack, bottom sheet, toaster, notification stack, scroll area (stick to bottom), card, pagination, alert, context menu, command palette, skeletons, desktop overlays | 29 | Khubaib | |
 | #27 | feat/app-shell-chat | affectUI-style app shell (resizable sidebar that snaps to icons, threads, folders, tabs, side pane), AI chat screens, messages, streaming markdown, reasoning, citations, terminal tabs, remaining composer parts (voice, queue, slash, mode, permission, tools); Beautiful UI harness and "Fork this" | 68 | Ismail | |
 | #28 | feat/parity-built | Close every gap on plans #15–#21 (approval panes, plan editing, tool-kind map, send menus, GPUI IME, GPUI detail panes) against affectUI / Arc / Beautiful UI | 74 | Khubaib | |
-| #29 | feat/diff-review | Diff viewer (split, stacked, per-hunk actions), inline diff, diff table, change summary, diff timeline, code block, review card | 5 + specs | Ismail | |
-| #30 | feat/merge-conflict | 3-way merge conflict editor, conflict radar | specs | Khubaib | |
-| #31 | feat/hitl-extras | Rollback impact sheet, checkpoint preview, decision inbox, autonomy dial, decision tree, recommendation card, selection actions, fine-tune card, away summary, agent recap, permission rules, swipe and review gestures | 24 | Ismail | |
-| #32 | feat/multi-agent | Agent graph, handoff, collaboration stream, agent cursors, delegate board, findings, agent lanes, plan vs actual, fallback chain, root cause tree, monitor, trace view, fan-out | 28 | Khubaib | |
-| #33 | feat/agent-ops | Parallel attempts, judge bracket, experiments, agent queue, scheduled runs, rate-limit planner, context map, tool access, integrations, memory, prompt library, writing tools, agent studio, provider keys, routing, run meter | 61 | Ismail | |
-| #34 | feat/data-viz | Data table, KPI chart, records table with AI column, filter table, insight cards, context cards, cost waterfall, dashboards and charts | 42 | Khubaib | |
-| #35 | feat/motion-effects | Number ticker variants, blur crossfade, gradient text and floor, grid background, tilt card, glass and dock morphs, genie menu, stretch pill, shockwave, theme wipe, shader sweep, ASCII and dither effects, interaction sounds with mute | 42 | Ismail | |
-| #36 | feat/agent-x-kit | Agent mascots and orbs, voice orb and captions, tests visualised, GPUI rich editor, media placeholders, animated marks | 20 | Khubaib | |
-| #37 | feat/screens-agent | Agent inbox, inbox board, tasks, activity, memory, orchestration, schedules, skills, usage, evals, mission control, run inspector, live session, Agent Screen | 18 | Ismail | |
-| #38 | feat/screens-settings-auth | Settings (9 screens), onboarding (5), login family, 2FA, magic link, team, API keys, webhooks, env vars, import wizard | 43 | Khubaib | |
-| #39 | feat/screens-business | Analytics, CRM, kanban (drag with tilt), files, workflow builder and flowchart, calendar boards, commerce, invoices, collaboration cards | 61 | Ismail | |
-| #40 | feat/illustrations | Agent, integration and card illustrations, maps (licensed data), explainer illustrations, showpieces | 50 | Khubaib | |
-| #41 | feat/marketing-kit | Pricing, logo marquee, testimonials, hero, bento, stats, theme switchers, changelog, FAQ, CTA, newsletter | 32 | Ismail | |
-| #42 | feat/cli-registry | `oxyn` CLI + free registry (copy-paste install) | — | Khubaib | |
-| #43 | feat/studio-v1 | Studio: click to edit, every prop as a control, state timeline, colour presets, radius modes, frame inspector | 2 | Ismail | |
-| #44 | feat/kits | Coding, app builder, CRM, finance, video shells | — | Khubaib | |
-| #45 | feat/pro-registry | Polar licences + Pro registry | — | Ismail | |
-| #46 | release/v0.1 | Changelog, release, launch | — | Khubaib | |
+| #29 | feat/site-v2 | Site in the affectUI interface: white landing page (promo strip, 44px top bar, hero with live ghost demos, tabbed card grid, screens, agent install panel, one-file cards, before/after compare, FAQ, footer); library shell (grey sidebar with groups and counts, white rounded main panel, no table of contents); component and screen pages in the reference order (preview toolbar, When to use / not, examples, API reference, keyboard, motion, Notes for AI, related, guides); 21 categories regrouped into 8 + Screens with redirects; screen full-view route | — | Ismail | |
+| #30 | feat/diff-review | Diff viewer (split, stacked, per-hunk actions), inline diff, diff table, change summary, diff timeline, code block, review card | 5 + specs | Ismail | |
+| #31 | feat/merge-conflict | 3-way merge conflict editor, conflict radar | specs | Khubaib | |
+| #32 | feat/hitl-extras | Rollback impact sheet, checkpoint preview, decision inbox, autonomy dial, decision tree, recommendation card, selection actions, fine-tune card, away summary, agent recap, permission rules, swipe and review gestures | 24 | Ismail | |
+| #33 | feat/multi-agent | Agent graph, handoff, collaboration stream, agent cursors, delegate board, findings, agent lanes, plan vs actual, fallback chain, root cause tree, monitor, trace view, fan-out | 28 | Khubaib | |
+| #34 | feat/agent-ops | Parallel attempts, judge bracket, experiments, agent queue, scheduled runs, rate-limit planner, context map, tool access, integrations, memory, prompt library, writing tools, agent studio, provider keys, routing, run meter | 61 | Ismail | |
+| #35 | feat/data-viz | Data table, KPI chart, records table with AI column, filter table, insight cards, context cards, cost waterfall, dashboards and charts | 42 | Khubaib | |
+| #36 | feat/motion-effects | Number ticker variants, blur crossfade, gradient text and floor, grid background, tilt card, glass and dock morphs, genie menu, stretch pill, shockwave, theme wipe, shader sweep, ASCII and dither effects, interaction sounds with mute | 42 | Ismail | |
+| #37 | feat/agent-x-kit | Agent mascots and orbs, voice orb and captions, tests visualised, GPUI rich editor, media placeholders, animated marks | 20 | Khubaib | |
+| #38 | feat/screens-agent | Agent inbox, inbox board, tasks, activity, memory, orchestration, schedules, skills, usage, evals, mission control, run inspector, live session, Agent Screen | 18 | Ismail | |
+| #39 | feat/screens-settings-auth | Settings (9 screens), onboarding (5), login family, 2FA, magic link, team, API keys, webhooks, env vars, import wizard | 43 | Khubaib | |
+| #40 | feat/screens-business | Analytics, CRM, kanban (drag with tilt), files, workflow builder and flowchart, calendar boards, commerce, invoices, collaboration cards | 61 | Ismail | |
+| #41 | feat/illustrations | Agent, integration and card illustrations, maps (licensed data), explainer illustrations, showpieces | 50 | Khubaib | |
+| #42 | feat/marketing-kit | Pricing, logo marquee, testimonials, hero, bento, stats, theme switchers, changelog, FAQ, CTA, newsletter | 32 | Ismail | |
+| #43 | feat/cli-registry | `oxyn` CLI + free registry (copy-paste install) | — | Khubaib | |
+| #44 | feat/studio-v1 | Studio: click to edit, every prop as a control, state timeline, colour presets, radius modes, frame inspector | 2 | Ismail | |
+| #45 | feat/kits | Coding, app builder, CRM, finance, video shells | — | Khubaib | |
+| #46 | feat/pro-registry | Polar licences + Pro registry | — | Ismail | |
+| #47 | release/v0.1 | Changelog, release, launch | — | Khubaib | |
 
 > **Plan #23 scope note (2026-11-13):** `status.csv` had five affectUI motion rows (blur crossfade,
 > gradient floor, gradient text, grid background, tilt card) under #23; the Delivers column puts them
@@ -75,3 +76,7 @@ folded into the table above.
 > **Numbering note (2026-11-12):** the #11 follow-up (GPUI on the web) landed as GitHub PR #12, so from
 > plan #12 on, the GitHub number is the plan number + 1 (plan #12 `chore/workspace-ci` is GitHub #13).
 > This table keeps the plan numbers.
+>
+> **Numbering note (2026-11-15):** plan #29 `feat/site-v2` was inserted after #28 and every later
+> plan moved down by one (diff-review is now #30 … release is #47). From plan #29 on, the GitHub
+> number is the plan number + 3 (plan #29 is GitHub #32). `parity/status.csv` follows the new plan numbers.
