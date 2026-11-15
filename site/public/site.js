@@ -181,7 +181,9 @@
   dlg.addEventListener('click', (e) => { if (e.target === dlg) close(); });
   document.addEventListener('click', (e) => { if (e.target.closest('[data-open-search]')) open(); });
   document.addEventListener('keydown', (e) => {
-    const typing = /INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName) || document.activeElement?.isContentEditable;
+    const a = document.activeElement;
+    // Custom editors (role=textbox, e.g. the rich-text editor) take '/' as text too.
+    const typing = /INPUT|TEXTAREA|SELECT/.test(a?.tagName) || a?.isContentEditable || a?.getAttribute('role') === 'textbox';
     if ((e.key === 'k' && (e.metaKey || e.ctrlKey)) || (e.key === '/' && !typing)) {
       e.preventDefault();
       dlg.classList.contains('open') ? close() : open();
