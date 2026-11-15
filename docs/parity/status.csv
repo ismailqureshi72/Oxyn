@@ -63,7 +63,7 @@ affectUI,Judge Bracket,https://www.affectui.com/components/judge-bracket,Compone
 affectUI,KPI Chart,https://www.affectui.com/components/kpi-chart,Components · Data display,Pro,genui-blocks,C12,#36,planned
 affectUI,Memory Panel,https://www.affectui.com/components/memory-panel,Components · Agents,Pro,NEW,C10,#35,planned
 affectUI,Message Actions,https://www.affectui.com/components/message-actions,Components · Chat,Free,"icon-states, message-bubble",,#42,planned
-affectUI,Model Picker,https://www.affectui.com/components/model-picker,Components · Chat,Pro,"composer-model-picker, composer-effort-control",,#28,built
+affectUI,Model Picker,https://www.affectui.com/components/model-picker,Components · Chat,Pro,"model-picker (exact, chunk 2), model-menu, composer-effort-control",,#32,built
 affectUI,Notification Stack,https://www.affectui.com/components/notification-stack,Components · Feedback,Free,notification-stack,C3,#26,built
 affectUI,OTP Input,https://www.affectui.com/components/otp-input,Components · Inputs,Free,otp-input,C2,#25,built
 affectUI,Parallel Attempts,https://www.affectui.com/components/parallel-attempts,Components · Agents,Pro,fanout-grid,C8,#35,planned
@@ -78,7 +78,7 @@ affectUI,Rate Limit Planner,https://www.affectui.com/components/rate-limit-plann
 affectUI,Reaction Bar,https://www.affectui.com/components/reaction-bar,Components · Buttons,Free,number-ticker,C4,#23,built
 affectUI,Review Center,https://www.affectui.com/components/review-center,Components · Agents,Pro,"review-center, review-card",,#30,built
 affectUI,Root Cause Tree,https://www.affectui.com/components/root-cause-tree,Components · Agents,Pro,trace-view,C7,#34,planned
-affectUI,Run Controls,https://www.affectui.com/components/run-controls,Components · Agents,Pro,"composer-send-control, composer-queue-stack, composer-mode-switch, composer-permission-selector, composer-context-meter",,#28,built
+affectUI,Run Controls,https://www.affectui.com/components/run-controls,Components · Agents,Pro,"run-controls (exact, chunk 2), composer-send-control, composer-queue-stack, composer-mode-switch, composer-permission-selector, composer-context-meter",,#32,built
 affectUI,Running Now,https://www.affectui.com/components/running-now,Components · Agents,Pro,"background-jobs, desktop-overlays",,#35,planned
 affectUI,Scheduled Runs,https://www.affectui.com/components/scheduled-runs,Components · Agents,Pro,background-jobs,C9,#35,planned
 affectUI,Segmented Control,https://www.affectui.com/components/segmented-control,Components · Navigation,Free,segmented-control,C1,#23,built

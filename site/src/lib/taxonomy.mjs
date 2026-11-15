@@ -44,7 +44,15 @@ export const ITEM_GROUP = {
   'code-block': 'data-display',
   'empty-states': 'feedback',
   'notification-center': 'feedback',
+  'run-controls': 'agents',
 };
+
+/** Pages that were folded into another (plan #32): the old URL lands on the new home. */
+export const MOVED = [
+  ['/components/chat/model-menu/', '/components/chat/model-picker/'],
+  ['/components/composer/model-menu/', '/components/chat/model-picker/'],
+  ['/components/chat/run-controls/', '/components/agents/run-controls/'],
+];
 
 /** Whole app frames: these get screen pages (/screens/<slug>/) and a full-viewport view. */
 export const SCREENS = ['app-shell', 'ai-chat-screens', 'activity-home', 'harness', 'thread-list', 'inbox-sidebar', 'ai-side-panel', 'doc-grid'];
@@ -66,5 +74,6 @@ export function redirects(demos, oldCategories) {
   for (const c of oldCategories) {
     if (!groupSlugs.has(c.slug)) out.push([`/components/${c.slug}/`, c.slug === 'shells' ? '/screens/' : `/components/${OLD_TO_GROUP[c.slug]}/`]);
   }
+  for (const m of MOVED) out.push(m);
   return out;
 }
