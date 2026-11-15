@@ -20,6 +20,7 @@ mod navigation;
 mod overlays;
 mod parity_approvals;
 mod parity_fields;
+mod parity_home;
 mod parity_input;
 mod parity_run;
 mod parity_text;
@@ -164,6 +165,7 @@ pub fn catalog() -> Vec<Demo> {
     v.extend(inputs::demos());
     v.extend(parity_input::demos());
     v.extend(parity_fields::demos());
+    v.extend(parity_home::demos());
     v.extend(forms::demos());
     v.extend(pickers::demos());
     v.extend(display::demos());

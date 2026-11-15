@@ -15,6 +15,7 @@ use crate::hsla;
 
 mod approvals;
 mod fields;
+mod home;
 mod ime;
 mod run;
 mod text;
@@ -28,6 +29,10 @@ pub use fields::{
     AiComposerEl, AvatarUploadEl, ChatComposerEl, ContextFieldEl, ContextGridEl, ElasticSliderEl,
     FileDropzoneEl, GaugeEl, ModelMenuEl, ModelPillEl, MorphSelectEl, NumberFieldEl, Pick,
     RichTextEl, RunControlsEl, ScrubInputEl, SplitBarEl, UsageMeterEl,
+};
+pub use home::{
+    ActivityHeatmapEl, ActivityHomeEl, AttachmentStripEl, DocGridEl, ExperimentGridEl,
+    PollingCostEl, RunModeMenuEl, ThreadListEl, TokenUsageChartEl,
 };
 pub use ime::{ImeEvent, ImeInput, bind_ime_keys};
 pub use run::{

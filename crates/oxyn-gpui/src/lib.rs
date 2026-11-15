@@ -48,6 +48,10 @@ pub use parity::{
     OrchestratorEl, PermissionRequestEl, ReadinessEl, TaskRowsEl, TreeTableEl,
 };
 pub use parity::{
+    ActivityHeatmapEl, ActivityHomeEl, AttachmentStripEl, DocGridEl, ExperimentGridEl,
+    PollingCostEl, RunModeMenuEl, ThreadListEl, TokenUsageChartEl,
+};
+pub use parity::{
     AiComposerEl, AvatarUploadEl, ChatComposerEl, ContextFieldEl, ContextGridEl, ElasticSliderEl,
     FileDropzoneEl, GaugeEl, ModelMenuEl, ModelPillEl, MorphSelectEl, NumberFieldEl, Pick,
     RichTextEl, RunControlsEl, ScrubInputEl, SplitBarEl, UsageMeterEl,

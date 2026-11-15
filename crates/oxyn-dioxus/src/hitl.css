@@ -96,6 +96,10 @@
 .oxyn-cp .tt{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 .oxyn-cp .badge{font-size:10.5px;padding:0 6px;border-radius:999px;border:1px solid var(--oxyn-color-border-default);color:var(--oxyn-color-fg-muted);white-space:nowrap}
 .oxyn-cp .badge.failed{color:var(--oxyn-color-status-danger-fg);border-color:color-mix(in oklab,var(--oxyn-color-status-danger-border) 50%,transparent);background:var(--oxyn-color-status-danger-bg)}
+.oxyn-cp .ti{flex:none;display:inline-grid;place-items:center;width:18px;height:18px;border-radius:5px;background:var(--oxyn-color-surface-sunken);color:var(--oxyn-color-fg-muted)}
+.oxyn-cp .ti.none{background:transparent}
+.oxyn-cp .row.cur .ti{color:var(--oxyn-color-fg-default)}
+.oxyn-cp .meta .cost{color:var(--oxyn-color-fg-muted)}
 .oxyn-cp .meta{display:inline-flex;gap:10px;font-family:var(--mono);font-size:11.5px;color:var(--oxyn-color-fg-subtle);white-space:nowrap}
 .oxyn-cp .rw{all:unset;cursor:pointer;display:none;align-items:center;gap:4px;font-size:12px;font-weight:500;padding:3px 8px;border-radius:6px;border:1px solid var(--oxyn-color-border-default)}
 .oxyn-cp .row:hover .rw,.oxyn-cp .row:focus-within .rw{display:inline-flex}

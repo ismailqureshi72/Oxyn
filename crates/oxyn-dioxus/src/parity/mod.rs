@@ -4,6 +4,7 @@
 mod approvals;
 mod compose;
 mod fields;
+mod home;
 mod input;
 mod meters;
 mod run;
@@ -20,6 +21,10 @@ pub use compose::{
     RunControls,
 };
 pub use fields::{ElasticSlider, MorphSelect, NumberField, ScrubInput};
+pub use home::{
+    ActivityHeatmap, ActivityHome, AttachmentStrip, DocGrid, ExperimentGrid, PollingCost,
+    RunModeMenu, ThreadList, TokenUsageChart,
+};
 pub use input::{GhostText, LabeledInput, LabeledTextarea, TextArea};
 pub use meters::{ContextField, ContextWindowGrid, CtxModel, Gauge, SplitBar, UsageMeter};
 pub use run::{
