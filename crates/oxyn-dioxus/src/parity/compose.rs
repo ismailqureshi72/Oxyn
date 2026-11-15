@@ -1,5 +1,5 @@
 //! Composers (plan #28, chunk 4b): `RichTextEditor` (Arc Rich text editor), `AiComposer` (Arc AI
-//! composer), `ChatComposer` (affectUI Chat Composer), `RunControls` (affectUI Run Controls, with
+//! composer), `RunControls` (affectUI Run Controls, with
 //! the send menu), `ModelMenu` (affectUI Model Picker) and `ModelPill` (Arc Model picker block).
 //! Behaviour-only rebuilds; models in `oxyn_core::parity::compose`.
 
@@ -10,7 +10,7 @@ use oxyn_core::{
     ClockMs,
     parity::compose::{
         BOLD, CODE, COMMANDS, Doc, Effort, ITALIC, Kind, RingTone, RunSeg, RunStatus, STRIKE,
-        SendAct, Trigger, dictated, filter, pixel_mark, price_pair, ring, send_key, snap, splice,
+        SendAct, Trigger, filter, pixel_mark, price_pair, ring, send_key, snap, splice,
         stream_upto, trigger,
     },
 };
@@ -596,187 +596,6 @@ pub fn AiComposer(
                                     },
                                     Icon { name: match si { 0 => "text", 1 => "pencil", _ => "alert" }, size: 12.0 }
                                     "{l}"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-// ─────────────────────────────────────────────────────────────── Chat composer ──
-
-/// Chat composer (affectUI behaviour): a prompt card with a model picker, voice input whose demo
-/// transcript appears word by word in grey while recording, a "Work in a folder" picker (picking
-/// the chosen folder again leaves it), a "Connect apps" menu whose first three marks show in the
-/// row, and a Request approval button with a loading state.
-#[component]
-pub fn ChatComposer(
-    /// Placeholder.
-    #[props(default = "Start by typing...".to_string())]
-    placeholder: String,
-    /// Model names; the first is selected.
-    #[props(default = vec!["Auto".to_string(), "Claude".to_string(), "ChatGPT".to_string()])]
-    models: Vec<String>,
-    /// Loading time of Request approval, ms.
-    #[props(default = 1300)]
-    load_ms: u64,
-    /// Demo transcript for dictation.
-    #[props(default = "Draft a short update for the team about the launch moving to Thursday".to_string())]
-    dictation: String,
-    /// Folders; empty leaves the picker out.
-    #[props(default = vec!["oxyn".to_string(), "website".to_string(), "research".to_string()])]
-    folders: Vec<String>,
-    /// Starting folder.
-    #[props(default)]
-    folder: Option<String>,
-    /// Apps: id and name.
-    #[props(default = vec![("gmail".to_string(), "Gmail".to_string()), ("slack".to_string(), "Slack".to_string()), ("clickup".to_string(), "ClickUp".to_string())])]
-    apps: Vec<(String, String)>,
-    /// Connected app ids at the start.
-    #[props(default = vec!["gmail".to_string()])]
-    connected: Vec<String>,
-    /// Shared clock (dictation and loading).
-    now: ClockMs,
-    /// Sent message and model.
-    #[props(default)]
-    on_send: EventHandler<(String, String)>,
-    /// Folder picked (`None` when left).
-    #[props(default)]
-    on_folder_change: EventHandler<Option<String>>,
-    /// Connected app ids.
-    #[props(default)]
-    on_apps_change: EventHandler<Vec<String>>,
-) -> Element {
-    let mut text = use_signal(String::new);
-    let mut model = use_signal(|| 0usize);
-    let mut open = use_signal(|| "");
-    let mut rec = use_signal(|| None::<ClockMs>);
-    let mut fold = use_signal(move || folder.clone());
-    let mut conn = use_signal(move || connected.clone());
-    let mut approval = use_signal(|| None::<ClockMs>);
-    let mut last = use_signal(|| None::<String>);
-    let heard = rec().map(|t| dictated(&dictation, now.since(t).as_millis() as u64, 170));
-    let appr = approval().map(|t| now.since(t).as_millis() as u64 >= load_ms);
-    let menu = open();
-    let dict2 = dictation.clone();
-    let model_names = use_signal(|| models.clone());
-    let mut send = move || {
-        let t = text().trim().to_string();
-        if t.is_empty() {
-            return;
-        }
-        on_send.call((
-            t.clone(),
-            model_names.peek().get(model()).cloned().unwrap_or_default(),
-        ));
-        last.set(Some(t));
-        text.set(String::new());
-    };
-    rsx! {
-        div { class: "oxk-cc",
-            if let Some(l) = last() { div { class: "oxk-sent", Icon { name: "check", size: 11.0 } "Sent to {models.get(model()).cloned().unwrap_or_default()}: {l}" } }
-            div { class: "oxk-card",
-                div { class: "oxk-ccfield",
-                    textarea { class: "oxk-ta", rows: "2", value: "{text}", placeholder: "{placeholder}", "aria-label": "Message",
-                        oninput: move |e| text.set(e.value()),
-                        onkeydown: move |e: KeyboardEvent| if e.key() == Key::Enter && !e.modifiers().shift() { e.prevent_default(); send() },
-                    }
-                    if let Some(h) = &heard { span { class: "oxk-heard", "aria-live": "polite", "{h}" span { class: "oxk-cur" } } }
-                }
-                div { class: "oxk-bar",
-                    button { class: "oxk-ib", r#type: "button", "aria-label": "Attach", Icon { name: "plus", size: 14.0 } }
-                    div { class: "oxk-menuwrap",
-                        button { class: "oxk-chip", r#type: "button", "aria-haspopup": "menu", "aria-expanded": "{menu == \"model\"}",
-                            onclick: move |_| open.set(if open() == "model" { "" } else { "model" }),
-                            "{models.get(model()).cloned().unwrap_or_default()}" Icon { name: "chevron", size: 10.0 }
-                        }
-                        if menu == "model" {
-                            div { class: "oxk-menu", role: "menu",
-                                for (i, m) in models.iter().enumerate() {
-                                    button { key: "{m}", class: "oxk-mi", role: "menuitemradio", "aria-checked": "{model() == i}", r#type: "button",
-                                        onclick: move |_| { model.set(i); open.set("") },
-                                        span { class: "oxk-on", if crate::brand::has_brand(m) { crate::brand::BrandIcon { name: m.clone(), size: 13.0 } } "{m}" } if model() == i { Icon { name: "check", size: 11.0 } }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    span { class: "oxk-sp" }
-                    button { class: if rec().is_some() { "oxk-ib rec" } else { "oxk-ib" }, r#type: "button", "aria-pressed": "{rec().is_some()}",
-                        "aria-label": if rec().is_some() { "Stop dictation" } else { "Dictate" },
-                        onclick: move |_| match rec() {
-                            Some(t) => { let h = dictated(&dict2, now.since(t).as_millis() as u64, 170); if !h.is_empty() { text.set(format!("{}{}{h}", text(), if text().is_empty() { "" } else { " " })) } rec.set(None) }
-                            None => rec.set(Some(now)),
-                        },
-                        Icon { name: "mic", size: 14.0 }
-                    }
-                    button { class: "oxk-send", r#type: "button", disabled: text().trim().is_empty(), "aria-label": "Send", onclick: move |_| send(),
-                        span { class: "oxk-arrow", Icon { name: "up", size: 14.0 } }
-                    }
-                }
-            }
-            div { class: "oxk-under",
-                if !folders.is_empty() {
-                    div { class: "oxk-menuwrap",
-                        button { class: "oxk-chip quiet", r#type: "button", "aria-haspopup": "menu", "aria-expanded": "{menu == \"folder\"}",
-                            onclick: move |_| open.set(if open() == "folder" { "" } else { "folder" }),
-                            Icon { name: "folder", size: 12.0 }
-                            {match fold() { Some(f) => rsx! { "{f}" }, None => rsx! { "Work in a folder" } }}
-                        }
-                        if menu == "folder" {
-                            div { class: "oxk-menu up", role: "menu",
-                                for f in folders.iter() {
-                                    {
-                                        let f2 = f.clone();
-                                        let on = fold().as_deref() == Some(f.as_str());
-                                        rsx! {
-                                            button { key: "{f}", class: "oxk-mi", role: "menuitemradio", "aria-checked": "{on}", r#type: "button",
-                                                onclick: move |_| { let n = if fold().as_deref() == Some(f2.as_str()) { None } else { Some(f2.clone()) }; fold.set(n.clone()); on_folder_change.call(n); open.set("") },
-                                                Icon { name: "folder", size: 11.0 } span { class: "oxk-on", "{f}" } if on { Icon { name: "check", size: 11.0 } }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                button { class: "oxk-chip quiet", r#type: "button", disabled: approval().is_some() && appr == Some(false),
-                    onclick: move |_| approval.set(Some(now)),
-                    {match appr {
-                        Some(false) => rsx! { span { class: "oxk-spin" } "Requesting…" },
-                        Some(true) => rsx! { Icon { name: "check", size: 12.0 } "Approval requested" },
-                        None => rsx! { Icon { name: "hand", size: 12.0 } "Request approval" },
-                    }}
-                }
-                span { class: "oxk-sp" }
-                div { class: "oxk-menuwrap",
-                    button { class: "oxk-chip quiet", r#type: "button", "aria-haspopup": "menu", "aria-expanded": "{menu == \"apps\"}",
-                        onclick: move |_| open.set(if open() == "apps" { "" } else { "apps" }),
-                        span { class: "oxk-marks",
-                            for (id, name) in apps.iter().take(3) {
-                                span { key: "{id}", class: "oxk-appmark", "data-on": "{conn().contains(id)}", if crate::brand::has_brand(name) { crate::brand::BrandIcon { name: name.clone(), size: 10.0 } } else { "{name.chars().next().unwrap_or('?')}" } }
-                            }
-                        }
-                        "Connect apps"
-                    }
-                    if menu == "apps" {
-                        div { class: "oxk-menu up end", role: "menu",
-                            for (id, name) in apps.iter() {
-                                {
-                                    let id2 = id.clone();
-                                    let on = conn().contains(id);
-                                    rsx! {
-                                        button { key: "{id}", class: "oxk-mi", role: "menuitemcheckbox", "aria-checked": "{on}", r#type: "button",
-                                            onclick: move |_| { let mut c = conn.write(); if let Some(p) = c.iter().position(|x| *x == id2) { c.remove(p); } else { c.push(id2.clone()); } on_apps_change.call(c.clone()); },
-                                            span { class: "oxk-appmark", "data-on": "{on}", if crate::brand::has_brand(name) { crate::brand::BrandIcon { name: name.clone(), size: 10.0 } } else { "{name.chars().next().unwrap_or('?')}" } }
-                                            span { class: "oxk-on", "{name}" }
-                                            span { class: if on { "oxk-sw on" } else { "oxk-sw" }, span {} }
-                                        }
-                                    }
                                 }
                             }
                         }
@@ -1450,7 +1269,7 @@ pub fn ModelPill(
                 onmounted: move |e| trig.set(Some(e.data())),
                 onclick: move |_| { open.set(!open()); sub.set(""); hi.set(0); focus(list()) },
                 onkeydown: keys,
-                span { key: "{cur.id}m", class: "oxk-pmark", "data-p": "{cur.provider}", if crate::brand::has_brand(&cur.provider) { crate::brand::BrandIcon { name: cur.provider.clone(), size: 12.0 } } else { "{mark(&cur.provider)}" } }
+                span { key: "{cur.id}m", class: "oxk-pmark", "data-p": "{cur.provider}", if crate::brand::has_brand(&cur.provider) { crate::brand::BrandIcon { name: cur.provider.clone(), size: 12.0, coloured: true } } else { "{mark(&cur.provider)}" } }
                 span { key: "{cur.id}", class: "oxk-pname", "{cur.name}" }
                 span { class: "oxk-eff", "{e_now.label()}" }
                 Icon { name: "chevron", size: 10.0 }
@@ -1464,7 +1283,7 @@ pub fn ModelPill(
                                 if let Some(mi) = models.iter().position(|m| &m.id == r) {
                                     button { key: "{r}", class: "oxk-mi tall", role: "menuitemradio", r#type: "button", "aria-checked": "{chosen() == mi}", "data-hi": "{hi() == ri}",
                                         onmouseenter: move |_| hi.set(ri), onclick: move |_| pick(mi),
-                                        span { class: "oxk-pmark", "data-p": "{models[mi].provider}", if crate::brand::has_brand(&models[mi].provider) { crate::brand::BrandIcon { name: models[mi].provider.clone(), size: 12.0 } } else { "{mark(&models[mi].provider)}" } }
+                                        span { class: "oxk-pmark", "data-p": "{models[mi].provider}", if crate::brand::has_brand(&models[mi].provider) { crate::brand::BrandIcon { name: models[mi].provider.clone(), size: 12.0, coloured: true } } else { "{mark(&models[mi].provider)}" } }
                                         span { class: "oxk-col", span { class: "oxk-on", "{models[mi].name}" } span { class: "oxk-oh", "{models[mi].blurb}" } }
                                         if chosen() == mi { Icon { name: "check", size: 11.0 } }
                                     }

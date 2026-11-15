@@ -20,7 +20,7 @@ mod status_indicator;
 mod status_text;
 mod surfaces;
 
-pub use brand::{BrandAssets, brand_icon, brand_path};
+pub use brand::{BrandAssets, brand_icon, brand_mark, brand_path};
 pub use chat::{
     AnswerEl, ChatThreadEl, FeedbackEl, MarkdownEl, MessageEl, ReasoningEl, SourceCardsEl,
     StartersEl, TraceEl,
@@ -53,6 +53,7 @@ pub use parity::{
     ActivityHeatmapEl, ActivityHomeEl, AttachmentStripEl, DocGridEl, ExperimentGridEl,
     PollingCostEl, RunModeMenuEl, ThreadListEl, TokenUsageChartEl,
 };
+pub use parity::{AgentCommentThreadEl, CommentsPanelEl, ThreadMsg, file_badge};
 pub use parity::{
     AiComposerEl, AvatarUploadEl, ChatComposerEl, ContextFieldEl, ContextGridEl, ElasticSliderEl,
     FileDropzoneEl, GaugeEl, ModelMenuEl, ModelPillEl, MorphSelectEl, NumberFieldEl, Pick,

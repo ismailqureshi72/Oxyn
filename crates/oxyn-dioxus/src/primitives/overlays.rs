@@ -461,7 +461,7 @@ pub fn DropdownMenu(
                                                         if let Some(c) = checked {
                                                             if c { svg { class: if radio { "chk radio" } else { "chk" }, view_box: "0 0 16 16", width: "14", height: "14",
                                                                 if radio { circle { cx: "8", cy: "8", r: "3" } } else { path { d: "M3.5 8.5 6.5 11.5 12.5 4.5", path_length: "1" } } } }
-                                                        } else if let Some(lg) = it.logo.clone() { if crate::brand::has_brand(&lg) { span { class: "logo brand", "aria-hidden": "true", crate::brand::BrandIcon { name: lg.clone(), size: 13.0 } } } else { span { class: "logo", "aria-hidden": "true", "{lg}" } } }
+                                                        } else if let Some(lg) = it.logo.clone() { if crate::brand::has_brand(&lg) { span { class: "logo brand", "aria-hidden": "true", crate::brand::BrandIcon { name: lg.clone(), size: 13.0, coloured: true } } } else { span { class: "logo", "aria-hidden": "true", "{lg}" } } }
                                                         else if let Some(ic) = it.icon.clone() { Icon { name: ic, size: 14.0 } }
                                                     }
                                                     span { class: "txt", span { class: "lb", "{it.label}" } if let Some(h) = it.hint.clone() { span { class: "ds", "{h}" } } }

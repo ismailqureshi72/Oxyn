@@ -15,6 +15,8 @@ pub enum BrandSource {
     SimpleIcons,
     /// Lobe Icons (`@lobehub/icons-static-svg`), MIT.
     LobeIcons,
+    /// Drawn by Oxyn from basic shapes in the official colours (MIT).
+    Oxyn,
 }
 
 /// What a mark stands for.
@@ -640,7 +642,111 @@ pub const BRANDS: &[BrandIcon] = &[
         hex: "000000",
         aliases: &["next.js", "nextjs"],
     },
+    BrandIcon {
+        id: "v0",
+        title: "v0",
+        source: BrandSource::LobeIcons,
+        kind: BrandKind::Ai,
+        view_box: "0 0 24 24",
+        body: r##"<path clip-rule="evenodd" d="M14.252 8.25h5.624c.088 0 .176.006.26.018l-5.87 5.87a1.889 1.889 0 01-.019-.265V8.25h-2.25v5.623a4.124 4.124 0 004.125 4.125h5.624v-2.25h-5.624c-.09 0-.179-.006-.265-.018l5.874-5.875a1.9 1.9 0 01.02.27v5.623H24v-5.624A4.124 4.124 0 0019.876 6h-5.624v2.25zM0 7.5v.006l7.686 9.788c.924 1.176 2.813.523 2.813-.973V7.5H8.25v6.87L2.856 7.5H0z"></path>"##,
+        fill_rule: "evenodd",
+        hex: "000000",
+        aliases: &["v0.dev"],
+    },
+    BrandIcon {
+        id: "clickup",
+        title: "ClickUp",
+        source: BrandSource::SimpleIcons,
+        kind: BrandKind::Integration,
+        view_box: "0 0 24 24",
+        body: r##"<path d="M2 18.439l3.69-2.828c1.961 2.56 4.044 3.739 6.363 3.739 2.307 0 4.33-1.166 6.203-3.704L22 18.405C19.298 22.065 15.941 24 12.053 24 8.178 24 4.788 22.078 2 18.439zM12.04 6.15l-6.568 5.66-3.036-3.52L12.055 0l9.543 8.296-3.05 3.509z"/>"##,
+        fill_rule: "nonzero",
+        hex: "7B68EE",
+        aliases: &[],
+    },
+    BrandIcon {
+        id: "dropbox",
+        title: "Dropbox",
+        source: BrandSource::SimpleIcons,
+        kind: BrandKind::Integration,
+        view_box: "0 0 24 24",
+        body: r##"<path d="M6 1.807L0 5.629l6 3.822 6.001-3.822L6 1.807zM18 1.807l-6 3.822 6 3.822 6-3.822-6-3.822zM0 13.274l6 3.822 6.001-3.822L6 9.452l-6 3.822zM18 9.452l-6 3.822 6 3.822 6-3.822-6-3.822zM6 18.371l6.001 3.822 6-3.822-6-3.822L6 18.371z"/>"##,
+        fill_rule: "nonzero",
+        hex: "0061FF",
+        aliases: &[],
+    },
+    BrandIcon {
+        id: "slack",
+        title: "Slack",
+        source: BrandSource::Oxyn,
+        kind: BrandKind::Integration,
+        view_box: "0 0 24 24",
+        body: r##"<g transform="rotate(0 12 12)"><rect x="7.6" y="1" width="4.2" height="10.4" rx="2.1"></rect><path d="M12.8 1h2.1a2.1 2.1 0 012.1 2.1 2.1 2.1 0 01-2.1 2.1h-2.1z"></path></g><g transform="rotate(90 12 12)"><rect x="7.6" y="1" width="4.2" height="10.4" rx="2.1"></rect><path d="M12.8 1h2.1a2.1 2.1 0 012.1 2.1 2.1 2.1 0 01-2.1 2.1h-2.1z"></path></g><g transform="rotate(180 12 12)"><rect x="7.6" y="1" width="4.2" height="10.4" rx="2.1"></rect><path d="M12.8 1h2.1a2.1 2.1 0 012.1 2.1 2.1 2.1 0 01-2.1 2.1h-2.1z"></path></g><g transform="rotate(270 12 12)"><rect x="7.6" y="1" width="4.2" height="10.4" rx="2.1"></rect><path d="M12.8 1h2.1a2.1 2.1 0 012.1 2.1 2.1 2.1 0 01-2.1 2.1h-2.1z"></path></g>"##,
+        fill_rule: "nonzero",
+        hex: "4A154B",
+        aliases: &[],
+    },
 ];
+
+/// Full-colour marks (id, inner SVG with its own fills) for brands whose logo has more than one
+/// colour: Lobe Icons' `-color` files, and Gmail, Google Drive, Slack and ClickUp drawn by Oxyn
+/// from basic shapes in the official colours. [`BrandIcon::svg_full`] uses them.
+pub const COLOURED: &[(&str, &str)] = &[
+    (
+        "claude",
+        r##"<path d="M4.709 15.955l4.72-2.647.08-.23-.08-.128H9.2l-.79-.048-2.698-.073-2.339-.097-2.266-.122-.571-.121L0 11.784l.055-.352.48-.321.686.06 1.52.103 2.278.158 1.652.097 2.449.255h.389l.055-.157-.134-.098-.103-.097-2.358-1.596-2.552-1.688-1.336-.972-.724-.491-.364-.462-.158-1.008.656-.722.881.06.225.061.893.686 1.908 1.476 2.491 1.833.365.304.145-.103.019-.073-.164-.274-1.355-2.446-1.446-2.49-.644-1.032-.17-.619a2.97 2.97 0 01-.104-.729L6.283.134 6.696 0l.996.134.42.364.62 1.414 1.002 2.229 1.555 3.03.456.898.243.832.091.255h.158V9.01l.128-1.706.237-2.095.23-2.695.08-.76.376-.91.747-.492.584.28.48.685-.067.444-.286 1.851-.559 2.903-.364 1.942h.212l.243-.242.985-1.306 1.652-2.064.73-.82.85-.904.547-.431h1.033l.76 1.129-.34 1.166-1.064 1.347-.881 1.142-1.264 1.7-.79 1.36.073.11.188-.02 2.856-.606 1.543-.28 1.841-.315.833.388.091.395-.328.807-1.969.486-2.309.462-3.439.813-.042.03.049.061 1.549.146.662.036h1.622l3.02.225.79.522.474.638-.079.485-1.215.62-1.64-.389-3.829-.91-1.312-.329h-.182v.11l1.093 1.068 2.006 1.81 2.509 2.33.127.578-.322.455-.34-.049-2.205-1.657-.851-.747-1.926-1.62h-.128v.17l.444.649 2.345 3.521.122 1.08-.17.353-.608.213-.668-.122-1.374-1.925-1.415-2.167-1.143-1.943-.14.08-.674 7.254-.316.37-.729.28-.607-.461-.322-.747.322-1.476.389-1.924.315-1.53.286-1.9.17-.632-.012-.042-.14.018-1.434 1.967-2.18 2.945-1.726 1.845-.414.164-.717-.37.067-.662.401-.589 2.388-3.036 1.44-1.882.93-1.086-.006-.158h-.055L4.132 18.56l-1.13.146-.487-.456.061-.746.231-.243 1.908-1.312-.006.006z" fill="#D97757" fill-rule="nonzero"></path>"##,
+    ),
+    (
+        "gemini",
+        r##"<path d="M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z" fill="#3186FF"></path><path d="M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z" fill="url(#lobe-icons-gemini-0-_R_0_)"></path><path d="M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z" fill="url(#lobe-icons-gemini-1-_R_0_)"></path><path d="M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z" fill="url(#lobe-icons-gemini-2-_R_0_)"></path><defs><linearGradient gradientUnits="userSpaceOnUse" id="lobe-icons-gemini-0-_R_0_" x1="7" x2="11" y1="15.5" y2="12"><stop stop-color="#08B962"></stop><stop offset="1" stop-color="#08B962" stop-opacity="0"></stop></linearGradient><linearGradient gradientUnits="userSpaceOnUse" id="lobe-icons-gemini-1-_R_0_" x1="8" x2="11.5" y1="5.5" y2="11"><stop stop-color="#F94543"></stop><stop offset="1" stop-color="#F94543" stop-opacity="0"></stop></linearGradient><linearGradient gradientUnits="userSpaceOnUse" id="lobe-icons-gemini-2-_R_0_" x1="3.5" x2="17.5" y1="13.5" y2="12"><stop stop-color="#FABC12"></stop><stop offset=".46" stop-color="#FABC12" stop-opacity="0"></stop></linearGradient></defs>"##,
+    ),
+    (
+        "google",
+        r##"<path d="M23 12.245c0-.905-.075-1.565-.236-2.25h-10.54v4.083h6.186c-.124 1.014-.797 2.542-2.294 3.569l-.021.136 3.332 2.53.23.022C21.779 18.417 23 15.593 23 12.245z" fill="#4285F4"></path><path d="M12.225 23c3.03 0 5.574-.978 7.433-2.665l-3.542-2.688c-.948.648-2.22 1.1-3.891 1.1a6.745 6.745 0 01-6.386-4.572l-.132.011-3.465 2.628-.045.124C4.043 20.531 7.835 23 12.225 23z" fill="#34A853"></path><path d="M5.84 14.175A6.65 6.65 0 015.463 12c0-.758.138-1.491.361-2.175l-.006-.147-3.508-2.67-.115.054A10.831 10.831 0 001 12c0 1.772.436 3.447 1.197 4.938l3.642-2.763z" fill="#FBBC05"></path><path d="M12.225 5.253c2.108 0 3.529.892 4.34 1.638l3.167-3.031C17.787 2.088 15.255 1 12.225 1 7.834 1 4.043 3.469 2.197 7.062l3.63 2.763a6.77 6.77 0 016.398-4.572z" fill="#EB4335"></path>"##,
+    ),
+    (
+        "figma",
+        r##"<path d="M4 20a4 4 0 014-4h4v4a4 4 0 01-8 0z" fill="#24CB71"></path><path d="M12 0v8h4a4 4 0 000-8h-4z" fill="#FF7237"></path><path d="M15.967 16a4 4 0 100-8 4 4 0 000 8z" fill="#00B6FF"></path><path d="M4 4a4 4 0 004 4h4V0H8a4 4 0 00-4 4z" fill="#FF3737"></path><path d="M4 12a4 4 0 004 4h4V8H8a4 4 0 00-4 4z" fill="#874FFF"></path>"##,
+    ),
+    (
+        "slack",
+        r##"<g transform="rotate(0 12 12)"><rect x="7.6" y="1" width="4.2" height="10.4" rx="2.1" fill="#36C5F0"></rect><path d="M12.8 1h2.1a2.1 2.1 0 012.1 2.1 2.1 2.1 0 01-2.1 2.1h-2.1z" fill="#36C5F0"></path></g><g transform="rotate(90 12 12)"><rect x="7.6" y="1" width="4.2" height="10.4" rx="2.1" fill="#2EB67D"></rect><path d="M12.8 1h2.1a2.1 2.1 0 012.1 2.1 2.1 2.1 0 01-2.1 2.1h-2.1z" fill="#2EB67D"></path></g><g transform="rotate(180 12 12)"><rect x="7.6" y="1" width="4.2" height="10.4" rx="2.1" fill="#ECB22E"></rect><path d="M12.8 1h2.1a2.1 2.1 0 012.1 2.1 2.1 2.1 0 01-2.1 2.1h-2.1z" fill="#ECB22E"></path></g><g transform="rotate(270 12 12)"><rect x="7.6" y="1" width="4.2" height="10.4" rx="2.1" fill="#E01E5A"></rect><path d="M12.8 1h2.1a2.1 2.1 0 012.1 2.1 2.1 2.1 0 01-2.1 2.1h-2.1z" fill="#E01E5A"></path></g>"##,
+    ),
+    (
+        "gmail",
+        r##"<path d="M1.5 6.6 6 9.9V20H3a1.5 1.5 0 01-1.5-1.5z" fill="#4285F4"></path><path d="M22.5 6.6 18 9.9V20h3a1.5 1.5 0 001.5-1.5z" fill="#34A853"></path><path d="M6 9.9 12 14.3l6-4.4V5l-6 4.4L6 5z" fill="#EA4335"></path><path d="M1.5 6.6v-1c0-1.7 1.9-2.6 3.3-1.6L6 5v4.9z" fill="#C5221F"></path><path d="M22.5 6.6v-1c0-1.7-1.9-2.6-3.3-1.6L18 5v4.9z" fill="#FBBC04"></path>"##,
+    ),
+    (
+        "googledrive",
+        r##"<path d="M8 3 1 15l3.5 6 7-12z" fill="#00AC47"></path><path d="M8 3h8l7 12h-7z" fill="#FFBA00"></path><path d="M4.5 21h15l3.5-6H8z" fill="#2684FC"></path>"##,
+    ),
+    (
+        "clickup",
+        r##"<defs><linearGradient id="oxyn-cu-a" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8930FD"></stop><stop offset="1" stop-color="#49CCF9"></stop></linearGradient><linearGradient id="oxyn-cu-b" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#FF02F0"></stop><stop offset="1" stop-color="#FFC800"></stop></linearGradient></defs><path d="M2 18.439l3.69-2.828c1.961 2.56 4.044 3.739 6.363 3.739 2.307 0 4.33-1.166 6.203-3.704L22 18.405C19.298 22.065 15.941 24 12.053 24 8.178 24 4.788 22.078 2 18.439z" fill="url(#oxyn-cu-b)"></path><path d="M12.04 6.15l-6.568 5.66-3.036-3.52L12.055 0l9.543 8.296-3.05 3.509z" fill="url(#oxyn-cu-a)"></path>"##,
+    ),
+];
+
+impl BrandIcon {
+    /// The full-colour inner SVG when the mark has more than one colour.
+    pub fn coloured_body(&self) -> Option<&'static str> {
+        COLOURED
+            .iter()
+            .find(|(i, _)| *i == self.id)
+            .map(|(_, b)| *b)
+    }
+    /// The mark as it should look in colour: the multi-colour version when there is one, else the
+    /// brand colour (near-black marks keep `currentColor` so they read on dark themes).
+    pub fn svg_full(&self) -> String {
+        match self.coloured_body() {
+            Some(b) => format!(
+                "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"{}\">{}</svg>",
+                self.view_box, b
+            ),
+            None if self.display_hex().is_some() => self.svg(true),
+            None => self.svg(false),
+        }
+    }
+}
 
 fn norm(s: &str) -> String {
     s.trim()

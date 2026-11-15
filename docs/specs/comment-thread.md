@@ -70,3 +70,17 @@ Review threads on a doc, design, ticket or pull request. Nested replies (`Thread
 
 ## 11. GPUI
 `CommentThreadEl::new(thread).title(..)` renders the tree, reactions and the resolved chip.
+
+## affectUI Comment Thread (`AgentCommentThread`, plan #32)
+**Status:** built v0.1 (2026-11-15, plan #32). Closes the parity row affectUI · Comment Thread; the
+Arc UI review thread above stays as `CommentThread`.
+
+- **Card:** "Comment · 3 messages" header with an optional ✕. People show a portrait, name, relative
+  time ("12min ago", "just now") and text; a leading `/Edit` is greyed as a command (`split_command`).
+- **Agent:** a gradient orb avatar and a status line "✓ Edit completed ⌄" that folds its details open
+  (chevron turns, 200 ms height).
+- **Reply:** "Reply, or ask @Atlas…" with a round send button. Your reply lands as "just now"; when the
+  agent answers, a shimmering "Thinking…" comes first (shared clock), then its message.
+- **Variants:** default, details (status folded open), people-only.
+- **Keyboard:** Enter posts, Shift + Enter breaks a line; the status line is a button with `aria-expanded`.
+- **API:** Dioxus `AgentCommentThread` (`ThreadNote`, `AgentOrb`, `Portrait`) / GPUI `AgentCommentThreadEl` (`ThreadMsg`).
