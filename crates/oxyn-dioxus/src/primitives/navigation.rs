@@ -416,7 +416,7 @@ pub fn ResizablePanels(
     let r = m.read().clone();
     let axis = if vertical { "v" } else { "h" };
     rsx! {
-        div { class: cls(&["oxyn-split", axis, &handle]), role: "group", "aria-label": "{label}", style: "height:{height}px",
+        div { class: cls(&["oxyn-rsplit", axis, &handle]), role: "group", "aria-label": "{label}", style: "height:{height}px",
             onmounted: move |e| { let d = e.data(); spawn(async move { if let Ok(b) = d.get_client_rect().await { let w = if vertical { b.size.height } else { b.size.width } as f32; let n = m.peek().panes.len().saturating_sub(1) as f32; m.write().set_total(w - 8.0 * n); } }); },
             onpointermove: move |e| { let dg = m.peek().drag.clone(); if let Some((d, _)) = dg {
                 let c = e.client_coordinates();

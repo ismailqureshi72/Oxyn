@@ -11,10 +11,10 @@
 @keyframes oxyn-stagger{from{opacity:0;transform:translateY(-4px)}}
 @keyframes oxyn-shimmer-t{from{background-position:120% 0}to{background-position:-20% 0}}
 @keyframes oxyn-busy{50%{opacity:.35}}
-.oxyn-tabs,.oxyn-crumbs,.oxyn-acc,.oxyn-split,.oxyn-hc,.oxyn-tree,.oxyn-reorder,.oxyn-tgl,.oxyn-chips,.oxyn-rcards,.oxyn-rating,.oxyn-copy,.oxyn-react,.oxyn-xtext,.oxyn-dock,.oxyn-toc,.oxyn-phead,.oxyn-umenu,.oxyn-team,.oxyn-ncenter,.oxyn-code,.oxyn-empties{font-family:var(--ox-font);color:var(--oxyn-color-fg-default);font-size:13px;line-height:1.45}
-:is(.oxyn-tabs,.oxyn-crumbs,.oxyn-acc,.oxyn-split,.oxyn-tree,.oxyn-reorder,.oxyn-toc,.oxyn-phead,.oxyn-umenu,.oxyn-team,.oxyn-ncenter,.oxyn-code,.oxyn-hc) :is(h2,h3,h4,p,ol,ul,li,dl,dt,dd,pre){margin:0;padding:0}
+.oxyn-tabs,.oxyn-crumbs,.oxyn-acc,.oxyn-rsplit,.oxyn-hc,.oxyn-tree,.oxyn-reorder,.oxyn-tgl,.oxyn-chips,.oxyn-rcards,.oxyn-rating,.oxyn-copy,.oxyn-react,.oxyn-xtext,.oxyn-dock,.oxyn-toc,.oxyn-phead,.oxyn-umenu,.oxyn-team,.oxyn-ncenter,.oxyn-code,.oxyn-empties{font-family:var(--ox-font);color:var(--oxyn-color-fg-default);font-size:13px;line-height:1.45}
+:is(.oxyn-tabs,.oxyn-crumbs,.oxyn-acc,.oxyn-rsplit,.oxyn-tree,.oxyn-reorder,.oxyn-toc,.oxyn-phead,.oxyn-umenu,.oxyn-team,.oxyn-ncenter,.oxyn-code,.oxyn-hc) :is(h2,h3,h4,p,ol,ul,li,dl,dt,dd,pre){margin:0;padding:0}
 :is(.oxyn-crumbs,.oxyn-tree,.oxyn-reorder,.oxyn-toc,.oxyn-team) :is(ol,ul){list-style:none}
-.oxyn-tabs button,.oxyn-crumbs button,.oxyn-acc button,.oxyn-split button,.oxyn-hc button,.oxyn-reorder button,.oxyn-tgl button,.oxyn-chips button,.oxyn-react button,.oxyn-xtext button,.oxyn-dock button,.oxyn-umenu button,.oxyn-team button,.oxyn-ncenter button,.oxyn-code button{font:inherit;color:inherit}
+.oxyn-tabs button,.oxyn-crumbs button,.oxyn-acc button,.oxyn-rsplit button,.oxyn-hc button,.oxyn-reorder button,.oxyn-tgl button,.oxyn-chips button,.oxyn-react button,.oxyn-xtext button,.oxyn-dock button,.oxyn-umenu button,.oxyn-team button,.oxyn-ncenter button,.oxyn-code button{font:inherit;color:inherit}
 
 /* ---------- Tabs ---------- */
 .oxyn-tabs{display:flex;flex-direction:column;gap:10px;min-width:0;width:100%}
@@ -97,24 +97,24 @@
 @media (hover:hover) and (pointer:fine){.oxyn-acc .trg:hover .tt{color:var(--oxyn-color-fg-default);text-decoration:underline;text-decoration-color:var(--oxyn-color-border-strong);text-underline-offset:4px}}
 
 /* ---------- Resizable panels ---------- */
-.oxyn-split{display:flex;width:100%;min-width:0;border:1px solid var(--oxyn-color-border-default);border-radius:12px;overflow:hidden;background:var(--oxyn-color-surface-base)}
-.oxyn-split.v{flex-direction:column}
-.oxyn-split .pw{display:contents}
-.oxyn-split .pane{position:relative;flex-grow:0;flex-shrink:1;min-width:0;min-height:0;overflow:hidden}
-.oxyn-split .pc{padding:12px 14px;opacity:var(--sq,1);transition:opacity var(--ox-fast);min-width:120px}
-.oxyn-split .ph{display:flex;justify-content:space-between;font-weight:600;font-size:12px;letter-spacing:.02em;color:var(--oxyn-color-fg-muted);text-transform:uppercase;margin-bottom:8px}
-.oxyn-split .pr{font:500 11px/1 var(--ox-mono);text-transform:none;color:var(--oxyn-color-fg-subtle)}
-.oxyn-split .pl{padding:5px 0;border-bottom:1px dashed var(--oxyn-color-border-subtle);color:var(--oxyn-color-fg-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.oxyn-split .div{position:relative;flex:none;width:8px;cursor:col-resize;touch-action:none;display:grid;place-items:center;outline:none}
-.oxyn-split.v .div{width:auto;height:8px;cursor:row-resize}
-.oxyn-split .hb{width:1px;height:100%;background:var(--oxyn-color-border-default);transition:background var(--ox-fast),width var(--ox-fast)}
-.oxyn-split.v .hb{height:1px;width:100%}
-.oxyn-split .div:hover .hb,.oxyn-split .div.drag .hb{background:var(--oxyn-color-fg-muted);width:2px}
-.oxyn-split.v .div:hover .hb,.oxyn-split.v .div.drag .hb{height:2px;width:100%}
-.oxyn-split .div:focus-visible .hb{background:var(--oxyn-color-focus);width:2px}
-.oxyn-split.grip .hb::after{content:"";position:absolute;left:50%;top:50%;width:4px;height:22px;transform:translate(-50%,-50%);border-radius:3px;background:var(--oxyn-color-surface-raised);box-shadow:inset 0 0 0 1px var(--oxyn-color-border-strong)}
-.oxyn-split.v.grip .hb::after{width:22px;height:4px}
-.oxyn-split .restore{all:unset;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:grid;place-items:center;width:18px;height:36px;border-radius:6px;background:var(--oxyn-color-surface-raised);border:1px solid var(--oxyn-color-border-default);color:var(--oxyn-color-fg-muted);cursor:pointer;animation:oxyn-pop 260ms var(--ox-ease);z-index:2}
+.oxyn-rsplit{display:flex;width:100%;min-width:0;border:1px solid var(--oxyn-color-border-default);border-radius:12px;overflow:hidden;background:var(--oxyn-color-surface-base)}
+.oxyn-rsplit.v{flex-direction:column}
+.oxyn-rsplit .pw{display:contents}
+.oxyn-rsplit .pane{position:relative;flex-grow:0;flex-shrink:1;min-width:0;min-height:0;overflow:hidden}
+.oxyn-rsplit .pc{padding:12px 14px;opacity:var(--sq,1);transition:opacity var(--ox-fast);min-width:120px}
+.oxyn-rsplit .ph{display:flex;justify-content:space-between;font-weight:600;font-size:12px;letter-spacing:.02em;color:var(--oxyn-color-fg-muted);text-transform:uppercase;margin-bottom:8px}
+.oxyn-rsplit .pr{font:500 11px/1 var(--ox-mono);text-transform:none;color:var(--oxyn-color-fg-subtle)}
+.oxyn-rsplit .pl{padding:5px 0;border-bottom:1px dashed var(--oxyn-color-border-subtle);color:var(--oxyn-color-fg-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.oxyn-rsplit .div{position:relative;flex:none;width:8px;cursor:col-resize;touch-action:none;display:grid;place-items:center;outline:none}
+.oxyn-rsplit.v .div{width:auto;height:8px;cursor:row-resize}
+.oxyn-rsplit .hb{width:1px;height:100%;background:var(--oxyn-color-border-default);transition:background var(--ox-fast),width var(--ox-fast)}
+.oxyn-rsplit.v .hb{height:1px;width:100%}
+.oxyn-rsplit .div:hover .hb,.oxyn-rsplit .div.drag .hb{background:var(--oxyn-color-fg-muted);width:2px}
+.oxyn-rsplit.v .div:hover .hb,.oxyn-rsplit.v .div.drag .hb{height:2px;width:100%}
+.oxyn-rsplit .div:focus-visible .hb{background:var(--oxyn-color-focus);width:2px}
+.oxyn-rsplit.grip .hb::after{content:"";position:absolute;left:50%;top:50%;width:4px;height:22px;transform:translate(-50%,-50%);border-radius:3px;background:var(--oxyn-color-surface-raised);box-shadow:inset 0 0 0 1px var(--oxyn-color-border-strong)}
+.oxyn-rsplit.v.grip .hb::after{width:22px;height:4px}
+.oxyn-rsplit .restore{all:unset;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:grid;place-items:center;width:18px;height:36px;border-radius:6px;background:var(--oxyn-color-surface-raised);border:1px solid var(--oxyn-color-border-default);color:var(--oxyn-color-fg-muted);cursor:pointer;animation:oxyn-pop 260ms var(--ox-ease);z-index:2}
 
 /* ---------- Hover card ---------- */
 .oxyn-hc{position:relative;display:inline-block}
@@ -544,5 +544,5 @@
 .oxyn-code.bare{border:0;background:transparent}
 
 @media (prefers-reduced-motion:reduce){
-:is(.oxyn-tabs,.oxyn-crumbs,.oxyn-acc,.oxyn-split,.oxyn-hc,.oxyn-tree,.oxyn-reorder,.oxyn-tgl,.oxyn-chips,.oxyn-rcards,.oxyn-rating,.oxyn-copy,.oxyn-react,.oxyn-xtext,.oxyn-dock,.oxyn-toc,.oxyn-phead,.oxyn-umenu,.oxyn-team,.oxyn-ncenter,.oxyn-code,.oxyn-empties),:is(.oxyn-tabs,.oxyn-crumbs,.oxyn-acc,.oxyn-split,.oxyn-hc,.oxyn-tree,.oxyn-reorder,.oxyn-tgl,.oxyn-chips,.oxyn-rcards,.oxyn-rating,.oxyn-copy,.oxyn-react,.oxyn-xtext,.oxyn-dock,.oxyn-toc,.oxyn-phead,.oxyn-umenu,.oxyn-team,.oxyn-ncenter,.oxyn-code,.oxyn-empties) *:not(.oxyn-timer){animation-duration:1ms!important;animation-delay:0ms!important;transition-duration:1ms!important}
+:is(.oxyn-tabs,.oxyn-crumbs,.oxyn-acc,.oxyn-rsplit,.oxyn-hc,.oxyn-tree,.oxyn-reorder,.oxyn-tgl,.oxyn-chips,.oxyn-rcards,.oxyn-rating,.oxyn-copy,.oxyn-react,.oxyn-xtext,.oxyn-dock,.oxyn-toc,.oxyn-phead,.oxyn-umenu,.oxyn-team,.oxyn-ncenter,.oxyn-code,.oxyn-empties),:is(.oxyn-tabs,.oxyn-crumbs,.oxyn-acc,.oxyn-rsplit,.oxyn-hc,.oxyn-tree,.oxyn-reorder,.oxyn-tgl,.oxyn-chips,.oxyn-rcards,.oxyn-rating,.oxyn-copy,.oxyn-react,.oxyn-xtext,.oxyn-dock,.oxyn-toc,.oxyn-phead,.oxyn-umenu,.oxyn-team,.oxyn-ncenter,.oxyn-code,.oxyn-empties) *:not(.oxyn-timer){animation-duration:1ms!important;animation-delay:0ms!important;transition-duration:1ms!important}
 }
