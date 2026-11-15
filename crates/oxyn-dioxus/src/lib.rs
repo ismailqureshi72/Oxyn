@@ -52,6 +52,10 @@ pub use parity::{
     TaskBreakdown, TaskRows, TreeTable, gate_dot,
 };
 pub use parity::{
+    ActivityHeatmap, ActivityHome, AttachmentStrip, DocGrid, ExperimentGrid, PollingCost,
+    RunModeMenu, ThreadList, TokenUsageChart,
+};
+pub use parity::{
     AiComposer, AvatarUpload, ChatComposer, ContextField, ContextWindowGrid, CtxModel,
     ElasticSlider, FileDropzone, Gauge, MenuModel, ModelMenu, ModelPill, MorphSelect, NumberField,
     PillModel, RichTextEditor, RunControls, ScrubInput, SplitBar, UsageMeter,

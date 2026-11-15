@@ -6,6 +6,8 @@
 //! - [`fields`]: number field, scrub input, elastic slider and morph select.
 //! - [`meters`]: gauge, usage meter, split bar and both context windows.
 //! - [`upload`]: dropzone rows, accept and size checks, and the avatar cropper.
+//! - [`home`]: thread groups, heat maps, token usage, uploads that land in turn, run modes and
+//!   experiments, document views and polling cost (the chunk 6 X-post references).
 //! - [`confirm`]: confirm morph, hold to confirm, confirm popover (destructive buttons that ask).
 //! - [`edit`]: a text buffer with selection and IME composition (GPUI text entry).
 //! - [`input`]: text area rows and counter, changed-word rows, ghost-text autocomplete.
@@ -21,6 +23,7 @@ pub mod edit;
 pub mod fields;
 pub mod fleet;
 pub mod gates;
+pub mod home;
 pub mod input;
 pub mod meters;
 pub mod plan;

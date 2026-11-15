@@ -816,8 +816,19 @@ pub fn checkpoints() -> Vec<Checkpoint> {
         Checkpoint::new("c6", Some("c5"), "Wiring the webhooks", 212)
             .with(CheckpointStatus::Running),
     ];
-    v[2].cost_cents = Some(31);
-    v[5].cost_cents = Some(42);
+    let tools = [
+        "Read",
+        "Edit",
+        "apply_patch",
+        "Bash",
+        "Write",
+        "mcp__stripe__create_webhook",
+    ];
+    let costs = [4, 14, 31, 37, 33, 42];
+    for (i, c) in v.iter_mut().enumerate() {
+        c.tool = Some(tools[i].to_string());
+        c.cost_cents = Some(costs[i]);
+    }
     v
 }
 
