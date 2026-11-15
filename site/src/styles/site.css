@@ -214,6 +214,10 @@ html[data-sidebar="hidden"] .lbar-open{display:inline-grid}
 .cc-prev .oxd-root,.cc-prev .oxd,.cc-prev .oxd-main,.cc-prev .oxd-stage{height:100%}
 .cc-prev .oxd-mini .oxd-main{border:0;border-radius:0}
 .cc-prev .oxd-stage{background:none;min-height:0!important;padding:18px;overflow:hidden;align-items:center}
+/* Card and landing-screen previews never scroll inside: lists in open popovers show whole, bars stay hidden. */
+.cc-prev *,.lp-screen *{scrollbar-width:none}
+.cc-prev *::-webkit-scrollbar,.lp-screen *::-webkit-scrollbar{display:none}
+.cc-prev .oxyn-pop .rows{max-height:none;overflow:visible}
 .cc-foot{display:flex;align-items:flex-start;gap:10px}
 .cc-txt{flex:1;min-width:0}
 .cc-name{margin:0;font-size:14px;font-weight:600;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
