@@ -132,7 +132,7 @@
 .oxyn-diff{container-type:inline-size}
 @container (max-width:640px){
   .oxyn-diff-body,.oxyn-diff[data-files="false"] .oxyn-diff-body,.oxyn-diff-body:not(:has(.oxyn-diff-mini)){grid-template-columns:minmax(0,1fr)}
-  .oxyn-diff-files{flex-direction:row;overflow-x:auto;border-right:0;border-bottom:1px solid var(--oxyn-color-border-subtle);scrollbar-width:thin}
+  .oxyn-diff-files{flex-direction:row;flex-wrap:wrap;border-right:0;border-bottom:1px solid var(--oxyn-color-border-subtle)}
   .oxyn-diff-fsum{display:none}
   .oxyn-diff-frow{grid-template-columns:16px auto auto;flex:none}
   .oxyn-diff-frow .oxyn-diff-fprog{display:none}
