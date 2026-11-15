@@ -76,4 +76,4 @@ Edit a document with AI where you read it. Click a word to select its sentence (
 - Touch selection uses taps on words instead of native selection.
 
 ## 11. GPUI
-`InlineEditEl::new(title, before, after).decisions(map)` renders the chunks and the review bar.
+`AiInlineEditEl::new(title, before, after).decisions(map)` renders the chunks and the review bar.

@@ -17,7 +17,20 @@ use oxyn_dioxus::{
 };
 
 use super::{Code, mk, q, rng, sel, tog, var};
-use crate::{Align, Demo, Vals, data::at};
+use crate::{Align, Demo, Vals};
+
+/// The sample clock runs four hours ahead of the demo base, so items can be an hour old.
+const AHEAD: u64 = 4 * 3_600_000;
+
+/// `ms` before the shifted clock.
+fn at(ms: u64) -> ClockMs {
+    ClockMs(crate::BASE.0 + AHEAD - ms)
+}
+
+/// The demo clock shifted by [`AHEAD`].
+fn shifted(now: ClockMs) -> ClockMs {
+    ClockMs(now.0 + AHEAD)
+}
 
 fn status(msg: Signal<String>) -> Element {
     rsx! { span { style: "font-size:12px;color:var(--oxyn-color-fg-muted);min-height:16px", role: "status", "{msg}" } }
@@ -144,7 +157,7 @@ fn diff_viewer(v: &Vals, _: ClockMs) -> Element {
         change_set()
     };
     rsx! {
-        div { style: "width:100%;max-width:1060px;display:flex;flex-direction:column;gap:6px",
+        div { style: "width:100%;max-width:1060px;display:flex;flex-direction:column;gap:6px;--oxyn-diff-max:none",
             DiffViewer { files, mode: ReviewMode::from_id(v.s("mode")), layout: v.string("layout"), change_style: v.string("style"),
                 file_list: v.b("list"), word_diff: v.b("words"), wrap: v.b("wrap"), line_numbers: v.b("numbers"), minimap: v.b("minimap"),
                 comments: v.b("comments"), focus_dim: v.b("dim"),
@@ -286,9 +299,9 @@ fn revisions() -> Vec<Revision> {
 fn diff_timeline(v: &Vals, now: ClockMs) -> Element {
     let mut msg = use_signal(String::new);
     rsx! {
-        div { style: "width:100%;max-width:960px;display:flex;flex-direction:column;gap:6px",
+        div { style: "width:100%;max-width:960px;display:flex;flex-direction:column;gap:6px;--oxyn-diff-max:none",
             for k in [v.string("layout")] {
-                DiffTimeline { key: "{k}", path: "src/billing/fetch-invoice.ts".to_string(), revisions: revisions(), now, layout: v.string("layout"),
+                DiffTimeline { key: "{k}", path: "src/billing/fetch-invoice.ts".to_string(), revisions: revisions(), now: shifted(now), layout: v.string("layout"),
                     on_range: move |(a, b): (usize, usize)| msg.set(format!("onRange({a}, {b})")) }
             }
             {status(msg)}
@@ -677,7 +690,7 @@ fn review_center(v: &Vals, now: ClockMs) -> Element {
     rsx! {
         div { style: "width:100%;max-width:980px;display:flex;flex-direction:column;gap:6px",
             for k in [format!("{}{}{}{}", v.s("order"), v.s("filter"), v.s("sla"), v.b("batch"))] {
-                ReviewCenter { key: "{k}", items: review_items(), now, reviewed: 24, sla, order: Order::from_id(v.s("order")), default_filter: Filter::from_id(v.s("filter")), batch_low: v.b("batch"),
+                ReviewCenter { key: "{k}", items: review_items(), now: shifted(now), reviewed: 24, sla, order: Order::from_id(v.s("order")), default_filter: Filter::from_id(v.s("filter")), batch_low: v.b("batch"),
                     on_decide: move |(id, d): (String, oxyn_core::parity::diff::Verdict)| msg.set(format!("onDecide({id}, {d:?})")),
                     on_undo: move |id: String| msg.set(format!("onUndo({id})")),
                     on_skip: move |id: String| msg.set(format!("onSkip({id})")) }
@@ -1116,7 +1129,7 @@ pub(crate) fn demos() -> Vec<Demo> {
                 "chat",
                 "Edit a document with AI in place: select a sentence, ⌘K, pick an action, and the rewrite streams in as a word diff you accept change by change, with undo and ghost-text completions.",
                 "AiInlineEdit",
-                "InlineEditEl",
+                "AiInlineEditEl",
                 "ai-inline-edit",
                 "parity/review.rs",
             )

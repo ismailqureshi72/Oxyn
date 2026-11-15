@@ -37,8 +37,9 @@ pub use home::{
 };
 pub use ime::{ImeEvent, ImeInput, bind_ime_keys};
 pub use review::{
-    ChangeSummaryEl, CodeSuggestionEl, CommentThreadEl, DiffTableEl, DiffTimelineEl, DiffViewerEl,
-    HunkAct, IdAct, ImageCompareEl, InlineDiffEl, InlineEditEl, ReviewCardEl, ReviewCenterEl,
+    AiInlineEditEl, ChangeSummaryEl, CodeSuggestionEl, CommentThreadEl, DiffTableEl,
+    DiffTimelineEl, DiffViewerEl, HunkAct, IdAct, ImageCompareEl, InlineDiffEl, ReviewCardEl,
+    ReviewCenterEl,
 };
 pub use run::{
     ActivityFeedEl, AgentPlanEl, AgentRunEl, AgentStatusEl, AgentTrailEl, AgentTreeEl, BreakdownEl,
