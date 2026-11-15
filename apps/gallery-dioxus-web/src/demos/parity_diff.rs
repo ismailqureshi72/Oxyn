@@ -1247,8 +1247,8 @@ pub(crate) fn demos() -> Vec<Demo> {
             height: 560,
             align: Align::Start,
             ..mk(
-                "comment-thread",
-                "Comment thread",
+                "threaded-comments",
+                "Threaded comments",
                 "chat",
                 "Threaded comments with nested replies, reactions, @mentions, edit and delete for your own comments, agent replies, and Resolve, which folds the thread into a chip.",
                 "CommentThread",
