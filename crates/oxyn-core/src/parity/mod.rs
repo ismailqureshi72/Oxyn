@@ -29,6 +29,8 @@
 //! - [`lanesfid`]: fidelity batch, family B part 3: Agent Lanes tasks, window, hand-offs, counts.
 //! - [`ledgerfid`]: fidelity batch, family B part 4: Agent Ledger changes, undo chains, demo.
 //! - [`monitorfid`]: fidelity batch, family B part 4: Agent Monitor states, steps, strip, demo.
+//! - [`queuefid`]: fidelity batch, family B part 4: Agent Queue simulation, stats, depth chart.
+//! - [`recapfid`]: fidelity batch, family B part 4: Agent Recap events, curve, counts.
 //! - [`answers`]: fidelity batch, family A: AI Answer markup and streaming, Cited Answer
 //!   sentences and quotes, Message Actions, Thinking Loader phases, Thinking State steps and the
 //!   Writing Assistant's sample writer and dictation.
@@ -59,6 +61,8 @@ pub mod merge;
 pub mod meters;
 pub mod monitorfid;
 pub mod plan;
+pub mod queuefid;
+pub mod recapfid;
 pub mod text;
 pub mod tools;
 pub mod upload;

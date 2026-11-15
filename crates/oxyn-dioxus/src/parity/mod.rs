@@ -20,6 +20,8 @@ mod ledgerfid;
 mod merge;
 mod meters;
 mod monitorfid;
+mod queuefid;
+mod recapfid;
 mod review;
 mod run;
 mod text;
@@ -58,6 +60,8 @@ pub use ledgerfid::AgentLedger;
 pub use merge::{ConflictRadar, MergeConflict};
 pub use meters::{ContextField, ContextWindowGrid, CtxModel, Gauge, SplitBar, UsageMeter};
 pub use monitorfid::AgentMonitor;
+pub use queuefid::AgentQueue;
+pub use recapfid::AgentRecap;
 pub use review::{AiInlineEdit, CommentThread, ImageCompare, ReviewCard, ReviewCenter};
 pub use run::{
     ActivityFeed, AgentFleet, AgentOrchestrator, AgentPlan, AgentRun, AgentStatus, AgentTrail,

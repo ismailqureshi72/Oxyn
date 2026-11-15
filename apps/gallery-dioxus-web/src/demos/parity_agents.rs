@@ -1,11 +1,11 @@
 //! Plan #32 (affectUI fidelity pass), overnight batch family B demos: the exact Agent Findings and
-//! Agent Inbox, each with every affectUI style and state; part 2: Agent Crew; part 3: Agent Cursors, Agent Graph, Agent Handoff and Agent Lanes; part 4: Agent Ledger and Agent Monitor.
+//! Agent Inbox, each with every affectUI style and state; part 2: Agent Crew; part 3: Agent Cursors, Agent Graph, Agent Handoff and Agent Lanes; part 4: Agent Ledger, Agent Monitor, Agent Queue and Agent Recap.
 
 use dioxus::prelude::*;
 use oxyn_core::ClockMs;
 use oxyn_dioxus::{
     AgentCrew, AgentCursors, AgentFindings, AgentGraph, AgentHandoff, AgentInbox, AgentLanes,
-    AgentLedger, AgentMonitor,
+    AgentLedger, AgentMonitor, AgentQueue, AgentRecap,
 };
 
 use super::{Code, mk, sel, tog, var};
@@ -408,6 +408,86 @@ fn agent_monitor_code(_: &Vals) -> String {
         .raw("on_pause", "move |paused| run.pause(paused)")
         .raw("on_cancel", "move |_| run.cancel()")
         .raw("on_open_log", "move |_| open_trace()")
+        .done()
+}
+
+// ---------- Agent Queue ----------
+
+fn agent_queue(v: &Vals, now: ClockMs) -> Element {
+    let mut msg = use_signal(String::new);
+    let key = format!("{}{}{}", v.s("style"), v.s("state"), v.s("width"));
+    let (at, paused, workers, open) = match v.s("state") {
+        "limited" => (Some(17_000), false, 4, None),
+        "paused" => (Some(9_000), true, 4, None),
+        "one" => (Some(12_000), false, 1, None),
+        "card" => (Some(17_000), false, 4, Some(1)),
+        _ => (None, false, 4, None),
+    };
+    let width = if v.s("width") == "narrow" {
+        "420px"
+    } else {
+        "756px"
+    };
+    rsx! {
+        div { "data-k": "{key}", key: "{key}", style: "width:{width};max-width:100%;display:flex;flex-direction:column;gap:8px",
+            AgentQueue { now, at, paused, workers, open_at: open, style: cstyle(v),
+                on_paused_change: move |p: bool| msg.set(format!("onPausedChange({p})")),
+                on_concurrency_change: move |n: usize| msg.set(format!("onConcurrencyChange({n})")),
+                on_promote: move |id: String| msg.set(format!("onPromote({id:?})")),
+                on_cancel: move |id: String| msg.set(format!("onCancel({id:?})")) }
+            {status(msg)}
+        }
+    }
+}
+
+fn agent_queue_code(_: &Vals) -> String {
+    Code::new("AgentQueue")
+        .raw("name", "\"agent-work\".into()")
+        .raw("workers", "4")
+        .raw("now", "clock.now()")
+        .raw("on_paused_change", "move |p| queue.pause(p)")
+        .raw("on_concurrency_change", "move |n| queue.set_workers(n)")
+        .raw("on_promote", "move |id| queue.promote(id)")
+        .raw("on_cancel", "move |id| queue.cancel(id)")
+        .done()
+}
+
+// ---------- Agent Recap ----------
+
+fn agent_recap(v: &Vals, now: ClockMs) -> Element {
+    let mut msg = use_signal(String::new);
+    let key = format!("{}{}{}", v.s("style"), v.s("state"), v.s("width"));
+    let (replay, acted, point): (u64, Vec<String>, &str) = match v.s("state") {
+        "settled" => (0, vec![], ""),
+        "pointed" => (0, vec![], "sync"),
+        "acted" => (0, vec!["refund".into(), "sync".into(), "prs".into()], ""),
+        _ => (1_800, vec![], ""),
+    };
+    let width = if v.s("width") == "narrow" {
+        "400px"
+    } else {
+        "804px"
+    };
+    rsx! {
+        div { "data-k": "{key}", key: "{key}", style: "width:{width};max-width:100%;display:flex;flex-direction:column;gap:8px",
+            AgentRecap { now, replay, acted, point: point.to_string(), style: cstyle(v),
+                on_action: move |(id, a): (String, String)| msg.set(format!("onAction({id:?}, {a:?})")),
+                on_undo: move |id: String| msg.set(format!("onUndo({id:?})")),
+                on_redo: move |id: String| msg.set(format!("onRedo({id:?})")) }
+            {status(msg)}
+        }
+    }
+}
+
+fn agent_recap_code(_: &Vals) -> String {
+    Code::new("AgentRecap")
+        .raw("events", "Some(night())")
+        .raw("since", "left_at_minutes")
+        .raw("span", "away_minutes")
+        .raw("now", "clock.now()")
+        .raw("on_action", "move |(id, which)| act(id, which)")
+        .raw("on_undo", "move |id| undo(id)")
+        .raw("on_redo", "move |id| redo(id)")
         .done()
 }
 
@@ -1049,6 +1129,155 @@ pub(crate) fn demos() -> Vec<Demo> {
                 "AgentMonitorEl",
                 "agent-monitor",
                 "parity/monitorfid.rs",
+            )
+        },
+        Demo {
+            controls: vec![
+                style(),
+                sel(
+                    "state",
+                    "State",
+                    &["live", "limited", "paused", "one", "card"],
+                    "live",
+                ),
+                sel("width", "Width", &["wide", "narrow"], "wide"),
+            ],
+            variants: vec![
+                var(
+                    "default",
+                    "As affectUI ships it: jobs drop into the queue, glide onto free workers as growing bars and land in Done or Failed; every pass a rate limit stops the workers, the backlog climbs past the backpressure line and drains after.",
+                    &[],
+                ),
+                var(
+                    "limited",
+                    "A rate limit with its countdown: running jobs paused, Waiting amber above the line, an amber stretch on the chart.",
+                    &[("state", "limited")],
+                ),
+                var(
+                    "paused",
+                    "Paused by hand: a grey pill, Resume, the workers waiting.",
+                    &[("state", "paused")],
+                ),
+                var(
+                    "one-worker",
+                    "One worker: the queue grows and the rest show as a grid of dots by kind.",
+                    &[("state", "one")],
+                ),
+                var(
+                    "card",
+                    "A job's card: how long it waited, its place, priority and attempt, with Cancel and Move to front.",
+                    &[("state", "card")],
+                ),
+                var(
+                    "narrow",
+                    "Under 600 px the flow stacks: queue, then workers (marks only), then Done and Failed side by side.",
+                    &[("width", "narrow")],
+                ),
+                var(
+                    "classic",
+                    "Classic style: mixed-case labels, the numbers and the chart in inset panels.",
+                    &[("style", "classic"), ("state", "limited")],
+                ),
+            ],
+            render: agent_queue,
+            code: agent_queue_code,
+            keyboard: vec![
+                (
+                    "Tab",
+                    "Into the jobs (the front job is the one stop), then the card's buttons",
+                ),
+                ("Enter / Space", "Opens or closes the focused job's card"),
+                ("Esc", "Closes the card"),
+            ],
+            a11y: vec![
+                "Every job is a button named with its kind, how long it waited or ran, its place in line, priority and attempt.",
+                "Pause is a toggle with aria-pressed; the stepper's buttons say what they do and the count is announced.",
+                "The chart is an image summarised in words; rate limits, pauses and crossing the backpressure line are announced politely.",
+            ],
+            responsive: vec![
+                "756 px up to its container.",
+                "Under 600 px the flow stacks and the four numbers wrap to two columns; under 440 px Pause and the stepper get their own row.",
+            ],
+            height: 640,
+            live: true,
+            ..mk(
+                "agent-queue",
+                "Agent Queue",
+                "tools",
+                "The work waiting for your agents and how fast it moves – a live queue, workers running jobs as growing bars, Done and Failed, and a depth chart that shows the backlog build up under a rate limit and drain after.",
+                "AgentQueue",
+                "AgentQueueEl",
+                "agent-queue",
+                "parity/queuefid.rs",
+            )
+        },
+        Demo {
+            controls: vec![
+                style(),
+                sel(
+                    "state",
+                    "State",
+                    &["replay", "settled", "pointed", "acted"],
+                    "replay",
+                ),
+                sel("width", "Width", &["wide", "narrow"], "wide"),
+            ],
+            variants: vec![
+                var(
+                    "default",
+                    "As affectUI ships it: the night replays – the line draws itself, a dot pops onto each peak and its card fades in as the line passes; Approve, Merge and Retry work for a moment, then settle with Undo.",
+                    &[],
+                ),
+                var(
+                    "pointed",
+                    "Pointing at an event: a crosshair, the dot grows and a dark tooltip with its time; the card lights up too.",
+                    &[("state", "pointed")],
+                ),
+                var(
+                    "acted",
+                    "After acting: the refund approved, the sync fixed, and one done card undone with Redo.",
+                    &[("state", "acted")],
+                ),
+                var(
+                    "narrow",
+                    "Under 640 px the three lanes stack.",
+                    &[("width", "narrow"), ("state", "settled")],
+                ),
+                var(
+                    "classic",
+                    "Classic style: the chart in its own panel, lanes without a background, solid primary buttons.",
+                    &[("style", "classic"), ("state", "settled")],
+                ),
+            ],
+            render: agent_recap,
+            code: agent_recap_code,
+            keyboard: vec![
+                (
+                    "Tab",
+                    "Through each card's buttons, lane by lane; focusing a card lights its dot",
+                ),
+                ("Enter / Space", "Runs the focused action, Undo or Redo"),
+            ],
+            a11y: vec![
+                "Each lane is a labelled section with its cards as a list; the chart is decorative and the summary says the counts in words.",
+                "While an action works its buttons are disabled and the row says Working…; the result and every undo are announced.",
+                "State is never colour alone: lanes are named, tags say Done, Approved, Fixed or Undone.",
+            ],
+            responsive: vec![
+                "804 px up to its container.",
+                "Under 640 px the three lanes stack and stop reserving room for three cards.",
+            ],
+            height: 560,
+            live: true,
+            ..mk(
+                "agent-recap",
+                "Agent Recap",
+                "tools",
+                "What the agents did while you were away – the night as a small chart with a peak per event, then a board of what needs you, what failed and what's done, acted on right on the card.",
+                "AgentRecap",
+                "AgentRecapEl",
+                "agent-recap",
+                "parity/recapfid.rs",
             )
         },
     ]
