@@ -237,6 +237,7 @@
 .oxyn-scroll.sb-hidden .trk{display:none}
 .oxyn-scroll .trk.y{top:4px;bottom:4px;right:2px;width:10px}
 .oxyn-scroll .trk.x{left:4px;right:4px;bottom:2px;height:10px}
+.oxyn-scroll.corner .trk.y{bottom:16px}.oxyn-scroll.corner .trk.x{right:16px}
 .oxyn-scroll .th{position:absolute;border-radius:6px;background:color-mix(in oklab,var(--oxyn-color-fg-default) 32%,transparent);transition:width 120ms,height 120ms,background-color 120ms}
 .oxyn-scroll .trk.y .th{right:2px;width:5px;top:0}
 .oxyn-scroll .trk.x .th{bottom:2px;height:5px;left:0}
@@ -376,6 +377,8 @@
 .oxyn-settings .sfield{all:unset;box-sizing:border-box;margin-left:auto;display:inline-flex;align-items:center;gap:8px;height:30px;width:220px;padding:0 6px 0 10px;border-radius:8px;border:1px solid var(--oxyn-color-border-default);background:var(--oxyn-color-surface-sunken);color:var(--oxyn-color-fg-subtle);font-size:12.5px;cursor:text;transition:width 260ms var(--ox-ease),opacity 160ms}
 .oxyn-settings .sfield span{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .oxyn-settings .sfield.grown{opacity:0}
+/* Narrow settings: the field drops its shortcut hint so "Search settings" reads in full. */
+@container (max-width:440px){.oxyn-settings .sfield{width:auto;max-width:190px}.oxyn-settings .sfield .oxyn-keys{display:none}}
 .oxyn-settings .sgrid{display:flex;flex:1;min-height:0}
 .oxyn-settings .snav{flex:none;width:150px;padding:10px 8px;border-right:1px solid var(--oxyn-color-border-subtle);display:flex;flex-direction:column;gap:2px}
 .oxyn-settings .si{display:flex;align-items:center;gap:6px;padding:6px 10px;border-radius:7px;font-size:13px;color:var(--oxyn-color-fg-muted);text-decoration:none}

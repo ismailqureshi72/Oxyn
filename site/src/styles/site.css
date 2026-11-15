@@ -198,5 +198,7 @@ html[data-oxyn-reduced] *{animation-duration:1ms!important;transition-duration:1
 /* Demos stack above the sidebar and table of contents; the demo being used (focus inside, or a
    layer open) rises above the sticky top nav too, so its menus and sheets are never covered. */
 oxyn-demo{position:relative;z-index:1}
+/* A demo showing an open menu or popover paints above its neighbours in the variants grid. */
+oxyn-demo:has([role=menu],[role=listbox],[role=dialog],.oxyn-pop,.oxyn-popover,.oxyn-menu){z-index:2}
 oxyn-demo:focus-within,oxyn-demo:has(.oxyn-layer:not(.contained)){z-index:45}
 .side:not(.oxd-root *),.toc{z-index:0}
