@@ -35,6 +35,7 @@ mod queuefid;
 mod recapfid;
 mod review;
 mod run;
+mod runningfid;
 mod seqfid;
 mod text;
 mod tools;
@@ -91,6 +92,7 @@ pub use run::{
     AgentTree, AnimatedCounter, Countdown, FlowStepper, OnboardingChecklist, ReleaseReadiness,
     TaskBreakdown, TaskRows, TreeTable,
 };
+pub use runningfid::RunningNow;
 pub use seqfid::AgentSequence;
 pub use text::{
     ActionSwapButton, InViewTitle, LoadingState, SlotReels, Source, StreamingText, SweepText,

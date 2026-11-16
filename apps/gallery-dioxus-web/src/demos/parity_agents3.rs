@@ -10,10 +10,12 @@ use oxyn_core::{
         fallbackfid::{FbOutcome, fb_demo, fb_demo_all_fail},
         judgefid::{jb_demo, jb_demo_verdicts},
         parallelfid::{PaStatus, pa_at, pa_demo},
+        runningfid::{RnState, rn_demo},
     },
 };
 use oxyn_dioxus::{
     DecisionTree, DelegateBoard, FallbackChain, JudgeBracket, MemoryPanel, ParallelAttempts,
+    RunningNow,
 };
 
 use super::{Code, mk, sel, var};
@@ -643,6 +645,157 @@ fn memory_panel_demo(style: crate::Control) -> Demo {
     }
 }
 
+// ---------- Running Now ----------
+
+fn running_now(v: &Vals, now: ClockMs) -> Element {
+    let mut msg = use_signal(String::new);
+    let key = format!("{}{}{}", v.s("style"), v.s("state"), v.s("place"));
+    let state = v.s("state");
+    let side = v.s("place") == "sidebar";
+    let mut tasks = rn_demo();
+    if state == "paused" {
+        for t in tasks.iter_mut() {
+            if t.state == RnState::Running {
+                t.state = RnState::Paused;
+            }
+        }
+    }
+    if state == "done" {
+        for t in tasks.iter_mut() {
+            t.state = RnState::Done;
+            t.done = t.total();
+        }
+    }
+    let default_open = state != "closed";
+    let title = if state == "words" {
+        "Agent jobs".to_string()
+    } else {
+        "Background tasks".to_string()
+    };
+    let rn = rsx! {
+        RunningNow { now, tasks: Some(tasks), default_open, title, placement: if side { "right" } else { "below-end" }, style: cstyle(v),
+            on_open: move |id: String| msg.set(format!("onOpen({id:?})")),
+            on_pause: move |(id, p): (String, bool)| msg.set(format!("{}({id:?})", if p { "onPause" } else { "onResume" })),
+            on_open_all: move |_| msg.set("onOpenAll()".into()) }
+    };
+    let bar = "display:flex;align-items:center;gap:8px;padding:6px 8px;border:1px solid var(--oxyn-color-border-default);border-radius:10px;background:var(--oxyn-color-surface-raised)";
+    let mark = "width:18px;height:18px;border-radius:5px;background:var(--oxyn-color-fg-default);flex:none";
+    rsx! {
+        div { "data-k": "{key}", key: "{key}", "data-state": "{state}", style: "width:520px;max-width:100%;display:flex;flex-direction:column;gap:8px;min-height:300px",
+            if side {
+                div { style: "display:flex;flex-direction:column;align-items:flex-start;gap:10px;width:230px;padding:10px;border:1px solid var(--oxyn-color-border-default);border-radius:10px;background:var(--oxyn-color-surface-raised)",
+                    span { style: "font-size:12px;font-weight:600", "Workspace" }
+                    {rn}
+                }
+            } else {
+                div { style: "{bar}",
+                    span { style: "{mark}" }
+                    span { style: "font-size:12px;color:var(--oxyn-color-fg-muted)", "Acme / " b { style: "color:var(--oxyn-color-fg-default)", "Agents" } }
+                    span { style: "flex:1" }
+                    {rn}
+                }
+            }
+            {status(msg)}
+        }
+    }
+}
+
+fn running_now_code(_: &Vals) -> String {
+    Code::new("RunningNow")
+        .raw("tasks", "Some(jobs.background())")
+        .raw("now", "clock.now()")
+        .raw("on_open", "move |id| nav.open_task(id)")
+        .raw(
+            "on_pause",
+            "move |(id, paused)| jobs.set_paused(id, paused)",
+        )
+        .raw("on_open_all", "move |_| nav.tasks()")
+        .done()
+}
+
+fn running_now_demo(style: crate::Control) -> Demo {
+    Demo {
+        controls: vec![
+            style,
+            sel(
+                "state",
+                "State",
+                &["closed", "open", "paused", "done", "words"],
+                "open",
+            ),
+            sel("place", "Placement", &["header", "sidebar"], "header"),
+        ],
+        variants: vec![
+            var(
+                "open",
+                "Open over an app bar: rings fill as tasks move through their steps; Pause, Resume and Open work, and the pill's counts follow.",
+                &[],
+            ),
+            var(
+                "closed",
+                "Closed: just the quiet pill – only the groups that aren't zero.",
+                &[("state", "closed")],
+            ),
+            var(
+                "paused",
+                "Everything that was running paused: grey frozen rings, Resume buttons, the pill down to what needs you.",
+                &[("state", "paused")],
+            ),
+            var(
+                "done",
+                "All finished: full rings with a check, the pill says so.",
+                &[("state", "done")],
+            ),
+            var(
+                "sidebar",
+                "In a sidebar, opening to the right.",
+                &[("place", "sidebar")],
+            ),
+            var(
+                "words",
+                "Your own words for the heading.",
+                &[("state", "words")],
+            ),
+            var(
+                "classic",
+                "Classic style: a squarer pill, a header band and footer band in the popover.",
+                &[("style", "classic")],
+            ),
+        ],
+        render: running_now,
+        code: running_now_code,
+        keyboard: vec![
+            ("Enter / Space", "Opens or closes the list from the pill"),
+            (
+                "Tab",
+                "Each task, its Pause / Resume or Open, then Open tasks",
+            ),
+            ("Escape", "Closes the list"),
+        ],
+        a11y: vec![
+            "The pill is a popup button (aria-expanded) whose name carries the counts; the list is a labelled dialog.",
+            "Each row's main button names the task and its step; Pause and Resume are named per task.",
+            "Finishing tasks are read out politely; reduced motion stops the ring sweep.",
+        ],
+        responsive: vec![
+            "The pill is inline and fits any header; the 284 px list opens below and aligned to the pill's end, or to the right in a sidebar.",
+        ],
+        height: 360,
+        live: true,
+        align: Align::Start,
+        ..mk(
+            "running-now",
+            "Running Now",
+            "tools",
+            "A compact pill for an app bar or side rail counting background agent work – how much is running, how much waits on you – that opens to each task's ring, current step, Pause / Resume and Open.",
+            "RunningNow",
+            "RunningNowEl",
+            "running-now",
+            "parity/runningfid.rs",
+        )
+    }
+}
+
 /// Family B part 8 demos.
 pub(crate) fn demos() -> Vec<Demo> {
     let style = || sel("style", "Style", &["clean", "classic"], "clean");
@@ -651,6 +804,7 @@ pub(crate) fn demos() -> Vec<Demo> {
         parallel_attempts_demo(style()),
         judge_bracket_demo(style()),
         memory_panel_demo(style()),
+        running_now_demo(style()),
         Demo {
             controls: vec![
                 style(),

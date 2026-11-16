@@ -43,6 +43,7 @@
 //! - [`parallelfid`]: fidelity batch, family B part 9: Parallel Attempts race, scores, best and pick.
 //! - [`judgefid`]: fidelity batch, family B part 9: Judge Bracket seeds, verdicts, current match and winner path.
 //! - [`memoryfid`]: fidelity batch, family B part 9: Memory Panel groups, filter, search, status and undo quote.
+//! - [`runningfid`]: fidelity batch, family B part 9: Running Now tasks, steps, counts and pill label.
 //! - [`answers`]: fidelity batch, family A: AI Answer markup and streaming, Cited Answer
 //!   sentences and quotes, Message Actions, Thinking Loader phases, Thinking State steps and the
 //!   Writing Assistant's sample writer and dictation.
@@ -86,6 +87,7 @@ pub mod parallelfid;
 pub mod plan;
 pub mod queuefid;
 pub mod recapfid;
+pub mod runningfid;
 pub mod seqfid;
 pub mod text;
 pub mod tools;

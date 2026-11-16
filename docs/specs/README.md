@@ -199,4 +199,5 @@ specified just as deeply. When we point at one component as an example, the stan
 | [parallel-attempts.md](parallel-attempts.md) | built v0.1 (plan #32, family B part 9) |
 | [judge-bracket.md](judge-bracket.md) | built v0.1 (plan #32, family B part 9) |
 | [memory-panel.md](memory-panel.md) | built v0.1 (plan #32, family B part 9) |
+| [running-now.md](running-now.md) | built v0.1 (plan #32, family B part 9) |
 | Every other component in [../component-taxonomy.md](../component-taxonomy.md) | to write in V2.2 |

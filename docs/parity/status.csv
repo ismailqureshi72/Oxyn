@@ -81,7 +81,7 @@ affectUI,Reaction Bar,https://www.affectui.com/components/reaction-bar,Component
 affectUI,Review Center,https://www.affectui.com/components/review-center,Components · Agents,Pro,"review-center, review-card",,#30,built
 affectUI,Root Cause Tree,https://www.affectui.com/components/root-cause-tree,Components · Agents,Pro,trace-view,C7,#34,planned
 affectUI,Run Controls,https://www.affectui.com/components/run-controls,Components · Agents,Pro,"run-controls (exact, chunk 2; finished turn and steer chip on its own line, batch A), composer-send-control, composer-queue-stack, composer-mode-switch, composer-permission-selector, composer-context-meter",,#32,built
-affectUI,Running Now,https://www.affectui.com/components/running-now,Components · Agents,Pro,"background-jobs, desktop-overlays",,#35,planned
+affectUI,Running Now,https://www.affectui.com/components/running-now,Components · Agents,Pro,"running-now (exact, ref-2 notes, family B part 9), background-jobs, desktop-overlays",,#32,built
 affectUI,Scheduled Runs,https://www.affectui.com/components/scheduled-runs,Components · Agents,Pro,background-jobs,C9,#35,planned
 affectUI,Segmented Control,https://www.affectui.com/components/segmented-control,Components · Navigation,Free,segmented-control,C1,#23,built
 affectUI,Select,https://www.affectui.com/components/select,Components · Inputs,Free,select,C1,#23,built

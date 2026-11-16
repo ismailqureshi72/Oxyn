@@ -44,6 +44,7 @@ mod queuefid;
 mod recapfid;
 mod review;
 mod run;
+mod runningfid;
 mod seqfid;
 mod text;
 mod tools;
@@ -100,6 +101,7 @@ pub use run::{
     ChecklistEl, CountdownEl, CounterEl, FleetEl, FlowStepperEl, OrchestratorEl, ReadinessEl,
     TaskRowsEl, TreeTableEl,
 };
+pub use runningfid::RunningNowEl;
 pub use seqfid::AgentSequenceEl;
 pub use text::{LoadingStateEl, ShimmerEl, SlotTextEl, ThinkingLoaderEl};
 pub use tools::{
