@@ -28,3 +28,5 @@
 .oxem-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 @media (max-width:640px){.oxem-sub{position:static;width:auto;margin:2px 0 4px 18px;box-shadow:none}}
 @media (prefers-reduced-motion:reduce){.oxem-pop,.oxem-sub{animation:none}}
+.oxem[data-armed="true"]{z-index:41}
+.oxem .oxth-catch{position:fixed;inset:0;z-index:-1}

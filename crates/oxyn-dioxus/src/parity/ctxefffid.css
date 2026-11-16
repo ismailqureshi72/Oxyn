@@ -21,3 +21,5 @@
 .oxec-sep{height:1px;margin:5px -6px;background:var(--oxth-line)}
 .oxec-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 @media (prefers-reduced-motion:reduce){.oxec-pop{animation:none}}
+.oxec[data-armed="true"]{z-index:41}
+.oxec .oxth-catch{position:fixed;inset:0;z-index:-1}

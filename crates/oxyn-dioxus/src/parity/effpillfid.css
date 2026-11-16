@@ -22,3 +22,5 @@
   box-shadow:0 0 0 2.5px var(--oxth-fg),0 2px 8px rgba(0,0,0,.3);transition:left .18s cubic-bezier(.2,.8,.2,1)}
 .oxeq-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 @media (prefers-reduced-motion:reduce){.oxeq-pop{animation:none}.oxeq-fill,.oxeq-thumb{transition:none}}
+.oxeq[data-armed="true"]{z-index:41}
+.oxeq .oxth-catch{position:fixed;inset:0;z-index:-1}
