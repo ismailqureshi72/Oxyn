@@ -149,7 +149,10 @@ pub fn stream_mark(agents: &[StreamAgent], id: &str) -> (usize, [bool; 9]) {
     let slot = if id == "you" {
         0
     } else {
-        agents.iter().position(|a| a.id == id).map_or(5, |i| 1 + i % 5)
+        agents
+            .iter()
+            .position(|a| a.id == id)
+            .map_or(5, |i| 1 + i % 5)
     };
     (slot, P[slot])
 }
@@ -277,7 +280,14 @@ pub fn stream_demo() -> Vec<StreamMessage> {
             "Refresh the onboarding docs by Thursday – shorter steps, one screenshot per step.",
             13 * 60 + 58,
         ),
-        m("s1", "planner", "analyst", Spawn, "Planner started Analyst", 13 * 60 + 59),
+        m(
+            "s1",
+            "planner",
+            "analyst",
+            Spawn,
+            "Planner started Analyst",
+            13 * 60 + 59,
+        ),
         m(
             "ask1",
             "planner",
@@ -342,14 +352,7 @@ pub fn stream_demo() -> Vec<StreamMessage> {
         att(
             "funnel.csv",
             "5 rows",
-            &[
-                "step,readers",
-                "1,1000",
-                "2,912",
-                "3,840",
-                "4,561",
-                "5,548",
-            ],
+            &["step,readers", "1,1000", "2,912", "3,840", "4,561", "5,548"],
         ),
     ];
     v[3].details = vec![
@@ -363,7 +366,11 @@ pub fn stream_demo() -> Vec<StreamMessage> {
         &["## Step 3 – Create a key", "Open Settings, then API keys…"],
     )];
     v[6].reply_to = Some("brief".into());
-    v[7].attachments = vec![att("PR #217", "Open · 3 files", &["docs/onboarding.md +48 −71"])];
+    v[7].attachments = vec![att(
+        "PR #217",
+        "Open · 3 files",
+        &["docs/onboarding.md +48 −71"],
+    )];
     v
 }
 
