@@ -603,7 +603,7 @@ fn nozzle_slider_code(v: &Vals) -> String {
         c = c.raw("tone", "\"red\"");
     }
     if v.s("size") != "md" {
-        c = c.raw("size", &format!("\"{}\"", v.s("size")));
+        c = c.raw("size", format!("\"{}\"", v.s("size")));
     }
     c.raw("value", "Some(effort())")
         .raw("on_change", "move |i| effort.set(i)")
