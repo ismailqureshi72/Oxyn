@@ -159,7 +159,7 @@ specified just as deeply. When we point at one component as an example, the stan
 | [inline-diff.md](inline-diff.md) | built v0.2 (review mode, plan #32, family B part 9) |
 | [change-summary.md](change-summary.md) | built v0.1 (plan #30) |
 | [diff-table.md](diff-table.md) | built v0.1 (plan #30) |
-| [diff-timeline.md](diff-timeline.md) | built v0.1 (plan #30) |
+| [diff-timeline.md](diff-timeline.md) | built v0.2 (run view, plan #32, family B part 9) |
 | [code-suggestion.md](code-suggestion.md) | built v0.1 (plan #30) |
 | [ai-inline-edit.md](ai-inline-edit.md) | built v0.1 (plan #30) |
 | [image-compare.md](image-compare.md) | built v0.1 (plan #30) |

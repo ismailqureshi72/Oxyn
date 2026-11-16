@@ -1,0 +1,128 @@
+/* affectUI fidelity pass, family B part 9 (plan #32): Diff Timeline run view (oxdl-).
+   Clean is the default; Classic follows data-cstyle or data-style. A card: the agent's pixel
+   mark, name and context, a live status line and +/− totals; a chart of lines added (green,
+   soft area) and removed (red) over the run with a dashed net line and breathing line ends;
+   one row per file with its edits as pieces of a bar and the file being edited washed grey;
+   a legend with the net. Under about 410 px the totals drop under the name, folders hide and counts
+   shorten. Monochrome chrome; green / red / blue are the only colours and they mean something. */
+[data-oxyn-theme="light"]{
+  --oxdl-card:#FFFFFF;--oxdl-bd:#E7E7EA;--oxdl-fg:#111111;--oxdl-mute:#8A8A8E;--oxdl-grid:#EEEEF0;--oxdl-wash:#F3F3F5;--oxdl-tray:#F4F4F5;
+  --oxdl-add:#16A34A;--oxdl-addbg:#E6F6EC;--oxdl-rem:#DC2626;--oxdl-rembg:#FDECEC;--oxdl-net:#9A9AA0;--oxdl-live:#2563EB;
+  --oxdl-shadow:0 1px 2px rgba(0,0,0,.04),0 4px 14px rgba(0,0,0,.04);--oxdl-pop:0 12px 30px rgba(0,0,0,.14),0 1px 3px rgba(0,0,0,.06);
+}
+[data-oxyn-theme="dark"],[data-oxyn-theme="hc-dark"]{
+  --oxdl-card:#17171A;--oxdl-bd:#2A2A2F;--oxdl-fg:#F2F2F2;--oxdl-mute:#8B8B90;--oxdl-grid:#232327;--oxdl-wash:#222226;--oxdl-tray:#111114;
+  --oxdl-add:#4ADE80;--oxdl-addbg:#12301F;--oxdl-rem:#F87171;--oxdl-rembg:#3A1717;--oxdl-net:#76767C;--oxdl-live:#60A5FA;
+  --oxdl-shadow:0 1px 2px rgba(0,0,0,.3);--oxdl-pop:0 12px 34px rgba(0,0,0,.6);
+}
+.oxdl{box-sizing:border-box;position:relative;display:flex;flex-direction:column;gap:10px;width:440px;max-width:100%;container-type:inline-size;padding:14px 16px;border:1px solid var(--oxdl-bd);border-radius:12px;background:var(--oxdl-card);color:var(--oxdl-fg);font-size:12px;line-height:1.35;box-shadow:var(--oxdl-shadow);-webkit-font-smoothing:antialiased}
+.oxdl *{box-sizing:border-box}
+.oxdl-hd{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:9px}
+.oxdl-mark{display:grid;grid-template-columns:repeat(5,4px);gap:1px;padding:4px;border-radius:7px;background:var(--oxdl-wash)}
+.oxdl-mark i{width:4px;height:4px;border-radius:1px;background:transparent}
+.oxdl-mark i[data-on="true"]{background:var(--oxdl-fg)}
+.oxdl-mark[data-live="true"] i[data-on="true"]:nth-child(3n){animation:oxdl-twinkle 1.6s ease-in-out infinite}
+.oxdl-mark[data-live="true"] i[data-on="true"]:nth-child(4n+1){animation:oxdl-twinkle 1.6s ease-in-out .5s infinite}
+.oxdl-who{min-width:0}
+.oxdl-l1{display:flex;gap:5px;min-width:0;white-space:nowrap}
+.oxdl-l1 b{font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis}
+.oxdl-ctx{color:var(--oxdl-mute);overflow:hidden;text-overflow:ellipsis}
+.oxdl-st{margin-top:1px;font-size:11.5px;color:var(--oxdl-mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.oxdl-st[data-live="true"]{color:var(--oxdl-fg)}
+.oxdl-st[data-live="true"]::before{content:"";display:inline-block;width:6px;height:6px;margin-right:6px;border-radius:50%;background:var(--oxdl-live);vertical-align:1px;animation:oxdl-breathe 1.4s ease-in-out infinite}
+.oxdl-tot{display:flex;align-items:center;gap:5px;white-space:nowrap}
+.oxdl-chip{padding:1px 6px;border-radius:5px;font-size:11px;font-weight:600;font-variant-numeric:tabular-nums}
+.oxdl-chip[data-k="add"]{background:var(--oxdl-addbg);color:var(--oxdl-add)}
+.oxdl-chip[data-k="rem"]{background:var(--oxdl-rembg);color:var(--oxdl-rem)}
+.oxdl-across{font-size:11px;color:var(--oxdl-mute)}
+.oxdl-short{display:none}
+.oxdl-panel{min-width:0}
+.oxdl-chart{position:relative;display:grid;grid-template-columns:28px minmax(0,1fr);grid-template-rows:150px 16px;outline:none;border-radius:6px}
+.oxdl-chart:focus-visible{box-shadow:0 0 0 2px var(--oxdl-fg);box-shadow:0 0 0 2px var(--oxdl-fg)}
+.oxdl-y{position:relative;grid-row:1;grid-column:1}
+.oxdl-y span{position:absolute;right:6px;translate:0 50%;font-size:9.5px;color:var(--oxdl-mute);font-variant-numeric:tabular-nums}
+.oxdl-plot{position:relative;grid-row:1;grid-column:2}
+.oxdl-grid i{position:absolute;left:0;right:0;height:0;border-top:1px dashed var(--oxdl-grid)}
+.oxdl-svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.oxdl-ln{fill:none;stroke-width:1.5;vector-effect:non-scaling-stroke;stroke-linejoin:round;stroke-linecap:round}
+.oxdl-ln[data-k="add"]{stroke:var(--oxdl-add)}
+.oxdl-ln[data-k="rem"]{stroke:var(--oxdl-rem)}
+.oxdl-ln[data-k="net"]{stroke:var(--oxdl-net);stroke-dasharray:4 3}
+.oxdl-area{stroke:none}
+.oxdl-area[data-k="add"]{fill:var(--oxdl-add);opacity:.12}
+.oxdl-area[data-k="rem"]{fill:var(--oxdl-rem);opacity:.06}
+.oxdl-end{position:absolute;width:6px;height:6px;margin:0 0 -3px -3px;border-radius:50%;background:var(--oxdl-add);transition:left .4s cubic-bezier(.2,.8,.2,1),bottom .4s cubic-bezier(.2,.8,.2,1)}
+.oxdl-end[data-k="rem"]{background:var(--oxdl-rem)}
+.oxdl-end[data-live="true"]::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:1.5px solid currentColor;color:inherit;background:inherit;opacity:.35;animation:oxdl-ring 1.6s ease-out infinite}
+.oxdl-base{position:absolute;left:0;right:0;bottom:-3px;height:6px}
+.oxdl-tick{position:absolute;bottom:0;width:4px;height:6px;margin-left:-2px;border-radius:2px;background:var(--oxdl-net);opacity:.45;cursor:pointer;transition:opacity .15s,background .15s,height .15s}
+.oxdl-tick:hover,.oxdl-tick[data-hl="true"]{opacity:1;background:var(--oxdl-fg);height:9px}
+.oxdl-tick[data-on="true"]{opacity:1;background:var(--oxdl-fg);height:11px}
+.oxdl-x{position:relative;grid-row:2;grid-column:2}
+.oxdl-x span{position:absolute;top:3px;translate:-50% 0;font-size:9.5px;color:var(--oxdl-mute);font-variant-numeric:tabular-nums}
+.oxdl-x span:first-child{translate:0 0}
+.oxdl-x span:last-child{translate:-100% 0}
+.oxdl-pop{position:absolute;top:calc(100% + 22px);z-index:5;width:230px;padding:10px 11px;border:1px solid var(--oxdl-bd);border-radius:10px;background:var(--oxdl-card);box-shadow:var(--oxdl-pop);animation:oxdl-pop .18s cubic-bezier(.2,.8,.2,1) both}
+.oxdl-ph{display:flex;align-items:baseline;gap:6px;min-width:0}
+.oxdl-pf{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:11.5px}
+.oxdl-pf b{font-weight:600}
+.oxdl-pt{font-size:11px;color:var(--oxdl-mute);font-variant-numeric:tabular-nums}
+.oxdl-pd{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 0 0}
+.oxdl-pd dt{font-size:10px;color:var(--oxdl-mute)}
+.oxdl-pd dd{margin:1px 0 0;font-size:12.5px;font-weight:600;font-variant-numeric:tabular-nums}
+.oxdl-pd dd span{font-weight:500;font-size:11px}
+.oxdl [data-k="add"]>span,.oxdl-pd [data-k="add"],.oxdl-n [data-k="add"]{color:var(--oxdl-add)}
+.oxdl-pd [data-k="rem"],.oxdl-n [data-k="rem"]{color:var(--oxdl-rem)}
+.oxdl-code{margin-top:8px}
+.oxdl-code>span{font-size:10px;color:var(--oxdl-mute)}
+.oxdl-code pre{margin:3px 0 0;padding:6px 7px;border-radius:6px;background:var(--oxdl-wash);font:11px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre-wrap;word-break:break-word;max-height:84px;overflow:auto}
+.oxdl-code code{display:block;color:var(--oxdl-add)}
+.oxdl-code code[data-sign="rem"]{color:var(--oxdl-rem)}
+.oxdl-bin{margin:8px 0 0;font-size:11px;color:var(--oxdl-mute)}
+.oxdl-files{display:flex;flex-direction:column;max-height:calc(var(--oxdl-list-h) + 7px);overflow:auto;border-top:1px solid var(--oxdl-bd);padding-top:6px}
+.oxdl-row{display:grid;grid-template-columns:14px minmax(0,1.25fr) minmax(0,1fr) auto;align-items:center;gap:7px;flex:none;height:22px;padding:0 5px;border-radius:5px;transition:background .3s,opacity .2s;animation:oxdl-rise .45s cubic-bezier(.2,.8,.2,1) both}
+.oxdl-row[data-cur="true"]{background:var(--oxdl-wash)}
+.oxdl-row[data-dim="true"]>*{opacity:.38;transition:opacity .2s}
+.oxdl-fi{display:inline-flex;color:var(--oxdl-mute)}
+.oxdl-fn{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:11.5px}
+.oxdl-fd{color:var(--oxdl-mute)}
+.oxdl-fn b{font-weight:600}
+.oxdl-lane{position:relative;height:6px}
+.oxdl-bar{display:flex;height:6px;border-radius:3px;overflow:hidden;background:var(--oxdl-grid);transition:width .4s cubic-bezier(.2,.8,.2,1);animation:oxdl-grow .5s cubic-bezier(.2,.8,.2,1) both;transform-origin:left}
+.oxdl-bar i{height:100%;transition:width .4s cubic-bezier(.2,.8,.2,1)}
+.oxdl-bar i[data-s="add"]{background:var(--oxdl-add)}
+.oxdl-bar i[data-s="rem"]{background:var(--oxdl-rem)}
+.oxdl-bar[data-bin="true"]{background:repeating-linear-gradient(45deg,var(--oxdl-grid) 0 3px,transparent 3px 6px);border:1px solid var(--oxdl-grid)}
+.oxdl-n{min-width:62px;text-align:right;font-size:11px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.oxdl-n[data-bin="true"]{font-weight:500;color:var(--oxdl-mute)}
+.oxdl-empty{padding:8px 5px;color:var(--oxdl-mute);font-size:11.5px}
+.oxdl-legend{display:flex;gap:14px;font-size:11px;color:var(--oxdl-mute)}
+.oxdl-legend span{display:inline-flex;align-items:center;gap:5px}
+.oxdl-legend i{width:12px;height:0;border-top:2px solid var(--oxdl-add)}
+.oxdl-legend [data-k="rem"] i{border-color:var(--oxdl-rem)}
+.oxdl-legend [data-k="net"] i{border-top:2px dashed var(--oxdl-net)}
+/* Classic: a grey tray holding two white panels; the legend sits on the tray. */
+:is([data-cstyle="classic"] .oxdl:not([data-style]),.oxdl[data-style="classic"]){background:var(--oxdl-tray);border-radius:16px;padding:12px}
+:is([data-cstyle="classic"] .oxdl:not([data-style]),.oxdl[data-style="classic"]) .oxdl-hd{padding:0 4px}
+:is([data-cstyle="classic"] .oxdl:not([data-style]),.oxdl[data-style="classic"]) .oxdl-panel{padding:10px;border:1px solid var(--oxdl-bd);border-radius:10px;background:var(--oxdl-card)}
+:is([data-cstyle="classic"] .oxdl:not([data-style]),.oxdl[data-style="classic"]) .oxdl-files{padding-top:6px;max-height:calc(var(--oxdl-list-h) + 20px)}
+:is([data-cstyle="classic"] .oxdl:not([data-style]),.oxdl[data-style="classic"]) .oxdl-legend{padding:0 6px}
+@container (max-width:380px){
+  .oxdl-hd{grid-template-columns:auto minmax(0,1fr)}
+  .oxdl-tot{grid-column:1 / -1}
+  .oxdl-fd{display:none}
+  .oxdl-full{display:none}
+  .oxdl-short{display:inline}
+  .oxdl-row{grid-template-columns:14px minmax(0,1.3fr) minmax(0,.8fr) auto}
+  .oxdl-n{min-width:52px}
+  .oxdl-pop{width:200px}
+}
+@keyframes oxdl-twinkle{0%,100%{opacity:1}50%{opacity:.25}}
+@keyframes oxdl-breathe{0%,100%{opacity:1}50%{opacity:.35}}
+@keyframes oxdl-ring{0%{transform:scale(.6);opacity:.45}100%{transform:scale(1.8);opacity:0}}
+@keyframes oxdl-rise{from{opacity:0;transform:translateY(5px);filter:blur(3px)}to{opacity:1;transform:none;filter:none}}
+@keyframes oxdl-grow{from{transform:scaleX(0)}to{transform:none}}
+@keyframes oxdl-pop{from{opacity:0;transform:translateY(4px) scale(.98)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){
+  .oxdl *,.oxdl *::before,.oxdl *::after{animation:none!important;transition:none!important}
+}
