@@ -10,8 +10,8 @@ use oxyn_core::{
     },
 };
 use oxyn_dioxus::{
-    ContextEffortMenu, EffortList, EffortPill, EffortRuler, ModelEffortMenu, NozzleSlider,
-    ReasoningPanel,
+    ContextEffortMenu, EffortList, EffortPill, EffortRuler, EffortStairs, ModelEffortMenu,
+    NozzleSlider, ReasoningPanel,
 };
 
 use super::{Code, mk, rng, sel, tog, var};
@@ -638,6 +638,79 @@ fn nozzle_slider_demo() -> Demo {
     }
 }
 
+// ---------- Effort stairs ----------
+
+fn effort_stairs(v: &Vals, _now: ClockMs) -> Element {
+    let mut msg = use_signal(String::new);
+    let key = format!("{}{}", v.s("level"), v.s("budget"));
+    let start = level_index(&effort_scale(), v.s("level"), 2);
+    let budget = v.b("budget");
+    rsx! {
+        div { key: "{key}", "data-k": "{key}", style: "width:300px;max-width:100%;display:flex;flex-direction:column;gap:10px",
+            EffortStairs { default_value: start, budget,
+                on_change: move |i: usize| msg.set(format!("onChange({})", effort_scale()[i].label)) }
+            {status(msg)}
+        }
+    }
+}
+
+fn effort_stairs_code(_: &Vals) -> String {
+    Code::new("EffortStairs")
+        .raw("value", "Some(effort())")
+        .raw("on_change", "move |i| effort.set(i)")
+        .done()
+}
+
+fn effort_stairs_demo() -> Demo {
+    Demo {
+        controls: vec![
+            sel("level", "Level", &FIVE, "high"),
+            tog("budget", "Budget line", true),
+        ],
+        variants: vec![
+            var(
+                "high",
+                "Three bars lit in ink; the line under the name gives a rough thinking budget and wait.",
+                &[],
+            ),
+            var(
+                "max",
+                "All five lit, the top one red: no cap.",
+                &[("level", "max")],
+            ),
+            var(
+                "plain",
+                "Without the budget line.",
+                &[("budget", "false"), ("level", "medium")],
+            ),
+        ],
+        render: effort_stairs,
+        code: effort_stairs_code,
+        keyboard: vec![
+            ("← / → · Home / End", "One level, or the ends"),
+            ("Pointer over a bar", "Previews that level's budget"),
+        ],
+        a11y: vec![
+            "The bars are one slider; each bar is a click target, the slider's value text is the level's name.",
+            "The budget preview on hover is extra; the chosen level is always said in the status line.",
+        ],
+        responsive: vec!["300 px card; bars share the width."],
+        height: 260,
+        live: false,
+        align: Align::Center,
+        ..mk(
+            "effort-stairs",
+            "Effort stairs",
+            CAT,
+            "An Oxyn original: one rising bar per level, lit up to the chosen one (the top in red); pointing at a bar previews its thinking budget and wait.",
+            "EffortStairs",
+            "EffortStairsEl",
+            "effort-stairs",
+            "parity/stairsfid.rs",
+        )
+    }
+}
+
 /// Every Thinking Selector demo, in sidebar order.
 pub(crate) fn demos() -> Vec<Demo> {
     vec![
@@ -648,5 +721,6 @@ pub(crate) fn demos() -> Vec<Demo> {
         context_effort_menu_demo(),
         model_effort_menu_demo(),
         nozzle_slider_demo(),
+        effort_stairs_demo(),
     ]
 }

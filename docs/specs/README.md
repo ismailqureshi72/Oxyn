@@ -213,4 +213,5 @@ specified just as deeply. When we point at one component as an example, the stan
 | [context-effort-menu.md](context-effort-menu.md) | built v0.1 (variants 1, Thinking Selector) |
 | [model-effort-menu.md](model-effort-menu.md) | built v0.1 (variants 1, Thinking Selector) |
 | [nozzle-slider.md](nozzle-slider.md) | built v0.1 (variants 1, Thinking Selector) |
+| [effort-stairs.md](effort-stairs.md) | built v0.1 (variants 1, Thinking Selector) |
 | Every other component in [../component-taxonomy.md](../component-taxonomy.md) | to write in V2.2 |

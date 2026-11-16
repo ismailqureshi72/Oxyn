@@ -56,6 +56,7 @@
 //! - [`reasonfid`]: Thinking Selector: Reasoning panel keys, context labels
 //! - [`effmenufid`]: Thinking Selector menus: roving highlight, context windows, models with effort.
 //! - [`nozzlefid`]: Thinking Selector: Nozzle line strokes and stops (Oxyn original)
+//! - [`stairsfid`]: Thinking Selector: Effort stairs budgets (Oxyn original)
 //! - [`answers`]: fidelity batch, family A: AI Answer markup and streaming, Cited Answer
 //!   sentences and quotes, Message Actions, Thinking Loader phases, Thinking State steps and the
 //!   Writing Assistant's sample writer and dictation.
@@ -110,6 +111,7 @@ pub mod rootfid;
 pub mod runningfid;
 pub mod schedfid;
 pub mod seqfid;
+pub mod stairsfid;
 pub mod text;
 pub mod thinkfid;
 pub mod toolmapfid;

@@ -48,6 +48,7 @@ pub use parity::DiffTimelineRunEl;
 pub use parity::EffortListEl;
 pub use parity::EffortPillEl;
 pub use parity::EffortRulerEl;
+pub use parity::EffortStairsEl;
 pub use parity::FanoutGridEl;
 pub use parity::JudgeBracketEl;
 pub use parity::MemoryPanelEl;
