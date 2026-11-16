@@ -41,6 +41,7 @@
 //! - [`recapfid`]: fidelity batch, family B part 4: Agent Recap events, curve, counts.
 //! - [`seqfid`]: fidelity batch, family B part 4: Agent Sequence rows, frames, bars, demo run.
 //! - [`parallelfid`]: fidelity batch, family B part 9: Parallel Attempts race, scores, best and pick.
+//! - [`judgefid`]: fidelity batch, family B part 9: Judge Bracket seeds, verdicts, current match and winner path.
 //! - [`answers`]: fidelity batch, family A: AI Answer markup and streaming, Cited Answer
 //!   sentences and quotes, Message Actions, Thinking Loader phases, Thinking State steps and the
 //!   Writing Assistant's sample writer and dictation.
@@ -73,6 +74,7 @@ pub mod graphfid;
 pub mod handofffid;
 pub mod home;
 pub mod input;
+pub mod judgefid;
 pub mod lanesfid;
 pub mod ledgerfid;
 pub mod merge;

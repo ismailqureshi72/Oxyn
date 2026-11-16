@@ -8,10 +8,11 @@ use oxyn_core::{
         delegatefid::{db_agents, db_auto_plan, db_tasks},
         dtreefid::{dt_demo, dt_extra},
         fallbackfid::{FbOutcome, fb_demo, fb_demo_all_fail},
+        judgefid::{jb_demo, jb_demo_verdicts},
         parallelfid::{PaStatus, pa_at, pa_demo},
     },
 };
-use oxyn_dioxus::{DecisionTree, DelegateBoard, FallbackChain, ParallelAttempts};
+use oxyn_dioxus::{DecisionTree, DelegateBoard, FallbackChain, JudgeBracket, ParallelAttempts};
 
 use super::{Code, mk, sel, var};
 use crate::{Align, Demo, Vals};
@@ -354,12 +355,177 @@ fn parallel_attempts_demo(style: crate::Control) -> Demo {
     }
 }
 
+// ---------- Judge Bracket ----------
+
+fn judge_bracket(v: &Vals, now: ClockMs) -> Element {
+    let mut msg = use_signal(String::new);
+    let key = format!(
+        "{}{}{}{}",
+        v.s("style"),
+        v.s("state"),
+        v.s("size"),
+        v.s("width")
+    );
+    let state = v.s("state");
+    let four = v.s("size") == "four";
+    let all = jb_demo_verdicts();
+    let contenders = if four {
+        let c = jb_demo();
+        Some(vec![c[0].clone(), c[2].clone(), c[4].clone(), c[6].clone()])
+    } else {
+        None
+    };
+    let verdicts = if four {
+        // Re-seat the semifinal and final verdicts as a four-contender bracket.
+        let mut x: Vec<_> = all[4..].to_vec();
+        for vd in &mut x {
+            vd.round -= 1;
+        }
+        let k = match state {
+            "judging" | "pending" => 2,
+            "quarter" => 1,
+            _ => 3,
+        };
+        x.truncate(k);
+        Some(x)
+    } else {
+        let k = match state {
+            "judging" => 4,
+            "quarter" => 5,
+            "pending" => 2,
+            _ => 7,
+        };
+        Some(all[..k].to_vec())
+    };
+    let open = match (state, four) {
+        ("quarter", false) => Some((0, 1)),
+        ("pending", false) => Some((1, 1)),
+        ("quarter", true) => Some((0, 0)),
+        _ => None,
+    };
+    let live = state == "live";
+    let w = match v.s("width") {
+        "narrow" => "380px",
+        _ => "640px",
+    };
+    rsx! {
+        div { "data-k": "{key}", key: "{key}", "data-state": "{state}", style: "width:{w};max-width:100%;display:flex;flex-direction:column;gap:8px",
+            JudgeBracket { now, live, contenders, verdicts: if live { None } else { verdicts }, open, style: cstyle(v),
+                on_pick: move |id: String| msg.set(format!("onPick({id:?})")) }
+            {status(msg)}
+        }
+    }
+}
+
+fn judge_bracket_code(_: &Vals) -> String {
+    Code::new("JudgeBracket")
+        .raw("contenders", "Some(answers.seeded())")
+        .raw("verdicts", "Some(judge.verdicts())")
+        .raw("judge", "\"Opus 4.1\"")
+        .raw("now", "clock.now()")
+        .raw("on_pick", "move |id| apply(id)")
+        .done()
+}
+
+fn judge_bracket_demo(style: crate::Control) -> Demo {
+    Demo {
+        controls: vec![
+            style,
+            sel(
+                "state",
+                "State",
+                &["live", "judging", "quarter", "pending", "decided"],
+                "live",
+            ),
+            sel("size", "Contenders", &["eight", "four"], "eight"),
+            sel("width", "Width", &["wide", "narrow"], "wide"),
+        ],
+        variants: vec![
+            var(
+                "live",
+                "Plays and loops: each match shimmers while the judge compares, the preferred answer moves on, the other fades but stays; at the end the winner's way lights up and a cup appears.",
+                &[],
+            ),
+            var(
+                "judging",
+                "Quarterfinals decided, a semifinal being judged: its names shimmer and the panel says the judge is comparing.",
+                &[("state", "judging")],
+            ),
+            var(
+                "match-open",
+                "A decided quarterfinal opened: both answers with their meta line, code and score, the Winner tag and the judge's reason.",
+                &[("state", "quarter")],
+            ),
+            var(
+                "not-judged",
+                "A semifinal whose contenders aren't known yet: dashed empty slots, Not judged yet.",
+                &[("state", "pending")],
+            ),
+            var(
+                "decided",
+                "The final decided: the winner's way in blue round after round, a cup in the final, and a Use button.",
+                &[("state", "decided")],
+            ),
+            var(
+                "four",
+                "Four contenders: semifinals and a final.",
+                &[("state", "decided"), ("size", "four")],
+            ),
+            var(
+                "narrow",
+                "When the rounds don't fit, each round becomes a list with one match a row and the answers stack.",
+                &[("state", "decided"), ("width", "narrow")],
+            ),
+            var(
+                "classic",
+                "Classic style: header band, framed answers panel, squarer slots.",
+                &[("style", "classic"), ("state", "quarter")],
+            ),
+        ],
+        render: judge_bracket,
+        code: judge_bracket_code,
+        keyboard: vec![
+            ("Tab", "Match by match, then the answers and Use"),
+            (
+                "→ / ←",
+                "Forward to the next-round match, or back to the first feeder",
+            ),
+            ("↑ / ↓", "Previous and next match in the round"),
+            ("Enter / Space", "Opens or closes a match's answers"),
+            ("Escape", "Back to the match being judged"),
+        ],
+        a11y: vec![
+            "Each match is a button named with both contenders and the result (or that it is being judged).",
+            "The winner keeps full colour and its score; the loser fades and its outline turns dashed – never colour alone.",
+            "Progress (round · decided/total) is a status region; reduced motion makes everything simply appear.",
+        ],
+        responsive: vec![
+            "Rounds share the width with fixed slot heights; the elbows join each pair into the next round.",
+            "Under 560 px each round is a list with one match a row and the two answers stack.",
+        ],
+        height: 640,
+        live: true,
+        align: Align::Start,
+        ..mk(
+            "judge-bracket",
+            "Judge Bracket",
+            "tools",
+            "Answers from several models in a knockout bracket judged by another model: open any match to compare both answers, their scores and why one won; once the final is settled the champion's route turns blue.",
+            "JudgeBracket",
+            "JudgeBracketEl",
+            "judge-bracket",
+            "parity/judgefid.rs",
+        )
+    }
+}
+
 /// Family B part 8 demos.
 pub(crate) fn demos() -> Vec<Demo> {
     let style = || sel("style", "Style", &["clean", "classic"], "clean");
     vec![
         decision_tree_demo(style()),
         parallel_attempts_demo(style()),
+        judge_bracket_demo(style()),
         Demo {
             controls: vec![
                 style(),
