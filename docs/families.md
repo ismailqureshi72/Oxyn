@@ -50,7 +50,7 @@ How hard the model thinks: rulers, sliders, menus and pickers.
 - Effort pill + popover with step dots
 - Context window + Effort grouped dropdown
 - Model list with effort suffix + cascading submenu
-- Nozzle line (user design): short closely spaced red lines, a transparent ring slides to select
+- Nozzle line (user design): even thin lines in a steel-blue → coral → periwinkle gradient, a solid nozzle in the colour under it slides to select (tone red keeps the all-red look)
 - Effort stairs: ascending bars, budget + latency estimate per step
 - Thought dial: a knob whose ring fills with tick marks; scroll to turn
 - Budget dial in tokens: pick a token cap, effort label follows

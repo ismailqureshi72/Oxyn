@@ -562,24 +562,50 @@ fn model_effort_menu_demo() -> Demo {
 
 // ---------- Nozzle line ----------
 
+fn nozzle_scale(v: &Vals) -> Vec<oxyn_core::parity::thinkfid::EffortLevel> {
+    match v.s("levels") {
+        "four" => effort_scale_short(),
+        "api" => effort_scale_api(),
+        _ => effort_scale(),
+    }
+}
+
 fn nozzle_slider(v: &Vals, _now: ClockMs) -> Element {
     let mut msg = use_signal(String::new);
-    let key = format!("{}{}{}", v.s("level"), v.s("strokes"), v.s("caption"));
-    let start = level_index(&effort_scale(), v.s("level"), 2);
+    let key = format!(
+        "{}{}{}{}{}{}",
+        v.s("level"),
+        v.s("levels"),
+        v.s("strokes"),
+        v.s("caption"),
+        v.s("tone"),
+        v.s("size")
+    );
+    let scale = nozzle_scale(v);
+    let names = scale.clone();
+    let start = level_index(&scale, v.s("level"), scale.len() / 2);
     let strokes = v.f("strokes").max(12.0) as usize;
     let caption = v.b("caption");
+    let tone = v.s("tone").to_string();
+    let size = v.s("size").to_string();
     rsx! {
-        div { key: "{key}", "data-k": "{key}", style: "width:420px;max-width:100%;display:flex;flex-direction:column;gap:10px",
-            NozzleSlider { default_value: start, strokes, caption,
-                on_change: move |i: usize| msg.set(format!("onChange({})", effort_scale()[i].label)) }
+        div { key: "{key}", "data-k": "{key}", style: "width:440px;max-width:100%;display:flex;flex-direction:column;gap:10px",
+            NozzleSlider { levels: Some(scale), default_value: start, strokes, caption, tone, size,
+                on_change: move |i: usize| msg.set(format!("onChange({})", names[i].label)) }
             {status(msg)}
         }
     }
 }
 
-fn nozzle_slider_code(_: &Vals) -> String {
-    Code::new("NozzleSlider")
-        .raw("value", "Some(effort())")
+fn nozzle_slider_code(v: &Vals) -> String {
+    let mut c = Code::new("NozzleSlider");
+    if v.s("tone") == "red" {
+        c = c.raw("tone", "\"red\"");
+    }
+    if v.s("size") != "md" {
+        c = c.raw("size", &format!("\"{}\"", v.s("size")));
+    }
+    c.raw("value", "Some(effort())")
         .raw("on_change", "move |i| effort.set(i)")
         .done()
 }
@@ -587,22 +613,38 @@ fn nozzle_slider_code(_: &Vals) -> String {
 fn nozzle_slider_demo() -> Demo {
     Demo {
         controls: vec![
+            sel("tone", "Tone", &["gradient", "red"], "gradient"),
+            sel("levels", "Levels", &["five", "four", "api"], "five"),
             sel("level", "Level", &FIVE, "high"),
-            rng("strokes", "Strokes", 21.0, 61.0, 4.0, "41"),
+            sel("size", "Size", &["sm", "md", "lg"], "md"),
+            rng("strokes", "Lines", 25.0, 49.0, 4.0, "37"),
             tog("caption", "Caption", true),
         ],
         variants: vec![
             var(
                 "high",
-                "The nozzle – a see-through ring – sits over the middle stop; the red strokes show through it.",
+                "Even gradient lines; the solid nozzle sits on the centre stop in coral.",
                 &[],
             ),
-            var("low", "Resting on the first stroke.", &[("level", "low")]),
-            var("max", "At the far end.", &[("level", "max")]),
             var(
-                "dense",
-                "61 strokes, no caption: just the line and the ring.",
-                &[("strokes", "61"), ("caption", "false")],
+                "low",
+                "On the first line, filled steel blue.",
+                &[("level", "low")],
+            ),
+            var(
+                "max",
+                "At the far end, filled periwinkle.",
+                &[("level", "max")],
+            ),
+            var(
+                "red",
+                "Tone red: every line and the nozzle in the one red.",
+                &[("tone", "red")],
+            ),
+            var(
+                "small",
+                "Size sm, four levels, no caption.",
+                &[("size", "sm"), ("levels", "four"), ("caption", "false")],
             ),
         ],
         render: nozzle_slider,
@@ -616,12 +658,15 @@ fn nozzle_slider_demo() -> Demo {
                 "Drag",
                 "The nozzle follows the pointer and snaps to the nearest stop",
             ),
+            ("Click", "The nozzle jumps to the nearest level"),
         ],
         a11y: vec![
-            "role=slider with the level's name as value text; the strokes and ring are decoration.",
-            "Level stops are drawn a touch taller and bolder so they read without colour.",
+            "role=slider with the level's name as value text; the lines and the nozzle are decoration.",
+            "The level is named in the caption and the value text, so it never rests on colour; light-mode line colours keep 4:1 on white.",
         ],
-        responsive: vec!["420 px up to its container; strokes are placed by percentage."],
+        responsive: vec![
+            "440 px up to its container; lines are placed by percentage, so they close up on narrow screens.",
+        ],
         height: 200,
         live: false,
         align: Align::Center,
@@ -629,7 +674,7 @@ fn nozzle_slider_demo() -> Demo {
             "nozzle-slider",
             "Nozzle line",
             CAT,
-            "An Oxyn original: short, closely spaced red strokes with a hand-drawn wobble; a see-through ring slides along and snaps to the levels.",
+            "An Oxyn original after the user's reference: even thin lines in a steel-blue to coral to periwinkle gradient; a solid nozzle in the colour under it slides along and snaps to the levels. Tone red keeps the all-red look.",
             "NozzleSlider",
             "NozzleSliderEl",
             "nozzle-slider",
