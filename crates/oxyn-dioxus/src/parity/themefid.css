@@ -253,7 +253,7 @@
 .oxtys-t{margin:0 0 .3em;font-size:1.25em;font-weight:600;line-height:1.2}
 .oxtys-p{margin:0;color:var(--oxth-fg2)}
 .oxtys-read{margin:8px 2px 0;min-height:16px;font-size:12px;color:var(--oxth-mute)}
-@media (max-width:480px){.oxtys{padding:14px}.oxtys-ctl{flex-direction:column;align-items:stretch}.oxtys-seg{align-self:flex-start}}
+@media (max-width:480px){.oxtys{padding:14px}.oxtys-ctl{flex-direction:column;align-items:stretch}.oxtys-seg{align-self:flex-start}.oxtys-size{flex:none}}
 
 /* Light playground */
 .oxtlp{width:560px;padding:16px 18px 12px}
@@ -338,15 +338,16 @@
 .oxdcf-gt{font-size:13.5px;font-weight:600}
 .oxdcf-gm{font-size:12px;color:var(--oxth-mute)}
 .oxdcf-bar{position:relative;display:block;height:5px;border-radius:3px;background:color-mix(in srgb,var(--oxth-fg) 12%,transparent);overflow:clip}
-.oxdcf-fill{position:absolute;top:0;bottom:0;left:0;width:40%;border-radius:3px;background:var(--oxth-fg);animation:oxdcf-run 1.6s ease-in-out infinite}
-@keyframes oxdcf-run{0%{transform:translateX(-100%)}100%{transform:translateX(260%)}}
+.oxdcf-fill{position:absolute;top:0;bottom:0;left:0;width:100%;border-radius:3px;background:linear-gradient(90deg,transparent 0 35%,var(--oxth-fg) 35% 65%,transparent 65%);
+  background-size:280% 100%;animation:oxdcf-run 1.6s ease-in-out infinite}
+@keyframes oxdcf-run{from{background-position:100% 0}to{background-position:0 0}}
 .oxdcf-row2{display:flex;align-items:center;gap:7px}
 .oxdcf-spin{width:12px;height:12px;border-radius:999px;border:2px solid color-mix(in srgb,var(--oxth-fg) 20%,transparent);border-top-color:var(--oxth-fg);animation:oxdcf-spin .8s linear infinite}
 @keyframes oxdcf-spin{to{transform:rotate(360deg)}}
 .oxdcf-pv[data-contrast="true"] .oxdcf-glass{border-color:var(--oxth-fg)}
 .oxdcf-pv[data-contrast="true"] .oxdcf-gm{color:var(--oxth-fg)}
 .oxdcf-pv[data-contrast="true"] .oxdcf-bar{background:color-mix(in srgb,var(--oxth-fg) 30%,transparent)}
-.oxdcf-pv[data-still="true"] .oxdcf-fill{animation:none;transform:none;width:60%}
+.oxdcf-pv[data-still="true"] .oxdcf-fill{animation:none;width:60%;background:var(--oxth-fg)}
 .oxdcf-pv[data-still="true"] .oxdcf-spin{animation:none;border-color:var(--oxth-fg)}
 .oxdcf-pv[data-solid="true"] .oxdcf-glass{background:var(--oxth-card);backdrop-filter:none;-webkit-backdrop-filter:none}
 .oxdcf-pv[data-bold="true"] .oxdcf-gt{font-weight:800}
