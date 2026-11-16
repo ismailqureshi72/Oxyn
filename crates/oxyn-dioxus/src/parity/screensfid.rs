@@ -830,6 +830,7 @@ pub fn RailFrame(
     let mut thr = threads;
     let mut active = active;
     let mut col = use_signal(|| true);
+    let mut cpeek = use_signal(|| false);
     let mut sect = use_signal(|| "chats".to_string());
     let mut proj = use_signal(|| "all".to_string());
     let mut q = use_signal(String::new);
@@ -846,6 +847,7 @@ pub fn RailFrame(
     let rest: Vec<Thread> = rest.into_iter().filter(keep).collect();
     let cur = active();
     let co = col();
+    let cp = cpeek();
     let proj_l = match proj().as_str() {
         "all" => "All projects".to_string(),
         k => projects()
@@ -875,34 +877,32 @@ pub fn RailFrame(
         }
     };
     rsx! {
-        div { class: "oxscn oxsrl", "data-layout": "{lay_k}", "data-state": "{st_k}", "data-col": "{co}", style: "--oxscn-h:{height}px",
+        div { class: "oxscn oxsrl", "data-layout": "{lay_k}", "data-state": "{st_k}", "data-col": "{co}", "data-cpeek": "{cp}", style: "--oxscn-h:{height}px",
             nav { class: "oxsrl-rail", "aria-label": "Sections",
                 span { class: "oxscn-mono", title: "{WORKSPACE}", "K" }
                 for (k, l, i) in [("chats", "Chats", "chat"), ("tasks", "Tasks", "tasks"), ("runs", "Runs", "runs"), ("files", "Files", "folder"), ("apps", "Apps", "apps")] {
                     button { key: "{k}", r#type: "button", class: "oxsrl-rb", "aria-label": "{l}", title: "{l}", "aria-current": if sect() == k { "page" } else { "false" },
-                        onclick: move |_| { if k == "chats" && sect() == "chats" { col.toggle(); } else { col.set(true); } sect.set(k.to_string()); }, {ico(i)} }
+                        onclick: move |_| { if k == "chats" && sect() == "chats" { col.toggle(); cpeek.toggle(); } else { col.set(true); cpeek.set(true); } sect.set(k.to_string()); }, {ico(i)} }
                 }
                 span { class: "oxscn-grow" }
                 button { r#type: "button", class: "oxsrl-rb", "aria-label": "Alerts", title: "Alerts", {ico("bell")} }
                 button { r#type: "button", class: "oxsrl-rb", "aria-label": "Settings", title: "Settings", {ico("gear")} }
                 span { class: "oxscn-av", title: "{PERSON}", "{PERSON_INI}" }
             }
-            if co {
-                div { class: "oxsrl-col",
-                    MenuButton { label: proj_l, aria: "Project", icon: "folder", items, checked: proj(), on_pick: move |k| proj.set(k), class: "oxsrl-proj" }
-                    label { class: "oxscn-search",
-                        {ico("search")}
-                        input { r#type: "search", placeholder: "Search", "aria-label": "Search chats", value: "{q}", oninput: move |e| q.set(e.value()) }
-                    }
-                    button { r#type: "button", class: "oxscn-nav-b", onclick: move |_| on_new.call(()), {ico("plus")} span { "New chat" } }
-                    div { class: "oxscn-lists",
-                        if st == ScreenState::Loading { {skel(7)} }
-                        else if list.is_empty() { p { class: "oxscn-hint", "No chats yet. Start one with New chat." } }
-                        else {
-                            if !pinned.is_empty() { p { class: "oxscn-gh", "Pinned" } for t in pinned { {row(t)} } }
-                            p { class: "oxscn-gh", "Chats" }
-                            for t in rest { {row(t)} }
-                        }
+            div { class: "oxsrl-col",
+                MenuButton { label: proj_l, aria: "Project", icon: "folder", items, checked: proj(), on_pick: move |k| proj.set(k), class: "oxsrl-proj" }
+                label { class: "oxscn-search",
+                    {ico("search")}
+                    input { r#type: "search", placeholder: "Search", "aria-label": "Search chats", value: "{q}", oninput: move |e| q.set(e.value()) }
+                }
+                button { r#type: "button", class: "oxscn-nav-b", onclick: move |_| on_new.call(()), {ico("plus")} span { "New chat" } }
+                div { class: "oxscn-lists",
+                    if st == ScreenState::Loading { {skel(7)} }
+                    else if list.is_empty() { p { class: "oxscn-hint", "No chats yet. Start one with New chat." } }
+                    else {
+                        if !pinned.is_empty() { p { class: "oxscn-gh", "Pinned" } for t in pinned { {row(t)} } }
+                        p { class: "oxscn-gh", "Chats" }
+                        for t in rest { {row(t)} }
                     }
                 }
             }
@@ -910,6 +910,7 @@ pub fn RailFrame(
                 main { class: "oxscn-main",
                     header { class: "oxscn-top",
                         button { r#type: "button", class: "oxscn-ib oxsrl-colb", "aria-label": if co { "Hide chats" } else { "Show chats" }, "aria-pressed": "{co}", onclick: move |_| col.toggle(), {ico("side")} }
+                        button { r#type: "button", class: "oxscn-ib oxscn-menu-b", "aria-label": "Open chats", "aria-expanded": "{cp}", onclick: move |_| cpeek.toggle(), {ico("side")} }
                         span { class: "oxscn-grow" }
                         if has_work {
                             button { r#type: "button", class: "oxscn-ib oxscn-wtog-w", "aria-label": if wo { format!("Hide {wl}") } else { format!("Show {wl}") }, "aria-pressed": "{wo}", onclick: move |_| wopen.toggle(), {ico("panel")} }
@@ -926,6 +927,7 @@ pub fn RailFrame(
                 }
             }
             if wp { div { class: "oxscn-scrim", onclick: move |_| wpeek.set(false) } }
+            if cp && !wp { div { class: "oxscn-scrim oxsrl-cscrim", onclick: move |_| cpeek.set(false) } }
         }
     }
 }
@@ -1849,7 +1851,7 @@ pub fn ChatRunScreen(
                         div { dt { "Steps" } dd { "{steps_s}" } } div { dt { "Tool calls" } dd { "{calls}" } }
                         div { dt { "Time" } dd { "{time_s}" } } div { dt { "Cost" } dd { "{cost_s}" } }
                     }
-                    div { class: "oxcov-h", h3 { "Plan" } span { class: "oxscn-row-a", "Enter renames · Alt+↑↓ moves · Delete removes" } }
+                    div { class: "oxcov-h", h3 { "Plan" } span { class: "oxscn-row-a oxcrn-keys", "Enter renames · Alt+↑↓ moves · Delete removes" } }
                     ol { class: "oxcrn-plan", "aria-label": "Plan",
                         for (i, s) in p.iter().enumerate() {
                             {

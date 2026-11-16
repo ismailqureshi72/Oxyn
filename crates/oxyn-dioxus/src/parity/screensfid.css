@@ -282,6 +282,7 @@ span.oxcst-st{width:110px;padding:0;border:0}
 .oxsrl[data-layout="inset"] .oxsrl-col{margin-right:8px;border-radius:12px;background:var(--oxth-card2);border:1px solid var(--oxth-line)}
 .oxsrl[data-layout="flat"] .oxsrl-rail,.oxsrl[data-layout="flat"] .oxsrl-col{border-right:1px solid var(--oxth-line)}
 .oxsrl-col>.oxscn-mb{width:100%}
+.oxsrl[data-col="false"] .oxsrl-col,.oxsrl-cscrim{display:none}
 .oxscn-btn.oxsrl-proj{width:100%;border-color:transparent;background:transparent;font-weight:600;color:var(--oxth-fg)}
 .oxcdr{display:flex;flex-direction:column;gap:14px;min-height:100%;padding:18px 20px 16px}
 .oxcdr>.oxscn-cmp{margin-top:auto}
@@ -340,6 +341,7 @@ li[data-s="active"] .oxcpr-tick{border-color:var(--oxth-fg);border-top-color:tra
 /* Run */
 .oxcrn{display:flex;flex-direction:column;gap:12px;padding:18px 20px 28px;max-width:760px}
 .oxcrn>.oxscn-row-a{display:flex;align-items:center;gap:6px}
+.oxcrn-keys{min-width:0;white-space:normal;text-align:right}
 .oxcrn-t{margin:0;font-size:20px;font-weight:600;letter-spacing:-.01em}
 .oxcrn-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:0}
 .oxcrn-stats div{padding:8px 10px;border-radius:11px;border:1px solid var(--oxth-line);background:var(--oxth-card2)}
@@ -388,10 +390,12 @@ li[data-s="active"] .oxcpr-tick{border-color:var(--oxth-fg);border-top-color:tra
   .oxsrl-col{width:200px}
   .oxcst-hi{font-size:22px}
   .oxcov-grid{grid-template-columns:minmax(0,1fr)}
+  .oxcrn-tool{display:none}
 }
 @container (max-width: 640px){
-  .oxscn-side{position:absolute;top:0;bottom:0;left:0;width:min(270px,86%);transform:translateX(-104%);box-shadow:var(--oxth-sh)}
-  .oxscn-side[data-peek="true"]{transform:none}
+  .oxscn-side{position:absolute;top:0;bottom:0;left:0;width:min(270px,86%);transform:translateX(-104%);visibility:hidden;box-shadow:var(--oxth-sh);
+    transition:transform .22s ease,visibility 0s linear .22s}
+  .oxscn-side[data-peek="true"]{transform:none;visibility:visible;transition:transform .22s ease,visibility 0s}
   .oxscn-side[data-rail="true"]{width:min(270px,86%);align-items:stretch}
   .oxscn-side[data-rail="true"] .oxscn-lbl,.oxscn-side[data-rail="true"] .oxscn-ws-n,.oxscn-side[data-rail="true"] .oxscn-search,.oxscn-side[data-rail="true"] .oxscn-lists{display:revert}
   .oxscn-sep[data-for="side"],.oxscn-fold{display:none}
@@ -400,6 +404,10 @@ li[data-s="active"] .oxcpr-tick{border-color:var(--oxth-fg);border-top-color:tra
   .oxsrl[data-layout="inset"]{padding:6px 6px 6px 0}
   .oxsrl-col{position:absolute;top:0;bottom:0;left:52px;z-index:6;width:min(240px,75%);box-shadow:var(--oxth-sh)}
   .oxsrl[data-layout="inset"] .oxsrl-col{top:6px;bottom:6px}
+  .oxsrl .oxsrl-col,.oxsrl[data-col="false"] .oxsrl-col{display:none}
+  .oxsrl[data-cpeek="true"] .oxsrl-col{display:flex}
+  .oxsrl-cscrim{display:block}
+  .oxsrl-colb{display:none}
   .oxsrl-rail{width:46px}
   .oxsrl-rb{width:32px;height:32px}
   .oxscn-wtog-n span{display:none}
@@ -407,7 +415,7 @@ li[data-s="active"] .oxcpr-tick{border-color:var(--oxth-fg);border-top-color:tra
   .oxcst-hi{font-size:21px}
   .oxcov,.oxcag,.oxcdr,.oxcpr,.oxcrn{padding:14px 12px}
   .oxcrn-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .oxcrn-tool,.oxcrn-step>.oxscn-row-a{display:none}
+  .oxcrn-step>.oxscn-row-a,.oxcrn-keys{display:none}
   .oxcrn-lbl{width:auto}
   .oxscn-cmp-row .oxscn-btn span{display:none}
   .oxscn-top{padding:0 6px 0 8px}
