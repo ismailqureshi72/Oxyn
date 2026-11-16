@@ -7,8 +7,8 @@ demo night's events, names, counts and times are our own).
 Components: `AgentRecap` (Dioxus) · `AgentRecapEl` (GPUI), model in `oxyn_core::parity::recapfid`.
 
 ## 1. Purpose
-What the agents did while you were away: the night as a small chart with a peak per event, then a board of what needs
-you, what failed and what's done – acted on right on the card.
+A catch-up card for when you come back: a tiny timeline of the night with a spike per event, then grouped items –
+waiting on you, broken, finished – each with its action in place.
 
 ## 2. Parts
 | Part | Look (Clean) |

@@ -13,7 +13,7 @@
   --oxad-risky:#D99A3D;--oxad-riskybg:#2A2013;--oxad-dest:#E5786B;--oxad-destbg:#2B1715;--oxad-inset:#1F1F22;
   --oxad-sh:0 1px 2px rgba(0,0,0,.4);--oxad-selsh:0 1px 2px rgba(0,0,0,.35);
 }
-.oxad{position:relative;display:flex;flex-direction:column;width:432px;max-width:100%;container-type:inline-size;border:1px solid var(--oxad-bd);border-radius:12px;background:var(--oxad-card);box-shadow:var(--oxad-sh);color:var(--oxad-fg);font-size:14px;line-height:1.35;overflow:clip;-webkit-font-smoothing:antialiased}
+.oxad{box-sizing:border-box;position:relative;display:flex;flex-direction:column;width:432px;max-width:100%;container-type:inline-size;border:1px solid var(--oxad-bd);border-radius:12px;background:var(--oxad-card);box-shadow:var(--oxad-sh);color:var(--oxad-fg);font-size:14px;line-height:1.35;overflow:clip;-webkit-font-smoothing:antialiased}
 .oxad *{box-sizing:border-box}
 .oxad-sr,.oxad-mean{position:absolute;width:1px;height:1px;margin:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 .oxad button:focus-visible{outline:2px solid var(--oxad-fg);outline-offset:2px}

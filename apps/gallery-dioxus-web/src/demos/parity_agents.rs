@@ -670,7 +670,7 @@ pub(crate) fn demos() -> Vec<Demo> {
                     "Enter / Space",
                     "On a face: follow that agent, or stop following",
                 ),
-                ("Esc", "Closes the window of a suggestion"),
+                ("Esc", "Dismisses an open suggestion"),
             ],
             a11y: vec![
                 "The text is real text in headings, paragraphs, a list and a table – pointers, carets and selections are decoration, hidden from screen readers.",
@@ -1063,7 +1063,7 @@ pub(crate) fn demos() -> Vec<Demo> {
                 ("Enter / Space", "Undoes or redoes the focused change"),
             ],
             a11y: vec![
-                "The ledger is an ordered list labelled with its title, newest first.",
+                "An ordered list named after the ledger, latest entry on top.",
                 "Undo is named with the change and how many build on it; Redo with the change.",
                 "Before → after is plain text and the arrow is read as \"to\"; what was undone is announced.",
             ],
@@ -1309,7 +1309,7 @@ pub(crate) fn demos() -> Vec<Demo> {
                 "agent-recap",
                 "Agent Recap",
                 "tools",
-                "What the agents did while you were away – the night as a small chart with a peak per event, then a board of what needs you, what failed and what's done, acted on right on the card.",
+                "A catch-up card for when you come back: a tiny timeline of the night with a spike per event, then grouped items – waiting on you, broken, finished – each with its action in place.",
                 "AgentRecap",
                 "AgentRecapEl",
                 "agent-recap",

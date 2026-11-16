@@ -33,6 +33,8 @@
 //! - [`autonomyfid`]: fidelity batch, family B part 6: Autonomy Dial levels, locks and the asks-first rule.
 //! - [`awayfid`]: fidelity batch, family B part 6: Away Summary items, order, counts and folding.
 //! - [`collabfid`]: fidelity batch, family B part 6: Collaboration Stream messages, quotes, mentions.
+//! - [`ctxmapfid`]: fidelity batch, family B part 6: Context Map blocks, ordered treemap, compaction.
+//! - [`costfid`]: fidelity batch, family B part 6: Cost Waterfall steps, rows, axis and formats.
 //! - [`recapfid`]: fidelity batch, family B part 4: Agent Recap events, curve, counts.
 //! - [`seqfid`]: fidelity batch, family B part 4: Agent Sequence rows, frames, bars, demo run.
 //! - [`answers`]: fidelity batch, family A: AI Answer markup and streaming, Cited Answer
@@ -50,7 +52,9 @@ pub mod chatfid;
 pub mod collabfid;
 pub mod compose;
 pub mod confirm;
+pub mod costfid;
 pub mod crewfid;
+pub mod ctxmapfid;
 pub mod cursorsfid;
 pub mod diff;
 pub mod edit;

@@ -97,7 +97,7 @@ impl Default for AutonomyDialEl {
             level: 1,
             pinned: autonomy_demo_pinned(),
             title: "Agent permissions".into(),
-            subtitle: "What it may do without asking you".into(),
+            subtitle: "What the agent may do on its own".into(),
             classic: false,
             act: None,
             theme: &Theme::DARK,

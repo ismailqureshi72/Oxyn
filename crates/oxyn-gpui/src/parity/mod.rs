@@ -19,7 +19,10 @@ mod approvals;
 mod autonomyfid;
 mod awayfid;
 mod chatfid;
+mod collabfid;
+mod costfid;
 mod crewfid;
+mod ctxmapfid;
 mod cursorsfid;
 mod fidelity;
 mod fields;
@@ -51,7 +54,10 @@ pub use approvals::{
 pub use autonomyfid::AutonomyDialEl;
 pub use awayfid::AwaySummaryEl;
 pub use chatfid::{AgentRunPanelEl, ModelPickerMenuEl};
+pub use collabfid::CollabStreamEl;
+pub use costfid::CostWaterfallEl;
 pub use crewfid::AgentCrewEl;
+pub use ctxmapfid::ContextMapEl;
 pub use cursorsfid::AgentCursorsEl;
 pub use fidelity::{AgentCommentThreadEl, ChatComposerEl, CommentsPanelEl, ThreadMsg, file_badge};
 pub use fields::{

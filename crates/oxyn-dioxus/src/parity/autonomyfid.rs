@@ -80,7 +80,7 @@ pub fn AutonomyDial(
     #[props(default = "Agent permissions".to_string())]
     title: String,
     /// Line under the heading.
-    #[props(default = "What it may do without asking you".to_string())]
+    #[props(default = "What the agent may do on its own".to_string())]
     subtitle: String,
     /// An action shown pointed at (its row tinted, its lock revealed).
     #[props(default)]
