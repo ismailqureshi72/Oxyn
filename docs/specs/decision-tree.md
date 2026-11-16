@@ -1,4 +1,4 @@
-**Status:** built v0.1 (2026-11-16, plan #32 affectUI fidelity pass, family B part 8).
+**Status:** built v0.2 (2026-11-16, plan #32 affectUI fidelity pass, family B part 8 – exact pass against the ref-1 capture notes).
 
 # Spec: Decision Tree (`decision-tree`)
 
@@ -14,16 +14,17 @@ worries it, which one it would take – and waits for a person to pick a path or
 ## 2. Parts
 | Part | Look (Clean, light) |
 |---|---|
-| Root | 820 px (max 100 %), container-sized; no panel – the bar and tree sit on the page |
-| Bar | blue tree glyph 18 px, "Decisions" 15/600, "n waiting for you" 13 muted; right: 5 px page dots (current #18181B, rest #D4D4D8) and "1 of n" |
-| Question | 205 px card, 12 px radius, #E6E6E9 hairline, 16 px padding; risk tag floating over the top-left corner (high #FEE4E2/#B42318, medium #FEF0C7/#B54708); 24 px agent tile (7 px radius) + agent 13/600 and model 11.5 muted; question 16/650 at 1.4; context 13 muted |
-| Branch | 183 × 36 px button, 10 px radius: 18 px number chip (#F1F1F3, 5 px radius), 14 px tool icon (brand marks coloured), label 14/600, "Agent's pick" 12/600 #2F6FED under it |
-| Lines | 1.5 px #D8DCE3 elbows from the card to a rail and on to each branch; the lit / picked path #4C7DF0 with a 3 px soft-blue ring on its card; dashed stubs to the consequences |
-| Consequences | 12.5 px muted lines; flagged runs are amber pills that open an "Agent's note" card (note 13 px, source line with a warning glyph) |
-| Follow-up | question pill (8 px radius, 13.5/600) and its own 283 px option cards with consequences and app logos; dimmed to 42 % and disabled until its branch is picked |
+| Root | 820 px (max 100 %), container-sized decision card: white / #17171A, 1 px #E6E6E6 / #2A2A2E, 14 px radius, soft shadow, 20 × 22 px padding |
+| Bar | blue tree glyph, "Decisions" 13/600, "n waiting for you" 12 muted; right: 5 px page dots (current #111827, rest #D4D4D8) and "1 of n" (12, tabular) |
+| Question | 190 px card, 12 px radius, #E6E6E6 hairline, 16 px padding; risk pill (10 px uppercase, 999 px radius) over the top-left corner (high #FEE2E2/#DC2626, medium #FEF3C7/#B45309; dark: translucent tints of #F87171 / #FBBF24); round 24 px agent avatar + agent 12/600 and model 11 muted; question 14/600; context 11 muted |
+| Branch | 150 × 40 px button, 10 px radius: 18 px number chip, 14 px tool icon (brand marks coloured), label 12/600, "Agent's pick" 11/600 #2563EB / #4C8DFF under it; picked: blue border on #EFF6FF |
+| Lines | 1.5 px #D4D4D8 elbows from the card to a rail and on to each branch; the lit / picked path #2563EB (dark #4C8DFF) with a 3 px soft-blue ring on its card; dashed stubs to the consequences |
+| Consequences | 11 px muted lines; flagged runs are amber (#B45309 on #FEF3C7) with an amber underline and that open an "Agent's note" card (note 13 px, source line with a warning glyph) |
+| Follow-up | sub-question as an 11 px muted label and its own 230 × 44 px option cards (10 px radius, 12/600 label, 11 px consequence) with consequences and app logos; dimmed to 42 % and disabled until its branch is picked |
 | Other… | the last branch; opens a two-line textarea (grows to three) with a darkening border; a sent instruction shows as a ringed card with "Sent to the …" |
 | Outcome | "✓ Approved · running" chip at the end of the picked path |
-| Footer | "Pick a branch 1 – 4 · next →" / "Then 1 – 2", kbd chips 18 px, plus "· note F" when there are flags |
+| Footer | "Choose a path 1 – 4 · next →" / "Then 1 – 2", 11 px, grey kbd chips 16 px (10 px text, 4 px radius), plus "· note F" when there are flags |
+| All decided | "n of n decided" in the bar; centre: 40 px green-tinted rounded-square check badge, "All decided" 14/600, a 12 px muted line |
 
 ## 3. Behaviour
 - `DtState::pick` takes the branch, then (when it has a follow-up) the follow-up option; a branch without one settles
@@ -45,11 +46,11 @@ so), with aria-keyshortcuts; flags take focus and aria-describedby points at a r
 reply is spoken through a polite status region; connector lines are pure CSS.
 
 ## 6. Responsive
-A container query: wide, question → branches → consequences left to right. Under 640 px top to bottom: branches hang
+A container query: wide, question → branches → consequences left to right. Under 520 px top to bottom: branches hang
 down the left below the question, consequences tucked under every branch; the "waiting" count steps aside.
 
 ## 7. Known gaps
-- Needs capture: the affectUI dark and classic screenshots were described in notes only; colours for dark are ours.
+- The ref-1 capture gives approximate sizes (screenshot reading); dark colours follow its hexes (#0B0B0C page, #111113 stage, #17171A card, #2A2A2E borders, #EDEDEF / #8A8A93 text).
 - Connector elbows are square (affectUI rounds them ~8 px) and do not draw themselves out on grow-in.
 - The agent's answer to an instruction is a fixed stand-in line (no async `onChoose` reply yet).
 - GPUI: a static snapshot – no lines, notes, hover or grow-in.

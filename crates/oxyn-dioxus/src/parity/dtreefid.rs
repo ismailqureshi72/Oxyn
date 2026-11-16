@@ -243,9 +243,13 @@ pub fn DecisionTree(
                 header { class: "oxdt-bar",
                     span { class: "oxdt-logo", {glyph("tree", 18)} }
                     h2 { class: "oxdt-ttl", "{title}" }
-                    span { class: "oxdt-wait", "{dt_waiting(0)}" }
+                    span { class: "oxdt-wait", "{all.len()} of {all.len()} decided" }
                 }
-                p { class: "oxdt-empty", "All decided – the agents are on their way." }
+                div { class: "oxdt-empty", role: "status",
+                    span { class: "oxdt-empty-ic", {glyph("check", 20)} }
+                    b { "All decided" }
+                    span { "Anything else your agents need from you will land here." }
+                }
                 div { class: "oxdt-sr", role: "status", "aria-live": "polite", "{live_msg}" }
             }
         };
@@ -511,7 +515,7 @@ pub fn DecisionTree(
                 if let Some((ok, _)) = outcome.clone() {
                     if ok { span { "Decided · next one in a moment" } } else { span { "{dt_reply(&d)}" } }
                 } else if first_level {
-                    span { "Pick a branch" }
+                    span { "Choose a path" }
                     kbd { "1" } span { "–" } kbd { "{top_key}" }
                     if n > 1 { span { "· next" } kbd { {glyph("arrow", 10)} } }
                 } else {
