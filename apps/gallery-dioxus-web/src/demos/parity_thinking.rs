@@ -6,7 +6,7 @@ use oxyn_core::{
     ClockMs,
     parity::thinkfid::{effort_scale, effort_scale_short, level_index},
 };
-use oxyn_dioxus::{EffortList, EffortRuler, ReasoningPanel};
+use oxyn_dioxus::{EffortList, EffortPill, EffortRuler, ReasoningPanel};
 
 use super::{Code, mk, rng, sel, tog, var};
 use crate::{Align, Demo, Vals};
@@ -303,11 +303,95 @@ fn effort_list_demo() -> Demo {
     }
 }
 
+// ---------- Effort pill ----------
+
+fn effort_pill(v: &Vals, _now: ClockMs) -> Element {
+    let mut msg = use_signal(String::new);
+    let key = format!("{}{}", v.s("level"), v.s("open"));
+    let start = (v.s("level") != "none").then(|| level_index(&effort_scale(), v.s("level"), 2));
+    let open = v.b("open");
+    rsx! {
+        div { key: "{key}", "data-k": "{key}", style: "width:400px;max-width:100%;min-height:230px;display:flex;flex-direction:column;align-items:flex-end;gap:10px",
+            EffortPill { default_value: start, default_open: open,
+                on_change: move |i: usize| msg.set(format!("onChange({})", effort_scale()[i].label)),
+                on_model: move |_| msg.set("onModel()".into()) }
+            {status(msg)}
+        }
+    }
+}
+
+fn effort_pill_code(_: &Vals) -> String {
+    Code::new("EffortPill")
+        .raw("value", "Some(effort())")
+        .s("model", "Atlas 6", "")
+        .raw("on_change", "move |i| effort.set(Some(i))")
+        .raw("on_model", "move |_| models.open()")
+        .done()
+}
+
+fn effort_pill_demo() -> Demo {
+    Demo {
+        controls: vec![
+            sel(
+                "level",
+                "Level",
+                &["none", "low", "medium", "high", "xhigh", "max"],
+                "high",
+            ),
+            tog("open", "Open", true),
+        ],
+        variants: vec![
+            var(
+                "open",
+                "The popover under the pill: the level, the model it applies to, and a fat slider with a dot per level.",
+                &[],
+            ),
+            var(
+                "unset",
+                "Nothing chosen yet: the pill reads “Select effort” in grey and the slider rests on the default.",
+                &[("level", "none"), ("open", "false")],
+            ),
+            var("max", "The thumb at the far end.", &[("level", "max")]),
+        ],
+        render: effort_pill,
+        code: effort_pill_code,
+        keyboard: vec![
+            ("Enter / Space on the pill", "Opens or closes the popover"),
+            (
+                "← / → · Home / End",
+                "On the slider: one level, or the ends",
+            ),
+            ("Escape", "Closes the popover"),
+        ],
+        a11y: vec![
+            "The pill reports aria-expanded; the popover is a dialog named Thinking effort.",
+            "The slider's value text is the level's name; reset is named after the level it returns to.",
+        ],
+        responsive: vec![
+            "380 px popover, capped at the viewport minus 32 px; the slider fills it.",
+        ],
+        height: 300,
+        live: false,
+        align: Align::Center,
+        ..mk(
+            "effort-pill",
+            "Effort pill",
+            CAT,
+            "A “Select effort” pill that opens a popover with the level, the model it applies to, a dotted step slider and reset.",
+            "EffortPill",
+            "EffortPillEl",
+            "effort-pill",
+            "parity/effpillfid.rs",
+        )
+    }
+}
+
 /// Every Thinking Selector demo, in sidebar order.
 pub(crate) fn demos() -> Vec<Demo> {
     vec![
         effort_ruler_demo(),
         reasoning_panel_demo(),
         effort_list_demo(),
+        effort_pill_demo(),
     ]
 }
