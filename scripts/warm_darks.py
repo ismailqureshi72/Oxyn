@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""List warm-hued dark greys (hue 15-65 deg, low saturation, low lightness) in the sources.
+"""List warm-hued dark greys (hue 15-65 deg, low saturation, low lightness) in the sources:
+components, GPUI palettes, tokens and the whole website shell (site/).
 
 Oxyn's default themes are neutral: dark surfaces are pure greys. Semantic colours (status, risk,
 diff, brand) are saturated and are not matched here. Exit code 1 when anything is found.
@@ -7,9 +8,9 @@ Usage: python3 scripts/warm_darks.py [--all]   (--all also prints the light warm
 """
 import colorsys, os, re, sys
 
-ROOTS = ['crates', 'apps', 'site/src', 'tokens', 'tools']
-EXT = ('.css', '.rs', '.json', '.ts', '.astro', '.mjs', '.html')
-SKIP = ('site/src/generated', 'node_modules', '/target', 'tokens/presets')
+ROOTS = ['crates', 'apps', 'site/src', 'site/public', 'site/astro.config.mjs', 'tokens', 'tools', 'docs/site']
+EXT = ('.css', '.rs', '.json', '.ts', '.astro', '.mjs', '.js', '.html', '.svg')
+SKIP = ('site/src/generated', 'site/public/wasm', 'node_modules', '/target', 'tokens/presets')
 HEX = re.compile(r'#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})\b')
 RGB = re.compile(r'rgba?\(\s*(\d{1,3})\s*[, ]\s*(\d{1,3})\s*[, ]\s*(\d{1,3})')
 GPUI = re.compile(r'\b0x([0-9a-fA-F]{6})(?:[0-9a-fA-F]{2})?\b')
@@ -18,7 +19,7 @@ GPUI = re.compile(r'\b0x([0-9a-fA-F]{6})(?:[0-9a-fA-F]{2})?\b')
 def warm(r, g, b, light=False):
     h, l, s = colorsys.rgb_to_hls(r / 255, g / 255, b / 255)
     hue = h * 360
-    if max(r, g, b) - min(r, g, b) < 3:
+    if max(r, g, b) == min(r, g, b):
         return False
     if not (15 <= hue <= 65):
         return False
@@ -30,7 +31,8 @@ def warm(r, g, b, light=False):
 def scan(light=False):
     hits = []
     for root in ROOTS:
-        for dp, _, fs in os.walk(root):
+        walk = [(os.path.dirname(root), [], [os.path.basename(root)])] if os.path.isfile(root) else os.walk(root)
+        for dp, _, fs in walk:
             if any(x in dp for x in SKIP):
                 continue
             for f in fs:

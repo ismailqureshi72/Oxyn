@@ -3,7 +3,7 @@
 @import './demo.css';
 
 :root,[data-theme='dark']{
-  --sl-color-accent-low:#1C1B1A;
+  --sl-color-accent-low:#1C1C1E;
   --sl-color-accent:#B4B4B8;
   --sl-color-accent-high:#F2F2F3;
   --sl-color-white:#F2F2F3;
@@ -12,7 +12,7 @@
   --sl-color-gray-3:#98989E;
   --sl-color-gray-4:#68686E;
   --sl-color-gray-5:#3B3B3F;
-  --sl-color-gray-6:#1C1B1A;
+  --sl-color-gray-6:#1C1C1E;
   --sl-color-black:#0B0B0C;
   --sl-font:var(--oxyn-font-ui);
   --sl-font-mono:var(--oxyn-font-mono);
@@ -21,8 +21,8 @@
 :root[data-theme='light']{
   --sl-color-accent-low:#ECECEE;
   --sl-color-accent:#3B3B3F;
-  --sl-color-accent-high:#141312;
-  --sl-color-white:#141312;
+  --sl-color-accent-high:#141316;
+  --sl-color-white:#141316;
   --sl-color-gray-1:#1C1C1E;
   --sl-color-gray-2:#3B3B3F;
   --sl-color-gray-3:#68686E;
