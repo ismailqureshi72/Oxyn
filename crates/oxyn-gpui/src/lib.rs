@@ -66,6 +66,8 @@ pub use parity::EffortPillEl;
 pub use parity::EffortRulerEl;
 pub use parity::EffortStairsEl;
 pub use parity::FanoutGridEl;
+pub use parity::FolderDetailEl;
+pub use parity::FoldersEl;
 pub use parity::GooeyAttachMenuEl;
 pub use parity::GooeyComposerEl;
 pub use parity::GooeyModelMenuEl;

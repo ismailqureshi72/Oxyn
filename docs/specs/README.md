@@ -249,4 +249,6 @@ specified just as deeply. When we point at one component as an example, the stan
 | [chat-double-sidebar.md](chat-double-sidebar.md) | built v0.1 (screens 1, Screens) |
 | [chat-progress.md](chat-progress.md) | built v0.1 (screens 1, Screens) |
 | [chat-run.md](chat-run.md) | built v0.1 (screens 1, Screens) |
+| [folders-overview.md](folders-overview.md) | built v0.1 (screens 1, Screens) |
+| [folders-detail.md](folders-detail.md) | built v0.1 (screens 1, Screens) |
 | Every other component in [../component-taxonomy.md](../component-taxonomy.md) | to write in V2.2 |
