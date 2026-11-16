@@ -40,6 +40,7 @@
 //! - [`costfid`]: fidelity batch, family B part 6: Cost Waterfall steps, rows, axis and formats.
 //! - [`recapfid`]: fidelity batch, family B part 4: Agent Recap events, curve, counts.
 //! - [`seqfid`]: fidelity batch, family B part 4: Agent Sequence rows, frames, bars, demo run.
+//! - [`parallelfid`]: fidelity batch, family B part 9: Parallel Attempts race, scores, best and pick.
 //! - [`answers`]: fidelity batch, family A: AI Answer markup and streaming, Cited Answer
 //!   sentences and quotes, Message Actions, Thinking Loader phases, Thinking State steps and the
 //!   Writing Assistant's sample writer and dictation.
@@ -77,6 +78,7 @@ pub mod ledgerfid;
 pub mod merge;
 pub mod meters;
 pub mod monitorfid;
+pub mod parallelfid;
 pub mod plan;
 pub mod queuefid;
 pub mod recapfid;
