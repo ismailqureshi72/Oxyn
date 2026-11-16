@@ -399,6 +399,7 @@ pub fn DecisionTree(
                             let rowkey = format!("{did}-{i}");
                             let awake = s.branch == Some(i) && !done;
                             let picked_then = if s.branch == Some(i) { s.then } else { None };
+                            let show_fu = lit == Some(i) || (lit.is_none() && o.pick) || s.branch == Some(i);
                             let lbl = if o.pick { format!("{}, the agent's pick", o.label) } else { o.label.clone() };
                             rsx! {
                                 li { class: "oxdt-row", "data-st": stt, "data-pick": o.pick, key: "{rowkey}", "data-k": "{rowkey}",
@@ -428,7 +429,7 @@ pub fn DecisionTree(
                                                     }
                                                 }
                                             }
-                                            if let Some(f) = o.next.clone() {
+                                            if let Some(f) = o.next.clone().filter(|_| show_fu) {
                                                 div { class: "oxdt-fu", "data-awake": awake || picked_then.is_some(),
                                                     span { class: "oxdt-fq", "{f.question}" }
                                                     for (j, fo) in f.options.iter().enumerate() {

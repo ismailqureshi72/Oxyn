@@ -64,7 +64,7 @@ pub use parity::{
 pub use parity::{
     AgentCrew, AgentCursors, AgentFindings, AgentGraph, AgentHandoff, AgentInbox, AgentLanes,
     AgentLedger, AgentMonitor, AgentQueue, AgentRecap, AgentSequence, AutonomyDial, AwaySummary,
-    CollabStream, ContextMap, CostWaterfall, DecisionTree,
+    CollabStream, ContextMap, CostWaterfall, DecisionTree, FallbackChain,
 };
 pub use parity::{
     AiComposer, AvatarUpload, ChatComposer, ContextField, ContextWindowGrid, CtxModel,

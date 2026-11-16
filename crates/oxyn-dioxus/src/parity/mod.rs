@@ -15,6 +15,7 @@ mod ctxmapfid;
 mod cursorsfid;
 mod diff;
 mod dtreefid;
+mod fallbackfid;
 mod fidelity;
 mod fields;
 mod graphfid;
@@ -56,6 +57,7 @@ pub use ctxmapfid::ContextMap;
 pub use cursorsfid::AgentCursors;
 pub use diff::{ChangeSummary, CodeSuggestion, DiffTable, DiffTimeline, DiffViewer, InlineDiff};
 pub use dtreefid::DecisionTree;
+pub use fallbackfid::FallbackChain;
 pub use fidelity::{
     AgentCommentThread, AgentOrb, ChatComposer, CommentsPanel, FileTypeIcon, PhotoAvatar, Portrait,
     ThreadNote,

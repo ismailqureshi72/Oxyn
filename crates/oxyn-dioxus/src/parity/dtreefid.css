@@ -50,15 +50,19 @@
 .oxdt-row{position:relative;display:grid;grid-template-columns:183px minmax(0,1fr);column-gap:36px;align-items:start;padding-bottom:18px;animation:oxdt-in .4s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(.12s + var(--i,0) * .08s);transition:opacity .25s}
 .oxdt-row:last-child{padding-bottom:0}
 .oxdt-row::before{content:"";position:absolute;left:-20px;top:18px;width:20px;border-top:1.5px solid var(--oxdt-link);transition:border-color .2s}
-.oxdt-row::after{content:"";position:absolute;left:-20px;top:0;bottom:0;border-left:1.5px solid var(--oxdt-link);transition:border-color .2s}
-.oxdt-row:first-child::after{top:18px}
-.oxdt-row:last-child::after{bottom:auto;height:18px}
+.oxdt-row::after{content:"";position:absolute;left:-20.75px;top:0;bottom:0;width:1.5px;background:linear-gradient(var(--oxdt-ra,var(--oxdt-link)) 0 18px,var(--oxdt-rb,var(--oxdt-link)) 18px)}
+.oxdt-row:first-child::after{top:18px;background:var(--oxdt-rb,var(--oxdt-link))}
+.oxdt-row:last-child::after{bottom:auto;height:18px;background:var(--oxdt-ra,var(--oxdt-link))}
 .oxdt-row:first-child:last-child::after{display:none}
-.oxdt-row:is([data-st="lit"],[data-st="picked"])::before,.oxdt-row:is([data-st="lit"],[data-st="picked"])::after,.oxdt-row:has(~ .oxdt-row:is([data-st="lit"],[data-st="picked"]))::after{border-color:var(--oxdt-link-pick)}
-.oxdt-row:is([data-st="lit"],[data-st="picked"]):not(:first-child)::after{bottom:auto;height:18px}
-.oxdt-row[data-st="dim"]{opacity:.4}
-.oxdt-row[data-st="gone"]{opacity:0;pointer-events:none;transition:opacity .35s}
-.oxdt-row[data-st="gone"]::before{opacity:0}
+.oxdt-row:is([data-st="lit"],[data-st="picked"]){--oxdt-ra:var(--oxdt-link-pick)}
+.oxdt-row:has(~ .oxdt-row:is([data-st="lit"],[data-st="picked"])){--oxdt-ra:var(--oxdt-link-pick);--oxdt-rb:var(--oxdt-link-pick)}
+.oxdt-row:is([data-st="lit"],[data-st="picked"])::before{border-color:var(--oxdt-link-pick)}
+.oxdt-row[data-st="picked"]{--oxdt-rb:transparent}
+.oxdt-row[data-st="picked"] ~ .oxdt-row{display:none}
+.oxdt-row>*{transition:opacity .3s}
+.oxdt-row[data-st="dim"]>*,.oxdt-row[data-st="dim"]::before{opacity:.4}
+.oxdt-row[data-st="gone"]>*,.oxdt-row[data-st="gone"]::before{opacity:0;pointer-events:none}
+.oxdt-row[data-st="gone"]:not(:has(~ .oxdt-row[data-st="picked"]))::after{opacity:0}
 .oxdt-opt{position:relative;display:flex;align-items:center;gap:8px;width:100%;min-height:36px;padding:8px 12px 8px 9px;border:1px solid var(--oxdt-bd);border-radius:10px;background:var(--oxdt-card);box-shadow:var(--oxdt-shadow);text-align:left;cursor:pointer;transition:border-color .2s,box-shadow .2s}
 .oxdt-opt:disabled{cursor:default}
 .oxdt-row:is([data-st="lit"],[data-st="picked"]) .oxdt-opt{border-color:var(--oxdt-link-pick);box-shadow:0 0 0 3px var(--oxdt-glow)}
@@ -79,7 +83,7 @@
 .oxdt-effs .oxdt-eff:first-child{padding-top:8px}
 .oxdt-apps{display:inline-flex;gap:6px;align-items:center;flex:none}
 .oxdt-flag{position:relative;display:inline;padding:1px 6px;border-radius:6px;background:var(--oxdt-amb-bg);color:var(--oxdt-amb);font-weight:600;cursor:help;outline-offset:1px}
-.oxdt-note{position:absolute;left:0;bottom:calc(100% + 8px);z-index:3;display:none;flex-direction:column;gap:4px;width:250px;padding:10px 12px;border:1px solid var(--oxdt-bd);border-radius:10px;background:var(--oxdt-card);box-shadow:var(--oxdt-tip);color:var(--oxdt-fg);font-weight:400;white-space:normal;cursor:default}
+.oxdt-note{position:absolute;right:0;bottom:calc(100% + 8px);z-index:3;display:none;flex-direction:column;gap:4px;width:250px;padding:10px 12px;border:1px solid var(--oxdt-bd);border-radius:10px;background:var(--oxdt-card);box-shadow:var(--oxdt-tip);color:var(--oxdt-fg);font-weight:400;white-space:normal;cursor:default}
 .oxdt-flag:is(:hover,:focus-visible,[data-open="true"]) .oxdt-note{display:flex;animation:oxdt-tip .18s ease-out both}
 .oxdt-note-h{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--oxdt-mute)}
 .oxdt-note-t{font-size:13px;line-height:1.45}
@@ -108,7 +112,9 @@
 .oxdt-sent{display:block;width:183px;padding:8px 12px;border:1px solid var(--oxdt-link-pick);border-radius:10px;background:var(--oxdt-card);box-shadow:0 0 0 3px var(--oxdt-glow);font-size:13px;font-weight:500;overflow-wrap:anywhere}
 .oxdt-reply{position:relative;align-self:center;color:var(--oxdt-mute);font-size:12.5px;animation:oxdt-fade 2.4s ease-out both}
 .oxdt-reply::before{content:"";position:absolute;right:calc(100% + 6px);top:50%;width:28px;border-top:1.5px solid var(--oxdt-link-pick)}
-.oxdt-orow:has(.oxdt-sent)::before,.oxdt-orow:has(.oxdt-sent)::after,.oxdt-row:has(~ .oxdt-orow .oxdt-sent)::after{border-color:var(--oxdt-link-pick)}
+.oxdt-orow:has(.oxdt-sent){--oxdt-ra:var(--oxdt-link-pick)}
+.oxdt-orow:has(.oxdt-sent)::before{border-color:var(--oxdt-link-pick)}
+.oxdt-row:has(~ .oxdt-orow .oxdt-sent){--oxdt-ra:var(--oxdt-link-pick);--oxdt-rb:var(--oxdt-link-pick)}
 /* footer */
 .oxdt-foot{display:flex;flex-wrap:wrap;align-items:center;gap:5px;min-height:20px;color:var(--oxdt-mute);font-size:12.5px}
 .oxdt-foot kbd{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 4px;border:1px solid var(--oxdt-kbd-bd);border-radius:5px;background:var(--oxdt-chip);color:var(--oxdt-num);font:inherit;font-size:11px;line-height:1}
@@ -139,8 +145,9 @@
   .oxdt-q[data-lit="true"]::after{border-color:var(--oxdt-link-pick)}
   .oxdt-br{padding-left:44px}
   .oxdt-row{grid-template-columns:minmax(0,1fr);row-gap:8px}
-  .oxdt-row::before,.oxdt-row::after{left:-22px}
-  .oxdt-row:first-child::after{top:-18px}
+  .oxdt-row::before{left:-22px}
+  .oxdt-row::after{left:-22.75px}
+  .oxdt-row:first-child::after{top:-18px;background:linear-gradient(var(--oxdt-ra,var(--oxdt-link)) 0 36px,var(--oxdt-rb,var(--oxdt-link)) 36px)}
   .oxdt-cons{padding-left:14px;border-left:1.5px dashed var(--oxdt-link)}
   .oxdt-cons::before{display:none}
   .oxdt-row:is([data-st="lit"],[data-st="picked"]) .oxdt-cons{border-left-style:solid;border-left-color:var(--oxdt-link-pick)}
@@ -150,4 +157,5 @@
   .oxdt-ta,.oxdt-sent{width:100%}
   .oxdt-reply::before{display:none}
   .oxdt-wait{display:none}
+  .oxdt-note{right:auto;left:0;width:min(250px,70cqw)}
 }
