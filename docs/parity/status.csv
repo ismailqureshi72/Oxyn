@@ -655,3 +655,11 @@ X post,#51 @AdiKodez footer,https://x.com/AdiKodez/status/2119362052993306706,X 
 X post,#52 @omarships agently,https://x.com/omarships/status/2119588761608827253,X videos,reference,NEW,,#39,planned
 X post,#53 @waynesutton quoting @mikeysee Threadbear (2 photos),https://x.com/waynesutton/status/2119683627936321896,X videos,reference,"thread-list, activity-home, activity-heatmap",,#28,built
 Oxyn,3-way merge conflict editor,docs/specs/merge-conflict.md,Components · Agents,Pro,merge-conflict,,#31,built
+Oxyn,Thinking Selector · Ruler card,,Thinking Selector,Free,effort-ruler,variants-1,#39,built
+Oxyn,Thinking Selector · Reasoning panel,,Thinking Selector,Free,reasoning-panel,variants-1,#39,built
+Oxyn,Thinking Selector · Effort list,,Thinking Selector,Free,effort-list,variants-1,#39,built
+Oxyn,Thinking Selector · Effort pill,,Thinking Selector,Free,effort-pill,variants-1,#39,built
+Oxyn,Thinking Selector · Context + Effort menu,,Thinking Selector,Free,context-effort-menu,variants-1,#39,built
+Oxyn,Thinking Selector · Model effort menu,,Thinking Selector,Free,model-effort-menu,variants-1,#39,built
+Oxyn,Thinking Selector · Nozzle line,,Thinking Selector,Free,nozzle-slider,variants-1,#39,built
+Oxyn,Thinking Selector · Effort stairs,,Thinking Selector,Free,effort-stairs,variants-1,#39,built

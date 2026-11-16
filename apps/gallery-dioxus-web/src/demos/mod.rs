@@ -31,6 +31,7 @@ mod parity_input;
 mod parity_merge;
 mod parity_run;
 mod parity_text;
+mod parity_thinking;
 mod parity_tools;
 mod pickers;
 mod search;
@@ -50,7 +51,7 @@ pub struct Category {
 }
 
 /// Categories in nav order.
-pub const CATEGORIES: [Category; 20] = [
+pub const CATEGORIES: [Category; 21] = [
     Category {
         slug: "composer",
         name: "Composer",
@@ -151,6 +152,11 @@ pub const CATEGORIES: [Category; 20] = [
         name: "App shells & screens",
         blurb: "Sidebars, icon rails, inbox and workspace sidebars, app shells, an AI side panel, terminal tabs, a demo harness and seven AI Chat screens.",
     },
+    Category {
+        slug: "thinking-selector",
+        name: "Thinking Selector",
+        blurb: "How hard the model thinks: effort sliders, rulers, menus and pickers, each a different take on the same choice.",
+    },
 ];
 
 /// Every demo, in category order.
@@ -172,6 +178,7 @@ pub fn catalog() -> Vec<Demo> {
     v.extend(parity_run::demos());
     v.extend(parity_tools::demos());
     v.extend(parity_diff::demos());
+    v.extend(parity_thinking::demos());
     v.extend(parity_merge::demos());
     v.extend(parity_text::demos());
     v.extend(checkpoints::demos());

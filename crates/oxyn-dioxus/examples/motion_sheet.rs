@@ -224,8 +224,8 @@ fn Sheet() -> Element {
 const PAGE_CSS: &str = r#"
 html,body{margin:0;background:#0B0B0C}
 .sheet{padding:28px;font-family:Inter,system-ui,sans-serif;display:grid;grid-template-columns:560px 620px;gap:18px;width:max-content;color:var(--oxyn-color-fg-default)}
-.sheet h1{grid-column:1/-1;margin:0 0 2px;color:#F2EFEA;font-size:22px;font-weight:600}
-.sheet h1 span{margin-left:12px;color:#8A867F;font-size:13px;font-weight:400}
+.sheet h1{grid-column:1/-1;margin:0 0 2px;color:#F2F2F3;font-size:22px;font-weight:600}
+.sheet h1 span{margin-left:12px;color:#8A8A93;font-size:13px;font-weight:400}
 .card{background:var(--oxyn-color-bg-base);border:1px solid var(--oxyn-color-border-subtle);border-radius:14px;padding:16px 18px}
 .card h2{margin:0 0 12px;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--oxyn-color-fg-muted);font-weight:600}
 .card h2.gap{margin-top:18px}

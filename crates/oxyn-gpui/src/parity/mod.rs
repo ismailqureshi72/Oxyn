@@ -22,11 +22,14 @@ mod chatfid;
 mod collabfid;
 mod costfid;
 mod crewfid;
+mod ctxefffid;
 mod ctxmapfid;
 mod cursorsfid;
 mod delegatefid;
 mod difftlfid;
 mod dtreefid;
+mod efflistfid;
+mod effpillfid;
 mod fallbackfid;
 mod fanfid;
 mod fidelity;
@@ -40,18 +43,23 @@ mod lanesfid;
 mod ledgerfid;
 mod memoryfid;
 mod merge;
+mod modeleffid;
 mod monitorfid;
+mod nozzlefid;
 mod parallelfid;
 mod planfid;
 mod queuefid;
 mod ratefid;
+mod reasonfid;
 mod recapfid;
 mod review;
 mod rootfid;
+mod rulerfid;
 mod run;
 mod runningfid;
 mod schedfid;
 mod seqfid;
+mod stairsfid;
 mod text;
 mod toolmapfid;
 mod tools;
@@ -72,11 +80,14 @@ pub use chatfid::{AgentRunPanelEl, ModelPickerMenuEl};
 pub use collabfid::CollabStreamEl;
 pub use costfid::CostWaterfallEl;
 pub use crewfid::AgentCrewEl;
+pub use ctxefffid::ContextEffortMenuEl;
 pub use ctxmapfid::ContextMapEl;
 pub use cursorsfid::AgentCursorsEl;
 pub use delegatefid::DelegateBoardEl;
 pub use difftlfid::DiffTimelineRunEl;
 pub use dtreefid::DecisionTreeEl;
+pub use efflistfid::EffortListEl;
+pub use effpillfid::EffortPillEl;
 pub use fallbackfid::FallbackChainEl;
 pub use fanfid::FanoutGridEl;
 pub use fidelity::{AgentCommentThreadEl, ChatComposerEl, CommentsPanelEl, ThreadMsg, file_badge};
@@ -97,11 +108,14 @@ pub use lanesfid::AgentLanesEl;
 pub use ledgerfid::AgentLedgerEl;
 pub use memoryfid::MemoryPanelEl;
 pub use merge::{ConflictRadarEl, MergeAct, MergeConflictEl, RadarAct};
+pub use modeleffid::ModelEffortMenuEl;
 pub use monitorfid::AgentMonitorEl;
+pub use nozzlefid::NozzleSliderEl;
 pub use parallelfid::ParallelAttemptsEl;
 pub use planfid::PlanVsActualEl;
 pub use queuefid::AgentQueueEl;
 pub use ratefid::RateLimitPlannerEl;
+pub use reasonfid::ReasoningPanelEl;
 pub use recapfid::AgentRecapEl;
 pub use review::{
     AiInlineEditEl, ChangeSummaryEl, CodeSuggestionEl, CommentThreadEl, DiffTableEl,
@@ -109,6 +123,7 @@ pub use review::{
     ReviewCenterEl,
 };
 pub use rootfid::RootCauseTreeEl;
+pub use rulerfid::EffortRulerEl;
 pub use run::{
     ActivityFeedEl, AgentPlanEl, AgentRunEl, AgentStatusEl, AgentTrailEl, AgentTreeEl, BreakdownEl,
     ChecklistEl, CountdownEl, CounterEl, FleetEl, FlowStepperEl, OrchestratorEl, ReadinessEl,
@@ -117,6 +132,7 @@ pub use run::{
 pub use runningfid::RunningNowEl;
 pub use schedfid::ScheduledRunsEl;
 pub use seqfid::AgentSequenceEl;
+pub use stairsfid::EffortStairsEl;
 pub use text::{LoadingStateEl, ShimmerEl, SlotTextEl, ThinkingLoaderEl};
 pub use toolmapfid::ToolAccessMapEl;
 pub use tools::{

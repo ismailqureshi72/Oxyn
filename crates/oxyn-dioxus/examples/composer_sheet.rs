@@ -423,8 +423,8 @@ fn Sheet() -> Element {
 const PAGE_CSS: &str = r#"
 html,body{margin:0;background:#0B0B0C}
 .page{padding:32px;width:1460px;font-family:Inter,system-ui,sans-serif;color:var(--oxyn-color-fg-default)}
-header h1{margin:0;font-size:24px;font-weight:600;color:#F2EFEA}
-header p{margin:4px 0 22px;color:#8A867F;font-size:13px}
+header h1{margin:0;font-size:24px;font-weight:600;color:#F2F2F3}
+header p{margin:4px 0 22px;color:#8A8A93;font-size:13px}
 .layouts{display:grid;grid-template-columns:1fr 1fr;gap:18px}
 .cell{position:relative;background:var(--oxyn-color-bg-base);border:1px solid var(--oxyn-color-border-subtle);border-radius:16px;padding:18px;
   display:flex;flex-direction:column;justify-content:flex-end;gap:10px}

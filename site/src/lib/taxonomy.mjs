@@ -2,7 +2,17 @@
 // build time (astro.config.mjs). Components follow eight categories; whole app frames are Screens.
 // Every older URL (/components/<old-category>/…) keeps working through a redirect.
 
-/** The eight component categories, in sidebar order. */
+/** Multi-variant families: one control done many ways, each variant its own page. A family is a
+ * category of its own (its pages live at /components/<family>/<slug>/) and gets its own collapsible
+ * group in the sidebar. Add a family here when its first component lands. */
+export const FAMILIES = [
+  { slug: 'thinking-selector', name: 'Thinking Selector', blurb: 'How hard the model thinks: effort sliders, rulers, menus and pickers, each a different take on the same choice.' },
+];
+function FAMILY_GROUPS() {
+  return FAMILIES.map((f) => ({ ...f, family: true }));
+}
+
+/** The eight component categories, then the families, in sidebar order. */
 export const GROUPS = [
   { slug: 'agents', name: 'Agents', blurb: 'What an agent is doing and what it needs from you: status, tool calls, plans, approvals and checkpoints.' },
   { slug: 'chat', name: 'Chat', blurb: 'The conversation: composer, messages, streaming answers, reasoning and sources.' },
@@ -12,6 +22,7 @@ export const GROUPS = [
   { slug: 'feedback', name: 'Feedback', blurb: 'Loaders, toasts, alerts, skeletons and empty states.' },
   { slug: 'cards', name: 'Cards', blurb: 'Cards, dialogs, sheets and the surfaces other parts sit on.' },
   { slug: 'buttons', name: 'Buttons', blurb: 'Buttons, button groups and actions that change in place.' },
+  ...FAMILY_GROUPS(),
 ];
 
 /** Old category (plan #24–#28) → new category. `shells` is decided per item below. */
@@ -36,6 +47,7 @@ export const OLD_TO_GROUP = {
   choice: 'inputs',
   chrome: 'navigation',
   shells: 'navigation',
+  ...Object.fromEntries(FAMILIES.map((f) => [f.slug, f.slug])),
 };
 
 /** Items whose old category is too broad for one new home. */
@@ -60,6 +72,8 @@ export const MOVED = [
 export const SCREENS = ['app-shell', 'ai-chat-screens', 'activity-home', 'harness', 'thread-list', 'inbox-sidebar', 'ai-side-panel', 'doc-grid'];
 
 export const groupSlugOf = (d) => ITEM_GROUP[d.slug] ?? OLD_TO_GROUP[d.category] ?? 'navigation';
+/** True for a demo that belongs to a multi-variant family. */
+export const familyOf = (d) => FAMILIES.find((f) => f.slug === d.category) ?? null;
 export const isScreen = (d) => SCREENS.includes(d.slug);
 export const pageUrl = (d) => (isScreen(d) ? `/screens/${d.slug}/` : `/components/${groupSlugOf(d)}/${d.slug}/`);
 export const legacyUrl = (d) => `/components/${d.category}/${d.slug}/`;

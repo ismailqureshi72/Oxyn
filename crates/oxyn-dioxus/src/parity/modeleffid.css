@@ -1,0 +1,32 @@
+/* Thinking Selector – Model effort menu (oxem-). Palette --oxth-* (rulerfid.css). The submenu
+   cascades to the right; under 640 px viewport it opens in place under its row. */
+.oxem{position:relative;display:inline-flex;flex-direction:column;align-items:flex-start;gap:8px;font:15px/1.3 Inter,ui-sans-serif,system-ui,sans-serif;color:var(--oxth-fg)}
+.oxem-pop{box-sizing:border-box;width:330px;max-width:calc(100vw - 32px);padding:6px;border-radius:14px;background:var(--oxth-card);border:1px solid var(--oxth-line);
+  box-shadow:var(--oxth-sh);outline:none;animation:oxem-in .16s cubic-bezier(.2,.8,.2,1) both;transform-origin:bottom left}
+@keyframes oxem-in{from{opacity:0;transform:translateY(6px) scale(.98)}to{opacity:1;transform:none}}
+.oxem-mark{display:grid;place-items:center;width:30px;height:30px;margin:4px 6px 6px;border-radius:8px;background:var(--oxth-sel);color:var(--oxth-fg)}
+.oxem-rowwrap{position:relative}
+.oxem-row{display:flex;align-items:center;justify-content:space-between;gap:10px;height:36px;padding:0 10px;border-radius:8px;cursor:pointer;user-select:none}
+.oxem-row[data-hi="true"],.oxem-row[data-sub="true"]{background:var(--oxth-hov)}
+.oxem-row[data-on="true"]{background:var(--oxth-sel)}
+.oxem-pop:focus-visible .oxem-row[data-hi="true"]{box-shadow:inset 0 0 0 1.5px var(--oxth-line2)}
+.oxem-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500}
+.oxem-lv{font-weight:400;color:var(--oxth-mute)}
+.oxem-lv[data-top="true"]{color:var(--oxth-red)}
+.oxem-go,.oxem-ck{display:grid;flex:none;color:var(--oxth-fg2)}
+.oxem-sub{position:absolute;left:100%;top:-6px;z-index:2;box-sizing:border-box;width:160px;margin-left:8px;padding:6px;border-radius:12px;background:var(--oxth-card);
+  border:1px solid var(--oxth-line);box-shadow:var(--oxth-sh);animation:oxem-sub .14s ease-out both}
+@keyframes oxem-sub{from{opacity:0;transform:translateX(-4px)}to{opacity:1;transform:none}}
+.oxem-subrow{display:flex;align-items:center;justify-content:space-between;height:34px;padding:0 10px;border-radius:7px;cursor:pointer}
+.oxem-subrow[data-hi="true"]{background:var(--oxth-hov)}
+.oxem-subrow:last-child span:first-child{color:var(--oxth-red)}
+.oxem-chip{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 10px 0 12px;border-radius:10px;border:1px solid var(--oxth-line);background:var(--oxth-card2);
+  color:var(--oxth-fg);font:500 14.5px/1 inherit;font-family:inherit;cursor:pointer}
+.oxem-chip:hover,.oxem[data-open="true"] .oxem-chip{background:var(--oxth-sel)}
+.oxem-chip svg{color:var(--oxth-mute)}
+.oxem-chip:focus-visible{outline:2px solid var(--oxth-fg);outline-offset:2px}
+.oxem-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (max-width:640px){.oxem-sub{position:static;width:auto;margin:2px 0 4px 18px;box-shadow:none}}
+@media (prefers-reduced-motion:reduce){.oxem-pop,.oxem-sub{animation:none}}
+.oxem[data-armed="true"]{z-index:41}
+.oxem .oxth-catch{position:fixed;inset:0;z-index:-1}

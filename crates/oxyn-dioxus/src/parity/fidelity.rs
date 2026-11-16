@@ -122,10 +122,11 @@ pub fn Portrait(
         "#E9B99A", "#C98E6C", "#F1C9A8", "#8D5A3F", "#DDA77F", "#B5774F",
     ];
     const HAIR: [&str; 6] = [
+        // warm-ok: illustration hair, not chrome
         "#3B2A22", "#1F1A17", "#A0652E", "#2B2320", "#5A3A26", "#14110F",
     ];
     const TOP: [&str; 6] = [
-        "#4B5563", "#1F2937", "#7C5C4A", "#2F4858", "#6B4E71", "#3F3F46",
+        "#4B5563", "#1F2937", "#5C5C66", "#2F4858", "#6B4E71", "#3F3F46",
     ];
     let i = seed as usize % 6;
     let (a, b) = BG[i];

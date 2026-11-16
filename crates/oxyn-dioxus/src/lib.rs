@@ -43,13 +43,21 @@ pub use composer::{
 pub use glyph_loader::{GLYPH_LOADER_CSS, GlyphLoader, GlyphLoaderProps};
 /// Stylesheet for approvals and checkpoints.
 pub const HITL_CSS: &str = include_str!("hitl.css");
+pub use parity::ContextEffortMenu;
 pub use parity::DiffTimelineRun;
+pub use parity::EffortList;
+pub use parity::EffortPill;
+pub use parity::EffortRuler;
+pub use parity::EffortStairs;
 pub use parity::FanoutGrid;
 pub use parity::JudgeBracket;
 pub use parity::MemoryPanel;
+pub use parity::ModelEffortMenu;
+pub use parity::NozzleSlider;
 pub use parity::ParallelAttempts;
 pub use parity::PlanVsActual;
 pub use parity::RateLimitPlanner;
+pub use parity::ReasoningPanel;
 pub use parity::RootCauseTree;
 pub use parity::RunningNow;
 pub use parity::ScheduledRuns;

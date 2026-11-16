@@ -52,6 +52,11 @@
 //! - [`tracefid`]: Trace Waterfall: an agent run as a live span tree on a time axis, folding, details per span.
 //! - [`fanfid`]: Fan-out Grid: a job's tasks as a live grid of status cells, filters, details, retry.
 //! - [`difftlfid`]: the exact Diff Timeline run view (affectUI, family B part 9)
+//! - [`thinkfid`]: Thinking Selector family: effort scales, stepping and snapping, tick tint, the dotted max fill.
+//! - [`reasonfid`]: Thinking Selector: Reasoning panel keys, context labels
+//! - [`effmenufid`]: Thinking Selector menus: roving highlight, context windows, models with effort.
+//! - [`nozzlefid`]: Thinking Selector: Nozzle line gradient, glow and stops (Oxyn original)
+//! - [`stairsfid`]: Thinking Selector: Effort stairs budgets (Oxyn original)
 //! - [`answers`]: fidelity batch, family A: AI Answer markup and streaming, Cited Answer
 //!   sentences and quotes, Message Actions, Thinking Loader phases, Thinking State steps and the
 //!   Writing Assistant's sample writer and dictation.
@@ -76,6 +81,7 @@ pub mod diff;
 pub mod difftlfid;
 pub mod dtreefid;
 pub mod edit;
+pub mod effmenufid;
 pub mod fallbackfid;
 pub mod fanfid;
 pub mod fidelity;
@@ -93,17 +99,21 @@ pub mod memoryfid;
 pub mod merge;
 pub mod meters;
 pub mod monitorfid;
+pub mod nozzlefid;
 pub mod parallelfid;
 pub mod plan;
 pub mod planfid;
 pub mod queuefid;
 pub mod ratefid;
+pub mod reasonfid;
 pub mod recapfid;
 pub mod rootfid;
 pub mod runningfid;
 pub mod schedfid;
 pub mod seqfid;
+pub mod stairsfid;
 pub mod text;
+pub mod thinkfid;
 pub mod toolmapfid;
 pub mod tools;
 pub mod tracefid;
