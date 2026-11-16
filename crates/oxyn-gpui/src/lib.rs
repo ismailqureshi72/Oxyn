@@ -51,6 +51,7 @@ pub use parity::EffortRulerEl;
 pub use parity::FanoutGridEl;
 pub use parity::JudgeBracketEl;
 pub use parity::MemoryPanelEl;
+pub use parity::ModelEffortMenuEl;
 pub use parity::ParallelAttemptsEl;
 pub use parity::PlanVsActualEl;
 pub use parity::RateLimitPlannerEl;
