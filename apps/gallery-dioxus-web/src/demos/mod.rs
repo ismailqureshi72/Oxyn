@@ -79,7 +79,7 @@ pub const CATEGORIES: [Category; 25] = [
     Category {
         slug: "approvals",
         name: "Approvals",
-        blurb: "The agent asks before it acts: risk, preview, decide with a key.",
+        blurb: "Approve or deny a risky step: its tier, a preview, a shortcut key.",
     },
     Category {
         slug: "checkpoints-git",
