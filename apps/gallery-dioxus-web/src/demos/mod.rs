@@ -50,7 +50,7 @@ pub struct Category {
 }
 
 /// Categories in nav order.
-pub const CATEGORIES: [Category; 20] = [
+pub const CATEGORIES: [Category; 21] = [
     Category {
         slug: "composer",
         name: "Composer",
@@ -150,6 +150,11 @@ pub const CATEGORIES: [Category; 20] = [
         slug: "shells",
         name: "App shells & screens",
         blurb: "Sidebars, icon rails, inbox and workspace sidebars, app shells, an AI side panel, terminal tabs, a demo harness and seven AI Chat screens.",
+    },
+    Category {
+        slug: "thinking-selector",
+        name: "Thinking Selector",
+        blurb: "How hard the model thinks: effort sliders, rulers, menus and pickers, each a different take on the same choice.",
     },
 ];
 

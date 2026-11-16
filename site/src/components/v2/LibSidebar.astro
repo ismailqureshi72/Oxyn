@@ -1,10 +1,13 @@
 ---
 // The library's left sidebar: wordmark, search, site links, style, and the collapsible groups.
 import { icon } from './icons';
-import { components, screens, counts, demoUrl, isPro, motionDemos, composedScreens } from '../../lib/data';
+import { components, screens, counts, demoUrl, isPro, motionDemos, composedScreens, groups, inGroup } from '../../lib/data';
+import { familyOf } from '../../lib/taxonomy.mjs';
 interface Props { current?: string }
 const { current = '' } = Astro.props;
-const byName = [...components].sort((a, b) => a.name.localeCompare(b.name));
+// Family members (Thinking Selector …) are listed under their family's own group, not here.
+const byName = components.filter((d) => !familyOf(d)).sort((a, b) => a.name.localeCompare(b.name));
+const families = groups.filter((g) => g.family).map((g) => ({ label: g.name, href: `/components/${g.slug}/`, n: inGroup(g.slug).length, items: inGroup(g.slug).map((d) => [d.name, demoUrl(d), isPro(d)] as const) }));
 const nav = [
   ['Library', '/components/', icon.library],
   ['Docs', '/docs/', icon.docs],
@@ -14,6 +17,7 @@ const nav = [
 const libActive = !current.startsWith('/docs') && !current.startsWith('/pricing');
 const groupsList = [
   { label: 'Components', href: '/components/', n: counts.components, items: byName.map((d) => [d.name, demoUrl(d), isPro(d)] as const) },
+  ...families,
   { label: 'Screens', href: '/screens/', n: counts.screens, items: [...composedScreens.map((c) => [c.name, c.href, false] as const), ...screens.map((d) => [d.name, demoUrl(d), isPro(d)] as const)] },
   { label: 'Blocks', href: '/blocks/', n: 0, items: [] },
   { label: 'Illustrations', href: '/illustrations/', n: 0, items: [] },
