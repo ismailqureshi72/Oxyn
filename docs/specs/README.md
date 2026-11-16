@@ -240,4 +240,7 @@ specified just as deeply. When we point at one component as an example, the stan
 | [light-playground.md](light-playground.md) | built v0.1 (variants 3, Theme Selector) |
 | [app-icon-picker.md](app-icon-picker.md) | built v0.1 (variants 3, Theme Selector) |
 | [display-comfort.md](display-comfort.md) | built v0.1 (variants 3, Theme Selector) |
+| [shell-inset.md](shell-inset.md) | built v0.1 (screens 1, Screens) |
+| [shell-flat.md](shell-flat.md) | built v0.1 (screens 1, Screens) |
+| [shell-three-pane.md](shell-three-pane.md) | built v0.1 (screens 1, Screens) |
 | Every other component in [../component-taxonomy.md](../component-taxonomy.md) | to write in V2.2 |

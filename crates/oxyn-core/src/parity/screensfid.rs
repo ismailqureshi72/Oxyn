@@ -1,0 +1,730 @@
+//! Screens 1 (whole app frames): the shared app frame (Inset or Flat, plus a three-pane frame with
+//! an icon rail), and the AI Chat screens built on it – Start, Overview, Agents, Double sidebar,
+//! Progress and Run. Each screen shows Sample, Loading or Empty data. Behaviour only: every
+//! person, workspace, project and line of copy here is fictional and our own.
+
+/// Which data a screen shows.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum ScreenState {
+    /// Filled with fictional sample data.
+    Sample,
+    /// Skeleton placeholders where the data will land.
+    Loading,
+    /// Nothing yet: each region says what will appear and how to start.
+    Empty,
+}
+
+impl ScreenState {
+    /// The three states, in toggle order.
+    pub const ALL: [ScreenState; 3] = [
+        ScreenState::Sample,
+        ScreenState::Loading,
+        ScreenState::Empty,
+    ];
+
+    /// Stable key.
+    pub fn key(self) -> &'static str {
+        match self {
+            ScreenState::Sample => "sample",
+            ScreenState::Loading => "loading",
+            ScreenState::Empty => "empty",
+        }
+    }
+
+    /// From a key (sample for anything unknown).
+    pub fn from_key(k: &str) -> ScreenState {
+        match k.to_ascii_lowercase().as_str() {
+            "loading" => ScreenState::Loading,
+            "empty" => ScreenState::Empty,
+            _ => ScreenState::Sample,
+        }
+    }
+}
+
+/// How the frame sits on the page.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum ShellLayout {
+    /// The page floats as a card with rounded corners over a grey backdrop.
+    Inset,
+    /// Edge to edge, regions split by single hairlines.
+    Flat,
+}
+
+impl ShellLayout {
+    /// Stable key.
+    pub fn key(self) -> &'static str {
+        match self {
+            ShellLayout::Inset => "inset",
+            ShellLayout::Flat => "flat",
+        }
+    }
+
+    /// From a key (inset for anything unknown).
+    pub fn from_key(k: &str) -> ShellLayout {
+        if k.eq_ignore_ascii_case("flat") {
+            ShellLayout::Flat
+        } else {
+            ShellLayout::Inset
+        }
+    }
+}
+
+/// The fictional workspace every screen opens on.
+pub const WORKSPACE: &str = "Kestrel Studio";
+/// The fictional signed-in person.
+pub const PERSON: &str = "Rowan Vale";
+/// Their initials.
+pub const PERSON_INI: &str = "RV";
+
+/// A project in the sidebar with its chats.
+#[derive(Clone, Debug, PartialEq)]
+pub struct Project {
+    /// Stable key.
+    pub key: &'static str,
+    /// Name.
+    pub label: &'static str,
+    /// Chats inside it.
+    pub chats: Vec<&'static str>,
+}
+
+/// The sample projects.
+pub fn projects() -> Vec<Project> {
+    let p = |key, label, chats| Project { key, label, chats };
+    vec![
+        p(
+            "autumn",
+            "Autumn launch",
+            vec!["Teaser hooks for week one", "Split the launch budget"],
+        ),
+        p("brand", "Brand kit", vec!["Logo lockups review"]),
+        p("hiring", "Hiring loop", vec![]),
+        p("research", "Field research", vec!["Interview notes digest"]),
+    ]
+}
+
+/// A chat thread in the sidebar.
+#[derive(Clone, Debug, PartialEq)]
+pub struct Thread {
+    /// Stable id.
+    pub id: u32,
+    /// Title.
+    pub title: String,
+    /// Pinned to the top group.
+    pub pinned: bool,
+    /// Has a reply you have not read.
+    pub unread: bool,
+    /// Minutes since the last message.
+    pub mins: u32,
+}
+
+/// The sample chats (not in a project).
+pub fn threads() -> Vec<Thread> {
+    let t = |id, title: &str, pinned, unread, mins| Thread {
+        id,
+        title: title.to_string(),
+        pinned,
+        unread,
+        mins,
+    };
+    vec![
+        t(1, "Quarterly letter to members", true, false, 40),
+        t(2, "Welcome email rewrite", false, true, 12),
+        t(3, "November content plan", false, false, 190),
+        t(4, "Venue shortlist for the offsite", false, false, 2900),
+    ]
+}
+
+/// Pin or unpin a thread; returns its new pinned state (false when the id is unknown).
+pub fn toggle_pin(list: &mut [Thread], id: u32) -> bool {
+    match list.iter_mut().find(|t| t.id == id) {
+        Some(t) => {
+            t.pinned = !t.pinned;
+            t.pinned
+        }
+        None => false,
+    }
+}
+
+/// Mark a thread read when it is opened.
+pub fn open_thread(list: &mut [Thread], id: u32) {
+    if let Some(t) = list.iter_mut().find(|t| t.id == id) {
+        t.unread = false;
+    }
+}
+
+/// The pinned threads, then the rest, each in list order.
+pub fn split_pinned(list: &[Thread]) -> (Vec<Thread>, Vec<Thread>) {
+    list.iter().cloned().partition(|t| t.pinned)
+}
+
+/// A new chat's title from its first message: up to six words, first letter capitalised, at most
+/// 40 characters (cut on a word with "…").
+pub fn chat_title(text: &str) -> String {
+    let words: Vec<&str> = text.split_whitespace().take(6).collect();
+    if words.is_empty() {
+        return "New chat".to_string();
+    }
+    let mut out = String::new();
+    for w in words {
+        let next = if out.is_empty() {
+            w.to_string()
+        } else {
+            format!("{out} {w}")
+        };
+        if next.chars().count() > 40 {
+            if out.is_empty() {
+                out = w.chars().take(39).collect();
+            }
+            out.push('…');
+            break;
+        }
+        out = next;
+    }
+    let mut c = out.chars();
+    match c.next() {
+        Some(f) => f.to_uppercase().collect::<String>() + c.as_str(),
+        None => out,
+    }
+}
+
+/// True when a message can be sent (anything but whitespace).
+pub fn can_send(text: &str) -> bool {
+    !text.trim().is_empty()
+}
+
+/// The greeting for an hour of the day (0–23).
+pub fn greeting(hour: u32) -> &'static str {
+    match hour % 24 {
+        5..=11 => "Good morning",
+        12..=17 => "Good afternoon",
+        18..=22 => "Good evening",
+        _ => "Working late",
+    }
+}
+
+/// Minutes as a short age: "now", "12m", "3h", "2d".
+pub fn ago(mins: u32) -> String {
+    match mins {
+        0 => "now".to_string(),
+        1..=59 => format!("{mins}m"),
+        60..=1439 => format!("{}h", mins / 60),
+        _ => format!("{}d", mins / 1440),
+    }
+}
+
+/// The setup checklist under the sidebar ("Set up Kestrel").
+pub fn setup_steps() -> Vec<(&'static str, bool)> {
+    vec![
+        ("Start your first chat", true),
+        ("Connect an app", false),
+        ("Invite a teammate", false),
+        ("Add a project", false),
+        ("Try an agent run", false),
+        ("Pick a default model", false),
+        ("Turn on daily notes", false),
+        ("Set a monthly budget", false),
+    ]
+}
+
+/// Whole percent done, rounded down (0 when there are no steps).
+pub fn pct_done(done: usize, total: usize) -> u32 {
+    (done * 100).checked_div(total).unwrap_or(0) as u32
+}
+
+/// Starter suggestions on the Start screen: key, label, the prompt it fills in.
+pub fn starters() -> Vec<(&'static str, &'static str, &'static str)> {
+    vec![
+        (
+            "docs",
+            "Ask our docs",
+            "What does our travel policy say about ",
+        ),
+        ("write", "Write a doc", "Draft a one-page brief about "),
+        (
+            "slides",
+            "Make slides",
+            "Turn these notes into six slides: ",
+        ),
+        ("table", "Build a table", "Make a table comparing "),
+        ("image", "Draw an image", "Draw a flat illustration of "),
+        ("deep", "Dig deeper", "Research in depth and cite sources: "),
+        ("chart", "Chart it", "Chart this data by month: "),
+    ]
+}
+
+/// Contribution-style activity levels (0–4) for `weeks` × 7 days, deterministic.
+pub fn heat(weeks: usize) -> Vec<u8> {
+    (0..weeks * 7)
+        .map(|i| {
+            let x = (i as u32).wrapping_mul(2_654_435_761).rotate_left(7) ^ 0x9E37;
+            let ramp = (i * 4 / (weeks * 7).max(1)) as u32; // busier toward today
+            let v = (x % 7 + ramp) / 2;
+            if i % 7 >= 5 {
+                (v / 2).min(4) as u8
+            } else {
+                v.min(4) as u8
+            }
+        })
+        .collect()
+}
+
+/// Chats a heat map stands for (level × 3 per day).
+pub fn heat_total(levels: &[u8]) -> u32 {
+    levels.iter().map(|&l| l as u32 * 3).sum()
+}
+
+/// 1284 → "1,284".
+pub fn thousands(n: u32) -> String {
+    let s = n.to_string();
+    let mut out = String::new();
+    for (i, c) in s.chars().enumerate() {
+        if i > 0 && (s.len() - i).is_multiple_of(3) {
+            out.push(',');
+        }
+        out.push(c);
+    }
+    out
+}
+
+/// Signed change: "+12", "−3", "0".
+pub fn delta(d: i32) -> String {
+    match d {
+        0 => "0".to_string(),
+        d if d > 0 => format!("+{d}"),
+        d => format!("−{}", d.unsigned_abs()),
+    }
+}
+
+/// Percent of a cap used, clamped to 0–100.
+pub fn used_pct(used: u32, cap: u32) -> u32 {
+    (used as u64 * 100)
+        .checked_div(cap as u64)
+        .unwrap_or(0)
+        .min(100) as u32
+}
+
+/// One agent in the crew working on a chat.
+#[derive(Clone, Debug, PartialEq)]
+pub struct CrewMember {
+    /// Stable key.
+    pub key: &'static str,
+    /// Role name.
+    pub name: &'static str,
+    /// What it is doing now.
+    pub doing: &'static str,
+    /// Finished.
+    pub done: bool,
+}
+
+/// The crew on the Agents screen (the orchestrator is listed separately).
+pub fn crew() -> Vec<CrewMember> {
+    let m = |key, name, doing, done| CrewMember {
+        key,
+        name,
+        doing,
+        done,
+    };
+    vec![
+        m(
+            "lead",
+            "Launch lead",
+            "Keeps the brief and the budget in step",
+            true,
+        ),
+        m(
+            "brand",
+            "Brand scout",
+            "Reads the style guide and past posts",
+            true,
+        ),
+        m("studio", "Studio", "Lays out six ad frames", false),
+        m("people", "Audience desk", "Sizes the two audiences", true),
+        m("art", "Art direction", "Picks crops and type", false),
+    ]
+}
+
+/// A selling angle with its signal strength (1–3 bars).
+#[derive(Clone, Debug, PartialEq)]
+pub struct Angle {
+    /// Stable key.
+    pub key: &'static str,
+    /// Label.
+    pub label: &'static str,
+    /// One line on why.
+    pub why: &'static str,
+    /// Signal strength, 1–3.
+    pub signal: u8,
+}
+
+/// The angles to pick from on the brief.
+pub fn angles() -> Vec<Angle> {
+    let a = |key, label, why, signal| Angle {
+        key,
+        label,
+        why,
+        signal,
+    };
+    vec![
+        a("feel", "How it feels", "Soft fabric, slow mornings", 3),
+        a("fix", "What it fixes", "One layer for three seasons", 2),
+        a("proof", "Who wears it", "Reviews and repeat buyers", 1),
+    ]
+}
+
+/// The channels on the brief, with their default on/off.
+pub fn channels() -> Vec<(&'static str, bool)> {
+    vec![
+        ("Photo feed", true),
+        ("Short video", true),
+        ("Link ads", false),
+    ]
+}
+
+/// Ads a brief produces and roughly how long it takes: two per channel that is on, plus one per
+/// extra format beyond the first; about 20 seconds each.
+pub fn ad_estimate(channels_on: usize, formats: usize) -> (usize, usize) {
+    let n = channels_on * 2 + formats.saturating_sub(1);
+    (n, (n * 20).div_ceil(60))
+}
+
+/// Column letter for an index (0 → A … 25 → Z).
+pub fn col_name(i: usize) -> char {
+    (b'A' + (i % 26) as u8) as char
+}
+
+/// "B3" for column 1, row 2 (zero-based).
+pub fn cell_ref(col: usize, row: usize) -> String {
+    format!("{}{}", col_name(col), row + 1)
+}
+
+/// The comparison sheet the Double sidebar screen opens: header row, then data rows.
+pub fn sheet() -> Vec<Vec<String>> {
+    let rows: [[&str; 4]; 6] = [
+        ["Fabric", "Weight g/m²", "Price / m", "Lead time d"],
+        ["Washed linen", "185", "14.20", "21"],
+        ["Linen–cotton", "160", "11.80", "14"],
+        ["Hemp twill", "240", "16.50", "35"],
+        ["Organic cotton", "150", "9.40", "10"],
+        ["Tencel blend", "130", "12.90", "18"],
+    ];
+    rows.iter()
+        .map(|r| r.iter().map(|c| c.to_string()).collect())
+        .collect()
+}
+
+/// Sort the data rows (not the header) by a column; numbers compare as numbers.
+pub fn sort_sheet(sheet: &mut [Vec<String>], col: usize, asc: bool) {
+    if sheet.len() < 2 {
+        return;
+    }
+    sheet[1..].sort_by(|a, b| {
+        let (x, y) = (
+            a.get(col).cloned().unwrap_or_default(),
+            b.get(col).cloned().unwrap_or_default(),
+        );
+        let o = match (x.parse::<f64>(), y.parse::<f64>()) {
+            (Ok(p), Ok(q)) => p.partial_cmp(&q).unwrap_or(std::cmp::Ordering::Equal),
+            _ => x.to_lowercase().cmp(&y.to_lowercase()),
+        };
+        if asc { o } else { o.reverse() }
+    });
+}
+
+/// A step of a run or of the progress pane.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum StepState {
+    /// Finished.
+    Done,
+    /// Working on it now.
+    Active,
+    /// Not started.
+    Pending,
+}
+
+impl StepState {
+    /// Stable key.
+    pub fn key(self) -> &'static str {
+        match self {
+            StepState::Done => "done",
+            StepState::Active => "active",
+            StepState::Pending => "pending",
+        }
+    }
+
+    /// Label.
+    pub fn label(self) -> &'static str {
+        match self {
+            StepState::Done => "Done",
+            StepState::Active => "Working",
+            StepState::Pending => "Up next",
+        }
+    }
+}
+
+/// The state of step `i` when `current` steps are finished (`current == len` means all done).
+pub fn step_state(i: usize, current: usize) -> StepState {
+    use std::cmp::Ordering::*;
+    match i.cmp(&current) {
+        Less => StepState::Done,
+        Equal => StepState::Active,
+        Greater => StepState::Pending,
+    }
+}
+
+/// One step of an agent run's plan.
+#[derive(Clone, Debug, PartialEq)]
+pub struct RunStep {
+    /// Title (editable).
+    pub title: String,
+    /// Why the step is there.
+    pub why: &'static str,
+    /// The tool it calls.
+    pub tool: &'static str,
+    /// Seconds it takes in the sample.
+    pub secs: u32,
+}
+
+/// The sample run's plan.
+pub fn run_plan() -> Vec<RunStep> {
+    let s = |title: &str, why, tool, secs| RunStep {
+        title: title.to_string(),
+        why,
+        tool,
+        secs,
+    };
+    vec![
+        s(
+            "Pull October sales",
+            "The update leads with revenue",
+            "ledger.query",
+            6,
+        ),
+        s(
+            "Find last quarter's memo",
+            "Keep the same headings",
+            "files.search",
+            4,
+        ),
+        s(
+            "Draft the member update",
+            "One page, plain words",
+            "docs.write",
+            9,
+        ),
+        s("Ask before sending", "Members see this", "mail.send", 5),
+        s(
+            "Book the review call",
+            "Thirty minutes, this week",
+            "calendar.add",
+            3,
+        ),
+    ]
+}
+
+/// Move a step up (`up`) or down; returns the new index.
+pub fn move_step(plan: &mut [RunStep], i: usize, up: bool) -> usize {
+    if up && i > 0 {
+        plan.swap(i, i - 1);
+        i - 1
+    } else if !up && i + 1 < plan.len() {
+        plan.swap(i, i + 1);
+        i + 1
+    } else {
+        i
+    }
+}
+
+/// Seconds as a clock: 65 → "1:05", 3725 → "1:02:05".
+pub fn clock(secs: u32) -> String {
+    let (h, m, s) = (secs / 3600, secs / 60 % 60, secs % 60);
+    if h > 0 {
+        format!("{h}:{m:02}:{s:02}")
+    } else {
+        format!("{m}:{s:02}")
+    }
+}
+
+/// The run's cost after `secs` seconds, in cents (a cent every two seconds, from 2 cents).
+pub fn run_cents(secs: u32) -> u32 {
+    2 + secs / 2
+}
+
+/// Cents as money: 14 → "$0.14".
+pub fn money(cents: u32) -> String {
+    format!("${}.{:02}", cents / 100, cents % 100)
+}
+
+/// One suggested edit in the run's draft.
+#[derive(Clone, Debug, PartialEq)]
+pub struct Suggestion {
+    /// Text taken out.
+    pub del: &'static str,
+    /// Text put in.
+    pub ins: &'static str,
+}
+
+/// The suggestions on the draft.
+pub fn suggestions() -> Vec<Suggestion> {
+    let s = |del, ins| Suggestion { del, ins };
+    vec![
+        s("grew a lot", "grew 18%"),
+        s("we think", "we expect"),
+        s("next month", "by 12 December"),
+        s("some members", "212 members"),
+        s("very soon", "on Friday"),
+    ]
+}
+
+/// A review decision on a suggestion.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Review {
+    /// Not decided.
+    Open,
+    /// Kept.
+    Accepted,
+    /// Thrown out.
+    Rejected,
+}
+
+/// How many suggestions are still open.
+pub fn open_count(r: &[Review]) -> usize {
+    r.iter().filter(|x| **x == Review::Open).count()
+}
+
+/// The next open suggestion after `from` (wrapping), or None when all are decided.
+pub fn next_open(r: &[Review], from: usize) -> Option<usize> {
+    let n = r.len();
+    (1..=n)
+        .map(|k| (from + k) % n)
+        .find(|&i| r[i] == Review::Open)
+}
+
+/// The progress pane's checklist on the Progress screen.
+pub fn progress_steps() -> Vec<&'static str> {
+    vec![
+        "Read the intake form",
+        "Search the team wiki",
+        "Match people to roles",
+        "Draft the welcome plan",
+        "Make the checklist sheet",
+    ]
+}
+
+/// Tool calls in the Progress chat: tool, what it did, seconds.
+pub fn progress_tools() -> Vec<(&'static str, &'static str, f32)> {
+    vec![
+        ("wiki.search", "Looked up the first-week pages", 1.8),
+        ("drive.read", "Read the intake form", 0.9),
+        ("people.match", "Matched three buddies by team", 2.4),
+    ]
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn states_and_layouts() {
+        assert_eq!(ScreenState::from_key("Loading"), ScreenState::Loading);
+        assert_eq!(ScreenState::from_key("x"), ScreenState::Sample);
+        assert_eq!(ScreenState::Empty.key(), "empty");
+        assert_eq!(ShellLayout::from_key("Flat"), ShellLayout::Flat);
+        assert_eq!(ShellLayout::from_key("?"), ShellLayout::Inset);
+    }
+
+    #[test]
+    fn threads_pin_and_read() {
+        let mut t = threads();
+        assert!(toggle_pin(&mut t, 2));
+        let (p, rest) = split_pinned(&t);
+        assert_eq!(p.len(), 2);
+        assert_eq!(rest.len(), 2);
+        assert!(!toggle_pin(&mut t, 2));
+        assert!(!toggle_pin(&mut t, 99));
+        open_thread(&mut t, 2);
+        assert!(!t[1].unread);
+    }
+
+    #[test]
+    fn titles_and_send() {
+        assert_eq!(
+            chat_title("  plan a two day offsite for nine people please"),
+            "Plan a two day offsite for"
+        );
+        assert_eq!(chat_title(""), "New chat");
+        let long = chat_title(&"x".repeat(60));
+        assert_eq!(long.chars().count(), 40);
+        assert!(long.ends_with('…'));
+        assert_eq!(
+            chat_title("ask about the twelve thousand nine hundred kilometre route"),
+            "Ask about the twelve thousand nine"
+        );
+        assert!(can_send(" hi "));
+        assert!(!can_send("  \n "));
+    }
+
+    #[test]
+    fn small_formats() {
+        assert_eq!(greeting(8), "Good morning");
+        assert_eq!(greeting(19), "Good evening");
+        assert_eq!(greeting(2), "Working late");
+        assert_eq!(ago(0), "now");
+        assert_eq!(ago(12), "12m");
+        assert_eq!(ago(190), "3h");
+        assert_eq!(ago(2900), "2d");
+        assert_eq!(thousands(1284), "1,284");
+        assert_eq!(thousands(1_234_567), "1,234,567");
+        assert_eq!(thousands(12), "12");
+        assert_eq!(delta(12), "+12");
+        assert_eq!(delta(-3), "−3");
+        assert_eq!(used_pct(1284, 2000), 64);
+        assert_eq!(used_pct(5, 0), 0);
+        assert_eq!(pct_done(1, 8), 12);
+        assert_eq!(clock(65), "1:05");
+        assert_eq!(clock(3725), "1:02:05");
+        assert_eq!(money(run_cents(24)), "$0.14");
+    }
+
+    #[test]
+    fn heat_is_stable() {
+        let h = heat(20);
+        assert_eq!(h.len(), 140);
+        assert!(h.iter().all(|&l| l <= 4));
+        assert_eq!(h, heat(20));
+        assert!(heat_total(&h) > 0);
+    }
+
+    #[test]
+    fn sheet_sorts_numbers() {
+        let mut s = sheet();
+        sort_sheet(&mut s, 1, true);
+        assert_eq!(s[0][0], "Fabric");
+        assert_eq!(s[1][0], "Tencel blend");
+        sort_sheet(&mut s, 2, false);
+        assert_eq!(s[1][0], "Hemp twill");
+        sort_sheet(&mut s, 0, true);
+        assert_eq!(s[1][0], "Hemp twill");
+        assert_eq!(cell_ref(1, 2), "B3");
+        assert_eq!(col_name(3), 'D');
+    }
+
+    #[test]
+    fn run_steps_and_review() {
+        assert_eq!(step_state(0, 2), StepState::Done);
+        assert_eq!(step_state(2, 2), StepState::Active);
+        assert_eq!(step_state(4, 2), StepState::Pending);
+        let mut p = run_plan();
+        assert_eq!(move_step(&mut p, 0, true), 0);
+        assert_eq!(move_step(&mut p, 0, false), 1);
+        assert_eq!(p[1].tool, "ledger.query");
+        assert_eq!(move_step(&mut p, 4, false), 4);
+        let mut r = vec![Review::Open; 5];
+        r[1] = Review::Accepted;
+        assert_eq!(open_count(&r), 4);
+        assert_eq!(next_open(&r, 0), Some(2));
+        let all = vec![Review::Rejected; 3];
+        assert_eq!(next_open(&all, 0), None);
+        assert_eq!(ad_estimate(2, 3), (6, 2));
+        assert_eq!(ad_estimate(0, 1), (0, 0));
+    }
+}
