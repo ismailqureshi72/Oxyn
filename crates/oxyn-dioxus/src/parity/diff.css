@@ -254,3 +254,43 @@
 @container (max-width:520px){.oxyn-sug-dir{display:none}}
 @container (max-width:440px){.oxyn-sug-src{white-space:pre-wrap;overflow-wrap:anywhere}.oxyn-sug-ln{grid-template-columns:30px 14px minmax(0,1fr)}.oxyn-sug-code{font-size:12px}.oxyn-sug-sum{display:none}.oxyn-sug-bar{padding-left:44px}.oxyn-sug-ft{flex-direction:column;align-items:stretch}.oxyn-sug-ft .oxyn-diff-btn{justify-content:center}}
 @media (prefers-reduced-motion:reduce){.oxyn-sug-shim{animation:none;color:var(--oxyn-color-fg-muted)}.oxyn-sug-spin{animation:none}}
+/* Plan #32 (ref-3): Inline Diff review mode (oxyn-idr-). A card of prose with struck removals and
+   tinted insertions; the highlighted change carries an Accept / Reject bar anchored above it
+   (CSS anchor positioning, flipped to stay inside the card); a footer with the count, prev /
+   next, Undo, Reject all and Accept all, then "All changes reviewed" + Undo. Classic puts the
+   footer above the text and drops the tints for colour + strike only. */
+.oxyn-idr{position:relative;anchor-scope:--oxidr;container-type:inline-size;display:flex;flex-direction:column;gap:10px;width:420px;max-width:100%;padding:14px 16px;border:1px solid var(--oxyn-color-border-default);border-radius:12px;background:var(--oxyn-color-bg-raised,var(--oxyn-color-bg-base));box-shadow:0 1px 2px rgba(0,0,0,.04),0 4px 14px rgba(0,0,0,.04);outline:none;box-sizing:border-box}
+.oxyn-idr *{box-sizing:border-box}
+.oxyn-idr button{font:inherit;color:inherit}
+.oxyn-idr button:focus-visible{outline:2px solid var(--oxyn-color-fg-default);outline-offset:1px}
+.oxyn-idr-lab{display:flex;align-items:center;gap:6px;color:var(--oxyn-color-fg-muted);font-size:11.5px}
+.oxyn-idr-p{margin:0;font-size:13.5px;line-height:1.75;overflow-wrap:anywhere}
+.oxyn-idr-ch{position:relative}
+.oxyn-idr-hit{display:inline;padding:0;border:0;background:none;cursor:pointer;border-radius:4px;transition:background .2s}
+.oxyn-idr-hit del{color:var(--oxyn-color-diff-del-fg);background:var(--oxyn-color-diff-del-bg);text-decoration:line-through;border-radius:3px;padding:0 1px}
+.oxyn-idr-hit ins{color:var(--oxyn-color-diff-add-fg);background:var(--oxyn-color-diff-add-bg);text-decoration:none;border-radius:3px;padding:0 1px}
+.oxyn-idr-ch[data-on="true"] .oxyn-idr-hit{anchor-name:--oxidr;background:color-mix(in srgb,var(--oxyn-color-fg-default) 8%,transparent);box-shadow:0 0 0 2px color-mix(in srgb,var(--oxyn-color-fg-default) 8%,transparent)}
+.oxyn-idr-ok{animation:oxyn-idr-res .35s ease-out}
+.oxyn-idr-pop{position:absolute;position-anchor:--oxidr;position-area:top span-right;position-try-fallbacks:flip-inline,flip-block;margin-bottom:6px;z-index:4;display:inline-flex;gap:2px;padding:3px;border-radius:9px;background:#18181B;color:#FAFAFA;box-shadow:0 6px 18px rgba(0,0,0,.2);white-space:nowrap;line-height:1;animation:oxyn-idr-up .18s ease-out}
+.oxyn-idr-pop button{display:inline-flex;align-items:center;gap:5px;height:24px;padding:0 8px;border:0;border-radius:6px;background:none;color:#FAFAFA!important;font-size:11.5px;cursor:pointer}
+.oxyn-idr-pop button:hover{background:rgba(255,255,255,.12)}
+.oxyn-idr-pop kbd{padding:0 4px;border-radius:4px;background:rgba(255,255,255,.14);font:inherit;font-size:10px}
+[data-oxyn-theme="dark"] .oxyn-idr-pop,[data-oxyn-theme="hc-dark"] .oxyn-idr-pop{background:#FAFAFA;color:#18181B}
+[data-oxyn-theme="dark"] .oxyn-idr-pop button,[data-oxyn-theme="hc-dark"] .oxyn-idr-pop button{color:#18181B!important}
+[data-oxyn-theme="dark"] .oxyn-idr-pop kbd,[data-oxyn-theme="hc-dark"] .oxyn-idr-pop kbd{background:rgba(0,0,0,.1)}
+.oxyn-idr-ft{display:flex;align-items:center;gap:6px;flex-wrap:wrap;row-gap:6px}
+.oxyn-idr-cnt{padding:2px 8px;border:1px solid var(--oxyn-color-border-default);border-radius:6px;font-size:11.5px;font-variant-numeric:tabular-nums}
+.oxyn-idr-arw{display:grid;place-items:center;width:26px;height:26px;padding:0;border:1px solid var(--oxyn-color-border-default);border-radius:50%;background:none;cursor:pointer}
+.oxyn-idr-arw:disabled{opacity:.4;cursor:default}
+.oxyn-idr-btn{display:inline-flex;align-items:center;gap:5px;height:28px;padding:0 11px;border:1px solid var(--oxyn-color-border-default);border-radius:8px;background:none;font-size:12px;cursor:pointer;white-space:nowrap}
+.oxyn-idr-btn.q{border-color:transparent;color:var(--oxyn-color-fg-muted)!important}
+.oxyn-idr-btn.p{background:var(--oxyn-color-fg-default);border-color:var(--oxyn-color-fg-default);color:var(--oxyn-color-bg-base)!important;font-weight:600}
+.oxyn-idr-fin{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--oxyn-color-diff-add-fg)}
+:is([data-cstyle="classic"] .oxyn-idr:not([data-style]),.oxyn-idr[data-style="classic"]) .oxyn-idr-ft{order:-1;padding-bottom:8px;border-bottom:1px solid var(--oxyn-color-border-default)}
+:is([data-cstyle="classic"] .oxyn-idr:not([data-style]),.oxyn-idr[data-style="classic"]) .oxyn-idr-lab{order:-2}
+:is([data-cstyle="classic"] .oxyn-idr:not([data-style]),.oxyn-idr[data-style="classic"]) .oxyn-idr-hit :is(del,ins){background:none}
+:is([data-cstyle="classic"] .oxyn-idr:not([data-style]),.oxyn-idr[data-style="classic"]) .oxyn-idr-hit ins{text-decoration:underline;text-underline-offset:2px}
+@container (max-width:360px){.oxyn-idr-arw{display:none}}
+@keyframes oxyn-idr-up{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
+@keyframes oxyn-idr-res{from{background:color-mix(in srgb,var(--oxyn-color-fg-default) 10%,transparent)}to{background:transparent}}
+@media (prefers-reduced-motion:reduce){.oxyn-idr-pop,.oxyn-idr-ok{animation:none}}

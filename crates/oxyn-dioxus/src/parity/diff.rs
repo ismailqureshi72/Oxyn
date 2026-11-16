@@ -12,8 +12,8 @@ use oxyn_core::{
     parity::diff::{
         Chunk, DLine, Decision, FileDiff, HunkRef, LineComment, LineKind, Review, ReviewMode,
         Revision, RowChange, RowKind, Seg, SugRow, SugStatus, Suggestion, change_totals,
-        files_changed, revision_diff, revision_stats, rewrite_chunks, split_rows, stat_blocks,
-        stat_label,
+        files_changed, revision_diff, revision_stats, rewrite_apply, rewrite_chunks, rewrite_next,
+        split_rows, stat_blocks, stat_label,
     },
     primitives::chrome::highlight,
 };
@@ -500,7 +500,29 @@ pub fn InlineDiff(
     /// Show the +/− word counts.
     #[props(default = true)]
     counts: bool,
+    /// Review mode: each change is a suggestion to accept (Y) or reject (N), one at a time or
+    /// all at once, with Undo (plan #32, ref-3).
+    #[props(default)]
+    review: bool,
+    /// Review mode: the line above the text.
+    #[props(default = "Suggested edit · Tighten it".to_string())]
+    label: String,
+    /// Review mode: decisions made from the start (`Some(true)` accepted).
+    #[props(default)]
+    decided: Vec<Option<bool>>,
+    /// Review mode: `clean`, `classic`, or empty to follow `data-cstyle`.
+    #[props(default)]
+    style: String,
+    /// Review mode: the text after each decision.
+    #[props(default)]
+    on_change: EventHandler<String>,
+    /// Review mode: the final text once nothing is left to decide.
+    #[props(default)]
+    on_done: EventHandler<String>,
 ) -> Element {
+    if review {
+        return rsx! { InlineDiffReview { before, after, label, decided, style, on_change, on_done } };
+    }
     let chunks = rewrite_chunks(&before, &after);
     let (mut a, mut r) = (0usize, 0usize);
     for c in &chunks {
@@ -977,6 +999,182 @@ pub fn CodeSuggestion(
                 } else if pending > 0 {
                     button { class: "oxyn-diff-btn q", r#type: "button", "aria-keyshortcuts": "Meta+Backspace", onclick: move |_| all(false), "Reject all" }
                     button { class: "oxyn-diff-btn p", r#type: "button", "aria-keyshortcuts": "Meta+Enter", onclick: move |_| all(true), "Accept all" if shortcuts { span { class: "oxyn-diff-kbd", "⌘↵" } } }
+                }
+            }
+            div { class: "oxyn-diff-sr", role: "status", "aria-live": "polite", "{live}" }
+        }
+    }
+}
+
+fn chunk_words(ch: &[Chunk], i: usize) -> String {
+    ch.iter()
+        .find_map(|x| match x {
+            Chunk::Change { id, del, ins } if *id == i => Some(match (del.trim(), ins.trim()) {
+                ("", a) => format!("add “{a}”"),
+                (r, "") => format!("remove “{r}”"),
+                (r, a) => format!("replace “{r}” with “{a}”"),
+            }),
+            _ => None,
+        })
+        .unwrap_or_default()
+}
+
+/// The review form of [`InlineDiff`]: struck removals and tinted insertions in running prose; the
+/// highlighted change carries a small Accept (Y) / Reject (N) bar above it; prev / next step
+/// through what is left; Accept all / Reject all; Undo walks back one decision.
+#[component]
+fn InlineDiffReview(
+    before: String,
+    after: String,
+    label: String,
+    decided: Vec<Option<bool>>,
+    style: String,
+    on_change: EventHandler<String>,
+    on_done: EventHandler<String>,
+) -> Element {
+    let chunks = rewrite_chunks(&before, &after);
+    let n = oxyn_core::parity::diff::change_count(&chunks);
+    let init = {
+        let mut d = decided.clone();
+        d.resize(n, None);
+        d
+    };
+    let first = rewrite_next(&init, n.saturating_sub(1)).unwrap_or(0);
+    let mut dec = use_signal(move || init.clone());
+    let mut hist = use_signal(Vec::<Vec<Option<bool>>>::new);
+    let mut cur = use_signal(move || first);
+    let mut live = use_signal(String::new);
+    // Chunks live in a signal so the handlers below stay `Copy` (the demo re-keys on new text).
+    let chs = use_signal(move || chunks.clone());
+    let chunks = chs();
+    let left = dec().iter().filter(|d| d.is_none()).count();
+    let finished = n > 0 && left == 0;
+    let c = cur().min(n.saturating_sub(1));
+    let words = move |i: usize| -> String { chunk_words(&chs.read(), i) };
+    let mut decide = move |i: usize, yes: bool| {
+        let mut d = dec();
+        if i >= d.len() || d[i].is_some() {
+            return;
+        }
+        hist.with_mut(|h| h.push(d.clone()));
+        d[i] = Some(yes);
+        dec.set(d.clone());
+        let left = d.iter().filter(|x| x.is_none()).count();
+        let what = words(i);
+        let what = format!("{}{}", what[..1].to_uppercase(), &what[1..]);
+        live.set(format!(
+            "{}: {what}. {left} left.",
+            if yes { "Accepted" } else { "Rejected" }
+        ));
+        let text = rewrite_apply(&chs.read(), &d);
+        on_change.call(text.clone());
+        if left == 0 {
+            on_done.call(text);
+        } else if let Some(nx) = rewrite_next(&d, i) {
+            cur.set(nx);
+        }
+    };
+    let mut all = move |yes: bool| {
+        let d0 = dec();
+        if d0.iter().all(|x| x.is_some()) {
+            return;
+        }
+        hist.with_mut(|h| h.push(d0.clone()));
+        let d: Vec<Option<bool>> = d0.iter().map(|x| x.or(Some(yes))).collect();
+        dec.set(d.clone());
+        live.set(if yes {
+            "Accepted every change.".into()
+        } else {
+            "Rejected every change.".into()
+        });
+        let text = rewrite_apply(&chs.read(), &d);
+        on_change.call(text.clone());
+        on_done.call(text);
+    };
+    let undo = move |_| {
+        if let Some(p) = hist.with_mut(|h| h.pop()) {
+            let back = p.iter().zip(dec().iter()).position(|(a, b)| a != b);
+            dec.set(p);
+            if let Some(b) = back {
+                cur.set(b);
+            }
+            live.set("Undone.".into());
+        }
+    };
+    let step = move |fwd: bool| {
+        let d = dec();
+        let open: Vec<usize> = (0..d.len()).filter(|&i| d[i].is_none()).collect();
+        let c = cur();
+        if fwd {
+            open.iter().copied().find(|&i| i > c)
+        } else {
+            open.iter().rev().copied().find(|&i| i < c)
+        }
+    };
+    let has_prev = step(false).is_some();
+    let has_next = step(true).is_some();
+    let count_s = if left == 1 {
+        "1 suggestion".to_string()
+    } else {
+        format!("{left} suggestions")
+    };
+    let style_a = (!style.is_empty()).then(|| style.clone());
+    rsx! {
+        div { class: "oxyn-idr", "data-style": style_a, "data-done": finished, role: "group", "aria-label": "{label}", tabindex: "-1",
+            onkeydown: move |e: KeyboardEvent| {
+                if finished { return; }
+                match e.key() {
+                    Key::Character(k) if k == "y" || k == "Y" => { e.prevent_default(); decide(cur(), true); }
+                    Key::Character(k) if k == "n" || k == "N" => { e.prevent_default(); decide(cur(), false); }
+                    _ => {}
+                }
+            },
+            div { class: "oxyn-idr-lab", Icon { name: "spark", size: 12.0 } span { "{label}" } }
+            p { class: "oxyn-idr-p",
+                for x in chunks.iter() {
+                    match x {
+                        Chunk::Same(t) => rsx! { "{t}" },
+                        Chunk::Change { id, del, ins } => {
+                            let i = *id;
+                            let d = dec().get(i).copied().flatten();
+                            let on = !finished && d.is_none() && i == c;
+                            let aria = format!("Change {} of {n}: {}. Y keeps it, N drops it", i + 1, words(i));
+                            match d {
+                                Some(true) => rsx! { span { key: "c{i}", "data-k": "c{i}", class: "oxyn-idr-ok", "{ins}" } },
+                                Some(false) => rsx! { span { key: "c{i}", "data-k": "c{i}", class: "oxyn-idr-ok", "{del}" } },
+                                None => rsx! {
+                                    span { key: "c{i}", "data-k": "c{i}", class: "oxyn-idr-ch", "data-on": on,
+                                        button { class: "oxyn-idr-hit", r#type: "button", "aria-label": "{aria}", "aria-pressed": on,
+                                            onclick: move |_| cur.set(i),
+                                            if !del.is_empty() { del { "{del}" } }
+                                            if !ins.is_empty() { ins { "{ins}" } }
+                                        }
+                                        if on {
+                                            span { class: "oxyn-idr-pop", role: "toolbar", "aria-label": "Review suggestion",
+                                                button { class: "oxyn-idr-yes", r#type: "button", onclick: move |_| decide(i, true), Icon { name: "check", size: 11.0 } "Accept" kbd { "Y" } }
+                                                button { class: "oxyn-idr-no", r#type: "button", onclick: move |_| decide(i, false), Icon { name: "x", size: 11.0 } "Reject" kbd { "N" } }
+                                            }
+                                        }
+                                    }
+                                },
+                            }
+                        }
+                    }
+                }
+            }
+            div { class: "oxyn-idr-ft",
+                if finished {
+                    span { class: "oxyn-idr-fin", Icon { name: "check", size: 12.0 } "All changes reviewed" }
+                    span { class: "oxyn-diff-sp" }
+                    button { class: "oxyn-idr-btn", r#type: "button", onclick: undo, Icon { name: "undo", size: 12.0 } "Undo" }
+                } else {
+                    span { class: "oxyn-idr-cnt", "{count_s}" }
+                    button { class: "oxyn-idr-arw", r#type: "button", "aria-label": "Previous suggestion", disabled: !has_prev, onclick: move |_| if let Some(p) = step(false) { cur.set(p) }, Icon { name: "chevron-left", size: 12.0 } }
+                    button { class: "oxyn-idr-arw", r#type: "button", "aria-label": "Next suggestion", disabled: !has_next, onclick: move |_| if let Some(p) = step(true) { cur.set(p) }, Icon { name: "chevron-right", size: 12.0 } }
+                    span { class: "oxyn-diff-sp" }
+                    if !hist().is_empty() { button { class: "oxyn-idr-btn q", r#type: "button", onclick: undo, Icon { name: "undo", size: 12.0 } "Undo" } }
+                    button { class: "oxyn-idr-btn", r#type: "button", onclick: move |_| all(false), "Reject all" }
+                    button { class: "oxyn-idr-btn p", r#type: "button", onclick: move |_| all(true), "Accept all" }
                 }
             }
             div { class: "oxyn-diff-sr", role: "status", "aria-live": "polite", "{live}" }

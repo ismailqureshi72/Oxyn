@@ -191,6 +191,7 @@ fn diff_viewer_code(v: &Vals) -> String {
 // ---------- inline diff ----------
 
 fn inline_diff(v: &Vals, _: ClockMs) -> Element {
+    let mut msg = use_signal(String::new);
     let (b, a) = match v.s("text") {
         "policy" => (
             "Refunds are available within 14 days of purchase, if the item is unused and you contact support by email.",
@@ -201,6 +202,29 @@ fn inline_diff(v: &Vals, _: ClockMs) -> Element {
             "Our agent is careful with your data and never shares it without asking you first.",
         ),
     };
+    if v.s("form") == "review" {
+        let stage = v.s("stage");
+        let decided = match stage {
+            "partly" => vec![Some(true), Some(false)],
+            "done" => vec![Some(true); 8],
+            _ => vec![],
+        };
+        let style = if v.s("style") == "classic" {
+            "classic"
+        } else {
+            ""
+        }
+        .to_string();
+        let key = format!("{}{}{}", v.s("text"), stage, v.s("style"));
+        return rsx! {
+            div { key: "{key}", "data-k": "{key}", style: "display:flex;flex-direction:column;gap:8px;width:440px;max-width:100%;padding-top:34px",
+                InlineDiff { before: b.to_string(), after: a.to_string(), review: true, decided, style,
+                    on_change: move |t: String| msg.set(format!("onChange({} chars)", t.len())),
+                    on_done: move |t: String| msg.set(format!("onDone({} chars)", t.len())) }
+                span { style: "font-size:12px;color:var(--oxyn-color-fg-muted);min-height:16px", role: "status", "{msg}" }
+            }
+        };
+    }
     rsx! { InlineDiff { before: b.to_string(), after: a.to_string(), form: v.string("form"), counts: v.b("counts") } }
 }
 
@@ -821,7 +845,7 @@ pub(crate) fn demos() -> Vec<Demo> {
             ],
             a11y: vec![
                 "Every changed line starts with a hidden “Added:” or “Removed:”, so the diff never relies on the tint; the + and − signs carry it on screen too.",
-                "Hunk buttons name their hunk (“Accept fn login”) and carry aria-keyshortcuts; decisions are announced in a polite live region with the count left.",
+                "Hunk buttons name their hunk (“Accept fn login”) and carry aria-keyshortcuts; each decision updates a polite status line that says how many hunks remain.",
                 "The layout switch is a radio group; Viewed is a real checkbox; the file list marks the current file with aria-current.",
                 "Reduced motion drops the chip pop, row fades and the smooth scroll to the next hunk.",
             ],
@@ -844,9 +868,16 @@ pub(crate) fn demos() -> Vec<Demo> {
         },
         Demo {
             controls: vec![
-                sel("form", "Form", &["inline", "lines", "after-only"], "inline"),
+                sel(
+                    "form",
+                    "Form",
+                    &["inline", "lines", "after-only", "review"],
+                    "inline",
+                ),
                 sel("text", "Text", &["privacy", "policy"], "privacy"),
                 tog("counts", "Word counts", true),
+                sel("stage", "Review", &["pending", "partly", "done"], "pending"),
+                sel("style", "Style", &["clean", "classic"], "clean"),
             ],
             variants: vec![
                 var(
@@ -864,12 +895,43 @@ pub(crate) fn demos() -> Vec<Demo> {
                     "Only the new words, highlighted where they changed.",
                     &[("form", "after-only")],
                 ),
+                var(
+                    "review",
+                    "Review mode: each change is a suggestion; the highlighted one carries Accept (Y) / Reject (N) above it, with prev / next, Reject all and Accept all below.",
+                    &[("form", "review"), ("text", "policy")],
+                ),
+                var(
+                    "review-partly",
+                    "Two decided: the accepted wording reads as plain text, the rejected one is back to the original, the count drops and Undo appears.",
+                    &[("form", "review"), ("text", "policy"), ("stage", "partly")],
+                ),
+                var(
+                    "review-done",
+                    "Everything decided: a green check, All changes reviewed and Undo.",
+                    &[("form", "review"), ("stage", "done")],
+                ),
+                var(
+                    "review-classic",
+                    "Classic review: the buttons sit above the text and changes are colour plus strike or underline, no tint.",
+                    &[("form", "review"), ("text", "policy"), ("style", "classic")],
+                ),
             ],
             render: inline_diff,
             code: inline_diff_code,
-            keyboard: vec![("Tab", "No stops of its own; it is read as text")],
+            keyboard: vec![
+                (
+                    "Tab",
+                    "Read-only forms: no stops. Review: each suggestion, then the footer buttons",
+                ),
+                (
+                    "Y / N",
+                    "Review: accept / reject the highlighted suggestion",
+                ),
+                ("Enter", "Review: highlight the focused suggestion"),
+            ],
             a11y: vec![
                 "Deletions and insertions are real del and ins elements, so screen readers announce them; colour is paired with strike-through and underline.",
+                "In review every change is its own button whose name gives its place, the words it swaps and the Y / N keys; each decision is read out by a polite status line.",
                 "Neighbouring single-word changes merge into phrases, so the paragraph reads as a few edits, not confetti.",
             ],
             responsive: vec!["Wraps like any paragraph; fills its column up to 640 px."],
@@ -903,7 +965,7 @@ pub(crate) fn demos() -> Vec<Demo> {
             code: change_summary_code,
             keyboard: vec![("Enter / Space", "Fold or unfold; on a row, open that file")],
             a11y: vec![
-                "The headline is a button with aria-expanded; status letters have the word as a title and the block bar is aria-hidden.",
+                "The headline toggles the body and reports aria-expanded; status letters have the word as a title and the block bar is aria-hidden.",
                 "Counts are text (+58 −21), so the colour is never the only signal.",
             ],
             responsive: vec!["Paths ellipsize from the end; the bar keeps its size."],
@@ -1239,7 +1301,7 @@ pub(crate) fn demos() -> Vec<Demo> {
             a11y: vec![
                 "The composer is a combobox with a listbox of people and aria-activedescendant.",
                 "Each comment is an article labelled with author and time; a deleted one reads “Deleted comment”.",
-                "Reaction chips are toggle buttons with aria-pressed and a label like “👍 2, including you”; reply toggles expose aria-expanded.",
+                "Each reaction chip toggles, reports aria-pressed, and reads like “👍 2, including you”; reply toggles expose aria-expanded.",
             ],
             responsive: vec![
                 "Below 420 px the composer hides its avatar and replies indent less (12 px); every action is a visible button on touch.",
@@ -1297,13 +1359,13 @@ pub(crate) fn demos() -> Vec<Demo> {
                 ("R", "Reject, then 1–4 picks the reason; Esc cancels"),
                 ("S", "Skip without deciding"),
                 ("J / K or ↓ / ↑", "Next / previous item"),
-                ("F", "Show the agent's note on the next flagged span"),
+                ("F", "Jump to the next flagged span and open its note"),
                 ("Z or ⌘Z", "Undo the last decision"),
             ],
             a11y: vec![
                 "Shortcuts work anywhere inside; buttons carry aria-keyshortcuts; the reason picker is a labelled group.",
                 "Queue rows are labelled with title, type, risk, confidence and waiting time; the current one has aria-current.",
-                "Flagged spans are focusable and point to their note with aria-describedby (role tooltip); decisions are announced with the new count.",
+                "Each flagged span takes focus and links its note via aria-describedby (role tooltip); every decision updates the remaining count.",
             ],
             responsive: vec![
                 "Container query: wide, the queue sits left of the item in a fixed-height workspace; under 640 px the queue goes on top (three rows) and buttons share the width.",
@@ -1339,7 +1401,7 @@ pub(crate) fn demos() -> Vec<Demo> {
             )],
             a11y: vec![
                 "The verdict is a status; severities are words, not colour alone.",
-                "Each finding header is a button with aria-expanded; fixes read “Removed:” / “Added:”.",
+                "Finding headers toggle their body and report aria-expanded; fixes read “Removed:” / “Added:”.",
             ],
             responsive: vec![
                 "Finding headers wrap the file and line under the title on narrow cards.",

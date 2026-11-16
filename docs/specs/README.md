@@ -156,7 +156,7 @@ specified just as deeply. When we point at one component as an example, the stan
 | [decision-card.md](decision-card.md) | v1 — implemented (plan #25): decision card |
 | [approval-questions.md](approval-questions.md) | v1 — implemented (plan #25): approval questions (Beautiful UI Approval Card port) |
 | [smart-form-fill.md](smart-form-fill.md) | v1 — implemented (plan #25): smart form fill |
-| [inline-diff.md](inline-diff.md) | built v0.1 (plan #30) |
+| [inline-diff.md](inline-diff.md) | built v0.2 (review mode, plan #32, family B part 9) |
 | [change-summary.md](change-summary.md) | built v0.1 (plan #30) |
 | [diff-table.md](diff-table.md) | built v0.1 (plan #30) |
 | [diff-timeline.md](diff-timeline.md) | built v0.1 (plan #30) |
