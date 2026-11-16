@@ -55,7 +55,7 @@
 //! - [`thinkfid`]: Thinking Selector family: effort scales, stepping and snapping, tick tint, the dotted max fill.
 //! - [`reasonfid`]: Thinking Selector: Reasoning panel keys, context labels
 //! - [`effmenufid`]: Thinking Selector menus: roving highlight, context windows, models with effort.
-//! - [`nozzlefid`]: Thinking Selector: Nozzle line strokes and stops (Oxyn original)
+//! - [`nozzlefid`]: Thinking Selector: Nozzle line gradient, glow and stops (Oxyn original)
 //! - [`stairsfid`]: Thinking Selector: Effort stairs budgets (Oxyn original)
 //! - [`answers`]: fidelity batch, family A: AI Answer markup and streaming, Cited Answer
 //!   sentences and quotes, Message Actions, Thinking Loader phases, Thinking State steps and the
