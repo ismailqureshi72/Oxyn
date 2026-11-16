@@ -4,9 +4,14 @@
 use dioxus::prelude::*;
 use oxyn_core::{
     ClockMs,
-    parity::thinkfid::{effort_scale, effort_scale_api, effort_scale_short, level_index},
+    parity::{
+        effmenufid::effort_models,
+        thinkfid::{effort_scale, effort_scale_api, effort_scale_short, level_index},
+    },
 };
-use oxyn_dioxus::{ContextEffortMenu, EffortList, EffortPill, EffortRuler, ReasoningPanel};
+use oxyn_dioxus::{
+    ContextEffortMenu, EffortList, EffortPill, EffortRuler, ModelEffortMenu, ReasoningPanel,
+};
 
 use super::{Code, mk, rng, sel, tog, var};
 use crate::{Align, Demo, Vals};
@@ -473,6 +478,87 @@ fn context_effort_menu_demo() -> Demo {
     }
 }
 
+// ---------- Model effort menu ----------
+
+fn model_effort_menu(v: &Vals, _now: ClockMs) -> Element {
+    let mut msg = use_signal(String::new);
+    let key = format!("{}{}", v.s("open"), v.s("sub"));
+    let open = v.s("open") != "closed";
+    let sub = (v.s("open") == "submenu").then_some(5);
+    rsx! {
+        div { key: "{key}", "data-k": "{key}", style: "min-height:380px;display:flex;flex-direction:column;justify-content:flex-end;gap:10px",
+            ModelEffortMenu { default_open: open, default_sub: sub,
+                on_change: move |(m, l): (usize, usize)| msg.set(format!("onChange({}, {})", effort_models()[m].name, effort_scale()[l].label)) }
+            {status(msg)}
+        }
+    }
+}
+
+fn model_effort_menu_code(_: &Vals) -> String {
+    Code::new("ModelEffortMenu")
+        .raw("models", "Some(my_models())")
+        .raw("on_change", "move |(model, level)| pick(model, level)")
+        .done()
+}
+
+fn model_effort_menu_demo() -> Demo {
+    Demo {
+        controls: vec![sel(
+            "open",
+            "State",
+            &["submenu", "list", "closed"],
+            "submenu",
+        )],
+        variants: vec![
+            var(
+                "submenu",
+                "Each model shows its effort as a grey suffix; the chosen one's submenu is open with High checked.",
+                &[],
+            ),
+            var(
+                "list",
+                "Just the list: Nimbus 3 runs at Max, the suffix in red.",
+                &[("open", "list")],
+            ),
+            var(
+                "closed",
+                "Closed: the chip names the chosen model.",
+                &[("open", "closed")],
+            ),
+        ],
+        render: model_effort_menu,
+        code: model_effort_menu_code,
+        keyboard: vec![
+            (
+                "↑ / ↓",
+                "Moves between models, or between levels inside a submenu",
+            ),
+            ("→ / Enter", "Opens the model's effort submenu"),
+            ("← / Escape", "Back to the models; Escape again closes"),
+        ],
+        a11y: vec![
+            "Model rows are menuitems with aria-haspopup and aria-expanded; their name includes the effort (“Atlas 6, High”).",
+            "Levels are menuitemradio rows; picking one picks the model too and returns focus to the chip.",
+        ],
+        responsive: vec![
+            "330 px list; the submenu cascades to the right, and under a 640 px viewport it opens in place under its row.",
+        ],
+        height: 420,
+        live: false,
+        align: Align::Center,
+        ..mk(
+            "model-effort-menu",
+            "Model effort menu",
+            CAT,
+            "Models listed with their effort as a suffix; hovering or → opens a cascading submenu that sets that model’s effort.",
+            "ModelEffortMenu",
+            "ModelEffortMenuEl",
+            "model-effort-menu",
+            "parity/modeleffid.rs",
+        )
+    }
+}
+
 /// Every Thinking Selector demo, in sidebar order.
 pub(crate) fn demos() -> Vec<Demo> {
     vec![
@@ -481,5 +567,6 @@ pub(crate) fn demos() -> Vec<Demo> {
         effort_list_demo(),
         effort_pill_demo(),
         context_effort_menu_demo(),
+        model_effort_menu_demo(),
     ]
 }
