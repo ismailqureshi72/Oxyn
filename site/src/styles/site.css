@@ -421,6 +421,14 @@ body.fullscreen{background:var(--oxyn-color-bg-base)}
 .fs-main .oxd-app.oxs-frame,.fs-main .oxyn-harness{max-width:none;width:100%;min-height:100vh;border-radius:0;border:0}
 .fs-back{position:fixed;left:14px;bottom:14px;z-index:50;background:var(--ink);color:var(--on-ink);box-shadow:0 6px 20px rgb(0 0 0 / .2)}
 
+/* Desktop: the main panel floats in the window like the sidebar – an 8px gap on every side, all four corners
+   rounded – and scrolls inside itself (thin pill thumb, no track). Under 901px the page scrolls as before. */
+@media (min-width:901px){
+  .lib-grid{height:100vh;min-height:0}
+  .lib-col{height:100vh;padding:8px 8px 8px 0;overflow:hidden}
+  .lpanel{flex:1;min-height:0;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:auto}
+  .lpanel::-webkit-scrollbar-track{margin:14px 0}
+}
 /* ── Responsive ─────────────────────────────────────────────────────── */
 @media (max-width:1280px){.x-art,.lend{width:min(76%,880px)}}
 @media (max-width:1100px){.cgrid{grid-template-columns:repeat(2,minmax(0,1fr))}.x-ghost{width:360px}.ghost-l{left:-200px}.ghost-r{right:-200px}}
