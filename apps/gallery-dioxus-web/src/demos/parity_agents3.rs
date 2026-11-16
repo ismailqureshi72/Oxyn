@@ -16,11 +16,13 @@ use oxyn_core::{
         runningfid::{RnState, rn_demo},
         schedfid::SrMode,
         toolmapfid::{tm_demo_agents, tm_replay},
+        tracefid::tw_demo,
     },
 };
 use oxyn_dioxus::{
     DecisionTree, DelegateBoard, FallbackChain, JudgeBracket, MemoryPanel, ParallelAttempts,
     PlanVsActual, RateLimitPlanner, RootCauseTree, RunningNow, ScheduledRuns, ToolAccessMap,
+    TraceWaterfall,
 };
 
 use super::{Code, mk, sel, var};
@@ -1491,6 +1493,146 @@ fn rate_limit_planner_demo(style: crate::Control) -> Demo {
     }
 }
 
+// ---------- Trace Waterfall ----------
+
+fn trace_waterfall(v: &Vals, now: ClockMs) -> Element {
+    let mut msg = use_signal(String::new);
+    let key = format!("{}{}{}", v.s("style"), v.s("state"), v.s("width"));
+    let state = v.s("state");
+    let end = tw_demo().end;
+    let at = match state {
+        "live" => None,
+        "early" => Some(14_000),
+        "mid" | "folded" => Some(38_000),
+        _ => Some(end),
+    };
+    let folded = if state == "folded" {
+        vec!["research".to_string(), "writer".to_string()]
+    } else {
+        vec![]
+    };
+    let open = match state {
+        "details" => Some("edit".to_string()),
+        "failed" => Some("tests1".to_string()),
+        _ => None,
+    };
+    let w = if v.s("width") == "narrow" {
+        "380px"
+    } else {
+        "640px"
+    };
+    rsx! {
+        div { "data-k": "{key}", key: "{key}", "data-state": "{state}", style: "width:{w};max-width:100%;display:flex;flex-direction:column;gap:8px;padding-bottom:40px",
+            TraceWaterfall { now, at, folded, open, style: cstyle(v),
+                on_open: move |id: Option<String>| msg.set(format!("onOpen({id:?})")) }
+            {status(msg)}
+        }
+    }
+}
+
+fn trace_waterfall_code(_: &Vals) -> String {
+    Code::new("TraceWaterfall")
+        .raw("trace", "Some(run.trace())")
+        .raw("at", "Some(run.elapsed_ms())")
+        .raw("now", "clock.now()")
+        .done()
+}
+
+fn trace_waterfall_demo(style: crate::Control) -> Demo {
+    Demo {
+        controls: vec![
+            style,
+            sel(
+                "state",
+                "State",
+                &[
+                    "live", "early", "mid", "folded", "done", "details", "failed",
+                ],
+                "live",
+            ),
+            sel("width", "Width", &["wide", "narrow"], "wide"),
+        ],
+        variants: vec![
+            var(
+                "live",
+                "The run replays and loops: spans slide in and grow with a sheen, the totals climb, the axis glides to the next round range, then the pill turns Done.",
+                &[],
+            ),
+            var(
+                "early",
+                "Fourteen seconds in: the plan done, the researcher reading pages on a 15 s axis.",
+                &[("state", "early")],
+            ),
+            var(
+                "mid",
+                "Mid-run: writer and coder side by side, a failed test run in red and the error count up.",
+                &[("state", "mid")],
+            ),
+            var(
+                "folded",
+                "Finished branches folded: their calls shrink to marks on the parent bar with a +n count.",
+                &[("state", "folded")],
+            ),
+            var(
+                "done",
+                "Finished: every span ended, the slowest call marked, the pill Done.",
+                &[("state", "done")],
+            ),
+            var(
+                "details",
+                "A model call opened: duration, start, cost, tokens in and out, and what went in and came out.",
+                &[("state", "details")],
+            ),
+            var(
+                "failed",
+                "The failed tool call opened: a red status and the error text.",
+                &[("state", "failed")],
+            ),
+            var(
+                "narrow",
+                "Under 560 px each row puts its bar under the name and the totals wrap to three columns.",
+                &[("state", "done"), ("width", "narrow")],
+            ),
+            var(
+                "classic",
+                "Classic style: a grey header band, sentence-case labels, roomier rows.",
+                &[("style", "classic"), ("state", "mid")],
+            ),
+        ],
+        render: trace_waterfall,
+        code: trace_waterfall_code,
+        keyboard: vec![
+            ("Tab", "The span tree is one stop"),
+            ("Up / Down, Home / End", "Move through the spans"),
+            ("Right / Left", "Unfold / fold a branch"),
+            ("Enter / Space", "Opens the span's details"),
+            ("Escape", "Closes the details"),
+        ],
+        a11y: vec![
+            "The spans are a tree (treeitems with levels and expanded state) with one tab stop and an active descendant.",
+            "The Live / Done pill is a status region; a failed span carries a warning icon and the word Failed in its details, not only red.",
+            "Reduced motion stops the sheen, the shimmer on the totals and the glides.",
+        ],
+        responsive: vec![
+            "Wide: the span names on the left, the time axis on the right.",
+            "Under 560 px each row stacks its bar under the name and the totals wrap to three columns; under 360 px the muted details drop.",
+        ],
+        height: 560,
+        live: true,
+        align: Align::Start,
+        ..mk(
+            "trace-waterfall",
+            "Trace Waterfall",
+            "tools",
+            "An agent run as a tree of spans on a time axis: agents, model calls and tool calls as tinted bars that grow while the run goes, the run's totals on top, finished branches folded into marks, and every span's details one click away.",
+            "TraceWaterfall",
+            "TraceWaterfallEl",
+            "trace-waterfall",
+            "parity/tracefid.rs",
+        )
+    }
+}
+
 /// Family B part 8 demos.
 pub(crate) fn demos() -> Vec<Demo> {
     let style = || sel("style", "Style", &["clean", "classic"], "clean");
@@ -1505,6 +1647,7 @@ pub(crate) fn demos() -> Vec<Demo> {
         tool_access_map_demo(style()),
         scheduled_runs_demo(style()),
         rate_limit_planner_demo(style()),
+        trace_waterfall_demo(style()),
         Demo {
             controls: vec![
                 style(),

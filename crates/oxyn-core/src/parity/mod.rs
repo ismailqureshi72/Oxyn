@@ -49,6 +49,7 @@
 //! - [`toolmapfid`]: fidelity batch, family B part 9: Tool Access Map per-agent tool states, counts, calls and replay.
 //! - [`schedfid`]: Scheduled Runs: a week of usage-limited sessions, auto or hand booking, split tasks.
 //! - [`ratefid`]: Rate Limit Planner: the day's token load against a per-minute limit, draggable runs, spread out, fit.
+//! - [`tracefid`]: Trace Waterfall: an agent run as a live span tree on a time axis, folding, details per span.
 //! - [`answers`]: fidelity batch, family A: AI Answer markup and streaming, Cited Answer
 //!   sentences and quotes, Message Actions, Thinking Loader phases, Thinking State steps and the
 //!   Writing Assistant's sample writer and dictation.
@@ -101,6 +102,7 @@ pub mod seqfid;
 pub mod text;
 pub mod toolmapfid;
 pub mod tools;
+pub mod tracefid;
 pub mod upload;
 
 /// Smoothstep ease used for rewinds and fills (0..1 in, 0..1 out).
