@@ -13,12 +13,13 @@ use oxyn_core::{
         planfid::{pv_actual_total, pv_demo},
         rootfid::{rc_demo, rc_len},
         runningfid::{RnState, rn_demo},
+        schedfid::SrMode,
         toolmapfid::{tm_demo_agents, tm_replay},
     },
 };
 use oxyn_dioxus::{
     DecisionTree, DelegateBoard, FallbackChain, JudgeBracket, MemoryPanel, ParallelAttempts,
-    PlanVsActual, RootCauseTree, RunningNow, ToolAccessMap,
+    PlanVsActual, RootCauseTree, RunningNow, ScheduledRuns, ToolAccessMap,
 };
 
 use super::{Code, mk, sel, var};
@@ -1222,6 +1223,151 @@ fn tool_access_map_demo(style: crate::Control) -> Demo {
     }
 }
 
+// ---------- Scheduled Runs ----------
+
+fn scheduled_runs(v: &Vals, _now: ClockMs) -> Element {
+    let mut msg = use_signal(String::new);
+    let key = format!("{}{}{}", v.s("style"), v.s("state"), v.s("width"));
+    let state = v.s("state");
+    let mode = if matches!(state, "manual" | "overbooked" | "open") {
+        SrMode::Manual
+    } else {
+        SrMode::Auto
+    };
+    let agent = (state == "filtered").then(|| "openai".to_string());
+    let open = match state {
+        "open" => Some("apiref".to_string()),
+        "booked-open" => Some("search".to_string()),
+        _ => None,
+    };
+    let booked = if state == "overbooked" {
+        vec![("sessions".to_string(), 4)]
+    } else {
+        vec![]
+    };
+    let w = if v.s("width") == "narrow" {
+        "380px"
+    } else {
+        "640px"
+    };
+    rsx! {
+        div { "data-k": "{key}", key: "{key}", "data-state": "{state}", style: "width:{w};max-width:100%;display:flex;flex-direction:column;gap:8px;padding:14px;border-radius:16px;background:var(--oxsr-bg)",
+            ScheduledRuns { mode, agent, open, booked, style: cstyle(v),
+                on_book: move |(id, c): (String, usize)| msg.set(format!("onBook({id}, {c})")),
+                on_mode: move |m: SrMode| msg.set(format!("onMode({})", m.id())),
+                on_filter: move |a: Option<String>| msg.set(format!("onFilter({a:?})")) }
+            {status(msg)}
+        }
+    }
+}
+
+fn scheduled_runs_code(_: &Vals) -> String {
+    Code::new("ScheduledRuns")
+        .raw("tasks", "Some(queue.tasks())")
+        .raw("mode", "SrMode::Auto")
+        .raw("on_book", "move |(id, cell)| queue.book(id, cell)")
+        .done()
+}
+
+fn scheduled_runs_demo(style: crate::Control) -> Demo {
+    Demo {
+        controls: vec![
+            style,
+            sel(
+                "state",
+                "State",
+                &[
+                    "auto",
+                    "manual",
+                    "filtered",
+                    "open",
+                    "booked-open",
+                    "overbooked",
+                ],
+                "auto",
+            ),
+            sel("width", "Width", &["wide", "narrow"], "wide"),
+        ],
+        variants: vec![
+            var(
+                "auto",
+                "Auto: the whole list is booked into the week, biggest tasks first, small ones into the gaps; the one-and-a-half-session task lands in two sessions as 1/2 and 2/2.",
+                &[],
+            ),
+            var(
+                "manual",
+                "Manual: only the five hand-booked runs stay; the other six wait in the list, one of them needing 150 % of a session.",
+                &[("state", "manual")],
+            ),
+            var(
+                "filtered",
+                "One agent picked: its pill and count show in the header and every other agent's card fades.",
+                &[("state", "filtered")],
+            ),
+            var(
+                "open",
+                "A waiting task opened: its details, what it needs, and buttons for the sessions it still fits in, so booking works without a drag.",
+                &[("state", "open")],
+            ),
+            var(
+                "booked-open",
+                "A booked task opened: where it runs, and a button that takes it back to the list (the board switches to Manual so it stays there).",
+                &[("state", "booked-open")],
+            ),
+            var(
+                "overbooked",
+                "A hand drop that overfills a session: its bar and figure turn red and the status line names the session.",
+                &[("state", "overbooked")],
+            ),
+            var(
+                "narrow",
+                "Under 560 px the list moves above the week and cards in the sessions keep only their title and share.",
+                &[("width", "narrow")],
+            ),
+            var(
+                "classic",
+                "Classic style: square cards with an agent stripe, a dashed list column.",
+                &[("style", "classic")],
+            ),
+        ],
+        render: scheduled_runs,
+        code: scheduled_runs_code,
+        keyboard: vec![
+            (
+                "Tab",
+                "Moves through the filter, the mode switch and the cards",
+            ),
+            (
+                "Enter / Space",
+                "Opens a card's details; inside, books it into a session or takes it back",
+            ),
+            ("Escape", "Closes the details"),
+        ],
+        a11y: vec![
+            "Auto | Manual is a radio group; the agent buttons are toggles named after the agent.",
+            "Each card's name gives its title, agent and share of a session; each session names how much of its limit is booked.",
+            "Booking never needs a drag: the details list the sessions that still have room. Overbooking is said in the status line, not only in red.",
+        ],
+        responsive: vec![
+            "The three days share the width after a 136 px list column.",
+            "Under 560 px the list sits above the week and cards in the sessions drop their description and figures.",
+        ],
+        height: 520,
+        live: false,
+        align: Align::Start,
+        ..mk(
+            "scheduled-runs",
+            "Scheduled Runs",
+            "tools",
+            "Agent tasks booked into a week of sessions that each have a usage limit: auto booking fills the gaps with small tasks and cuts big ones across sessions, manual keeps what you booked by hand, and one agent can be picked out.",
+            "ScheduledRuns",
+            "ScheduledRunsEl",
+            "scheduled-runs",
+            "parity/schedfid.rs",
+        )
+    }
+}
+
 /// Family B part 8 demos.
 pub(crate) fn demos() -> Vec<Demo> {
     let style = || sel("style", "Style", &["clean", "classic"], "clean");
@@ -1234,6 +1380,7 @@ pub(crate) fn demos() -> Vec<Demo> {
         plan_vs_actual_demo(style()),
         root_cause_tree_demo(style()),
         tool_access_map_demo(style()),
+        scheduled_runs_demo(style()),
         Demo {
             controls: vec![
                 style(),

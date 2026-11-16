@@ -38,6 +38,7 @@ mod review;
 mod rootfid;
 mod run;
 mod runningfid;
+mod schedfid;
 mod seqfid;
 mod text;
 mod toolmapfid;
@@ -98,6 +99,7 @@ pub use run::{
     TaskBreakdown, TaskRows, TreeTable,
 };
 pub use runningfid::RunningNow;
+pub use schedfid::ScheduledRuns;
 pub use seqfid::AgentSequence;
 pub use text::{
     ActionSwapButton, InViewTitle, LoadingState, SlotReels, Source, StreamingText, SweepText,

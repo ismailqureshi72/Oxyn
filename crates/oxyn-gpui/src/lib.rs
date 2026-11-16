@@ -49,6 +49,7 @@ pub use parity::ParallelAttemptsEl;
 pub use parity::PlanVsActualEl;
 pub use parity::RootCauseTreeEl;
 pub use parity::RunningNowEl;
+pub use parity::ScheduledRunsEl;
 pub use parity::ToolAccessMapEl;
 pub use parity::{
     Act, ActivityFeedEl, AgentApprovalsEl, AgentPlanEl, AgentRunEl, AgentStatusEl, AgentTrailEl,
