@@ -128,8 +128,8 @@ fn Sheet() -> Element {
 const PAGE_CSS: &str = r#"
 html,body{margin:0;background:#0B0B0C}
 .sheet{padding:28px;font-family:Inter,system-ui,sans-serif;display:grid;grid-template-columns:repeat(3,auto);gap:20px;width:max-content}
-.sheet h1{grid-column:1/-1;margin:0 0 4px;color:#F2EFEA;font-size:22px;font-weight:600}
-.sheet h1 span{margin-left:12px;color:#8A867F;font-size:13px;font-weight:400}
+.sheet h1{grid-column:1/-1;margin:0 0 4px;color:#F2F2F3;font-size:22px;font-weight:600}
+.sheet h1 span{margin-left:12px;color:#8A8A93;font-size:13px;font-weight:400}
 .theme{background:var(--oxyn-color-bg-base);border-radius:14px;padding:16px 18px;border:1px solid var(--oxyn-color-border-subtle)}
 .theme h2{margin:0 0 10px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--oxyn-color-fg-muted)}
 .grid{display:grid;grid-template-columns:auto auto auto auto auto;gap:9px 16px;align-items:center}

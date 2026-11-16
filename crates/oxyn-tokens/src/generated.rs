@@ -1093,33 +1093,33 @@ impl Theme {
         name: "dark",
         colors: [
             Color::rgb(11, 11, 12), // bg.base
-            Color::rgb(7, 6, 4), // surface.sunken
+            Color::rgb(7, 7, 8), // surface.sunken
             Color::rgb(11, 11, 12), // surface.base
-            Color::rgb(34, 32, 30), // surface.raised
-            Color::rgb(46, 44, 42), // surface.overlay
-            Color::rgba(242, 239, 234, 0.06), // surface.hover
-            Color::rgba(242, 239, 234, 0.1), // surface.pressed
-            Color::rgba(242, 239, 234, 0.12), // surface.selected
-            Color::rgb(242, 239, 234), // fg.default
-            Color::rgb(183, 180, 175), // fg.muted
-            Color::rgb(155, 152, 147), // fg.subtle
-            Color::rgb(106, 103, 99), // fg.disabled
+            Color::rgb(28, 28, 30), // surface.raised
+            Color::rgb(42, 42, 46), // surface.overlay
+            Color::rgba(242, 242, 243, 0.06), // surface.hover
+            Color::rgba(242, 242, 243, 0.1), // surface.pressed
+            Color::rgba(242, 242, 243, 0.12), // surface.selected
+            Color::rgb(242, 242, 243), // fg.default
+            Color::rgb(180, 180, 184), // fg.muted
+            Color::rgb(152, 152, 158), // fg.subtle
+            Color::rgb(104, 104, 110), // fg.disabled
             Color::rgb(11, 11, 12), // fg.on-accent
             Color::rgb(11, 11, 12), // fg.inverse
-            Color::rgb(46, 44, 42), // border.subtle
-            Color::rgb(61, 59, 57), // border.default
-            Color::rgb(129, 126, 122), // border.strong
-            Color::rgb(242, 239, 234), // accent.solid
+            Color::rgb(42, 42, 46), // border.subtle
+            Color::rgb(59, 59, 63), // border.default
+            Color::rgb(126, 126, 133), // border.strong
+            Color::rgb(242, 242, 243), // accent.solid
             Color::rgb(255, 255, 255), // accent.solid-hover
-            Color::rgb(207, 203, 199), // accent.solid-pressed
-            Color::rgb(242, 239, 234), // accent.fg
-            Color::rgb(129, 126, 122), // accent.border
-            Color::rgba(242, 239, 234, 0.08), // accent.bg
-            Color::rgb(183, 180, 175), // focus
-            Color::rgba(242, 239, 234, 0.22), // selection
+            Color::rgb(204, 204, 207), // accent.solid-pressed
+            Color::rgb(242, 242, 243), // accent.fg
+            Color::rgb(126, 126, 133), // accent.border
+            Color::rgba(242, 242, 243, 0.08), // accent.bg
+            Color::rgb(180, 180, 184), // focus
+            Color::rgba(242, 242, 243, 0.22), // selection
             Color::rgba(0, 0, 0, 0.6), // scrim
-            Color::rgb(242, 239, 234), // highlight
-            Color::rgb(242, 239, 234), // link
+            Color::rgb(242, 242, 243), // highlight
+            Color::rgb(242, 242, 243), // link
             Color::rgb(90, 199, 119), // status.success.fg
             Color::rgb(55, 176, 93), // status.success.border
             Color::rgba(55, 176, 93, 0.14), // status.success.bg
@@ -1135,22 +1135,22 @@ impl Theme {
             Color::rgb(225, 158, 0), // status.waiting.fg
             Color::rgb(196, 136, 0), // status.waiting.border
             Color::rgba(196, 136, 0, 0.14), // status.waiting.bg
-            Color::rgb(183, 180, 175), // state.idle
-            Color::rgb(242, 239, 234), // state.composing
-            Color::rgb(242, 239, 234), // state.submitted
-            Color::rgb(242, 239, 234), // state.thinking
-            Color::rgb(242, 239, 234), // state.streaming
-            Color::rgb(242, 239, 234), // state.tool-running
+            Color::rgb(180, 180, 184), // state.idle
+            Color::rgb(242, 242, 243), // state.composing
+            Color::rgb(242, 242, 243), // state.submitted
+            Color::rgb(242, 242, 243), // state.thinking
+            Color::rgb(242, 242, 243), // state.streaming
+            Color::rgb(242, 242, 243), // state.tool-running
             Color::rgb(225, 158, 0), // state.awaiting-approval
-            Color::rgb(183, 180, 175), // state.queued
+            Color::rgb(180, 180, 184), // state.queued
             Color::rgb(112, 175, 255), // state.steering
             Color::rgb(90, 199, 119), // state.done
             Color::rgb(255, 126, 146), // state.error
-            Color::rgb(183, 180, 175), // state.cancelled
+            Color::rgb(180, 180, 184), // state.cancelled
             Color::rgb(225, 158, 0), // state.stalled
-            Color::rgb(183, 180, 175), // risk.low.fg
-            Color::rgb(155, 152, 147), // risk.low.border
-            Color::rgba(242, 239, 234, 0.06), // risk.low.bg
+            Color::rgb(180, 180, 184), // risk.low.fg
+            Color::rgb(152, 152, 158), // risk.low.border
+            Color::rgba(242, 242, 243, 0.06), // risk.low.bg
             Color::rgb(225, 158, 0), // risk.medium.fg
             Color::rgb(196, 136, 0), // risk.medium.border
             Color::rgba(196, 136, 0, 0.14), // risk.medium.bg
@@ -1171,57 +1171,57 @@ impl Theme {
             Color::rgba(246, 82, 116, 0.14), // diff.del.bg
             Color::rgba(246, 82, 116, 0.34), // diff.del.word
             Color::rgb(246, 82, 116), // diff.del.stripe
-            Color::rgb(183, 180, 175), // diff.hunk.header
-            Color::rgb(7, 6, 4), // diff.hunk.bg
-            Color::rgb(183, 180, 175), // diff.kept
-            Color::rgb(183, 180, 175), // diff.undone
+            Color::rgb(180, 180, 184), // diff.hunk.header
+            Color::rgb(7, 7, 8), // diff.hunk.bg
+            Color::rgb(180, 180, 184), // diff.kept
+            Color::rgb(180, 180, 184), // diff.undone
             Color::rgb(112, 175, 255), // merge.current
             Color::rgb(69, 194, 188), // merge.incoming
-            Color::rgb(183, 180, 175), // merge.base
+            Color::rgb(180, 180, 184), // merge.base
             Color::rgb(225, 158, 0), // merge.conflict
             Color::rgb(175, 164, 214), // merge.suggested
             Color::rgb(142, 185, 150), // merge.resolved
             Color::rgba(246, 82, 116, 0.16), // merge.marker
-            Color::rgb(242, 239, 234), // git.branch
-            Color::rgb(183, 180, 175), // git.ahead
-            Color::rgb(183, 180, 175), // git.behind
+            Color::rgb(242, 242, 243), // git.branch
+            Color::rgb(180, 180, 184), // git.ahead
+            Color::rgb(180, 180, 184), // git.behind
             Color::rgb(225, 158, 0), // git.behind-warn
             Color::rgb(197, 167, 122), // git.dirty
             Color::rgb(197, 167, 122), // git.detached
             Color::rgb(223, 153, 131), // git.worktree
             Color::rgb(255, 126, 146), // review.critical
             Color::rgb(225, 158, 0), // review.warning
-            Color::rgb(242, 239, 234), // review.suggestion
-            Color::rgb(183, 180, 175), // review.nit
-            Color::rgb(242, 239, 234), // review.info
+            Color::rgb(242, 242, 243), // review.suggestion
+            Color::rgb(180, 180, 184), // review.nit
+            Color::rgb(242, 242, 243), // review.info
             Color::rgb(225, 158, 0), // impact.external
             Color::rgb(255, 126, 146), // impact.irreversible
-            Color::rgb(183, 180, 175), // icon.fg
-            Color::rgb(242, 239, 234), // icon.fg-strong
+            Color::rgb(180, 180, 184), // icon.fg
+            Color::rgb(242, 242, 243), // icon.fg-strong
             Color::rgb(11, 11, 12), // icon.on-accent
-            Color::rgb(242, 239, 234), // loader.fg
-            Color::rgba(242, 239, 234, 0.2), // loader.track
-            Color::rgb(242, 239, 234), // loader.accent
+            Color::rgb(242, 242, 243), // loader.fg
+            Color::rgba(242, 242, 243, 0.2), // loader.track
+            Color::rgb(242, 242, 243), // loader.accent
             Color::rgb(225, 158, 0), // loader.waiting
             Color::rgb(225, 158, 0), // loader.warn
             Color::rgb(255, 126, 146), // loader.danger
             Color::rgb(90, 199, 119), // loader.success
-            Color::rgb(242, 239, 234), // loader.spectral.0
+            Color::rgb(242, 242, 243), // loader.spectral.0
             Color::rgb(255, 255, 255), // loader.spectral.1
-            Color::rgb(207, 203, 199), // loader.spectral.2
-            Color::rgb(183, 180, 175), // loader.spectral.3
-            Color::rgb(129, 126, 122), // loader.spectral.4
-            Color::rgb(155, 152, 147), // loader.spectral.5
-            Color::rgb(242, 239, 234), // term.prompt
-            Color::rgb(242, 239, 234), // plan.changed
-            Color::rgb(242, 239, 234), // feedback.on
-            Color::rgb(34, 32, 30), // code.inline.bg
-            Color::rgb(34, 32, 30), // bubble.user
-            Color::rgb(183, 180, 175), // checkpoint.marker
-            Color::rgb(242, 239, 234), // checkpoint.current
-            Color::rgb(242, 239, 234), // text-status.fg
-            Color::rgb(242, 239, 234), // text-status.crest
-            Color::rgb(150, 148, 145), // text-status.base
+            Color::rgb(204, 204, 207), // loader.spectral.2
+            Color::rgb(180, 180, 184), // loader.spectral.3
+            Color::rgb(126, 126, 133), // loader.spectral.4
+            Color::rgb(152, 152, 158), // loader.spectral.5
+            Color::rgb(242, 242, 243), // term.prompt
+            Color::rgb(242, 242, 243), // plan.changed
+            Color::rgb(242, 242, 243), // feedback.on
+            Color::rgb(28, 28, 30), // code.inline.bg
+            Color::rgb(28, 28, 30), // bubble.user
+            Color::rgb(180, 180, 184), // checkpoint.marker
+            Color::rgb(242, 242, 243), // checkpoint.current
+            Color::rgb(242, 242, 243), // text-status.fg
+            Color::rgb(242, 242, 243), // text-status.crest
+            Color::rgb(150, 150, 154), // text-status.base
             Color::rgb(255, 126, 146), // agent.red
             Color::rgb(255, 132, 95), // agent.orange
             Color::rgb(225, 158, 0), // agent.yellow
@@ -1230,26 +1230,26 @@ impl Theme {
             Color::rgb(180, 152, 255), // agent.violet
             Color::rgb(236, 129, 208), // agent.pink
             Color::rgb(69, 194, 188), // agent.cyan
-            Color::rgb(183, 180, 175), // mcp.disconnected
+            Color::rgb(180, 180, 184), // mcp.disconnected
             Color::rgb(112, 175, 255), // mcp.connecting
             Color::rgb(90, 199, 119), // mcp.connected
             Color::rgb(225, 158, 0), // mcp.needs-auth
             Color::rgb(225, 158, 0), // mcp.pending-approval
             Color::rgb(255, 126, 146), // mcp.error
-            Color::rgb(155, 152, 147), // mcp.disabled
+            Color::rgb(152, 152, 158), // mcp.disabled
             Color::rgb(255, 126, 146), // mcp.blocked
             Color::rgb(112, 175, 255), // mcp.updating
             Color::rgb(225, 158, 0), // mcp.flag-warning
-            Color::rgb(183, 180, 175), // voice.idle
-            Color::rgb(183, 180, 175), // voice.connecting
+            Color::rgb(180, 180, 184), // voice.idle
+            Color::rgb(180, 180, 184), // voice.connecting
             Color::rgb(112, 175, 255), // voice.listening
             Color::rgb(112, 175, 255), // voice.user-speaking
-            Color::rgb(242, 239, 234), // voice.thinking
-            Color::rgb(242, 239, 234), // voice.agent-speaking
+            Color::rgb(242, 242, 243), // voice.thinking
+            Color::rgb(242, 242, 243), // voice.agent-speaking
             Color::rgb(225, 158, 0), // voice.awaiting-approval
             Color::rgb(225, 158, 0), // voice.interrupted
-            Color::rgb(183, 180, 175), // voice.muted
-            Color::rgb(155, 152, 147), // voice.asleep
+            Color::rgb(180, 180, 184), // voice.muted
+            Color::rgb(152, 152, 158), // voice.asleep
             Color::rgb(90, 199, 119), // voice.latency-good
             Color::rgb(225, 158, 0), // voice.latency-ok
             Color::rgb(255, 126, 146), // voice.latency-slow
@@ -1278,22 +1278,22 @@ impl Theme {
             Color::rgb(246, 218, 247), // monogram.10.fg
             Color::rgb(93, 41, 63), // monogram.11.bg
             Color::rgb(255, 217, 230), // monogram.11.fg
-            Color::rgb(46, 44, 42), // ansi.0
+            Color::rgb(42, 42, 46), // ansi.0
             Color::rgb(255, 126, 146), // ansi.1
             Color::rgb(90, 199, 119), // ansi.2
             Color::rgb(225, 158, 0), // ansi.3
             Color::rgb(112, 175, 255), // ansi.4
             Color::rgb(236, 129, 208), // ansi.5
             Color::rgb(69, 194, 188), // ansi.6
-            Color::rgb(207, 203, 199), // ansi.7
-            Color::rgb(155, 152, 147), // ansi.8
+            Color::rgb(204, 204, 207), // ansi.7
+            Color::rgb(152, 152, 158), // ansi.8
             Color::rgb(255, 163, 174), // ansi.9
             Color::rgb(131, 216, 150), // ansi.10
             Color::rgb(238, 182, 88), // ansi.11
             Color::rgb(150, 196, 255), // ansi.12
             Color::rgb(248, 158, 223), // ansi.13
             Color::rgb(119, 212, 206), // ansi.14
-            Color::rgb(242, 239, 234), // ansi.15
+            Color::rgb(242, 242, 243), // ansi.15
         ],
         elevation: [
             Shadow { color: Color::rgba(0, 0, 0, 0.5), offset_x: Dimension { value: 0.0, unit: Unit::Px }, offset_y: Dimension { value: 1.0, unit: Unit::Px }, blur: Dimension { value: 2.0, unit: Unit::Px }, spread: Dimension { value: 0.0, unit: Unit::Px } }, // raised
@@ -1301,36 +1301,36 @@ impl Theme {
             Shadow { color: Color::rgba(0, 0, 0, 0.6), offset_x: Dimension { value: 0.0, unit: Unit::Px }, offset_y: Dimension { value: 12.0, unit: Unit::Px }, blur: Dimension { value: 32.0, unit: Unit::Px }, spread: Dimension { value: -4.0, unit: Unit::Px } }, // modal
             Shadow { color: Color::rgba(0, 0, 0, 0.65), offset_x: Dimension { value: 0.0, unit: Unit::Px }, offset_y: Dimension { value: 16.0, unit: Unit::Px }, blur: Dimension { value: 40.0, unit: Unit::Px }, spread: Dimension { value: -4.0, unit: Unit::Px } }, // approval
         ],
-        focus_ring: Border { color: Color::rgb(183, 180, 175), width: Dimension { value: 2.0, unit: Unit::Px } },
+        focus_ring: Border { color: Color::rgb(180, 180, 184), width: Dimension { value: 2.0, unit: Unit::Px } },
     };
     /// The `light` theme.
     pub const LIGHT: Theme = Theme {
         name: "light",
         colors: [
-            Color::rgb(253, 249, 245), // bg.base
-            Color::rgb(242, 239, 234), // surface.sunken
-            Color::rgb(253, 249, 245), // surface.base
+            Color::rgb(250, 250, 250), // bg.base
+            Color::rgb(242, 242, 243), // surface.sunken
+            Color::rgb(250, 250, 250), // surface.base
             Color::rgb(255, 255, 255), // surface.raised
             Color::rgb(255, 255, 255), // surface.overlay
             Color::rgba(11, 11, 12, 0.05), // surface.hover
             Color::rgba(11, 11, 12, 0.09), // surface.pressed
             Color::rgba(11, 11, 12, 0.08), // surface.selected
             Color::rgb(11, 11, 12), // fg.default
-            Color::rgb(83, 81, 78), // fg.muted
-            Color::rgb(106, 103, 99), // fg.subtle
-            Color::rgb(183, 180, 175), // fg.disabled
+            Color::rgb(81, 81, 86), // fg.muted
+            Color::rgb(104, 104, 110), // fg.subtle
+            Color::rgb(180, 180, 184), // fg.disabled
             Color::rgb(255, 255, 255), // fg.on-accent
-            Color::rgb(242, 239, 234), // fg.inverse
-            Color::rgb(231, 228, 223), // border.subtle
-            Color::rgb(220, 216, 212), // border.default
-            Color::rgb(129, 126, 122), // border.strong
+            Color::rgb(242, 242, 243), // fg.inverse
+            Color::rgb(230, 230, 232), // border.subtle
+            Color::rgb(218, 218, 221), // border.default
+            Color::rgb(126, 126, 133), // border.strong
             Color::rgb(11, 11, 12), // accent.solid
             Color::rgb(0, 0, 0), // accent.solid-hover
-            Color::rgb(61, 59, 57), // accent.solid-pressed
+            Color::rgb(59, 59, 63), // accent.solid-pressed
             Color::rgb(11, 11, 12), // accent.fg
-            Color::rgb(129, 126, 122), // accent.border
+            Color::rgb(126, 126, 133), // accent.border
             Color::rgba(11, 11, 12, 0.06), // accent.bg
-            Color::rgb(83, 81, 78), // focus
+            Color::rgb(81, 81, 86), // focus
             Color::rgba(11, 11, 12, 0.15), // selection
             Color::rgba(11, 11, 12, 0.4), // scrim
             Color::rgb(11, 11, 12), // highlight
@@ -1350,21 +1350,21 @@ impl Theme {
             Color::rgb(135, 93, 0), // status.waiting.fg
             Color::rgb(159, 110, 0), // status.waiting.border
             Color::rgba(196, 136, 0, 0.1), // status.waiting.bg
-            Color::rgb(83, 81, 78), // state.idle
+            Color::rgb(81, 81, 86), // state.idle
             Color::rgb(11, 11, 12), // state.composing
             Color::rgb(11, 11, 12), // state.submitted
             Color::rgb(11, 11, 12), // state.thinking
             Color::rgb(11, 11, 12), // state.streaming
             Color::rgb(11, 11, 12), // state.tool-running
             Color::rgb(135, 93, 0), // state.awaiting-approval
-            Color::rgb(83, 81, 78), // state.queued
+            Color::rgb(81, 81, 86), // state.queued
             Color::rgb(35, 102, 180), // state.steering
             Color::rgb(0, 123, 54), // state.done
             Color::rgb(180, 39, 75), // state.error
-            Color::rgb(83, 81, 78), // state.cancelled
+            Color::rgb(81, 81, 86), // state.cancelled
             Color::rgb(135, 93, 0), // state.stalled
-            Color::rgb(83, 81, 78), // risk.low.fg
-            Color::rgb(106, 103, 99), // risk.low.border
+            Color::rgb(81, 81, 86), // risk.low.fg
+            Color::rgb(104, 104, 110), // risk.low.border
             Color::rgba(11, 11, 12, 0.05), // risk.low.bg
             Color::rgb(135, 93, 0), // risk.medium.fg
             Color::rgb(159, 110, 0), // risk.medium.border
@@ -1386,20 +1386,20 @@ impl Theme {
             Color::rgba(246, 82, 116, 0.1), // diff.del.bg
             Color::rgba(246, 82, 116, 0.26), // diff.del.word
             Color::rgb(208, 54, 90), // diff.del.stripe
-            Color::rgb(83, 81, 78), // diff.hunk.header
-            Color::rgb(242, 239, 234), // diff.hunk.bg
-            Color::rgb(83, 81, 78), // diff.kept
-            Color::rgb(83, 81, 78), // diff.undone
+            Color::rgb(81, 81, 86), // diff.hunk.header
+            Color::rgb(242, 242, 243), // diff.hunk.bg
+            Color::rgb(81, 81, 86), // diff.kept
+            Color::rgb(81, 81, 86), // diff.undone
             Color::rgb(35, 102, 180), // merge.current
             Color::rgb(0, 118, 113), // merge.incoming
-            Color::rgb(83, 81, 78), // merge.base
+            Color::rgb(81, 81, 86), // merge.base
             Color::rgb(135, 93, 0), // merge.conflict
             Color::rgb(105, 94, 137), // merge.suggested
             Color::rgb(75, 113, 83), // merge.resolved
             Color::rgba(246, 82, 116, 0.16), // merge.marker
             Color::rgb(11, 11, 12), // git.branch
-            Color::rgb(83, 81, 78), // git.ahead
-            Color::rgb(83, 81, 78), // git.behind
+            Color::rgb(81, 81, 86), // git.ahead
+            Color::rgb(81, 81, 86), // git.behind
             Color::rgb(135, 93, 0), // git.behind-warn
             Color::rgb(123, 97, 57), // git.dirty
             Color::rgb(123, 97, 57), // git.detached
@@ -1407,11 +1407,11 @@ impl Theme {
             Color::rgb(180, 39, 75), // review.critical
             Color::rgb(135, 93, 0), // review.warning
             Color::rgb(11, 11, 12), // review.suggestion
-            Color::rgb(83, 81, 78), // review.nit
+            Color::rgb(81, 81, 86), // review.nit
             Color::rgb(11, 11, 12), // review.info
             Color::rgb(135, 93, 0), // impact.external
             Color::rgb(180, 39, 75), // impact.irreversible
-            Color::rgb(83, 81, 78), // icon.fg
+            Color::rgb(81, 81, 86), // icon.fg
             Color::rgb(11, 11, 12), // icon.fg-strong
             Color::rgb(255, 255, 255), // icon.on-accent
             Color::rgb(11, 11, 12), // loader.fg
@@ -1423,16 +1423,16 @@ impl Theme {
             Color::rgb(0, 123, 54), // loader.success
             Color::rgb(11, 11, 12), // loader.spectral.0
             Color::rgb(0, 0, 0), // loader.spectral.1
-            Color::rgb(61, 59, 57), // loader.spectral.2
-            Color::rgb(83, 81, 78), // loader.spectral.3
-            Color::rgb(129, 126, 122), // loader.spectral.4
-            Color::rgb(106, 103, 99), // loader.spectral.5
+            Color::rgb(59, 59, 63), // loader.spectral.2
+            Color::rgb(81, 81, 86), // loader.spectral.3
+            Color::rgb(126, 126, 133), // loader.spectral.4
+            Color::rgb(104, 104, 110), // loader.spectral.5
             Color::rgb(11, 11, 12), // term.prompt
             Color::rgb(11, 11, 12), // plan.changed
             Color::rgb(11, 11, 12), // feedback.on
-            Color::rgb(231, 228, 223), // code.inline.bg
-            Color::rgb(231, 228, 223), // bubble.user
-            Color::rgb(83, 81, 78), // checkpoint.marker
+            Color::rgb(230, 230, 232), // code.inline.bg
+            Color::rgb(230, 230, 232), // bubble.user
+            Color::rgb(81, 81, 86), // checkpoint.marker
             Color::rgb(11, 11, 12), // checkpoint.current
             Color::rgb(11, 11, 12), // text-status.fg
             Color::rgb(11, 11, 12), // text-status.crest
@@ -1445,26 +1445,26 @@ impl Theme {
             Color::rgb(130, 96, 205), // agent.violet
             Color::rgb(178, 76, 153), // agent.pink
             Color::rgb(0, 139, 134), // agent.cyan
-            Color::rgb(83, 81, 78), // mcp.disconnected
+            Color::rgb(81, 81, 86), // mcp.disconnected
             Color::rgb(35, 102, 180), // mcp.connecting
             Color::rgb(0, 123, 54), // mcp.connected
             Color::rgb(135, 93, 0), // mcp.needs-auth
             Color::rgb(135, 93, 0), // mcp.pending-approval
             Color::rgb(180, 39, 75), // mcp.error
-            Color::rgb(106, 103, 99), // mcp.disabled
+            Color::rgb(104, 104, 110), // mcp.disabled
             Color::rgb(180, 39, 75), // mcp.blocked
             Color::rgb(35, 102, 180), // mcp.updating
             Color::rgb(135, 93, 0), // mcp.flag-warning
-            Color::rgb(83, 81, 78), // voice.idle
-            Color::rgb(83, 81, 78), // voice.connecting
+            Color::rgb(81, 81, 86), // voice.idle
+            Color::rgb(81, 81, 86), // voice.connecting
             Color::rgb(35, 102, 180), // voice.listening
             Color::rgb(35, 102, 180), // voice.user-speaking
             Color::rgb(11, 11, 12), // voice.thinking
             Color::rgb(11, 11, 12), // voice.agent-speaking
             Color::rgb(135, 93, 0), // voice.awaiting-approval
             Color::rgb(135, 93, 0), // voice.interrupted
-            Color::rgb(83, 81, 78), // voice.muted
-            Color::rgb(106, 103, 99), // voice.asleep
+            Color::rgb(81, 81, 86), // voice.muted
+            Color::rgb(104, 104, 110), // voice.asleep
             Color::rgb(0, 123, 54), // voice.latency-good
             Color::rgb(135, 93, 0), // voice.latency-ok
             Color::rgb(180, 39, 75), // voice.latency-slow
@@ -1500,15 +1500,15 @@ impl Theme {
             Color::rgb(35, 102, 180), // ansi.4
             Color::rgb(154, 61, 131), // ansi.5
             Color::rgb(0, 118, 113), // ansi.6
-            Color::rgb(183, 180, 175), // ansi.7
-            Color::rgb(106, 103, 99), // ansi.8
+            Color::rgb(180, 180, 184), // ansi.7
+            Color::rgb(104, 104, 110), // ansi.8
             Color::rgb(143, 27, 57), // ansi.9
             Color::rgb(0, 97, 41), // ansi.10
             Color::rgb(106, 72, 0), // ansi.11
             Color::rgb(24, 79, 144), // ansi.12
             Color::rgb(122, 46, 104), // ansi.13
             Color::rgb(0, 93, 89), // ansi.14
-            Color::rgb(207, 203, 199), // ansi.15
+            Color::rgb(204, 204, 207), // ansi.15
         ],
         elevation: [
             Shadow { color: Color::rgba(0, 0, 0, 0.06), offset_x: Dimension { value: 0.0, unit: Unit::Px }, offset_y: Dimension { value: 1.0, unit: Unit::Px }, blur: Dimension { value: 2.0, unit: Unit::Px }, spread: Dimension { value: 0.0, unit: Unit::Px } }, // raised
@@ -1516,7 +1516,7 @@ impl Theme {
             Shadow { color: Color::rgba(0, 0, 0, 0.14), offset_x: Dimension { value: 0.0, unit: Unit::Px }, offset_y: Dimension { value: 12.0, unit: Unit::Px }, blur: Dimension { value: 32.0, unit: Unit::Px }, spread: Dimension { value: -4.0, unit: Unit::Px } }, // modal
             Shadow { color: Color::rgba(0, 0, 0, 0.16), offset_x: Dimension { value: 0.0, unit: Unit::Px }, offset_y: Dimension { value: 16.0, unit: Unit::Px }, blur: Dimension { value: 40.0, unit: Unit::Px }, spread: Dimension { value: -4.0, unit: Unit::Px } }, // approval
         ],
-        focus_ring: Border { color: Color::rgb(83, 81, 78), width: Dimension { value: 2.0, unit: Unit::Px } },
+        focus_ring: Border { color: Color::rgb(81, 81, 86), width: Dimension { value: 2.0, unit: Unit::Px } },
     };
     /// The `hc-dark` theme.
     pub const HC_DARK: Theme = Theme {
@@ -1526,27 +1526,27 @@ impl Theme {
             Color::rgb(0, 0, 0), // surface.sunken
             Color::rgb(0, 0, 0), // surface.base
             Color::rgb(11, 11, 12), // surface.raised
-            Color::rgb(26, 24, 22), // surface.overlay
-            Color::rgba(242, 239, 234, 0.1), // surface.hover
-            Color::rgba(242, 239, 234, 0.16), // surface.pressed
-            Color::rgba(242, 239, 234, 0.12), // surface.selected
-            Color::rgb(242, 239, 234), // fg.default
-            Color::rgb(220, 216, 212), // fg.muted
-            Color::rgb(207, 203, 199), // fg.subtle
-            Color::rgb(129, 126, 122), // fg.disabled
+            Color::rgb(23, 23, 26), // surface.overlay
+            Color::rgba(242, 242, 243, 0.1), // surface.hover
+            Color::rgba(242, 242, 243, 0.16), // surface.pressed
+            Color::rgba(242, 242, 243, 0.12), // surface.selected
+            Color::rgb(242, 242, 243), // fg.default
+            Color::rgb(218, 218, 221), // fg.muted
+            Color::rgb(204, 204, 207), // fg.subtle
+            Color::rgb(126, 126, 133), // fg.disabled
             Color::rgb(0, 0, 0), // fg.on-accent
             Color::rgb(0, 0, 0), // fg.inverse
-            Color::rgb(83, 81, 78), // border.subtle
-            Color::rgb(129, 126, 122), // border.default
-            Color::rgb(183, 180, 175), // border.strong
+            Color::rgb(81, 81, 86), // border.subtle
+            Color::rgb(126, 126, 133), // border.default
+            Color::rgb(180, 180, 184), // border.strong
             Color::rgb(255, 255, 255), // accent.solid
             Color::rgb(255, 255, 255), // accent.solid-hover
-            Color::rgb(242, 239, 234), // accent.solid-pressed
+            Color::rgb(242, 242, 243), // accent.solid-pressed
             Color::rgb(255, 255, 255), // accent.fg
-            Color::rgb(183, 180, 175), // accent.border
-            Color::rgba(242, 239, 234, 0.08), // accent.bg
-            Color::rgb(231, 228, 223), // focus
-            Color::rgba(242, 239, 234, 0.22), // selection
+            Color::rgb(180, 180, 184), // accent.border
+            Color::rgba(242, 242, 243, 0.08), // accent.bg
+            Color::rgb(230, 230, 232), // focus
+            Color::rgba(242, 242, 243, 0.22), // selection
             Color::rgba(0, 0, 0, 0.8), // scrim
             Color::rgb(255, 255, 255), // highlight
             Color::rgb(255, 255, 255), // link
@@ -1565,22 +1565,22 @@ impl Theme {
             Color::rgb(238, 182, 88), // status.waiting.fg
             Color::rgb(238, 182, 88), // status.waiting.border
             Color::rgba(196, 136, 0, 0.2), // status.waiting.bg
-            Color::rgb(220, 216, 212), // state.idle
-            Color::rgb(242, 239, 234), // state.composing
+            Color::rgb(218, 218, 221), // state.idle
+            Color::rgb(242, 242, 243), // state.composing
             Color::rgb(255, 255, 255), // state.submitted
             Color::rgb(255, 255, 255), // state.thinking
             Color::rgb(255, 255, 255), // state.streaming
             Color::rgb(255, 255, 255), // state.tool-running
             Color::rgb(238, 182, 88), // state.awaiting-approval
-            Color::rgb(220, 216, 212), // state.queued
+            Color::rgb(218, 218, 221), // state.queued
             Color::rgb(150, 196, 255), // state.steering
             Color::rgb(131, 216, 150), // state.done
             Color::rgb(255, 163, 174), // state.error
-            Color::rgb(220, 216, 212), // state.cancelled
+            Color::rgb(218, 218, 221), // state.cancelled
             Color::rgb(238, 182, 88), // state.stalled
-            Color::rgb(220, 216, 212), // risk.low.fg
-            Color::rgb(207, 203, 199), // risk.low.border
-            Color::rgba(242, 239, 234, 0.1), // risk.low.bg
+            Color::rgb(218, 218, 221), // risk.low.fg
+            Color::rgb(204, 204, 207), // risk.low.border
+            Color::rgba(242, 242, 243, 0.1), // risk.low.bg
             Color::rgb(238, 182, 88), // risk.medium.fg
             Color::rgb(238, 182, 88), // risk.medium.border
             Color::rgba(196, 136, 0, 0.2), // risk.medium.bg
@@ -1601,20 +1601,20 @@ impl Theme {
             Color::rgba(246, 82, 116, 0.22), // diff.del.bg
             Color::rgba(246, 82, 116, 0.36), // diff.del.word
             Color::rgb(255, 163, 174), // diff.del.stripe
-            Color::rgb(220, 216, 212), // diff.hunk.header
+            Color::rgb(218, 218, 221), // diff.hunk.header
             Color::rgb(0, 0, 0), // diff.hunk.bg
-            Color::rgb(220, 216, 212), // diff.kept
-            Color::rgb(220, 216, 212), // diff.undone
+            Color::rgb(218, 218, 221), // diff.kept
+            Color::rgb(218, 218, 221), // diff.undone
             Color::rgb(150, 196, 255), // merge.current
             Color::rgb(119, 212, 206), // merge.incoming
-            Color::rgb(220, 216, 212), // merge.base
+            Color::rgb(218, 218, 221), // merge.base
             Color::rgb(238, 182, 88), // merge.conflict
             Color::rgb(195, 186, 228), // merge.suggested
             Color::rgb(168, 204, 174), // merge.resolved
             Color::rgba(246, 82, 116, 0.16), // merge.marker
-            Color::rgb(242, 239, 234), // git.branch
-            Color::rgb(220, 216, 212), // git.ahead
-            Color::rgb(220, 216, 212), // git.behind
+            Color::rgb(242, 242, 243), // git.branch
+            Color::rgb(218, 218, 221), // git.ahead
+            Color::rgb(218, 218, 221), // git.behind
             Color::rgb(238, 182, 88), // git.behind-warn
             Color::rgb(214, 189, 151), // git.dirty
             Color::rgb(214, 189, 151), // git.detached
@@ -1622,15 +1622,15 @@ impl Theme {
             Color::rgb(255, 163, 174), // review.critical
             Color::rgb(238, 182, 88), // review.warning
             Color::rgb(255, 255, 255), // review.suggestion
-            Color::rgb(220, 216, 212), // review.nit
-            Color::rgb(242, 239, 234), // review.info
+            Color::rgb(218, 218, 221), // review.nit
+            Color::rgb(242, 242, 243), // review.info
             Color::rgb(238, 182, 88), // impact.external
             Color::rgb(255, 163, 174), // impact.irreversible
-            Color::rgb(220, 216, 212), // icon.fg
-            Color::rgb(242, 239, 234), // icon.fg-strong
+            Color::rgb(218, 218, 221), // icon.fg
+            Color::rgb(242, 242, 243), // icon.fg-strong
             Color::rgb(0, 0, 0), // icon.on-accent
-            Color::rgb(242, 239, 234), // loader.fg
-            Color::rgba(242, 239, 234, 0.2), // loader.track
+            Color::rgb(242, 242, 243), // loader.fg
+            Color::rgba(242, 242, 243, 0.2), // loader.track
             Color::rgb(255, 255, 255), // loader.accent
             Color::rgb(238, 182, 88), // loader.waiting
             Color::rgb(238, 182, 88), // loader.warn
@@ -1638,20 +1638,20 @@ impl Theme {
             Color::rgb(131, 216, 150), // loader.success
             Color::rgb(255, 255, 255), // loader.spectral.0
             Color::rgb(255, 255, 255), // loader.spectral.1
-            Color::rgb(242, 239, 234), // loader.spectral.2
-            Color::rgb(231, 228, 223), // loader.spectral.3
-            Color::rgb(183, 180, 175), // loader.spectral.4
-            Color::rgb(155, 152, 147), // loader.spectral.5
+            Color::rgb(242, 242, 243), // loader.spectral.2
+            Color::rgb(230, 230, 232), // loader.spectral.3
+            Color::rgb(180, 180, 184), // loader.spectral.4
+            Color::rgb(152, 152, 158), // loader.spectral.5
             Color::rgb(255, 255, 255), // term.prompt
             Color::rgb(255, 255, 255), // plan.changed
             Color::rgb(255, 255, 255), // feedback.on
-            Color::rgb(26, 24, 22), // code.inline.bg
-            Color::rgb(26, 24, 22), // bubble.user
-            Color::rgb(220, 216, 212), // checkpoint.marker
+            Color::rgb(23, 23, 26), // code.inline.bg
+            Color::rgb(23, 23, 26), // bubble.user
+            Color::rgb(218, 218, 221), // checkpoint.marker
             Color::rgb(255, 255, 255), // checkpoint.current
-            Color::rgb(242, 239, 234), // text-status.fg
-            Color::rgb(242, 239, 234), // text-status.crest
-            Color::rgb(242, 239, 234), // text-status.base
+            Color::rgb(242, 242, 243), // text-status.fg
+            Color::rgb(242, 242, 243), // text-status.crest
+            Color::rgb(242, 242, 243), // text-status.base
             Color::rgb(255, 163, 174), // agent.red
             Color::rgb(255, 167, 141), // agent.orange
             Color::rgb(238, 182, 88), // agent.yellow
@@ -1660,26 +1660,26 @@ impl Theme {
             Color::rgb(198, 179, 255), // agent.violet
             Color::rgb(248, 158, 223), // agent.pink
             Color::rgb(119, 212, 206), // agent.cyan
-            Color::rgb(220, 216, 212), // mcp.disconnected
+            Color::rgb(218, 218, 221), // mcp.disconnected
             Color::rgb(150, 196, 255), // mcp.connecting
             Color::rgb(131, 216, 150), // mcp.connected
             Color::rgb(238, 182, 88), // mcp.needs-auth
             Color::rgb(238, 182, 88), // mcp.pending-approval
             Color::rgb(255, 163, 174), // mcp.error
-            Color::rgb(207, 203, 199), // mcp.disabled
+            Color::rgb(204, 204, 207), // mcp.disabled
             Color::rgb(255, 163, 174), // mcp.blocked
             Color::rgb(150, 196, 255), // mcp.updating
             Color::rgb(238, 182, 88), // mcp.flag-warning
-            Color::rgb(220, 216, 212), // voice.idle
-            Color::rgb(220, 216, 212), // voice.connecting
+            Color::rgb(218, 218, 221), // voice.idle
+            Color::rgb(218, 218, 221), // voice.connecting
             Color::rgb(150, 196, 255), // voice.listening
             Color::rgb(150, 196, 255), // voice.user-speaking
             Color::rgb(255, 255, 255), // voice.thinking
             Color::rgb(255, 255, 255), // voice.agent-speaking
             Color::rgb(238, 182, 88), // voice.awaiting-approval
             Color::rgb(238, 182, 88), // voice.interrupted
-            Color::rgb(220, 216, 212), // voice.muted
-            Color::rgb(207, 203, 199), // voice.asleep
+            Color::rgb(218, 218, 221), // voice.muted
+            Color::rgb(204, 204, 207), // voice.asleep
             Color::rgb(131, 216, 150), // voice.latency-good
             Color::rgb(238, 182, 88), // voice.latency-ok
             Color::rgb(255, 163, 174), // voice.latency-slow
@@ -1708,15 +1708,15 @@ impl Theme {
             Color::rgb(252, 241, 253), // monogram.10.fg
             Color::rgb(72, 29, 48), // monogram.11.bg
             Color::rgb(255, 241, 246), // monogram.11.fg
-            Color::rgb(61, 59, 57), // ansi.0
+            Color::rgb(59, 59, 63), // ansi.0
             Color::rgb(255, 163, 174), // ansi.1
             Color::rgb(131, 216, 150), // ansi.2
             Color::rgb(238, 182, 88), // ansi.3
             Color::rgb(150, 196, 255), // ansi.4
             Color::rgb(248, 158, 223), // ansi.5
             Color::rgb(119, 212, 206), // ansi.6
-            Color::rgb(231, 228, 223), // ansi.7
-            Color::rgb(207, 203, 199), // ansi.8
+            Color::rgb(230, 230, 232), // ansi.7
+            Color::rgb(204, 204, 207), // ansi.8
             Color::rgb(255, 199, 204), // ansi.9
             Color::rgb(178, 231, 188), // ansi.10
             Color::rgb(246, 209, 154), // ansi.11
@@ -1731,7 +1731,7 @@ impl Theme {
             Shadow { color: Color::rgba(0, 0, 0, 0.0), offset_x: Dimension { value: 0.0, unit: Unit::Px }, offset_y: Dimension { value: 0.0, unit: Unit::Px }, blur: Dimension { value: 0.0, unit: Unit::Px }, spread: Dimension { value: 0.0, unit: Unit::Px } }, // modal
             Shadow { color: Color::rgba(0, 0, 0, 0.0), offset_x: Dimension { value: 0.0, unit: Unit::Px }, offset_y: Dimension { value: 0.0, unit: Unit::Px }, blur: Dimension { value: 0.0, unit: Unit::Px }, spread: Dimension { value: 0.0, unit: Unit::Px } }, // approval
         ],
-        focus_ring: Border { color: Color::rgb(231, 228, 223), width: Dimension { value: 2.0, unit: Unit::Px } },
+        focus_ring: Border { color: Color::rgb(230, 230, 232), width: Dimension { value: 2.0, unit: Unit::Px } },
     };
 }
 
@@ -1859,8 +1859,8 @@ pub mod primitive {
             use std::time::Duration;
             /// `primitive.color.brand.ink`: Brand background #0B0B0C
             pub const INK: Color = Color::rgb(11, 11, 12);
-            /// `primitive.color.brand.paper`: Brand off-white #F2EFEA
-            pub const PAPER: Color = Color::rgb(242, 239, 234);
+            /// `primitive.color.brand.paper`: Brand off-white #F2F2F3
+            pub const PAPER: Color = Color::rgb(242, 242, 243);
             /// `primitive.color.brand.rust`: Brand accent #FF5A1F
             pub const RUST: Color = Color::rgb(255, 90, 31);
         }
@@ -1931,37 +1931,37 @@ pub mod primitive {
             /// `primitive.color.neutral.0`.
             pub const N0: Color = Color::rgb(255, 255, 255);
             /// `primitive.color.neutral.25`.
-            pub const N25: Color = Color::rgb(253, 249, 245);
+            pub const N25: Color = Color::rgb(250, 250, 250);
             /// `primitive.color.neutral.50`.
-            pub const N50: Color = Color::rgb(242, 239, 234);
+            pub const N50: Color = Color::rgb(242, 242, 243);
             /// `primitive.color.neutral.100`.
-            pub const N100: Color = Color::rgb(231, 228, 223);
+            pub const N100: Color = Color::rgb(230, 230, 232);
             /// `primitive.color.neutral.150`.
-            pub const N150: Color = Color::rgb(220, 216, 212);
+            pub const N150: Color = Color::rgb(218, 218, 221);
             /// `primitive.color.neutral.200`.
-            pub const N200: Color = Color::rgb(207, 203, 199);
+            pub const N200: Color = Color::rgb(204, 204, 207);
             /// `primitive.color.neutral.300`.
-            pub const N300: Color = Color::rgb(183, 180, 175);
+            pub const N300: Color = Color::rgb(180, 180, 184);
             /// `primitive.color.neutral.400`.
-            pub const N400: Color = Color::rgb(155, 152, 147);
+            pub const N400: Color = Color::rgb(152, 152, 158);
             /// `primitive.color.neutral.500`.
-            pub const N500: Color = Color::rgb(129, 126, 122);
+            pub const N500: Color = Color::rgb(126, 126, 133);
             /// `primitive.color.neutral.600`.
-            pub const N600: Color = Color::rgb(106, 103, 99);
+            pub const N600: Color = Color::rgb(104, 104, 110);
             /// `primitive.color.neutral.700`.
-            pub const N700: Color = Color::rgb(83, 81, 78);
+            pub const N700: Color = Color::rgb(81, 81, 86);
             /// `primitive.color.neutral.800`.
-            pub const N800: Color = Color::rgb(61, 59, 57);
+            pub const N800: Color = Color::rgb(59, 59, 63);
             /// `primitive.color.neutral.850`.
-            pub const N850: Color = Color::rgb(46, 44, 42);
+            pub const N850: Color = Color::rgb(42, 42, 46);
             /// `primitive.color.neutral.900`.
-            pub const N900: Color = Color::rgb(34, 32, 30);
+            pub const N900: Color = Color::rgb(28, 28, 30);
             /// `primitive.color.neutral.925`.
-            pub const N925: Color = Color::rgb(26, 24, 22);
+            pub const N925: Color = Color::rgb(23, 23, 26);
             /// `primitive.color.neutral.950`.
             pub const N950: Color = Color::rgb(11, 11, 12);
             /// `primitive.color.neutral.975`.
-            pub const N975: Color = Color::rgb(7, 6, 4);
+            pub const N975: Color = Color::rgb(7, 7, 8);
             /// `primitive.color.neutral.1000`.
             pub const N1000: Color = Color::rgb(0, 0, 0);
         }

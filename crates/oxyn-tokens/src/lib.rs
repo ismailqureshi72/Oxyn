@@ -54,7 +54,7 @@ mod tests {
     fn brand_values_hold() {
         let d = Theme::DARK;
         assert_eq!(d.color(ColorRole::BgBase).hex(), *b"#0B0B0C");
-        assert_eq!(d.color(ColorRole::FgDefault).hex(), *b"#F2EFEA");
+        assert_eq!(d.color(ColorRole::FgDefault).hex(), *b"#F2F2F3");
         assert_eq!(primitive::color::rust::N500.hex(), *b"#FF5A1F");
     }
 
