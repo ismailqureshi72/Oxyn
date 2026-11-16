@@ -10,6 +10,7 @@ export const FAMILIES = [
   { slug: 'context-visualizer', name: 'Context Visualizer', blurb: 'How full the context window is and what fills it: bars, fields of dots, breakdowns, stacks and a tide glass.' },
   { slug: 'storage', name: 'Storage', blurb: 'Disk and context usage drawn as dot matrices: capacity, cleanup, waffle and forecast.' },
   { slug: 'attachments', name: 'Attachments', blurb: 'Files, images and links going into a prompt: drop zones, chips with upload progress, prints and lanes.' },
+  { slug: 'menu-motion', name: 'Menu Motion', blurb: 'Menus and controls that move like liquid: the gooey menu motion on attach and model menus, a composer, tabs and drops.' },
 ];
 function FAMILY_GROUPS() {
   return FAMILIES.map((f) => ({ ...f, family: true }));

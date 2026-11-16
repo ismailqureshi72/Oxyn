@@ -36,6 +36,7 @@ mod fallbackfid;
 mod fanfid;
 mod fidelity;
 mod fields;
+mod gooeyfid;
 mod graphfid;
 mod handofffid;
 mod home;
@@ -100,6 +101,9 @@ pub use fields::{
     AiComposerEl, AvatarUploadEl, ContextFieldEl, ContextGridEl, ElasticSliderEl, FileDropzoneEl,
     GaugeEl, ModelMenuEl, ModelPillEl, MorphSelectEl, NumberFieldEl, Pick, RichTextEl,
     RunControlsEl, ScrubInputEl, SplitBarEl, UsageMeterEl,
+};
+pub use gooeyfid::{
+    GooeyAttachMenuEl, GooeyComposerEl, GooeyModelMenuEl, LiquidDropsEl, LiquidTabsEl,
 };
 pub use graphfid::AgentGraphEl;
 pub use handofffid::AgentHandoffEl;

@@ -26,6 +26,7 @@ mod fallbackfid;
 mod fanfid;
 mod fidelity;
 mod fields;
+mod gooeyfid;
 mod graphfid;
 mod handofffid;
 mod home;
@@ -95,6 +96,7 @@ pub use fidelity::{
     ThreadNote,
 };
 pub use fields::{ElasticSlider, MorphSelect, NumberField, ScrubInput};
+pub use gooeyfid::{GooeyAttachMenu, GooeyComposer, GooeyModelMenu, LiquidDrops, LiquidTabs};
 pub use graphfid::AgentGraph;
 pub use handofffid::AgentHandoff;
 pub use home::{

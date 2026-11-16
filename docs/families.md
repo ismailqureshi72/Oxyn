@@ -1,8 +1,8 @@
 # Oxyn component families (sidebar categories)
 
-Generated 2026-11-16 for PR #39 (variants 1). Every existing component sits in exactly one family; each family will hold many variants. The site sidebar groups components by these families (`site/src/lib/families.mjs`).
+Generated 2026-11-16 for PR #39 (variants 1); PR #40 (variants 2) added the Storage and Menu Motion families and built variants in Context Visualizer and Attachments. Every existing component sits in exactly one family; each family will hold many variants. The site sidebar groups components by these families (`site/src/lib/families.mjs`).
 
-36 families, 268 existing components.
+38 families, 268 existing components before variants (PR #39 added 8, PR #40 added 17).
 
 ## Composer (`composer`)
 The prompt box itself, the field and what sits in it.
@@ -91,6 +91,20 @@ Disk and context usage drawn as dot matrices: capacity, cleanup, waffle and fore
 - Setup map: where agent skills, rules and servers live, folder by folder, with counts
 - Leftovers sweep: old sessions, logs and build output an agent left behind, grouped by age
 - Notch tabs: Now / Skills / Storage / Cleanup in one compact panel
+
+## Menu Motion (`menu-motion`)
+Menus and controls that move like liquid: the gooey menu motion on attach and model menus, a composer, tabs and drops.
+
+**Existing:** _none yet_
+
+**Built in #40 (variants 2):** Gooey composer (`gooey-composer`), Gooey attach menu (`gooey-attach-menu`), Gooey model menu (`gooey-model-menu`), Liquid tabs (`liquid-tabs`), Liquid drops (`liquid-drops`)
+
+The gooey motion is a shared Oxyn menu motion (`gooeyfid.css`, `oxgm-*`): any menu can take it (see the spec).
+
+**New variants to build:**
+- Gooey context menu at the pointer
+- Melt switch: the knob stretches before it lands
+- Approval menu whose Full access row bleeds red into the button
 
 ## Voice (`voice`)
 Speaking to the agent: record, dictate, listen.
