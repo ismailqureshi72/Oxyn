@@ -1,23 +1,24 @@
-//! affectUI fidelity pass, family B part 8 (plan #32): the **Delegate Board** model. A person hands
-//! work to a specific agent by hand: unassigned tasks wait in a tray, each agent shows its skills
-//! and how busy it is, the agents that can take the selected task light up (the least busy one is
-//! the best fit), and handed-over tasks run and finish in that agent's column. Behaviour only.
+//! affectUI fidelity pass, family B part 8 (plan #32): the **Delegate Board** model. A pile of
+//! unassigned tasks and a column of agents, each with a model, a per-minute rate, the job it is on
+//! and a queue. Handing a task over appends it to that agent's queue, pushes its "busy until" time
+//! and adds to the money waiting in queues; Auto mode hands each task to whoever is free first.
+//! Behaviour only: the views live in `oxyn-dioxus` / `oxyn-gpui` (`parity/delegatefid.rs`).
 
-/// One agent that can take work.
+/// One agent.
 #[derive(Clone, Debug, PartialEq)]
 pub struct DbAgent {
     /// Stable id.
     pub id: String,
-    /// Name.
+    /// Display name ("Coder").
     pub name: String,
-    /// Model.
+    /// Model line ("Opus 4.1").
     pub model: String,
-    /// Brand id for its mark.
+    /// Brand id for the avatar mark.
     pub brand: String,
-    /// What it can do.
-    pub skills: Vec<String>,
-    /// How many tasks it runs at once.
-    pub capacity: usize,
+    /// Dollars per working minute.
+    pub rate: f64,
+    /// The job it is on now and the minutes left on it.
+    pub current: Option<(String, u32)>,
 }
 
 /// One task.
@@ -25,200 +26,171 @@ pub struct DbAgent {
 pub struct DbTask {
     /// Stable id.
     pub id: String,
-    /// What to do.
+    /// Title.
     pub title: String,
-    /// The skill it needs.
-    pub skill: String,
-    /// Rough run time, s (the demo plays it faster).
-    pub est_s: u32,
+    /// Estimate, minutes.
+    pub est: u32,
+    /// Brand id of the tool it mostly needs.
+    pub tool: String,
 }
 
-/// Where a handed-over task stands.
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum DbStatus {
-    /// Waiting for a free slot.
-    Queued,
-    /// Running.
-    Running,
-    /// Finished.
-    Done,
+/// Minutes of work an agent holds: what is left of its current job plus every queued task.
+pub fn db_load_min(a: &DbAgent, tasks: &[DbTask], given: &[(String, String)]) -> u32 {
+    a.current.as_ref().map_or(0, |c| c.1)
+        + given
+            .iter()
+            .filter(|(_, ai)| *ai == a.id)
+            .filter_map(|(ti, _)| tasks.iter().find(|t| t.id == *ti))
+            .map(|t| t.est)
+            .sum::<u32>()
 }
 
-impl DbStatus {
-    /// `queued` / `running` / `done`.
-    pub fn id(self) -> &'static str {
-        match self {
-            Self::Queued => "queued",
-            Self::Running => "running",
-            Self::Done => "done",
-        }
-    }
-    /// Label.
-    pub fn label(self) -> &'static str {
-        match self {
-            Self::Queued => "Queued",
-            Self::Running => "Running",
-            Self::Done => "Done",
-        }
-    }
+/// "10:41" for minutes after midnight (wraps at 24 h).
+pub fn db_clock(min: u32) -> String {
+    let m = min % (24 * 60);
+    format!("{}:{:02}", m / 60, m % 60)
 }
 
-/// Whether an agent has the skill a task needs.
-pub fn db_fits(a: &DbAgent, t: &DbTask) -> bool {
-    a.skills.iter().any(|s| s == &t.skill)
+/// Money waiting in queues: every agent's held minutes at its rate.
+pub fn db_cost(agents: &[DbAgent], tasks: &[DbTask], given: &[(String, String)]) -> f64 {
+    agents
+        .iter()
+        .map(|a| db_load_min(a, tasks, given) as f64 * a.rate)
+        .sum()
 }
 
-/// Open (not done) tasks an agent holds, given `(task id, agent id, status)` rows.
-pub fn db_load(agent: &str, rows: &[(String, String, DbStatus)]) -> usize {
-    rows.iter()
-        .filter(|(_, a, s)| a == agent && *s != DbStatus::Done)
-        .count()
+/// "$2.16".
+pub fn db_usd(v: f64) -> String {
+    format!("${v:.2}")
 }
 
-/// The best fit for a task: an agent with the skill and the most free slots (first on a tie).
-pub fn db_best(
+/// The agent that is free first (fewest held minutes; the earlier one on a tie).
+pub fn db_free_first(
     agents: &[DbAgent],
-    t: &DbTask,
-    rows: &[(String, String, DbStatus)],
+    tasks: &[DbTask],
+    given: &[(String, String)],
 ) -> Option<usize> {
     agents
         .iter()
         .enumerate()
-        .filter(|(_, a)| db_fits(a, t))
-        .max_by(|(i, a), (j, b)| {
-            let fa = a.capacity as i64 - db_load(&a.id, rows) as i64;
-            let fb = b.capacity as i64 - db_load(&b.id, rows) as i64;
-            fa.cmp(&fb).then(j.cmp(i))
-        })
+        .min_by_key(|(i, a)| (db_load_min(a, tasks, given), *i))
         .map(|(i, _)| i)
 }
 
-/// Status of each task an agent holds, from when it was handed over (`ms_ago`) and a time scale
-/// (ms per estimated second): tasks run in hand-over order, `capacity` at a time.
-pub fn db_statuses(a: &DbAgent, held: &[(DbTask, u64)], ms_per_s: u64) -> Vec<DbStatus> {
-    // Simulate slots: each task starts when handed over or when a slot frees, whichever is later.
-    let mut slots: Vec<u64> = vec![0; a.capacity.max(1)];
+/// Auto mode's plan: the tasks still in the pile handed one by one, each to whoever is free first
+/// at that moment. Returns (task id, agent id) in order.
+pub fn db_auto_plan(
+    agents: &[DbAgent],
+    tasks: &[DbTask],
+    given: &[(String, String)],
+) -> Vec<(String, String)> {
+    let mut g = given.to_vec();
     let mut out = vec![];
-    // Hand-over time measured from the oldest hand-over.
-    let oldest = held.iter().map(|(_, ago)| *ago).max().unwrap_or(0);
-    for (t, ago) in held {
-        let given = oldest - ago;
-        let (si, free) = slots
-            .iter()
-            .enumerate()
-            .min_by_key(|(_, f)| **f)
-            .map(|(i, f)| (i, *f))
-            .unwrap_or((0, 0));
-        let start = given.max(free);
-        let end = start + t.est_s as u64 * ms_per_s;
-        slots[si] = end;
-        let now = oldest;
-        out.push(if now < start {
-            DbStatus::Queued
-        } else if now < end {
-            DbStatus::Running
-        } else {
-            DbStatus::Done
-        });
+    for t in tasks {
+        if g.iter().any(|(ti, _)| *ti == t.id) {
+            continue;
+        }
+        let Some(i) = db_free_first(agents, tasks, &g) else {
+            break;
+        };
+        let pair = (t.id.clone(), agents[i].id.clone());
+        g.push(pair.clone());
+        out.push(pair);
     }
     out
 }
 
-fn ag(id: &str, name: &str, model: &str, brand: &str, skills: &[&str], capacity: usize) -> DbAgent {
+fn ag(
+    id: &str,
+    name: &str,
+    model: &str,
+    brand: &str,
+    rate: f64,
+    cur: Option<(&str, u32)>,
+) -> DbAgent {
     DbAgent {
         id: id.into(),
         name: name.into(),
         model: model.into(),
         brand: brand.into(),
-        skills: skills.iter().map(|s| (*s).to_string()).collect(),
-        capacity,
+        rate,
+        current: cur.map(|(t, m)| (t.to_string(), m)),
     }
 }
 
-fn tk(id: &str, title: &str, skill: &str, est_s: u32) -> DbTask {
+fn tk(id: &str, title: &str, est: u32, tool: &str) -> DbTask {
     DbTask {
         id: id.into(),
         title: title.into(),
-        skill: skill.into(),
-        est_s,
+        est,
+        tool: tool.into(),
     }
 }
 
-/// Demo agents (invented).
+/// The demo agents: two busy, one free.
 pub fn db_agents() -> Vec<DbAgent> {
     vec![
         ag(
-            "code",
-            "Code agent",
-            "Sonnet 4.5",
-            "anthropic",
-            &["code", "tests"],
-            2,
+            "coder",
+            "Coder",
+            "Opus 4.1",
+            "claude",
+            0.08,
+            Some(("Fix the flaky login test", 12)),
         ),
         ag(
             "research",
-            "Research agent",
+            "Researcher",
             "GPT-5",
             "openai",
-            &["research", "writing"],
-            2,
+            0.05,
+            Some(("Compare three vendors", 20)),
         ),
-        ag(
-            "ops",
-            "Ops agent",
-            "Gemini 2.5 Pro",
-            "gemini",
-            &["infra", "code"],
-            1,
-        ),
+        ag("ops", "Ops", "Gemini 2.5 Pro", "gemini", 0.04, None),
     ]
 }
 
-/// Demo tasks (invented).
+/// The demo pile.
 pub fn db_tasks() -> Vec<DbTask> {
     vec![
-        tk("t1", "Fix the flaky export test", "tests", 6),
-        tk("t2", "Compare three vector databases", "research", 8),
-        tk("t3", "Rotate the staging API keys", "infra", 4),
-        tk("t4", "Draft the changelog for 2.4", "writing", 5),
-        tk("t5", "Add retries to the webhook sender", "code", 7),
+        tk("t1", "Merge duplicate CRM contacts", 15, "hubspot"),
+        tk("t2", "Draft the release notes", 10, "notion"),
+        tk("t3", "Rotate the staging keys", 8, "github"),
+        tk("t4", "Tag last week's tickets", 20, "linear"),
     ]
 }
+
+/// The demo's starting clock, minutes after midnight (10:21).
+pub const DB_START: u32 = 10 * 60 + 21;
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
-    fn fit_load_and_best() {
+    fn load_cost_and_clock() {
         let a = db_agents();
         let t = db_tasks();
-        assert!(db_fits(&a[0], &t[0]));
-        assert!(!db_fits(&a[1], &t[0]));
-        // Code work: the code agent (2 slots) beats ops (1 slot).
-        assert_eq!(db_best(&a, &t[4], &[]), Some(0));
-        let rows = vec![
-            ("x".to_string(), "code".to_string(), DbStatus::Running),
-            ("y".to_string(), "code".to_string(), DbStatus::Running),
-        ];
-        assert_eq!(db_load("code", &rows), 2);
-        // Code agent full: ops (1 free) is the best fit now.
-        assert_eq!(db_best(&a, &t[4], &rows), Some(2));
-        assert_eq!(db_best(&a, &tk("z", "Paint", "art", 1), &rows), None);
+        assert_eq!(db_load_min(&a[0], &t, &[]), 12);
+        assert_eq!(db_clock(DB_START + 12), "10:33");
+        assert_eq!(db_clock(24 * 60 + 5), "0:05");
+        // 12 × 0.08 + 20 × 0.05 = 1.96
+        assert_eq!(db_usd(db_cost(&a, &t, &[])), "$1.96");
+        let g = vec![("t1".to_string(), "coder".to_string())];
+        assert_eq!(db_load_min(&a[0], &t, &g), 27);
+        assert_eq!(db_usd(db_cost(&a, &t, &g)), "$3.16");
     }
 
     #[test]
-    fn statuses_respect_capacity() {
-        let ops = &db_agents()[2]; // one slot
+    fn auto_hands_to_free_first() {
+        let a = db_agents();
         let t = db_tasks();
-        // Two tasks handed over together, 4 s and 7 s at 100 ms/s; 300 ms later.
-        let held = vec![(t[2].clone(), 300), (t[4].clone(), 300)];
-        let s = db_statuses(ops, &held, 100);
-        assert_eq!(s, vec![DbStatus::Running, DbStatus::Queued]);
-        // The first, handed over long ago, is done; the second runs since it arrived.
-        let held = vec![(t[2].clone(), 5000), (t[4].clone(), 100)];
-        let s = db_statuses(ops, &held, 100);
-        assert_eq!(s, vec![DbStatus::Done, DbStatus::Running]);
-        assert_eq!(DbStatus::Queued.label(), "Queued");
+        assert_eq!(db_free_first(&a, &t, &[]), Some(2));
+        let plan = db_auto_plan(&a, &t, &[]);
+        let who: Vec<&str> = plan.iter().map(|(_, a)| a.as_str()).collect();
+        // ops 0 → t1 (15); coder 12 → t2 (22); ops 15 → t3 (23); research 20 → t4.
+        assert_eq!(who, ["ops", "coder", "ops", "research"]);
+        let done = db_auto_plan(&a, &t, &plan);
+        assert!(done.is_empty());
     }
 }

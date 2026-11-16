@@ -5,7 +5,7 @@ use dioxus::prelude::*;
 use oxyn_core::{
     ClockMs,
     parity::{
-        delegatefid::{db_agents, db_tasks},
+        delegatefid::{db_agents, db_auto_plan, db_tasks},
         dtreefid::{dt_demo, dt_extra},
         fallbackfid::{FbOutcome, fb_demo, fb_demo_all_fail},
     },
@@ -161,46 +161,27 @@ fn delegate_board(v: &Vals, now: ClockMs) -> Element {
     let mut msg = use_signal(String::new);
     let key = format!("{}{}{}", v.s("style"), v.s("state"), v.s("width"));
     let state = v.s("state");
+    let pair = |t: &str, a: &str| (t.to_string(), a.to_string());
     let assigned: Vec<(String, String)> = match state {
-        "busy" | "full" => {
-            let mut a = vec![
-                ("t5".to_string(), "code".to_string()),
-                ("t2".to_string(), "research".to_string()),
-            ];
-            if state == "full" {
-                a.push(("t1".into(), "code".into()));
-            }
-            a
-        }
-        "done" => db_tasks()
-            .iter()
-            .map(|t| {
-                let a = db_agents()
-                    .into_iter()
-                    .find(|a| a.skills.contains(&t.skill))
-                    .map(|a| a.id)
-                    .unwrap_or_default();
-                (t.id.clone(), a)
-            })
-            .collect(),
+        "queued" => vec![
+            pair("t1", "coder"),
+            pair("t2", "coder"),
+            pair("t3", "coder"),
+        ],
+        "done" => db_auto_plan(&db_agents(), &db_tasks(), &[]),
         _ => vec![],
     };
-    let selected = match state {
-        "selected" => "t5",
-        "full" => "t3",
-        _ => "",
-    }
-    .to_string();
-    let assigned_ago_ms = if state == "done" { 600_000 } else { 0 };
+    let suggestion = (state == "suggest").then(|| pair("t3", "ops"));
+    let auto = state == "auto";
     let w = match v.s("width") {
         "narrow" => "380px",
-        _ => "780px",
+        _ => "720px",
     };
     rsx! {
         div { "data-k": "{key}", key: "{key}", "data-state": "{state}", style: "width:{w};max-width:100%;display:flex;flex-direction:column;gap:8px",
-            DelegateBoard { now, assigned, assigned_ago_ms, selected, ms_per_s: if state == "full" { 20_000 } else { 450 }, style: cstyle(v),
-                on_assign: move |(t, a): (String, String)| msg.set(format!("onAssign({t:?}, {a:?})")),
-                on_unassign: move |t: String| msg.set(format!("onUnassign({t:?})")) }
+            DelegateBoard { now, assigned, auto, suggestion, style: cstyle(v),
+                on_assign: move |(t, a): (String, Option<String>)| msg.set(format!("onAssign({t:?}, {a:?})")),
+                on_mode_change: move |m: bool| msg.set(format!("onModeChange({:?})", if m { "auto" } else { "manual" })) }
             {status(msg)}
         }
     }
@@ -209,9 +190,10 @@ fn delegate_board(v: &Vals, now: ClockMs) -> Element {
 fn delegate_board_code(_: &Vals) -> String {
     Code::new("DelegateBoard")
         .raw("agents", "Some(team.agents())")
-        .raw("tasks", "Some(backlog.unassigned())")
+        .raw("tasks", "Some(backlog.tasks())")
         .raw("now", "clock.now()")
         .raw("on_assign", "move |(task, agent)| team.give(task, agent)")
+        .raw("on_mode_change", "move |auto| team.set_auto(auto)")
         .done()
 }
 
@@ -226,66 +208,67 @@ pub(crate) fn demos() -> Vec<Demo> {
                 sel(
                     "state",
                     "State",
-                    &["empty", "selected", "busy", "full", "done"],
-                    "empty",
+                    &["manual", "suggest", "queued", "auto", "done"],
+                    "manual",
                 ),
                 sel("width", "Width", &["wide", "narrow"], "wide"),
             ],
             variants: vec![
                 var(
                     "default",
-                    "Five tasks waiting, three agents idle. Pick a task, then click an agent, press its digit or drop the card on it.",
+                    "Four tasks in the pile, two agents busy, one free. Drag a card onto an agent – or press Enter on it, choose with ↑ ↓ and press Enter, or press the agent's digit.",
                     &[],
                 ),
                 var(
-                    "selected",
-                    "A coding task picked: the agents that can code light up and the one with the most free slots says Best fit.",
-                    &[("state", "selected")],
+                    "suggest",
+                    "A suggested hand-over: the agent lights up with the time it would be busy until, and the task is marked in the pile.",
+                    &[("state", "suggest")],
                 ),
                 var(
-                    "busy",
-                    "Two tasks already handed over and running in their agents' columns; queued ones can be taken back.",
-                    &[("state", "busy")],
+                    "queued",
+                    "Three tasks queued on one agent: the queue folds past three into a +N chip with the rest in its tooltip; click a waiting chip to put it back.",
+                    &[("state", "queued")],
                 ),
                 var(
-                    "full",
-                    "The code agent is at capacity and an infra task is picked: only the ops agent can take it, so it is the best fit.",
-                    &[("state", "full")],
+                    "auto",
+                    "Auto switched on: one task a second goes to whoever frees up first, until the pile is empty; queued counts show beside the names.",
+                    &[("state", "auto")],
                 ),
                 var(
                     "done",
-                    "Everything handed out and finished – the tray is empty.",
+                    "Everything handed out: an empty pile and the money waiting in queues.",
                     &[("state", "done")],
                 ),
                 var(
                     "narrow",
-                    "Under 620 px the tray sits on top and the agents stack.",
-                    &[("state", "selected"), ("width", "narrow")],
+                    "Under 560 px the pile sits above the agents.",
+                    &[("width", "narrow")],
                 ),
                 var(
                     "classic",
-                    "Classic style: grey header band, framed, tinted agent columns.",
-                    &[("style", "classic"), ("state", "busy")],
+                    "Classic style: header and footer bands, each agent framed.",
+                    &[("style", "classic"), ("state", "queued")],
                 ),
             ],
             render: delegate_board,
             code: delegate_board_code,
             keyboard: vec![
-                ("Tab / Enter", "Selects a task in the tray"),
                 (
-                    "1 – 3",
-                    "Hands the selected task to that agent (when it has the skill)",
+                    "Enter",
+                    "Picks up the focused task; Enter again hands it to the chosen agent",
                 ),
-                ("Escape", "Clears the selection"),
+                ("↑ / ↓", "Chooses the agent while a task is held"),
+                ("1 – 9", "Hands the held task to that agent at once"),
+                ("Escape", "Puts the held task back"),
             ],
             a11y: vec![
-                "Tray tasks are toggle buttons (aria-pressed); each agent column is a named group with a Hand over button carrying aria-keyshortcuts.",
-                "Agents without the skill keep a disabled button that says what they can't do.",
-                "A polite status region reads out each hand-over; dragging is optional – clicks and digits do the same.",
+                "Pile cards are toggle buttons (aria-pressed while held); each agent is a named group whose digit button carries aria-keyshortcuts.",
+                "Auto is a role=switch; each hand-over and put-back is read out by a polite status region.",
+                "Dragging is optional – Enter, the arrows and the digits do the same; the +N chip is focusable and lists the rest in a tooltip.",
             ],
             responsive: vec![
-                "Wide: tray left, agent columns right (auto-fit, 150 px minimum).",
-                "Under 620 px the tray goes on top and the columns stack.",
+                "Fills up to 720 px: pile left (170 px), agents right.",
+                "Under 560 px the pile sits above the agents and the hint line drops out of the header.",
             ],
             height: 460,
             live: true,
@@ -294,7 +277,7 @@ pub(crate) fn demos() -> Vec<Demo> {
                 "delegate-board",
                 "Delegate Board",
                 "tools",
-                "Give a task to the agent you choose: unassigned work in a tray, each agent with its skills and free slots, the right ones lit when you pick a task, and the job queuing, running and finishing in that agent's column.",
+                "Hand tasks to agents yourself: a pile of unassigned work beside each agent's model, rate, busy-until time and queue, with the money waiting in queues – or switch on Auto and let whoever frees up first take the next one.",
                 "DelegateBoard",
                 "DelegateBoardEl",
                 "delegate-board",
