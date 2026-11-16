@@ -52,6 +52,7 @@ pub use parity::FanoutGrid;
 pub use parity::JudgeBracket;
 pub use parity::MemoryPanel;
 pub use parity::ModelEffortMenu;
+pub use parity::NozzleSlider;
 pub use parity::ParallelAttempts;
 pub use parity::PlanVsActual;
 pub use parity::RateLimitPlanner;

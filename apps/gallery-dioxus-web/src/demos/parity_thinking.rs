@@ -10,7 +10,8 @@ use oxyn_core::{
     },
 };
 use oxyn_dioxus::{
-    ContextEffortMenu, EffortList, EffortPill, EffortRuler, ModelEffortMenu, ReasoningPanel,
+    ContextEffortMenu, EffortList, EffortPill, EffortRuler, ModelEffortMenu, NozzleSlider,
+    ReasoningPanel,
 };
 
 use super::{Code, mk, rng, sel, tog, var};
@@ -559,6 +560,84 @@ fn model_effort_menu_demo() -> Demo {
     }
 }
 
+// ---------- Nozzle line ----------
+
+fn nozzle_slider(v: &Vals, _now: ClockMs) -> Element {
+    let mut msg = use_signal(String::new);
+    let key = format!("{}{}{}", v.s("level"), v.s("strokes"), v.s("caption"));
+    let start = level_index(&effort_scale(), v.s("level"), 2);
+    let strokes = v.f("strokes").max(12.0) as usize;
+    let caption = v.b("caption");
+    rsx! {
+        div { key: "{key}", "data-k": "{key}", style: "width:420px;max-width:100%;display:flex;flex-direction:column;gap:10px",
+            NozzleSlider { default_value: start, strokes, caption,
+                on_change: move |i: usize| msg.set(format!("onChange({})", effort_scale()[i].label)) }
+            {status(msg)}
+        }
+    }
+}
+
+fn nozzle_slider_code(_: &Vals) -> String {
+    Code::new("NozzleSlider")
+        .raw("value", "Some(effort())")
+        .raw("on_change", "move |i| effort.set(i)")
+        .done()
+}
+
+fn nozzle_slider_demo() -> Demo {
+    Demo {
+        controls: vec![
+            sel("level", "Level", &FIVE, "high"),
+            rng("strokes", "Strokes", 21.0, 61.0, 4.0, "41"),
+            tog("caption", "Caption", true),
+        ],
+        variants: vec![
+            var(
+                "high",
+                "The nozzle – a see-through ring – sits over the middle stop; the red strokes show through it.",
+                &[],
+            ),
+            var("low", "Resting on the first stroke.", &[("level", "low")]),
+            var("max", "At the far end.", &[("level", "max")]),
+            var(
+                "dense",
+                "61 strokes, no caption: just the line and the ring.",
+                &[("strokes", "61"), ("caption", "false")],
+            ),
+        ],
+        render: nozzle_slider,
+        code: nozzle_slider_code,
+        keyboard: vec![
+            (
+                "← / → · Home / End",
+                "One level, or the ends; the nozzle springs to the stop",
+            ),
+            (
+                "Drag",
+                "The nozzle follows the pointer and snaps to the nearest stop",
+            ),
+        ],
+        a11y: vec![
+            "role=slider with the level's name as value text; the strokes and ring are decoration.",
+            "Level stops are drawn a touch taller and bolder so they read without colour.",
+        ],
+        responsive: vec!["420 px up to its container; strokes are placed by percentage."],
+        height: 200,
+        live: false,
+        align: Align::Center,
+        ..mk(
+            "nozzle-slider",
+            "Nozzle line",
+            CAT,
+            "An Oxyn original: short, closely spaced red strokes with a hand-drawn wobble; a see-through ring slides along and snaps to the levels.",
+            "NozzleSlider",
+            "NozzleSliderEl",
+            "nozzle-slider",
+            "parity/nozzlefid.rs",
+        )
+    }
+}
+
 /// Every Thinking Selector demo, in sidebar order.
 pub(crate) fn demos() -> Vec<Demo> {
     vec![
@@ -568,5 +647,6 @@ pub(crate) fn demos() -> Vec<Demo> {
         effort_pill_demo(),
         context_effort_menu_demo(),
         model_effort_menu_demo(),
+        nozzle_slider_demo(),
     ]
 }
