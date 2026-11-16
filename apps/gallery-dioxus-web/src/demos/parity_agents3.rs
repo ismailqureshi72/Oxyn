@@ -489,7 +489,7 @@ fn decision_tree_demo(style: crate::Control) -> Demo {
         ],
         responsive: vec![
             "A container query: wide, question → branches → consequences run left to right.",
-            "Under 640 px it runs top to bottom with the consequences under each branch; nothing scrolls sideways.",
+            "Under 520 px it runs top to bottom with the consequences under each branch; nothing scrolls sideways.",
         ],
         height: 560,
         live: true,

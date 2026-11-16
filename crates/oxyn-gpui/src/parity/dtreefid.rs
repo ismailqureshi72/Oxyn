@@ -100,31 +100,31 @@ impl RenderOnce for DecisionTreeEl {
         let h = |x: u32| -> Hsla { rgb(x).into() };
         let (card, bd, fg, mute, chip, blue, band, red_bg, red, amb_bg, amb) = if dark {
             (
-                h(0x18181B),
-                h(0x2C2C31),
+                h(0x17171A),
+                h(0x2A2A2E),
                 h(0xEDEDEF),
-                h(0x8B8B94),
+                h(0x8A8A93),
                 h(0x26262B),
-                h(0x7AA5FF),
-                h(0x1D1D21),
-                h(0x3D1A17),
-                h(0xF97066),
-                h(0x3A2A10),
-                h(0xF5B04C),
+                h(0x4C8DFF),
+                h(0x111113),
+                h(0x3A1C1E),
+                h(0xF87171),
+                h(0x3A2E12),
+                h(0xFBBF24),
             )
         } else {
             (
                 h(0xFFFFFF),
-                h(0xE6E6E9),
-                h(0x18181B),
+                h(0xE6E6E6),
+                h(0x111827),
                 h(0x8A8A93),
                 h(0xF1F1F3),
-                h(0x2F6FED),
-                h(0xEFEFF1),
-                h(0xFEE4E2),
-                h(0xB42318),
-                h(0xFEF0C7),
-                h(0xB54708),
+                h(0x2563EB),
+                h(0xFAFAFA),
+                h(0xFEE2E2),
+                h(0xDC2626),
+                h(0xFEF3C7),
+                h(0xB45309),
             )
         };
         let n = self.queue.len();
