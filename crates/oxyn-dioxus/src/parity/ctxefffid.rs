@@ -51,6 +51,9 @@ pub fn ContextEffortMenu(
     let mut win = use_signal(move || default_window.min(nw.saturating_sub(1)));
     let mut eff = use_signal(move || default_effort);
     let mut open = use_signal(move || default_open);
+    // Only a menu the user opened gets the click-outside catcher; a preview that starts open
+    // never covers the page.
+    let mut armed = use_signal(|| false);
     let mut hi = use_signal(|| 0usize);
     let mut want = use_signal(|| false);
     let mut said = use_signal(String::new);
@@ -80,14 +83,17 @@ pub fn ContextEffortMenu(
         el.get(cur_e).cloned().unwrap_or_default()
     );
 
+    let catch = is_open && armed();
+
     rsx! {
-        div { class: "oxec", "data-open": "{is_open}",
+        div { class: "oxec", "data-open": "{is_open}", "data-armed": "{catch}",
+            if catch { div { class: "oxth-catch", "aria-hidden": "true", onpointerdown: move |_| open.set(false) } }
             button { class: "oxec-chip", r#type: "button", "aria-haspopup": "menu", "aria-expanded": "{is_open}",
                 "aria-label": "{model}, {summary}",
                 onmounted: move |e| chip.set(Some(e.data())),
-                onclick: move |_| { if !open() { hi.set(cur_w); want.set(true); } open.set(!open()); },
+                onclick: move |_| { if !open() { hi.set(cur_w); want.set(true); armed.set(true); } open.set(!open()); },
                 onkeydown: move |e: KeyboardEvent| if matches!(e.key(), Key::ArrowDown | Key::ArrowUp) && !open() {
-                    e.prevent_default(); hi.set(cur_w); want.set(true); open.set(true);
+                    e.prevent_default(); hi.set(cur_w); want.set(true); armed.set(true); open.set(true);
                 },
                 span { class: "oxec-model", "{model}" }
                 span { class: "oxec-sum", "{summary}" }

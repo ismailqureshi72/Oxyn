@@ -41,6 +41,9 @@ pub fn ModelEffortMenu(
     let mut list = use_signal(move || start);
     let mut chosen = use_signal(move || default_model.min(n - 1));
     let mut open = use_signal(move || default_open);
+    // Only a menu the user opened gets the click-outside catcher; a preview that starts open
+    // never covers the page.
+    let mut armed = use_signal(|| false);
     let mut hi = use_signal(move || default_sub.unwrap_or(default_model).min(n - 1));
     let mut sub = use_signal(move || default_sub);
     let mut sub_hi = use_signal(|| 0usize);
@@ -76,8 +79,11 @@ pub fn ModelEffortMenu(
         .map(|l| l.label.clone())
         .unwrap_or_default();
 
+    let catch = is_open && armed();
+
     rsx! {
-        div { class: "oxem", "data-open": "{is_open}",
+        div { class: "oxem", "data-open": "{is_open}", "data-armed": "{catch}",
+            if catch { div { class: "oxth-catch", "aria-hidden": "true", onpointerdown: move |_| open.set(false) } }
             if is_open {
                 div { class: "oxem-pop", role: "menu", tabindex: "-1", "aria-label": "Models",
                     "aria-activedescendant": "{active}",
@@ -143,7 +149,7 @@ pub fn ModelEffortMenu(
             button { class: "oxem-chip", r#type: "button", "aria-haspopup": "menu", "aria-expanded": "{is_open}",
                 "aria-label": "Model: {trigger}, {trigger_lv}",
                 onmounted: move |e| chip.set(Some(e.data())),
-                onclick: move |_| { if !open() { hi.set(cur); sub.set(None); want.set(true); } open.set(!open()); },
+                onclick: move |_| { if !open() { hi.set(cur); sub.set(None); want.set(true); armed.set(true); } open.set(!open()); },
                 span { "{trigger}" } {chevron(false)} }
             div { class: "oxem-sr", role: "status", "aria-live": "polite", "{said}" }
         }

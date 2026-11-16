@@ -44,6 +44,9 @@ pub fn EffortPill(
     let mut own = use_signal(move || default_value.map(|v| v.min(n - 1)));
     let cur = value.unwrap_or(own()).map(|v| v.min(n - 1));
     let mut open = use_signal(move || default_open);
+    // Only a menu the user opened gets the click-outside catcher; a preview that starts open
+    // never covers the page.
+    let mut armed = use_signal(|| false);
     let mut said = use_signal(String::new);
     let track = use_hook(Track::new);
     let all = levels.clone();
@@ -61,12 +64,15 @@ pub fn EffortPill(
     let home = reset.min(n - 1);
     let reset_label = format!("Reset to {}", levels[home].label);
 
+    let catch = is_open && armed();
+
     rsx! {
-        div { class: "oxeq", "data-open": "{is_open}",
+        div { class: "oxeq", "data-open": "{is_open}", "data-armed": "{catch}",
             onkeydown: move |e: KeyboardEvent| if e.key() == Key::Escape && open() { e.prevent_default(); open.set(false); },
+            if catch { div { class: "oxth-catch", "aria-hidden": "true", onpointerdown: move |_| open.set(false) } }
             button { class: "oxeq-pill", r#type: "button", "aria-expanded": "{is_open}", "aria-haspopup": "dialog",
                 "data-set": "{cur.is_some()}",
-                onclick: move |_| open.set(!open()),
+                onclick: move |_| { armed.set(true); open.set(!open()) },
                 span { "{pill}" } {chevron(false)} }
             if is_open {
                 div { class: "oxeq-pop", role: "dialog", "aria-label": "Thinking effort",

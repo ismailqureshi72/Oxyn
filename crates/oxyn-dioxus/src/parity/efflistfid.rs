@@ -80,6 +80,9 @@ pub fn EffortList(
     let mut own = use_signal(move || default_value.unwrap_or(n - 1).min(n - 1));
     let cur = value.unwrap_or(own()).min(n - 1);
     let mut open = use_signal(move || default_open);
+    // Only a menu the user opened gets the click-outside catcher; a preview that starts open
+    // never covers the page.
+    let mut armed = use_signal(|| false);
     let mut hi = use_signal(move || cur);
     let mut said = use_signal(String::new);
     let mut chip = use_signal(|| None::<Rc<MountedData>>);
@@ -97,13 +100,17 @@ pub fn EffortList(
     let mut show = move |at: usize| {
         hi.set(at);
         want.set(true);
+        armed.set(true);
         open.set(true);
     };
     let active = format!("{uid}-{}", hi());
     let is_open = open();
 
+    let catch = is_open && armed();
+
     rsx! {
-        div { class: "oxel", "data-open": "{is_open}",
+        div { class: "oxel", "data-open": "{is_open}", "data-armed": "{catch}",
+            if catch { div { class: "oxth-catch", "aria-hidden": "true", onpointerdown: move |_| open.set(false) } }
             if is_open {
                 div { class: "oxel-pop",
                     p { class: "oxel-h", id: "{uid}-h", "{heading}" }
