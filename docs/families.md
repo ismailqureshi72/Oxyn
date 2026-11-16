@@ -432,11 +432,10 @@ Tabs, breadcrumbs, accordions, panes, trees and docks.
 ## Screens (`screens`)
 Whole app frames built from the components (affectUI's screen set by behaviour, in Oxyn's own words and greys). Every screen has Sample / Loading / Empty data, an Inset or Flat frame, and light / dark. Pages live at `/screens/<slug>/` with a full-viewport view.
 
-**Built in #42 (screens 1):** App shell · Inset (`shell-inset`), App shell · Flat (`shell-flat`), Three-pane shell (`shell-three-pane`), AI Chat · Start (`chat-start`), AI Chat · Overview (`chat-overview`), AI Chat · Agents (`chat-agents`), AI Chat · Double sidebar (`chat-double-sidebar`), AI Chat · Progress (`chat-progress`), AI Chat · Run (`chat-run`)
+**Built in #42 (screens 1):** App shell · Inset (`shell-inset`), App shell · Flat (`shell-flat`), Three-pane shell (`shell-three-pane`), AI Chat · Start (`chat-start`), AI Chat · Overview (`chat-overview`), AI Chat · Agents (`chat-agents`), AI Chat · Double sidebar (`chat-double-sidebar`), AI Chat · Progress (`chat-progress`), AI Chat · Run (`chat-run`), Folders · Overview (`folders-overview`), Folders · Detail (`folders-detail`)
 
 **New variants to build:**
 - Settings shell (return link, personal and team sections)
-- Folders · Overview and Folders · Detail
 - Integrations (app directory with connect states)
 - CRM (views as tabs, editable table)
 - Kanban board (drag between columns, issue detail)

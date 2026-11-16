@@ -5,16 +5,19 @@
 //! is the three-pane frame: an icon rail, a chats column, the page and a work area. On top of them:
 //! [`AppShellScreen`], [`RailShellScreen`] and the AI Chat screens [`ChatStartScreen`],
 //! [`ChatOverviewScreen`], [`ChatAgentsScreen`], [`ChatRailScreen`], [`ChatProgressScreen`] and
-//! [`ChatRunScreen`], each with Sample, Loading and Empty data. Models:
-//! `oxyn_core::parity::screensfid`. Styles: `screensfid.css` (`oxscn-` frame, `oxsrl-` rail frame,
-//! `oxcst-` start, `oxcov-` overview, `oxcag-` agents, `oxcdr-` double sidebar, `oxcpr-` progress,
-//! `oxcrn-` run). Every person, workspace and line of copy is fictional and our own.
+//! [`ChatRunScreen`], and the Folders screens ([`FoldersScreen`], Overview and Detail), each with
+//! Sample, Loading and Empty data. Models: `oxyn_core::parity::screensfid`. Styles:
+//! `screensfid.css` (`oxscn-` frame, `oxsrl-` rail frame, `oxcst-` start, `oxcov-` overview,
+//! `oxcag-` agents, `oxcdr-` double sidebar, `oxcpr-` progress, `oxcrn-` run, `oxsfo-` / `oxsfd-` /
+//! `oxsfi-` folders). Every person, workspace and line of copy is fictional and our own.
 
 use dioxus::prelude::*;
 use oxyn_core::ClockMs;
 use oxyn_core::parity::screensfid::{
-    PERSON, PERSON_INI, Review, ScreenState, ShellLayout, Thread, WORKSPACE, ago, can_send,
-    chat_title, open_thread, pct_done, projects, setup_steps, split_pinned, threads, toggle_pin,
+    FileRow, FileSort, Folder, PERSON, PERSON_INI, Review, ScreenState, ShellLayout, Thread,
+    WORKSPACE, ago, can_send, chat_title, folder_activity, folder_files, folder_view, folders,
+    invite_initials, member_name, open_thread, pct_done, projects, setup_steps, size_label,
+    sort_files, split_pinned, threads, toggle_pin, total_size, untitled,
 };
 
 use super::efflistfid::{check_glyph, chevron};
@@ -1907,6 +1910,449 @@ pub fn ChatRunScreen(
                                 }
                             }
                         }
+                    }
+                }
+            }
+        }
+    }
+}
+
+// ───────────────────────────────────────────────────────────── Folders ──
+
+/// Folders seeded for a state: the sample set, one empty folder when the screen opens inside a
+/// folder with no data, or none.
+fn seed_folders(st: ScreenState, detail: bool) -> Vec<Folder> {
+    match st {
+        ScreenState::Sample => folders(),
+        _ if detail => {
+            let mut f = folders().remove(0);
+            f.members = vec![PERSON_INI.to_string()];
+            f.starred = false;
+            vec![f]
+        }
+        _ => vec![],
+    }
+}
+
+/// Up to four member initials, then `+n`.
+fn faces(members: &[String]) -> Element {
+    let more = members.len().saturating_sub(4);
+    rsx! {
+        span { class: "oxsfo-faces",
+            for (i, m) in members.iter().take(4).enumerate() {
+                span { key: "{i}", class: "oxscn-av oxsfo-face", title: "{member_name(m)}", "{m}" }
+            }
+            if more > 0 { span { class: "oxsfo-more", "+{more}" } }
+        }
+    }
+}
+
+/// Screen – Folders: the folders you share with people and agents (Overview), and one folder open
+/// with its files and details (Detail). `detail` starts inside the first folder.
+#[component]
+pub fn FoldersScreen(
+    /// `inset` or `flat`.
+    #[props(default = "inset".to_string())]
+    layout: String,
+    /// `sample`, `loading` or `empty`.
+    #[props(default = "sample".to_string())]
+    state: String,
+    /// Height px.
+    #[props(default = 640)]
+    height: u32,
+    /// Start inside the first folder.
+    #[props(default)]
+    detail: bool,
+) -> Element {
+    let st = ScreenState::from_key(&state);
+    let thr = use_threads(st);
+    let active = use_signal(|| 0u32);
+    let list = use_signal(move || seed_folders(st, detail));
+    let mut open = use_signal(move || if detail { Some(1u32) } else { None });
+    let cur = open().and_then(|id| list().into_iter().find(|f| f.id == id));
+    let title = match &cur {
+        Some(f) => format!("Folders / {}", f.name),
+        None => "Folders".to_string(),
+    };
+    let work = cur.as_ref().map(|f| {
+        let id = f.id;
+        rsx! { FolderInfo { key: "{id}", state: state.clone(), list, id } }
+    });
+    rsx! {
+        AppFrame { layout, state: state.clone(), height, threads: thr, active, title, work, work_label: "Details",
+            on_nav: move |k: String| if k == "files" { open.set(None) },
+            if let Some(f) = cur {
+                FolderFiles { key: "{f.id}", state: state.clone(), name: f.name.clone(), note: f.note.clone(), members: f.members.clone(), on_back: move |_| open.set(None) }
+            } else {
+                FolderGrid { state: state.clone(), list, on_open: move |id: u32| open.set(Some(id)) }
+            }
+        }
+    }
+}
+
+/// The Overview page: search, sort, grid or list, star, and a new folder typed in place.
+#[component]
+fn FolderGrid(state: String, list: Signal<Vec<Folder>>, on_open: EventHandler<u32>) -> Element {
+    let st = ScreenState::from_key(&state);
+    let mut q = use_signal(String::new);
+    let mut by_name = use_signal(|| false);
+    let mut as_list = use_signal(|| false);
+    let mut adding = use_signal(|| false);
+    let mut draft = use_signal(String::new);
+    let mut said = use_signal(String::new);
+    let all = list();
+    let view = folder_view(&all, &q(), by_name());
+    let shown = view.len();
+    let mut create = move || {
+        let name = draft.peek().trim().to_string();
+        if name.is_empty() {
+            return;
+        }
+        let id = list.peek().iter().map(|f| f.id).max().unwrap_or(0) + 1;
+        list.write().push(Folder {
+            id,
+            name: name.clone(),
+            note: "Empty so far".to_string(),
+            members: vec![PERSON_INI.to_string()],
+            mins: 0,
+            starred: false,
+            agents: false,
+        });
+        draft.set(String::new());
+        adding.set(false);
+        said.set(format!("Made {name}"));
+    };
+    let lay = if as_list() { "list" } else { "grid" };
+    rsx! {
+        div { class: "oxsfo",
+            div { class: "oxsfo-head",
+                div { class: "oxsfo-ht",
+                    h1 { class: "oxscn-h1", "Folders" }
+                    p { class: "oxscn-row-a", if st == ScreenState::Sample { "{all.len()} folders · shared with people and agents" } else { "Shared with people and agents" } }
+                }
+                button { r#type: "button", class: "oxscn-primary oxsfo-new", onclick: move |_| adding.set(true), {ico("plus")} span { "New folder" } }
+            }
+            div { class: "oxsfo-bar",
+                label { class: "oxscn-search oxsfo-q",
+                    {ico("search")}
+                    input { r#type: "search", placeholder: "Find a folder", "aria-label": "Find a folder", value: "{q}",
+                        oninput: move |e| q.set(e.value()),
+                        onkeydown: move |e: KeyboardEvent| if e.key() == Key::Escape { q.set(String::new()) } }
+                }
+                MenuButton { label: if by_name() { "Name".to_string() } else { "Recent".to_string() }, aria: "Sort folders", icon: "sort", right: true,
+                    items: vec![("recent", "Recently changed", ""), ("name", "Name", "")], checked: if by_name() { "name".to_string() } else { "recent".to_string() },
+                    on_pick: move |k: String| by_name.set(k == "name") }
+                div { class: "oxscn-seg oxsfo-view", role: "group", "aria-label": "View",
+                    button { r#type: "button", class: "oxscn-ib", "aria-label": "Grid", "aria-pressed": "{!as_list()}", onclick: move |_| as_list.set(false), {ico("apps")} }
+                    button { r#type: "button", class: "oxscn-ib", "aria-label": "List", "aria-pressed": "{as_list()}", onclick: move |_| as_list.set(true), {ico("row")} }
+                }
+            }
+            if st == ScreenState::Loading {
+                div { class: "oxsfo-grid", "data-view": "grid", "aria-hidden": "true",
+                    for i in 0..6 { div { key: "{i}", class: "oxsfo-card oxsfo-sk", {skel(3)} } }
+                }
+            } else {
+                if all.is_empty() && !adding() {
+                    {empty("No folders yet", "Make one for a project: files, chats and agents can all share it.")}
+                }
+                ul { class: "oxsfo-grid", "data-view": "{lay}", "aria-label": "Folders",
+                    if adding() {
+                        li { class: "oxsfo-card oxsfo-add",
+                            span { class: "oxsfo-fi", {ico("folder")} }
+                            input { class: "oxsfo-in", r#type: "text", placeholder: "Folder name", "aria-label": "New folder name", value: "{draft}",
+                                onmounted: move |e: MountedEvent| { let d = e.data(); spawn(async move { let _ = d.set_focus(true).await; }); },
+                                oninput: move |e| draft.set(e.value()),
+                                onkeydown: move |e: KeyboardEvent| match e.key() { Key::Enter => create(), Key::Escape => { adding.set(false); draft.set(String::new()); } _ => {} } }
+                            div { class: "oxsfo-add-a",
+                                button { r#type: "button", class: "oxscn-btn", onclick: move |_| { adding.set(false); draft.set(String::new()); }, "Cancel" }
+                                button { r#type: "button", class: "oxscn-primary", disabled: draft().trim().is_empty(), onclick: move |_| create(), "Create" }
+                            }
+                        }
+                    }
+                    for f in view {
+                        {
+                            let id = f.id;
+                            let star = f.starred;
+                            let nm = f.name.clone();
+                            let ago_s = if f.mins == 0 { "Just now".to_string() } else { ago(f.mins) };
+                            rsx! {
+                                li { key: "{id}", class: "oxsfo-card", "data-star": "{star}",
+                                    button { r#type: "button", class: "oxsfo-open", onclick: move |_| on_open.call(id),
+                                        span { class: "oxsfo-fi", {ico("folder")} }
+                                        span { class: "oxsfo-t",
+                                            span { class: "oxsfo-n", "{f.name}" }
+                                            span { class: "oxsfo-note", "{f.note}" }
+                                        }
+                                    }
+                                    div { class: "oxsfo-foot",
+                                        {faces(&f.members)}
+                                        if f.agents { span { class: "oxsfo-ag", title: "Agents can read this folder", {ico("spark")} span { "Agents" } } }
+                                        span { class: "oxscn-row-a", "{ago_s}" }
+                                    }
+                                    button { r#type: "button", class: "oxscn-ib oxsfo-star", "aria-label": "Star {nm}", "aria-pressed": "{star}",
+                                        onclick: move |_| { if let Some(x) = list.write().iter_mut().find(|x| x.id == id) { x.starred = !x.starred; } },
+                                        {star_glyph(star)} }
+                                }
+                            }
+                        }
+                    }
+                }
+                if !all.is_empty() && shown == 0 {
+                    p { class: "oxscn-hint", role: "status", "No folder matches “{q}”." }
+                }
+            }
+            p { class: "oxscn-sr", role: "status", "{said}" }
+        }
+    }
+}
+
+fn star_glyph(on: bool) -> Element {
+    let fill = if on { "currentColor" } else { "none" };
+    rsx! {
+        svg { class: "oxscn-ico", width: "16", height: "16", view_box: "0 0 24 24", fill: "{fill}", stroke: "currentColor", stroke_width: "1.8", stroke_linejoin: "round", "aria-hidden": "true",
+            path { d: "m12 4 2.4 5 5.4.6-4 3.7 1.1 5.4L12 16l-4.9 2.7 1.1-5.4-4-3.7 5.4-.6z" }
+        }
+    }
+}
+
+/// The Detail page: a folder's files with sort, select, delete with undo, and add.
+#[component]
+fn FolderFiles(
+    state: String,
+    name: String,
+    note: String,
+    members: Vec<String>,
+    on_back: EventHandler<()>,
+) -> Element {
+    let st = ScreenState::from_key(&state);
+    let mut files = use_signal(move || {
+        if st == ScreenState::Sample {
+            folder_files()
+        } else {
+            vec![]
+        }
+    });
+    let mut sort = use_signal(|| (FileSort::Edited, false));
+    let mut picked = use_signal(Vec::<u32>::new);
+    let mut undo = use_signal(|| None::<Vec<FileRow>>);
+    let mut said = use_signal(String::new);
+    let (by, rev) = sort();
+    let mut rows = files();
+    sort_files(&mut rows, by, rev);
+    let sel = picked();
+    let n_sel = sel.len();
+    let all_on = !rows.is_empty() && n_sel == rows.len();
+    let total = total_size(&rows);
+    let count = rows.len();
+    let mut del = move || {
+        let p = picked.peek().clone();
+        if p.is_empty() {
+            return;
+        }
+        let before = files.peek().clone();
+        files.write().retain(|f| !p.contains(&f.id));
+        picked.set(vec![]);
+        undo.set(Some(before));
+        said.set(if p.len() == 1 {
+            "Deleted 1 file".to_string()
+        } else {
+            format!("Deleted {} files", p.len())
+        });
+    };
+    let add = move |_| {
+        let names: Vec<String> = files.peek().iter().map(|f| f.name.clone()).collect();
+        let nm = untitled(&names, "untitled", ".md");
+        let id = files.peek().iter().map(|f| f.id).max().unwrap_or(0) + 1;
+        files.write().push(FileRow {
+            id,
+            name: nm.clone(),
+            kind: "Doc",
+            owner: PERSON_INI,
+            mins: 0,
+            kb: 1,
+        });
+        sort.set((FileSort::Edited, false));
+        said.set(format!("Added {nm}"));
+    };
+    let th = move |k: FileSort, l: &'static str| {
+        let on = by == k;
+        // Edited (newest first) and Size (largest first) start descending.
+        let desc = matches!(k, FileSort::Edited | FileSort::Size) != rev;
+        let aria = if !on {
+            "none"
+        } else if desc {
+            "descending"
+        } else {
+            "ascending"
+        };
+        rsx! {
+            th { scope: "col", "aria-sort": "{aria}",
+                button { r#type: "button", class: "oxsfd-sort", "data-on": "{on}", onclick: move |_| { let (b, r) = sort(); sort.set((k, if b == k { !r } else { false })); },
+                    "{l}" if on { span { class: "oxsfd-arr", "aria-hidden": "true", if desc { "↓" } else { "↑" } } } }
+            }
+        }
+    };
+    rsx! {
+        div { class: "oxsfd",
+            button { r#type: "button", class: "oxscn-link oxsfd-back", onclick: move |_| on_back.call(()), {ico("back")} "All folders" }
+            div { class: "oxsfo-head",
+                div { class: "oxsfo-ht",
+                    h1 { class: "oxscn-h1", "{name}" }
+                    p { class: "oxscn-row-a", "{note}" }
+                }
+                {faces(&members)}
+                button { r#type: "button", class: "oxscn-primary", disabled: st == ScreenState::Loading, onclick: add, {ico("plus")} span { "Add file" } }
+            }
+            if n_sel > 0 {
+                div { class: "oxsfd-selbar", role: "toolbar", "aria-label": "Selected files",
+                    span { "{n_sel} selected" }
+                    span { class: "oxscn-grow" }
+                    button { r#type: "button", class: "oxscn-btn", onclick: move |_| picked.set(vec![]), "Clear" }
+                    button { r#type: "button", class: "oxscn-btn oxsfd-del", onclick: move |_| del(), "Delete" }
+                }
+            } else if undo().is_some() {
+                div { class: "oxsfd-selbar", role: "status",
+                    span { "{said}" }
+                    span { class: "oxscn-grow" }
+                    button { r#type: "button", class: "oxscn-link", onclick: move |_| { if let Some(b) = undo.take() { files.set(b); said.set("Restored".to_string()); } }, "Undo" }
+                }
+            }
+            if st == ScreenState::Loading { {skel(8)} }
+            else if rows.is_empty() {
+                {empty("Nothing in this folder", "Add a file and everyone it is shared with sees it; agents too, if you let them.")}
+            } else {
+                div { class: "oxsfd-wrap",
+                    onkeydown: move |e: KeyboardEvent| if e.key() == Key::Delete { del() },
+                    table { class: "oxsfd-tb",
+                        thead {
+                            tr {
+                                th { scope: "col", class: "oxsfd-ck",
+                                    input { r#type: "checkbox", "aria-label": "Select all files", checked: all_on,
+                                        onchange: move |_| { if all_on { picked.set(vec![]); } else { picked.set(files.peek().iter().map(|f| f.id).collect()); } } } }
+                                {th(FileSort::Name, "Name")}
+                                {th(FileSort::Kind, "Kind")}
+                                th { scope: "col", class: "oxsfd-own", "Owner" }
+                                {th(FileSort::Edited, "Edited")}
+                                {th(FileSort::Size, "Size")}
+                            }
+                        }
+                        tbody {
+                            for f in rows {
+                                {
+                                    let id = f.id;
+                                    let on = sel.contains(&id);
+                                    let ed = if f.mins == 0 { "Just now".to_string() } else { ago(f.mins) };
+                                    rsx! {
+                                        tr { key: "{id}", "data-on": "{on}",
+                                            td { class: "oxsfd-ck", input { r#type: "checkbox", "aria-label": "Select {f.name}", checked: on,
+                                                onchange: move |_| { let mut p = picked.write(); if let Some(i) = p.iter().position(|x| *x == id) { p.remove(i); } else { p.push(id); } } } }
+                                            td { class: "oxsfd-name", {ico(kind_icon(f.kind))} span { class: "oxscn-row-t", "{f.name}" } }
+                                            td { class: "oxscn-row-a", "{f.kind}" }
+                                            td { class: "oxsfd-own", span { class: "oxscn-av oxsfo-face", title: "{member_name(f.owner)}", "{f.owner}" } }
+                                            td { class: "oxscn-row-a", "{ed}" }
+                                            td { class: "oxscn-row-a oxsfd-num", "{size_label(f.kb)}" }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                p { class: "oxsfd-total oxscn-row-a", "{count} files · {total}" }
+            }
+            p { class: "oxscn-sr", role: "status", "{said}" }
+        }
+    }
+}
+
+fn kind_icon(kind: &str) -> &'static str {
+    match kind {
+        "Sheet" => "chart",
+        "Image" => "globe",
+        "Notes" => "note",
+        _ => "file",
+    }
+}
+
+/// The Details area of an open folder: about, who it is shared with (role menu, remove, invite),
+/// whether agents may read it, and recent activity.
+#[component]
+fn FolderInfo(state: String, list: Signal<Vec<Folder>>, id: u32) -> Element {
+    let st = ScreenState::from_key(&state);
+    let f = list().into_iter().find(|f| f.id == id);
+    let mut roles = use_signal(Vec::<(String, &'static str)>::new);
+    let mut invite = use_signal(String::new);
+    let mut bad = use_signal(|| false);
+    let Some(f) = f else { return rsx! {} };
+    let agents = f.agents;
+    let members = f.members.clone();
+    let role_of = move |m: &str| {
+        roles()
+            .iter()
+            .find(|(k, _)| k == m)
+            .map(|(_, r)| *r)
+            .unwrap_or(if m == PERSON_INI { "owner" } else { "edit" })
+    };
+    let mut send_invite = move || {
+        let v = invite.peek().trim().to_string();
+        match invite_initials(&v) {
+            Some(ini) => {
+                if let Some(x) = list.write().iter_mut().find(|x| x.id == id)
+                    && !x.members.contains(&ini)
+                {
+                    x.members.push(ini);
+                }
+                invite.set(String::new());
+                bad.set(false);
+            }
+            None => bad.set(true),
+        }
+    };
+    rsx! {
+        div { class: "oxsfi",
+            if st == ScreenState::Loading { {skel(9)} } else {
+                p { class: "oxscn-gh", "About" }
+                p { class: "oxsfi-about", "{f.note}" }
+                p { class: "oxscn-gh", "Shared with" }
+                ul { class: "oxsfi-people",
+                    for m in members {
+                        {
+                            let r = role_of(&m);
+                            let nm = member_name(&m);
+                            let m2 = m.clone();
+                            rsx! {
+                                li { key: "{m}", class: "oxsfi-p",
+                                    span { class: "oxscn-av", "{m}" }
+                                    span { class: "oxscn-row-t", "{nm}" }
+                                    if r == "owner" { span { class: "oxscn-row-a", "Owner" } } else {
+                                        MenuButton { label: if r == "view" { "Can view".to_string() } else { "Can edit".to_string() }, aria: "Access for {nm}", right: true, class: "oxsfi-role".to_string(),
+                                            items: vec![("edit", "Can edit", ""), ("view", "Can view", ""), ("remove", "Remove", "")], checked: r.to_string(),
+                                            on_pick: move |k: String| {
+                                                if k == "remove" { if let Some(x) = list.write().iter_mut().find(|x| x.id == id) { x.members.retain(|y| *y != m2); } }
+                                                else { let k: &'static str = if k == "view" { "view" } else { "edit" }; let mut v = roles.write(); v.retain(|(a, _)| *a != m2); v.push((m2.clone(), k)); }
+                                            } }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                label { class: "oxscn-search oxsfi-inv", "data-bad": "{bad}",
+                    {ico("plus")}
+                    input { r#type: "email", placeholder: "Invite by email", "aria-label": "Invite by email", "aria-invalid": "{bad}", value: "{invite}",
+                        oninput: move |e| { invite.set(e.value()); bad.set(false); },
+                        onkeydown: move |e: KeyboardEvent| if e.key() == Key::Enter { send_invite() } }
+                }
+                if bad() { p { class: "oxscn-hint", role: "status", "That does not look like an email address." } }
+                div { class: "oxcag-sw oxsfi-sw",
+                    span { "Agents can read this folder" }
+                    button { r#type: "button", role: "switch", class: "oxscn-switch", "aria-checked": "{agents}", "aria-label": "Agents can read this folder",
+                        onclick: move |_| { if let Some(x) = list.write().iter_mut().find(|x| x.id == id) { x.agents = !x.agents; } }, span {} }
+                }
+                p { class: "oxscn-gh", "Activity" }
+                if st == ScreenState::Empty { p { class: "oxscn-hint", "Edits, uploads and agent reads show up here." } } else {
+                    for (i, (w, t, a)) in folder_activity().into_iter().enumerate() {
+                        div { key: "{i}", class: "oxsfi-act", span { class: "oxscn-av oxsfo-face", "{w}" } span { class: "oxscn-row-t", "{t}" } span { class: "oxscn-row-a", "{a}" } }
                     }
                 }
             }

@@ -143,8 +143,8 @@ pub use run::{
 pub use runningfid::RunningNowEl;
 pub use schedfid::ScheduledRunsEl;
 pub use screensfid::{
-    ChatAgentsEl, ChatOverviewEl, ChatProgressEl, ChatRailEl, ChatRunEl, ChatStartEl, ScreenRailEl,
-    ScreenShellEl,
+    ChatAgentsEl, ChatOverviewEl, ChatProgressEl, ChatRailEl, ChatRunEl, ChatStartEl,
+    FolderDetailEl, FoldersEl, ScreenRailEl, ScreenShellEl,
 };
 pub use seqfid::AgentSequenceEl;
 pub use stairsfid::EffortStairsEl;

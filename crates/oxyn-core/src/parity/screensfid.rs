@@ -1,7 +1,8 @@
 //! Screens 1 (whole app frames): the shared app frame (Inset or Flat, plus a three-pane frame with
-//! an icon rail), and the AI Chat screens built on it – Start, Overview, Agents, Double sidebar,
-//! Progress and Run. Each screen shows Sample, Loading or Empty data. Behaviour only: every
-//! person, workspace, project and line of copy here is fictional and our own.
+//! an icon rail), the AI Chat screens built on it – Start, Overview, Agents, Double sidebar,
+//! Progress and Run – and the Folders screens (Overview, Detail). Each screen shows Sample,
+//! Loading or Empty data. Behaviour only: every person, workspace, project and line of copy here
+//! is fictional and our own.
 
 /// Which data a screen shows.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -619,6 +620,254 @@ pub fn progress_tools() -> Vec<(&'static str, &'static str, f32)> {
     ]
 }
 
+// ───────────────────────────────────────────────────────────── Folders ──
+
+/// A shared folder on the Folders screens.
+#[derive(Clone, Debug, PartialEq)]
+pub struct Folder {
+    /// Stable id.
+    pub id: u32,
+    /// Name.
+    pub name: String,
+    /// One line on what it holds.
+    pub note: String,
+    /// Initials of the people it is shared with.
+    pub members: Vec<String>,
+    /// Minutes since something in it changed.
+    pub mins: u32,
+    /// Starred to the top.
+    pub starred: bool,
+    /// Agents may read it.
+    pub agents: bool,
+}
+
+/// The sample folders.
+pub fn folders() -> Vec<Folder> {
+    let f = |id, name: &str, note: &str, members: Vec<&str>, mins, starred, agents| Folder {
+        id,
+        name: name.to_string(),
+        note: note.to_string(),
+        members: members.into_iter().map(String::from).collect(),
+        mins,
+        starred,
+        agents,
+    };
+    vec![
+        f(
+            1,
+            "Autumn launch",
+            "Copy, timelines and the ad brief",
+            vec!["RV", "JO", "TA"],
+            35,
+            true,
+            true,
+        ),
+        f(
+            2,
+            "Brand kit",
+            "Marks, type and the palette notes",
+            vec!["RV", "MI"],
+            1500,
+            false,
+            true,
+        ),
+        f(
+            3,
+            "Field research",
+            "Interview notes and fabric tests",
+            vec!["RV", "TA", "SE", "JO"],
+            260,
+            false,
+            false,
+        ),
+        f(
+            4,
+            "Hiring loop",
+            "Role notes and the interview plan",
+            vec!["RV"],
+            4300,
+            false,
+            false,
+        ),
+        f(
+            5,
+            "Member letters",
+            "Every quarterly letter so far",
+            vec!["RV", "MI", "JO"],
+            9000,
+            false,
+            true,
+        ),
+        f(
+            6,
+            "Offsite",
+            "Venues, travel and the agenda",
+            vec!["RV", "SE"],
+            20000,
+            false,
+            false,
+        ),
+    ]
+}
+
+/// Folders whose name or note contains the query (case-insensitive), starred first, then by most
+/// recently changed.
+pub fn folder_view(list: &[Folder], q: &str, by_name: bool) -> Vec<Folder> {
+    let q = q.trim().to_lowercase();
+    let mut v: Vec<Folder> = list
+        .iter()
+        .filter(|f| {
+            q.is_empty() || f.name.to_lowercase().contains(&q) || f.note.to_lowercase().contains(&q)
+        })
+        .cloned()
+        .collect();
+    v.sort_by(|a, b| {
+        b.starred.cmp(&a.starred).then_with(|| {
+            if by_name {
+                a.name.to_lowercase().cmp(&b.name.to_lowercase())
+            } else {
+                a.mins.cmp(&b.mins)
+            }
+        })
+    });
+    v
+}
+
+/// A file in a folder.
+#[derive(Clone, Debug, PartialEq)]
+pub struct FileRow {
+    /// Stable id.
+    pub id: u32,
+    /// File name.
+    pub name: String,
+    /// Kind label (Doc, Sheet, Image, Notes).
+    pub kind: &'static str,
+    /// Owner initials.
+    pub owner: &'static str,
+    /// Minutes since edited.
+    pub mins: u32,
+    /// Size in KB.
+    pub kb: u32,
+}
+
+/// The sample files of the first folder.
+pub fn folder_files() -> Vec<FileRow> {
+    let r = |id, name: &str, kind, owner, mins, kb| FileRow {
+        id,
+        name: name.to_string(),
+        kind,
+        owner,
+        mins,
+        kb,
+    };
+    vec![
+        r(1, "launch-timeline.md", "Doc", "RV", 35, 14),
+        r(2, "ad-brief.md", "Doc", "TA", 120, 9),
+        r(3, "channel-budget.csv", "Sheet", "JO", 300, 42),
+        r(4, "overshirt-hero.png", "Image", "TA", 1400, 2380),
+        r(5, "teaser-hooks.md", "Notes", "RV", 2900, 6),
+        r(6, "press-list.csv", "Sheet", "JO", 7200, 18),
+    ]
+}
+
+/// Columns a file list sorts by.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum FileSort {
+    /// File name, A to Z.
+    Name,
+    /// Kind label.
+    Kind,
+    /// Most recently edited first.
+    Edited,
+    /// Largest first.
+    Size,
+}
+
+/// Sorts files by a column; `rev` flips the order.
+pub fn sort_files(list: &mut [FileRow], by: FileSort, rev: bool) {
+    list.sort_by(|a, b| {
+        let o = match by {
+            FileSort::Name => a.name.cmp(&b.name),
+            FileSort::Kind => a.kind.cmp(b.kind).then_with(|| a.name.cmp(&b.name)),
+            FileSort::Edited => a.mins.cmp(&b.mins),
+            FileSort::Size => b.kb.cmp(&a.kb),
+        };
+        if rev { o.reverse() } else { o }
+    });
+}
+
+/// A size in KB as words: `6 KB`, `2.3 MB`.
+pub fn size_label(kb: u32) -> String {
+    if kb < 1000 {
+        format!("{kb} KB")
+    } else {
+        format!("{:.1} MB", kb as f32 / 1000.0)
+    }
+}
+
+/// Total size of a list of files, as words.
+pub fn total_size(list: &[FileRow]) -> String {
+    size_label(list.iter().map(|f| f.kb).sum())
+}
+
+/// The next free "Untitled n" name among existing names.
+pub fn untitled(names: &[String], stem: &str, ext: &str) -> String {
+    let mut n = 1;
+    loop {
+        let c = if n == 1 {
+            format!("{stem}{ext}")
+        } else {
+            format!("{stem}-{n}{ext}")
+        };
+        if !names.iter().any(|x| x == &c) {
+            return c;
+        }
+        n += 1;
+    }
+}
+
+/// A member's display name from their initials (fictional people).
+pub fn member_name(ini: &str) -> &'static str {
+    match ini {
+        "RV" => PERSON,
+        "JO" => "Jun Oduya",
+        "TA" => "Tamsin Arvo",
+        "MI" => "Mika Ilves",
+        "SE" => "Sefa Ennis",
+        _ => "Invited guest",
+    }
+}
+
+/// Initials for an invite typed as an email address (`ada.lin@x.example` → `AL`), or `None` when
+/// the text is not an address.
+pub fn invite_initials(email: &str) -> Option<String> {
+    let e = email.trim();
+    let (user, host) = e.split_once('@')?;
+    if user.is_empty() || !host.contains('.') || host.starts_with('.') || host.ends_with('.') {
+        return None;
+    }
+    let mut parts = user.split(['.', '_', '-', '+']).filter(|p| !p.is_empty());
+    let a = parts.next()?.chars().next()?.to_ascii_uppercase();
+    let b = parts
+        .next()
+        .and_then(|p| p.chars().next())
+        .map(|c| c.to_ascii_uppercase());
+    let s = match b {
+        Some(b) => format!("{a}{b}"),
+        None => a.to_string(),
+    };
+    Some(s)
+}
+
+/// Recent activity in the first folder: who, what, when.
+pub fn folder_activity() -> Vec<(&'static str, &'static str, &'static str)> {
+    vec![
+        ("TA", "Edited ad-brief.md", "2h"),
+        ("JO", "Added channel-budget.csv", "5h"),
+        ("RV", "Let agents read the folder", "1d"),
+    ]
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -726,5 +975,45 @@ mod tests {
         assert_eq!(next_open(&all, 0), None);
         assert_eq!(ad_estimate(2, 3), (6, 2));
         assert_eq!(ad_estimate(0, 1), (0, 0));
+    }
+
+    #[test]
+    fn folders_filter_sort_and_files() {
+        let f = folders();
+        let v = folder_view(&f, "", false);
+        assert!(v[0].starred);
+        assert!(v[1].mins <= v[2].mins);
+        let n = folder_view(&f, "", true);
+        assert_eq!(n[0].name, "Autumn launch");
+        assert_eq!(n[1].name, "Brand kit");
+        assert_eq!(folder_view(&f, "FABRIC", false).len(), 1);
+        assert!(folder_view(&f, "zzz", false).is_empty());
+        let mut files = folder_files();
+        sort_files(&mut files, FileSort::Size, false);
+        assert_eq!(files[0].name, "overshirt-hero.png");
+        sort_files(&mut files, FileSort::Name, true);
+        assert_eq!(files[0].name, "teaser-hooks.md");
+        sort_files(&mut files, FileSort::Edited, false);
+        assert_eq!(files[0].mins, 35);
+        assert_eq!(size_label(6), "6 KB");
+        assert_eq!(size_label(2380), "2.4 MB");
+        assert_eq!(total_size(&folder_files()), "2.5 MB");
+        let names = vec!["untitled.md".to_string(), "untitled-2.md".to_string()];
+        assert_eq!(untitled(&names, "untitled", ".md"), "untitled-3.md");
+        assert_eq!(untitled(&[], "untitled", ".md"), "untitled.md");
+    }
+
+    #[test]
+    fn invites_need_an_address() {
+        assert_eq!(
+            invite_initials("ada.lin@studio.example").as_deref(),
+            Some("AL")
+        );
+        assert_eq!(invite_initials(" kit@x.example ").as_deref(), Some("K"));
+        assert_eq!(invite_initials("not an email"), None);
+        assert_eq!(invite_initials("a@b"), None);
+        assert_eq!(invite_initials("@b.example"), None);
+        assert_eq!(member_name("TA"), "Tamsin Arvo");
+        assert_eq!(member_name("ZZ"), "Invited guest");
     }
 }

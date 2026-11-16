@@ -1,16 +1,18 @@
 //! Screens 1 for GPUI over `oxyn_core::parity::screensfid`: static snapshots of the app frames
 //! ([`ScreenShellEl`], [`ScreenRailEl`]) and the AI Chat screens ([`ChatStartEl`], [`ChatOverviewEl`],
-//! [`ChatAgentsEl`], [`ChatRailEl`], [`ChatProgressEl`], [`ChatRunEl`]). Each takes the data state
-//! (Sample, Loading, Empty), the frame (Inset or Flat) and the theme; the host owns any live state.
-//! Rows a host can route carry `Act` ids: `nav-<key>`, `thread-<id>`.
+//! [`ChatAgentsEl`], [`ChatRailEl`], [`ChatProgressEl`], [`ChatRunEl`]) and Folders ([`FoldersEl`],
+//! [`FolderDetailEl`]). Each takes the data state (Sample, Loading, Empty), the frame (Inset or
+//! Flat) and the theme; the host owns any live state.
+//! Rows a host can route carry `Act` ids: `nav-<key>`, `thread-<id>`, `folder-<id>`.
 
 use gpui::{
     App, Div, FontWeight, IntoElement, ParentElement, RenderOnce, SharedString, Styled, Window,
     div, prelude::*, px,
 };
 use oxyn_core::parity::screensfid::{
-    PERSON, PERSON_INI, ScreenState, ShellLayout, StepState, WORKSPACE, ago, angles, crew, heat,
-    progress_steps, projects, run_plan, sheet, split_pinned, starters, step_state, threads,
+    PERSON, PERSON_INI, ScreenState, ShellLayout, StepState, WORKSPACE, ago, angles, crew,
+    folder_files, folder_view, folders, heat, member_name, progress_steps, projects, run_plan,
+    sheet, size_label, split_pinned, starters, step_state, threads, total_size,
 };
 use oxyn_tokens::Theme;
 
@@ -1034,6 +1036,200 @@ impl RenderOnce for ChatRunEl {
             sidebar(&p, self.state, &self.act, true),
             page(&p, "Runs / Member update", body),
             Some(side),
+        )
+    }
+}
+
+screen_el!(
+    /// Folders / Overview: folder cards with members, agent access and when they last changed.
+    /// Rows a host can route carry `folder-<id>`.
+    FoldersEl
+);
+screen_el!(
+    /// Folders / Detail: one folder's files as a table, with its details beside it.
+    FolderDetailEl
+);
+
+fn faces_el(p: &ThPal, members: &[String]) -> Div {
+    let mut d = div().flex().items_center().gap(px(2.));
+    for m in members.iter().take(4) {
+        d = d.child(
+            div()
+                .w(px(22.))
+                .h(px(22.))
+                .rounded(px(11.))
+                .bg(p.sel)
+                .flex()
+                .items_center()
+                .justify_center()
+                .text_size(px(9.5))
+                .child(SharedString::from(m.clone())),
+        );
+    }
+    d
+}
+
+impl RenderOnce for FoldersEl {
+    fn render(self, _: &mut Window, _: &mut App) -> impl IntoElement {
+        let p = th_pal(self.theme);
+        let mut body = div().flex().flex_col().gap(px(12.)).p(px(22.)).child(
+            div()
+                .text_size(px(22.))
+                .font_weight(FontWeight::SEMIBOLD)
+                .child("Folders"),
+        );
+        match self.state {
+            ScreenState::Loading => body = body.child(skel(&p, 6)),
+            ScreenState::Empty => {
+                body = body.child(empty(
+                    &p,
+                    "No folders yet",
+                    "Make one for a project: files, chats and agents can all share it.",
+                ))
+            }
+            ScreenState::Sample => {
+                let mut grid = div().flex().flex_wrap().gap(px(10.));
+                for f in folder_view(&folders(), "", false) {
+                    const IDS: [&str; 6] = [
+                        "folder-1", "folder-2", "folder-3", "folder-4", "folder-5", "folder-6",
+                    ];
+                    let key = IDS
+                        .get((f.id as usize).wrapping_sub(1))
+                        .copied()
+                        .unwrap_or("folder");
+                    let fi = fire(&self.act, key);
+                    grid = grid.child(
+                        div()
+                            .id(SharedString::from(key))
+                            .w(px(232.))
+                            .p(px(12.))
+                            .rounded(px(12.))
+                            .border_1()
+                            .border_color(p.line)
+                            .flex()
+                            .flex_col()
+                            .gap(px(8.))
+                            .child(div().font_weight(FontWeight::SEMIBOLD).child(if f.starred {
+                                format!("★ {}", f.name)
+                            } else {
+                                f.name.clone()
+                            }))
+                            .child(div().text_color(p.mute).child(f.note.clone()))
+                            .child(
+                                div()
+                                    .flex()
+                                    .items_center()
+                                    .gap(px(8.))
+                                    .child(faces_el(&p, &f.members))
+                                    .when(f.agents, |d| {
+                                        d.child(div().text_color(p.fg2).child("Agents"))
+                                    })
+                                    .child(div().flex_1())
+                                    .child(div().text_color(p.mute).child(ago(f.mins))),
+                            )
+                            .on_click(move |_, w, cx| fi(w, cx)),
+                    );
+                }
+                body = body.child(grid);
+            }
+        }
+        frame(
+            self.theme,
+            self.layout,
+            sidebar(&p, self.state, &self.act, false),
+            page(&p, "Folders", body),
+            None,
+        )
+    }
+}
+
+impl RenderOnce for FolderDetailEl {
+    fn render(self, _: &mut Window, _: &mut App) -> impl IntoElement {
+        let p = th_pal(self.theme);
+        let f = folders().remove(0);
+        let mut body = div()
+            .flex()
+            .flex_col()
+            .gap(px(10.))
+            .p(px(22.))
+            .child(div().text_color(p.mute).child("← All folders"))
+            .child(
+                div()
+                    .text_size(px(22.))
+                    .font_weight(FontWeight::SEMIBOLD)
+                    .child(f.name.clone()),
+            )
+            .child(div().text_color(p.mute).child(f.note.clone()));
+        let files = if self.state == ScreenState::Sample {
+            folder_files()
+        } else {
+            vec![]
+        };
+        match self.state {
+            ScreenState::Loading => body = body.child(skel(&p, 8)),
+            ScreenState::Empty => {
+                body = body.child(empty(
+                    &p,
+                    "Nothing in this folder",
+                    "Add a file and everyone it is shared with sees it.",
+                ))
+            }
+            ScreenState::Sample => {
+                let mut tb = div()
+                    .flex()
+                    .flex_col()
+                    .rounded(px(12.))
+                    .border_1()
+                    .border_color(p.line)
+                    .child(row(&p, "Name".into(), "Edited · Size".into(), false));
+                for x in &files {
+                    tb = tb.child(row(
+                        &p,
+                        format!("{}  ·  {}", x.name, x.kind),
+                        format!("{} · {}", ago(x.mins), size_label(x.kb)),
+                        false,
+                    ));
+                }
+                body = body.child(tb).child(div().text_color(p.mute).child(format!(
+                    "{} files · {}",
+                    files.len(),
+                    total_size(&files)
+                )));
+            }
+        }
+        let mut info = div().flex().flex_col().gap(px(4.)).child(gh(&p, "About"));
+        if self.state == ScreenState::Loading {
+            info = info.child(skel(&p, 6));
+        } else {
+            info = info
+                .child(div().px(px(8.)).child(f.note.clone()))
+                .child(gh(&p, "Shared with"));
+            let members = if self.state == ScreenState::Sample {
+                f.members.clone()
+            } else {
+                vec![PERSON_INI.to_string()]
+            };
+            for m in &members {
+                let r = if m == PERSON_INI { "Owner" } else { "Can edit" };
+                info = info.child(row(&p, member_name(m).to_string(), r.to_string(), false));
+            }
+            info = info.child(row(
+                &p,
+                "Agents can read this folder".into(),
+                if f.agents && self.state == ScreenState::Sample {
+                    "On".into()
+                } else {
+                    "Off".into()
+                },
+                false,
+            ));
+        }
+        frame(
+            self.theme,
+            self.layout,
+            sidebar(&p, self.state, &self.act, false),
+            page(&p, "Folders", body),
+            Some(info),
         )
     }
 }

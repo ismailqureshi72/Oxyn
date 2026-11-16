@@ -1,12 +1,12 @@
 //! Screens 1 demos: app frames (Inset, Flat, three-pane) and the AI Chat screens (Start, Overview,
-//! Agents, Double sidebar, Progress, Run). Every screen has Sample / Loading / Empty data and an
+//! Agents, Double sidebar, Progress, Run) and Folders (Overview, Detail). Every screen has Sample / Loading / Empty data and an
 //! Inset / Flat frame; light and dark follow the page theme.
 
 use dioxus::prelude::*;
 use oxyn_core::ClockMs;
 use oxyn_dioxus::{
     AppShellScreen, ChatAgentsScreen, ChatOverviewScreen, ChatProgressScreen, ChatRailScreen,
-    ChatRunScreen, ChatStartScreen, RailShellScreen,
+    ChatRunScreen, ChatStartScreen, FoldersScreen, RailShellScreen,
 };
 
 use super::{Code, mk, sel, var};
@@ -25,12 +25,13 @@ fn frame(v: &Vals) -> (String, String, String) {
     (st, lay, key)
 }
 
-fn code(name: &str, v: &Vals, live: bool) -> String {
+fn code(name: &str, v: &Vals, live: bool, detail: bool) -> String {
     let c = Code::new(name).s("layout", &low(v.s("frame")), "inset").s(
         "state",
         &low(v.s("data")),
         "sample",
     );
+    let c = if detail { c.raw("detail", "true") } else { c };
     if live {
         c.raw("now", "clock()").done()
     } else {
@@ -62,7 +63,7 @@ fn shell_inset(v: &Vals, _now: ClockMs) -> Element {
 }
 
 fn shell_inset_code(v: &Vals) -> String {
-    code("AppShellScreen", v, false)
+    code("AppShellScreen", v, false, false)
 }
 
 fn shell_inset_demo() -> Demo {
@@ -130,7 +131,7 @@ fn shell_flat(v: &Vals, _now: ClockMs) -> Element {
 }
 
 fn shell_flat_code(v: &Vals) -> String {
-    code("AppShellScreen", v, false)
+    code("AppShellScreen", v, false, false)
 }
 
 fn shell_flat_demo() -> Demo {
@@ -198,7 +199,7 @@ fn shell_three_pane(v: &Vals, _now: ClockMs) -> Element {
 }
 
 fn shell_three_pane_code(v: &Vals) -> String {
-    code("RailShellScreen", v, false)
+    code("RailShellScreen", v, false, false)
 }
 
 fn shell_three_pane_demo() -> Demo {
@@ -266,7 +267,7 @@ fn chat_start(v: &Vals, now: ClockMs) -> Element {
 }
 
 fn chat_start_code(v: &Vals) -> String {
-    code("ChatStartScreen", v, true)
+    code("ChatStartScreen", v, true, false)
 }
 
 fn chat_start_demo() -> Demo {
@@ -335,7 +336,7 @@ fn chat_overview(v: &Vals, now: ClockMs) -> Element {
 }
 
 fn chat_overview_code(v: &Vals) -> String {
-    code("ChatOverviewScreen", v, true)
+    code("ChatOverviewScreen", v, true, false)
 }
 
 fn chat_overview_demo() -> Demo {
@@ -404,7 +405,7 @@ fn chat_agents(v: &Vals, now: ClockMs) -> Element {
 }
 
 fn chat_agents_code(v: &Vals) -> String {
-    code("ChatAgentsScreen", v, true)
+    code("ChatAgentsScreen", v, true, false)
 }
 
 fn chat_agents_demo() -> Demo {
@@ -473,7 +474,7 @@ fn chat_double_sidebar(v: &Vals, now: ClockMs) -> Element {
 }
 
 fn chat_double_sidebar_code(v: &Vals) -> String {
-    code("ChatRailScreen", v, true)
+    code("ChatRailScreen", v, true, false)
 }
 
 fn chat_double_sidebar_demo() -> Demo {
@@ -543,7 +544,7 @@ fn chat_progress(v: &Vals, now: ClockMs) -> Element {
 }
 
 fn chat_progress_code(v: &Vals) -> String {
-    code("ChatProgressScreen", v, true)
+    code("ChatProgressScreen", v, true, false)
 }
 
 fn chat_progress_demo() -> Demo {
@@ -612,7 +613,7 @@ fn chat_run(v: &Vals, now: ClockMs) -> Element {
 }
 
 fn chat_run_code(v: &Vals) -> String {
-    code("ChatRunScreen", v, true)
+    code("ChatRunScreen", v, true, false)
 }
 
 fn chat_run_demo() -> Demo {
@@ -672,6 +673,150 @@ fn chat_run_demo() -> Demo {
     }
 }
 
+// ---------- Folders · Overview ----------
+
+fn folders_overview(v: &Vals, _now: ClockMs) -> Element {
+    let (st, lay, key) = frame(v);
+    rsx! {
+        div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
+            FoldersScreen { layout: lay, state: st }
+        }
+    }
+}
+
+fn folders_overview_code(v: &Vals) -> String {
+    code("FoldersScreen", v, false, false)
+}
+
+fn folders_overview_demo() -> Demo {
+    Demo {
+        controls: controls("inset"),
+        variants: vec![
+            var("sample", "Sample data in the Inset frame.", &[]),
+            var(
+                "flat",
+                "The same screen in the Flat frame.",
+                &[("frame", "Flat")],
+            ),
+            var(
+                "loading",
+                "Skeletons where the data will land.",
+                &[("data", "Loading")],
+            ),
+            var(
+                "empty",
+                "Nothing yet: each region says what will appear.",
+                &[("data", "Empty")],
+            ),
+        ],
+        render: folders_overview,
+        code: folders_overview_code,
+        keyboard: vec![
+            ("Tab", "Sidebar, page, then the work area"),
+            ("← / → on a hairline", "Resize the sidebar or work area"),
+            ("Escape", "Close an open menu; clear search"),
+            ("Enter in New folder", "Create it (Escape cancels)"),
+            ("Escape in Find", "Clear the search"),
+        ],
+        a11y: vec![
+            "The sidebar is a labelled nav; the open chat has aria-current and unread chats say so.",
+            "Menus open from a trigger that reports aria-expanded; their items are menuitemradio and Escape shuts them.",
+            "Hairlines are separators with a value and arrow keys; skeletons are hidden from screen readers.",
+        ],
+        responsive: vec![
+            "Under 860 px of width the work area becomes a sheet opened from the top bar.",
+            "Under 640 px the sidebar slides in from the menu button and the composer drops its labels.",
+        ],
+        height: 660,
+        live: false,
+        align: Align::Start,
+        ..mk(
+            "folders-overview",
+            "Folders · Overview",
+            CAT,
+            "The folders you share with people and agents: find one, sort, switch grid or list, star it to the top, make a new one in place, and open it.",
+            "FoldersScreen",
+            "FoldersEl",
+            "folders-overview",
+            "parity/screensfid.rs",
+        )
+    }
+}
+
+// ---------- Folders · Detail ----------
+
+fn folders_detail(v: &Vals, _now: ClockMs) -> Element {
+    let (st, lay, key) = frame(v);
+    rsx! {
+        div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
+            FoldersScreen { layout: lay, state: st, detail: true }
+        }
+    }
+}
+
+fn folders_detail_code(v: &Vals) -> String {
+    code("FoldersScreen", v, false, true)
+}
+
+fn folders_detail_demo() -> Demo {
+    Demo {
+        controls: controls("inset"),
+        variants: vec![
+            var("sample", "Sample data in the Inset frame.", &[]),
+            var(
+                "flat",
+                "The same screen in the Flat frame.",
+                &[("frame", "Flat")],
+            ),
+            var(
+                "loading",
+                "Skeletons where the data will land.",
+                &[("data", "Loading")],
+            ),
+            var(
+                "empty",
+                "Nothing yet: each region says what will appear.",
+                &[("data", "Empty")],
+            ),
+        ],
+        render: folders_detail,
+        code: folders_detail_code,
+        keyboard: vec![
+            ("Tab", "Sidebar, page, then the work area"),
+            ("← / → on a hairline", "Resize the sidebar or work area"),
+            ("Escape", "Close an open menu; clear search"),
+            ("Space on a checkbox", "Select the file"),
+            (
+                "Delete",
+                "Delete the selected files (Undo brings them back)",
+            ),
+            ("Enter in Invite", "Invite the address"),
+        ],
+        a11y: vec![
+            "The sidebar is a labelled nav; the open chat has aria-current and unread chats say so.",
+            "Menus open from a trigger that reports aria-expanded; their items are menuitemradio and Escape shuts them.",
+            "Hairlines are separators with a value and arrow keys; skeletons are hidden from screen readers.",
+        ],
+        responsive: vec![
+            "Under 860 px of width the work area becomes a sheet opened from the top bar.",
+            "Under 640 px the sidebar slides in from the menu button and the composer drops its labels.",
+        ],
+        height: 660,
+        live: false,
+        align: Align::Start,
+        ..mk(
+            "folders-detail",
+            "Folders · Detail",
+            CAT,
+            "One folder open: its files in a table you sort by any column, select, delete with undo and add to, with who it is shared with, their access, an invite field and agent access beside it.",
+            "FoldersScreen",
+            "FolderDetailEl",
+            "folders-detail",
+            "parity/screensfid.rs",
+        )
+    }
+}
+
 pub(crate) fn demos() -> Vec<Demo> {
     vec![
         shell_inset_demo(),
@@ -683,5 +828,7 @@ pub(crate) fn demos() -> Vec<Demo> {
         chat_double_sidebar_demo(),
         chat_progress_demo(),
         chat_run_demo(),
+        folders_overview_demo(),
+        folders_detail_demo(),
     ]
 }
