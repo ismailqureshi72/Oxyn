@@ -44,6 +44,7 @@ pub use navigation::{
     UserMenuEl,
 };
 pub use parity::DiffTimelineRunEl;
+pub use parity::EffortListEl;
 pub use parity::EffortRulerEl;
 pub use parity::FanoutGridEl;
 pub use parity::JudgeBracketEl;

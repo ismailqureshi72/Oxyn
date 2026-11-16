@@ -17,6 +17,7 @@ mod delegatefid;
 mod diff;
 mod difftlfid;
 mod dtreefid;
+mod efflistfid;
 mod fallbackfid;
 mod fanfid;
 mod fidelity;
@@ -74,6 +75,7 @@ pub use delegatefid::DelegateBoard;
 pub use diff::{ChangeSummary, CodeSuggestion, DiffTable, DiffTimeline, DiffViewer, InlineDiff};
 pub use difftlfid::DiffTimelineRun;
 pub use dtreefid::DecisionTree;
+pub use efflistfid::EffortList;
 pub use fallbackfid::FallbackChain;
 pub use fanfid::FanoutGrid;
 pub use fidelity::{
