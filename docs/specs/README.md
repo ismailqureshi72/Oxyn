@@ -66,7 +66,7 @@ specified just as deeply. When we point at one component as an example, the stan
 | [terminal-output.md](terminal-output.md) | draft v0.1 |
 | [plan-todo.md](plan-todo.md) | draft v0.1 |
 | [subagent-tree.md](subagent-tree.md) | draft v0.1 |
-| [fanout-grid.md](fanout-grid.md) | draft v0.1 |
+| [fanout-grid.md](fanout-grid.md) | built v0.2 (task grid, plan #32, family B part 9); lanes draft |
 | [acting-indicator.md](acting-indicator.md) | draft v0.1 |
 | [trace-view.md](trace-view.md) | draft v0.1 |
 | [background-jobs.md](background-jobs.md) | draft v0.1 |
