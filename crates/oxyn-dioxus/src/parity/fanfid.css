@@ -1,0 +1,78 @@
+/* affectUI fidelity pass, family B part 9 (plan #32): Fan-out Grid (oxfo-).
+   Clean is the default; Classic follows data-cstyle or data-style. A card: header with the job and
+   done / cost / time left; a wrapping grid of 10 px cells tinted by status (running cells carry a
+   shine, retrying ones breathe amber, done and failed pop once); a details card for the hovered
+   or pinned cell; toggle counts that filter the grid and Retry failed; a polite status line.
+   Classic puts the counts on a grey tray. Under 520 px the numbers take their own line. */
+[data-oxyn-theme="light"]{
+  --oxfo-card:#FFFFFF;--oxfo-bd:#ECECEC;--oxfo-fg:#111111;--oxfo-mute:#8A8A8E;--oxfo-tray:#F4F4F5;
+  --oxfo-q:#EDEDEF;--oxfo-qbd:#E2E2E5;--oxfo-run:#3B82F6;--oxfo-runbg:#DBEAFE;--oxfo-done:#4ADE80;--oxfo-donefg:#1A7F4B;--oxfo-donebg:#E4F6EA;
+  --oxfo-amb:#F59E0B;--oxfo-ambfg:#B45F06;--oxfo-ambbg:#FDF0DD;--oxfo-red:#EF4444;--oxfo-redfg:#C0362C;--oxfo-redbg:#FDE9E7;
+  --oxfo-shadow:0 1px 2px rgba(0,0,0,.04),0 4px 14px rgba(0,0,0,.04);--oxfo-pop:0 8px 24px rgba(0,0,0,.12);
+}
+[data-oxyn-theme="dark"],[data-oxyn-theme="hc-dark"]{
+  --oxfo-card:#17171A;--oxfo-bd:#2A2A2F;--oxfo-fg:#F2F2F2;--oxfo-mute:#8B8B90;--oxfo-tray:#1F1F23;
+  --oxfo-q:#26262B;--oxfo-qbd:#303036;--oxfo-run:#60A5FA;--oxfo-runbg:#14243F;--oxfo-done:#34D399;--oxfo-donefg:#4ADE80;--oxfo-donebg:#12301F;
+  --oxfo-amb:#FBBF24;--oxfo-ambfg:#FBBF24;--oxfo-ambbg:#3A2A12;--oxfo-red:#F87171;--oxfo-redfg:#F87171;--oxfo-redbg:#3A1714;
+  --oxfo-shadow:0 1px 2px rgba(0,0,0,.3);--oxfo-pop:0 10px 28px rgba(0,0,0,.55);
+}
+.oxfo{box-sizing:border-box;position:relative;display:flex;flex-direction:column;gap:10px;width:580px;max-width:100%;container-type:inline-size;padding:14px 16px;border:1px solid var(--oxfo-bd);border-radius:12px;background:var(--oxfo-card);color:var(--oxfo-fg);font-size:12px;line-height:1.35;box-shadow:var(--oxfo-shadow);-webkit-font-smoothing:antialiased}
+.oxfo *{box-sizing:border-box}
+.oxfo button{font:inherit;color:inherit}
+.oxfo button:focus-visible{outline:2px solid var(--oxfo-fg);outline-offset:1px}
+.oxfo-flex{flex:1}
+.oxfo-bar{display:flex;align-items:center;gap:8px;min-width:0;flex-wrap:wrap;row-gap:4px}
+.oxfo-logo{display:inline-flex;color:var(--oxfo-run)}
+.oxfo .oxfo-ttl{margin:0;font-size:12.5px;font-weight:650}
+.oxfo-job{min-width:0;color:var(--oxfo-mute);font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.oxfo-nums{display:inline-flex;gap:12px;color:var(--oxfo-mute);font-size:11.5px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.oxfo-nums b{color:var(--oxfo-fg);font-weight:600}
+.oxfo-left[data-ok="true"]{color:var(--oxfo-donefg);font-weight:600}
+.oxfo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(10px,1fr));gap:3px;outline:none;border-radius:4px}
+.oxfo-grid:focus-visible{box-shadow:0 0 0 2px var(--oxfo-card),0 0 0 4px var(--oxfo-fg)}
+.oxfo-cell{position:relative;display:block;aspect-ratio:1;border-radius:3px;background:var(--oxfo-q);box-shadow:inset 0 0 0 1px var(--oxfo-qbd);cursor:pointer;overflow:hidden;transition:background .25s,opacity .25s,box-shadow .2s;animation:oxfo-wave .35s ease-out both;animation-delay:calc(var(--d) * .3)}
+.oxfo-cell[data-st="running"]{background:var(--oxfo-run);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--oxfo-run) 70%,#fff)}
+.oxfo-cell[data-st="running"]::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.65) 50%,transparent 70%) no-repeat;background-size:250% 100%;animation:oxfo-shine 1.1s linear infinite;animation-delay:var(--d)}
+.oxfo-cell[data-st="retrying"]{background:var(--oxfo-amb);box-shadow:none;animation:oxfo-breathe 1.2s ease-in-out infinite}
+.oxfo-cell[data-st="done"]{background:var(--oxfo-done);box-shadow:none;animation:oxfo-pop .3s ease-out both}
+.oxfo-cell[data-st="failed"]{background:var(--oxfo-red);box-shadow:none;animation:oxfo-pop .3s ease-out both}
+.oxfo-cell[data-dim="true"]{opacity:.18}
+.oxfo-cell[data-on="true"]{box-shadow:0 0 0 1.5px var(--oxfo-card),0 0 0 3px var(--oxfo-fg)}
+.oxfo-tip{display:flex;flex-direction:column;gap:2px;padding:8px 10px;border:1px solid var(--oxfo-bd);border-radius:8px;background:var(--oxfo-card);box-shadow:var(--oxfo-pop);animation:oxfo-tip .16s ease-out both}
+.oxfo-th{display:flex;align-items:center;gap:8px}
+.oxfo-th b{font-size:12px;font-weight:600}
+.oxfo-pill{padding:0 7px;border-radius:999px;font-size:10.5px;font-weight:600;background:var(--oxfo-q);color:var(--oxfo-mute)}
+.oxfo-pill[data-st="running"]{background:var(--oxfo-runbg);color:var(--oxfo-run)}
+.oxfo-pill[data-st="retrying"]{background:var(--oxfo-ambbg);color:var(--oxfo-ambfg)}
+.oxfo-pill[data-st="done"]{background:var(--oxfo-donebg);color:var(--oxfo-donefg)}
+.oxfo-pill[data-st="failed"]{background:var(--oxfo-redbg);color:var(--oxfo-redfg)}
+.oxfo-tl{font-size:11px;font-variant-numeric:tabular-nums}
+.oxfo-tr{font-size:11px;color:var(--oxfo-mute)}
+.oxfo-tr[data-st="failed"]{color:var(--oxfo-redfg)}
+.oxfo-counts{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.oxfo-cnt{display:inline-flex;align-items:center;gap:5px;height:24px;padding:0 8px;border:1px solid transparent;border-radius:7px;background:none;cursor:pointer;font-size:11.5px;font-variant-numeric:tabular-nums;transition:background .2s,border-color .2s}
+.oxfo-cnt:hover{background:var(--oxfo-tray)}
+.oxfo-cnt[aria-pressed="true"]{border-color:var(--oxfo-bd);background:var(--oxfo-tray)}
+.oxfo-cnt i{width:7px;height:7px;border-radius:2px;background:var(--oxfo-done)}
+.oxfo-cnt[data-st="running"] i{background:var(--oxfo-run)}
+.oxfo-cnt[data-st="retrying"] i{background:var(--oxfo-amb)}
+.oxfo-cnt[data-st="failed"] i{background:var(--oxfo-red)}
+.oxfo-cnt b{font-weight:650}
+.oxfo-cnt span{color:var(--oxfo-mute)}
+.oxfo-retry{display:inline-flex;align-items:center;gap:5px;height:24px;padding:0 8px;border:0;border-radius:7px;background:none;color:var(--oxfo-redfg)!important;font-weight:600;font-size:11.5px;cursor:pointer}
+.oxfo-retry:hover{background:var(--oxfo-redbg)}
+.oxfo-status{margin:0;color:var(--oxfo-mute);font-size:11px}
+/* Classic: the counts sit on a grey tray under the card. */
+:is([data-cstyle="classic"] .oxfo:not([data-style]),.oxfo[data-style="classic"]) .oxfo-counts{margin:2px -16px -14px;padding:8px 12px;border-top:1px solid var(--oxfo-bd);background:var(--oxfo-tray);border-radius:0 0 12px 12px}
+:is([data-cstyle="classic"] .oxfo:not([data-style]),.oxfo[data-style="classic"]) .oxfo-status{order:-1;display:none}
+:is([data-cstyle="classic"] .oxfo:not([data-style]),.oxfo[data-style="classic"]) .oxfo-cell{border-radius:2px}
+@container (max-width:520px){
+  .oxfo-nums{flex-basis:100%;order:9}
+  .oxfo-grid{grid-template-columns:repeat(auto-fill,minmax(8px,1fr));gap:2px}
+}
+@keyframes oxfo-wave{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:none}}
+@keyframes oxfo-shine{from{background-position:120% 0}to{background-position:-120% 0}}
+@keyframes oxfo-breathe{50%{opacity:.55}}
+@keyframes oxfo-pop{0%{transform:scale(.7)}60%{transform:scale(1.15)}100%{transform:none}}
+@keyframes oxfo-tip{from{opacity:0;transform:translateY(-3px) scale(.98)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.oxfo-cell,.oxfo-cell::after,.oxfo-tip{animation:none!important}.oxfo-cell{transition:none}}

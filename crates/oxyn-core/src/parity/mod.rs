@@ -50,6 +50,7 @@
 //! - [`schedfid`]: Scheduled Runs: a week of usage-limited sessions, auto or hand booking, split tasks.
 //! - [`ratefid`]: Rate Limit Planner: the day's token load against a per-minute limit, draggable runs, spread out, fit.
 //! - [`tracefid`]: Trace Waterfall: an agent run as a live span tree on a time axis, folding, details per span.
+//! - [`fanfid`]: Fan-out Grid: a job's tasks as a live grid of status cells, filters, details, retry.
 //! - [`answers`]: fidelity batch, family A: AI Answer markup and streaming, Cited Answer
 //!   sentences and quotes, Message Actions, Thinking Loader phases, Thinking State steps and the
 //!   Writing Assistant's sample writer and dictation.
@@ -74,6 +75,7 @@ pub mod diff;
 pub mod dtreefid;
 pub mod edit;
 pub mod fallbackfid;
+pub mod fanfid;
 pub mod fidelity;
 pub mod fields;
 pub mod fleet;

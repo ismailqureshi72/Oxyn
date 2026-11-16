@@ -8,6 +8,7 @@ use oxyn_core::{
         delegatefid::{db_agents, db_auto_plan, db_tasks},
         dtreefid::{dt_demo, dt_extra},
         fallbackfid::{FbOutcome, fb_demo, fb_demo_all_fail},
+        fanfid::FoStatus,
         judgefid::{jb_demo, jb_demo_verdicts},
         parallelfid::{PaStatus, pa_at, pa_demo},
         planfid::{pv_actual_total, pv_demo},
@@ -20,9 +21,9 @@ use oxyn_core::{
     },
 };
 use oxyn_dioxus::{
-    DecisionTree, DelegateBoard, FallbackChain, JudgeBracket, MemoryPanel, ParallelAttempts,
-    PlanVsActual, RateLimitPlanner, RootCauseTree, RunningNow, ScheduledRuns, ToolAccessMap,
-    TraceWaterfall,
+    DecisionTree, DelegateBoard, FallbackChain, FanoutGrid, JudgeBracket, MemoryPanel,
+    ParallelAttempts, PlanVsActual, RateLimitPlanner, RootCauseTree, RunningNow, ScheduledRuns,
+    ToolAccessMap, TraceWaterfall,
 };
 
 use super::{Code, mk, sel, var};
@@ -1633,6 +1634,137 @@ fn trace_waterfall_demo(style: crate::Control) -> Demo {
     }
 }
 
+// ---------- Fan-out Grid ----------
+
+fn fanout_grid(v: &Vals, now: ClockMs) -> Element {
+    let mut msg = use_signal(String::new);
+    let key = format!("{}{}{}", v.s("style"), v.s("state"), v.s("width"));
+    let state = v.s("state");
+    let at = match state {
+        "live" => None,
+        "early" => Some(3_000),
+        "mid" | "filtered" | "pinned" => Some(11_000),
+        _ => Some(40_000),
+    };
+    let filter = (state == "filtered").then_some(FoStatus::Running);
+    let pinned = (state == "pinned").then_some(41);
+    let w = if v.s("width") == "narrow" {
+        "380px"
+    } else {
+        "620px"
+    };
+    rsx! {
+        div { "data-k": "{key}", key: "{key}", "data-state": "{state}", style: "width:{w};max-width:100%;display:flex;flex-direction:column;gap:8px",
+            FanoutGrid { now, at, filter, pinned, style: cstyle(v),
+                on_retry: move |ids: Vec<String>| msg.set(format!("onRetry({} tasks)", ids.len())),
+                on_select: move |i: Option<usize>| msg.set(format!("onSelect({i:?})")) }
+            {status(msg)}
+        }
+    }
+}
+
+fn fanout_grid_code(_: &Vals) -> String {
+    Code::new("FanoutGrid")
+        .raw("tasks", "Some(job.tasks())")
+        .raw("at", "Some(job.elapsed_ms())")
+        .raw("workers", "12")
+        .raw("now", "clock.now()")
+        .done()
+}
+
+fn fanout_grid_demo(style: crate::Control) -> Demo {
+    Demo {
+        controls: vec![
+            style,
+            sel(
+                "state",
+                "State",
+                &["live", "early", "mid", "filtered", "pinned", "failed"],
+                "live",
+            ),
+            sel("width", "Width", &["wide", "narrow"], "wide"),
+        ],
+        variants: vec![
+            var(
+                "live",
+                "The job replays and loops: cells turn blue with a shine, then green in a wave; one retries in amber, two fail; done, cost and time left keep moving.",
+                &[],
+            ),
+            var(
+                "early",
+                "Three seconds in: the first wave of twelve workers busy, everything else queued.",
+                &[("state", "early")],
+            ),
+            var(
+                "mid",
+                "Mid-job: green spreading, a retry breathing amber, the time left counting down.",
+                &[("state", "mid")],
+            ),
+            var(
+                "filtered",
+                "A count pressed: only running cells stay vivid, the rest fade back.",
+                &[("state", "filtered")],
+            ),
+            var(
+                "pinned",
+                "A cell pinned: a ring on it and its card – worker, time, tries, cost and result.",
+                &[("state", "pinned")],
+            ),
+            var(
+                "failed",
+                "Ended with two failures: a red count and Retry failed, which runs them again until the job finishes green.",
+                &[("state", "failed")],
+            ),
+            var(
+                "narrow",
+                "Below 520 px the cells get smaller and done / cost / time left wrap under the title.",
+                &[("state", "mid"), ("width", "narrow")],
+            ),
+            var(
+                "classic",
+                "Classic style: square-ish cells; the count buttons sit in a grey strip along the bottom of the card.",
+                &[("style", "classic"), ("state", "failed")],
+            ),
+        ],
+        render: fanout_grid,
+        code: fanout_grid_code,
+        keyboard: vec![
+            (
+                "Tab",
+                "The grid is one stop, then the counts and Retry failed",
+            ),
+            (
+                "Arrow keys, Home / End",
+                "Walk the cells and show each one's card",
+            ),
+            ("Enter / Space", "Pin or release the card"),
+            ("Escape", "Releases the card"),
+        ],
+        a11y: vec![
+            "The grid is a single tab stop with an active cell; each cell is named by its task and status and described by its card.",
+            "Each count is a pressed / not-pressed toggle; a polite status line reports progress every tenth and once at the end.",
+            "Status is never colour alone: the card and the counts say it in words; reduced motion stops the wave, shine and breathing.",
+        ],
+        responsive: vec![
+            "The cells fill the width and wrap.",
+            "Below 520 px cells are 8 px and the header figures wrap onto their own line.",
+        ],
+        height: 420,
+        live: true,
+        align: Align::Start,
+        ..mk(
+            "fanout-grid",
+            "Fan-out Grid",
+            "tools",
+            "One job split into hundreds of small tasks across a pool of workers: a cell per task tinted by status, counts that filter the grid, the cost and time left, each task's card one hover away and Retry failed.",
+            "FanoutGrid",
+            "FanoutGridEl",
+            "fanout-grid",
+            "parity/fanfid.rs",
+        )
+    }
+}
+
 /// Family B part 8 demos.
 pub(crate) fn demos() -> Vec<Demo> {
     let style = || sel("style", "Style", &["clean", "classic"], "clean");
@@ -1648,6 +1780,7 @@ pub(crate) fn demos() -> Vec<Demo> {
         scheduled_runs_demo(style()),
         rate_limit_planner_demo(style()),
         trace_waterfall_demo(style()),
+        fanout_grid_demo(style()),
         Demo {
             controls: vec![
                 style(),

@@ -43,6 +43,7 @@ pub use navigation::{
     ReorderListEl, ResizableEl, TabsEl, TeamSwitcherEl, TocProgressEl, ToggleGroupEl, TreeViewEl,
     UserMenuEl,
 };
+pub use parity::FanoutGridEl;
 pub use parity::JudgeBracketEl;
 pub use parity::MemoryPanelEl;
 pub use parity::ParallelAttemptsEl;
