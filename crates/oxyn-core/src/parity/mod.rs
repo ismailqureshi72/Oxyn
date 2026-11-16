@@ -57,6 +57,7 @@
 //! - [`effmenufid`]: Thinking Selector menus: roving highlight, context windows, models with effort.
 //! - [`nozzlefid`]: Thinking Selector: Nozzle line gradient, glow and stops (Oxyn original)
 //! - [`stairsfid`]: Thinking Selector: Effort stairs budgets (Oxyn original)
+//! - [`ctxvisfid`]: Context Visualizer: kinds, shares, field of dots, slabs, compaction and turns left (variants 2)
 //! - [`answers`]: fidelity batch, family A: AI Answer markup and streaming, Cited Answer
 //!   sentences and quotes, Message Actions, Thinking Loader phases, Thinking State steps and the
 //!   Writing Assistant's sample writer and dictation.
@@ -75,6 +76,7 @@ pub mod confirm;
 pub mod costfid;
 pub mod crewfid;
 pub mod ctxmapfid;
+pub mod ctxvisfid;
 pub mod cursorsfid;
 pub mod delegatefid;
 pub mod diff;

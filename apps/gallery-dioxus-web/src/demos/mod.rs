@@ -23,6 +23,7 @@ mod parity_agents2;
 mod parity_agents3;
 mod parity_answers;
 mod parity_approvals;
+mod parity_context;
 mod parity_diff;
 mod parity_fidelity;
 mod parity_fields;
@@ -51,7 +52,7 @@ pub struct Category {
 }
 
 /// Categories in nav order.
-pub const CATEGORIES: [Category; 21] = [
+pub const CATEGORIES: [Category; 22] = [
     Category {
         slug: "composer",
         name: "Composer",
@@ -157,6 +158,11 @@ pub const CATEGORIES: [Category; 21] = [
         name: "Thinking Selector",
         blurb: "How hard the model thinks: effort sliders, rulers, menus and pickers, each a different take on the same choice.",
     },
+    Category {
+        slug: "context-visualizer",
+        name: "Context Visualizer",
+        blurb: "How full the context window is and what fills it: bars, fields of dots, breakdowns, stacks and a tide glass.",
+    },
 ];
 
 /// Every demo, in category order.
@@ -179,6 +185,7 @@ pub fn catalog() -> Vec<Demo> {
     v.extend(parity_tools::demos());
     v.extend(parity_diff::demos());
     v.extend(parity_thinking::demos());
+    v.extend(parity_context::demos());
     v.extend(parity_merge::demos());
     v.extend(parity_text::demos());
     v.extend(checkpoints::demos());

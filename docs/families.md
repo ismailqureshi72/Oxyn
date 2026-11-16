@@ -60,10 +60,10 @@ How full the context window is and what fills it.
 
 **Existing:** Context meter (`context-meter`), Context window (cells) (`context-field`), Context window (grid) (`context-grid`), Context Map (`context-map`), Context cards (`context-cards`)
 
+**Built in #40 (variants 2):** Context bar (`context-bar`), Context breakdown (`context-breakdown`), Context stack (`context-stack`), Context tide (`context-tide`)
+
 **New variants to build:**
-- Stacked segment bar with Chat/Files/Tools/System/Memory chips and Compact button
 - Context meter ring with hover legend
-- Tide gauge: water line in a tall glass, compaction drains it
 - Shelf view: each file a book on a shelf, width = tokens; drag off to drop
 - Heat strip of the transcript showing which turns weigh most
 - Pressure bar that blinks before auto-compact with a countdown
