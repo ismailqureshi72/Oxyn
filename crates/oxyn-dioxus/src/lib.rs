@@ -45,6 +45,7 @@ pub use glyph_loader::{GLYPH_LOADER_CSS, GlyphLoader, GlyphLoaderProps};
 pub const HITL_CSS: &str = include_str!("hitl.css");
 pub use parity::DiffTimelineRun;
 pub use parity::EffortList;
+pub use parity::EffortPill;
 pub use parity::EffortRuler;
 pub use parity::FanoutGrid;
 pub use parity::JudgeBracket;
