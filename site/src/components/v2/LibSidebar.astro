@@ -1,13 +1,15 @@
 ---
 // The library's left sidebar: wordmark, search, site links, style, and the collapsible groups.
 import { icon } from './icons';
-import { components, screens, counts, demoUrl, isPro, motionDemos, composedScreens, groups, inGroup } from '../../lib/data';
-import { familyOf } from '../../lib/taxonomy.mjs';
+import { components, screens, counts, demoUrl, isPro, motionDemos, composedScreens } from '../../lib/data';
+import { FAMILY_NAV, navFamilyOf } from '../../lib/families.mjs';
 interface Props { current?: string }
 const { current = '' } = Astro.props;
-// Family members (Thinking Selector …) are listed under their family's own group, not here.
-const byName = components.filter((d) => !familyOf(d)).sort((a, b) => a.name.localeCompare(b.name));
-const families = groups.filter((g) => g.family).map((g) => ({ label: g.name, href: `/components/${g.slug}/`, n: inGroup(g.slug).length, items: inGroup(g.slug).map((d) => [d.name, demoUrl(d), isPro(d)] as const) }));
+// Components are grouped by family (one idea, many variants); each family is its own collapsible group.
+const families = FAMILY_NAV.map((f) => {
+  const items = components.filter((d) => navFamilyOf(d)?.slug === f.slug).sort((a, b) => a.name.localeCompare(b.name));
+  return { label: f.name, href: items.length ? demoUrl(items[0]) : '/components/', n: items.length, family: true, items: items.map((d) => [d.name, demoUrl(d), isPro(d)] as const) };
+});
 const nav = [
   ['Library', '/components/', icon.library],
   ['Docs', '/docs/', icon.docs],
@@ -16,7 +18,7 @@ const nav = [
 ];
 const libActive = !current.startsWith('/docs') && !current.startsWith('/pricing');
 const groupsList = [
-  { label: 'Components', href: '/components/', n: counts.components, items: byName.map((d) => [d.name, demoUrl(d), isPro(d)] as const) },
+  { label: 'Components', href: '/components/', n: counts.components, items: [], head: true },
   ...families,
   { label: 'Screens', href: '/screens/', n: counts.screens, items: [...composedScreens.map((c) => [c.name, c.href, false] as const), ...screens.map((d) => [d.name, demoUrl(d), isPro(d)] as const)] },
   { label: 'Blocks', href: '/blocks/', n: 0, items: [] },
@@ -41,8 +43,10 @@ const groupsList = [
     <button type="button" class="style-pill" aria-disabled="true" title="One style today; more come with the Studio">Default</button>
   </div>
   <div class="lsb-groups">
-    {groupsList.map((g) => (
-      <details class="lsb-g" open={g.items.length > 0 && g.items.length < 400}>
+    {groupsList.map((g) => g.head ? (
+      <p class="lsb-head"><a href={g.href}>{g.label}</a><span class="n">{g.n}</span></p>
+    ) : (
+      <details class:list={['lsb-g', g.family && 'lsb-fam']} open={g.family ? g.items.some(([, h]) => h === current) : g.items.length > 0 && g.items.length < 400}>
         <summary><a href={g.href}>{g.label}</a>{g.n != null && <span class="n">{g.n}</span>}<span class="chev"><Fragment set:html={icon.chevron} /></span></summary>
         {g.items.length > 0 ? (
           <ul>
