@@ -43,7 +43,9 @@ pub use composer::{
 pub use glyph_loader::{GLYPH_LOADER_CSS, GlyphLoader, GlyphLoaderProps};
 /// Stylesheet for approvals and checkpoints.
 pub const HITL_CSS: &str = include_str!("hitl.css");
+pub use parity::AccentDensity;
 pub use parity::AttachmentChips;
+pub use parity::BackgroundPicker;
 pub use parity::ContextBar;
 pub use parity::ContextBreakdown;
 pub use parity::ContextEffortMenu;
@@ -78,6 +80,8 @@ pub use parity::StorageCleanup;
 pub use parity::StorageForecast;
 pub use parity::StorageMeter;
 pub use parity::StorageWaffle;
+pub use parity::ThemeGrid;
+pub use parity::ThemeSplit;
 pub use parity::ToolAccessMap;
 pub use parity::TraceWaterfall;
 pub use parity::UploadDropzone;

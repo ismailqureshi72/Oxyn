@@ -43,7 +43,9 @@ pub use navigation::{
     ReorderListEl, ResizableEl, TabsEl, TeamSwitcherEl, TocProgressEl, ToggleGroupEl, TreeViewEl,
     UserMenuEl,
 };
+pub use parity::AccentDensityEl;
 pub use parity::AttachmentChipsEl;
+pub use parity::BackgroundPickerEl;
 pub use parity::ContextBarEl;
 pub use parity::ContextBreakdownEl;
 pub use parity::ContextEffortMenuEl;
@@ -77,6 +79,8 @@ pub use parity::StorageCleanupEl;
 pub use parity::StorageForecastEl;
 pub use parity::StorageMeterEl;
 pub use parity::StorageWaffleEl;
+pub use parity::ThemeGridEl;
+pub use parity::ThemeSplitEl;
 pub use parity::ToolAccessMapEl;
 pub use parity::TraceWaterfallEl;
 pub use parity::UploadDropzoneEl;

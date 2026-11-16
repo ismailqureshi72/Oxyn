@@ -321,15 +321,13 @@ Dates, times and when agents run.
 - Next-run countdown chip
 
 ## Theme Selector (`theme-selector`)
-Backgrounds, textures, theme swatches and font size.
+Background pictures and texture, theme swatches with font size, a split compare and accent with density.
 
 **Existing:** _none yet_
 
+**Built in #41 (variants 3):** Background picker (`background-picker`), Theme grid (`theme-grid`), Theme split (`theme-split`), Accent and density (`accent-density`)
+
 **New variants to build:**
-- Background tiles (Default, images, Your own +) with Texture Film/Static/Dither
-- Theme grid of 8 mini-window swatches (system split, light, dark, tinted…) + Font size dropdown
-- Accent picker that stays monochrome by default
-- Density slider with live preview
 - Theme playground: drag a light source over the UI
 
 ## Buttons (`buttons`)
