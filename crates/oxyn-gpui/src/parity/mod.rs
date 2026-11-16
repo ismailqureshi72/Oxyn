@@ -24,6 +24,7 @@ mod costfid;
 mod crewfid;
 mod ctxmapfid;
 mod cursorsfid;
+mod dtreefid;
 mod fidelity;
 mod fields;
 mod graphfid;
@@ -59,6 +60,7 @@ pub use costfid::CostWaterfallEl;
 pub use crewfid::AgentCrewEl;
 pub use ctxmapfid::ContextMapEl;
 pub use cursorsfid::AgentCursorsEl;
+pub use dtreefid::DecisionTreeEl;
 pub use fidelity::{AgentCommentThreadEl, ChatComposerEl, CommentsPanelEl, ThreadMsg, file_badge};
 pub use fields::{
     AiComposerEl, AvatarUploadEl, ContextFieldEl, ContextGridEl, ElasticSliderEl, FileDropzoneEl,

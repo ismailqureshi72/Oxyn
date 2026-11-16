@@ -14,6 +14,7 @@ mod crewfid;
 mod ctxmapfid;
 mod cursorsfid;
 mod diff;
+mod dtreefid;
 mod fidelity;
 mod fields;
 mod graphfid;
@@ -54,6 +55,7 @@ pub use crewfid::AgentCrew;
 pub use ctxmapfid::ContextMap;
 pub use cursorsfid::AgentCursors;
 pub use diff::{ChangeSummary, CodeSuggestion, DiffTable, DiffTimeline, DiffViewer, InlineDiff};
+pub use dtreefid::DecisionTree;
 pub use fidelity::{
     AgentCommentThread, AgentOrb, ChatComposer, CommentsPanel, FileTypeIcon, PhotoAvatar, Portrait,
     ThreadNote,
