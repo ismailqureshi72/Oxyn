@@ -48,6 +48,7 @@ mod ratefid;
 mod recapfid;
 mod review;
 mod rootfid;
+mod rulerfid;
 mod run;
 mod runningfid;
 mod schedfid;
@@ -109,6 +110,7 @@ pub use review::{
     ReviewCenterEl,
 };
 pub use rootfid::RootCauseTreeEl;
+pub use rulerfid::EffortRulerEl;
 pub use run::{
     ActivityFeedEl, AgentPlanEl, AgentRunEl, AgentStatusEl, AgentTrailEl, AgentTreeEl, BreakdownEl,
     ChecklistEl, CountdownEl, CounterEl, FleetEl, FlowStepperEl, OrchestratorEl, ReadinessEl,

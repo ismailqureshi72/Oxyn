@@ -39,6 +39,7 @@ mod ratefid;
 mod recapfid;
 mod review;
 mod rootfid;
+mod rulerfid;
 mod run;
 mod runningfid;
 mod schedfid;
@@ -100,6 +101,7 @@ pub use ratefid::RateLimitPlanner;
 pub use recapfid::AgentRecap;
 pub use review::{AiInlineEdit, CommentThread, ImageCompare, ReviewCard, ReviewCenter};
 pub use rootfid::RootCauseTree;
+pub use rulerfid::EffortRuler;
 pub use run::{
     ActivityFeed, AgentFleet, AgentOrchestrator, AgentPlan, AgentRun, AgentStatus, AgentTrail,
     AgentTree, AnimatedCounter, Countdown, FlowStepper, OnboardingChecklist, ReleaseReadiness,
