@@ -58,6 +58,7 @@
 //! - [`nozzlefid`]: Thinking Selector: Nozzle line gradient, glow and stops (Oxyn original)
 //! - [`stairsfid`]: Thinking Selector: Effort stairs budgets (Oxyn original)
 //! - [`ctxvisfid`]: Context Visualizer: kinds, shares, field of dots, slabs, compaction and turns left (variants 2)
+//! - [`storagefid`]: Storage: categories, dot runs, clearing, unused skills and a fill forecast (variants 2)
 //! - [`answers`]: fidelity batch, family A: AI Answer markup and streaming, Cited Answer
 //!   sentences and quotes, Message Actions, Thinking Loader phases, Thinking State steps and the
 //!   Writing Assistant's sample writer and dictation.
@@ -114,6 +115,7 @@ pub mod runningfid;
 pub mod schedfid;
 pub mod seqfid;
 pub mod stairsfid;
+pub mod storagefid;
 pub mod text;
 pub mod thinkfid;
 pub mod toolmapfid;

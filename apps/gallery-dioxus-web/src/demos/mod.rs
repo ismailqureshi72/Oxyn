@@ -31,6 +31,7 @@ mod parity_home;
 mod parity_input;
 mod parity_merge;
 mod parity_run;
+mod parity_storage;
 mod parity_text;
 mod parity_thinking;
 mod parity_tools;
@@ -52,7 +53,7 @@ pub struct Category {
 }
 
 /// Categories in nav order.
-pub const CATEGORIES: [Category; 22] = [
+pub const CATEGORIES: [Category; 23] = [
     Category {
         slug: "composer",
         name: "Composer",
@@ -163,6 +164,11 @@ pub const CATEGORIES: [Category; 22] = [
         name: "Context Visualizer",
         blurb: "How full the context window is and what fills it: bars, fields of dots, breakdowns, stacks and a tide glass.",
     },
+    Category {
+        slug: "storage",
+        name: "Storage",
+        blurb: "Disk and context usage drawn as dot matrices: capacity, cleanup, waffle and forecast.",
+    },
 ];
 
 /// Every demo, in category order.
@@ -186,6 +192,7 @@ pub fn catalog() -> Vec<Demo> {
     v.extend(parity_diff::demos());
     v.extend(parity_thinking::demos());
     v.extend(parity_context::demos());
+    v.extend(parity_storage::demos());
     v.extend(parity_merge::demos());
     v.extend(parity_text::demos());
     v.extend(checkpoints::demos());

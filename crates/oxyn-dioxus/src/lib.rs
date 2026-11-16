@@ -65,6 +65,10 @@ pub use parity::ReasoningPanel;
 pub use parity::RootCauseTree;
 pub use parity::RunningNow;
 pub use parity::ScheduledRuns;
+pub use parity::StorageCleanup;
+pub use parity::StorageForecast;
+pub use parity::StorageMeter;
+pub use parity::StorageWaffle;
 pub use parity::ToolAccessMap;
 pub use parity::TraceWaterfall;
 pub use parity::{

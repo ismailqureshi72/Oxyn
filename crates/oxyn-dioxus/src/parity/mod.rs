@@ -52,6 +52,7 @@ mod runningfid;
 mod schedfid;
 mod seqfid;
 mod stairsfid;
+mod storagefid;
 mod text;
 mod toolmapfid;
 mod tools;
@@ -126,6 +127,7 @@ pub use runningfid::RunningNow;
 pub use schedfid::ScheduledRuns;
 pub use seqfid::AgentSequence;
 pub use stairsfid::EffortStairs;
+pub use storagefid::{StorageCleanup, StorageForecast, StorageMeter, StorageWaffle};
 pub use text::{
     ActionSwapButton, InViewTitle, LoadingState, SlotReels, Source, StreamingText, SweepText,
     TextMorph, ThinkingLoader, WordReveal,

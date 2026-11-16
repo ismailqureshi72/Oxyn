@@ -81,6 +81,18 @@ Files, images and links going into a prompt.
 - Inline chips that expand into a mini preview sheet
 - Storage scanner style: sunburst of what you attach most
 
+## Storage (`storage`)
+Disk and context usage drawn as dot matrices: capacity, cleanup, waffle and forecast.
+
+**Existing:** _none yet_
+
+**Built in #40 (variants 2):** Storage meter (`storage-meter`), Storage cleanup (`storage-cleanup`), Storage waffle (`storage-waffle`), Storage forecast (`storage-forecast`)
+
+**New variants to build:**
+- Setup map: where agent skills, rules and servers live, folder by folder, with counts
+- Leftovers sweep: old sessions, logs and build output an agent left behind, grouped by age
+- Notch tabs: Now / Skills / Storage / Cleanup in one compact panel
+
 ## Voice (`voice`)
 Speaking to the agent: record, dictate, listen.
 

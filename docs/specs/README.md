@@ -218,4 +218,8 @@ specified just as deeply. When we point at one component as an example, the stan
 | [context-breakdown.md](context-breakdown.md) | built v0.1 (variants 2, Context Visualizer) |
 | [context-stack.md](context-stack.md) | built v0.1 (variants 2, Context Visualizer) |
 | [context-tide.md](context-tide.md) | built v0.1 (variants 2, Context Visualizer) |
+| [storage-meter.md](storage-meter.md) | built v0.1 (variants 2, Storage) |
+| [storage-cleanup.md](storage-cleanup.md) | built v0.1 (variants 2, Storage) |
+| [storage-waffle.md](storage-waffle.md) | built v0.1 (variants 2, Storage) |
+| [storage-forecast.md](storage-forecast.md) | built v0.1 (variants 2, Storage) |
 | Every other component in [../component-taxonomy.md](../component-taxonomy.md) | to write in V2.2 |
