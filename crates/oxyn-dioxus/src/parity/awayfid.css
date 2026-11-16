@@ -1,0 +1,80 @@
+/* affectUI fidelity pass, overnight batch, family B part 6 (plan #32): Away Summary (oxaw-).
+   Clean is the default; Classic follows data-cstyle or data-style. 600 px up to its container;
+   under 460 px the counts drop under the title. */
+[data-oxyn-theme="light"]{
+  --oxaw-card:#FFFFFF;--oxaw-bd:#EBEBEB;--oxaw-line:#F1F1F1;--oxaw-fg:#0A0A0A;--oxaw-fg2:#151515;--oxaw-mute:#848484;--oxaw-det:#818181;--oxaw-ghost:#5C5C5C;--oxaw-faint:#CFCFCF;
+  --oxaw-needs:#E3AC05;--oxaw-failed:#F04B39;--oxaw-done:#1592F5;--oxaw-btn:#FFFFFF;--oxaw-btnbd:#EDEDED;--oxaw-hov:#F4F4F4;--oxaw-flash:#F6F6F5;--oxaw-band:#F3F3F2;
+  --oxaw-sh:0 1px 2px rgba(0,0,0,.035),0 2px 10px rgba(0,0,0,.025);--oxaw-btnsh:0 1px 2px rgba(0,0,0,.08),0 0 0 .5px rgba(0,0,0,.04);
+}
+[data-oxyn-theme="dark"],[data-oxyn-theme="hc-dark"]{
+  --oxaw-card:#171718;--oxaw-bd:#2B2B2D;--oxaw-line:#2A2A2C;--oxaw-fg:#F4F4F5;--oxaw-fg2:#ECECEE;--oxaw-mute:#9A9A9E;--oxaw-det:#85858A;--oxaw-ghost:#B4B4B8;--oxaw-faint:#4A4A4E;
+  --oxaw-needs:#E5B30C;--oxaw-failed:#EF5350;--oxaw-done:#2F9BFF;--oxaw-btn:#1E1E20;--oxaw-btnbd:#333336;--oxaw-hov:#222224;--oxaw-flash:#1F1F21;--oxaw-band:#1D1D1F;
+  --oxaw-sh:0 1px 2px rgba(0,0,0,.4);--oxaw-btnsh:0 1px 2px rgba(0,0,0,.4);
+}
+.oxaw{position:relative;display:flex;flex-direction:column;width:600px;max-width:100%;container-type:inline-size;border:1px solid var(--oxaw-bd);border-radius:12px;background:var(--oxaw-card);box-shadow:var(--oxaw-sh);color:var(--oxaw-fg);font-size:13px;line-height:1.35;overflow:clip;-webkit-font-smoothing:antialiased;animation:oxaw-open .26s cubic-bezier(.2,.8,.2,1)}
+@keyframes oxaw-open{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.oxaw *{box-sizing:border-box}
+.oxaw-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.oxaw button:focus-visible,.oxaw-div:focus-visible{outline:2px solid var(--oxaw-fg);outline-offset:2px}
+.oxaw-sp{flex:1}
+.oxaw-head{display:flex;align-items:center;gap:12px;min-height:40px;padding:0 14px;border-bottom:1px solid var(--oxaw-line)}
+.oxaw .oxaw-ttl{flex:1;min-width:0;margin:0;overflow:hidden;font-size:13.5px;font-weight:600;white-space:nowrap;text-overflow:ellipsis}
+.oxaw-dur{color:var(--oxaw-mute);font-weight:400}
+.oxaw-cnts{display:flex;align-items:center;gap:6px;color:var(--oxaw-mute);font-size:12.5px;white-space:nowrap}
+.oxaw-c{display:inline-flex;align-items:center;gap:6px;animation:oxaw-roll .3s cubic-bezier(.2,.8,.2,1)}
+@keyframes oxaw-roll{from{opacity:.2;translate:0 4px}to{opacity:1;translate:0 0}}
+.oxaw-sep{color:var(--oxaw-faint);font-style:normal}
+.oxaw-dot{display:inline-block;width:6px;height:6px;border-radius:50%;flex:none}
+.oxaw-dot[data-k="needs-you"]{background:var(--oxaw-needs)}
+.oxaw-dot[data-k="failed"]{background:var(--oxaw-failed)}
+.oxaw-dot[data-k="done"]{background:var(--oxaw-done)}
+.oxaw-list{display:flex;flex-direction:column;margin:0;padding:4px 0;list-style:none}
+.oxaw-row{display:flex;align-items:center;gap:11px;height:48px;padding:0 12px 0 15px;transition:background-color .4s}
+.oxaw-row[data-flash="true"]{animation:oxaw-flash 1.2s ease-out}
+@keyframes oxaw-flash{from{background:var(--oxaw-flash)}to{background:transparent}}
+.oxaw-row[data-grow="true"]{animation:oxaw-grow .28s cubic-bezier(.2,.8,.2,1) both}
+@keyframes oxaw-grow{from{opacity:0;height:0}to{opacity:1;height:48px}}
+.oxaw-mkw{display:inline-flex;align-self:flex-start;margin-top:9px;flex:none;animation:oxaw-pop .32s cubic-bezier(.3,1.5,.5,1)}
+.oxaw-row:not(:has(.oxaw-det)) .oxaw-mkw{align-self:center;margin-top:0}
+@keyframes oxaw-pop{from{transform:scale(.4);opacity:0}to{transform:none;opacity:1}}
+.oxaw-mk{display:block}
+.oxaw-breath{transform-origin:7px 7px;animation:oxaw-breathe 2.4s ease-in-out infinite}
+@keyframes oxaw-breathe{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.55;transform:scale(.78)}}
+.oxaw-tick{stroke-dasharray:9;stroke-dashoffset:0;animation:oxaw-draw .4s .12s ease-out both}
+@keyframes oxaw-draw{from{stroke-dashoffset:9}to{stroke-dashoffset:0}}
+.oxaw-txt{display:flex;flex-direction:column;gap:1px;flex:1;min-width:0}
+.oxaw-rt{overflow:hidden;color:var(--oxaw-fg2);font-size:13.5px;font-weight:500;line-height:18px;white-space:nowrap;text-overflow:ellipsis}
+.oxaw-det{overflow:hidden;color:var(--oxaw-det);font-size:12px;line-height:16px;white-space:nowrap;text-overflow:ellipsis}
+.oxaw-act{display:inline-flex;align-items:center;justify-content:center;gap:6px;flex:none;max-width:40%;height:26px;padding:0 10px;overflow:hidden;border:0;border-radius:7px;background:none;color:var(--oxaw-ghost);font:inherit;font-size:12.5px;font-weight:500;white-space:nowrap;text-overflow:ellipsis;cursor:pointer;transition:background-color .15s,color .15s}
+.oxaw-act:hover{background:var(--oxaw-hov);color:var(--oxaw-fg)}
+.oxaw-act[data-kind="needs-you"]{background:var(--oxaw-btn);color:var(--oxaw-fg);box-shadow:var(--oxaw-btnsh)}
+.oxaw-act[data-kind="needs-you"]:hover{background:var(--oxaw-hov)}
+.oxaw-act[data-busy="true"]{cursor:progress;opacity:.75}
+.oxaw-spin{width:10px;height:10px;border:1.5px solid currentColor;border-right-color:transparent;border-radius:50%;animation:oxaw-rot .7s linear infinite}
+@keyframes oxaw-rot{to{transform:rotate(1turn)}}
+.oxaw-foot{display:flex;align-items:center;min-height:38px;padding:0 8px;border-top:1px solid var(--oxaw-line)}
+.oxaw-fb{display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 6px;border:0;border-radius:6px;background:none;color:var(--oxaw-ghost);font:inherit;font-size:12.5px;font-weight:500;cursor:pointer}
+.oxaw-fb:hover{color:var(--oxaw-fg)}
+.oxaw-fb svg{opacity:.7}
+/* folded */
+.oxaw-fold{width:600px;max-width:100%;container-type:inline-size}
+.oxaw-div{display:flex;align-items:center;gap:12px;width:100%;height:32px;padding:0;border:0;border-radius:8px;background:none;color:var(--oxaw-mute);font:inherit;font-size:12.5px;cursor:pointer;animation:oxaw-open .26s cubic-bezier(.2,.8,.2,1)}
+.oxaw-div:hover{color:var(--oxaw-fg)}
+.oxaw-rule{flex:1;height:1px;background:var(--oxaw-line);min-width:12px}
+.oxaw-dt{display:inline-flex;align-items:center;gap:7px;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+@supports (corner-shape:squircle){
+  .oxaw,.oxaw-act,.oxaw-fb{corner-shape:squircle}
+  .oxaw{border-radius:20px}.oxaw-act{border-radius:11px}.oxaw-fb{border-radius:9px}
+}
+@container (max-width:460px){
+  .oxaw-head{flex-direction:column;align-items:flex-start;justify-content:center;gap:2px;padding-top:8px;padding-bottom:8px}
+  .oxaw .oxaw-ttl{flex:none;max-width:100%}
+}
+@media (hover:none){.oxaw-act,.oxaw-fb{height:36px}}
+
+/* Classic: the header in a grey band, a stronger border and shadow, a larger radius */
+:is([data-cstyle="classic"] .oxaw:not([data-style="clean"]),.oxaw[data-style="classic"]){border-color:color-mix(in srgb,var(--oxaw-fg) 9%,var(--oxaw-bd));border-radius:16px;box-shadow:0 1px 3px rgba(0,0,0,.06),0 6px 18px rgba(0,0,0,.05)}
+:is([data-cstyle="classic"] .oxaw:not([data-style="clean"]),.oxaw[data-style="classic"]) .oxaw-head{background:var(--oxaw-band)}
+:is([data-cstyle="classic"] .oxaw:not([data-style="clean"]),.oxaw[data-style="classic"]) .oxaw-act[data-kind="needs-you"]{box-shadow:0 1px 2px rgba(0,0,0,.1),0 0 0 1px var(--oxaw-btnbd)}
+
+@media (prefers-reduced-motion:reduce){.oxaw *,.oxaw,.oxaw-div{animation:none!important;transition:none!important}}

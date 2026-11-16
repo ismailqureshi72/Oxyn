@@ -4,6 +4,8 @@
 mod agentsfid;
 mod answers;
 mod approvals;
+mod autonomyfid;
+mod awayfid;
 mod chatfid;
 mod compose;
 mod crewfid;
@@ -37,6 +39,8 @@ pub use approvals::{
     AgentApprovals, ApprovalGates, ConfirmMorph, ConfirmPopover, HoldToConfirm, PermissionRequest,
     gate_dot,
 };
+pub use autonomyfid::AutonomyDial;
+pub use awayfid::AwaySummary;
 pub use chatfid::{AgentRunPanel, ModelPickerMenu};
 pub use compose::{
     AiComposer, MenuModel, ModelMenu, ModelPill, PillModel, RichTextEditor, RunControls,

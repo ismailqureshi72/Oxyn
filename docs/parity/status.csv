@@ -20,9 +20,9 @@ affectUI,Agent Tree,https://www.affectui.com/components/agent-tree,Components ·
 affectUI,AI Answer,https://www.affectui.com/components/ai-answer,Components · Chat,Pro,"ai-answer (exact, overnight batch A), citations-sources",,#32,built
 affectUI,Approval Card,https://www.affectui.com/components/approval-card,Components · Agents,Pro,approval-card,,#28,built
 affectUI,Approval Gates,https://www.affectui.com/components/approval-gates,Components · Agents,Pro,"approvals, approval-card",,#28,built
-affectUI,Autonomy Dial,https://www.affectui.com/components/autonomy-dial,Components · Agents,Pro,"composer-permission-selector, permission-rules",C5,#33,planned
+affectUI,Autonomy Dial,https://www.affectui.com/components/autonomy-dial,Components · Agents,Pro,"autonomy-dial (exact, overnight batch B part 6), composer-permission-selector, permission-rules",C5,#32,built
 affectUI,Avatar,https://www.affectui.com/components/avatar,Components · Data display,Free,avatar,C4,#23,built
-affectUI,Away Summary,https://www.affectui.com/components/away-summary,Components · Agents,Pro,background-jobs,C5,#33,planned
+affectUI,Away Summary,https://www.affectui.com/components/away-summary,Components · Agents,Pro,"away-summary (exact, overnight batch B part 6), background-jobs",C5,#32,built
 affectUI,Badge,https://www.affectui.com/components/badge,Components · Data display,Free,badges-chips,C4,#23,built
 affectUI,Billing Schedule,https://www.affectui.com/components/billing-schedule,Components · Inputs,Pro,NEW,C12,#36,planned
 affectUI,Breakdown Chart,https://www.affectui.com/components/breakdown-chart,Components · Data display,Pro,genui-blocks,,#36,planned

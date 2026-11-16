@@ -16,6 +16,8 @@ use crate::hsla;
 mod agentsfid;
 mod answers;
 mod approvals;
+mod autonomyfid;
+mod awayfid;
 mod chatfid;
 mod crewfid;
 mod cursorsfid;
@@ -46,6 +48,8 @@ pub use approvals::{
     AgentApprovalsEl, ApprovalGatesEl, ApprovalPagerEl, ConfirmMorphEl, ConfirmPopoverEl,
     HoldConfirmEl, PermissionRequestEl,
 };
+pub use autonomyfid::AutonomyDialEl;
+pub use awayfid::AwaySummaryEl;
 pub use chatfid::{AgentRunPanelEl, ModelPickerMenuEl};
 pub use crewfid::AgentCrewEl;
 pub use cursorsfid::AgentCursorsEl;
