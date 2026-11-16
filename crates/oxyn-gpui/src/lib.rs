@@ -65,6 +65,10 @@ pub use parity::ReasoningPanelEl;
 pub use parity::RootCauseTreeEl;
 pub use parity::RunningNowEl;
 pub use parity::ScheduledRunsEl;
+pub use parity::StorageCleanupEl;
+pub use parity::StorageForecastEl;
+pub use parity::StorageMeterEl;
+pub use parity::StorageWaffleEl;
 pub use parity::ToolAccessMapEl;
 pub use parity::TraceWaterfallEl;
 pub use parity::{

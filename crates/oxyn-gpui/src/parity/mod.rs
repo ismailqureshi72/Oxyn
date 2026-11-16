@@ -61,6 +61,7 @@ mod runningfid;
 mod schedfid;
 mod seqfid;
 mod stairsfid;
+mod storagefid;
 mod text;
 mod toolmapfid;
 mod tools;
@@ -135,6 +136,7 @@ pub use runningfid::RunningNowEl;
 pub use schedfid::ScheduledRunsEl;
 pub use seqfid::AgentSequenceEl;
 pub use stairsfid::EffortStairsEl;
+pub use storagefid::{StorageCleanupEl, StorageForecastEl, StorageMeterEl, StorageWaffleEl};
 pub use text::{LoadingStateEl, ShimmerEl, SlotTextEl, ThinkingLoaderEl};
 pub use toolmapfid::ToolAccessMapEl;
 pub use tools::{

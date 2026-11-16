@@ -8,6 +8,7 @@
 export const FAMILIES = [
   { slug: 'thinking-selector', name: 'Thinking Selector', blurb: 'How hard the model thinks: effort sliders, rulers, menus and pickers, each a different take on the same choice.' },
   { slug: 'context-visualizer', name: 'Context Visualizer', blurb: 'How full the context window is and what fills it: bars, fields of dots, breakdowns, stacks and a tide glass.' },
+  { slug: 'storage', name: 'Storage', blurb: 'Disk and context usage drawn as dot matrices: capacity, cleanup, waffle and forecast.' },
 ];
 function FAMILY_GROUPS() {
   return FAMILIES.map((f) => ({ ...f, family: true }));
