@@ -1410,6 +1410,32 @@ pub fn rewrite_chunks(old: &str, new: &str) -> Vec<Chunk> {
         .collect()
 }
 
+/// The text after review: an accepted change (`Some(true)`) takes its new words; a rejected or
+/// undecided one keeps the old.
+pub fn rewrite_apply(chunks: &[Chunk], decisions: &[Option<bool>]) -> String {
+    chunks
+        .iter()
+        .map(|c| match c {
+            Chunk::Same(t) => t.as_str(),
+            Chunk::Change { id, del, ins } => {
+                if decisions.get(*id).copied().flatten() == Some(true) {
+                    ins.as_str()
+                } else {
+                    del.as_str()
+                }
+            }
+        })
+        .collect()
+}
+
+/// The next undecided change after `from` (wrapping), if any.
+pub fn rewrite_next(decisions: &[Option<bool>], from: usize) -> Option<usize> {
+    let n = decisions.len();
+    (1..=n)
+        .map(|k| (from + k) % n.max(1))
+        .find(|&i| decisions.get(i).is_some_and(|d| d.is_none()))
+}
+
 /// Number of change chunks.
 pub fn change_count(chunks: &[Chunk]) -> usize {
     chunks
@@ -2642,6 +2668,29 @@ pub fn severity_counts(f: &[Finding]) -> Vec<(Severity, usize)> {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn rewrite_review_apply() {
+        use super::*;
+        let ch = rewrite_chunks(
+            "We will ship the new page on Friday.",
+            "We ship the page Thursday.",
+        );
+        let n = change_count(&ch);
+        assert!(n >= 2);
+        let none = vec![None; n];
+        assert_eq!(
+            rewrite_apply(&ch, &none),
+            "We will ship the new page on Friday."
+        );
+        let all = vec![Some(true); n];
+        assert_eq!(rewrite_apply(&ch, &all), "We ship the page Thursday.");
+        let mut d = vec![None; n];
+        d[0] = Some(true);
+        assert_eq!(rewrite_next(&d, 0), Some(1));
+        let done = vec![Some(false); n];
+        assert_eq!(rewrite_next(&done, 0), None);
+    }
+
     use super::*;
 
     const OLD: &str = "fn login(id: u32) {\n    let user = find(id)?;\n    let ok = check(pw);\n    if !ok { return Err(Denied) }\n    Ok(user)\n}\n";
