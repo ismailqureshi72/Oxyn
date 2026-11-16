@@ -18,7 +18,7 @@ Pick a model and its effort in one gesture: every model shows its effort as a su
 
 ## 3. Behaviour
 Hovering a row, clicking it, → or Enter opens its submenu; picking a level sets that model's level, makes it the
-chosen model and closes everything (focus back to the chip). ← or Escape inside a submenu returns to the list.
+chosen model and closes everything (focus back to the chip). ← or Escape inside a submenu returns to the list. A press outside closes it when the user opened it; a start-open preview draws no catcher.
 The demo's seven models are fictional (`effort_models`). `on_change((model, level))`.
 prefers-reduced-motion: no transitions or pop-in.
 

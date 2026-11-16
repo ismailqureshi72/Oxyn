@@ -20,7 +20,7 @@ Set the context window and the effort of the current model in one dropdown, from
 
 ## 3. Behaviour
 Two radio groups, one keyboard list (`menu_move` over both). A pick sets that group's value and keeps the menu
-open so both can be changed; Escape or Tab closes it and focus returns to the chip. Uncontrolled
+open so both can be changed; Escape or Tab closes it and the chip takes focus back. A press outside closes it when the user opened it; a start-open preview draws no catcher. Uncontrolled
 (`default_window`, `default_effort`); `on_window_change`, `on_effort_change`.
 prefers-reduced-motion: no transitions or pop-in.
 

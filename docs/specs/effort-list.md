@@ -34,4 +34,4 @@ with `aria-checked`; the highlight uses `aria-activedescendant` with page-unique
 300 px list capped at the viewport minus 32 px.
 
 ## 7. Known gaps
-No click-outside close yet (Escape, a pick or the chip close it). GPUI: static snapshot.
+A press outside closes a menu the user opened (a start-open preview draws no catcher, so it never covers the page). GPUI: static snapshot.

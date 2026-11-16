@@ -24,3 +24,4 @@
 @media (prefers-reduced-motion:reduce){.oxeq-pop{animation:none}.oxeq-fill,.oxeq-thumb{transition:none}}
 .oxeq[data-armed="true"]{z-index:41}
 .oxeq .oxth-catch{position:fixed;inset:0;z-index:-1}
+@media (max-width:480px){.oxeq-pop{width:calc(100vw - 64px)}}

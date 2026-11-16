@@ -22,7 +22,7 @@ popover with a big, touch-friendly step slider.
 ## 3. Behaviour
 Press, drag (snapping) or keys pick a level; the pill shows it. Reset returns to `reset` (Medium). The model line fires
 `on_model` (open a model picker). Controlled (`value: Some(Option<usize>)`) or uncontrolled; `on_change`.
-Escape closes the popover. prefers-reduced-motion: no glide, no pop-in.
+Escape closes the popover. A press outside closes it when the user opened it; a start-open preview draws no catcher. prefers-reduced-motion: no glide, no pop-in.
 
 ## 4. Variants
 open (default) · unset (closed, grey pill) · max.
