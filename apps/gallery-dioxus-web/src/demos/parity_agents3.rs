@@ -11,6 +11,7 @@ use oxyn_core::{
         judgefid::{jb_demo, jb_demo_verdicts},
         parallelfid::{PaStatus, pa_at, pa_demo},
         planfid::{pv_actual_total, pv_demo},
+        ratefid::{RL_BASE, RlRun, rl_demo, rl_now, rl_parse, rl_spread},
         rootfid::{rc_demo, rc_len},
         runningfid::{RnState, rn_demo},
         schedfid::SrMode,
@@ -19,7 +20,7 @@ use oxyn_core::{
 };
 use oxyn_dioxus::{
     DecisionTree, DelegateBoard, FallbackChain, JudgeBracket, MemoryPanel, ParallelAttempts,
-    PlanVsActual, RootCauseTree, RunningNow, ScheduledRuns, ToolAccessMap,
+    PlanVsActual, RateLimitPlanner, RootCauseTree, RunningNow, ScheduledRuns, ToolAccessMap,
 };
 
 use super::{Code, mk, sel, var};
@@ -1368,6 +1369,128 @@ fn scheduled_runs_demo(style: crate::Control) -> Demo {
     }
 }
 
+// ---------- Rate Limit Planner ----------
+
+fn rate_limit_planner(v: &Vals, _now: ClockMs) -> Element {
+    let mut msg = use_signal(String::new);
+    let key = format!("{}{}{}", v.s("style"), v.s("state"), v.s("width"));
+    let state = v.s("state");
+    let mut runs = rl_demo();
+    let now = rl_now();
+    match state {
+        "spread" => runs = rl_spread(&runs, RL_BASE, now),
+        "over" | "selected" => runs[2].start = rl_parse("15:30").unwrap_or(runs[2].start),
+        _ => {}
+    }
+    let selected = (state == "selected").then(|| "docs".to_string());
+    let editing = (state == "edit").then(|| "index".to_string());
+    let w = if v.s("width") == "narrow" {
+        "380px"
+    } else {
+        "600px"
+    };
+    rsx! {
+        div { "data-k": "{key}", key: "{key}", "data-state": "{state}", style: "width:{w};max-width:100%;display:flex;flex-direction:column;gap:8px;padding-bottom:150px",
+            RateLimitPlanner { runs: Some(runs), selected, editing, style: cstyle(v),
+                on_runs_change: move |r: Vec<RlRun>| msg.set(format!("onRunsChange({} runs)", r.len())) }
+            {status(msg)}
+        }
+    }
+}
+
+fn rate_limit_planner_code(_: &Vals) -> String {
+    Code::new("RateLimitPlanner")
+        .raw("runs", "Some(planner.runs())")
+        .raw("limit", "120.0")
+        .raw("on_runs_change", "move |runs| planner.save(runs)")
+        .done()
+}
+
+fn rate_limit_planner_demo(style: crate::Control) -> Demo {
+    Demo {
+        controls: vec![
+            style,
+            sel(
+                "state",
+                "State",
+                &["close", "spread", "over", "selected", "edit"],
+                "close",
+            ),
+            sel("width", "Width", &["wide", "narrow"], "wide"),
+        ],
+        variants: vec![
+            var(
+                "close",
+                "Two afternoon runs crowd each other: the peak sits just under the limit and the pill turns amber.",
+                &[],
+            ),
+            var(
+                "spread",
+                "After Spread out: the movable runs glide apart, the peak drops and the pill turns green; Undo puts them back.",
+                &[("state", "spread")],
+            ),
+            var(
+                "over",
+                "One run moved onto another: the part over the limit is hatched red, the pill names the stretch and the footer offers the nearest start that fits.",
+                &[("state", "over")],
+            ),
+            var(
+                "selected",
+                "The run causing the overrun picked: its row tints, its time turns red, remove and edit appear and Move to fixes it.",
+                &[("state", "selected")],
+            ),
+            var(
+                "edit",
+                "The edit window: name, start, peak, how long it climbs and how fast it fades.",
+                &[("state", "edit")],
+            ),
+            var(
+                "narrow",
+                "Under 520 px the name column narrows and every other axis label drops out.",
+                &[("width", "narrow")],
+            ),
+            var(
+                "classic",
+                "Classic style: solid thin bars, square pills, a lighter area.",
+                &[("style", "classic"), ("state", "over")],
+            ),
+        ],
+        render: rate_limit_planner,
+        code: rate_limit_planner_code,
+        keyboard: vec![
+            ("Tab", "Moves through the runs, their bars and buttons"),
+            ("Arrow keys", "Move a focused bar 5 minutes (Shift: 30)"),
+            ("Enter / Space", "Selects a run or presses a button"),
+            (
+                "Escape",
+                "Closes the edit window, then clears the selection",
+            ),
+        ],
+        a11y: vec![
+            "Each bar is a slider whose value text is its start time; a run already under way is a disabled slider.",
+            "The pill (under, close to or over the limit) is a status region; the chart is aria-hidden and the footer says the same in words.",
+            "Over the limit is named in text with its times, never by the red hatching alone.",
+        ],
+        responsive: vec![
+            "Rows keep 28 px; bars share the width after the name and time columns.",
+            "Under 520 px the name column narrows, the axis keeps every other label and the now label drops out.",
+        ],
+        height: 520,
+        live: false,
+        align: Align::Start,
+        ..mk(
+            "rate-limit-planner",
+            "Rate Limit Planner",
+            "tools",
+            "When agent runs happen across a day, drawn as the token load against an API's per-minute limit: drag a run's bar to move it, spread the runs out to lower the peak, and get the nearest start that keeps a run under the limit.",
+            "RateLimitPlanner",
+            "RateLimitPlannerEl",
+            "rate-limit-planner",
+            "parity/ratefid.rs",
+        )
+    }
+}
+
 /// Family B part 8 demos.
 pub(crate) fn demos() -> Vec<Demo> {
     let style = || sel("style", "Style", &["clean", "classic"], "clean");
@@ -1381,6 +1504,7 @@ pub(crate) fn demos() -> Vec<Demo> {
         root_cause_tree_demo(style()),
         tool_access_map_demo(style()),
         scheduled_runs_demo(style()),
+        rate_limit_planner_demo(style()),
         Demo {
             controls: vec![
                 style(),

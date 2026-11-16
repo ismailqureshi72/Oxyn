@@ -76,7 +76,7 @@ affectUI,Profile Menu,https://www.affectui.com/components/profile-menu,Component
 affectUI,Progress Tracker,https://www.affectui.com/components/progress-tracker,Components · Feedback,Free,plan-todo,C11,#41,planned
 affectUI,Project Card,https://www.affectui.com/components/project-card,Components · Cards,Pro,NEW,C11,#41,planned
 affectUI,Prompt Library,https://www.affectui.com/components/prompt-library,Components · Inputs,Pro,composer-slash-mentions,C10,#35,planned
-affectUI,Rate Limit Planner,https://www.affectui.com/components/rate-limit-planner,Components · Agents,Pro,background-jobs,C9,#35,planned
+affectUI,Rate Limit Planner,https://www.affectui.com/components/rate-limit-planner,Components · Agents,Pro,"rate-limit-planner (exact, ref-2 notes, family B part 9), background-jobs",C9,#32,built
 affectUI,Reaction Bar,https://www.affectui.com/components/reaction-bar,Components · Buttons,Free,number-ticker,C4,#23,built
 affectUI,Review Center,https://www.affectui.com/components/review-center,Components · Agents,Pro,"review-center, review-card",,#30,built
 affectUI,Root Cause Tree,https://www.affectui.com/components/root-cause-tree,Components · Agents,Pro,"root-cause-tree (exact, ref-2 notes, family B part 9), trace-view",C7,#32,built
