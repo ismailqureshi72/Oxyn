@@ -61,7 +61,7 @@ fn pal(t: &Theme) -> Pal {
             info_bg: h(0x1D2732),
             info_pill: h(0x22384B),
             warn: h(0xF5B454),
-            warn_bg: h(0x2A241A),
+            warn_bg: h(0x2A241A), // warm-ok: semantic warning tint
             warn_pill: h(0x3E3018),
             band: h(0x232326),
         }

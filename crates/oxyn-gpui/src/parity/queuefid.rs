@@ -55,7 +55,7 @@ fn pal(t: &Theme) -> Pal {
             blue: h(0x6AAEFF),
             blue_bg: h(0x1E2B3D),
             amber: h(0xF5B454),
-            amber_bg: h(0x33281A),
+            amber_bg: h(0x33281A), // warm-ok: semantic warning tint
             violet: h(0xA78BFA),
             teal: h(0x2DD4BF),
             slate: h(0x94A3B8),
