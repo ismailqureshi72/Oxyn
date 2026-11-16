@@ -3,8 +3,8 @@
 //! refused), [`AttachmentChips`] (chips with ring progress, failed and too-big states, Retry and
 //! +N overflow), and two Oxyn originals: [`PolaroidStack`] (image attachments that fan out) and
 //! [`DropLanes`] (a drop target that splits into where the file should go). Models:
-//! `oxyn_core::parity::attachfid`. Styles: `attachfid.css` (`oxfb-`, `oxud-`, `oxac-`, `oxps-`,
-//! `oxdl-`). Timed states end on the CSS animation's end, so no timer is needed.
+//! `oxyn_core::parity::attachfid`. Styles: `attachfid.css` (`oxfic-`, `oxud-`, `oxac-`, `oxps-`,
+//! `oxdrl-`). Timed states end on the CSS animation's end, so no timer is needed.
 
 use dioxus::prelude::*;
 use oxyn_core::parity::attachfid::{
@@ -27,15 +27,15 @@ pub fn FileIcon(
     let bw = 6.0 + badge.len() as f32 * 5.4;
     let image = file_family(&name) == "image";
     rsx! {
-        svg { class: "oxfb", width: "{w}", height: "{size}", view_box: "0 0 32 40", "aria-hidden": "true",
-            path { class: "oxfb-page", d: "M5 1.5h15.5L29.5 10.5v26a2 2 0 0 1-2 2h-22.5a2 2 0 0 1-2-2v-33a2 2 0 0 1 2-2z" }
-            path { class: "oxfb-fold", d: "M20.5 1.5v7a2 2 0 0 0 2 2h7" }
+        svg { class: "oxfic", width: "{w}", height: "{size}", view_box: "0 0 32 40", "aria-hidden": "true",
+            path { class: "oxfic-page", d: "M5 1.5h15.5L29.5 10.5v26a2 2 0 0 1-2 2h-22.5a2 2 0 0 1-2-2v-33a2 2 0 0 1 2-2z" }
+            path { class: "oxfic-fold", d: "M20.5 1.5v7a2 2 0 0 0 2 2h7" }
             if image {
                 rect { x: "8", y: "15", width: "17", height: "13", rx: "2.5", fill: "#{hex}", opacity: ".18" }
                 circle { cx: "12.5", cy: "19", r: "1.9", fill: "#{hex}" }
                 path { d: "M8 26.5 13.5 22l3.5 2.8 3-2.3 5 4", fill: "none", stroke: "#{hex}", stroke_width: "1.8", stroke_linejoin: "round", stroke_linecap: "round" }
             } else {
-                path { class: "oxfb-lines", d: "M9 15h12M9 19h14M9 23h9" }
+                path { class: "oxfic-lines", d: "M9 15h12M9 19h14M9 23h9" }
             }
             rect { x: "0.5", y: "26", width: "{bw}", height: "11", rx: "3", fill: "#{hex}" }
             text { x: "{0.5 + bw / 2.0}", y: "33.9", text_anchor: "middle", font_size: "7.4", font_weight: "700", fill: "#fff",
@@ -515,16 +515,16 @@ pub fn DropLanes(
     let loose: Vec<usize> = (0..n).filter(|i| lo[*i].is_none()).collect();
 
     rsx! {
-        div { class: "oxdl", "data-active": "{active}",
-            div { class: "oxdl-tray",
-                span { class: "oxdl-tl", if loose.is_empty() { "Every file has a place" } else if active { "Now pick a lane" } else { "Drag a file to a lane, or press it" } }
-                div { class: "oxdl-chips",
+        div { class: "oxdrl", "data-active": "{active}",
+            div { class: "oxdrl-tray",
+                span { class: "oxdrl-tl", if loose.is_empty() { "Every file has a place" } else if active { "Now pick a lane" } else { "Drag a file to a lane, or press it" } }
+                div { class: "oxdrl-chips",
                     for i in loose.iter().copied() {
                         {
                             let f = list[i].clone();
                             let on = held() == Some(i);
                             rsx! {
-                                button { key: "{f.name}", class: "oxdl-chip", r#type: "button", draggable: "true", "aria-pressed": "{on}",
+                                button { key: "{f.name}", class: "oxdrl-chip", r#type: "button", draggable: "true", "aria-pressed": "{on}",
                                     "aria-label": "{file_said(&f)}",
                                     ondragstart: move |_| held.set(Some(i)),
                                     ondragend: move |_| over.set(None),
@@ -537,30 +537,30 @@ pub fn DropLanes(
                     }
                 }
             }
-            div { class: "oxdl-lanes",
+            div { class: "oxdrl-lanes",
                 for (l, (key, label, hint)) in LANES.iter().enumerate() {
                     {
                         let inl: Vec<usize> = (0..n).filter(|i| lo[*i] == Some(l)).collect();
                         let cnt = inl.len();
                         rsx! {
-                            div { key: "{key}", class: "oxdl-lane", "data-over": "{over() == Some(l)}", "data-k": "{key}",
+                            div { key: "{key}", class: "oxdrl-lane", "data-over": "{over() == Some(l)}", "data-k": "{key}",
                                 ondragover: move |e: DragEvent| { e.prevent_default(); over.set(Some(l)); },
                                 ondragleave: move |_| over.set(None),
                                 ondrop: move |e: DragEvent| { e.prevent_default(); if let Some(f) = held() { put.call((f, l)); } },
-                                button { class: "oxdl-head", r#type: "button", disabled: !active, "aria-label": "File under {label}",
+                                button { class: "oxdrl-head", r#type: "button", disabled: !active, "aria-label": "File under {label}",
                                     onclick: move |_| if let Some(f) = held() { put.call((f, l)) },
-                                    span { class: "oxdl-ln", "{label}" }
-                                    span { class: "oxdl-n", "{cnt}" }
+                                    span { class: "oxdrl-ln", "{label}" }
+                                    span { class: "oxdrl-n", "{cnt}" }
                                 }
-                                span { class: "oxdl-hint", "{hint}" }
-                                ul { class: "oxdl-in",
+                                span { class: "oxdrl-hint", "{hint}" }
+                                ul { class: "oxdrl-in",
                                     for i in inl.iter().copied() {
                                         {
                                             let nm = names2[i];
                                             rsx! {
-                                                li { key: "{nm}", class: "oxdl-item",
+                                                li { key: "{nm}", class: "oxdrl-item",
                                                     FileIcon { name: nm.to_string(), size: 18.0 }
-                                                    span { class: "oxdl-nm", "{nm}" }
+                                                    span { class: "oxdrl-nm", "{nm}" }
                                                     button { class: "oxac-x", r#type: "button", "aria-label": "Send {nm} back",
                                                         onclick: move |_| { lane_of.write()[i] = None; said.set(format!("{nm} sent back.")); },
                                                         {x_glyph()}

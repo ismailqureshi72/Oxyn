@@ -3,7 +3,7 @@
 //! [`ContextBreakdown`] (a list of kinds that open into what each holds), [`ContextStack`] (an
 //! Oxyn original: the window as a pile of slabs with the auto-compact line) and [`ContextTide`]
 //! (an Oxyn original: a glass whose water rises a turn at a time). Models:
-//! `oxyn_core::parity::ctxvisfid`. Styles: `ctxvisfid.css` (`oxcv-`, `oxcb-`, `oxcs-`, `oxct-`).
+//! `oxyn_core::parity::ctxvisfid`. Styles: `ctxvisfid.css` (`oxcv-`, `oxcb-`, `oxcxs-`, `oxcxt-`).
 //! Chrome uses the neutral `--oxth-*` greys; hue only marks the kinds and the fill level.
 
 use dioxus::prelude::*;
@@ -342,19 +342,19 @@ pub fn ContextStack(
     let line = format!("bottom:{auto}%");
 
     rsx! {
-        div { class: "oxcs", "data-level": "{level}",
-            div { class: "oxcs-head",
-                span { class: "oxcs-title", "Context stack" }
-                span { class: "oxcs-fig", b { "{u}" } " / {l} · {pct}%" }
+        div { class: "oxcxs", "data-level": "{level}",
+            div { class: "oxcxs-head",
+                span { class: "oxcxs-title", "Context stack" }
+                span { class: "oxcxs-fig", b { "{u}" } " / {l} · {pct}%" }
             }
-            div { class: "oxcs-body",
-                div { class: "oxcs-col", role: "img", "aria-label": "{label}", style: "height:{height}px",
-                    div { class: "oxcs-line", style: "{line}", span { "Compacts at {auto}%" } }
+            div { class: "oxcxs-body",
+                div { class: "oxcxs-col", role: "img", "aria-label": "{label}", style: "height:{height}px",
+                    div { class: "oxcxs-line", style: "{line}", span { "Compacts at {auto}%" } }
                     for (i, p) in ps.iter().enumerate() {
                         {
                             let st = format!("{};height:{}px", kind_style(p.kind, mono), hs[i]);
                             rsx! {
-                                div { key: "{p.kind}", class: "oxcs-slab oxcv-k", "data-kind": "{p.kind}", "data-hov": "{hov() == Some(i)}", style: "{st}",
+                                div { key: "{p.kind}", class: "oxcxs-slab oxcv-k", "data-kind": "{p.kind}", "data-hov": "{hov() == Some(i)}", style: "{st}",
                                     onpointerenter: move |_| hov.set(Some(i)),
                                     onpointerleave: move |_| hov.set(None),
                                 }
@@ -362,26 +362,26 @@ pub fn ContextStack(
                         }
                     }
                 }
-                ul { class: "oxcs-legend",
+                ul { class: "oxcxs-legend",
                     for (i, p) in ps.iter().enumerate().rev() {
                         {
                             let st = kind_style(p.kind, mono);
                             let t = fmt_tokens(p.tokens);
                             rsx! {
-                                li { key: "{p.kind}", class: "oxcs-lg", "data-hov": "{hov() == Some(i)}",
+                                li { key: "{p.kind}", class: "oxcxs-lg", "data-hov": "{hov() == Some(i)}",
                                     onpointerenter: move |_| hov.set(Some(i)),
                                     onpointerleave: move |_| hov.set(None),
-                                    i { class: "oxcs-sw oxcv-k", style: "{st}" }
-                                    span { class: "oxcs-ln", "{p.label}" }
-                                    span { class: "oxcs-lt", "{t}" }
+                                    i { class: "oxcxs-sw oxcv-k", style: "{st}" }
+                                    span { class: "oxcxs-ln", "{p.label}" }
+                                    span { class: "oxcxs-lt", "{t}" }
                                 }
                             }
                         }
                     }
                 }
             }
-            div { class: "oxcs-acts",
-                button { class: "oxcs-b", r#type: "button",
+            div { class: "oxcxs-acts",
+                button { class: "oxcxs-b", r#type: "button",
                     onclick: move |_| {
                         let mut v = list();
                         ctx_add_turn(&mut v, per_turn);
@@ -396,7 +396,7 @@ pub fn ContextStack(
                     },
                     "Add a turn"
                 }
-                button { class: "oxcs-b", r#type: "button", disabled: squeezed,
+                button { class: "oxcxs-b", r#type: "button", disabled: squeezed,
                     onclick: move |_| {
                         let v = ctx_compact(&list(), 180);
                         note.set(format!("Compacted. {}", ctx_said(ctx_used(&v), limit)));
@@ -405,12 +405,12 @@ pub fn ContextStack(
                     },
                     "Compact"
                 }
-                button { class: "oxcs-b oxcs-ghost", r#type: "button",
+                button { class: "oxcxs-b oxcxs-ghost", r#type: "button",
                     onclick: move |_| { list.set(first.clone()); note.set("Reset.".into()); },
                     "Reset"
                 }
             }
-            p { class: "oxcs-note", role: "status", "aria-live": "polite", "{note}" }
+            p { class: "oxcxs-note", role: "status", "aria-live": "polite", "{note}" }
         }
     }
 }
@@ -462,24 +462,24 @@ pub fn ContextTide(
     let squeezed = list().iter().any(|p| p.kind == "summary");
 
     rsx! {
-        div { class: "oxct", "data-level": "{level}",
-            div { class: "oxct-glass", role: "meter", "aria-label": "Context used", "aria-valuemin": "0", "aria-valuemax": "100",
+        div { class: "oxcxt", "data-level": "{level}",
+            div { class: "oxcxt-glass", role: "meter", "aria-label": "Context used", "aria-valuemin": "0", "aria-valuemax": "100",
                 "aria-valuenow": "{pct}", "aria-valuetext": "{u} of {l} tokens",
-                div { class: "oxct-water", style: "{water}",
-                    svg { class: "oxct-wave", view_box: "0 0 240 12", preserve_aspect_ratio: "none", "aria-hidden": "true",
+                div { class: "oxcxt-water", style: "{water}",
+                    svg { class: "oxcxt-wave", view_box: "0 0 240 12", preserve_aspect_ratio: "none", "aria-hidden": "true",
                         path { d: "M0 6 Q15 0 30 6 T60 6 T90 6 T120 6 T150 6 T180 6 T210 6 T240 6 V12 H0Z" }
                     }
                 }
-                div { class: "oxct-mark", style: "bottom:75%", span { "75" } }
-                div { class: "oxct-mark oxct-auto", style: "{mark}", span { "{auto}" } }
+                div { class: "oxcxt-mark", style: "bottom:75%", span { "75" } }
+                div { class: "oxcxt-mark oxcxt-auto", style: "{mark}", span { "{auto}" } }
             }
-            div { class: "oxct-side",
-                span { class: "oxct-k", "Context" }
-                for k in std::iter::once(pct) { span { key: "{k}", class: "oxct-pct", "{k}%" } }
-                span { class: "oxct-of", "{u} of {l} tokens" }
-                span { class: "oxct-turns", "{turns}" }
-                div { class: "oxct-acts",
-                    button { class: "oxcs-b", r#type: "button",
+            div { class: "oxcxt-side",
+                span { class: "oxcxt-k", "Context" }
+                for k in std::iter::once(pct) { span { key: "{k}", class: "oxcxt-pct", "{k}%" } }
+                span { class: "oxcxt-of", "{u} of {l} tokens" }
+                span { class: "oxcxt-turns", "{turns}" }
+                div { class: "oxcxt-acts",
+                    button { class: "oxcxs-b", r#type: "button",
                         onclick: move |_| {
                             let mut v = list();
                             ctx_add_turn(&mut v, per_turn);
@@ -494,7 +494,7 @@ pub fn ContextTide(
                         },
                         "Send a turn"
                     }
-                    button { class: "oxcs-b", r#type: "button", disabled: squeezed,
+                    button { class: "oxcxs-b", r#type: "button", disabled: squeezed,
                         onclick: move |_| {
                             let v = ctx_compact(&list(), 180);
                             note.set(format!("Drained. {}", ctx_said(ctx_used(&v), limit)));
@@ -503,7 +503,7 @@ pub fn ContextTide(
                         },
                         "Compact"
                     }
-                    button { class: "oxcs-b oxcs-ghost", r#type: "button",
+                    button { class: "oxcxs-b oxcxs-ghost", r#type: "button",
                         onclick: move |_| { list.set(first.clone()); note.set("Reset.".into()); },
                         "Reset"
                     }
