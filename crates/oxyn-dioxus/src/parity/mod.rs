@@ -17,6 +17,7 @@ mod delegatefid;
 mod diff;
 mod dtreefid;
 mod fallbackfid;
+mod fanfid;
 mod fidelity;
 mod fields;
 mod graphfid;
@@ -70,6 +71,7 @@ pub use delegatefid::DelegateBoard;
 pub use diff::{ChangeSummary, CodeSuggestion, DiffTable, DiffTimeline, DiffViewer, InlineDiff};
 pub use dtreefid::DecisionTree;
 pub use fallbackfid::FallbackChain;
+pub use fanfid::FanoutGrid;
 pub use fidelity::{
     AgentCommentThread, AgentOrb, ChatComposer, CommentsPanel, FileTypeIcon, PhotoAvatar, Portrait,
     ThreadNote,

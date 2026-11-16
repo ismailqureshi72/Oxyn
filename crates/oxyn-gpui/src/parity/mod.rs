@@ -27,6 +27,7 @@ mod cursorsfid;
 mod delegatefid;
 mod dtreefid;
 mod fallbackfid;
+mod fanfid;
 mod fidelity;
 mod fields;
 mod graphfid;
@@ -75,6 +76,7 @@ pub use cursorsfid::AgentCursorsEl;
 pub use delegatefid::DelegateBoardEl;
 pub use dtreefid::DecisionTreeEl;
 pub use fallbackfid::FallbackChainEl;
+pub use fanfid::FanoutGridEl;
 pub use fidelity::{AgentCommentThreadEl, ChatComposerEl, CommentsPanelEl, ThreadMsg, file_badge};
 pub use fields::{
     AiComposerEl, AvatarUploadEl, ContextFieldEl, ContextGridEl, ElasticSliderEl, FileDropzoneEl,

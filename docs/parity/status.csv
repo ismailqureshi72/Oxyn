@@ -55,7 +55,7 @@ affectUI,Email Draft,https://www.affectui.com/components/email-draft,Components 
 affectUI,Empty State,https://www.affectui.com/components/empty-state,Components · Feedback,Free,display-atoms,C4,#23,built
 affectUI,Experiment Card,https://www.affectui.com/components/experiment-card,Components · Data display,Pro,genui-blocks,C8,#35,planned
 affectUI,Fallback Chain,https://www.affectui.com/components/fallback-chain,Components · Agents,Pro,"fallback-chain (exact, ref-1 notes, family B part 8), trace-view",C7,#32,built
-affectUI,Fan-out Grid,https://www.affectui.com/components/fan-out-grid,Components · Agents,Pro,fanout-grid,,#34,planned
+affectUI,Fan-out Grid,https://www.affectui.com/components/fan-out-grid,Components · Agents,Pro,"fanout-grid (exact, ref-3 notes, family B part 9)",C7,#32,built
 affectUI,Filter Menu,https://www.affectui.com/components/filter-menu,Components · Inputs,Free,filter-menu,C2,#25,built
 affectUI,Icon Button,https://www.affectui.com/components/icon-button,Components · Buttons,Free,icon-states,,#42,planned
 affectUI,Inline Diff,https://www.affectui.com/components/inline-diff,Components · Agents,Pro,diff-viewer,C8,#35,planned
