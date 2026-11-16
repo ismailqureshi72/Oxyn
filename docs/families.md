@@ -73,10 +73,9 @@ Files, images and links going into a prompt.
 
 **Existing:** Attachments (`attachments`), Attachment strip (`attachment-strip`), File dropzone (`file-dropzone`), Avatar upload (`avatar-upload`), Link unfurl (`link-unfurl`), Document extraction (`document-extraction`)
 
+**Built in #40 (variants 2):** Upload dropzone (`upload-dropzone`), Attachment chips (`attachment-chips`), Polaroid stack (`polaroid-stack`), Drop lanes (`drop-lanes`)
+
 **New variants to build:**
-- Polaroid stack: images fan out on hover
-- Ring upload: BoardUI-style progress ring per file
-- Upload dropzone with scan line and type icons
 - Paper clip tray: files dangle from a clip on the composer edge
 - Inline chips that expand into a mini preview sheet
 - Storage scanner style: sunburst of what you attach most

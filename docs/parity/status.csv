@@ -671,3 +671,7 @@ Oxyn,Storage · Storage meter,,Storage,Free,storage-meter,variants-2,#40,built
 Oxyn,Storage · Storage cleanup,,Storage,Free,storage-cleanup,variants-2,#40,built
 Oxyn,Storage · Storage waffle,,Storage,Free,storage-waffle,variants-2,#40,built
 Oxyn,Storage · Storage forecast,,Storage,Free,storage-forecast,variants-2,#40,built
+Oxyn,Attachments · Upload dropzone,,Attachments,Free,upload-dropzone,variants-2,#40,built
+Oxyn,Attachments · Attachment chips,,Attachments,Free,attachment-chips,variants-2,#40,built
+Oxyn,Attachments · Polaroid stack,,Attachments,Free,polaroid-stack,variants-2,#40,built
+Oxyn,Attachments · Drop lanes,,Attachments,Free,drop-lanes,variants-2,#40,built
