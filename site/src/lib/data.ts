@@ -180,7 +180,7 @@ export function parityItems(section: string) {
 }
 
 // ── Library v2 (plan #29): eight categories + screens, affectUI-style pages ─────────────────
-export type Group = { slug: string; name: string; blurb: string };
+export type Group = { slug: string; name: string; blurb: string; family?: boolean };
 export const groups = GROUPS as Group[];
 export const screens = demos.filter((d) => isScreen(d));
 export const components = demos.filter((d) => !isScreen(d));
