@@ -61,6 +61,23 @@ pub const PRIMITIVES_CSS: &str = concat!(
     include_str!("../parity/merge.css"),
     include_str!("../parity/fidelity.css"),
     include_str!("../parity/chatfid.css"),
+    include_str!("../parity/answers.css"),
+    include_str!("../parity/agentsfid.css"),
+    include_str!("../parity/crewfid.css"),
+    include_str!("../parity/cursorsfid.css"),
+    include_str!("../parity/graphfid.css"),
+    include_str!("../parity/handofffid.css"),
+    include_str!("../parity/lanesfid.css"),
+    include_str!("../parity/ledgerfid.css"),
+    include_str!("../parity/monitorfid.css"),
+    include_str!("../parity/queuefid.css"),
+    include_str!("../parity/recapfid.css"),
+    include_str!("../parity/autonomyfid.css"),
+    include_str!("../parity/awayfid.css"),
+    include_str!("../parity/collabfid.css"),
+    include_str!("../parity/ctxmapfid.css"),
+    include_str!("../parity/costfid.css"),
+    include_str!("../parity/seqfid.css"),
     include_str!("polish.css")
 );
 

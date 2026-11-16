@@ -18,6 +18,9 @@ mod inputs;
 mod loaders;
 mod navigation;
 mod overlays;
+mod parity_agents;
+mod parity_agents2;
+mod parity_answers;
 mod parity_approvals;
 mod parity_diff;
 mod parity_fidelity;
@@ -153,6 +156,9 @@ pub const CATEGORIES: [Category; 20] = [
 pub fn catalog() -> Vec<Demo> {
     let mut v = Vec::new();
     v.extend(parity_fidelity::demos());
+    v.extend(parity_answers::demos());
+    v.extend(parity_agents::demos());
+    v.extend(parity_agents2::demos());
     v.extend(composer::demos());
     v.extend(composer_parts::demos());
     v.extend(shells::demos());
@@ -181,7 +187,17 @@ pub fn catalog() -> Vec<Demo> {
     v.extend(search::demos());
     v.extend(chat::demos());
     v.extend(navigation::demos());
+    // Earlier Oxyn demos that now live on an affectUI page as its "Oxyn extra" variant.
+    v.retain(|d| !d.slug.ends_with("-oxyn"));
     v
+}
+
+/// An earlier Oxyn demo by slug, shown inside a fidelity page as its "Oxyn extra".
+pub(crate) fn legacy_demo(slug: &str) -> Option<Demo> {
+    chat::demos()
+        .into_iter()
+        .chain(parity_text::demos())
+        .find(|d| d.slug == slug)
 }
 
 pub(crate) fn sel(

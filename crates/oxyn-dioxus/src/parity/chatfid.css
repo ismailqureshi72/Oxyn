@@ -43,12 +43,11 @@
 .oxmq-n{display:flex;align-items:center;gap:6px;font-weight:600;font-size:13px;white-space:nowrap}
 .oxmq-d{font-size:12px;color:var(--oxf-ph,#8A8A8E);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .oxmq-ck{display:grid;color:var(--oxq-blue)}
-.oxmq-opt:not([data-lit="true"]) .oxmq-n,.oxmq-opt:not([data-lit="true"]) .oxmq-tile{opacity:.72}
 .oxmq-dash{flex:none;display:flex;gap:2px;width:40px}
 .oxmq-dash+.oxmq-dash{margin-left:-4px}
 .oxmq-dash i{flex:1;height:3px;border-radius:1.5px;background:var(--oxq-dash);transition:background .18s}
 .oxmq-dash i[data-on="true"]{background:var(--oxq-dash-on)}
-.oxmq-opt[data-lit="true"] .oxmq-dash i[data-on="true"]{background:var(--oxq-blue)}
+.oxmq-opt[data-lit="true"] .oxmq-dash i[data-on="true"],.oxmq-opt[aria-selected="true"] .oxmq-dash i[data-on="true"]{background:var(--oxq-blue)}
 .oxmq-opt[data-lit="true"] .oxmq-dash i:nth-child(2){transition-delay:.03s}.oxmq-opt[data-lit="true"] .oxmq-dash i:nth-child(3){transition-delay:.06s}.oxmq-opt[data-lit="true"] .oxmq-dash i:nth-child(4){transition-delay:.09s}.oxmq-opt[data-lit="true"] .oxmq-dash i:nth-child(5){transition-delay:.12s}
 .oxmq-varies{width:128px;text-align:center;font-size:12px;color:var(--oxf-ph,#8A8A8E)}
 .oxmq-sep{height:1px;margin:6px -6px;background:var(--oxf-line2)}

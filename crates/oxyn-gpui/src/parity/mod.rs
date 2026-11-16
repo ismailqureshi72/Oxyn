@@ -13,35 +13,71 @@ use oxyn_tokens::{ColorRole, Theme};
 
 use crate::hsla;
 
+mod agentsfid;
+mod answers;
 mod approvals;
+mod autonomyfid;
+mod awayfid;
 mod chatfid;
+mod collabfid;
+mod costfid;
+mod crewfid;
+mod ctxmapfid;
+mod cursorsfid;
 mod fidelity;
 mod fields;
+mod graphfid;
+mod handofffid;
 mod home;
 mod ime;
+mod lanesfid;
+mod ledgerfid;
 mod merge;
+mod monitorfid;
+mod queuefid;
+mod recapfid;
 mod review;
 mod run;
+mod seqfid;
 mod text;
 mod tools;
 
+pub use agentsfid::{AgentFindingsEl, AgentInboxEl};
+pub use answers::{
+    AnswerCardEl, CitedAnswerEl, MessageActionsEl, ThinkingPanelEl, ThinkingPillEl,
+    WritingAssistantEl,
+};
 pub use approvals::{
     AgentApprovalsEl, ApprovalGatesEl, ApprovalPagerEl, ConfirmMorphEl, ConfirmPopoverEl,
     HoldConfirmEl, PermissionRequestEl,
 };
+pub use autonomyfid::AutonomyDialEl;
+pub use awayfid::AwaySummaryEl;
 pub use chatfid::{AgentRunPanelEl, ModelPickerMenuEl};
+pub use collabfid::CollabStreamEl;
+pub use costfid::CostWaterfallEl;
+pub use crewfid::AgentCrewEl;
+pub use ctxmapfid::ContextMapEl;
+pub use cursorsfid::AgentCursorsEl;
 pub use fidelity::{AgentCommentThreadEl, ChatComposerEl, CommentsPanelEl, ThreadMsg, file_badge};
 pub use fields::{
     AiComposerEl, AvatarUploadEl, ContextFieldEl, ContextGridEl, ElasticSliderEl, FileDropzoneEl,
     GaugeEl, ModelMenuEl, ModelPillEl, MorphSelectEl, NumberFieldEl, Pick, RichTextEl,
     RunControlsEl, ScrubInputEl, SplitBarEl, UsageMeterEl,
 };
+pub use graphfid::AgentGraphEl;
+pub use handofffid::AgentHandoffEl;
 pub use home::{
     ActivityHeatmapEl, ActivityHomeEl, AttachmentStripEl, DocGridEl, ExperimentGridEl,
     PollingCostEl, RunModeMenuEl, ThreadListEl, TokenUsageChartEl,
 };
 pub use ime::{ImeEvent, ImeInput, bind_ime_keys};
+pub use lanesfid::AgentLanesEl;
+pub use ledgerfid::AgentLedgerEl;
 pub use merge::{ConflictRadarEl, MergeAct, MergeConflictEl, RadarAct};
+pub use monitorfid::AgentMonitorEl;
+pub use queuefid::AgentQueueEl;
+pub use recapfid::AgentRecapEl;
 pub use review::{
     AiInlineEditEl, ChangeSummaryEl, CodeSuggestionEl, CommentThreadEl, DiffTableEl,
     DiffTimelineEl, DiffViewerEl, HunkAct, IdAct, ImageCompareEl, InlineDiffEl, ReviewCardEl,
@@ -52,6 +88,7 @@ pub use run::{
     ChecklistEl, CountdownEl, CounterEl, FleetEl, FlowStepperEl, OrchestratorEl, ReadinessEl,
     TaskRowsEl, TreeTableEl,
 };
+pub use seqfid::AgentSequenceEl;
 pub use text::{LoadingStateEl, ShimmerEl, SlotTextEl, ThinkingLoaderEl};
 pub use tools::{
     ExpandableCardEl, JsonViewerEl, LinkUnfurlEl, ToolCallCardEl, ToolCallEl, ToolChipsEl,
