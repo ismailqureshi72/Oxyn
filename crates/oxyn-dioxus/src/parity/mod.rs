@@ -35,6 +35,7 @@ mod planfid;
 mod queuefid;
 mod recapfid;
 mod review;
+mod rootfid;
 mod run;
 mod runningfid;
 mod seqfid;
@@ -89,6 +90,7 @@ pub use planfid::PlanVsActual;
 pub use queuefid::AgentQueue;
 pub use recapfid::AgentRecap;
 pub use review::{AiInlineEdit, CommentThread, ImageCompare, ReviewCard, ReviewCenter};
+pub use rootfid::RootCauseTree;
 pub use run::{
     ActivityFeed, AgentFleet, AgentOrchestrator, AgentPlan, AgentRun, AgentStatus, AgentTrail,
     AgentTree, AnimatedCounter, Countdown, FlowStepper, OnboardingChecklist, ReleaseReadiness,
