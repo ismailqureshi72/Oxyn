@@ -5,7 +5,8 @@
 use dioxus::prelude::*;
 use oxyn_core::ClockMs;
 use oxyn_dioxus::{
-    AppShellScreen, ChatAgentsScreen, ChatOverviewScreen, ChatStartScreen, RailShellScreen,
+    AppShellScreen, ChatAgentsScreen, ChatOverviewScreen, ChatProgressScreen, ChatRailScreen,
+    ChatRunScreen, ChatStartScreen, RailShellScreen,
 };
 
 use super::{Code, mk, sel, var};
@@ -460,6 +461,217 @@ fn chat_agents_demo() -> Demo {
     }
 }
 
+// ---------- AI Chat · Double sidebar ----------
+
+fn chat_double_sidebar(v: &Vals, now: ClockMs) -> Element {
+    let (st, lay, key) = frame(v);
+    rsx! {
+        div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
+            ChatRailScreen { layout: lay, state: st, now }
+        }
+    }
+}
+
+fn chat_double_sidebar_code(v: &Vals) -> String {
+    code("ChatRailScreen", v, true)
+}
+
+fn chat_double_sidebar_demo() -> Demo {
+    Demo {
+        controls: controls("inset"),
+        variants: vec![
+            var("sample", "Sample data in the Inset frame.", &[]),
+            var(
+                "flat",
+                "The same screen in the Flat frame.",
+                &[("frame", "Flat")],
+            ),
+            var(
+                "loading",
+                "Skeletons where the data will land.",
+                &[("data", "Loading")],
+            ),
+            var(
+                "empty",
+                "Nothing yet: each region says what will appear.",
+                &[("data", "Empty")],
+            ),
+        ],
+        render: chat_double_sidebar,
+        code: chat_double_sidebar_code,
+        keyboard: vec![
+            ("Tab", "Sidebar, page, then the work area"),
+            ("← / → on a hairline", "Resize the sidebar or work area"),
+            ("Escape", "Close an open menu; clear search"),
+            ("Arrow keys in the sheet", "Move the selected cell"),
+            ("Enter in Contents", "Keep the edit, move down"),
+        ],
+        a11y: vec![
+            "The sidebar is a labelled nav; the open chat has aria-current and unread chats say so.",
+            "Menus open from a trigger that reports aria-expanded; their items are menuitemradio and Escape shuts them.",
+            "Hairlines are separators with a value and arrow keys; skeletons are hidden from screen readers.",
+        ],
+        responsive: vec![
+            "Under 860 px of width the work area becomes a sheet opened from the top bar.",
+            "Under 640 px the sidebar slides in from the menu button and the composer drops its labels.",
+        ],
+        height: 660,
+        live: true,
+        align: Align::Start,
+        ..mk(
+            "chat-double-sidebar",
+            "AI Chat · Double sidebar",
+            CAT,
+            "Rail and chats column, a plain chat with web search folded into one line per answer, and artifacts on the right: an editable sheet and the sources.",
+            "ChatRailScreen",
+            "ChatRailEl",
+            "chat-double-sidebar",
+            "parity/screensfid.rs",
+        )
+    }
+}
+
+// ---------- AI Chat · Progress ----------
+
+fn chat_progress(v: &Vals, now: ClockMs) -> Element {
+    let (st, lay, key) = frame(v);
+    rsx! {
+        div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
+            ChatProgressScreen { layout: lay, state: st, now }
+        }
+    }
+}
+
+fn chat_progress_code(v: &Vals) -> String {
+    code("ChatProgressScreen", v, true)
+}
+
+fn chat_progress_demo() -> Demo {
+    Demo {
+        controls: controls("inset"),
+        variants: vec![
+            var("sample", "Sample data in the Inset frame.", &[]),
+            var(
+                "flat",
+                "The same screen in the Flat frame.",
+                &[("frame", "Flat")],
+            ),
+            var(
+                "loading",
+                "Skeletons where the data will land.",
+                &[("data", "Loading")],
+            ),
+            var(
+                "empty",
+                "Nothing yet: each region says what will appear.",
+                &[("data", "Empty")],
+            ),
+        ],
+        render: chat_progress,
+        code: chat_progress_code,
+        keyboard: vec![
+            ("Tab", "Sidebar, page, then the work area"),
+            ("← / → on a hairline", "Resize the sidebar or work area"),
+            ("Escape", "Close an open menu; clear search"),
+            ("Enter / Space on a tool card", "Open its input and output"),
+        ],
+        a11y: vec![
+            "The sidebar is a labelled nav; the open chat has aria-current and unread chats say so.",
+            "Menus open from a trigger that reports aria-expanded; their items are menuitemradio and Escape shuts them.",
+            "Hairlines are separators with a value and arrow keys; skeletons are hidden from screen readers.",
+        ],
+        responsive: vec![
+            "Under 860 px of width the work area becomes a sheet opened from the top bar.",
+            "Under 640 px the sidebar slides in from the menu button and the composer drops its labels.",
+        ],
+        height: 660,
+        live: true,
+        align: Align::Start,
+        ..mk(
+            "chat-progress",
+            "AI Chat · Progress",
+            CAT,
+            "A chat whose tool calls open into cards, with the work beside it: steps ticking off, what it made and the uploads, apps, web pages and skills it used.",
+            "ChatProgressScreen",
+            "ChatProgressEl",
+            "chat-progress",
+            "parity/screensfid.rs",
+        )
+    }
+}
+
+// ---------- AI Chat · Run ----------
+
+fn chat_run(v: &Vals, now: ClockMs) -> Element {
+    let (st, lay, key) = frame(v);
+    rsx! {
+        div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
+            ChatRunScreen { layout: lay, state: st, now }
+        }
+    }
+}
+
+fn chat_run_code(v: &Vals) -> String {
+    code("ChatRunScreen", v, true)
+}
+
+fn chat_run_demo() -> Demo {
+    Demo {
+        controls: controls("inset"),
+        variants: vec![
+            var("sample", "Sample data in the Inset frame.", &[]),
+            var(
+                "flat",
+                "The same screen in the Flat frame.",
+                &[("frame", "Flat")],
+            ),
+            var(
+                "loading",
+                "Skeletons where the data will land.",
+                &[("data", "Loading")],
+            ),
+            var(
+                "empty",
+                "Nothing yet: each region says what will appear.",
+                &[("data", "Empty")],
+            ),
+        ],
+        render: chat_run,
+        code: chat_run_code,
+        keyboard: vec![
+            ("Tab", "Sidebar, page, then the work area"),
+            ("← / → on a hairline", "Resize the sidebar or work area"),
+            ("Escape", "Close an open menu; clear search"),
+            ("Enter on a step", "Rename it"),
+            ("Alt + ↑ / ↓", "Move a step"),
+            ("Delete", "Remove a step"),
+            ("Y / N in the draft", "Accept or reject the suggestion"),
+        ],
+        a11y: vec![
+            "The sidebar is a labelled nav; the open chat has aria-current and unread chats say so.",
+            "Menus open from a trigger that reports aria-expanded; their items are menuitemradio and Escape shuts them.",
+            "Hairlines are separators with a value and arrow keys; skeletons are hidden from screen readers.",
+        ],
+        responsive: vec![
+            "Under 860 px of width the work area becomes a sheet opened from the top bar.",
+            "Under 640 px the sidebar slides in from the menu button and the composer drops its labels.",
+        ],
+        height: 660,
+        live: true,
+        align: Align::Start,
+        ..mk(
+            "chat-run",
+            "AI Chat · Run",
+            CAT,
+            "One agent run: an editable plan ticking through its steps, live time and cost, a step that waits for your yes, and the draft with suggestions to accept or reject.",
+            "ChatRunScreen",
+            "ChatRunEl",
+            "chat-run",
+            "parity/screensfid.rs",
+        )
+    }
+}
+
 pub(crate) fn demos() -> Vec<Demo> {
     vec![
         shell_inset_demo(),
@@ -468,5 +680,8 @@ pub(crate) fn demos() -> Vec<Demo> {
         chat_start_demo(),
         chat_overview_demo(),
         chat_agents_demo(),
+        chat_double_sidebar_demo(),
+        chat_progress_demo(),
+        chat_run_demo(),
     ]
 }

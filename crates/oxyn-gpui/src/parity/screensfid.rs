@@ -9,8 +9,8 @@ use gpui::{
     div, prelude::*, px,
 };
 use oxyn_core::parity::screensfid::{
-    PERSON, PERSON_INI, ScreenState, ShellLayout, WORKSPACE, ago, angles, crew, heat, projects,
-    split_pinned, starters, threads,
+    PERSON, PERSON_INI, ScreenState, ShellLayout, StepState, WORKSPACE, ago, angles, crew, heat,
+    progress_steps, projects, run_plan, sheet, split_pinned, starters, step_state, threads,
 };
 use oxyn_tokens::Theme;
 
@@ -363,6 +363,18 @@ screen_el!(
 screen_el!(
     /// AI Chat / Agents.
     ChatAgentsEl
+);
+screen_el!(
+    /// AI Chat / Double sidebar.
+    ChatRailEl
+);
+screen_el!(
+    /// AI Chat / Progress.
+    ChatProgressEl
+);
+screen_el!(
+    /// AI Chat / Run.
+    ChatRunEl
 );
 
 fn workspace(p: &ThPal, st: ScreenState) -> Div {
@@ -773,6 +785,255 @@ impl RenderOnce for ChatAgentsEl {
             sidebar(&p, self.state, &self.act, false),
             page(&p, "Ads for the overshirt", body),
             Some(brief),
+        )
+    }
+}
+
+impl RenderOnce for ChatRailEl {
+    fn render(self, _: &mut Window, _: &mut App) -> impl IntoElement {
+        let p = th_pal(self.theme);
+        let body = match self.state {
+            ScreenState::Loading => skel(&p, 8).p(px(20.)),
+            ScreenState::Empty => empty(
+                &p,
+                "Ask with the web",
+                "Searches fold into one line you can open.",
+            ),
+            ScreenState::Sample => div()
+                .p(px(20.))
+                .flex()
+                .flex_col()
+                .gap(px(14.))
+                .child(msg(&p, true, "Compare five fabrics for the overshirt."))
+                .child(
+                    div()
+                        .h(px(28.))
+                        .w(px(180.))
+                        .px(px(10.))
+                        .flex()
+                        .items_center()
+                        .rounded(px(14.))
+                        .border_1()
+                        .border_color(p.line)
+                        .text_color(p.mute)
+                        .child("Ran 3 searches · 4.1s"),
+                )
+                .child(msg(
+                    &p,
+                    false,
+                    "Washed linen and hemp twill are the sturdiest; organic cotton is cheapest.",
+                )),
+        };
+        let mut grid = div()
+            .flex()
+            .flex_col()
+            .border_1()
+            .border_color(p.line)
+            .rounded(px(9.))
+            .overflow_hidden();
+        if self.state == ScreenState::Sample {
+            for (r, rowv) in sheet().into_iter().enumerate() {
+                let mut tr = div().flex();
+                for v in rowv {
+                    tr = tr.child(
+                        div()
+                            .w(px(76.))
+                            .h(px(26.))
+                            .px(px(6.))
+                            .flex()
+                            .items_center()
+                            .border_r_1()
+                            .border_b_1()
+                            .border_color(p.line)
+                            .when(r == 0, |d| d.font_weight(FontWeight::SEMIBOLD))
+                            .text_size(px(11.5))
+                            .overflow_hidden()
+                            .child(v),
+                    );
+                }
+                grid = grid.child(tr);
+            }
+        }
+        frame(
+            self.theme,
+            self.layout,
+            rail_left(&p, self.state),
+            page(&p, "Venue shortlist for the offsite", body),
+            Some(div().child(gh(&p, "fabric-compare.csv")).child(grid)),
+        )
+    }
+}
+
+impl RenderOnce for ChatProgressEl {
+    fn render(self, _: &mut Window, _: &mut App) -> impl IntoElement {
+        let p = th_pal(self.theme);
+        let body = match self.state {
+            ScreenState::Loading => skel(&p, 8).p(px(20.)),
+            ScreenState::Empty => empty(
+                &p,
+                "Ask for something that takes a few steps",
+                "Each step and tool shows as it goes.",
+            ),
+            ScreenState::Sample => div()
+                .p(px(20.))
+                .flex()
+                .flex_col()
+                .gap(px(10.))
+                .child(msg(
+                    &p,
+                    true,
+                    "Three people start Monday. Plan their first week.",
+                ))
+                .child(
+                    row(
+                        &p,
+                        "wiki.search · Looked up the first-week pages".to_string(),
+                        "1.8s".to_string(),
+                        false,
+                    )
+                    .border_1()
+                    .border_color(p.line),
+                )
+                .child(
+                    row(
+                        &p,
+                        "drive.read · Read the intake form".to_string(),
+                        "0.9s".to_string(),
+                        false,
+                    )
+                    .border_1()
+                    .border_color(p.line),
+                )
+                .child(msg(&p, false, "Here is the week at a glance.")),
+        };
+        let mut steps = div()
+            .flex()
+            .flex_col()
+            .gap(px(6.))
+            .child(div().font_weight(FontWeight::SEMIBOLD).child("Progress"));
+        if self.state == ScreenState::Sample {
+            for (i, s) in progress_steps().into_iter().enumerate() {
+                let k = step_state(i, 3);
+                steps = steps.child(
+                    div()
+                        .flex()
+                        .gap(px(8.))
+                        .items_center()
+                        .child(
+                            div()
+                                .w(px(16.))
+                                .h(px(16.))
+                                .rounded(px(8.))
+                                .border_1()
+                                .border_color(p.fg2)
+                                .when(k == StepState::Done, |d| d.bg(p.fg)),
+                        )
+                        .text_color(if k == StepState::Pending {
+                            p.mute
+                        } else {
+                            p.fg
+                        })
+                        .child(s),
+                );
+            }
+        }
+        frame(
+            self.theme,
+            self.layout,
+            sidebar(&p, self.state, &self.act, false),
+            page(&p, "Plan the new starters' week", body),
+            Some(steps),
+        )
+    }
+}
+
+impl RenderOnce for ChatRunEl {
+    fn render(self, _: &mut Window, _: &mut App) -> impl IntoElement {
+        let p = th_pal(self.theme);
+        let body = match self.state {
+            ScreenState::Loading => skel(&p, 10).p(px(20.)),
+            ScreenState::Empty => empty(
+                &p,
+                "No runs yet",
+                "Give an agent a goal; its plan shows up here.",
+            ),
+            ScreenState::Sample => {
+                let mut plan = div()
+                    .flex()
+                    .flex_col()
+                    .border_1()
+                    .border_color(p.line)
+                    .rounded(px(12.));
+                for (i, s) in run_plan().into_iter().enumerate() {
+                    let k = step_state(i, 2);
+                    plan = plan.child(
+                        div()
+                            .h(px(46.))
+                            .px(px(12.))
+                            .flex()
+                            .items_center()
+                            .gap(px(10.))
+                            .border_b_1()
+                            .border_color(p.line)
+                            .child(
+                                div()
+                                    .w(px(10.))
+                                    .h(px(10.))
+                                    .rounded(px(5.))
+                                    .border_1()
+                                    .border_color(p.fg)
+                                    .when(k == StepState::Done, |d| d.bg(p.fg)),
+                            )
+                            .child(div().flex_1().child(s.title))
+                            .child(div().text_size(px(11.5)).text_color(p.fg2).child(s.tool))
+                            .child(
+                                div()
+                                    .w(px(70.))
+                                    .text_size(px(12.))
+                                    .text_color(p.mute)
+                                    .child(k.label()),
+                            ),
+                    );
+                }
+                div()
+                    .p(px(20.))
+                    .flex()
+                    .flex_col()
+                    .gap(px(12.))
+                    .child(
+                        div()
+                            .text_size(px(20.))
+                            .font_weight(FontWeight::SEMIBOLD)
+                            .child("Write the November member update"),
+                    )
+                    .child(
+                        div()
+                            .flex()
+                            .gap(px(8.))
+                            .child("Steps 2/5")
+                            .child("Tool calls 5")
+                            .child("Time 0:17")
+                            .child("Cost $0.10"),
+                    )
+                    .child(plan)
+            }
+        };
+        let side = div()
+            .flex()
+            .flex_col()
+            .gap(px(8.))
+            .child(div().font_weight(FontWeight::SEMIBOLD).child("Draft"))
+            .child(
+                div()
+                    .text_color(p.fg2)
+                    .child("In October membership grew 18% · we expect · by 12 December"),
+            );
+        frame(
+            self.theme,
+            self.layout,
+            sidebar(&p, self.state, &self.act, true),
+            page(&p, "Runs / Member update", body),
+            Some(side),
         )
     }
 }

@@ -13,8 +13,8 @@
 use dioxus::prelude::*;
 use oxyn_core::ClockMs;
 use oxyn_core::parity::screensfid::{
-    PERSON, PERSON_INI, ScreenState, ShellLayout, Thread, WORKSPACE, ago, can_send, chat_title,
-    open_thread, pct_done, projects, setup_steps, split_pinned, threads, toggle_pin,
+    PERSON, PERSON_INI, Review, ScreenState, ShellLayout, Thread, WORKSPACE, ago, can_send,
+    chat_title, open_thread, pct_done, projects, setup_steps, split_pinned, threads, toggle_pin,
 };
 
 use super::efflistfid::{check_glyph, chevron};
@@ -672,6 +672,15 @@ pub(crate) fn start_thread(mut thr: Signal<Vec<Thread>>, mut active: Signal<u32>
         },
     );
     active.set(id);
+}
+
+/// Count of open suggestions as words.
+pub(crate) fn open_words(r: &[Review]) -> String {
+    match oxyn_core::parity::screensfid::open_count(r) {
+        0 => "All reviewed".to_string(),
+        1 => "1 to review".to_string(),
+        n => format!("{n} to review"),
+    }
 }
 
 /// Milliseconds between two clock readings.
@@ -1373,6 +1382,531 @@ pub fn ChatAgentsScreen(
                     {convo(&msgs(), now, 1200)}
                 }
                 ScreenComposer { text, on_send: send }
+            }
+        }
+    }
+}
+
+/// The sheet editor in the Double sidebar screen's artifacts: toolbar, cell reference, contents
+/// and a grid you click or arrow through; typing in Contents edits the cell, Enter moves down.
+#[component]
+fn SheetEditor() -> Element {
+    use oxyn_core::parity::screensfid::{cell_ref, col_name, sheet, sort_sheet};
+    let mut data = use_signal(sheet);
+    let mut undo = use_signal(Vec::<Vec<Vec<String>>>::new);
+    let mut sel = use_signal(|| (1usize, 1usize));
+    let mut bold = use_signal(Vec::<(usize, usize)>::new);
+    let d = data();
+    let (r, c) = sel();
+    let rows = d.len();
+    let cols = d.first().map(|x| x.len()).unwrap_or(0);
+    let val = d.get(r).and_then(|x| x.get(c)).cloned().unwrap_or_default();
+    let refs = cell_ref(c, r);
+    let can_undo = !undo().is_empty();
+    let mut snap = move || {
+        let s = data.peek().clone();
+        undo.write().push(s);
+    };
+    let heads: Vec<String> = (0..cols).map(|i| col_name(i).to_string()).collect();
+    rsx! {
+        div { class: "oxcdr-sheet",
+            div { class: "oxcdr-tb", role: "toolbar", "aria-label": "Sheet",
+                button { r#type: "button", class: "oxscn-ib", "aria-label": "Undo", disabled: !can_undo, onclick: move |_| { if let Some(s) = undo.write().pop() { data.set(s); } }, {ico("undo")} }
+                button { r#type: "button", class: "oxscn-ib", "aria-label": "Bold", "aria-pressed": "{bold().contains(&(r, c))}",
+                    onclick: move |_| { let k = sel(); let mut b = bold.write(); if let Some(i) = b.iter().position(|x| *x == k) { b.remove(i); } else { b.push(k); } }, {ico("bold")} }
+                button { r#type: "button", class: "oxscn-ib", "aria-label": "Sort A to Z by this column", onclick: move |_| { snap(); sort_sheet(&mut data.write(), sel().1, true); }, {ico("sort")} }
+                button { r#type: "button", class: "oxscn-btn", onclick: move |_| { snap(); sort_sheet(&mut data.write(), sel().1, false); }, "Z–A" }
+                button { r#type: "button", class: "oxscn-ib", "aria-label": "Insert a row below", onclick: move |_| { snap(); let at = sel().0 + 1; let n = data.peek()[0].len(); data.write().insert(at, vec![String::new(); n]); sel.set((at, 0)); }, {ico("row")} }
+            }
+            div { class: "oxcdr-fx",
+                input { class: "oxcdr-ref", "aria-label": "Cell", readonly: true, value: "{refs}" }
+                input { class: "oxcdr-val", "aria-label": "Contents of {refs}", value: "{val}",
+                    oninput: move |e| { let (r, c) = sel(); if let Some(x) = data.write().get_mut(r).and_then(|x| x.get_mut(c)) { *x = e.value(); } },
+                    onfocus: move |_| snap(),
+                    onkeydown: move |e: KeyboardEvent| if e.key() == Key::Enter { let (r, c) = sel(); sel.set(((r + 1).min(rows - 1), c)); } }
+            }
+            div { class: "oxcdr-grid", role: "grid", tabindex: "0", "aria-label": "Fabric comparison",
+                onkeydown: move |e: KeyboardEvent| {
+                    let (r, c) = sel();
+                    let n = match e.key() { Key::ArrowUp => (r.saturating_sub(1), c), Key::ArrowDown => ((r + 1).min(rows - 1), c), Key::ArrowLeft => (r, c.saturating_sub(1)), Key::ArrowRight => (r, (c + 1).min(cols - 1)), _ => (r, c) };
+                    if n != (r, c) { e.prevent_default(); sel.set(n); }
+                },
+                div { class: "oxcdr-tr oxcdr-hd", span { class: "oxcdr-rh" } for (i, h) in heads.iter().enumerate() { span { key: "{i}", class: "oxcdr-ch", "{h}" } } }
+                for (ri, row) in d.iter().enumerate() {
+                    div { key: "{ri}", class: "oxcdr-tr", role: "row",
+                        span { class: "oxcdr-rh", "{ri + 1}" }
+                        for (ci, v) in row.iter().enumerate() {
+                            span { key: "{ci}", class: "oxcdr-td", role: "gridcell", "aria-selected": "{(ri, ci) == (r, c)}", "data-b": "{bold().contains(&(ri, ci))}", "data-h": "{ri == 0}",
+                                onclick: move |_| sel.set((ri, ci)), "{v}" }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+/// Screen – AI Chat / Double sidebar: an icon rail and a chats column, a plain chat with web search
+/// (each answer folds its tool calls into one line and links what it made), and the artifacts on
+/// the right – a sheet you can edit and the sources list – as closable tabs.
+#[component]
+pub fn ChatRailScreen(
+    /// `inset` or `flat`.
+    #[props(default = "inset".to_string())]
+    layout: String,
+    /// `sample`, `loading` or `empty`.
+    #[props(default = "sample".to_string())]
+    state: String,
+    /// Height px.
+    #[props(default = 640)]
+    height: u32,
+    /// The clock.
+    now: ClockMs,
+) -> Element {
+    let st = ScreenState::from_key(&state);
+    let thr = use_threads(st);
+    let mut active = use_signal(|| 3u32);
+    let text = use_signal(String::new);
+    let mut msgs = use_signal(Vec::<Msg>::new);
+    let mut tools_open = use_signal(|| false);
+    let mut arts = use_signal(move || {
+        if st == ScreenState::Sample {
+            vec!["fabric-compare.csv", "sources.md"]
+        } else {
+            vec![]
+        }
+    });
+    let mut art = use_signal(|| 0usize);
+    let loading = st == ScreenState::Loading;
+    let blank = st == ScreenState::Empty;
+    let a = arts();
+    let ai = art().min(a.len().saturating_sub(1));
+    let cur = a.get(ai).copied().unwrap_or("");
+    let mut open_art = move |n: &'static str| {
+        let p = arts.peek().iter().position(|x| *x == n);
+        match p {
+            Some(i) => art.set(i),
+            None => {
+                arts.write().push(n);
+                let l = arts.peek().len();
+                art.set(l - 1);
+            }
+        }
+    };
+    let send = move |t: String| {
+        if thr.peek().is_empty() {
+            start_thread(thr, active, &t);
+        }
+        push_pair(msgs, now, t);
+    };
+    let title = thr()
+        .iter()
+        .find(|t| t.id == active())
+        .map(|t| t.title.clone())
+        .unwrap_or_else(|| "New chat".to_string());
+    let to = tools_open();
+    let work = rsx! {
+        div { class: "oxcdr-arts",
+            div { class: "oxscn-tabs", role: "tablist", "aria-label": "Artifacts",
+                for (i, n) in a.iter().copied().enumerate() {
+                    div { key: "{n}", class: "oxscn-tab", "data-on": "{i == ai}",
+                        button { r#type: "button", role: "tab", class: "oxscn-tab-b", "aria-selected": "{i == ai}", onclick: move |_| art.set(i), "{n}" }
+                        button { r#type: "button", class: "oxscn-tab-x", "aria-label": "Close {n}", onclick: move |_| { arts.write().remove(i); art.set(0); }, {ico("close")} }
+                    }
+                }
+            }
+            if loading { {skel(10)} }
+            else if a.is_empty() { {empty("Nothing open", "Files the assistant makes open here as tabs.")} }
+            else if cur == "fabric-compare.csv" { p { class: "oxscn-row-a oxcdr-meta", "fabric-compare.csv · just now" } SheetEditor {} }
+            else {
+                ol { class: "oxcdr-src",
+                    for (i, (t, d)) in [("Linen weights explained", "textiles.example.org"), ("Hemp twill lead times", "mills.example.com"), ("Tencel care notes", "fibre.example.net")].into_iter().enumerate() {
+                        li { key: "{i}", span { class: "oxscn-row-t", "{t}" } span { class: "oxscn-row-a", "{d}" } }
+                    }
+                }
+            }
+        }
+    };
+    rsx! {
+        RailFrame { layout, state: state.clone(), height, threads: thr, active, work, work_label: "Artifacts",
+            on_new: move |_| { msgs.set(vec![]); active.set(0); },
+            div { class: "oxcdr",
+                h1 { class: "oxcdr-t", "{title}" }
+                if loading { {skel(8)} }
+                else if blank && msgs().is_empty() { {empty("Ask with the web", "Answers search the web, then fold the searches into one line you can open.")} }
+                else {
+                    div { class: "oxscn-log",
+                        if !blank {
+                            div { class: "oxscn-msg", "data-me": "true", p { "Compare five fabrics for the overshirt: weight, price per metre and lead time." } }
+                            div { class: "oxscn-msg", "data-me": "false", span { class: "oxscn-mono oxscn-mono-s", "K" }
+                                div { class: "oxcdr-turn",
+                                    button { r#type: "button", class: "oxcdr-ran", "aria-expanded": "{to}", onclick: move |_| tools_open.toggle(), {ico("globe")} span { "Ran 3 searches · 4.1s" } {chevron(to)} }
+                                    if to {
+                                        ul { class: "oxcdr-calls", li { "web.search “linen weight gsm” · 1.2s" } li { "web.search “hemp twill lead time” · 1.6s" } li { "web.read 3 pages · 1.3s" } }
+                                    }
+                                    p { "Washed linen and hemp twill are the sturdiest; organic cotton is cheapest and quickest to arrive. I put all five side by side." }
+                                    div { class: "oxcdr-chips",
+                                        button { r#type: "button", class: "oxscn-chip oxscn-chip-b", onclick: move |_| open_art("fabric-compare.csv"), {ico("file")} "fabric-compare.csv" }
+                                        button { r#type: "button", class: "oxscn-chip oxscn-chip-b", onclick: move |_| open_art("sources.md"), {ico("file")} "sources.md" }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    {convo(&msgs(), now, 1200)}
+                }
+                ScreenComposer { text, on_send: send }
+            }
+        }
+    }
+}
+
+/// Screen – AI Chat / Progress: a chat whose tool calls open into cards, with its working notes
+/// alongside, in the page itself – the steps ticking off, what it made and what it used.
+#[component]
+pub fn ChatProgressScreen(
+    /// `inset` or `flat`.
+    #[props(default = "inset".to_string())]
+    layout: String,
+    /// `sample`, `loading` or `empty`.
+    #[props(default = "sample".to_string())]
+    state: String,
+    /// Height px.
+    #[props(default = 640)]
+    height: u32,
+    /// The clock.
+    now: ClockMs,
+) -> Element {
+    use oxyn_core::parity::screensfid::{progress_steps, progress_tools, step_state};
+    let st = ScreenState::from_key(&state);
+    let thr = use_threads(st);
+    let active = use_signal(|| 1u32);
+    let text = use_signal(String::new);
+    let msgs = use_signal(Vec::<Msg>::new);
+    let start = use_signal(|| now.0);
+    let mut open_tool = use_signal(|| usize::MAX);
+    let mut sec = use_signal(|| vec![true, true, true]);
+    let loading = st == ScreenState::Loading;
+    let blank = st == ScreenState::Empty;
+    let steps = progress_steps();
+    let done = if st == ScreenState::Sample {
+        (2 + (since(now, start()) / 1500) as usize).min(steps.len())
+    } else {
+        0
+    };
+    let said = if done >= steps.len() {
+        "All steps done".to_string()
+    } else {
+        format!("Working on: {}", steps[done])
+    };
+    let send = move |t: String| push_pair(msgs, now, t);
+    let s = sec();
+    let ot = open_tool();
+    let s2 = s.clone();
+    let head = move |i: usize, l: &'static str, n: String| {
+        let o = s2[i];
+        rsx! { button { r#type: "button", class: "oxcpr-sh", "aria-expanded": "{o}", onclick: move |_| { sec.write()[i] = !o; }, span { "{l}" } span { class: "oxscn-row-a", "{n}" } {chevron(o)} } }
+    };
+    let n_steps = format!("{done} of {}", steps.len());
+    let work = rsx! {
+        div { class: "oxcpr-pane",
+            if loading { {skel(10)} }
+            else if blank { {empty("Nothing running", "Steps, outputs and the apps it uses show here while it works.")} }
+            else {
+                {head(0, "Progress", n_steps)}
+                if s[0] {
+                    ul { class: "oxcpr-steps",
+                        for (i, l) in steps.iter().enumerate() {
+                            { let k = step_state(i, done).key(); rsx! { li { key: "{i}", "data-s": "{k}", span { class: "oxcpr-tick", if k == "done" { {check_glyph()} } } "{l}" } } }
+                        }
+                    }
+                    p { class: "oxscn-sr", role: "status", "{said}" }
+                }
+                {head(1, "Outputs", "3".to_string())}
+                if s[1] {
+                    for (i, (f, b, k)) in [("Welcome plan", "notion", "Notion page"), ("Buddy checklist", "googledrive", "Sheet"), ("First-week notes.md", "", "Markdown")].into_iter().enumerate() {
+                        div { key: "{i}", class: "oxcov-li", if b.is_empty() { {ico("file")} } else { BrandIcon { name: b.to_string(), size: 15.0, coloured: true } } span { class: "oxscn-row-t", "{f}" } span { class: "oxscn-row-a", "{k}" } }
+                    }
+                }
+                {head(2, "Used in this chat", String::new())}
+                if s[2] {
+                    dl { class: "oxcag-dl",
+                        div { dt { "Uploads" } dd { "2 files" } }
+                        div { dt { "Apps" } dd { class: "oxcpr-apps", BrandIcon { name: "notion".to_string(), size: 14.0, coloured: true } BrandIcon { name: "googledrive".to_string(), size: 14.0, coloured: true } BrandIcon { name: "slack".to_string(), size: 14.0, coloured: true } } }
+                        div { dt { "Web" } dd { "6 pages" } }
+                        div { dt { "Skills" } dd { "Onboarding plan" } }
+                    }
+                }
+            }
+        }
+    };
+    rsx! {
+        AppFrame { layout, state: state.clone(), height, threads: thr, active, title: "Plan the new starters' week", work, work_label: "Progress",
+            div { class: "oxcpr",
+                if loading { {skel(9)} }
+                else if blank { {empty("Ask for something that takes a few steps", "You'll see each step and every tool it calls as it goes.")} }
+                else {
+                    div { class: "oxscn-log",
+                        div { class: "oxscn-msg", "data-me": "true", p { "Three people start Monday. Plan their first week and pair each with a buddy." } }
+                        for (i, (t, d, secs)) in progress_tools().into_iter().enumerate() {
+                            {
+                                let o = ot == i;
+                                let secs_s = format!("{secs:.1}s");
+                                rsx! {
+                                    div { key: "{i}", class: "oxcpr-tool", "data-open": "{o}",
+                                        button { r#type: "button", class: "oxcpr-tool-b", "aria-expanded": "{o}", onclick: move |_| open_tool.set(if o { usize::MAX } else { i }),
+                                            span { class: "oxcpr-ok", {check_glyph()} } span { class: "oxcpr-tn", "{t}" } span { class: "oxscn-row-t", "{d}" } span { class: "oxscn-row-a", "{secs_s}" } {chevron(o)} }
+                                        if o { pre { class: "oxcpr-io", "in: {t}(team: \"design\")\nout: 3 results" } }
+                                    }
+                                }
+                            }
+                        }
+                        div { class: "oxscn-msg", "data-me": "false", span { class: "oxscn-mono oxscn-mono-s", "K" }
+                            div { p { "Here is the week at a glance:" }
+                                ul { li { "Monday: laptops, accounts and lunch with their buddy" } li { "Tuesday to Thursday: one shadow day per team" } li { "Friday: a small first task, shipped together" } } }
+                        }
+                    }
+                    {convo(&msgs(), now, 1200)}
+                }
+                ScreenComposer { text, on_send: send }
+            }
+        }
+    }
+}
+
+/// Screen – AI Chat / Run: one agent run – the plan ticking through its steps (rename with Enter,
+/// move with Alt+arrows, Delete removes), live time and cost, a step that waits for your yes, and
+/// the draft it wrote with suggestions to accept (Y) or reject (N).
+#[component]
+pub fn ChatRunScreen(
+    /// `inset` or `flat`.
+    #[props(default = "inset".to_string())]
+    layout: String,
+    /// `sample`, `loading` or `empty`.
+    #[props(default = "sample".to_string())]
+    state: String,
+    /// Height px.
+    #[props(default = 640)]
+    height: u32,
+    /// The clock.
+    now: ClockMs,
+) -> Element {
+    use oxyn_core::parity::screensfid::{
+        clock, money, move_step, next_open, run_cents, run_plan, step_state, suggestions,
+    };
+    let st = ScreenState::from_key(&state);
+    let thr = use_threads(st);
+    let active = use_signal(|| 0u32);
+    let mut plan = use_signal(run_plan);
+    let start = use_signal(|| now.0);
+    let mut stopped = use_signal(|| None::<u32>);
+    let mut approved = use_signal(|| None::<(bool, u32)>);
+    let mut edit = use_signal(|| None::<usize>);
+    let mut focus_i = use_signal(|| 0usize);
+    let mut rev = use_signal(|| vec![Review::Open; suggestions().len()]);
+    let mut cur_s = use_signal(|| 0usize);
+    let mut act_open = use_signal(|| usize::MAX);
+    let loading = st == ScreenState::Loading;
+    let blank = st == ScreenState::Empty;
+    let p = plan();
+    // Elapsed run time: frozen when stopped; the gate step waits for approval.
+    let live = (since(now, start()) / 1000) as u32 + 7;
+    let mut t = stopped().unwrap_or(live);
+    let gate = p
+        .iter()
+        .position(|s| s.tool == "mail.send")
+        .unwrap_or(usize::MAX);
+    let mut acc = 0u32;
+    let mut done = 0usize;
+    let mut waiting = false;
+    for (i, s) in p.iter().enumerate() {
+        if i == gate {
+            match approved() {
+                None => {
+                    if t >= acc {
+                        waiting = true;
+                        t = t.min(acc + 1);
+                    }
+                    break;
+                }
+                Some((false, _)) => {
+                    waiting = false;
+                    break;
+                }
+                Some((true, at)) => {
+                    acc = acc.max(at);
+                }
+            }
+        }
+        if t >= acc + s.secs {
+            acc += s.secs;
+            done = i + 1;
+        } else {
+            break;
+        }
+    }
+    let held = matches!(approved(), Some((false, _)));
+    let finished = done >= p.len();
+    let status = if stopped().is_some() {
+        "Stopped"
+    } else if held {
+        "On hold"
+    } else if waiting {
+        "Needs you"
+    } else if finished {
+        "Done"
+    } else {
+        "Running"
+    };
+    let tone = match status {
+        "Done" => "ok",
+        "Needs you" | "On hold" => "warn",
+        "Stopped" => "muted",
+        _ => "run",
+    };
+    let calls = done * 2 + usize::from(!finished);
+    let time_s = clock(t);
+    let cost_s = money(run_cents(t));
+    let steps_s = format!("{done}/{}", p.len());
+    let n = p.len();
+    let sug = suggestions();
+    let r = rev();
+    let open = oxyn_core::parity::screensfid::open_count(&r);
+    let cs = cur_s().min(sug.len() - 1);
+    let mut decide = move |ok: bool| {
+        let c = cur_s();
+        rev.write()[c] = if ok {
+            Review::Accepted
+        } else {
+            Review::Rejected
+        };
+        if let Some(nx) = next_open(&rev.peek(), c) {
+            cur_s.set(nx);
+        }
+    };
+    let count_s = open_words(&r);
+    let work = rsx! {
+        div { class: "oxcrn-side",
+            if loading { {skel(10)} }
+            else if blank { {empty("Nothing needs you yet", "When a run reaches a step that needs a yes, it waits here.")} }
+            else {
+                if waiting && approved().is_none() && stopped().is_none() {
+                    div { class: "oxcrn-gate", role: "alert",
+                        p { class: "oxcrn-gate-t", "Send the member update?" }
+                        p { class: "oxscn-row-a", "212 members get it by email. You can still edit the draft below." }
+                        div { class: "oxcrn-gate-b",
+                            button { r#type: "button", class: "oxscn-btn", onclick: move |_| approved.set(Some((false, 0))), "Hold" }
+                            button { r#type: "button", class: "oxscn-primary", onclick: move |_| { let l = (since(now, start()) / 1000) as u32 + 7; approved.set(Some((true, l))); }, "Send it" }
+                        }
+                    }
+                } else {
+                    p { class: "oxscn-hint", match approved() { Some((true, _)) => "You said yes to sending. Nothing else needs you.", Some((false, _)) => "On hold: the run waits until you send it.", None => "Nothing needs you yet." } }
+                }
+                div { class: "oxcrn-draft",
+                    div { class: "oxcov-h", h3 { "Draft" } span { class: "oxscn-row-a", role: "status", "{count_s}" } }
+                    div { class: "oxcrn-doc", tabindex: "0", "aria-label": "Draft with suggestions; Y accepts, N rejects",
+                        onkeydown: move |e: KeyboardEvent| match e.key() { Key::Character(ref c) if c == "y" => decide(true), Key::Character(ref c) if c == "n" => decide(false), _ => {} },
+                        "In October membership "
+                        for (i, s) in sug.iter().enumerate() {
+                            {
+                                let k = match r[i] { Review::Open => "open", Review::Accepted => "yes", Review::Rejected => "no" };
+                                let on = i == cs && r[i] == Review::Open;
+                                rsx! {
+                                    span { key: "{i}", class: "oxcrn-sug", "data-r": "{k}", "data-on": "{on}", onclick: move |_| cur_s.set(i),
+                                        if k != "yes" { del { "{s.del}" } } if k != "no" { ins { "{s.ins}" } }
+                                    }
+                                    if i < 4 { " · " }
+                                }
+                            }
+                        }
+                    }
+                    div { class: "oxcrn-rv",
+                        button { r#type: "button", class: "oxscn-btn", disabled: open == 0, onclick: move |_| decide(false), "Reject" kbd { class: "oxscn-kbd", "N" } }
+                        button { r#type: "button", class: "oxscn-btn", disabled: open == 0, onclick: move |_| decide(true), "Accept" kbd { class: "oxscn-kbd", "Y" } }
+                        span { class: "oxscn-grow" }
+                        button { r#type: "button", class: "oxscn-link", disabled: open == 0, onclick: move |_| { for x in rev.write().iter_mut() { if *x == Review::Open { *x = Review::Rejected; } } }, "Reject all" }
+                        button { r#type: "button", class: "oxscn-link", disabled: open == 0, onclick: move |_| { for x in rev.write().iter_mut() { if *x == Review::Open { *x = Review::Accepted; } } }, "Accept all" }
+                    }
+                }
+                p { class: "oxscn-gh", "Files" }
+                for (i, f) in ["member-update.md", "october-sales.csv", "signups-chart.png"].iter().enumerate() { div { key: "{i}", class: "oxcov-li", {ico("file")} span { class: "oxscn-row-t", "{f}" } } }
+            }
+        }
+    };
+    rsx! {
+        AppFrame { layout, state: state.clone(), height, threads: thr, active, side: "runs", title: "Runs / Member update", work, work_label: "Run details",
+            actions: rsx! {
+                span { class: "oxscn-tag", "data-tone": "{tone}", "{status}" }
+                button { r#type: "button", class: "oxscn-btn", disabled: stopped().is_some() || finished || loading || blank, onclick: move |_| stopped.set(Some(t)), {ico("stop")} span { "Stop" } }
+            },
+            div { class: "oxcrn",
+                if loading { {skel(10)} }
+                else if blank { {empty("No runs yet", "Give an agent a goal; its plan, tool calls and the draft it writes show up here.")} }
+                else {
+                    p { class: "oxscn-row-a", span { class: "oxscn-mono oxscn-mono-s", "M" } " Started by {PERSON} at 7:48 PM" }
+                    h1 { class: "oxcrn-t", "Write the November member update" }
+                    dl { class: "oxcrn-stats",
+                        div { dt { "Steps" } dd { "{steps_s}" } } div { dt { "Tool calls" } dd { "{calls}" } }
+                        div { dt { "Time" } dd { "{time_s}" } } div { dt { "Cost" } dd { "{cost_s}" } }
+                    }
+                    div { class: "oxcov-h", h3 { "Plan" } span { class: "oxscn-row-a", "Enter renames · Alt+↑↓ moves · Delete removes" } }
+                    ol { class: "oxcrn-plan", "aria-label": "Plan",
+                        for (i, s) in p.iter().enumerate() {
+                            {
+                                let k = if i == gate && waiting { "wait" } else { step_state(i, done).key() };
+                                let lbl = match k { "wait" => "Needs you", "done" => "Done", "active" => "Working", _ => "Up next" };
+                                let ed = edit() == Some(i);
+                                let title = s.title.clone();
+                                let secs_s = format!("{}s", s.secs);
+                                rsx! {
+                                    li { key: "{i}-{title}", class: "oxcrn-step", "data-s": "{k}", tabindex: "0", "aria-label": "{title}, {lbl}",
+                                        onfocus: move |_| focus_i.set(i),
+                                        onkeydown: move |e: KeyboardEvent| {
+                                            if edit().is_some() { return; }
+                                            match e.key() {
+                                                Key::Enter => { e.prevent_default(); edit.set(Some(i)); }
+                                                Key::ArrowUp if e.modifiers().alt() => { e.prevent_default(); let j = move_step(&mut plan.write(), i, true); focus_i.set(j); }
+                                                Key::ArrowDown if e.modifiers().alt() => { e.prevent_default(); let j = move_step(&mut plan.write(), i, false); focus_i.set(j); }
+                                                Key::Delete | Key::Backspace if n > 1 => { e.prevent_default(); plan.write().remove(i); }
+                                                _ => {}
+                                            }
+                                        },
+                                        span { class: "oxcrn-dot" }
+                                        span { class: "oxcrn-st",
+                                            if ed {
+                                                input { class: "oxcrn-in", "aria-label": "Step name", value: "{title}",
+                                                    onmounted: move |e| { let d = e.data(); spawn(async move { let _ = d.set_focus(true).await; }); },
+                                                    oninput: move |e| { plan.write()[i].title = e.value(); },
+                                                    onkeydown: move |e: KeyboardEvent| if e.key() == Key::Enter || e.key() == Key::Escape { e.prevent_default(); e.stop_propagation(); edit.set(None); },
+                                                    onblur: move |_| edit.set(None) }
+                                            } else { span { class: "oxcrn-sn", "{title}" } }
+                                            span { class: "oxscn-row-a", "{s.why}" }
+                                        }
+                                        code { class: "oxcrn-tool", "{s.tool}" }
+                                        span { class: "oxcrn-lbl", "{lbl}" }
+                                        span { class: "oxscn-row-a", "{secs_s}" }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    p { class: "oxscn-sr", role: "status", "{status} · {steps_s}" }
+                    div { class: "oxcov-h", h3 { "Activity" } }
+                    for (i, s) in p.iter().enumerate().take(done) {
+                        {
+                            let o = act_open() == i;
+                            let tl = s.title.clone();
+                            let tool = s.tool;
+                            rsx! {
+                                div { key: "{i}", class: "oxcrn-act",
+                                    button { r#type: "button", class: "oxcdr-ran", "aria-expanded": "{o}", onclick: move |_| act_open.set(if o { usize::MAX } else { i }),
+                                        span { class: "oxcpr-ok", {check_glyph()} } span { "{tl} · used 1 tool" } {chevron(o)} }
+                                    if o { pre { class: "oxcpr-io", "{tool} → ok" } }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }
