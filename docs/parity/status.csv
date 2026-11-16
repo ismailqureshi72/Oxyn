@@ -689,3 +689,6 @@ Oxyn,Theme Selector · Type scale,,Theme Selector,Free,type-scale,variants-3,#41
 Oxyn,Theme Selector · Light playground,,Theme Selector,Free,light-playground,variants-3,#41,built
 Oxyn,Theme Selector · App icon,,Theme Selector,Free,app-icon-picker,variants-3,#41,built
 Oxyn,Theme Selector · Display comfort,,Theme Selector,Free,display-comfort,variants-3,#41,built
+Oxyn,Screens · App shell · Inset,,Screens,Free,shell-inset,screens-1,#42,built
+Oxyn,Screens · App shell · Flat,,Screens,Free,shell-flat,screens-1,#42,built
+Oxyn,Screens · Three-pane shell,,Screens,Free,shell-three-pane,screens-1,#42,built

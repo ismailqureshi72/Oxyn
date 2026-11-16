@@ -52,6 +52,7 @@ mod rulerfid;
 mod run;
 mod runningfid;
 mod schedfid;
+mod screensfid;
 mod seqfid;
 mod stairsfid;
 mod storagefid;
@@ -130,6 +131,9 @@ pub use run::{
 };
 pub use runningfid::RunningNow;
 pub use schedfid::ScheduledRuns;
+pub use screensfid::{
+    AppFrame, AppShellScreen, MenuButton, RailFrame, RailShellScreen, ScreenComposer,
+};
 pub use seqfid::AgentSequence;
 pub use stairsfid::EffortStairs;
 pub use storagefid::{StorageCleanup, StorageForecast, StorageMeter, StorageWaffle};

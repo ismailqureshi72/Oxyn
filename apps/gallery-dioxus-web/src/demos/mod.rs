@@ -33,6 +33,7 @@ mod parity_home;
 mod parity_input;
 mod parity_merge;
 mod parity_run;
+mod parity_screens;
 mod parity_storage;
 mod parity_text;
 mod parity_theme;
@@ -56,7 +57,7 @@ pub struct Category {
 }
 
 /// Categories in nav order.
-pub const CATEGORIES: [Category; 26] = [
+pub const CATEGORIES: [Category; 27] = [
     Category {
         slug: "composer",
         name: "Composer",
@@ -187,6 +188,11 @@ pub const CATEGORIES: [Category; 26] = [
         name: "Theme Selector",
         blurb: "Backgrounds and texture, theme swatches and font size, plus a split compare, accent and density, a schedule, type, light, icons and comfort.",
     },
+    Category {
+        slug: "screens",
+        name: "Screens",
+        blurb: "Whole app frames: Inset, Flat and three-pane shells and the AI Chat screens, each with Sample, Loading and Empty data.",
+    },
 ];
 
 /// Every demo, in category order.
@@ -210,6 +216,7 @@ pub fn catalog() -> Vec<Demo> {
     v.extend(parity_diff::demos());
     v.extend(parity_thinking::demos());
     v.extend(parity_context::demos());
+    v.extend(parity_screens::demos());
     v.extend(parity_gooey::demos());
     v.extend(parity_attach::demos());
     v.extend(parity_storage::demos());
