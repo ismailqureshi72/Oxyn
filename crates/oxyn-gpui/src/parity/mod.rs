@@ -49,6 +49,7 @@ mod run;
 mod runningfid;
 mod seqfid;
 mod text;
+mod toolmapfid;
 mod tools;
 
 pub use agentsfid::{AgentFindingsEl, AgentInboxEl};
@@ -108,6 +109,7 @@ pub use run::{
 pub use runningfid::RunningNowEl;
 pub use seqfid::AgentSequenceEl;
 pub use text::{LoadingStateEl, ShimmerEl, SlotTextEl, ThinkingLoaderEl};
+pub use toolmapfid::ToolAccessMapEl;
 pub use tools::{
     ExpandableCardEl, JsonViewerEl, LinkUnfurlEl, ToolCallCardEl, ToolCallEl, ToolChipsEl,
 };

@@ -46,6 +46,7 @@
 //! - [`runningfid`]: fidelity batch, family B part 9: Running Now tasks, steps, counts and pill label.
 //! - [`planfid`]: fidelity batch, family B part 9: Plan vs Actual schedule, slips, knock-on shifts and ETA.
 //! - [`rootfid`]: fidelity batch, family B part 9: Root Cause Tree checks, gates, found route and evidence.
+//! - [`toolmapfid`]: fidelity batch, family B part 9: Tool Access Map per-agent tool states, counts, calls and replay.
 //! - [`answers`]: fidelity batch, family A: AI Answer markup and streaming, Cited Answer
 //!   sentences and quotes, Message Actions, Thinking Loader phases, Thinking State steps and the
 //!   Writing Assistant's sample writer and dictation.
@@ -94,6 +95,7 @@ pub mod rootfid;
 pub mod runningfid;
 pub mod seqfid;
 pub mod text;
+pub mod toolmapfid;
 pub mod tools;
 pub mod upload;
 

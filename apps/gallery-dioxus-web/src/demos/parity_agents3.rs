@@ -13,11 +13,12 @@ use oxyn_core::{
         planfid::{pv_actual_total, pv_demo},
         rootfid::{rc_demo, rc_len},
         runningfid::{RnState, rn_demo},
+        toolmapfid::{tm_demo_agents, tm_replay},
     },
 };
 use oxyn_dioxus::{
     DecisionTree, DelegateBoard, FallbackChain, JudgeBracket, MemoryPanel, ParallelAttempts,
-    PlanVsActual, RootCauseTree, RunningNow,
+    PlanVsActual, RootCauseTree, RunningNow, ToolAccessMap,
 };
 
 use super::{Code, mk, sel, var};
@@ -1060,6 +1061,167 @@ fn root_cause_tree_demo(style: crate::Control) -> Demo {
     }
 }
 
+// ---------- Tool Access Map ----------
+
+fn tool_access_map(v: &Vals, now: ClockMs) -> Element {
+    let mut msg = use_signal(String::new);
+    let key = format!("{}{}{}", v.s("style"), v.s("state"), v.s("width"));
+    let state = v.s("state");
+    let mut agents = tm_demo_agents();
+    if state == "replaying" {
+        let _ = tm_replay(
+            &mut agents[0],
+            "github",
+            "{ \"pull_request\": \"Pricing v3\", \"base\": \"main\" }",
+            240,
+        );
+    }
+    let agent = match state {
+        "scout" | "failed" => Some("scout".to_string()),
+        "scribe" => Some("scribe".to_string()),
+        _ => None,
+    };
+    let open = match state {
+        "calls" | "replaying" | "editing" => Some("github".to_string()),
+        "failed" => Some("search".to_string()),
+        _ => None,
+    };
+    let call = (state == "editing").then(|| "gh2".to_string());
+    let editing = state == "editing";
+    let w = if v.s("width") == "narrow" {
+        "380px"
+    } else {
+        "720px"
+    };
+    rsx! {
+        div { "data-k": "{key}", key: "{key}", "data-state": "{state}", style: "width:{w};max-width:100%;display:flex;flex-direction:column;gap:8px",
+            ToolAccessMap { now, agents: Some(agents), agent, open, call, editing, style: cstyle(v),
+                on_agent_change: move |id: String| msg.set(format!("onAgentChange({id:?})")),
+                on_replay: move |(a, t, _): (String, String, String)| msg.set(format!("onReplay({a:?}, {t:?}, …)")) }
+            {status(msg)}
+        }
+    }
+}
+
+fn tool_access_map_code(_: &Vals) -> String {
+    Code::new("ToolAccessMap")
+        .raw("tools", "Some(run.tools())")
+        .raw("agents", "Some(run.agents())")
+        .raw("now", "clock.now()")
+        .raw(
+            "on_replay",
+            "move |(agent, tool, input)| run.replay(agent, tool, input)",
+        )
+        .done()
+}
+
+fn tool_access_map_demo(style: crate::Control) -> Demo {
+    Demo {
+        controls: vec![
+            style,
+            sel(
+                "state",
+                "State",
+                &[
+                    "map",
+                    "scout",
+                    "scribe",
+                    "calls",
+                    "replaying",
+                    "editing",
+                    "failed",
+                ],
+                "map",
+            ),
+            sel("width", "Width", &["wide", "narrow"], "wide"),
+        ],
+        variants: vec![
+            var(
+                "map",
+                "The builder agent in the middle: six of nine tools in reach, the shell busy with a build (its wire shimmers), the rest used once or more, and three tools it cannot touch.",
+                &[],
+            ),
+            var(
+                "other-agent",
+                "Another agent on the same layout: most cards drop to No access, a query is in flight and the last web search failed.",
+                &[("state", "scout")],
+            ),
+            var(
+                "needs-you",
+                "An agent waiting on a person: the amber Needs you badge on its card.",
+                &[("state", "scribe")],
+            ),
+            var(
+                "calls",
+                "A tool opened: its calls newest first, the picked call's input and output, Edit input and Replay. Escape or the back arrow returns to the map.",
+                &[("state", "calls")],
+            ),
+            var(
+                "replaying",
+                "A replay in flight: the new call is marked Replay, the output waits and both buttons hold until it lands.",
+                &[("state", "replaying")],
+            ),
+            var(
+                "editing",
+                "Editing the input before a replay: Cmd or Ctrl + Enter runs it.",
+                &[("state", "editing")],
+            ),
+            var(
+                "failed",
+                "A failed call: the error text in red in the output.",
+                &[("state", "failed")],
+            ),
+            var(
+                "narrow",
+                "Under 540 px the agent sits on top and the tools fall into two columns below; the wires go.",
+                &[("width", "narrow")],
+            ),
+            var(
+                "classic",
+                "Classic style: one framed card with a header band and squarer cards.",
+                &[("style", "classic")],
+            ),
+        ],
+        render: tool_access_map,
+        code: tool_access_map_code,
+        keyboard: vec![
+            ("← / →", "Moves between the agent tabs"),
+            (
+                "Tab / Enter",
+                "Through the tools; Enter opens a tool's calls",
+            ),
+            (
+                "↑ / ↓",
+                "Moves through the calls (the list is one tab stop)",
+            ),
+            ("Escape", "Back to the map"),
+            ("Cmd / Ctrl + Enter", "Runs the edited input"),
+        ],
+        a11y: vec![
+            "The agents are a tablist; each tool is a button named with its state and call count; tools out of reach are disabled.",
+            "States are words (Running, Failed, Not used yet, No access), never colour alone; the counts are a status region.",
+            "Reduced motion stops the wire shimmer and the slide-in.",
+        ],
+        responsive: vec![
+            "Tool cards have one fixed size, so nothing shifts when a call starts, ends or fails.",
+            "Below 540 px the agent card leads, two columns of tools follow with no wires, and the calls view stacks its list over the details.",
+        ],
+        height: 470,
+        live: true,
+        align: Align::Start,
+        ..mk(
+            "tool-access-map",
+            "Tool Access Map",
+            "tools",
+            "Which tools an agent can reach and what it did with them: the agent in the middle, every tool of the run around it with a wire where access exists, cards for used, busy, failed or unused, and each tool's calls one click away with a replay.",
+            "ToolAccessMap",
+            "ToolAccessMapEl",
+            "tool-access-map",
+            "parity/toolmapfid.rs",
+        )
+    }
+}
+
 /// Family B part 8 demos.
 pub(crate) fn demos() -> Vec<Demo> {
     let style = || sel("style", "Style", &["clean", "classic"], "clean");
@@ -1071,6 +1233,7 @@ pub(crate) fn demos() -> Vec<Demo> {
         running_now_demo(style()),
         plan_vs_actual_demo(style()),
         root_cause_tree_demo(style()),
+        tool_access_map_demo(style()),
         Demo {
             controls: vec![
                 style(),
