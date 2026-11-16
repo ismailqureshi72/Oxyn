@@ -226,4 +226,9 @@ specified just as deeply. When we point at one component as an example, the stan
 | [attachment-chips.md](attachment-chips.md) | built v0.1 (variants 2, Attachments) |
 | [polaroid-stack.md](polaroid-stack.md) | built v0.1 (variants 2, Attachments) |
 | [drop-lanes.md](drop-lanes.md) | built v0.1 (variants 2, Attachments) |
+| [gooey-composer.md](gooey-composer.md) | built v0.1 (variants 2, Menu Motion) |
+| [gooey-attach-menu.md](gooey-attach-menu.md) | built v0.1 (variants 2, Menu Motion) |
+| [gooey-model-menu.md](gooey-model-menu.md) | built v0.1 (variants 2, Menu Motion) |
+| [liquid-tabs.md](liquid-tabs.md) | built v0.1 (variants 2, Menu Motion) |
+| [liquid-drops.md](liquid-drops.md) | built v0.1 (variants 2, Menu Motion) |
 | Every other component in [../component-taxonomy.md](../component-taxonomy.md) | to write in V2.2 |

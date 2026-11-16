@@ -60,6 +60,7 @@
 //! - [`ctxvisfid`]: Context Visualizer: kinds, shares, field of dots, slabs, compaction and turns left (variants 2)
 //! - [`storagefid`]: Storage: categories, dot runs, clearing, unused skills and a fill forecast (variants 2)
 //! - [`attachfid`]: Attachments: file types and badges, size checks, upload timing, drop lanes and the print fan (variants 2)
+//! - [`gooeyfid`]: Menu Motion: gooey menu rows, heights, stagger, open side, liquid tabs and drops (variants 2)
 //! - [`answers`]: fidelity batch, family A: AI Answer markup and streaming, Cited Answer
 //!   sentences and quotes, Message Actions, Thinking Loader phases, Thinking State steps and the
 //!   Writing Assistant's sample writer and dictation.
@@ -93,6 +94,7 @@ pub mod fidelity;
 pub mod fields;
 pub mod fleet;
 pub mod gates;
+pub mod gooeyfid;
 pub mod graphfid;
 pub mod handofffid;
 pub mod home;
