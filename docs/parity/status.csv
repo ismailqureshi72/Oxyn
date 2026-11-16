@@ -45,44 +45,44 @@ affectUI,Data Table,https://www.affectui.com/components/data-table,Components ·
 affectUI,Date Range Picker,https://www.affectui.com/components/date-range-picker,Components · Inputs,Pro,date-range-picker,C2,#25,built
 affectUI,Decision Card,https://www.affectui.com/components/decision-card,Components · Agents,Pro,decision-card,,#25,built
 affectUI,Decision Inbox,https://www.affectui.com/components/decision-inbox,Components · Feedback,Free,approvals,C5,#33,planned
-affectUI,Decision Tree,https://www.affectui.com/components/decision-tree,Components · Agents,Pro,plan-approval,C5,#33,planned
-affectUI,Delegate Board,https://www.affectui.com/components/delegate-board,Components · Agents,Pro,background-jobs,C6,#34,planned
+affectUI,Decision Tree,https://www.affectui.com/components/decision-tree,Components · Agents,Pro,"decision-tree (exact, ref-1 notes, family B part 8), plan-approval",C5,#32,built
+affectUI,Delegate Board,https://www.affectui.com/components/delegate-board,Components · Agents,Pro,"delegate-board (exact, ref-1 notes, family B part 8), background-jobs",C6,#32,built
 affectUI,Dialog,https://www.affectui.com/components/dialog,Components · Feedback,Free,dialog,C3,#26,built
-affectUI,Diff Timeline,https://www.affectui.com/components/diff-timeline,Components · Agents,Pro,"diff-viewer, run-replay",C7,#34,planned
+affectUI,Diff Timeline,https://www.affectui.com/components/diff-timeline,Components · Agents,Pro,"diff-timeline (run view, ref-3 notes, family B part 9), diff-viewer, run-replay",C7,#32,built
 affectUI,Dropdown Menu,https://www.affectui.com/components/dropdown-menu,Components · Navigation,Free,dropdown-menu,C3,#26,built
 affectUI,Dropzone,https://www.affectui.com/components/dropzone,Components · Inputs,Pro,composer-attachments,,#28,built
 affectUI,Email Draft,https://www.affectui.com/components/email-draft,Components · Cards,Free,genui-forms,C11,#41,planned
 affectUI,Empty State,https://www.affectui.com/components/empty-state,Components · Feedback,Free,display-atoms,C4,#23,built
 affectUI,Experiment Card,https://www.affectui.com/components/experiment-card,Components · Data display,Pro,genui-blocks,C8,#35,planned
-affectUI,Fallback Chain,https://www.affectui.com/components/fallback-chain,Components · Agents,Pro,trace-view,C7,#34,planned
-affectUI,Fan-out Grid,https://www.affectui.com/components/fan-out-grid,Components · Agents,Pro,fanout-grid,,#34,planned
+affectUI,Fallback Chain,https://www.affectui.com/components/fallback-chain,Components · Agents,Pro,"fallback-chain (exact, ref-1 notes, family B part 8), trace-view",C7,#32,built
+affectUI,Fan-out Grid,https://www.affectui.com/components/fan-out-grid,Components · Agents,Pro,"fanout-grid (exact, ref-3 notes, family B part 9)",C7,#32,built
 affectUI,Filter Menu,https://www.affectui.com/components/filter-menu,Components · Inputs,Free,filter-menu,C2,#25,built
 affectUI,Icon Button,https://www.affectui.com/components/icon-button,Components · Buttons,Free,icon-states,,#42,planned
-affectUI,Inline Diff,https://www.affectui.com/components/inline-diff,Components · Agents,Pro,diff-viewer,C8,#35,planned
+affectUI,Inline Diff,https://www.affectui.com/components/inline-diff,Components · Agents,Pro,"inline-diff (review mode, ref-3 notes, family B part 9), diff-viewer",C8,#32,built
 affectUI,Integration Picker,https://www.affectui.com/components/integration-picker,Components · Navigation,Pro,"mcp-plugin-list, plugin-icons",C10,#35,planned
 affectUI,Integration Settings,https://www.affectui.com/components/integration-settings,Components · Inputs,Pro,mcp-plugin-list,C10,#35,planned
-affectUI,Judge Bracket,https://www.affectui.com/components/judge-bracket,Components · Agents,Pro,NEW,C8,#35,planned
+affectUI,Judge Bracket,https://www.affectui.com/components/judge-bracket,Components · Agents,Pro,"judge-bracket (exact, ref-1 notes, family B part 9)",C8,#32,built
 affectUI,KPI Chart,https://www.affectui.com/components/kpi-chart,Components · Data display,Pro,genui-blocks,C12,#36,planned
-affectUI,Memory Panel,https://www.affectui.com/components/memory-panel,Components · Agents,Pro,NEW,C10,#35,planned
+affectUI,Memory Panel,https://www.affectui.com/components/memory-panel,Components · Agents,Pro,"memory-panel (exact, ref-1 notes, family B part 9)",C10,#32,built
 affectUI,Message Actions,https://www.affectui.com/components/message-actions,Components · Chat,Free,"message-actions (exact, overnight batch A), icon-states, message-bubble",,#32,built
 affectUI,Model Picker,https://www.affectui.com/components/model-picker,Components · Chat,Pro,"model-picker (exact, chunk 2; selected row marked by check and blue dashes only, batch A), model-menu, composer-effort-control",,#32,built
 affectUI,Notification Stack,https://www.affectui.com/components/notification-stack,Components · Feedback,Free,notification-stack,C3,#26,built
 affectUI,OTP Input,https://www.affectui.com/components/otp-input,Components · Inputs,Free,otp-input,C2,#25,built
-affectUI,Parallel Attempts,https://www.affectui.com/components/parallel-attempts,Components · Agents,Pro,fanout-grid,C8,#35,planned
+affectUI,Parallel Attempts,https://www.affectui.com/components/parallel-attempts,Components · Agents,Pro,"parallel-attempts (exact, ref-1 notes, family B part 9), fanout-grid",C8,#32,built
 affectUI,Permission Request,https://www.affectui.com/components/permission-request,Components · Agents,Pro,"approval-card, permission-rules",,#28,built
-affectUI,Plan vs Actual,https://www.affectui.com/components/plan-vs-actual,Components · Agents,Pro,"plan-todo, trace-view",C7,#34,planned
+affectUI,Plan vs Actual,https://www.affectui.com/components/plan-vs-actual,Components · Agents,Pro,"plan-vs-actual (exact, ref-2 notes, family B part 9), plan-todo, trace-view",C7,#32,built
 affectUI,Popover,https://www.affectui.com/components/popover,Components · Navigation,Free,tooltip-popover,C3,#26,built
 affectUI,Profile Menu,https://www.affectui.com/components/profile-menu,Components · Navigation,Free,workspace-chrome,C11,#41,planned
 affectUI,Progress Tracker,https://www.affectui.com/components/progress-tracker,Components · Feedback,Free,plan-todo,C11,#41,planned
 affectUI,Project Card,https://www.affectui.com/components/project-card,Components · Cards,Pro,NEW,C11,#41,planned
 affectUI,Prompt Library,https://www.affectui.com/components/prompt-library,Components · Inputs,Pro,composer-slash-mentions,C10,#35,planned
-affectUI,Rate Limit Planner,https://www.affectui.com/components/rate-limit-planner,Components · Agents,Pro,background-jobs,C9,#35,planned
+affectUI,Rate Limit Planner,https://www.affectui.com/components/rate-limit-planner,Components · Agents,Pro,"rate-limit-planner (exact, ref-2 notes, family B part 9), background-jobs",C9,#32,built
 affectUI,Reaction Bar,https://www.affectui.com/components/reaction-bar,Components · Buttons,Free,number-ticker,C4,#23,built
 affectUI,Review Center,https://www.affectui.com/components/review-center,Components · Agents,Pro,"review-center, review-card",,#30,built
-affectUI,Root Cause Tree,https://www.affectui.com/components/root-cause-tree,Components · Agents,Pro,trace-view,C7,#34,planned
+affectUI,Root Cause Tree,https://www.affectui.com/components/root-cause-tree,Components · Agents,Pro,"root-cause-tree (exact, ref-2 notes, family B part 9), trace-view",C7,#32,built
 affectUI,Run Controls,https://www.affectui.com/components/run-controls,Components · Agents,Pro,"run-controls (exact, chunk 2; finished turn and steer chip on its own line, batch A), composer-send-control, composer-queue-stack, composer-mode-switch, composer-permission-selector, composer-context-meter",,#32,built
-affectUI,Running Now,https://www.affectui.com/components/running-now,Components · Agents,Pro,"background-jobs, desktop-overlays",,#35,planned
-affectUI,Scheduled Runs,https://www.affectui.com/components/scheduled-runs,Components · Agents,Pro,background-jobs,C9,#35,planned
+affectUI,Running Now,https://www.affectui.com/components/running-now,Components · Agents,Pro,"running-now (exact, ref-2 notes, family B part 9), background-jobs, desktop-overlays",,#32,built
+affectUI,Scheduled Runs,https://www.affectui.com/components/scheduled-runs,Components · Agents,Pro,"scheduled-runs (exact, ref-2 notes, family B part 9), background-jobs",C9,#32,built
 affectUI,Segmented Control,https://www.affectui.com/components/segmented-control,Components · Navigation,Free,segmented-control,C1,#23,built
 affectUI,Select,https://www.affectui.com/components/select,Components · Inputs,Free,select,C1,#23,built
 affectUI,Setup Guide,https://www.affectui.com/components/setup-guide,Components · Feedback,Pro,NEW,C11,#41,planned
@@ -98,10 +98,10 @@ affectUI,Thinking Loader,https://www.affectui.com/components/thinking-loader,Com
 affectUI,Thinking State,https://www.affectui.com/components/thinking-state,Components · Chat,Pro,"thinking-state (exact, overnight batch A), reasoning-block",,#32,built
 affectUI,Tips Panel,https://www.affectui.com/components/tips-panel,Components · Cards,Free,NEW,C11,#41,planned
 affectUI,Toaster,https://www.affectui.com/components/toaster,Components · Feedback,Pro,toaster,C3,#26,built
-affectUI,Tool Access Map,https://www.affectui.com/components/tool-access-map,Components · Agents,Pro,"mcp-plugin-list, plugin-icons",C10,#35,planned
+affectUI,Tool Access Map,https://www.affectui.com/components/tool-access-map,Components · Agents,Pro,"tool-access-map (exact, ref-2 notes, family B part 9), mcp-plugin-list, plugin-icons",C10,#32,built
 affectUI,Tool Call Card,https://www.affectui.com/components/tool-call-card,Components · Agents,Free,"tool-call, tools",,#28,built
 affectUI,Tooltip,https://www.affectui.com/components/tooltip,Components · Feedback,Free,tooltip-popover,C3,#26,built
-affectUI,Trace Waterfall,https://www.affectui.com/components/trace-waterfall,Components · Agents,Pro,trace-view,,#34,planned
+affectUI,Trace Waterfall,https://www.affectui.com/components/trace-waterfall,Components · Agents,Pro,"trace-waterfall (exact, ref-3 notes, family B part 9), trace-view",C7,#32,built
 affectUI,Usage Meter,https://www.affectui.com/components/usage-meter,Components · Data display,Pro,run-meter,,#35,planned
 affectUI,Writing Assistant,https://www.affectui.com/components/writing-assistant,Components · Chat,Pro,"writing-assistant (exact, overnight batch A), composer-voice-input, live-voice",C10,#32,built
 affectUI,Agent / Activity,https://www.affectui.com/screens/agent-activity,Screens · App screens,Pro,"rollback-impact, run-replay",S1,#39,planned

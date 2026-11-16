@@ -43,6 +43,18 @@ pub use composer::{
 pub use glyph_loader::{GLYPH_LOADER_CSS, GlyphLoader, GlyphLoaderProps};
 /// Stylesheet for approvals and checkpoints.
 pub const HITL_CSS: &str = include_str!("hitl.css");
+pub use parity::DiffTimelineRun;
+pub use parity::FanoutGrid;
+pub use parity::JudgeBracket;
+pub use parity::MemoryPanel;
+pub use parity::ParallelAttempts;
+pub use parity::PlanVsActual;
+pub use parity::RateLimitPlanner;
+pub use parity::RootCauseTree;
+pub use parity::RunningNow;
+pub use parity::ScheduledRuns;
+pub use parity::ToolAccessMap;
+pub use parity::TraceWaterfall;
 pub use parity::{
     ActionSwapButton, InViewTitle, LoadingState, SlotReels, Source, StreamingText, SweepText,
     TextMorph, ThinkingLoader, WordReveal,
@@ -64,7 +76,7 @@ pub use parity::{
 pub use parity::{
     AgentCrew, AgentCursors, AgentFindings, AgentGraph, AgentHandoff, AgentInbox, AgentLanes,
     AgentLedger, AgentMonitor, AgentQueue, AgentRecap, AgentSequence, AutonomyDial, AwaySummary,
-    CollabStream, ContextMap, CostWaterfall,
+    CollabStream, ContextMap, CostWaterfall, DecisionTree, DelegateBoard, FallbackChain,
 };
 pub use parity::{
     AiComposer, AvatarUpload, ChatComposer, ContextField, ContextWindowGrid, CtxModel,

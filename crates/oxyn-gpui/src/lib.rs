@@ -43,6 +43,18 @@ pub use navigation::{
     ReorderListEl, ResizableEl, TabsEl, TeamSwitcherEl, TocProgressEl, ToggleGroupEl, TreeViewEl,
     UserMenuEl,
 };
+pub use parity::DiffTimelineRunEl;
+pub use parity::FanoutGridEl;
+pub use parity::JudgeBracketEl;
+pub use parity::MemoryPanelEl;
+pub use parity::ParallelAttemptsEl;
+pub use parity::PlanVsActualEl;
+pub use parity::RateLimitPlannerEl;
+pub use parity::RootCauseTreeEl;
+pub use parity::RunningNowEl;
+pub use parity::ScheduledRunsEl;
+pub use parity::ToolAccessMapEl;
+pub use parity::TraceWaterfallEl;
 pub use parity::{
     Act, ActivityFeedEl, AgentApprovalsEl, AgentPlanEl, AgentRunEl, AgentStatusEl, AgentTrailEl,
     AgentTreeEl, ApprovalGatesEl, ApprovalPagerEl, BreakdownEl, ChecklistEl, ConfirmMorphEl,
@@ -60,7 +72,8 @@ pub use parity::{
 pub use parity::{
     AgentCrewEl, AgentCursorsEl, AgentFindingsEl, AgentGraphEl, AgentHandoffEl, AgentInboxEl,
     AgentLanesEl, AgentLedgerEl, AgentMonitorEl, AgentQueueEl, AgentRecapEl, AgentSequenceEl,
-    AutonomyDialEl, AwaySummaryEl, CollabStreamEl, ContextMapEl, CostWaterfallEl,
+    AutonomyDialEl, AwaySummaryEl, CollabStreamEl, ContextMapEl, CostWaterfallEl, DecisionTreeEl,
+    DelegateBoardEl, FallbackChainEl,
 };
 pub use parity::{
     AiComposerEl, AvatarUploadEl, ChatComposerEl, ContextFieldEl, ContextGridEl, ElasticSliderEl,

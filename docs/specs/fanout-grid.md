@@ -1,4 +1,4 @@
-**Status:** draft v0.1 (2026-11-11).
+**Status:** built v0.2 (2026-11-16, plan #32 affectUI fidelity pass, family B part 9 – the task grid, against the ref-3 capture notes; the parallel-lanes half below stays draft).
 
 # Spec: fan-out grid and parallel lanes (`fanout-grid`)
 
@@ -6,6 +6,28 @@ Part of family F, part 2 "Orchestration & observability" ([../component-taxonomy
 overview in [tools.md](tools.md)). Same depth as [composer-send-control.md](composer-send-control.md).
 Target **4 free + 14 Pro = 18 variants**. Reads the shared `RunGraph` from
 [subagent-tree.md](subagent-tree.md) §9.
+
+## 0. Built: the task grid (`FanoutGrid` · `FanoutGridEl`, model `oxyn_core::parity::fanfid`)
+Closes the parity row affectUI · Fan-out Grid (Pro). Behaviour-only rebuild; the job, labels and copy are our own.
+
+| Part | Look (Clean, light / dark) |
+|---|---|
+| Root | card 580 px: white / #17171A, 1 px hairline, 12 px radius, soft shadow |
+| Header | blue fan-out glyph, "Fan-out" 12.5/650, the job muted; right: "done / total", cost so far, "~n left" (green "Finished in n" at the end) |
+| Grid | one 10 px cell per task (3 px gap, 3 px radius, wraps to the width): queued grey, running blue with a sweeping shine (each a little out of step), retrying amber breathing, done green and failed red popping once |
+| Card | under the grid for the hovered / pinned cell: label + status pill, "Worker n · 1.3s · $0.02 · 2 tries", the result (or the error in red) |
+| Counts | toggle buttons with a dot, bold count and word (done, running, retrying, failed – failed only when there are failures); "Retry failed" in red with a ↻ on the right |
+| Status | polite line: "n of N done." in tenths, then "Finished: n done, n failed, $x." |
+
+Behaviour: a fixed pool of workers takes tasks in turn; a few fail once and are retried by their worker (amber), a few
+fail for good until Retry failed runs them again. A count pressed fades every other status to 18 %. Hover shows a
+cell's card; click / Enter / Space pins it (ring), Escape releases. The grid is one tab stop (arrows walk the cells,
+20 per row step for Up / Down, Home / End). Classic moves the count buttons into a grey strip along the card's bottom edge. Below 520 px cells are 8 px and the
+header figures wrap onto their own line. Reduced motion: no wave, shine, breathing or pop.
+Variants: live · early · mid · filtered · pinned · failed · narrow · classic. Extras beyond the reference: tries in the
+card; the filter also clears itself when Retry failed empties the failed count.
+Known gaps: the card sits under the grid instead of floating from its cell; Up / Down step a fixed 20 cells rather
+than one visual row; GPUI is a static snapshot.
 
 ## 1. Purpose
 Two related moments:
@@ -19,8 +41,8 @@ Two related moments:
 Plus a **lanes inbox**: when many lanes run, the user only cares about the ones that need them.
 
 What we saw: affectUI Agent Lanes — a lane per agent, tasks grow into "now", hand-offs drawn between
-agents, approvals sit on the block; affectUI Fan-out Grid — every task a cell that fills as workers
-complete, retries, failures, cost and time left, details on hover; affectUI also lists Parallel Attempts
+agents, approvals sit on the block; affectUI Fan-out Grid — one cell per task coloured by its state,
+with counts, spend, an estimate and per-task details; affectUI also lists Parallel Attempts
 and Judge Bracket (names only) (research note 11, all Pro, study only). Flo Hoeller's lanes post: header
 "2 running · 1 need you", lanes with model names, a lane marked "Idle", a red "Needs you" block
 [R061]; his inbox: columns NEEDS YOU / RUNNING / DONE with counts, live clocks, msgs/tools counts, cards

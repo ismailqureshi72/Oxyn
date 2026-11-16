@@ -34,9 +34,24 @@
 //! - [`awayfid`]: fidelity batch, family B part 6: Away Summary items, order, counts and folding.
 //! - [`collabfid`]: fidelity batch, family B part 6: Collaboration Stream messages, quotes, mentions.
 //! - [`ctxmapfid`]: fidelity batch, family B part 6: Context Map blocks, ordered treemap, compaction.
+//! - [`dtreefid`]: fidelity batch, family B part 8: Decision Tree decisions, branches, follow-ups, flags and keys.
+//! - [`fallbackfid`]: fidelity batch, family B part 8: Fallback Chain attempts, states and timing.
+//! - [`delegatefid`]: fidelity batch, family B part 8: Delegate Board agents, tasks, fit and run status.
 //! - [`costfid`]: fidelity batch, family B part 6: Cost Waterfall steps, rows, axis and formats.
 //! - [`recapfid`]: fidelity batch, family B part 4: Agent Recap events, curve, counts.
 //! - [`seqfid`]: fidelity batch, family B part 4: Agent Sequence rows, frames, bars, demo run.
+//! - [`parallelfid`]: fidelity batch, family B part 9: Parallel Attempts race, scores, best and pick.
+//! - [`judgefid`]: fidelity batch, family B part 9: Judge Bracket seeds, verdicts, current match and winner path.
+//! - [`memoryfid`]: fidelity batch, family B part 9: Memory Panel groups, filter, search, status and undo quote.
+//! - [`runningfid`]: fidelity batch, family B part 9: Running Now tasks, steps, counts and pill label.
+//! - [`planfid`]: fidelity batch, family B part 9: Plan vs Actual schedule, slips, knock-on shifts and ETA.
+//! - [`rootfid`]: fidelity batch, family B part 9: Root Cause Tree checks, gates, found route and evidence.
+//! - [`toolmapfid`]: fidelity batch, family B part 9: Tool Access Map per-agent tool states, counts, calls and replay.
+//! - [`schedfid`]: Scheduled Runs: a week of usage-limited sessions, auto or hand booking, split tasks.
+//! - [`ratefid`]: Rate Limit Planner: the day's token load against a per-minute limit, draggable runs, spread out, fit.
+//! - [`tracefid`]: Trace Waterfall: an agent run as a live span tree on a time axis, folding, details per span.
+//! - [`fanfid`]: Fan-out Grid: a job's tasks as a live grid of status cells, filters, details, retry.
+//! - [`difftlfid`]: the exact Diff Timeline run view (affectUI, family B part 9)
 //! - [`answers`]: fidelity batch, family A: AI Answer markup and streaming, Cited Answer
 //!   sentences and quotes, Message Actions, Thinking Loader phases, Thinking State steps and the
 //!   Writing Assistant's sample writer and dictation.
@@ -56,8 +71,13 @@ pub mod costfid;
 pub mod crewfid;
 pub mod ctxmapfid;
 pub mod cursorsfid;
+pub mod delegatefid;
 pub mod diff;
+pub mod difftlfid;
+pub mod dtreefid;
 pub mod edit;
+pub mod fallbackfid;
+pub mod fanfid;
 pub mod fidelity;
 pub mod fields;
 pub mod fleet;
@@ -66,17 +86,27 @@ pub mod graphfid;
 pub mod handofffid;
 pub mod home;
 pub mod input;
+pub mod judgefid;
 pub mod lanesfid;
 pub mod ledgerfid;
+pub mod memoryfid;
 pub mod merge;
 pub mod meters;
 pub mod monitorfid;
+pub mod parallelfid;
 pub mod plan;
+pub mod planfid;
 pub mod queuefid;
+pub mod ratefid;
 pub mod recapfid;
+pub mod rootfid;
+pub mod runningfid;
+pub mod schedfid;
 pub mod seqfid;
 pub mod text;
+pub mod toolmapfid;
 pub mod tools;
+pub mod tracefid;
 pub mod upload;
 
 /// Smoothstep ease used for rewinds and fills (0..1 in, 0..1 out).

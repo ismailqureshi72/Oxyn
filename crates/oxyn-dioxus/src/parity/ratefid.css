@@ -1,0 +1,111 @@
+/* affectUI fidelity pass, family B part 9 (plan #32): Rate Limit Planner (oxrl-).
+   Clean is the default; Classic follows data-cstyle or data-style. A card: a header with the
+   status pill and Spread out; the day's load as a violet area with the dashed limit, a safety
+   line, the now line and a peak chip, the part over the limit hatched red; one row per run
+   with a draggable bar; Add run; a footer with the insight and a Move to button. Under 520 px
+   the subtitle wraps and the name column narrows. */
+[data-oxyn-theme="light"]{
+  --oxrl-card:#FFFFFF;--oxrl-bd:#ECECEC;--oxrl-fg:#111111;--oxrl-mute:#8A8A8E;--oxrl-grid:#F1F1F2;--oxrl-sel:#F3F0FC;
+  --oxrl-vi:#6E56CF;--oxrl-g0:rgba(110,86,207,.28);--oxrl-g1:rgba(110,86,207,0);
+  --oxrl-amb:#B45F06;--oxrl-ambbg:#FDF0DD;--oxrl-green:#1A7F4B;--oxrl-greenbg:#E4F6EA;--oxrl-red:#C0362C;--oxrl-redbg:#FDE9E7;
+  --oxrl-chip:#171717;--oxrl-chipfg:#FFFFFF;--oxrl-move:#111111;--oxrl-movefg:#FFFFFF;
+  --oxrl-t0:#6E56CF;--oxrl-t0bg:#EEEAFB;--oxrl-t1:#0F9D6B;--oxrl-t1bg:#E3F6EE;--oxrl-t2:#D6336C;--oxrl-t2bg:#FCE7EF;--oxrl-t3:#2F9E44;--oxrl-t3bg:#E6F4E8;
+  --oxrl-shadow:0 1px 2px rgba(0,0,0,.04),0 4px 14px rgba(0,0,0,.04);--oxrl-pop:0 10px 30px rgba(0,0,0,.14);
+}
+[data-oxyn-theme="dark"],[data-oxyn-theme="hc-dark"]{
+  --oxrl-card:#171717;--oxrl-bd:#2A2A2A;--oxrl-fg:#F2F2F2;--oxrl-mute:#8B8B90;--oxrl-grid:#212123;--oxrl-sel:#221E33;
+  --oxrl-vi:#9B87F5;--oxrl-g0:rgba(155,135,245,.32);--oxrl-g1:rgba(155,135,245,0);
+  --oxrl-amb:#F0A54A;--oxrl-ambbg:#3A2A12;--oxrl-green:#4ADE80;--oxrl-greenbg:#12301F;--oxrl-red:#F2685C;--oxrl-redbg:#3A1714;
+  --oxrl-chip:#F2F2F2;--oxrl-chipfg:#111111;--oxrl-move:#0B0B0C;--oxrl-movefg:#F2F2F2;
+  --oxrl-t0:#A795F7;--oxrl-t0bg:#2A2442;--oxrl-t1:#34D399;--oxrl-t1bg:#10302A;--oxrl-t2:#F06595;--oxrl-t2bg:#3A1626;--oxrl-t3:#69DB7C;--oxrl-t3bg:#15301C;
+  --oxrl-shadow:0 1px 2px rgba(0,0,0,.3);--oxrl-pop:0 10px 30px rgba(0,0,0,.55);
+}
+.oxrl{box-sizing:border-box;position:relative;display:flex;flex-direction:column;gap:8px;width:560px;max-width:100%;container-type:inline-size;padding:14px 16px 12px;border:1px solid var(--oxrl-bd);border-radius:12px;background:var(--oxrl-card);color:var(--oxrl-fg);font-size:12px;line-height:1.35;box-shadow:var(--oxrl-shadow);-webkit-font-smoothing:antialiased}
+.oxrl *{box-sizing:border-box}
+.oxrl button{font:inherit;color:inherit}
+.oxrl button:focus-visible,.oxrl [role="slider"]:focus-visible{outline:2px solid var(--oxrl-fg);outline-offset:1px}
+.oxrl-flex{flex:1}
+.oxrl-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;row-gap:6px;min-width:0}
+.oxrl-hd{display:flex;align-items:baseline;gap:8px;min-width:0;flex-wrap:wrap}
+.oxrl .oxrl-ttl{margin:0;font-size:13.5px;font-weight:600;white-space:nowrap}
+.oxrl-sub{color:var(--oxrl-mute);font-size:11px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.oxrl-pill{padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums;transition:background .3s,color .3s}
+.oxrl-pill[data-state="under"]{background:var(--oxrl-greenbg);color:var(--oxrl-green)}
+.oxrl-pill[data-state="close"]{background:var(--oxrl-ambbg);color:var(--oxrl-amb)}
+.oxrl-pill[data-state="over"]{background:var(--oxrl-redbg);color:var(--oxrl-red)}
+.oxrl-btn{display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 10px;border:1px solid var(--oxrl-bd);border-radius:8px;background:var(--oxrl-card);font-size:12px;cursor:pointer;white-space:nowrap}
+.oxrl-btn:hover{background:var(--oxrl-grid)}
+.oxrl-plot{display:grid;grid-template-columns:132px 50px minmax(0,1fr) 52px;margin-top:16px}
+.oxrl-chart{grid-column:3;position:relative;height:110px}
+.oxrl-svg{display:block;width:100%;height:100%;overflow:visible}
+.oxrl-g0{stop-color:var(--oxrl-g0)}
+.oxrl-g1{stop-color:var(--oxrl-g1)}
+.oxrl-overa{fill:color-mix(in srgb,var(--oxrl-red) 16%,transparent)}
+.oxrl-hatch{fill:none;stroke:var(--oxrl-red);stroke-width:1;opacity:.75}
+.oxrl-gl{stroke:var(--oxrl-grid);stroke-width:1}
+.oxrl-buf{stroke:var(--oxrl-mute);stroke-width:1;stroke-dasharray:2 4;opacity:.6}
+.oxrl-lim{stroke:var(--oxrl-red);stroke-width:1.2;stroke-dasharray:5 4}
+.oxrl-line{fill:none;stroke:var(--oxrl-vi);stroke-width:1.8;stroke-linejoin:round}
+.oxrl[data-state="over"] .oxrl-line{stroke:var(--oxrl-red)}
+.oxrl-nowl{stroke:var(--oxrl-fg);stroke-width:1;opacity:.5}
+.oxrl-ylab{position:absolute;right:calc(100% + 6px);translate:0 -50%;font-size:10px;color:var(--oxrl-mute);font-variant-numeric:tabular-nums}
+.oxrl-limlab{color:var(--oxrl-red)}
+.oxrl-now{position:absolute;top:-14px;translate:-50% 0;font-size:10px;color:var(--oxrl-mute);white-space:nowrap}
+.oxrl-peak{position:absolute;translate:-50% calc(-100% - 6px);padding:2px 6px;border-radius:5px;background:var(--oxrl-chip);color:var(--oxrl-chipfg);font-size:10px;font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums;transition:left .35s,top .35s,background .3s}
+.oxrl-peak[data-state="over"]{background:var(--oxrl-red);color:#fff}
+.oxrl-axis{grid-column:3;position:relative;height:14px;margin-top:3px}
+.oxrl-axis span{position:absolute;translate:-50% 0;font-size:10px;color:var(--oxrl-mute);font-variant-numeric:tabular-nums}
+.oxrl-axis span:first-child{translate:0 0}
+.oxrl-rows{display:flex;flex-direction:column;margin-top:4px}
+.oxrl-row{position:relative;display:grid;grid-template-columns:132px 50px minmax(0,1fr) 52px;align-items:center;height:28px;border-radius:7px;transition:background .2s}
+.oxrl-row[data-sel="true"]{background:var(--oxrl-sel)}
+.oxrl-name{display:flex;align-items:center;gap:7px;min-width:0;height:100%;padding:0 4px;border:0;background:none;text-align:left;cursor:pointer}
+.oxrl-gly{flex:none;display:inline-flex;align-items:flex-end;gap:2px;height:10px}
+.oxrl-gly i{display:block;width:3px;border-radius:1px;background:var(--oxrl-tc)}
+.oxrl-gly i:first-child{height:6px}
+.oxrl-gly i:last-child{height:10px}
+.oxrl-nm{min-width:0;font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.oxrl-row[data-started="true"] .oxrl-nm{color:var(--oxrl-mute)}
+.oxrl-when{font-size:11px;color:var(--oxrl-mute);font-variant-numeric:tabular-nums}
+.oxrl-when[data-late="true"]{color:var(--oxrl-red);font-weight:600}
+.oxrl-track{position:relative;height:100%}
+.oxrl-row[data-tone="0"]{--oxrl-tc:var(--oxrl-t0);--oxrl-tb:var(--oxrl-t0bg)}
+.oxrl-row[data-tone="1"]{--oxrl-tc:var(--oxrl-t1);--oxrl-tb:var(--oxrl-t1bg)}
+.oxrl-row[data-tone="2"]{--oxrl-tc:var(--oxrl-t2);--oxrl-tb:var(--oxrl-t2bg)}
+.oxrl-row[data-tone="3"]{--oxrl-tc:var(--oxrl-t3);--oxrl-tb:var(--oxrl-t3bg)}
+.oxrl-run{position:absolute;top:50%;height:14px;translate:0 -50%;min-width:8px;border-radius:5px;background:var(--oxrl-tb);border:1px solid color-mix(in srgb,var(--oxrl-tc) 55%,transparent);cursor:grab;touch-action:none;transition:left .38s cubic-bezier(.2,.9,.25,1.1)}
+.oxrl[data-drag="true"] .oxrl-run{transition:none;cursor:grabbing}
+.oxrl-fill{position:absolute;inset:2px auto 2px 2px;width:22%;border-radius:3px;background:var(--oxrl-tc);opacity:.8}
+.oxrl-run[aria-disabled="true"]{cursor:default;filter:grayscale(.85);opacity:.6}
+.oxrl-pk{position:absolute;top:50%;translate:0 -50%;font-size:10px;font-weight:600;color:var(--oxrl-tc);white-space:nowrap;font-variant-numeric:tabular-nums;transition:left .38s cubic-bezier(.2,.9,.25,1.1)}
+.oxrl[data-drag="true"] .oxrl-pk{transition:none}
+.oxrl-acts{display:flex;justify-content:flex-end;gap:2px;opacity:0;transition:opacity .15s}
+.oxrl-row:hover .oxrl-acts,.oxrl-row[data-sel="true"] .oxrl-acts,.oxrl-acts:focus-within{opacity:1}
+.oxrl-ic{display:grid;place-items:center;width:22px;height:22px;padding:0;border:0;border-radius:6px;background:none;color:var(--oxrl-mute)!important;cursor:pointer}
+.oxrl-ic:hover{background:var(--oxrl-grid);color:var(--oxrl-fg)!important}
+.oxrl-dlg{position:absolute;z-index:6;top:calc(100% + 4px);right:0;width:268px;max-width:calc(100cqw - 8px);display:flex;flex-direction:column;gap:7px;padding:12px;border:1px solid var(--oxrl-bd);border-radius:10px;background:var(--oxrl-card);box-shadow:var(--oxrl-pop);transform-origin:top right;animation:oxrl-pop .18s ease-out both}
+.oxrl-dt{font-size:12px;font-weight:600}
+.oxrl-f{display:grid;grid-template-columns:1fr 128px;align-items:center;gap:8px;font-size:11px;color:var(--oxrl-mute)}
+.oxrl-f input{width:100%;height:26px;padding:0 7px;border:1px solid var(--oxrl-bd);border-radius:6px;background:var(--oxrl-card);color:var(--oxrl-fg);font:inherit;font-size:11.5px;color-scheme:light dark}
+.oxrl-f input:focus-visible{outline:2px solid var(--oxrl-vi);outline-offset:0}
+.oxrl-done{align-self:flex-end;height:26px;padding:0 14px;border:0;border-radius:7px;background:var(--oxrl-move);color:var(--oxrl-movefg)!important;font-weight:600;cursor:pointer}
+.oxrl-add{align-self:flex-start;display:inline-flex;align-items:center;gap:5px;height:24px;padding:0 6px;border:0;border-radius:6px;background:none;color:var(--oxrl-mute)!important;font-size:12px;cursor:pointer}
+.oxrl-add:hover{background:var(--oxrl-grid);color:var(--oxrl-fg)!important}
+.oxrl-foot{display:flex;align-items:center;gap:10px;min-height:30px;padding-top:8px;border-top:1px solid var(--oxrl-bd)}
+.oxrl-ins{flex:1;min-width:0;font-size:11.5px;color:var(--oxrl-mute)}
+.oxrl-move{flex:none;height:28px;padding:0 12px;border:1px solid var(--oxrl-move);border-radius:999px;background:var(--oxrl-move);color:var(--oxrl-movefg)!important;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap}
+[data-oxyn-theme="dark"] .oxrl-move,[data-oxyn-theme="hc-dark"] .oxrl-move{border-color:#F2F2F2}
+/* Classic: plain bars and square pills. */
+:is([data-cstyle="classic"] .oxrl:not([data-style]),.oxrl[data-style="classic"]) .oxrl-run{border-radius:2px;background:var(--oxrl-tc);border:0;height:8px}
+:is([data-cstyle="classic"] .oxrl:not([data-style]),.oxrl[data-style="classic"]) .oxrl-fill{display:none}
+:is([data-cstyle="classic"] .oxrl:not([data-style]),.oxrl[data-style="classic"]) .oxrl-pill,:is([data-cstyle="classic"] .oxrl:not([data-style]),.oxrl[data-style="classic"]) .oxrl-move{border-radius:4px}
+:is([data-cstyle="classic"] .oxrl:not([data-style]),.oxrl[data-style="classic"]) .oxrl-area{opacity:.45}
+@container (max-width:520px){
+  .oxrl-row,.oxrl-plot{grid-template-columns:96px 40px minmax(0,1fr) 48px}
+  .oxrl-gly{display:none}
+  .oxrl-axis span:nth-child(even){display:none}
+  .oxrl-foot{flex-wrap:wrap}
+  .oxrl-now{display:none}
+}
+@keyframes oxrl-pop{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.oxrl-run,.oxrl-pk,.oxrl-peak,.oxrl-pill{transition:none}.oxrl-dlg{animation:none}}

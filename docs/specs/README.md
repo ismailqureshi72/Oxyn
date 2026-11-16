@@ -66,7 +66,7 @@ specified just as deeply. When we point at one component as an example, the stan
 | [terminal-output.md](terminal-output.md) | draft v0.1 |
 | [plan-todo.md](plan-todo.md) | draft v0.1 |
 | [subagent-tree.md](subagent-tree.md) | draft v0.1 |
-| [fanout-grid.md](fanout-grid.md) | draft v0.1 |
+| [fanout-grid.md](fanout-grid.md) | built v0.2 (task grid, plan #32, family B part 9); lanes draft |
 | [acting-indicator.md](acting-indicator.md) | draft v0.1 |
 | [trace-view.md](trace-view.md) | draft v0.1 |
 | [background-jobs.md](background-jobs.md) | draft v0.1 |
@@ -156,10 +156,10 @@ specified just as deeply. When we point at one component as an example, the stan
 | [decision-card.md](decision-card.md) | v1 — implemented (plan #25): decision card |
 | [approval-questions.md](approval-questions.md) | v1 — implemented (plan #25): approval questions (Beautiful UI Approval Card port) |
 | [smart-form-fill.md](smart-form-fill.md) | v1 — implemented (plan #25): smart form fill |
-| [inline-diff.md](inline-diff.md) | built v0.1 (plan #30) |
+| [inline-diff.md](inline-diff.md) | built v0.2 (review mode, plan #32, family B part 9) |
 | [change-summary.md](change-summary.md) | built v0.1 (plan #30) |
 | [diff-table.md](diff-table.md) | built v0.1 (plan #30) |
-| [diff-timeline.md](diff-timeline.md) | built v0.1 (plan #30) |
+| [diff-timeline.md](diff-timeline.md) | built v0.2 (run view, plan #32, family B part 9) |
 | [code-suggestion.md](code-suggestion.md) | built v0.1 (plan #30) |
 | [ai-inline-edit.md](ai-inline-edit.md) | built v0.1 (plan #30) |
 | [image-compare.md](image-compare.md) | built v0.1 (plan #30) |
@@ -193,4 +193,17 @@ specified just as deeply. When we point at one component as an example, the stan
 | [collaboration-stream.md](collaboration-stream.md) | built v0.1 (plan #32, overnight batch, family B part 6) |
 | [context-map.md](context-map.md) | built v0.1 (plan #32, overnight batch, family B part 6) |
 | [cost-waterfall.md](cost-waterfall.md) | built v0.1 (plan #32, overnight batch, family B part 6) |
+| [decision-tree.md](decision-tree.md) | built v0.2 (plan #32, family B part 8) |
+| [delegate-board.md](delegate-board.md) | built v0.2 (plan #32, family B part 8) |
+| [fallback-chain.md](fallback-chain.md) | built v0.2 (plan #32, family B part 8) |
+| [parallel-attempts.md](parallel-attempts.md) | built v0.1 (plan #32, family B part 9) |
+| [judge-bracket.md](judge-bracket.md) | built v0.1 (plan #32, family B part 9) |
+| [memory-panel.md](memory-panel.md) | built v0.1 (plan #32, family B part 9) |
+| [running-now.md](running-now.md) | built v0.1 (plan #32, family B part 9) |
+| [plan-vs-actual.md](plan-vs-actual.md) | built v0.1 (plan #32, family B part 9) |
+| [root-cause-tree.md](root-cause-tree.md) | built v0.1 (plan #32, family B part 9) |
+| [tool-access-map.md](tool-access-map.md) | built v0.1 (plan #32, family B part 9) |
+| [scheduled-runs.md](scheduled-runs.md) | built v0.1 (plan #32, family B part 9) |
+| [rate-limit-planner.md](rate-limit-planner.md) | built v0.1 (plan #32, family B part 9) |
+| [trace-waterfall.md](trace-waterfall.md) | built v0.1 (plan #32, family B part 9) |
 | Every other component in [../component-taxonomy.md](../component-taxonomy.md) | to write in V2.2 |

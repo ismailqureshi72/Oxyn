@@ -1,0 +1,71 @@
+/* affectUI fidelity pass, family B part 9 (plan #32): Running Now (oxrn-).
+   Clean is the default; Classic follows data-cstyle or data-style. An inline pill for a header
+   or sidebar; the popover opens below it (end- or start-aligned) or to its right. */
+[data-oxyn-theme="light"]{
+  --oxrn-card:#FFFFFF;--oxrn-bd:#ECECEC;--oxrn-fg:#111111;--oxrn-mute:#8A8A8E;--oxrn-hover:#F6F6F7;--oxrn-ib:#F4F4F5;--oxrn-track:#E8E8EA;
+  --oxrn-run:#6E56CF;--oxrn-amb:#B45F06;--oxrn-ambbg:#FDF0DD;--oxrn-done:#1A7F4B;--oxrn-pause:#A1A1AA;
+  --oxrn-pop:0 12px 30px rgba(0,0,0,.12),0 2px 6px rgba(0,0,0,.05);
+}
+[data-oxyn-theme="dark"],[data-oxyn-theme="hc-dark"]{
+  --oxrn-card:#1B1B1B;--oxrn-bd:#2E2E2E;--oxrn-fg:#F2F2F2;--oxrn-mute:#85858C;--oxrn-hover:#232323;--oxrn-ib:#242424;--oxrn-track:#333336;
+  --oxrn-run:#9B87F5;--oxrn-amb:#F0A54A;--oxrn-ambbg:#3A2A12;--oxrn-done:#3DD68C;--oxrn-pause:#71717A;
+  --oxrn-pop:0 14px 36px rgba(0,0,0,.55);
+}
+.oxrn{position:relative;display:inline-flex;color:var(--oxrn-fg);font-size:12px;line-height:1.35;-webkit-font-smoothing:antialiased}
+.oxrn *{box-sizing:border-box}
+.oxrn button{font:inherit;color:inherit}
+.oxrn button:focus-visible{outline:2px solid var(--oxrn-fg);outline-offset:2px}
+.oxrn-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.oxrn-pill{display:inline-flex;align-items:center;gap:10px;height:24px;padding:0 6px 0 10px;border:1px solid var(--oxrn-bd);border-radius:999px;background:var(--oxrn-card);font-size:12px;white-space:nowrap;cursor:pointer;transition:background .15s}
+.oxrn-pill:hover{background:var(--oxrn-hover)}
+.oxrn-g{display:inline-flex;align-items:center;gap:5px;color:var(--oxrn-mute)}
+.oxrn-g b{color:var(--oxrn-fg);font-weight:600;font-variant-numeric:tabular-nums}
+.oxrn-dot{width:6px;height:6px;border-radius:50%}
+.oxrn-dot[data-st="running"]{background:var(--oxrn-run);animation:oxrn-pulse 1.6s ease-in-out infinite}
+.oxrn-dot[data-st="needs-you"]{background:var(--oxrn-amb)}
+.oxrn-chev{display:inline-flex;color:var(--oxrn-mute);transition:rotate .2s}
+.oxrn[data-open="true"] .oxrn-chev{rotate:180deg}
+.oxrn-pop{position:absolute;top:calc(100% + 6px);right:0;z-index:20;width:284px;padding:8px;border:1px solid var(--oxrn-bd);border-radius:12px;background:var(--oxrn-card);box-shadow:var(--oxrn-pop);transform-origin:top right;animation:oxrn-open .18s cubic-bezier(.2,.8,.2,1) both;overflow:clip}
+.oxrn[data-place="below-start"] .oxrn-pop{right:auto;left:0;transform-origin:top left}
+.oxrn[data-place="right"] .oxrn-pop{top:0;right:auto;left:calc(100% + 8px);transform-origin:top left}
+.oxrn-ph{display:flex;align-items:center;gap:6px;padding:4px 6px 6px;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--oxrn-mute)}
+.oxrn-ph span{font-variant-numeric:tabular-nums}
+.oxrn-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.oxrn-row{display:flex;align-items:center;gap:6px;min-height:40px;padding:0 4px 0 0;border-radius:8px;transition:background .15s}
+.oxrn-row:hover{background:var(--oxrn-hover)}
+.oxrn-main{display:flex;align-items:center;gap:9px;flex:1;min-width:0;height:40px;padding:0 0 0 6px;border:0;background:none;text-align:left;cursor:pointer}
+.oxrn-tx{display:flex;flex-direction:column;min-width:0}
+.oxrn-tx b{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.oxrn-step{font-size:11px;color:var(--oxrn-mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;animation:oxrn-fade .3s ease-out}
+.oxrn-cnt{flex:none;font-size:11px;color:var(--oxrn-mute);font-variant-numeric:tabular-nums}
+.oxrn-ib{flex:none;display:grid;place-items:center;width:24px;height:24px;padding:0;border:0;border-radius:7px;background:var(--oxrn-ib);color:var(--oxrn-mute);cursor:pointer}
+.oxrn-ib:hover{color:var(--oxrn-fg)}
+.oxrn-ghost{visibility:hidden}
+.oxrn-need{flex:none;padding:1px 7px;border-radius:999px;background:var(--oxrn-ambbg);color:var(--oxrn-amb);font-size:10.5px;font-weight:600;white-space:nowrap;animation:oxrn-fade .3s ease-out}
+.oxrn-open{flex:none;height:24px;padding:0 6px;border:0;border-radius:7px;background:none;font-size:11.5px;font-weight:600;cursor:pointer}
+.oxrn-open:hover{background:var(--oxrn-ib)}
+.oxrn-ring{flex:none;overflow:visible}
+.oxrn-rt{fill:none;stroke:var(--oxrn-track);stroke-width:2}
+.oxrn-rf{fill:none;stroke:var(--oxrn-run);stroke-width:2;stroke-linecap:round;transform:rotate(-90deg);transform-origin:8px 8px;transition:stroke-dasharray .6s ease,stroke .3s}
+.oxrn-ring[data-st="running"]{animation:oxrn-sweep 2.4s linear infinite}
+.oxrn-ring[data-st="paused"] .oxrn-rf{stroke:var(--oxrn-pause)}
+.oxrn-ring[data-st="needs-you"] .oxrn-rf{stroke:var(--oxrn-amb)}
+.oxrn-ring[data-st="done"] .oxrn-rf{stroke:var(--oxrn-done)}
+.oxrn-rk{fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.oxrn-ring[data-st="done"] .oxrn-rk{stroke:var(--oxrn-done)}
+.oxrn-ring[data-st="needs-you"] .oxrn-rk{stroke:var(--oxrn-amb)}
+.oxrn-row[data-st="done"] .oxrn-tx b{color:var(--oxrn-mute)}
+.oxrn-all{display:flex;align-items:center;gap:8px;width:100%;height:34px;margin-top:6px;padding:0 6px;border:0;border-top:1px solid var(--oxrn-bd);border-radius:0 0 6px 6px;background:none;font-size:12px;cursor:pointer;text-align:left}
+.oxrn-all span{flex:1}
+.oxrn-all svg{color:var(--oxrn-mute)}
+.oxrn-all:hover{background:var(--oxrn-hover)}
+@keyframes oxrn-open{from{opacity:0;scale:.96}to{opacity:1;scale:1}}
+@keyframes oxrn-fade{from{opacity:0}to{opacity:1}}
+@keyframes oxrn-pulse{50%{opacity:.35}}
+@keyframes oxrn-sweep{to{rotate:360deg}}
+@media (prefers-reduced-motion:reduce){.oxrn *{animation:none!important;transition:none!important}}
+:is([data-cstyle="classic"] .oxrn:not([data-style="clean"]),.oxrn[data-style="classic"]) .oxrn-pill{border-radius:8px;border-color:color-mix(in srgb,var(--oxrn-fg) 14%,var(--oxrn-bd))}
+:is([data-cstyle="classic"] .oxrn:not([data-style="clean"]),.oxrn[data-style="classic"]) .oxrn-pop{padding:0;border-radius:10px}
+:is([data-cstyle="classic"] .oxrn:not([data-style="clean"]),.oxrn[data-style="classic"]) .oxrn-ph{padding:8px 12px;border-bottom:1px solid var(--oxrn-bd);background:var(--oxrn-hover)}
+:is([data-cstyle="classic"] .oxrn:not([data-style="clean"]),.oxrn[data-style="classic"]) .oxrn-list{padding:4px}
+:is([data-cstyle="classic"] .oxrn:not([data-style="clean"]),.oxrn[data-style="classic"]) .oxrn-all{margin:0;padding:0 12px;border-radius:0;background:var(--oxrn-hover)}
