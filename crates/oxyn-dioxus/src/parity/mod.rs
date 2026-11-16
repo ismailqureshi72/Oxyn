@@ -56,6 +56,7 @@ mod seqfid;
 mod stairsfid;
 mod storagefid;
 mod text;
+mod themefid;
 mod toolmapfid;
 mod tools;
 mod tracefid;
@@ -136,6 +137,7 @@ pub use text::{
     ActionSwapButton, InViewTitle, LoadingState, SlotReels, Source, StreamingText, SweepText,
     TextMorph, ThinkingLoader, WordReveal,
 };
+pub use themefid::{AccentDensity, BackgroundPicker, ThemeGrid, ThemeSplit};
 pub use toolmapfid::ToolAccessMap;
 pub use tools::{
     ChipStep, DiffChip, ExpandableCard, JsonViewer, LinkUnfurl, RowOutput, ToolCall, ToolCallCard,

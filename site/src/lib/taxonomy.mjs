@@ -11,6 +11,7 @@ export const FAMILIES = [
   { slug: 'storage', name: 'Storage', blurb: 'Disk and context usage drawn as dot matrices: capacity, cleanup, waffle and forecast.' },
   { slug: 'attachments', name: 'Attachments', blurb: 'Files, images and links going into a prompt: drop zones, chips with upload progress, prints and lanes.' },
   { slug: 'menu-motion', name: 'Menu Motion', blurb: 'Menus and controls that move like liquid: the gooey menu motion on attach and model menus, a composer, tabs and drops.' },
+  { slug: 'theme-selector', name: 'Theme Selector', blurb: 'Background pictures and texture, theme swatches with font size, a split compare and accent with density.' },
 ];
 function FAMILY_GROUPS() {
   return FAMILIES.map((f) => ({ ...f, family: true }));

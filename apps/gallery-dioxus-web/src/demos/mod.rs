@@ -35,6 +35,7 @@ mod parity_merge;
 mod parity_run;
 mod parity_storage;
 mod parity_text;
+mod parity_theme;
 mod parity_thinking;
 mod parity_tools;
 mod pickers;
@@ -55,7 +56,7 @@ pub struct Category {
 }
 
 /// Categories in nav order.
-pub const CATEGORIES: [Category; 25] = [
+pub const CATEGORIES: [Category; 26] = [
     Category {
         slug: "composer",
         name: "Composer",
@@ -181,6 +182,11 @@ pub const CATEGORIES: [Category; 25] = [
         name: "Menu Motion",
         blurb: "Menus and controls that move like liquid: the gooey menu motion on attach and model menus, a composer, tabs and drops.",
     },
+    Category {
+        slug: "theme-selector",
+        name: "Theme Selector",
+        blurb: "Background pictures and texture, theme swatches with font size, a split compare and accent with density.",
+    },
 ];
 
 /// Every demo, in category order.
@@ -207,6 +213,7 @@ pub fn catalog() -> Vec<Demo> {
     v.extend(parity_gooey::demos());
     v.extend(parity_attach::demos());
     v.extend(parity_storage::demos());
+    v.extend(parity_theme::demos());
     v.extend(parity_merge::demos());
     v.extend(parity_text::demos());
     v.extend(checkpoints::demos());
