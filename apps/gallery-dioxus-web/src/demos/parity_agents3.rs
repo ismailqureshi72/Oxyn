@@ -8,9 +8,10 @@ use oxyn_core::{
         delegatefid::{db_agents, db_auto_plan, db_tasks},
         dtreefid::{dt_demo, dt_extra},
         fallbackfid::{FbOutcome, fb_demo, fb_demo_all_fail},
+        parallelfid::{PaStatus, pa_at, pa_demo},
     },
 };
-use oxyn_dioxus::{DecisionTree, DelegateBoard, FallbackChain};
+use oxyn_dioxus::{DecisionTree, DelegateBoard, FallbackChain, ParallelAttempts};
 
 use super::{Code, mk, sel, var};
 use crate::{Align, Demo, Vals};
@@ -197,11 +198,168 @@ fn delegate_board_code(_: &Vals) -> String {
         .done()
 }
 
+// ---------- Parallel Attempts ----------
+
+fn five() -> Vec<oxyn_core::parity::parallelfid::PaScript> {
+    let mut d = pa_demo();
+    let mut x = d[0].clone();
+    x.end.id = "d".into();
+    x.end.model = "Grok 4".into();
+    x.end.brand = "grok".into();
+    x.end.approach = "Mock the clock".into();
+    x.end.score = Some(71);
+    x.end.note = "18 of 20 runs pass".into();
+    x.ms = 6900;
+    let mut y = d[1].clone();
+    y.end.id = "e".into();
+    y.end.model = "Mistral Large".into();
+    y.end.brand = "mistral".into();
+    y.end.approach = "Pin the test data".into();
+    y.end.score = Some(86);
+    y.end.note = "20 of 20 runs pass · touches 6 files".into();
+    y.ms = 7200;
+    d.push(x);
+    d.push(y);
+    d
+}
+
+fn parallel_attempts(v: &Vals, now: ClockMs) -> Element {
+    let mut msg = use_signal(String::new);
+    let key = format!(
+        "{}{}{}{}",
+        v.s("style"),
+        v.s("state"),
+        v.s("attempts"),
+        v.s("width")
+    );
+    let state = v.s("state");
+    let scripts = if v.s("attempts") == "five" {
+        five()
+    } else {
+        pa_demo()
+    };
+    let attempts = match state {
+        "running" => Some(pa_at(&scripts, 2600)),
+        "start" => Some(pa_at(&scripts, 0)),
+        _ => None,
+    };
+    let picked = (state == "picked").then(|| "a".to_string());
+    let live = state == "live";
+    let w = match v.s("width") {
+        "narrow" => "380px",
+        _ => "720px",
+    };
+    let _ = PaStatus::Done;
+    rsx! {
+        div { "data-k": "{key}", key: "{key}", "data-state": "{state}", style: "width:{w};max-width:100%;display:flex;flex-direction:column;gap:8px",
+            ParallelAttempts { now, live, attempts, scripts: Some(scripts), picked, style: cstyle(v),
+                on_pick: move |id: String| msg.set(format!("onPick({id:?})")) }
+            {status(msg)}
+        }
+    }
+}
+
+fn parallel_attempts_code(_: &Vals) -> String {
+    Code::new("ParallelAttempts")
+        .raw("attempts", "Some(race.attempts())")
+        .raw("task", "\"Steady the flaky payment test\"")
+        .raw("now", "clock.now()")
+        .raw("on_pick", "move |id| race.use_attempt(id)")
+        .done()
+}
+
+fn parallel_attempts_demo(style: crate::Control) -> Demo {
+    Demo {
+        controls: vec![
+            style,
+            sel(
+                "state",
+                "State",
+                &["live", "start", "running", "done", "picked"],
+                "live",
+            ),
+            sel("attempts", "Attempts", &["three", "five"], "three"),
+            sel("width", "Width", &["wide", "narrow"], "wide"),
+        ],
+        variants: vec![
+            var(
+                "live",
+                "The race plays and loops: bars grow with a shine, the step under each name changes, cost counts up; then scores land, the best is marked and used.",
+                &[],
+            ),
+            var(
+                "start",
+                "Just started: every bar at a sliver, no scores, nothing to pick yet.",
+                &[("state", "start")],
+            ),
+            var(
+                "running",
+                "Mid-race: one attempt has already failed where it stopped; the others are still going.",
+                &[("state", "running")],
+            ),
+            var(
+                "done",
+                "Finished: the best score gets the Best tag, a green bar and a soft green wash; the failure stays dimmed.",
+                &[("state", "done")],
+            ),
+            var(
+                "own-pick",
+                "Your own pick: the lower-scoring attempt is in use, the best keeps its tag and offers Use this one.",
+                &[("state", "picked")],
+            ),
+            var(
+                "best-of-5",
+                "Best of 5 with more models and approaches.",
+                &[("state", "done"), ("attempts", "five")],
+            ),
+            var(
+                "narrow",
+                "Below 560 px each progress bar drops to its own line and the approach is hidden.",
+                &[("state", "done"), ("width", "narrow")],
+            ),
+            var(
+                "classic",
+                "Classic style: header band, rows joined in one framed list, a green edge on the one in use.",
+                &[("style", "classic"), ("state", "done")],
+            ),
+        ],
+        render: parallel_attempts,
+        code: parallel_attempts_code,
+        keyboard: vec![
+            ("Tab", "Moves between the finished attempts' Use buttons"),
+            ("Enter / Space", "Uses the focused attempt"),
+        ],
+        a11y: vec![
+            "The rows form a radiogroup labelled by the heading; a finished attempt's Use control is a radio whose name gives the model and its score.",
+            "Bars are decorative; progress, failure and score are all in text.",
+            "Reduced motion drops the stagger, the shine and the glides.",
+        ],
+        responsive: vec![
+            "Wide: tile, name and approach, bar, score and the use button in one line.",
+            "Under 560 px the bar goes under the name, the approach and the task drop out.",
+        ],
+        height: 300,
+        live: true,
+        align: Align::Start,
+        ..mk(
+            "parallel-attempts",
+            "Parallel Attempts",
+            "tools",
+            "One task tried several ways at once: every attempt races as a row with its model, approach and a live bar, finishes with a score, and the best one is marked and used – switch to another if you prefer.",
+            "ParallelAttempts",
+            "ParallelAttemptsEl",
+            "parallel-attempts",
+            "parity/parallelfid.rs",
+        )
+    }
+}
+
 /// Family B part 8 demos.
 pub(crate) fn demos() -> Vec<Demo> {
     let style = || sel("style", "Style", &["clean", "classic"], "clean");
     vec![
         decision_tree_demo(style()),
+        parallel_attempts_demo(style()),
         Demo {
             controls: vec![
                 style(),
