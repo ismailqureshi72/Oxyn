@@ -12,7 +12,7 @@ EXT = ('.css', '.rs', '.json', '.ts', '.astro', '.mjs', '.html')
 SKIP = ('site/src/generated', 'node_modules', '/target', 'tokens/presets')
 HEX = re.compile(r'#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})\b')
 RGB = re.compile(r'rgba?\(\s*(\d{1,3})\s*[, ]\s*(\d{1,3})\s*[, ]\s*(\d{1,3})')
-GPUI = re.compile(r'rgba?\(\s*0x([0-9a-fA-F]{6})')
+GPUI = re.compile(r'\b0x([0-9a-fA-F]{6})(?:[0-9a-fA-F]{2})?\b')
 
 
 def warm(r, g, b, light=False):
