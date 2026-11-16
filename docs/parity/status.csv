@@ -48,7 +48,7 @@ affectUI,Decision Inbox,https://www.affectui.com/components/decision-inbox,Compo
 affectUI,Decision Tree,https://www.affectui.com/components/decision-tree,Components · Agents,Pro,"decision-tree (exact, ref-1 notes, family B part 8), plan-approval",C5,#32,built
 affectUI,Delegate Board,https://www.affectui.com/components/delegate-board,Components · Agents,Pro,"delegate-board (exact, ref-1 notes, family B part 8), background-jobs",C6,#32,built
 affectUI,Dialog,https://www.affectui.com/components/dialog,Components · Feedback,Free,dialog,C3,#26,built
-affectUI,Diff Timeline,https://www.affectui.com/components/diff-timeline,Components · Agents,Pro,"diff-viewer, run-replay",C7,#34,planned
+affectUI,Diff Timeline,https://www.affectui.com/components/diff-timeline,Components · Agents,Pro,"diff-timeline (run view, ref-3 notes, family B part 9), diff-viewer, run-replay",C7,#32,built
 affectUI,Dropdown Menu,https://www.affectui.com/components/dropdown-menu,Components · Navigation,Free,dropdown-menu,C3,#26,built
 affectUI,Dropzone,https://www.affectui.com/components/dropzone,Components · Inputs,Pro,composer-attachments,,#28,built
 affectUI,Email Draft,https://www.affectui.com/components/email-draft,Components · Cards,Free,genui-forms,C11,#41,planned

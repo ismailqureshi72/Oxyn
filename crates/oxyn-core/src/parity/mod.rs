@@ -51,6 +51,7 @@
 //! - [`ratefid`]: Rate Limit Planner: the day's token load against a per-minute limit, draggable runs, spread out, fit.
 //! - [`tracefid`]: Trace Waterfall: an agent run as a live span tree on a time axis, folding, details per span.
 //! - [`fanfid`]: Fan-out Grid: a job's tasks as a live grid of status cells, filters, details, retry.
+//! - [`difftlfid`]: the exact Diff Timeline run view (affectUI, family B part 9)
 //! - [`answers`]: fidelity batch, family A: AI Answer markup and streaming, Cited Answer
 //!   sentences and quotes, Message Actions, Thinking Loader phases, Thinking State steps and the
 //!   Writing Assistant's sample writer and dictation.
@@ -72,6 +73,7 @@ pub mod ctxmapfid;
 pub mod cursorsfid;
 pub mod delegatefid;
 pub mod diff;
+pub mod difftlfid;
 pub mod dtreefid;
 pub mod edit;
 pub mod fallbackfid;

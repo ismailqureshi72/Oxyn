@@ -10,10 +10,11 @@ use oxyn_core::{
         ReviewMode, ReviewStep, Revision, Risk, Severity, Span, SugHunk, SugStatus, Suggestion,
         Thread, table_diff,
     },
+    parity::difftlfid::{dt_demo, dt_end},
 };
 use oxyn_dioxus::{
     AiInlineEdit, ChangeSummary, CodeSuggestion, CommentThread, DiffTable, DiffTimeline,
-    DiffViewer, ImageCompare, InlineDiff, ReviewCard, ReviewCenter,
+    DiffTimelineRun, DiffViewer, ImageCompare, InlineDiff, ReviewCard, ReviewCenter,
 };
 
 use super::{Code, mk, q, rng, sel, tog, var};
@@ -322,6 +323,34 @@ fn revisions() -> Vec<Revision> {
 
 fn diff_timeline(v: &Vals, now: ClockMs) -> Element {
     let mut msg = use_signal(String::new);
+    if v.s("view") == "run" {
+        let key = format!("{}{}{}", v.s("style"), v.s("state"), v.s("width"));
+        let state = v.s("state");
+        let at = match state {
+            "live" => None,
+            "early" => Some(47_000),
+            "mid" | "open" => Some(126_000),
+            _ => Some(dt_end(&dt_demo())),
+        };
+        let open = (state == "open").then_some(7);
+        let style = if v.s("style") == "classic" {
+            "classic".to_string()
+        } else {
+            String::new()
+        };
+        let w = if v.s("width") == "narrow" {
+            "360px"
+        } else {
+            "460px"
+        };
+        return rsx! {
+            div { "data-k": "{key}", key: "{key}", "data-state": "{state}", style: "width:{w};max-width:100%;display:flex;flex-direction:column;gap:8px",
+                DiffTimelineRun { now, at, open, style,
+                    on_open: move |i: Option<usize>| msg.set(format!("onOpen({i:?})")) }
+                {status(msg)}
+            }
+        };
+    }
     rsx! {
         div { style: "width:100%;max-width:960px;display:flex;flex-direction:column;gap:6px;--oxyn-diff-max:none",
             for k in [v.string("layout")] {
@@ -334,6 +363,15 @@ fn diff_timeline(v: &Vals, now: ClockMs) -> Element {
 }
 
 fn diff_timeline_code(v: &Vals) -> String {
+    if v.s("view") == "run" {
+        return Code::new("DiffTimelineRun")
+            .raw("edits", "Some(run.edits())")
+            .raw("at", "Some(run.elapsed_ms())")
+            .raw("agent", q("UI agent"))
+            .raw("context", q("PR #57"))
+            .raw("now", "clock.now()")
+            .done();
+    }
     Code::new("DiffTimeline")
         .raw("path", q("src/billing/fetch-invoice.ts"))
         .raw("revisions", "history.revisions()")
@@ -1025,39 +1063,97 @@ pub(crate) fn demos() -> Vec<Demo> {
             )
         },
         Demo {
-            controls: vec![sel(
-                "layout",
-                "Diff layout",
-                &["unified", "split", "stacked"],
-                "unified",
-            )],
+            controls: vec![
+                sel("view", "View", &["run", "revisions"], "run"),
+                sel("style", "Style", &["clean", "classic"], "clean"),
+                sel(
+                    "state",
+                    "Run state",
+                    &["live", "early", "mid", "done", "open"],
+                    "live",
+                ),
+                sel("width", "Width", &["wide", "narrow"], "wide"),
+                sel(
+                    "layout",
+                    "Diff layout",
+                    &["unified", "split", "stacked"],
+                    "unified",
+                ),
+            ],
             variants: vec![
-                var("rail", "Revisions on a rail; the last two compared.", &[]),
+                var(
+                    "run",
+                    "The run replays and loops: files join the list as the agent first touches them, bars grow piece by piece, the green and red lines climb with breathing ends, then the status reads Done.",
+                    &[],
+                ),
+                var(
+                    "early",
+                    "Under a minute in: four edits to three files, the row being edited washed grey.",
+                    &[("state", "early")],
+                ),
+                var(
+                    "done",
+                    "Finished: fifteen edits in 3:22 across seven files, the image listed as binary, the net in the legend.",
+                    &[("state", "done")],
+                ),
+                var(
+                    "open",
+                    "An edit picked on the chart: its file and time, running totals with this edit's share, the changed lines; other rows fade.",
+                    &[("state", "open")],
+                ),
+                var(
+                    "narrow",
+                    "Under about 410 px the totals drop under the name, folders hide and big counts shorten.",
+                    &[("state", "done"), ("width", "narrow")],
+                ),
+                var(
+                    "classic",
+                    "Classic style: a grey tray holding the chart and the file list as two panels.",
+                    &[("style", "classic"), ("state", "mid")],
+                ),
+                var(
+                    "rail",
+                    "Revisions on a rail; the last two compared.",
+                    &[("view", "revisions")],
+                ),
                 var(
                     "stacked",
                     "Before over after, for narrow panels.",
-                    &[("layout", "stacked")],
+                    &[("view", "revisions"), ("layout", "stacked")],
                 ),
             ],
             render: diff_timeline,
             code: diff_timeline_code,
             keyboard: vec![
+                ("Tab", "Run view: the chart is one stop"),
+                (
+                    "← / → (run)",
+                    "Step to the previous / next edit and open it",
+                ),
+                ("Home / End (run)", "First / last edit"),
+                ("Escape (run)", "Closes the open edit"),
                 ("← / →", "Move the compare target"),
                 ("Shift + ← / →", "Move the base"),
                 ("Home / End", "First base / latest revision"),
             ],
             a11y: vec![
+                "Run view: the chart takes a single tab stop and is named with its edit count; an opened edit is announced politely, and the line under the name is a status region.",
+                "Each file row reads its path, lines added and removed and how many edits, so the bar colours are never the only signal; reduced motion stops the breathing, the rise and the growing bars.",
                 "The rail is a listbox; each revision says who wrote it, when and its +/− counts.",
                 "Your revisions draw a square dot and the agent's a round one, so author is not colour alone.",
             ],
-            responsive: vec!["The rail scrolls sideways when there are more revisions than room."],
-            height: 520,
+            responsive: vec![
+                "Run view: the card fills its container up to 440 px; under about 410 px the totals move under the name, folders hide and counts shorten (4.8k); more than seven files scroll inside the list.",
+                "The rail scrolls sideways when there are more revisions than room.",
+            ],
+            height: 560,
+            live: true,
             align: Align::Start,
             ..mk(
                 "diff-timeline",
                 "Diff timeline",
                 "tools",
-                "One file across the agent's and your revisions: pick any two points on the rail and read the diff between them.",
+                "An agent's edits over a run as lines added and removed against time, with a row per file and any edit opened to its changed lines; or one file across revisions on a rail, any two compared.",
                 "DiffTimeline",
                 "DiffTimelineEl",
                 "diff-timeline",

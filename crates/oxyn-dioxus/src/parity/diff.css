@@ -274,7 +274,7 @@
 .oxyn-idr-pop{position:absolute;position-anchor:--oxidr;position-area:top span-right;position-try-fallbacks:flip-inline,flip-block;margin-bottom:6px;z-index:4;display:inline-flex;gap:2px;padding:3px;border-radius:9px;background:#18181B;color:#FAFAFA;box-shadow:0 6px 18px rgba(0,0,0,.2);white-space:nowrap;line-height:1;animation:oxyn-idr-up .18s ease-out}
 .oxyn-idr-pop button{display:inline-flex;align-items:center;gap:5px;height:24px;padding:0 8px;border:0;border-radius:6px;background:none;color:#FAFAFA!important;font-size:11.5px;cursor:pointer}
 .oxyn-idr-pop button:hover{background:rgba(255,255,255,.12)}
-.oxyn-idr-pop kbd{padding:0 4px;border-radius:4px;background:rgba(255,255,255,.14);font:inherit;font-size:10px}
+.oxyn-idr-pop kbd{padding:0 4px;border:0;border-radius:4px;color:inherit;box-shadow:none;background:rgba(255,255,255,.14);font:inherit;font-size:10px}
 [data-oxyn-theme="dark"] .oxyn-idr-pop,[data-oxyn-theme="hc-dark"] .oxyn-idr-pop{background:#FAFAFA;color:#18181B}
 [data-oxyn-theme="dark"] .oxyn-idr-pop button,[data-oxyn-theme="hc-dark"] .oxyn-idr-pop button{color:#18181B!important}
 [data-oxyn-theme="dark"] .oxyn-idr-pop kbd,[data-oxyn-theme="hc-dark"] .oxyn-idr-pop kbd{background:rgba(0,0,0,.1)}
