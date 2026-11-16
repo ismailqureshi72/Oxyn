@@ -63,7 +63,7 @@ pub use parity::{
 };
 pub use parity::{
     AgentCrew, AgentCursors, AgentFindings, AgentGraph, AgentHandoff, AgentInbox, AgentLanes,
-    AgentLedger, AgentMonitor, AgentQueue, AgentRecap, AgentSequence,
+    AgentLedger, AgentMonitor, AgentQueue, AgentRecap, AgentSequence, AutonomyDial, AwaySummary,
 };
 pub use parity::{
     AiComposer, AvatarUpload, ChatComposer, ContextField, ContextWindowGrid, CtxModel,

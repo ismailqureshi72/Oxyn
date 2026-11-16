@@ -30,6 +30,9 @@
 //! - [`ledgerfid`]: fidelity batch, family B part 4: Agent Ledger changes, undo chains, demo.
 //! - [`monitorfid`]: fidelity batch, family B part 4: Agent Monitor states, steps, strip, demo.
 //! - [`queuefid`]: fidelity batch, family B part 4: Agent Queue simulation, stats, depth chart.
+//! - [`autonomyfid`]: fidelity batch, family B part 6: Autonomy Dial levels, locks and the asks-first rule.
+//! - [`awayfid`]: fidelity batch, family B part 6: Away Summary items, order, counts and folding.
+//! - [`collabfid`]: fidelity batch, family B part 6: Collaboration Stream messages, quotes, mentions.
 //! - [`recapfid`]: fidelity batch, family B part 4: Agent Recap events, curve, counts.
 //! - [`seqfid`]: fidelity batch, family B part 4: Agent Sequence rows, frames, bars, demo run.
 //! - [`answers`]: fidelity batch, family A: AI Answer markup and streaming, Cited Answer
@@ -41,6 +44,9 @@
 
 pub mod agentsfid;
 pub mod answers;
+pub mod autonomyfid;
+pub mod awayfid;
+pub mod collabfid;
 pub mod chatfid;
 pub mod compose;
 pub mod confirm;
