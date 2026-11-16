@@ -1,0 +1,38 @@
+/* Thinking Selector family (variants 1). The --oxth-* palette is shared by every variant
+   (rulerfid, reasonfid, efflistfid, effpillfid, ctxefffid, modeleffid, nozzlefid, stairsfid):
+   monochrome greys with one red accent for the effort itself. Ruler card: oxer-. */
+[data-oxyn-theme="dark"],[data-oxyn-theme="hc-dark"]{
+  --oxth-card:#1C1C1E;--oxth-card2:#17171A;--oxth-inset:#141316;--oxth-line:#2A2A2E;--oxth-line2:#333338;
+  --oxth-fg:#F2F2F3;--oxth-fg2:#D4D4D8;--oxth-mute:#8A8A93;--oxth-tick:#3E3E44;--oxth-hov:rgba(255,255,255,.06);
+  --oxth-sel:#2A2A2E;--oxth-red:#F0533F;--oxth-redbg:rgba(240,83,63,.16);--oxth-knob:#F2F2F3;--oxth-off:#3A3A3F;
+  --oxth-sh:0 12px 32px rgba(0,0,0,.5),0 1px 2px rgba(0,0,0,.4);--oxth-kbd:#2A2A2E;
+}
+[data-oxyn-theme="light"]{
+  --oxth-card:#FFFFFF;--oxth-card2:#FAFAFA;--oxth-inset:#F4F4F5;--oxth-line:#E6E6E8;--oxth-line2:#DADADD;
+  --oxth-fg:#111113;--oxth-fg2:#2A2A2E;--oxth-mute:#6E6E76;--oxth-tick:#CFCFD4;--oxth-hov:rgba(0,0,0,.045);
+  --oxth-sel:#F0F0F1;--oxth-red:#E0442F;--oxth-redbg:rgba(224,68,47,.10);--oxth-knob:#FFFFFF;--oxth-off:#DADADD;
+  --oxth-sh:0 12px 32px rgba(0,0,0,.10),0 1px 2px rgba(0,0,0,.06);--oxth-kbd:#F0F0F1;
+}
+.oxer{position:relative;box-sizing:border-box;width:440px;max-width:100%;padding:18px 18px 18px;border-radius:18px;
+  background:var(--oxth-card);border:1px solid var(--oxth-line);box-shadow:var(--oxth-sh);color:var(--oxth-fg);
+  font:14px/1.4 Inter,ui-sans-serif,system-ui,sans-serif;container-type:inline-size}
+.oxer-head{text-align:center;padding:2px 34px 14px}
+.oxer-lv{margin:0;font-size:19px;font-weight:600;letter-spacing:-.01em;color:var(--oxth-fg);transition:color .18s}
+.oxer[data-top="true"] .oxer-lv{color:var(--oxth-red)}
+.oxer-sub{margin:4px 0 0;font-size:15px;color:var(--oxth-mute)}
+.oxer-reset{position:absolute;top:14px;right:14px;display:grid;place-items:center;width:28px;height:28px;border:0;border-radius:8px;
+  background:transparent;color:var(--oxth-fg2);cursor:pointer;transition:background .15s,color .15s,opacity .15s}
+.oxer-reset:hover:not(:disabled){background:var(--oxth-hov);color:var(--oxth-fg)}
+.oxer-reset:disabled{opacity:.35;cursor:default}
+.oxer-reset:focus-visible,.oxer-track:focus-visible{outline:2px solid var(--oxth-fg);outline-offset:2px}
+.oxer-well{padding:0 22px;border-radius:14px;background:var(--oxth-inset);border:1px solid var(--oxth-line)}
+.oxer-track{position:relative;height:60px;cursor:pointer;touch-action:none;border-radius:6px}
+.oxer-track[data-drag="true"]{cursor:grabbing}
+.oxer-tick{position:absolute;top:50%;width:2px;height:18px;margin-left:-1px;border-radius:1px;transform:translateY(-50%);
+  background:color-mix(in srgb,var(--oxth-red) calc(var(--w,0)*100%),var(--oxth-tick));transition:background .2s}
+.oxer-knob{position:absolute;top:50%;width:8px;height:30px;margin-left:-4px;border-radius:999px;transform:translateY(-50%);
+  background:var(--oxth-red);box-shadow:0 0 0 3px var(--oxth-redbg),0 0 14px var(--oxth-redbg);transition:left .16s cubic-bezier(.2,.8,.2,1)}
+.oxer-track[data-drag="true"] .oxer-knob{transition:none}
+.oxer-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@container (max-width:340px){.oxer-head{padding:2px 30px 12px}.oxer-lv{font-size:17px}.oxer-sub{font-size:13.5px}.oxer-well{padding:0 14px}}
+@media (prefers-reduced-motion:reduce){.oxer-knob,.oxer-tick,.oxer-lv{transition:none}}

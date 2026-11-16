@@ -17,7 +17,7 @@ when the user picks it. The brand mark is separate. Contrast: 715 rows, 0 failur
 ## 1. Principles
 | # | Rule |
 |---|---|
-| 1 | **Ink, paper, rust.** Background `#0B0B0C`, text `#F2EFEA`, one accent `#FF5A1F`. Everything else is quiet. |
+| 1 | **Ink, paper, rust.** Background `#0B0B0C`, text `#F2F2F3`, one accent `#FF5A1F`. Everything else is quiet. |
 | 2 | **Accent means "the agent is doing something" or "this is the action".** Not decoration. |
 | 3 | **Never colour alone.** State, risk, diff side and review severity always pair colour with a glyph, shape or word. |
 | 4 | **Contrast is measured, not eyeballed.** Every text/surface pair in §8 is computed; text ≥ 4.5:1, UI ≥ 3:1, high contrast ≥ 7:1 / 4.5:1. |
@@ -28,7 +28,7 @@ when the user picks it. The brand mark is separate. Contrast: 715 rows, 0 failur
 ## 2. Tiers
 | Tier | Root | What | Count |
 |---|---|---|---|
-| 1 Primitive | `primitive.*` | raw palette (warm-grey neutral 0–1000, rust, red, amber, green, teal, blue, violet, pink, 4 low-chroma `-soft` scales), font families, size steps, 4 px space steps, radii, border widths | 205 |
+| 1 Primitive | `primitive.*` | raw palette (neutral grey 0–1000, rust, red, amber, green, teal, blue, violet, pink, 4 low-chroma `-soft` scales), font families, size steps, 4 px space steps, radii, border widths | 205 |
 | 2 Semantic | `semantic.*` | theme-independent roles: font, typography, space, radius, border width, size, density, z, opacity, blur, focus, voice | 94 |
 | 3 Theme | `theme.dark` · `theme.light` · `theme.hc-dark` | colour roles (202), elevation (4), focus ring (1) | 207 × 3 |
 | | | **Total** | **920** (585 aliases) |
@@ -69,20 +69,20 @@ Specs were written before this file. Where a spec name could not be kept, this i
 
 ## 4. Primitives
 
-### 4.1 Neutral (warm grey)
+### 4.1 Neutral (neutral grey)
 `50` and `950` are brand pins. Generated in OKLCH at hue 75, chroma ≤ 0.0075.
 
 | Step | Hex | | Step | Hex |
 |---|---|---|---|---|
-| 0 | `#FFFFFF` | | 600 | `#6A6763` |
-| 25 | `#FDF9F5` | | 700 | `#53514E` |
-| 50 | `#F2EFEA` | | 800 | `#3D3B39` |
-| 100 | `#E7E4DF` | | 850 | `#2E2C2A` |
-| 150 | `#DCD8D4` | | 900 | `#22201E` |
-| 200 | `#CFCBC7` | | 925 | `#1A1816` |
-| 300 | `#B7B4AF` | | 950 | `#0B0B0C` |
-| 400 | `#9B9893` | | 975 | `#070604` |
-| 500 | `#817E7A` | | 1000 | `#000000` |
+| 0 | `#FFFFFF` | | 600 | `#68686E` |
+| 25 | `#FAFAFA` | | 700 | `#515156` |
+| 50 | `#F2F2F3` | | 800 | `#3B3B3F` |
+| 100 | `#E6E6E8` | | 850 | `#2A2A2E` |
+| 150 | `#DADADD` | | 900 | `#1C1C1E` |
+| 200 | `#CCCCCF` | | 925 | `#17171A` |
+| 300 | `#B4B4B8` | | 950 | `#0B0B0C` |
+| 400 | `#98989E` | | 975 | `#070708` |
+| 500 | `#7E7E85` | | 1000 | `#000000` |
 
 ### 4.2 Hue scales
 OKLCH ladders, same lightness per step across hues (L 0.97 → 0.27), gamut-mapped by chroma. `rust.500` is pinned
@@ -112,19 +112,19 @@ Used by: all.
 
 | Token | Dark | Light | HC dark | Source (dark) | Named in specs |
 |---|---|---|---|---|---|
-| `color.bg.base` | `#0B0B0C` | `#FDF9F5` | `#000000` | neutral.950 |  |
+| `color.bg.base` | `#0B0B0C` | `#FAFAFA` | `#000000` | neutral.950 |  |
 
 #### `color.surface.*`
 Used by: all.
 
 | Token | Dark | Light | HC dark | Source (dark) | Named in specs |
 |---|---|---|---|---|---|
-| `color.surface.sunken` | `#070604` | `#F2EFEA` | `#000000` | neutral.975 |  |
-| `color.surface.base` | `#0B0B0C` | `#FDF9F5` | `#000000` | bg.base |  |
-| `color.surface.raised` | `#22201E` | `#FFFFFF` | `#0B0B0C` | neutral.900 |  |
-| `color.surface.overlay` | `#2E2C2A` | `#FFFFFF` | `#1A1816` | neutral.850 |  |
-| `color.surface.hover` | `#F2EFEA @6%` | `#0B0B0C @5%` | `#F2EFEA @10%` | fg.default @6% |  |
-| `color.surface.pressed` | `#F2EFEA @10%` | `#0B0B0C @9%` | `#F2EFEA @16%` | fg.default @10% |  |
+| `color.surface.sunken` | `#070708` | `#F2F2F3` | `#000000` | neutral.975 |  |
+| `color.surface.base` | `#0B0B0C` | `#FAFAFA` | `#000000` | bg.base |  |
+| `color.surface.raised` | `#1C1C1E` | `#FFFFFF` | `#0B0B0C` | neutral.900 |  |
+| `color.surface.overlay` | `#2A2A2E` | `#FFFFFF` | `#17171A` | neutral.850 |  |
+| `color.surface.hover` | `#F2F2F3 @6%` | `#0B0B0C @5%` | `#F2F2F3 @10%` | fg.default @6% |  |
+| `color.surface.pressed` | `#F2F2F3 @10%` | `#0B0B0C @9%` | `#F2F2F3 @16%` | fg.default @10% |  |
 | `color.surface.selected` | `#FF5A1F @16%` | `#D04000 @12%` | `#FF845F @24%` | accent.solid @16% |  |
 
 #### `color.fg.*`
@@ -132,21 +132,21 @@ Used by: all.
 
 | Token | Dark | Light | HC dark | Source (dark) | Named in specs |
 |---|---|---|---|---|---|
-| `color.fg.default` | `#F2EFEA` | `#0B0B0C` | `#F2EFEA` | neutral.50 |  |
-| `color.fg.muted` | `#B7B4AF` | `#53514E` | `#DCD8D4` | neutral.300 |  |
-| `color.fg.subtle` | `#9B9893` | `#6A6763` | `#CFCBC7` | neutral.400 |  |
-| `color.fg.disabled` | `#6A6763` | `#B7B4AF` | `#817E7A` | neutral.600 |  |
+| `color.fg.default` | `#F2F2F3` | `#0B0B0C` | `#F2F2F3` | neutral.50 |  |
+| `color.fg.muted` | `#B4B4B8` | `#515156` | `#DADADD` | neutral.300 |  |
+| `color.fg.subtle` | `#98989E` | `#68686E` | `#CCCCCF` | neutral.400 |  |
+| `color.fg.disabled` | `#68686E` | `#B4B4B8` | `#7E7E85` | neutral.600 |  |
 | `color.fg.on-accent` | `#0B0B0C` | `#FFFFFF` | `#000000` | neutral.950 |  |
-| `color.fg.inverse` | `#0B0B0C` | `#F2EFEA` | `#000000` | neutral.950 |  |
+| `color.fg.inverse` | `#0B0B0C` | `#F2F2F3` | `#000000` | neutral.950 |  |
 
 #### `color.border.*`
 Used by: all.
 
 | Token | Dark | Light | HC dark | Source (dark) | Named in specs |
 |---|---|---|---|---|---|
-| `color.border.subtle` | `#2E2C2A` | `#E7E4DF` | `#53514E` | neutral.850 | workspace-chrome |
-| `color.border.default` | `#3D3B39` | `#DCD8D4` | `#817E7A` | neutral.800 |  |
-| `color.border.strong` | `#817E7A` | `#817E7A` | `#B7B4AF` | neutral.500 |  |
+| `color.border.subtle` | `#2A2A2E` | `#E6E6E8` | `#515156` | neutral.850 | workspace-chrome |
+| `color.border.default` | `#3B3B3F` | `#DADADD` | `#7E7E85` | neutral.800 |  |
+| `color.border.strong` | `#7E7E85` | `#7E7E85` | `#B4B4B8` | neutral.500 |  |
 
 #### `color.accent.*`
 Used by: all.
@@ -186,18 +186,18 @@ Used by: architecture (AgentState), loaders, status-text, tools.
 
 | Token | Dark | Light | HC dark | Source (dark) | Named in specs |
 |---|---|---|---|---|---|
-| `color.state.idle` | `#B7B4AF` | `#53514E` | `#DCD8D4` | fg.muted |  |
-| `color.state.composing` | `#F2EFEA` | `#0B0B0C` | `#F2EFEA` | fg.default |  |
+| `color.state.idle` | `#B4B4B8` | `#515156` | `#DADADD` | fg.muted |  |
+| `color.state.composing` | `#F2F2F3` | `#0B0B0C` | `#F2F2F3` | fg.default |  |
 | `color.state.submitted` | `#FF845F` | `#B13500` | `#FFA78D` | accent.fg |  |
 | `color.state.thinking` | `#FF845F` | `#B13500` | `#FFA78D` | accent.fg |  |
 | `color.state.streaming` | `#FF845F` | `#B13500` | `#FFA78D` | accent.fg |  |
 | `color.state.tool-running` | `#FF845F` | `#B13500` | `#FFA78D` | accent.fg |  |
 | `color.state.awaiting-approval` | `#E19E00` | `#875D00` | `#EEB658` | status.waiting.fg |  |
-| `color.state.queued` | `#B7B4AF` | `#53514E` | `#DCD8D4` | fg.muted |  |
+| `color.state.queued` | `#B4B4B8` | `#515156` | `#DADADD` | fg.muted |  |
 | `color.state.steering` | `#70AFFF` | `#2366B4` | `#96C4FF` | status.info.fg |  |
 | `color.state.done` | `#5AC777` | `#007B36` | `#83D896` | status.success.fg |  |
 | `color.state.error` | `#FF7E92` | `#B4274B` | `#FFA3AE` | status.danger.fg |  |
-| `color.state.cancelled` | `#B7B4AF` | `#53514E` | `#DCD8D4` | fg.muted |  |
+| `color.state.cancelled` | `#B4B4B8` | `#515156` | `#DADADD` | fg.muted |  |
 | `color.state.stalled` | `#E19E00` | `#875D00` | `#EEB658` | status.warning.fg |  |
 
 #### `color.risk.*`
@@ -234,10 +234,10 @@ Used by: checkpoints-git, diff-viewer, file-edit-chip.
 | `color.diff.del.bg` | `#F65274 @14%` | `#F65274 @10%` | `#F65274 @22%` | red.500 @14% | checkpoints-git, diff-viewer |
 | `color.diff.del.word` | `#F65274 @34%` | `#F65274 @26%` | `#F65274 @36%` | red.500 @34% | checkpoints-git |
 | `color.diff.del.stripe` | `#F65274` | `#D0365A` | `#FFA3AE` | red.500 |  |
-| `color.diff.hunk.header` | `#B7B4AF` | `#53514E` | `#DCD8D4` | fg.muted | checkpoints-git |
-| `color.diff.hunk.bg` | `#070604` | `#F2EFEA` | `#000000` | surface.sunken |  |
-| `color.diff.kept` | `#B7B4AF` | `#53514E` | `#DCD8D4` | fg.muted | checkpoints-git |
-| `color.diff.undone` | `#B7B4AF` | `#53514E` | `#DCD8D4` | fg.muted |  |
+| `color.diff.hunk.header` | `#B4B4B8` | `#515156` | `#DADADD` | fg.muted | checkpoints-git |
+| `color.diff.hunk.bg` | `#070708` | `#F2F2F3` | `#000000` | surface.sunken |  |
+| `color.diff.kept` | `#B4B4B8` | `#515156` | `#DADADD` | fg.muted | checkpoints-git |
+| `color.diff.undone` | `#B4B4B8` | `#515156` | `#DADADD` | fg.muted |  |
 
 #### `color.merge.*`
 Used by: merge-conflict.
@@ -246,7 +246,7 @@ Used by: merge-conflict.
 |---|---|---|---|---|---|
 | `color.merge.current` | `#70AFFF` | `#2366B4` | `#96C4FF` | blue.400 | merge-conflict |
 | `color.merge.incoming` | `#45C2BC` | `#007671` | `#77D4CE` | teal.400 | merge-conflict |
-| `color.merge.base` | `#B7B4AF` | `#53514E` | `#DCD8D4` | fg.muted | merge-conflict |
+| `color.merge.base` | `#B4B4B8` | `#515156` | `#DADADD` | fg.muted | merge-conflict |
 | `color.merge.conflict` | `#E19E00` | `#875D00` | `#EEB658` | loader.waiting | merge-conflict |
 | `color.merge.suggested` | `#AFA4D6` | `#695E89` | `#C3BAE4` | violet-soft.400 | merge-conflict |
 | `color.merge.resolved` | `#8EB996` | `#4B7153` | `#A8CCAE` | green-soft.400 | merge-conflict |
@@ -257,9 +257,9 @@ Used by: git-chips.
 
 | Token | Dark | Light | HC dark | Source (dark) | Named in specs |
 |---|---|---|---|---|---|
-| `color.git.branch` | `#F2EFEA` | `#0B0B0C` | `#F2EFEA` | fg.default | git-chips |
-| `color.git.ahead` | `#B7B4AF` | `#53514E` | `#DCD8D4` | fg.muted | git-chips |
-| `color.git.behind` | `#B7B4AF` | `#53514E` | `#DCD8D4` | fg.muted | git-chips |
+| `color.git.branch` | `#F2F2F3` | `#0B0B0C` | `#F2F2F3` | fg.default | git-chips |
+| `color.git.ahead` | `#B4B4B8` | `#515156` | `#DADADD` | fg.muted | git-chips |
+| `color.git.behind` | `#B4B4B8` | `#515156` | `#DADADD` | fg.muted | git-chips |
 | `color.git.behind-warn` | `#E19E00` | `#875D00` | `#EEB658` | status.warning.fg |  |
 | `color.git.dirty` | `#C5A77A` | `#7B6139` | `#D6BD97` | amber-soft.400 | git-chips |
 | `color.git.detached` | `#C5A77A` | `#7B6139` | `#D6BD97` | amber-soft.400 | git-chips |
@@ -273,8 +273,8 @@ Used by: review-card.
 | `color.review.critical` | `#FF7E92` | `#B4274B` | `#FFA3AE` | status.danger.fg | review-card |
 | `color.review.warning` | `#E19E00` | `#875D00` | `#EEB658` | status.warning.fg | review-card |
 | `color.review.suggestion` | `#FF845F` | `#B13500` | `#FFA78D` | accent.fg | review-card |
-| `color.review.nit` | `#B7B4AF` | `#53514E` | `#DCD8D4` | fg.muted | review-card |
-| `color.review.info` | `#F2EFEA` | `#0B0B0C` | `#F2EFEA` | fg.default | review-card |
+| `color.review.nit` | `#B4B4B8` | `#515156` | `#DADADD` | fg.muted | review-card |
+| `color.review.info` | `#F2F2F3` | `#0B0B0C` | `#F2F2F3` | fg.default | review-card |
 
 #### `color.impact.*`
 Used by: rollback-impact, checkpoints-git.
@@ -289,8 +289,8 @@ Used by: icons, icon-states.
 
 | Token | Dark | Light | HC dark | Source (dark) | Named in specs |
 |---|---|---|---|---|---|
-| `color.icon.fg` | `#B7B4AF` | `#53514E` | `#DCD8D4` | fg.muted | icons |
-| `color.icon.fg-strong` | `#F2EFEA` | `#0B0B0C` | `#F2EFEA` | fg.default | icons |
+| `color.icon.fg` | `#B4B4B8` | `#515156` | `#DADADD` | fg.muted | icons |
+| `color.icon.fg-strong` | `#F2F2F3` | `#0B0B0C` | `#F2F2F3` | fg.default | icons |
 | `color.icon.on-accent` | `#0B0B0C` | `#FFFFFF` | `#000000` | fg.on-accent | icons |
 
 #### `color.loader.*`
@@ -298,8 +298,8 @@ Used by: loaders, loader-*, animated-marks, thinking-orb, tools, terminal-tabs.
 
 | Token | Dark | Light | HC dark | Source (dark) | Named in specs |
 |---|---|---|---|---|---|
-| `color.loader.fg` | `#F2EFEA` | `#0B0B0C` | `#F2EFEA` | fg.default | loaders |
-| `color.loader.track` | `#F2EFEA @20%` | `#0B0B0C @20%` | `#F2EFEA @20%` | neutral.50 @20% | loaders |
+| `color.loader.fg` | `#F2F2F3` | `#0B0B0C` | `#F2F2F3` | fg.default | loaders |
+| `color.loader.track` | `#F2F2F3 @20%` | `#0B0B0C @20%` | `#F2F2F3 @20%` | neutral.50 @20% | loaders |
 | `color.loader.accent` | `#FF5A1F` | `#D04000` | `#FF845F` | accent.solid | loaders |
 | `color.loader.waiting` | `#E19E00` | `#875D00` | `#EEB658` | status.waiting.fg | animated-marks, approvals, loader-glyph, loader-vector, loaders, merge-conflict, terminal-tabs, tools |
 | `color.loader.warn` | `#E19E00` | `#875D00` | `#EEB658` | status.warning.fg | animated-marks, loaders |
@@ -317,9 +317,9 @@ Used by: status-text, text-shimmer, verb-cycler.
 
 | Token | Dark | Light | HC dark | Source (dark) | Named in specs |
 |---|---|---|---|---|---|
-| `color.text-status.fg` | `#F2EFEA` | `#0B0B0C` | `#F2EFEA` | fg.default |  |
-| `color.text-status.crest` | `#F2EFEA` | `#0B0B0C` | `#F2EFEA` | fg.default |  |
-| `color.text-status.base` | `#969491` | `#605E5E` | `#F2EFEA` | mix(fg → bg), floored 4.5:1 |  |
+| `color.text-status.fg` | `#F2F2F3` | `#0B0B0C` | `#F2F2F3` | fg.default |  |
+| `color.text-status.crest` | `#F2F2F3` | `#0B0B0C` | `#F2F2F3` | fg.default |  |
+| `color.text-status.base` | `#969491` | `#605E5E` | `#F2F2F3` | mix(fg → bg), floored 4.5:1 |  |
 
 #### `color.agent.*`
 Used by: subagent-tree, fanout-grid, plan-todo.
@@ -340,13 +340,13 @@ Used by: mcp-plugin-list.
 
 | Token | Dark | Light | HC dark | Source (dark) | Named in specs |
 |---|---|---|---|---|---|
-| `color.mcp.disconnected` | `#B7B4AF` | `#53514E` | `#DCD8D4` | fg.muted |  |
+| `color.mcp.disconnected` | `#B4B4B8` | `#515156` | `#DADADD` | fg.muted |  |
 | `color.mcp.connecting` | `#70AFFF` | `#2366B4` | `#96C4FF` | status.info.fg |  |
 | `color.mcp.connected` | `#5AC777` | `#007B36` | `#83D896` | status.success.fg |  |
 | `color.mcp.needs-auth` | `#E19E00` | `#875D00` | `#EEB658` | status.waiting.fg |  |
 | `color.mcp.pending-approval` | `#E19E00` | `#875D00` | `#EEB658` | status.waiting.fg |  |
 | `color.mcp.error` | `#FF7E92` | `#B4274B` | `#FFA3AE` | status.danger.fg |  |
-| `color.mcp.disabled` | `#9B9893` | `#6A6763` | `#CFCBC7` | fg.subtle |  |
+| `color.mcp.disabled` | `#98989E` | `#68686E` | `#CCCCCF` | fg.subtle |  |
 | `color.mcp.blocked` | `#FF7E92` | `#B4274B` | `#FFA3AE` | status.danger.fg |  |
 | `color.mcp.updating` | `#70AFFF` | `#2366B4` | `#96C4FF` | status.info.fg |  |
 | `color.mcp.flag-warning` | `#E19E00` | `#875D00` | `#EEB658` | status.warning.fg |  |
@@ -356,16 +356,16 @@ Used by: live-voice, voice-orb, voice-control-bar, live-captions.
 
 | Token | Dark | Light | HC dark | Source (dark) | Named in specs |
 |---|---|---|---|---|---|
-| `color.voice.idle` | `#B7B4AF` | `#53514E` | `#DCD8D4` | fg.muted |  |
-| `color.voice.connecting` | `#B7B4AF` | `#53514E` | `#DCD8D4` | fg.muted |  |
+| `color.voice.idle` | `#B4B4B8` | `#515156` | `#DADADD` | fg.muted |  |
+| `color.voice.connecting` | `#B4B4B8` | `#515156` | `#DADADD` | fg.muted |  |
 | `color.voice.listening` | `#70AFFF` | `#2366B4` | `#96C4FF` | status.info.fg |  |
 | `color.voice.user-speaking` | `#70AFFF` | `#2366B4` | `#96C4FF` | status.info.fg |  |
 | `color.voice.thinking` | `#FF845F` | `#B13500` | `#FFA78D` | accent.fg |  |
 | `color.voice.agent-speaking` | `#FF845F` | `#B13500` | `#FFA78D` | accent.fg |  |
 | `color.voice.awaiting-approval` | `#E19E00` | `#875D00` | `#EEB658` | status.waiting.fg |  |
 | `color.voice.interrupted` | `#E19E00` | `#875D00` | `#EEB658` | status.warning.fg |  |
-| `color.voice.muted` | `#B7B4AF` | `#53514E` | `#DCD8D4` | fg.muted |  |
-| `color.voice.asleep` | `#9B9893` | `#6A6763` | `#CFCBC7` | fg.subtle |  |
+| `color.voice.muted` | `#B4B4B8` | `#515156` | `#DADADD` | fg.muted |  |
+| `color.voice.asleep` | `#98989E` | `#68686E` | `#CCCCCF` | fg.subtle |  |
 | `color.voice.latency-good` | `#5AC777` | `#007B36` | `#83D896` | status.success.fg |  |
 | `color.voice.latency-ok` | `#E19E00` | `#875D00` | `#EEB658` | status.warning.fg |  |
 | `color.voice.latency-slow` | `#FF7E92` | `#B4274B` | `#FFA3AE` | status.danger.fg |  |
@@ -406,22 +406,22 @@ Used by: terminal-output, terminal-tabs.
 
 | Token | Dark | Light | HC dark | Source (dark) | Named in specs |
 |---|---|---|---|---|---|
-| `color.ansi.0` | `#2E2C2A` | `#0B0B0C` | `#3D3B39` | neutral.850 | terminal-output |
+| `color.ansi.0` | `#2A2A2E` | `#0B0B0C` | `#3B3B3F` | neutral.850 | terminal-output |
 | `color.ansi.1` | `#FF7E92` | `#B4274B` | `#FFA3AE` | red.400 |  |
 | `color.ansi.2` | `#5AC777` | `#007B36` | `#83D896` | green.400 |  |
 | `color.ansi.3` | `#E19E00` | `#875D00` | `#EEB658` | amber.400 |  |
 | `color.ansi.4` | `#70AFFF` | `#2366B4` | `#96C4FF` | blue.400 |  |
 | `color.ansi.5` | `#EC81D0` | `#9A3D83` | `#F89EDF` | pink.400 |  |
 | `color.ansi.6` | `#45C2BC` | `#007671` | `#77D4CE` | teal.400 |  |
-| `color.ansi.7` | `#CFCBC7` | `#B7B4AF` | `#E7E4DF` | neutral.200 |  |
-| `color.ansi.8` | `#9B9893` | `#6A6763` | `#CFCBC7` | neutral.400 |  |
+| `color.ansi.7` | `#CCCCCF` | `#B4B4B8` | `#E6E6E8` | neutral.200 |  |
+| `color.ansi.8` | `#98989E` | `#68686E` | `#CCCCCF` | neutral.400 |  |
 | `color.ansi.9` | `#FFA3AE` | `#8F1B39` | `#FFC7CC` | red.300 |  |
 | `color.ansi.10` | `#83D896` | `#006129` | `#B2E7BC` | green.300 |  |
 | `color.ansi.11` | `#EEB658` | `#6A4800` | `#F6D19A` | amber.300 |  |
 | `color.ansi.12` | `#96C4FF` | `#184F90` | `#BEDAFF` | blue.300 |  |
 | `color.ansi.13` | `#F89EDF` | `#7A2E68` | `#FDC2EB` | pink.300 |  |
 | `color.ansi.14` | `#77D4CE` | `#005D59` | `#ACE4E0` | teal.300 |  |
-| `color.ansi.15` | `#F2EFEA` | `#CFCBC7` | `#FFFFFF` | neutral.50 |  |
+| `color.ansi.15` | `#F2F2F3` | `#CCCCCF` | `#FFFFFF` | neutral.50 |  |
 
 #### focus, selection & component one-offs
 
@@ -435,9 +435,9 @@ Used by: terminal-output, terminal-tabs.
 | `color.term.prompt` | `#FF845F` | `#B13500` | `#FFA78D` | accent.fg | terminal-output |
 | `color.plan.changed` | `#FF5A1F` | `#D04000` | `#FF845F` | accent.solid | plan-todo |
 | `color.feedback.on` | `#FF845F` | `#B13500` | `#FFA78D` | accent.fg | message-bubble |
-| `color.code.inline.bg` | `#22201E` | `#E7E4DF` | `#1A1816` | neutral.900 | streaming-markdown |
-| `color.bubble.user` | `#22201E` | `#E7E4DF` | `#1A1816` | neutral.900 | message-bubble |
-| `color.checkpoint.marker` | `#B7B4AF` | `#53514E` | `#DCD8D4` | fg.muted | checkpoints-git |
+| `color.code.inline.bg` | `#1C1C1E` | `#E6E6E8` | `#17171A` | neutral.900 | streaming-markdown |
+| `color.bubble.user` | `#1C1C1E` | `#E6E6E8` | `#17171A` | neutral.900 | message-bubble |
+| `color.checkpoint.marker` | `#B4B4B8` | `#515156` | `#DADADD` | fg.muted | checkpoints-git |
 | `color.checkpoint.current` | `#FF845F` | `#B13500` | `#FFA78D` | accent.fg | checkpoint-timeline |
 
 ### 5.1 Role notes

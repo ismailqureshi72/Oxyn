@@ -1,0 +1,28 @@
+/* Thinking Selector – Nozzle line (oxen-), an Oxyn original after the user's reference: even thin
+   lines in a steel-blue → coral → periwinkle gradient, a solid nozzle in the colour under it.
+   Each line and the nozzle carry --cd (dark) / --cl (light) from Rust. Palette --oxth-* (rulerfid.css). */
+[data-oxyn-theme="dark"],[data-oxyn-theme="hc-dark"]{--oxen-bg:#0D0D0F;--oxen-lo:.85;--oxen-sh:0 2px 8px rgba(0,0,0,.55)}
+[data-oxyn-theme="light"]{--oxen-bg:#FFFFFF;--oxen-lo:.85;--oxen-sh:0 1px 2px rgba(0,0,0,.18),0 2px 8px rgba(0,0,0,.12)}
+.oxen{--oxen-h:16px;--oxen-w:2px;--oxen-kw:28px;--oxen-kh:32px;--oxen-pad:20px;--oxen-row:52px;
+  position:relative;box-sizing:border-box;width:440px;max-width:100%;padding:6px 0 10px;border-radius:14px;
+  background:var(--oxen-bg,#0D0D0F);border:1px solid var(--oxth-line);font:13px/1.3 Inter,ui-sans-serif,system-ui,sans-serif;color:var(--oxth-fg)}
+.oxen[data-size="sm"]{--oxen-h:12px;--oxen-w:1.5px;--oxen-kw:22px;--oxen-kh:26px;--oxen-pad:16px;--oxen-row:42px}
+.oxen[data-size="lg"]{--oxen-h:20px;--oxen-w:2.5px;--oxen-kw:34px;--oxen-kh:38px;--oxen-pad:24px;--oxen-row:62px}
+.oxen-line{position:relative;height:var(--oxen-row);cursor:pointer;touch-action:none;border-radius:10px}
+.oxen-line:focus-visible{outline:2px solid var(--oxth-fg);outline-offset:2px}
+.oxen-rail{position:absolute;top:0;bottom:0;left:var(--oxen-pad);right:var(--oxen-pad)}
+.oxen-s{position:absolute;top:50%;width:var(--oxen-w);height:var(--oxen-h);margin:calc(var(--oxen-h) / -2) 0 0 calc(var(--oxen-w) / -2);
+  border-radius:var(--oxen-w);background:var(--cd);opacity:calc(var(--oxen-lo,.85) + (1 - var(--oxen-lo,.85)) * var(--g,0));transition:opacity .2s}
+[data-oxyn-theme="light"] .oxen-s{background:var(--cl)}
+.oxen-noz{position:absolute;top:50%;width:var(--oxen-kw);height:var(--oxen-kh);margin:calc(var(--oxen-kh) / -2) 0 0 calc(var(--oxen-kw) / -2);
+  box-sizing:border-box;display:flex;align-items:center;justify-content:center;
+  border-radius:calc(var(--oxen-kw) / 2) calc(var(--oxen-kw) / 2) 8px 8px;border:1.5px solid rgba(255,246,238,.92);
+  background:var(--cd);color:var(--kd);box-shadow:0 0 0 4px var(--oxen-bg,#0D0D0F),var(--oxen-sh,none);
+  transition:left .2s cubic-bezier(.3,1.4,.5,1),background-color .2s,transform .15s}
+[data-oxyn-theme="light"] .oxen-noz{background:var(--cl);color:var(--kl);border-color:#FFFFFF}
+.oxen[data-size="sm"] .oxen-glyph{width:11px;height:11px}
+.oxen[data-size="lg"] .oxen-glyph{width:17px;height:17px}
+.oxen[data-drag="true"] .oxen-noz{transition:background-color .1s,transform .15s;transform:scale(1.08)}
+.oxen-cap{margin:0;text-align:center;color:var(--oxth-fg2);font-weight:500}
+.oxen-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (prefers-reduced-motion:reduce){.oxen-noz,.oxen-s{transition:none}}

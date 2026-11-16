@@ -1,0 +1,127 @@
+//! Thinking Selector family, variant "Nozzle line" ([`NozzleSlider`]), an Oxyn original after the
+//! user's reference: perfectly even thin vertical lines carrying a colour gradient (steel blue →
+//! coral at the centre → periwinkle); a solid nozzle filled with the gradient colour where it
+//! stands slides along them and snaps to the levels. `tone="red"` keeps the earlier all-red look.
+//! Models: `oxyn_core::parity::{thinkfid, nozzlefid}`. Styles: `nozzlefid.css` (classes `oxen-*`).
+
+use dioxus::prelude::*;
+use oxyn_core::parity::{
+    nozzlefid::{NozzleTone, hex, is_stop, level_tick, line_glow, nozzle_ink, nozzle_rgb},
+    thinkfid::{EffortLevel, effort_said, effort_scale, effort_step, level_frac, snap_level},
+};
+
+use super::rulerfid::{Track, slider_key};
+
+/// Both theme colours of one spot on the line, as CSS custom properties (`--cd` / `--cl`).
+fn tint(f: f32, tone: NozzleTone) -> String {
+    format!(
+        "--cd:{};--cl:{}",
+        hex(nozzle_rgb(f, tone, true)),
+        hex(nozzle_rgb(f, tone, false))
+    )
+}
+
+/// Thinking Selector – Nozzle line: a slider drawn as a row of even, gradient-coloured lines; the
+/// nozzle (a solid knob in the colour under it) glides along and snaps to the levels. Drag, click,
+/// arrows, Home / End.
+#[component]
+pub fn NozzleSlider(
+    /// The scale (Low … Max when `None`).
+    #[props(default)]
+    levels: Option<Vec<EffortLevel>>,
+    /// Controlled level.
+    #[props(default)]
+    value: Option<usize>,
+    /// Starting level when uncontrolled.
+    #[props(default = 2)]
+    default_value: usize,
+    /// How many lines (odd counts put a line under the centre).
+    #[props(default = 37)]
+    strokes: usize,
+    /// `"gradient"` (default, the reference colours) or `"red"`.
+    #[props(default = "gradient".to_string())]
+    tone: String,
+    /// `"sm"`, `"md"` (default) or `"lg"`.
+    #[props(default = "md".to_string())]
+    size: String,
+    /// Show the level's name under the line.
+    #[props(default = true)]
+    caption: bool,
+    /// Accessible name.
+    #[props(default = "Thinking effort".to_string())]
+    label: String,
+    /// The level changed.
+    #[props(default)]
+    on_change: EventHandler<usize>,
+) -> Element {
+    let levels = levels.unwrap_or_else(effort_scale);
+    let n = levels.len().max(1);
+    let strokes = strokes.max(n).max(2);
+    let tone = NozzleTone::parse(&tone);
+    let mut own = use_signal(move || default_value.min(n - 1));
+    let mut said = use_signal(String::new);
+    // While dragging, the nozzle follows the pointer freely; it snaps on release.
+    let mut free = use_signal(|| None::<f32>);
+    let track = use_hook(Track::new);
+    let cur = value.unwrap_or(own()).min(n - 1);
+    let all = levels.clone();
+    let pick = use_callback(move |i: usize| {
+        let i = i.min(n - 1);
+        own.set(i);
+        said.set(effort_said(&all[i]));
+        on_change.call(i);
+    });
+    let at = use_callback(move |f: f32| {
+        free.set(Some(f));
+        pick.call(snap_level(f, n));
+    });
+    let pos = free().unwrap_or(level_frac(cur, n));
+    let stop = level_tick(cur, n, strokes);
+    let lv = levels[cur].clone();
+    let dragging = (track.drag)();
+    let knob = format!(
+        "left:{:.3}%;{};--kd:{};--kl:{}",
+        pos * 100.0,
+        tint(pos, tone),
+        hex(nozzle_ink(nozzle_rgb(pos, tone, true))),
+        hex(nozzle_ink(nozzle_rgb(pos, tone, false)))
+    );
+    let size = match size.as_str() {
+        "sm" | "lg" => size,
+        _ => "md".to_string(),
+    };
+
+    rsx! {
+        div { class: "oxen", "data-drag": "{dragging}", "data-tone": tone.as_str(), "data-size": "{size}",
+            div { class: "oxen-line", role: "slider", tabindex: "0", "aria-label": "{label}",
+                "aria-valuemin": "0", "aria-valuemax": "{n - 1}", "aria-valuenow": "{cur}", "aria-valuetext": "{lv.label}",
+                onpointerdown: move |e: PointerEvent| track.press(e.client_coordinates().x, at),
+                onpointermove: move |e: PointerEvent| if let Some(f) = track.moved(e.client_coordinates().x) { at.call(f) },
+                onpointerup: move |_| { track.release(); free.set(None); },
+                onpointerleave: move |_| { track.release(); free.set(None); },
+                onkeydown: move |e: KeyboardEvent| if let Some(d) = slider_key(&e.key()) { e.prevent_default(); free.set(None); pick.call(effort_step(cur, d, n)); },
+                div { class: "oxen-rail", "aria-hidden": "true", onmounted: move |e| track.mount(e.data()),
+                    for t in 0..strokes {
+                        {
+                            let x = t as f32 / (strokes - 1) as f32;
+                            let g = line_glow(x, pos);
+                            let c = tint(x, tone);
+                            let s = is_stop(t, n, strokes);
+                            rsx! { i { key: "{t}", "data-k": "{t}", class: "oxen-s", "data-stop": "{s}", "data-at": "{t == stop}",
+                                style: "left:{x * 100.0:.3}%;{c};--g:{g:.2}" } }
+                        }
+                    }
+                    span { class: "oxen-noz", style: "{knob}",
+                        svg { class: "oxen-glyph", width: "14", height: "14", view_box: "0 0 14 14", fill: "none",
+                            stroke: "currentColor", stroke_width: "1.6", stroke_linecap: "round",
+                            circle { cx: "7", cy: "8.4", r: "3" }
+                            path { d: "M7 1.4v1.8M2.4 3.2l1.1 1.2M11.6 3.2l-1.1 1.2" }
+                        }
+                    }
+                }
+            }
+            if caption { p { class: "oxen-cap", "aria-hidden": "true", "{lv.label}" } }
+            div { class: "oxen-sr", role: "status", "aria-live": "polite", "{said}" }
+        }
+    }
+}

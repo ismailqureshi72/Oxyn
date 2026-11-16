@@ -43,13 +43,21 @@ pub use navigation::{
     ReorderListEl, ResizableEl, TabsEl, TeamSwitcherEl, TocProgressEl, ToggleGroupEl, TreeViewEl,
     UserMenuEl,
 };
+pub use parity::ContextEffortMenuEl;
 pub use parity::DiffTimelineRunEl;
+pub use parity::EffortListEl;
+pub use parity::EffortPillEl;
+pub use parity::EffortRulerEl;
+pub use parity::EffortStairsEl;
 pub use parity::FanoutGridEl;
 pub use parity::JudgeBracketEl;
 pub use parity::MemoryPanelEl;
+pub use parity::ModelEffortMenuEl;
+pub use parity::NozzleSliderEl;
 pub use parity::ParallelAttemptsEl;
 pub use parity::PlanVsActualEl;
 pub use parity::RateLimitPlannerEl;
+pub use parity::ReasoningPanelEl;
 pub use parity::RootCauseTreeEl;
 pub use parity::RunningNowEl;
 pub use parity::ScheduledRunsEl;

@@ -58,7 +58,7 @@ fn pal(t: &Theme) -> Pal {
             fg: h(0x0A0A0A),
             mute: h(0x848484),
             ghost: h(0x5C5C5C),
-            band: h(0xF3F3F2),
+            band: h(0xF3F3F4),
             needs: h(0xE3AC05),
             failed: h(0xF04B39),
             done: h(0x1592F5),
