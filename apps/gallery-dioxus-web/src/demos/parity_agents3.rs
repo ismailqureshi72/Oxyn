@@ -4,9 +4,12 @@
 use dioxus::prelude::*;
 use oxyn_core::{
     ClockMs,
-    parity::dtreefid::{dt_demo, dt_extra},
+    parity::{
+        dtreefid::{dt_demo, dt_extra},
+        fallbackfid::{FbOutcome, fb_demo, fb_demo_all_fail},
+    },
 };
-use oxyn_dioxus::DecisionTree;
+use oxyn_dioxus::{DecisionTree, FallbackChain};
 
 use super::{Code, mk, sel, var};
 use crate::{Align, Demo, Vals};
@@ -94,12 +97,152 @@ fn decision_tree_code(_: &Vals) -> String {
         .done()
 }
 
+// ---------- Fallback Chain ----------
+
+fn fallback_chain(v: &Vals, now: ClockMs) -> Element {
+    let mut msg = use_signal(String::new);
+    let key = format!(
+        "{}{}{}{}",
+        v.s("style"),
+        v.s("state"),
+        v.s("chain"),
+        v.s("width")
+    );
+    let state = v.s("state");
+    let live = state == "live";
+    let open = (state == "details").then_some(0);
+    let attempts = match v.s("chain") {
+        "fail" => fb_demo_all_fail(),
+        "first" => {
+            let mut a = fb_demo();
+            a[0].outcome = FbOutcome::Ok;
+            a
+        }
+        "long" => {
+            let mut a = fb_demo();
+            a[1].outcome = FbOutcome::Timeout;
+            a[2].outcome = FbOutcome::Error("400 · context too long".into());
+            a
+        }
+        _ => fb_demo(),
+    };
+    let w = match v.s("width") {
+        "narrow" => "380px",
+        _ => "760px",
+    };
+    rsx! {
+        div { "data-k": "{key}", key: "{key}", "data-state": "{state}", style: "width:{w};max-width:100%;display:flex;flex-direction:column;gap:8px",
+            FallbackChain { now, live, open, attempts: Some(attempts), style: cstyle(v),
+                on_replay: move |_| msg.set("onReplay()".into()),
+                on_open_change: move |i: Option<usize>| msg.set(format!("onOpenChange({i:?})")) }
+            {status(msg)}
+        }
+    }
+}
+
+fn fallback_chain_code(_: &Vals) -> String {
+    Code::new("FallbackChain")
+        .raw("attempts", "Some(router.attempts())")
+        .raw("request", "req.summary()")
+        .raw("now", "clock.now()")
+        .done()
+}
+
 /// Family B part 8 demos.
 pub(crate) fn demos() -> Vec<Demo> {
     let style = || sel("style", "Style", &["clean", "classic"], "clean");
-    vec![Demo {
+    vec![
+        decision_tree_demo(style()),
+        Demo {
+            controls: vec![
+                style(),
+                sel("state", "State", &["live", "settled", "details"], "live"),
+                sel(
+                    "chain",
+                    "Chain",
+                    &["second", "first", "long", "fail"],
+                    "second",
+                ),
+                sel("width", "Width", &["wide", "narrow"], "wide"),
+            ],
+            variants: vec![
+                var(
+                    "live",
+                    "The request leaves, a light runs to the first model, it is rate limited and the branch breaks red; the second one answers and runs on to the response.",
+                    &[],
+                ),
+                var(
+                    "settled",
+                    "The finished chain: one failure, the answer, two models never asked.",
+                    &[("state", "settled")],
+                ),
+                var(
+                    "first-try",
+                    "The first model answers – everything after it stays dashed and unused.",
+                    &[("state", "settled"), ("chain", "first")],
+                ),
+                var(
+                    "third-try",
+                    "Two failures with different reasons before the third model answers.",
+                    &[("state", "settled"), ("chain", "long")],
+                ),
+                var(
+                    "all-failed",
+                    "Every model fails: red branches, a red status and no response.",
+                    &[("state", "settled"), ("chain", "fail")],
+                ),
+                var(
+                    "details",
+                    "A model clicked: how long its try took and what happened next.",
+                    &[("state", "details")],
+                ),
+                var(
+                    "narrow",
+                    "Under 600 px the diagram becomes a list on a rail.",
+                    &[("state", "settled"), ("width", "narrow")],
+                ),
+                var(
+                    "classic",
+                    "Classic style: grey header band, a stronger frame, flat nodes.",
+                    &[("style", "classic"), ("state", "settled")],
+                ),
+            ],
+            render: fallback_chain,
+            code: fallback_chain_code,
+            keyboard: vec![
+                ("Tab", "Replay, then each model in order"),
+                ("Enter / Space", "Opens or closes a model's details"),
+            ],
+            a11y: vec![
+                "Each model is a button whose name carries its place in the order, the model and what happened to it.",
+                "The headline (trying, answered by, every model failed) is a status region.",
+                "The links are an aria-hidden SVG; the order is also the list order.",
+            ],
+            responsive: vec![
+                "Wide: request, links, models, links, response in one row.",
+                "Under 600 px the links give way to a rail and the request, models and response stack.",
+            ],
+            height: 420,
+            live: true,
+            align: Align::Start,
+            ..mk(
+                "fallback-chain",
+                "Fallback Chain",
+                "tools",
+                "Which model actually served a request: the fallback order drawn as a small flow, each failed try marked with why, the one that answered carried through to the reply.",
+                "FallbackChain",
+                "FallbackChainEl",
+                "fallback-chain",
+                "parity/fallbackfid.rs",
+            )
+        },
+    ]
+}
+
+fn decision_tree_demo(style: crate::Control) -> Demo {
+    Demo {
         controls: vec![
-            style(),
+            style,
             sel(
                 "state",
                 "State",
@@ -219,5 +362,5 @@ pub(crate) fn demos() -> Vec<Demo> {
             "decision-tree",
             "parity/dtreefid.rs",
         )
-    }]
+    }
 }

@@ -35,6 +35,7 @@
 //! - [`collabfid`]: fidelity batch, family B part 6: Collaboration Stream messages, quotes, mentions.
 //! - [`ctxmapfid`]: fidelity batch, family B part 6: Context Map blocks, ordered treemap, compaction.
 //! - [`dtreefid`]: fidelity batch, family B part 8: Decision Tree decisions, branches, follow-ups, flags and keys.
+//! - [`fallbackfid`]: fidelity batch, family B part 8: Fallback Chain attempts, states and timing.
 //! - [`costfid`]: fidelity batch, family B part 6: Cost Waterfall steps, rows, axis and formats.
 //! - [`recapfid`]: fidelity batch, family B part 4: Agent Recap events, curve, counts.
 //! - [`seqfid`]: fidelity batch, family B part 4: Agent Sequence rows, frames, bars, demo run.
@@ -60,6 +61,7 @@ pub mod cursorsfid;
 pub mod diff;
 pub mod dtreefid;
 pub mod edit;
+pub mod fallbackfid;
 pub mod fidelity;
 pub mod fields;
 pub mod fleet;
