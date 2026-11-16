@@ -45,6 +45,7 @@ mod parallelfid;
 mod planfid;
 mod queuefid;
 mod ratefid;
+mod reasonfid;
 mod recapfid;
 mod review;
 mod rootfid;
@@ -103,6 +104,7 @@ pub use parallelfid::ParallelAttemptsEl;
 pub use planfid::PlanVsActualEl;
 pub use queuefid::AgentQueueEl;
 pub use ratefid::RateLimitPlannerEl;
+pub use reasonfid::ReasoningPanelEl;
 pub use recapfid::AgentRecapEl;
 pub use review::{
     AiInlineEditEl, ChangeSummaryEl, CodeSuggestionEl, CommentThreadEl, DiffTableEl,
