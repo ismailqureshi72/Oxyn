@@ -40,6 +40,7 @@ mod run;
 mod runningfid;
 mod seqfid;
 mod text;
+mod toolmapfid;
 mod tools;
 mod upload;
 
@@ -102,6 +103,7 @@ pub use text::{
     ActionSwapButton, InViewTitle, LoadingState, SlotReels, Source, StreamingText, SweepText,
     TextMorph, ThinkingLoader, WordReveal,
 };
+pub use toolmapfid::ToolAccessMap;
 pub use tools::{
     ChipStep, DiffChip, ExpandableCard, JsonViewer, LinkUnfurl, RowOutput, ToolCall, ToolCallCard,
     ToolCallGroup, ToolCallList, ToolChips, ToolKindLegend,

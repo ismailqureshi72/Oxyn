@@ -1,0 +1,132 @@
+/* affectUI fidelity pass, family B part 9 (plan #32): Tool Access Map (oxtm-).
+   Clean is the default; Classic follows data-cstyle or data-style. Header, agent tabs, then the map
+   (tools in two columns, the agent card between, a wire from every tool to a spine and on to the
+   agent) or a tool's calls view. Under 540 px the tools fall into a grid under the agent and the
+   wires go; the calls list sits above the call. */
+[data-oxyn-theme="light"]{
+  --oxtm-card:#FFFFFF;--oxtm-bd:#E6E6EA;--oxtm-fg:#17181C;--oxtm-mute:#8A8F98;--oxtm-track:#F1F1F3;--oxtm-band:#FAFAFB;
+  --oxtm-code:#F5F5F7;--oxtm-blue:#2F6FED;--oxtm-blue-bg:#EAF1FE;--oxtm-glint:#1D4ED8;--oxtm-off:#C9CAD0;
+  --oxtm-amb:#B45309;--oxtm-amb-bg:#FEF3C7;--oxtm-red:#DC2626;--oxtm-pri:#17181C;--oxtm-pri-fg:#FFFFFF;
+  --oxtm-shadow:0 1px 2px rgba(0,0,0,.04),0 2px 8px rgba(0,0,0,.04);
+}
+[data-oxyn-theme="dark"],[data-oxyn-theme="hc-dark"]{
+  --oxtm-card:#17181C;--oxtm-bd:#26272B;--oxtm-fg:#F4F5F7;--oxtm-mute:#8B9099;--oxtm-track:#1F2024;--oxtm-band:#121215;
+  --oxtm-code:#1F2024;--oxtm-blue:#4D8DFF;--oxtm-blue-bg:rgba(77,141,255,.15);--oxtm-glint:#9DBEFF;--oxtm-off:#3A3B40;
+  --oxtm-amb:#FBBF24;--oxtm-amb-bg:rgba(251,191,36,.14);--oxtm-red:#F87171;--oxtm-pri:#F4F5F7;--oxtm-pri-fg:#17181C;
+  --oxtm-shadow:0 1px 2px rgba(0,0,0,.35);
+}
+.oxtm{box-sizing:border-box;position:relative;display:flex;flex-direction:column;gap:12px;width:720px;max-width:100%;color:var(--oxtm-fg);font-size:12px;line-height:1.4;container-type:inline-size;-webkit-font-smoothing:antialiased}
+.oxtm *{box-sizing:border-box}
+.oxtm button{font:inherit;color:inherit}
+.oxtm button:focus-visible,.oxtm [tabindex]:focus-visible{outline:2px solid var(--oxtm-blue);outline-offset:2px}
+.oxtm-sp{flex:1}
+.oxtm-bar{display:flex;align-items:center;gap:8px;min-width:0}
+.oxtm-logo{display:inline-flex}
+.oxtm .oxtm-ttl{margin:0;font-size:13px;font-weight:600;white-space:nowrap}
+.oxtm-run{display:inline-flex;align-items:center;gap:5px;padding:1px 8px;border-radius:999px;background:var(--oxtm-blue-bg);color:var(--oxtm-blue);font-size:11px;font-weight:600;white-space:nowrap}
+.oxtm-cnt{color:var(--oxtm-mute);font-size:12px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.oxtm-pulse{width:6px;height:6px;border-radius:50%;background:currentColor;animation:oxtm-pulse 1.2s ease-in-out infinite}
+/* agent tabs */
+.oxtm-tabs{display:flex;gap:2px;align-self:flex-start;max-width:100%;padding:3px;border-radius:10px;background:var(--oxtm-track);overflow-x:auto;scrollbar-width:none}
+.oxtm-tab{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 11px;border:0;border-radius:8px;background:none;color:var(--oxtm-mute);font-size:12px;font-weight:500;white-space:nowrap;cursor:pointer;transition:background .2s,color .2s}
+.oxtm-tab:hover{color:var(--oxtm-fg)}
+.oxtm-tab[aria-selected="true"]{background:var(--oxtm-card);color:var(--oxtm-fg);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+/* map */
+.oxtm-map{display:grid;grid-template-columns:minmax(0,1fr) 190px minmax(0,1fr);column-gap:44px;align-items:center;padding:4px 0;animation:oxtm-fade .25s ease-out}
+.oxtm-col{position:relative;display:flex;flex-direction:column;gap:8px}
+.oxtm-col::after{content:"";position:absolute;top:22px;bottom:22px;border-left:1px solid var(--oxtm-off)}
+.oxtm-col[data-side="left"]::after{right:-22px}
+.oxtm-col[data-side="right"]::after{left:-22px}
+.oxtm-mid{position:relative;display:flex;align-items:center}
+.oxtm-mid::before,.oxtm-mid::after{content:"";position:absolute;top:50%;width:22px;border-top:1px solid var(--oxtm-blue)}
+.oxtm-mid::before{right:100%}
+.oxtm-mid::after{left:100%}
+.oxtm-agent{display:flex;flex-direction:column;align-items:flex-start;gap:3px;width:100%;padding:10px 12px;border:1px solid var(--oxtm-bd);border-radius:10px;background:var(--oxtm-card);box-shadow:var(--oxtm-shadow);animation:oxtm-up .3s cubic-bezier(.2,.8,.2,1)}
+.oxtm-ah{display:inline-flex;align-items:center;gap:6px}
+.oxtm-ah b{font-size:13px;font-weight:600}
+.oxtm-am{color:var(--oxtm-mute);font-size:11px}
+.oxtm-badge{padding:0 7px;border-radius:999px;background:var(--oxtm-track);color:var(--oxtm-mute);font-size:10.5px;font-weight:600;line-height:17px}
+.oxtm-badge[data-st="running"]{background:var(--oxtm-blue-bg);color:var(--oxtm-blue)}
+.oxtm-badge[data-st="waiting"]{background:var(--oxtm-amb-bg);color:var(--oxtm-amb)}
+.oxtm-badge[data-st="failed"]{color:var(--oxtm-red)}
+.oxtm .oxtm-task{margin:2px 0 0;font-size:12px;line-height:1.4}
+/* tool card: fixed size so nothing moves */
+.oxtm-tool{position:relative;display:flex;align-items:flex-start;gap:7px;height:46px;padding:7px 9px;border:1px solid var(--oxtm-bd);border-radius:10px;background:var(--oxtm-card);text-align:left;cursor:pointer;box-shadow:var(--oxtm-shadow);transition:border-color .2s,opacity .3s}
+.oxtm-tool:hover:not(:disabled){border-color:color-mix(in srgb,var(--oxtm-fg) 22%,var(--oxtm-bd))}
+.oxtm-tool:disabled{cursor:default;opacity:.5;box-shadow:none}
+.oxtm-tool[data-st="running"]{border-color:color-mix(in srgb,var(--oxtm-blue) 45%,var(--oxtm-bd))}
+.oxtm-ti{display:inline-grid;place-items:center;flex:none;width:16px;height:16px;margin-top:1px;color:var(--oxtm-fg)}
+.oxtm-tool:disabled .oxtm-ti{filter:grayscale(1);color:var(--oxtm-mute)}
+.oxtm-tx{display:flex;flex-direction:column;gap:1px;flex:1;min-width:0}
+.oxtm-tn{display:flex;align-items:baseline;gap:6px;min-width:0}
+.oxtm-tn b{flex:1;min-width:0;font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.oxtm-n{color:var(--oxtm-mute);font-size:11px;font-variant-numeric:tabular-nums}
+.oxtm-tl{display:inline-flex;align-items:center;gap:5px;color:var(--oxtm-mute);font-size:10.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.oxtm-tl[data-tone="run"]{align-self:flex-start;padding:0 6px;border-radius:999px;background:var(--oxtm-blue-bg);color:var(--oxtm-blue);font-weight:600}
+.oxtm-tl[data-tone="fail"]{color:var(--oxtm-red);font-weight:600}
+/* wires */
+.oxtm-wire{position:absolute;top:50%;width:22px;height:0;border-top:1px solid var(--oxtm-blue);pointer-events:none}
+.oxtm-tool[data-side="left"] .oxtm-wire{left:100%;margin-left:1px}
+.oxtm-tool[data-side="right"] .oxtm-wire{right:100%;margin-right:1px}
+.oxtm-tool[data-st="none"] .oxtm-wire{border-top:1px dashed var(--oxtm-off)}
+.oxtm-tool[data-st="failed"] .oxtm-wire{border-top-color:var(--oxtm-red)}
+.oxtm-tool[data-st="running"] .oxtm-wire{height:2px;border:0;margin-top:-1px;background:linear-gradient(90deg,var(--oxtm-blue) 0 30%,var(--oxtm-glint) 50%,var(--oxtm-blue) 70%);background-size:200% 100%;animation:oxtm-glint 1.1s linear infinite}
+.oxtm-tool[data-side="left"][data-st="running"] .oxtm-wire{animation-direction:reverse}
+/* calls view */
+.oxtm-calls{display:flex;flex-direction:column;border:1px solid var(--oxtm-bd);border-radius:12px;background:var(--oxtm-card);box-shadow:var(--oxtm-shadow);overflow:clip;animation:oxtm-slide .25s cubic-bezier(.2,.8,.2,1)}
+.oxtm-ch{display:flex;align-items:center;gap:7px;min-width:0;padding:9px 12px;border-bottom:1px solid var(--oxtm-bd)}
+.oxtm-ch b{font-size:13px;font-weight:600;white-space:nowrap}
+.oxtm-scope{min-width:0;color:var(--oxtm-mute);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.oxtm-back{display:grid;place-items:center;width:24px;height:24px;padding:0;border:0;border-radius:7px;background:none;color:var(--oxtm-mute);cursor:pointer}
+.oxtm-back:hover{background:var(--oxtm-track);color:var(--oxtm-fg)}
+.oxtm-cbody{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);min-height:220px}
+.oxtm-list{display:flex;flex-direction:column;gap:2px;padding:6px;border-right:1px solid var(--oxtm-bd);outline-offset:-2px}
+.oxtm-call{display:flex;align-items:center;gap:7px;min-height:32px;padding:4px 8px;border-radius:8px;cursor:pointer;transition:background .15s}
+.oxtm-call:hover{background:var(--oxtm-band)}
+.oxtm-call[aria-selected="true"]{background:var(--oxtm-track)}
+.oxtm-cg{display:inline-grid;place-items:center;flex:none;width:14px;color:var(--oxtm-blue)}
+.oxtm-call[data-st="done"] .oxtm-cg{color:var(--oxtm-mute)}
+.oxtm-call[data-st="failed"] .oxtm-cg{color:var(--oxtm-red)}
+.oxtm-cs{flex:1;min-width:0;font:11px ui-monospace,SFMono-Regular,Menlo,monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.oxtm-rp{flex:none;padding:0 5px;border-radius:5px;background:var(--oxtm-blue-bg);color:var(--oxtm-blue);font-size:10px;font-weight:600;line-height:16px}
+.oxtm-cd{flex:none;color:var(--oxtm-mute);font-size:11px;font-variant-numeric:tabular-nums}
+.oxtm .oxtm-none{margin:8px;color:var(--oxtm-mute)}
+.oxtm-detail{display:flex;flex-direction:column;gap:10px;min-width:0;padding:10px 12px;animation:oxtm-fade .2s ease-out}
+.oxtm-blk{display:flex;flex-direction:column;gap:4px;min-width:0}
+.oxtm-bl{display:flex;justify-content:space-between;color:var(--oxtm-mute);font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase}
+.oxtm-bl span{font-weight:400;letter-spacing:0;text-transform:none;font-variant-numeric:tabular-nums}
+.oxtm .oxtm-code{display:block;width:100%;margin:0;padding:8px 10px;border:0;border-radius:8px;background:var(--oxtm-code);color:var(--oxtm-fg);font:11px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre-wrap;overflow-wrap:anywhere}
+.oxtm .oxtm-code[data-st="failed"]{color:var(--oxtm-red)}
+.oxtm .oxtm-ta{min-height:58px;resize:vertical;outline:1px solid var(--oxtm-blue)}
+.oxtm .oxtm-wait{display:flex;align-items:center;gap:7px;color:var(--oxtm-mute);font-family:inherit}
+.oxtm-acts{display:flex;justify-content:flex-end;gap:6px;margin-top:auto}
+.oxtm-btn{display:inline-flex;align-items:center;gap:5px;height:28px;padding:0 11px;border:1px solid var(--oxtm-bd);border-radius:8px;background:var(--oxtm-card);font-size:12px;font-weight:500;white-space:nowrap;cursor:pointer}
+.oxtm-btn:hover:not(:disabled){background:var(--oxtm-band)}
+.oxtm-btn:disabled{opacity:.45;cursor:default}
+.oxtm-btn.oxtm-pri{border-color:transparent;background:var(--oxtm-pri);color:var(--oxtm-pri-fg)}
+.oxtm-btn.oxtm-pri:hover:not(:disabled){background:color-mix(in srgb,var(--oxtm-pri) 85%,var(--oxtm-card))}
+.oxtm-spin{width:10px;height:10px;border:1.5px solid color-mix(in srgb,currentColor 25%,transparent);border-top-color:currentColor;border-radius:50%;animation:oxtm-spin .8s linear infinite}
+@keyframes oxtm-fade{from{opacity:0}to{opacity:1}}
+@keyframes oxtm-up{from{opacity:0;translate:0 6px}to{opacity:1;translate:0 0}}
+@keyframes oxtm-slide{from{opacity:0;translate:0 8px}to{opacity:1;translate:0 0}}
+@keyframes oxtm-glint{from{background-position:100% 0}to{background-position:-100% 0}}
+@keyframes oxtm-pulse{50%{opacity:.35}}
+@keyframes oxtm-spin{to{rotate:360deg}}
+@media (prefers-reduced-motion:reduce){.oxtm *{animation:none!important;transition:none!important}}
+/* Classic: one framed card, header band, squarer cards */
+:is([data-cstyle="classic"] .oxtm:not([data-style="clean"]),.oxtm[data-style="classic"]){gap:0;border:1px solid var(--oxtm-bd);border-radius:12px;background:var(--oxtm-band);overflow:clip}
+:is([data-cstyle="classic"] .oxtm:not([data-style="clean"]),.oxtm[data-style="classic"]) .oxtm-bar{padding:10px 14px;border-bottom:1px solid var(--oxtm-bd);background:var(--oxtm-card)}
+:is([data-cstyle="classic"] .oxtm:not([data-style="clean"]),.oxtm[data-style="classic"]) .oxtm-tabs{margin:12px 14px 0;border-radius:6px}
+:is([data-cstyle="classic"] .oxtm:not([data-style="clean"]),.oxtm[data-style="classic"]) .oxtm-tab{border-radius:4px}
+:is([data-cstyle="classic"] .oxtm:not([data-style="clean"]),.oxtm[data-style="classic"]) .oxtm-map{padding:16px 14px}
+:is([data-cstyle="classic"] .oxtm:not([data-style="clean"]),.oxtm[data-style="classic"]) :is(.oxtm-tool,.oxtm-agent){border-radius:6px;box-shadow:none}
+:is([data-cstyle="classic"] .oxtm:not([data-style="clean"]),.oxtm[data-style="classic"]) .oxtm-calls{margin:12px 14px 14px;border-radius:8px;box-shadow:none}
+/* narrow */
+@container (max-width:540px){
+  .oxtm-map{grid-template-columns:1fr 1fr;row-gap:8px;column-gap:8px}
+  .oxtm-mid{grid-column:1 / -1;order:-1}
+  .oxtm-mid::before,.oxtm-mid::after,.oxtm-col::after,.oxtm-wire{display:none}
+  .oxtm-cbody{grid-template-columns:minmax(0,1fr)}
+  .oxtm-list{border-right:0;border-bottom:1px solid var(--oxtm-bd)}
+  .oxtm-scope{display:none}
+}

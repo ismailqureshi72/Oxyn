@@ -49,6 +49,7 @@ pub use parity::ParallelAttempts;
 pub use parity::PlanVsActual;
 pub use parity::RootCauseTree;
 pub use parity::RunningNow;
+pub use parity::ToolAccessMap;
 pub use parity::{
     ActionSwapButton, InViewTitle, LoadingState, SlotReels, Source, StreamingText, SweepText,
     TextMorph, ThinkingLoader, WordReveal,
