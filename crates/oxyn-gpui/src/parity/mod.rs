@@ -24,23 +24,38 @@ mod costfid;
 mod crewfid;
 mod ctxmapfid;
 mod cursorsfid;
+mod delegatefid;
+mod difftlfid;
+mod dtreefid;
+mod fallbackfid;
+mod fanfid;
 mod fidelity;
 mod fields;
 mod graphfid;
 mod handofffid;
 mod home;
 mod ime;
+mod judgefid;
 mod lanesfid;
 mod ledgerfid;
+mod memoryfid;
 mod merge;
 mod monitorfid;
+mod parallelfid;
+mod planfid;
 mod queuefid;
+mod ratefid;
 mod recapfid;
 mod review;
+mod rootfid;
 mod run;
+mod runningfid;
+mod schedfid;
 mod seqfid;
 mod text;
+mod toolmapfid;
 mod tools;
+mod tracefid;
 
 pub use agentsfid::{AgentFindingsEl, AgentInboxEl};
 pub use answers::{
@@ -59,6 +74,11 @@ pub use costfid::CostWaterfallEl;
 pub use crewfid::AgentCrewEl;
 pub use ctxmapfid::ContextMapEl;
 pub use cursorsfid::AgentCursorsEl;
+pub use delegatefid::DelegateBoardEl;
+pub use difftlfid::DiffTimelineRunEl;
+pub use dtreefid::DecisionTreeEl;
+pub use fallbackfid::FallbackChainEl;
+pub use fanfid::FanoutGridEl;
 pub use fidelity::{AgentCommentThreadEl, ChatComposerEl, CommentsPanelEl, ThreadMsg, file_badge};
 pub use fields::{
     AiComposerEl, AvatarUploadEl, ContextFieldEl, ContextGridEl, ElasticSliderEl, FileDropzoneEl,
@@ -72,27 +92,37 @@ pub use home::{
     PollingCostEl, RunModeMenuEl, ThreadListEl, TokenUsageChartEl,
 };
 pub use ime::{ImeEvent, ImeInput, bind_ime_keys};
+pub use judgefid::JudgeBracketEl;
 pub use lanesfid::AgentLanesEl;
 pub use ledgerfid::AgentLedgerEl;
+pub use memoryfid::MemoryPanelEl;
 pub use merge::{ConflictRadarEl, MergeAct, MergeConflictEl, RadarAct};
 pub use monitorfid::AgentMonitorEl;
+pub use parallelfid::ParallelAttemptsEl;
+pub use planfid::PlanVsActualEl;
 pub use queuefid::AgentQueueEl;
+pub use ratefid::RateLimitPlannerEl;
 pub use recapfid::AgentRecapEl;
 pub use review::{
     AiInlineEditEl, ChangeSummaryEl, CodeSuggestionEl, CommentThreadEl, DiffTableEl,
     DiffTimelineEl, DiffViewerEl, HunkAct, IdAct, ImageCompareEl, InlineDiffEl, ReviewCardEl,
     ReviewCenterEl,
 };
+pub use rootfid::RootCauseTreeEl;
 pub use run::{
     ActivityFeedEl, AgentPlanEl, AgentRunEl, AgentStatusEl, AgentTrailEl, AgentTreeEl, BreakdownEl,
     ChecklistEl, CountdownEl, CounterEl, FleetEl, FlowStepperEl, OrchestratorEl, ReadinessEl,
     TaskRowsEl, TreeTableEl,
 };
+pub use runningfid::RunningNowEl;
+pub use schedfid::ScheduledRunsEl;
 pub use seqfid::AgentSequenceEl;
 pub use text::{LoadingStateEl, ShimmerEl, SlotTextEl, ThinkingLoaderEl};
+pub use toolmapfid::ToolAccessMapEl;
 pub use tools::{
     ExpandableCardEl, JsonViewerEl, LinkUnfurlEl, ToolCallCardEl, ToolCallEl, ToolChipsEl,
 };
+pub use tracefid::TraceWaterfallEl;
 
 /// Button callback: the action id and the window.
 pub type Act = Rc<dyn Fn(&'static str, &mut Window, &mut App)>;

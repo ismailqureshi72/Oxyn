@@ -1,0 +1,75 @@
+/* affectUI fidelity pass, family B part 9 (plan #32): Parallel Attempts (oxpt-).
+   Clean is the default; Classic follows data-cstyle or data-style. Each attempt one row – tile,
+   name + approach over the step / outcome, bar, score, use button; under 560 px the bar moves
+   under the name and the approach drops out. */
+[data-oxyn-theme="light"]{
+  --oxpt-card:#FFFFFF;--oxpt-bd:#E5E7EB;--oxpt-fg:#111827;--oxpt-mute:#6B7280;--oxpt-track:#EEF0F2;--oxpt-band:#FAFAFA;
+  --oxpt-blue:#2563EB;--oxpt-green:#16A34A;--oxpt-best-bg:#DCFCE7;--oxpt-wash:#F0FDF4;--oxpt-best-edge:#86EFAC;--oxpt-red:#DC2626;
+  --oxpt-shadow:0 1px 2px rgba(0,0,0,.04),0 4px 14px rgba(0,0,0,.04);
+}
+[data-oxyn-theme="dark"],[data-oxyn-theme="hc-dark"]{
+  --oxpt-card:#17171A;--oxpt-bd:#2A2A2E;--oxpt-fg:#EDEDEF;--oxpt-mute:#8A8A93;--oxpt-track:#26262B;--oxpt-band:#111113;
+  --oxpt-blue:#4C8DFF;--oxpt-green:#34D399;--oxpt-best-bg:rgba(52,211,153,.16);--oxpt-wash:rgba(52,211,153,.07);--oxpt-best-edge:rgba(52,211,153,.45);--oxpt-red:#F87171;
+  --oxpt-shadow:0 1px 2px rgba(0,0,0,.3);
+}
+.oxpt{box-sizing:border-box;position:relative;display:flex;flex-direction:column;gap:12px;width:720px;max-width:100%;container-type:inline-size;padding:16px;border:1px solid var(--oxpt-bd);border-radius:16px;background:var(--oxpt-card);color:var(--oxpt-fg);font-size:12px;line-height:1.4;overflow:clip;box-shadow:var(--oxpt-shadow);-webkit-font-smoothing:antialiased}
+.oxpt *{box-sizing:border-box}
+.oxpt button{font:inherit;color:inherit}
+.oxpt button:focus-visible{outline:2px solid var(--oxpt-fg);outline-offset:2px}
+.oxpt-sp{flex:1}
+.oxpt-bar{display:flex;align-items:center;gap:8px;min-width:0}
+.oxpt-logo{display:inline-flex;color:var(--oxpt-blue)}
+.oxpt .oxpt-ttl{margin:0;font-size:13px;font-weight:600;white-space:nowrap}
+.oxpt-task{min-width:0;color:var(--oxpt-mute);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.oxpt-done{color:var(--oxpt-mute);font-size:12px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.oxpt-cost{font-size:12px;font-weight:600;font-variant-numeric:tabular-nums}
+.oxpt-list{display:flex;flex-direction:column;gap:8px}
+.oxpt-row{display:grid;grid-template-columns:20px minmax(0,1.35fr) minmax(56px,1fr) 78px 96px;grid-template-areas:"tile name bar right use";align-items:center;column-gap:12px;min-height:48px;padding:8px 12px 8px 14px;border:1px solid var(--oxpt-bd);border-radius:12px;background:var(--oxpt-card);transition:background .35s,border-color .35s,opacity .35s;animation:oxpt-in .4s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0) * 70ms)}
+.oxpt-row[data-use="true"]{background:var(--oxpt-wash);border-color:var(--oxpt-best-edge)}
+.oxpt-row[data-st="failed"]{opacity:.58}
+.oxpt-row[data-back="true"][data-st="done"]{opacity:.8}
+.oxpt-row[data-back="true"]:is(:hover,:focus-within){opacity:1;border-color:color-mix(in srgb,var(--oxpt-fg) 20%,var(--oxpt-bd))}
+.oxpt-tile{grid-area:tile;display:grid;place-items:center;width:20px;height:20px;border-radius:6px;background:var(--oxpt-band);border:1px solid var(--oxpt-bd)}
+.oxpt-name{grid-area:name;display:flex;flex-direction:column;min-width:0;line-height:1.3}
+.oxpt-l1{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.oxpt-l1 b{font-size:13px;font-weight:600}
+.oxpt-ap{color:var(--oxpt-mute);font-size:12px}
+.oxpt-l2{min-height:15px;color:var(--oxpt-mute);font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;animation:oxpt-fade .3s ease-out}
+.oxpt-l2[data-run="true"]{color:var(--oxpt-blue)}
+.oxpt-track{grid-area:bar;position:relative;height:6px;border-radius:999px;background:var(--oxpt-track);overflow:clip}
+.oxpt-fill{position:absolute;inset:0 auto 0 0;border-radius:inherit;background:var(--oxpt-blue);transition:width .25s linear,background .4s}
+.oxpt-row[data-st="running"] .oxpt-fill{box-shadow:0 0 8px color-mix(in srgb,var(--oxpt-blue) 60%,transparent)}
+.oxpt-row[data-st="running"] .oxpt-fill::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);background-size:40px 100%;background-repeat:no-repeat;animation:oxpt-shine 1.2s linear infinite}
+.oxpt-row[data-st="done"] .oxpt-fill{background:color-mix(in srgb,var(--oxpt-fg) 28%,var(--oxpt-track))}
+.oxpt-row[data-use="true"] .oxpt-fill{background:var(--oxpt-green)}
+.oxpt-row[data-st="failed"] .oxpt-fill{background:var(--oxpt-red)}
+.oxpt-right{grid-area:right;display:flex;flex-direction:column;align-items:flex-end;min-width:0;line-height:1.3}
+.oxpt-sc{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.oxpt-sc b{font-weight:700}
+.oxpt-row[data-use="true"] .oxpt-sc b{color:var(--oxpt-green)}
+.oxpt-pct{color:var(--oxpt-mute);font-size:12px}
+.oxpt-fail{color:var(--oxpt-red);font-size:12px;font-weight:600}
+.oxpt-best{padding:1px 7px;border-radius:999px;background:var(--oxpt-best-bg);color:var(--oxpt-green);font-size:10.5px;font-weight:600;animation:oxpt-fade .3s ease-out}
+.oxpt-meta{color:var(--oxpt-mute);font-size:11px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.oxpt-use{grid-area:use;justify-self:end;display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 10px;border:1px solid var(--oxpt-bd);border-radius:8px;background:var(--oxpt-card);font-size:11.5px;font-weight:500;white-space:nowrap;cursor:pointer;transition:background .2s,color .2s,border-color .2s}
+.oxpt-use:hover{background:var(--oxpt-band)}
+.oxpt-use[aria-checked="true"]{border-color:transparent;background:none;color:var(--oxpt-green);cursor:default}
+.oxpt-ghost{visibility:hidden}
+@keyframes oxpt-in{from{opacity:0;translate:0 4px}to{opacity:1;translate:0 0}}
+@keyframes oxpt-fade{from{opacity:0}to{opacity:1}}
+@keyframes oxpt-shine{from{background-position:-40px 0}to{background-position:calc(100% + 40px) 0}}
+@media (prefers-reduced-motion:reduce){.oxpt *,.oxpt *::after{animation:none!important;transition:none!important}}
+:is([data-cstyle="classic"] .oxpt:not([data-style="clean"]),.oxpt[data-style="classic"]){padding:0;gap:0;border-color:color-mix(in srgb,var(--oxpt-fg) 12%,var(--oxpt-bd));background:var(--oxpt-band)}
+:is([data-cstyle="classic"] .oxpt:not([data-style="clean"]),.oxpt[data-style="classic"]) .oxpt-bar{padding:12px 16px;border-bottom:1px solid var(--oxpt-bd);background:var(--oxpt-card)}
+:is([data-cstyle="classic"] .oxpt:not([data-style="clean"]),.oxpt[data-style="classic"]) .oxpt-list{padding:12px;gap:0}
+:is([data-cstyle="classic"] .oxpt:not([data-style="clean"]),.oxpt[data-style="classic"]) .oxpt-row{border-radius:0;border-width:0 0 1px;background:var(--oxpt-card)}
+:is([data-cstyle="classic"] .oxpt:not([data-style="clean"]),.oxpt[data-style="classic"]) .oxpt-row:first-child{border-radius:10px 10px 0 0}
+:is([data-cstyle="classic"] .oxpt:not([data-style="clean"]),.oxpt[data-style="classic"]) .oxpt-row:last-child{border-radius:0 0 10px 10px;border-bottom:0}
+:is([data-cstyle="classic"] .oxpt:not([data-style="clean"]),.oxpt[data-style="classic"]) .oxpt-row[data-use="true"]{box-shadow:inset 3px 0 0 var(--oxpt-green)}
+@container (max-width:560px){
+  .oxpt-task{display:none}
+  .oxpt-row{grid-template-columns:20px minmax(0,1fr) auto;grid-template-areas:"tile name right" ". bar bar" ". use use";row-gap:6px}
+  .oxpt-ap{display:none}
+  .oxpt-use{justify-self:start}
+  .oxpt-ghost{display:none}
+}
