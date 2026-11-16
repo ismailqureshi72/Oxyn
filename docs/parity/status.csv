@@ -63,7 +63,7 @@ affectUI,Integration Picker,https://www.affectui.com/components/integration-pick
 affectUI,Integration Settings,https://www.affectui.com/components/integration-settings,Components · Inputs,Pro,mcp-plugin-list,C10,#35,planned
 affectUI,Judge Bracket,https://www.affectui.com/components/judge-bracket,Components · Agents,Pro,"judge-bracket (exact, ref-1 notes, family B part 9)",C8,#32,built
 affectUI,KPI Chart,https://www.affectui.com/components/kpi-chart,Components · Data display,Pro,genui-blocks,C12,#36,planned
-affectUI,Memory Panel,https://www.affectui.com/components/memory-panel,Components · Agents,Pro,NEW,C10,#35,planned
+affectUI,Memory Panel,https://www.affectui.com/components/memory-panel,Components · Agents,Pro,"memory-panel (exact, ref-1 notes, family B part 9)",C10,#32,built
 affectUI,Message Actions,https://www.affectui.com/components/message-actions,Components · Chat,Free,"message-actions (exact, overnight batch A), icon-states, message-bubble",,#32,built
 affectUI,Model Picker,https://www.affectui.com/components/model-picker,Components · Chat,Pro,"model-picker (exact, chunk 2; selected row marked by check and blue dashes only, batch A), model-menu, composer-effort-control",,#32,built
 affectUI,Notification Stack,https://www.affectui.com/components/notification-stack,Components · Feedback,Free,notification-stack,C3,#26,built

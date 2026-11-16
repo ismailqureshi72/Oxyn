@@ -12,7 +12,9 @@ use oxyn_core::{
         parallelfid::{PaStatus, pa_at, pa_demo},
     },
 };
-use oxyn_dioxus::{DecisionTree, DelegateBoard, FallbackChain, JudgeBracket, ParallelAttempts};
+use oxyn_dioxus::{
+    DecisionTree, DelegateBoard, FallbackChain, JudgeBracket, MemoryPanel, ParallelAttempts,
+};
 
 use super::{Code, mk, sel, var};
 use crate::{Align, Demo, Vals};
@@ -519,6 +521,128 @@ fn judge_bracket_demo(style: crate::Control) -> Demo {
     }
 }
 
+// ---------- Memory Panel ----------
+
+fn memory_panel(v: &Vals, now: ClockMs) -> Element {
+    let mut msg = use_signal(String::new);
+    let key = format!("{}{}", v.s("style"), v.s("state"));
+    let state = v.s("state");
+    let filter = (state == "projects").then(|| "Projects".to_string());
+    let search = (state == "search").then(|| "tokens".to_string());
+    let pointed = (state == "tray").then(|| "m4".to_string());
+    let forgotten = (state == "forgot").then(|| "m2".to_string());
+    rsx! {
+        div { "data-k": "{key}", key: "{key}", "data-state": "{state}", style: "display:flex;flex-direction:column;gap:8px;max-width:100%",
+            MemoryPanel { now, filter, search, pointed, forgotten, undo_ms: if state == "forgot" { 600_000 } else { 5000 },
+                enabled: state != "off", adding: state == "new", style: cstyle(v),
+                on_change: move |m: Vec<oxyn_core::parity::memoryfid::MpMemory>| msg.set(format!("onChange({} memories)", m.len())),
+                on_enabled_change: move |b: bool| msg.set(format!("onEnabledChange({b})")) }
+            {status(msg)}
+        }
+    }
+}
+
+fn memory_panel_code(_: &Vals) -> String {
+    Code::new("MemoryPanel")
+        .raw("memories", "Some(store.memories())")
+        .raw("now", "clock.now()")
+        .raw("on_change", "move |m| store.save(m)")
+        .raw("on_enabled_change", "move |on| store.set_enabled(on)")
+        .done()
+}
+
+fn memory_panel_demo(style: crate::Control) -> Demo {
+    Demo {
+        controls: vec![
+            style,
+            sel(
+                "state",
+                "State",
+                &["all", "projects", "search", "tray", "forgot", "off", "new"],
+                "all",
+            ),
+        ],
+        variants: vec![
+            var(
+                "default",
+                "Eight memories in three groups, one paused. Point at a row for Edit, Pause and Forget.",
+                &[],
+            ),
+            var(
+                "filtered",
+                "The Projects chip picked: other groups fold away.",
+                &[("state", "projects")],
+            ),
+            var(
+                "search",
+                "Search open: the chips give way to a field and the list filters as you type.",
+                &[("state", "search")],
+            ),
+            var(
+                "tray",
+                "A row pointed at: light fill, the three actions, and the status line names its category.",
+                &[("state", "tray")],
+            ),
+            var(
+                "undo",
+                "A memory forgotten: the counts drop and the last line offers Undo for a few seconds.",
+                &[("state", "forgot")],
+            ),
+            var(
+                "off",
+                "Memory switched off: a note unfolds, the list dims, nothing is deleted.",
+                &[("state", "off")],
+            ),
+            var(
+                "new",
+                "New memory: a field, a category and Save (disabled until there is text).",
+                &[("state", "new")],
+            ),
+            var(
+                "classic",
+                "Classic style: header and status bands, squarer card.",
+                &[("style", "classic")],
+            ),
+        ],
+        render: memory_panel,
+        code: memory_panel_code,
+        keyboard: vec![
+            (
+                "Tab",
+                "Switch, chips, search, each memory's actions, New memory",
+            ),
+            ("← / →", "Moves between the category chips"),
+            (
+                "Enter",
+                "Saves an edit or a new memory (Shift+Enter: new line)",
+            ),
+            ("Escape", "Cancels an edit, the new memory or the search"),
+        ],
+        a11y: vec![
+            "Use memory is a role=switch; the chips are a radiogroup with roving focus; Pause is a toggle (aria-pressed).",
+            "Each row's actions also appear on keyboard focus, not only on hover.",
+            "Saves, pauses, forgets and undos are read out by a polite status region.",
+        ],
+        responsive: vec![
+            "A narrow card (320 px, shrinks with its container); the chip row scrolls sideways instead of wrapping.",
+            "Past 360 px the rows scroll within the card.",
+        ],
+        height: 600,
+        live: true,
+        align: Align::Start,
+        ..mk(
+            "memory-panel",
+            "Memory Panel",
+            "tools",
+            "What the assistant remembers about you, by category: filter or search it, pause a memory, edit or forget it with a short undo, add your own, or switch memory off without losing anything.",
+            "MemoryPanel",
+            "MemoryPanelEl",
+            "memory-panel",
+            "parity/memoryfid.rs",
+        )
+    }
+}
+
 /// Family B part 8 demos.
 pub(crate) fn demos() -> Vec<Demo> {
     let style = || sel("style", "Style", &["clean", "classic"], "clean");
@@ -526,6 +650,7 @@ pub(crate) fn demos() -> Vec<Demo> {
         decision_tree_demo(style()),
         parallel_attempts_demo(style()),
         judge_bracket_demo(style()),
+        memory_panel_demo(style()),
         Demo {
             controls: vec![
                 style(),

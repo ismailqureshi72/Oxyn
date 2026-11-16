@@ -44,6 +44,7 @@ pub use glyph_loader::{GLYPH_LOADER_CSS, GlyphLoader, GlyphLoaderProps};
 /// Stylesheet for approvals and checkpoints.
 pub const HITL_CSS: &str = include_str!("hitl.css");
 pub use parity::JudgeBracket;
+pub use parity::MemoryPanel;
 pub use parity::ParallelAttempts;
 pub use parity::{
     ActionSwapButton, InViewTitle, LoadingState, SlotReels, Source, StreamingText, SweepText,

@@ -44,6 +44,7 @@ pub use navigation::{
     UserMenuEl,
 };
 pub use parity::JudgeBracketEl;
+pub use parity::MemoryPanelEl;
 pub use parity::ParallelAttemptsEl;
 pub use parity::{
     Act, ActivityFeedEl, AgentApprovalsEl, AgentPlanEl, AgentRunEl, AgentStatusEl, AgentTrailEl,
