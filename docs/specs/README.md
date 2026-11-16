@@ -205,4 +205,5 @@ specified just as deeply. When we point at one component as an example, the stan
 | [tool-access-map.md](tool-access-map.md) | built v0.1 (plan #32, family B part 9) |
 | [scheduled-runs.md](scheduled-runs.md) | built v0.1 (plan #32, family B part 9) |
 | [rate-limit-planner.md](rate-limit-planner.md) | built v0.1 (plan #32, family B part 9) |
+| [trace-waterfall.md](trace-waterfall.md) | built v0.1 (plan #32, family B part 9) |
 | Every other component in [../component-taxonomy.md](../component-taxonomy.md) | to write in V2.2 |

@@ -52,6 +52,7 @@ pub use parity::RootCauseTree;
 pub use parity::RunningNow;
 pub use parity::ScheduledRuns;
 pub use parity::ToolAccessMap;
+pub use parity::TraceWaterfall;
 pub use parity::{
     ActionSwapButton, InViewTitle, LoadingState, SlotReels, Source, StreamingText, SweepText,
     TextMorph, ThinkingLoader, WordReveal,

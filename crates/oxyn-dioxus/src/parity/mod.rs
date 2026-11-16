@@ -44,6 +44,7 @@ mod seqfid;
 mod text;
 mod toolmapfid;
 mod tools;
+mod tracefid;
 mod upload;
 
 pub use agentsfid::{AgentFindings, AgentInbox};
@@ -112,4 +113,5 @@ pub use tools::{
     ChipStep, DiffChip, ExpandableCard, JsonViewer, LinkUnfurl, RowOutput, ToolCall, ToolCallCard,
     ToolCallGroup, ToolCallList, ToolChips, ToolKindLegend,
 };
+pub use tracefid::TraceWaterfall;
 pub use upload::{AvatarUpload, FileDropzone};

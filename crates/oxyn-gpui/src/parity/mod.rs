@@ -53,6 +53,7 @@ mod seqfid;
 mod text;
 mod toolmapfid;
 mod tools;
+mod tracefid;
 
 pub use agentsfid::{AgentFindingsEl, AgentInboxEl};
 pub use answers::{
@@ -117,6 +118,7 @@ pub use toolmapfid::ToolAccessMapEl;
 pub use tools::{
     ExpandableCardEl, JsonViewerEl, LinkUnfurlEl, ToolCallCardEl, ToolCallEl, ToolChipsEl,
 };
+pub use tracefid::TraceWaterfallEl;
 
 /// Button callback: the action id and the window.
 pub type Act = Rc<dyn Fn(&'static str, &mut Window, &mut App)>;
