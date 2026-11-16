@@ -10,12 +10,13 @@ use oxyn_core::{
         fallbackfid::{FbOutcome, fb_demo, fb_demo_all_fail},
         judgefid::{jb_demo, jb_demo_verdicts},
         parallelfid::{PaStatus, pa_at, pa_demo},
+        planfid::{pv_actual_total, pv_demo},
         runningfid::{RnState, rn_demo},
     },
 };
 use oxyn_dioxus::{
     DecisionTree, DelegateBoard, FallbackChain, JudgeBracket, MemoryPanel, ParallelAttempts,
-    RunningNow,
+    PlanVsActual, RunningNow,
 };
 
 use super::{Code, mk, sel, var};
@@ -796,6 +797,134 @@ fn running_now_demo(style: crate::Control) -> Demo {
     }
 }
 
+// ---------- Plan vs Actual ----------
+
+fn plan_vs_actual(v: &Vals, now: ClockMs) -> Element {
+    let mut msg = use_signal(String::new);
+    let key = format!("{}{}{}", v.s("style"), v.s("state"), v.s("width"));
+    let state = v.s("state");
+    let mut steps = pv_demo();
+    if state == "ahead" {
+        steps[1].actual = 24;
+        steps[3].actual = 30;
+    }
+    let total = pv_actual_total(&steps);
+    let at = match state {
+        "live" => None,
+        "early" => Some(30),
+        "mid" | "selected" => Some(62),
+        _ => Some(total),
+    };
+    let selected = (state == "selected").then(|| "checkout".to_string());
+    let w = if v.s("width") == "narrow" {
+        "380px"
+    } else {
+        "640px"
+    };
+    rsx! {
+        div { "data-k": "{key}", key: "{key}", "data-state": "{state}", style: "width:{w};max-width:100%;display:flex;flex-direction:column;gap:8px",
+            PlanVsActual { now, steps: Some(steps), at, selected, style: cstyle(v),
+                on_select: move |id: Option<String>| msg.set(format!("onSelect({id:?})")) }
+            {status(msg)}
+        }
+    }
+}
+
+fn plan_vs_actual_code(_: &Vals) -> String {
+    Code::new("PlanVsActual")
+        .raw("steps", "Some(agent.plan_with_timings())")
+        .raw("at", "Some(run.elapsed_secs())")
+        .raw("task", "\"Launch the pricing page\"")
+        .raw("now", "clock.now()")
+        .done()
+}
+
+fn plan_vs_actual_demo(style: crate::Control) -> Demo {
+    Demo {
+        controls: vec![
+            style,
+            sel(
+                "state",
+                "State",
+                &["live", "early", "mid", "selected", "done", "ahead"],
+                "live",
+            ),
+            sel("width", "Width", &["wide", "narrow"], "wide"),
+        ],
+        variants: vec![
+            var(
+                "live",
+                "The run plays and loops: bars grow over their dashed plans, the copy step overruns and turns amber, everything after it slides right and the ETA drifts past the planned finish.",
+                &[],
+            ),
+            var(
+                "early",
+                "Thirty seconds in: the brief done early, two steps running side by side.",
+                &[("state", "early")],
+            ),
+            var(
+                "mid",
+                "Mid-run: one step over plan, the now line, the planned finish and the amber gap to the ETA.",
+                &[("state", "mid")],
+            ),
+            var(
+                "selected",
+                "A step picked: its row tints, its bar gets a ring, curves join it to what it waits on and what waits on it, and its cost shows.",
+                &[("state", "selected")],
+            ),
+            var(
+                "done",
+                "Finished behind plan: every step checked, the final deltas, an amber ETA.",
+                &[("state", "done")],
+            ),
+            var(
+                "ahead",
+                "Finished ahead: the status and ETA turn green.",
+                &[("state", "ahead")],
+            ),
+            var(
+                "narrow",
+                "Under 560 px the name column narrows; the task, glyphs and axis labels drop out.",
+                &[("state", "mid"), ("width", "narrow")],
+            ),
+            var(
+                "classic",
+                "Classic style: thin plain bars, a dot on the running edge, ETA before Plan.",
+                &[("style", "classic"), ("state", "mid")],
+            ),
+        ],
+        render: plan_vs_actual,
+        code: plan_vs_actual_code,
+        keyboard: vec![
+            ("Tab", "Moves through the steps"),
+            ("Enter / Space", "Selects a step to show its links and cost"),
+            ("Escape", "Clears the selection"),
+        ],
+        a11y: vec![
+            "Each step is a toggle button whose name says how long it took against plan, or when it is expected to start.",
+            "The header status (behind / ahead / on plan) is a status region; the chart marks are aria-hidden.",
+            "Overruns are named in text (+14s), never by colour alone; reduced motion stops the sheen, spin and glides.",
+        ],
+        responsive: vec![
+            "Rows keep their 28 px height at every width; the bars share the space after the 150 px name column.",
+            "Under 560 px the name column narrows to 96 px and the task, glyphs and axis labels drop out.",
+        ],
+        height: 380,
+        live: true,
+        align: Align::Start,
+        ..mk(
+            "plan-vs-actual",
+            "Plan vs Actual",
+            "tools",
+            "How an agent's run is going against its plan: each step's real bar over a dashed planned one, overruns in amber, later steps pushed right and the expected finish drifting from the planned finish.",
+            "PlanVsActual",
+            "PlanVsActualEl",
+            "plan-vs-actual",
+            "parity/planfid.rs",
+        )
+    }
+}
+
 /// Family B part 8 demos.
 pub(crate) fn demos() -> Vec<Demo> {
     let style = || sel("style", "Style", &["clean", "classic"], "clean");
@@ -805,6 +934,7 @@ pub(crate) fn demos() -> Vec<Demo> {
         judge_bracket_demo(style()),
         memory_panel_demo(style()),
         running_now_demo(style()),
+        plan_vs_actual_demo(style()),
         Demo {
             controls: vec![
                 style(),
