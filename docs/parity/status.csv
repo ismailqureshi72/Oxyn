@@ -692,3 +692,6 @@ Oxyn,Theme Selector · Display comfort,,Theme Selector,Free,display-comfort,vari
 Oxyn,Screens · App shell · Inset,,Screens,Free,shell-inset,screens-1,#42,built
 Oxyn,Screens · App shell · Flat,,Screens,Free,shell-flat,screens-1,#42,built
 Oxyn,Screens · Three-pane shell,,Screens,Free,shell-three-pane,screens-1,#42,built
+Oxyn,Screens · AI Chat · Start,,Screens,Free,chat-start,screens-1,#42,built
+Oxyn,Screens · AI Chat · Overview,,Screens,Free,chat-overview,screens-1,#42,built
+Oxyn,Screens · AI Chat · Agents,,Screens,Free,chat-agents,screens-1,#42,built
