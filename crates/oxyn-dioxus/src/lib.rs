@@ -51,6 +51,7 @@ pub use parity::MemoryPanel;
 pub use parity::ParallelAttempts;
 pub use parity::PlanVsActual;
 pub use parity::RateLimitPlanner;
+pub use parity::ReasoningPanel;
 pub use parity::RootCauseTree;
 pub use parity::RunningNow;
 pub use parity::ScheduledRuns;
