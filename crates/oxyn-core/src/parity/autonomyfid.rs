@@ -54,9 +54,9 @@ pub const AUTONOMY_LEVELS: [&str; 3] = ["Always ask", "If risky", "Full auto"];
 /// What a level means, in one sentence (the radio group's description).
 pub fn autonomy_meaning(level: u8) -> &'static str {
     match level {
-        0 => "Nothing happens without your OK",
-        1 => "Safe actions run, risky ones wait for you",
-        _ => "Everything runs, except what you locked",
+        0 => "Every action waits for your yes",
+        1 => "Low-risk work goes ahead; anything risky stops for you",
+        _ => "It all goes ahead, apart from the locked actions",
     }
 }
 

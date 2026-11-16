@@ -7,8 +7,11 @@ mod approvals;
 mod autonomyfid;
 mod awayfid;
 mod chatfid;
+mod collabfid;
 mod compose;
+mod costfid;
 mod crewfid;
+mod ctxmapfid;
 mod cursorsfid;
 mod diff;
 mod fidelity;
@@ -42,10 +45,13 @@ pub use approvals::{
 pub use autonomyfid::AutonomyDial;
 pub use awayfid::AwaySummary;
 pub use chatfid::{AgentRunPanel, ModelPickerMenu};
+pub use collabfid::CollabStream;
 pub use compose::{
     AiComposer, MenuModel, ModelMenu, ModelPill, PillModel, RichTextEditor, RunControls,
 };
+pub use costfid::CostWaterfall;
 pub use crewfid::AgentCrew;
+pub use ctxmapfid::ContextMap;
 pub use cursorsfid::AgentCursors;
 pub use diff::{ChangeSummary, CodeSuggestion, DiffTable, DiffTimeline, DiffViewer, InlineDiff};
 pub use fidelity::{

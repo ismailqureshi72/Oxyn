@@ -11,7 +11,7 @@
   --oxaw-needs:#E5B30C;--oxaw-failed:#EF5350;--oxaw-done:#2F9BFF;--oxaw-btn:#1E1E20;--oxaw-btnbd:#333336;--oxaw-hov:#222224;--oxaw-flash:#1F1F21;--oxaw-band:#1D1D1F;
   --oxaw-sh:0 1px 2px rgba(0,0,0,.4);--oxaw-btnsh:0 1px 2px rgba(0,0,0,.4);
 }
-.oxaw{position:relative;display:flex;flex-direction:column;width:600px;max-width:100%;container-type:inline-size;border:1px solid var(--oxaw-bd);border-radius:12px;background:var(--oxaw-card);box-shadow:var(--oxaw-sh);color:var(--oxaw-fg);font-size:13px;line-height:1.35;overflow:clip;-webkit-font-smoothing:antialiased;animation:oxaw-open .26s cubic-bezier(.2,.8,.2,1)}
+.oxaw{box-sizing:border-box;position:relative;display:flex;flex-direction:column;width:600px;max-width:100%;container-type:inline-size;border:1px solid var(--oxaw-bd);border-radius:12px;background:var(--oxaw-card);box-shadow:var(--oxaw-sh);color:var(--oxaw-fg);font-size:13px;line-height:1.35;overflow:clip;-webkit-font-smoothing:antialiased;animation:oxaw-open .26s cubic-bezier(.2,.8,.2,1)}
 @keyframes oxaw-open{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
 .oxaw *{box-sizing:border-box}
 .oxaw-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}

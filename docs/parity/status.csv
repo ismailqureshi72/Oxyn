@@ -31,16 +31,16 @@ affectUI,Change Summary,https://www.affectui.com/components/change-summary,Compo
 affectUI,Chat Composer,https://www.affectui.com/components/chat-composer,Components · Chat,Pro,"chat-composer, composer, composer-model-picker, composer-voice-input, composer-tools-menu, composer-attachments",,#32,built
 affectUI,Checkbox,https://www.affectui.com/components/checkbox,Components · Inputs,Free,toggles,C1,#23,built
 affectUI,Cited Answer,https://www.affectui.com/components/cited-answer,Components · Chat,Pro,"cited-answer (exact, overnight batch A), citations-sources",,#32,built
-affectUI,Collaboration Stream,https://www.affectui.com/components/collaboration-stream,Components · Agents,Pro,"subagent-tree, messages",C6,#34,planned
+affectUI,Collaboration Stream,https://www.affectui.com/components/collaboration-stream,Components · Agents,Pro,"collaboration-stream (exact, overnight batch B part 6), subagent-tree, messages",C6,#32,built
 affectUI,Combobox,https://www.affectui.com/components/combobox,Components · Inputs,Pro,combobox,C2,#25,built
 affectUI,Command Menu,https://www.affectui.com/components/command-menu,Components · Navigation,Pro,command-palette,,#26,built
 affectUI,Comment Thread,https://www.affectui.com/components/comment-thread,Components · Chat,Free,comment-thread,,#32,built
 affectUI,Comments Panel,https://www.affectui.com/components/comments-panel,Components · Chat,Pro,comments-panel,,#32,built
 affectUI,Compact Breakdown,https://www.affectui.com/components/compact-breakdown,Components · Data display,Pro,genui-blocks,C12,#36,planned
 affectUI,Conflict Radar,https://www.affectui.com/components/conflict-radar,Components · Agents,Pro,"conflict-radar, merge-conflict",C8,#31,built
-affectUI,Context Map,https://www.affectui.com/components/context-map,Components · Agents,Pro,composer-context-meter,C9,#35,planned
+affectUI,Context Map,https://www.affectui.com/components/context-map,Components · Agents,Pro,"context-map (exact, overnight batch B part 6), composer-context-meter",C9,#32,built
 affectUI,Context Window,https://www.affectui.com/components/context-window,Components · Agents,Pro,composer-context-meter,,#28,built
-affectUI,Cost Waterfall,https://www.affectui.com/components/cost-waterfall,Components · Agents,Pro,"trace-view, run-meter",,#34,planned
+affectUI,Cost Waterfall,https://www.affectui.com/components/cost-waterfall,Components · Agents,Pro,"cost-waterfall (exact, overnight batch B part 6), trace-view, run-meter",,#32,built
 affectUI,Data Table,https://www.affectui.com/components/data-table,Components · Data display,Pro,genui-blocks,C12,#36,planned
 affectUI,Date Range Picker,https://www.affectui.com/components/date-range-picker,Components · Inputs,Pro,date-range-picker,C2,#25,built
 affectUI,Decision Card,https://www.affectui.com/components/decision-card,Components · Agents,Pro,decision-card,,#25,built

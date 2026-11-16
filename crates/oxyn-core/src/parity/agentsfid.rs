@@ -164,7 +164,7 @@ pub fn demo_findings() -> (Vec<FindingAgent>, Vec<AgentFinding>) {
                 "GPT-6",
                 "openai",
                 &[
-                    "Fuzzing transfer with 10k inputs",
+                    "Fuzz-testing the payout path, 12k cases",
                     "Replaying failed sequences",
                     "Shrinking a failing case",
                 ],
