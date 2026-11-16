@@ -103,7 +103,7 @@ pub fn ContextBar(
                 }
             }
             div { class: "oxcv-fig",
-                span { key: "{num}", class: "oxcv-num", "{num}" }
+                for k in std::iter::once(num.clone()) { span { key: "{k}", class: "oxcv-num", "{k}" } }
                 span { class: "oxcv-of", "{of}" }
             }
             if field {
@@ -475,7 +475,7 @@ pub fn ContextTide(
             }
             div { class: "oxct-side",
                 span { class: "oxct-k", "Context" }
-                span { key: "{pct}", class: "oxct-pct", "{pct}%" }
+                for k in std::iter::once(pct) { span { key: "{k}", class: "oxct-pct", "{k}%" } }
                 span { class: "oxct-of", "{u} of {l} tokens" }
                 span { class: "oxct-turns", "{turns}" }
                 div { class: "oxct-acts",
