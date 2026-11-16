@@ -137,7 +137,9 @@ pub use text::{
     ActionSwapButton, InViewTitle, LoadingState, SlotReels, Source, StreamingText, SweepText,
     TextMorph, ThinkingLoader, WordReveal,
 };
-pub use themefid::{AccentDensity, BackgroundPicker, ThemeGrid, ThemeSplit};
+pub use themefid::{
+    AccentDensity, BackgroundPicker, ThemeGrid, ThemeSchedule, ThemeSplit, TypeScale,
+};
 pub use toolmapfid::ToolAccessMap;
 pub use tools::{
     ChipStep, DiffChip, ExpandableCard, JsonViewer, LinkUnfurl, RowOutput, ToolCall, ToolCallCard,

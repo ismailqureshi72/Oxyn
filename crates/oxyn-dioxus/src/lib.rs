@@ -81,9 +81,11 @@ pub use parity::StorageForecast;
 pub use parity::StorageMeter;
 pub use parity::StorageWaffle;
 pub use parity::ThemeGrid;
+pub use parity::ThemeSchedule;
 pub use parity::ThemeSplit;
 pub use parity::ToolAccessMap;
 pub use parity::TraceWaterfall;
+pub use parity::TypeScale;
 pub use parity::UploadDropzone;
 pub use parity::{
     ActionSwapButton, InViewTitle, LoadingState, SlotReels, Source, StreamingText, SweepText,

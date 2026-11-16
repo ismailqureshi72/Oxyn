@@ -1,15 +1,18 @@
 //! Theme Selector family (variants 3): how the app looks – [`BackgroundPicker`] (picture tiles we
 //! draw ourselves, a tile for your own picture, and a texture laid over it), [`ThemeGrid`] (eight
-//! mini-window swatches and a font size menu over a live sample), and two Oxyn originals:
+//! mini-window swatches and a font size menu over a live sample), and four Oxyn originals:
 //! [`ThemeSplit`] (two themes over one sample window with a divider you drag) and
-//! [`AccentDensity`] (accent, spacing and corners on a settings sample). Models:
-//! `oxyn_core::parity::themefid`. Styles: `themefid.css` (`oxbgk-`, `oxtsg-`, `oxtpv-`, `oxadn-`).
+//! [`AccentDensity`] (accent, spacing and corners on a settings sample), [`ThemeSchedule`] (light
+//! and dark by the clock on a 24-hour strip) and [`TypeScale`] (family, size and spacing on a
+//! reading sample). Models: `oxyn_core::parity::themefid`. Styles: `themefid.css` (`oxbgk-`,
+//! `oxtsg-`, `oxtpv-`, `oxadn-`, `oxtsc-`, `oxtys-`).
 
 use dioxus::prelude::*;
 use oxyn_core::parity::effmenufid::menu_move;
 use oxyn_core::parity::themefid::{
-    Texture, ThemeSwatch, accents, backdrops, corners, data_url, densities, font_sizes, own_check,
-    split_clamp, swatch_for, swatches, texture_press,
+    SUN, TYPE_STEPS, Texture, ThemeSwatch, accents, backdrops, chars_per_line, corners, data_url,
+    densities, fmt_hm, fmt_in, font_sizes, measure_word, next_switch, own_check, sched_light,
+    sched_modes, split_clamp, swatch_for, swatches, texture_press, type_families, type_spacing,
 };
 
 use super::efflistfid::{check_glyph, chevron, focus, menu_key, use_uid};
@@ -35,11 +38,11 @@ pub(crate) fn backdrop_art(key: &str, slot: &str) -> Element {
                     stop { offset: "0", stop_color: "#8FC3D8" } stop { offset: "1", stop_color: "#5E98B8" } } }
                 rect { width: "160", height: "90", fill: "{gu}" }
                 g { stroke: "#1E2A24", stroke_linecap: "round", fill: "none",
-                    path { d: "M-4 8 C30 14 52 30 70 52", stroke_width: "2.4" }
+                    path { d: "M0 8 C30 14 52 30 70 52", stroke_width: "2.4" }
                     path { d: "M28 15 C40 6 54 4 70 2", stroke_width: "1.4" }
                     path { d: "M52 30 C66 26 86 30 104 22", stroke_width: "1.3" }
-                    path { d: "M164 4 C130 12 118 26 112 46", stroke_width: "2" }
-                    path { d: "M128 14 C140 24 150 24 164 30", stroke_width: "1.2" }
+                    path { d: "M160 4 C130 12 118 26 112 46", stroke_width: "2" }
+                    path { d: "M128 14 C140 24 150 24 160 29", stroke_width: "1.2" }
                 }
                 g { fill: "#D9472F",
                     for (x, y) in [(12, 9), (22, 14), (34, 19), (44, 24), (56, 33), (62, 42), (40, 8), (58, 5), (74, 27), (88, 29), (98, 24),
@@ -57,16 +60,20 @@ pub(crate) fn backdrop_art(key: &str, slot: &str) -> Element {
         },
         "orbit" => rsx! {
             svg { class: "oxbgk-art", view_box: "0 0 160 90", preserve_aspect_ratio: "xMidYMid slice", "aria-hidden": "true",
-                defs { linearGradient { id: "{g}", x1: "0", y1: "0", x2: "1", y2: "1",
-                    stop { offset: "0.30", stop_color: "#F2702C" } stop { offset: "0.40", stop_color: "#FFE8C2" }
-                    stop { offset: "0.50", stop_color: "#E9F4FF" } stop { offset: "0.66", stop_color: "#3E8EE6" }
-                    stop { offset: "1", stop_color: "#071226" } } }
-                rect { width: "160", height: "90", fill: "#030305" }
-                path { d: "M30 -10 C70 30 110 70 190 96 L190 120 L-20 120 Z", fill: "{gu}" }
-                path { d: "M98 48 l6 -1 l2 -3 l1 3 l5 1 l-5 1 l-1 3 l-2 -3 z", fill: "#050507" }
-                g { fill: "#FFFFFF", opacity: ".7",
-                    circle { cx: "12", cy: "70", r: ".6" } circle { cx: "24", cy: "52", r: ".5" } circle { cx: "8", cy: "30", r: ".5" }
+                defs {
+                    radialGradient { id: "{g}", gradient_units: "userSpaceOnUse", cx: "-6", cy: "136", r: "124",
+                        stop { offset: "0.86", stop_color: "#0A2A5E" } stop { offset: "0.95", stop_color: "#3E8EE6" }
+                        stop { offset: "0.985", stop_color: "#E9F4FF" } stop { offset: "1", stop_color: "#F2702C" } }
+                    filter { id: "{g2}", x: "-10%", y: "-10%", width: "120%", height: "120%", feGaussianBlur { std_deviation: "1.6" } }
                 }
+                rect { width: "160", height: "90", fill: "#030305" }
+                g { fill: "#FFFFFF", opacity: ".75",
+                    circle { cx: "120", cy: "14", r: ".6" } circle { cx: "146", cy: "40", r: ".5" } circle { cx: "98", cy: "8", r: ".5" }
+                    circle { cx: "150", cy: "70", r: ".6" } circle { cx: "132", cy: "28", r: ".4" }
+                }
+                path { d: "M0 9.1 A127 127 0 0 1 112.4 90", fill: "none", stroke: "#F2702C", stroke_width: "5", opacity: ".55", filter: "{gu2}" }
+                path { d: "M0 12.1 A124 124 0 0 1 109.2 90 L0 90 Z", fill: "{gu}" }
+                path { d: "M96 40 l5 -1 l2 -3 l1 3 l5 1 l-5 1 l-1 3 l-2 -3 z", fill: "#E9F4FF" }
             }
         },
         "neon" => rsx! {
@@ -712,6 +719,281 @@ pub fn AccentDensity(
                 }
             }
             p { class: "oxadn-note", role: "status", "aria-live": "polite", "{note}" }
+        }
+    }
+}
+
+fn sun_glyph(moon: bool) -> Element {
+    let d = if moon {
+        "M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"
+    } else {
+        "M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"
+    };
+    rsx! {
+        svg { width: "14", height: "14", view_box: "0 0 24 24", fill: "none", stroke: "currentColor", stroke_width: "1.9",
+            stroke_linecap: "round", stroke_linejoin: "round", "aria-hidden": "true", path { d: "{d}" } }
+    }
+}
+
+/// Theme Selector – Theme schedule (Oxyn original): Light, Dark, Sun (follows sunrise and sunset)
+/// or Custom hours. A 24-hour strip shows the light window; drag along it to preview any time of
+/// day, and the sample window turns light or dark with it. In Custom, two sliders set the hours.
+#[component]
+pub fn ThemeSchedule(
+    /// Starting mode (`light`, `dark`, `sun`, `custom`).
+    #[props(default = "custom".to_string())]
+    default_mode: String,
+    /// Light from (minutes after midnight).
+    #[props(default = 420)]
+    default_from: u32,
+    /// Dark from (minutes after midnight).
+    #[props(default = 1140)]
+    default_to: u32,
+    /// The previewed time (minutes after midnight).
+    #[props(default = 1080)]
+    default_at: u32,
+    /// Mode or hours changed: (mode, from, to).
+    #[props(default)]
+    on_change: EventHandler<(String, u32, u32)>,
+) -> Element {
+    let mut mode = use_signal(move || default_mode);
+    let mut from = use_signal(move || default_from.min(1425));
+    let mut to = use_signal(move || default_to.min(1425));
+    let mut at = use_signal(move || default_at.min(1439));
+    let m = mode();
+    let (f, t) = if m == "sun" { SUN } else { (from(), to()) };
+    let now = at();
+    let light = sched_light(&m, now, f, t);
+    let sw = if light {
+        swatch_for("light", false)
+    } else {
+        swatch_for("dark", true)
+    };
+    let vars = swatch_vars(&sw);
+    let window = m == "sun" || m == "custom";
+    let line = match m.as_str() {
+        "light" => "Always light.".to_string(),
+        "dark" => "Always dark.".to_string(),
+        _ => {
+            let nx = next_switch(now, f, t).map(fmt_in).unwrap_or_default();
+            let what = if light { "dark" } else { "light" };
+            let head = if m == "sun" {
+                "Follows the sun"
+            } else {
+                "Your hours"
+            };
+            format!(
+                "{head}: light {}–{}. Turns {what} {nx}.",
+                fmt_hm(f),
+                fmt_hm(t)
+            )
+        }
+    };
+    let pct = |x: u32| x as f64 / 1440.0 * 100.0;
+    // The light band, split in two when it wraps past midnight.
+    let bands: Vec<String> = if !window {
+        if m == "light" {
+            vec!["left:0%;width:100%".to_string()]
+        } else {
+            vec![]
+        }
+    } else if f <= t {
+        vec![format!("left:{:.2}%;width:{:.2}%", pct(f), pct(t - f))]
+    } else {
+        vec![
+            format!("left:0%;width:{:.2}%", pct(t)),
+            format!("left:{:.2}%;width:{:.2}%", pct(f), 100.0 - pct(f)),
+        ]
+    };
+    let now_st = format!("left:{:.2}%", pct(now));
+    let now_s = fmt_hm(now);
+    let fs = fmt_hm(from());
+    let ts = fmt_hm(to());
+    let fv = format!("{}", from());
+    let tv = format!("{}", to());
+    let av = format!("{now}");
+    let custom = m == "custom";
+    let off = !custom;
+    let late = now > 1260;
+    let theme_word = if light { "Light" } else { "Dark" };
+    let fire = move || on_change.call((mode.peek().clone(), *from.peek(), *to.peek()));
+
+    rsx! {
+        div { class: "oxtsc", "data-mode": "{m}", "data-light": "{light}", "data-late": "{late}",
+            div { class: "oxtsc-head",
+                p { class: "oxtsc-h", "Light and dark" }
+                div { class: "oxtsc-seg", role: "radiogroup", "aria-label": "Schedule",
+                    for (k, l) in sched_modes() {
+                        {
+                            let on = m == k;
+                            rsx! {
+                                button { key: "{k}", class: "oxtsc-sb", r#type: "button", role: "radio", "aria-checked": "{on}",
+                                    onclick: move |_| { mode.set(k.to_string()); fire(); },
+                                    "{l}"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            p { class: "oxtsc-line", role: "status", "aria-live": "polite", "{line}" }
+            div { class: "oxtsc-strip",
+                for (i, b) in bands.iter().enumerate() {
+                    span { key: "{i}", class: "oxtsc-band", style: "{b}" }
+                }
+                for h in 1..24u32 {
+                    {
+                        let st = format!("left:{:.3}%", h as f64 / 24.0 * 100.0);
+                        let major = h % 6 == 0;
+                        rsx! { i { key: "{h}", class: "oxtsc-tick", "data-major": "{major}", style: "{st}" } }
+                    }
+                }
+                span { class: "oxtsc-now", style: "{now_st}", "aria-hidden": "true", span { class: "oxtsc-nl", "{now_s}" } }
+                input { class: "oxtsc-range", r#type: "range", min: "0", max: "1439", step: "15", value: "{av}",
+                    "aria-label": "Preview time", "aria-valuetext": "{now_s}, {theme_word}",
+                    oninput: move |e: FormEvent| { if let Ok(v) = e.value().parse::<u32>() { at.set(v.min(1439)); } }
+                }
+            }
+            div { class: "oxtsc-hours", "aria-hidden": "true",
+                span { "00" } span { "06" } span { "12" } span { "18" } span { "24" }
+            }
+            div { class: "oxtsc-body",
+                div { class: "oxtsc-pv", style: "{vars}", role: "img", "aria-label": "{theme_word} at {now_s}",
+                    div { class: "oxtsc-pv-bar", span { class: "oxtsc-pv-ic", {sun_glyph(!light)} } span { "{now_s}" } }
+                    div { class: "oxtsc-pv-main",
+                        span { class: "oxtsc-pv-t", "{theme_word}" }
+                        span { class: "oxtsc-pv-l" } span { class: "oxtsc-pv-l", "data-s": "true" }
+                    }
+                }
+                div { class: "oxtsc-ctl", "data-off": "{off}",
+                    label { class: "oxtsc-row",
+                        span { class: "oxtsc-rl", {sun_glyph(false)} "Light from" }
+                        input { class: "oxtsc-sl", r#type: "range", min: "0", max: "1425", step: "15", value: "{fv}", disabled: !custom,
+                            "aria-valuetext": "{fs}",
+                            oninput: move |e: FormEvent| { if let Ok(v) = e.value().parse::<u32>() { from.set(v); fire(); } }
+                        }
+                        span { class: "oxtsc-rv", "{fs}" }
+                    }
+                    label { class: "oxtsc-row",
+                        span { class: "oxtsc-rl", {sun_glyph(true)} "Dark from" }
+                        input { class: "oxtsc-sl", r#type: "range", min: "0", max: "1425", step: "15", value: "{tv}", disabled: !custom,
+                            "aria-valuetext": "{ts}",
+                            oninput: move |e: FormEvent| { if let Ok(v) = e.value().parse::<u32>() { to.set(v); fire(); } }
+                        }
+                        span { class: "oxtsc-rv", "{ts}" }
+                    }
+                }
+            }
+        }
+    }
+}
+
+const READ_TEXT: &str = "Evening reading should feel easy. Pick a family, nudge the size until a line sits \
+    comfortably under your eye, and give the lines a little room to breathe.";
+
+/// Theme Selector – Type scale (Oxyn original): Sans, Serif or Mono; A− and A+ around a stepped
+/// size slider; Tight, Normal or Relaxed lines. The reading sample takes each at once and says
+/// about how many characters fit a line.
+#[component]
+pub fn TypeScale(
+    /// Starting family (`sans`, `serif`, `mono`).
+    #[props(default = "sans".to_string())]
+    default_family: String,
+    /// Starting size step (0–5: 13, 14, 15, 16, 18, 20 px).
+    #[props(default = 3)]
+    default_step: usize,
+    /// Starting spacing (`tight`, `normal`, `relaxed`).
+    #[props(default = "normal".to_string())]
+    default_spacing: String,
+    /// Width the line count is worked out for, in px.
+    #[props(default = 520.0)]
+    measure_width: f64,
+    /// Any choice changed: (family, px, line height).
+    #[props(default)]
+    on_change: EventHandler<(String, u32, f64)>,
+) -> Element {
+    let mut fam = use_signal(move || default_family);
+    let mut step = use_signal(move || default_step.min(TYPE_STEPS.len() - 1));
+    let mut sp = use_signal(move || default_spacing);
+    let fams = type_families();
+    let sps = type_spacing();
+    let fk = fams
+        .iter()
+        .find(|x| x.0 == fam())
+        .map(|x| x.0)
+        .unwrap_or("sans");
+    let lh = sps.iter().find(|x| x.0 == sp()).map(|x| x.2).unwrap_or(1.5);
+    let last = TYPE_STEPS.len() - 1;
+    let i = step().min(last);
+    let px = TYPE_STEPS[i];
+    let cpl = chars_per_line(measure_width, px, fk);
+    let word = measure_word(cpl);
+    let vars = format!("--tsz:{px}px;--tlh:{lh}");
+    let read = format!("{px} px · {lh} lines · about {cpl} characters a line, {word}");
+    let iv = format!("{i}");
+    let lastv = format!("{last}");
+    let pxv = format!("{px} px");
+    let fire = move || {
+        let f = fam.peek().clone();
+        let px = TYPE_STEPS[(*step.peek()).min(TYPE_STEPS.len() - 1)];
+        let lh = type_spacing()
+            .iter()
+            .find(|x| x.0 == *sp.peek())
+            .map(|x| x.2)
+            .unwrap_or(1.5);
+        on_change.call((f, px, lh));
+    };
+
+    rsx! {
+        div { class: "oxtys", "data-family": "{fk}", "data-px": "{px}",
+            div { class: "oxtys-ctl",
+                div { class: "oxtys-seg", role: "radiogroup", "aria-label": "Family",
+                    for (k, l, _) in fams.iter().copied() {
+                        {
+                            let on = fk == k;
+                            rsx! {
+                                button { key: "{k}", class: "oxtys-sb", "data-f": "{k}", r#type: "button", role: "radio", "aria-checked": "{on}",
+                                    onclick: move |_| { fam.set(k.to_string()); fire(); },
+                                    "{l}"
+                                }
+                            }
+                        }
+                    }
+                }
+                div { class: "oxtys-size",
+                    button { class: "oxtys-ab", r#type: "button", "aria-label": "Smaller text", disabled: i == 0,
+                        onclick: move |_| { let v = step().saturating_sub(1); step.set(v); fire(); },
+                        span { class: "oxtys-a", "data-s": "true", "A" }
+                    }
+                    input { class: "oxtys-range", r#type: "range", min: "0", max: "{lastv}", step: "1", value: "{iv}",
+                        "aria-label": "Text size", "aria-valuetext": "{pxv}",
+                        oninput: move |e: FormEvent| { if let Ok(v) = e.value().parse::<usize>() { step.set(v.min(TYPE_STEPS.len() - 1)); fire(); } }
+                    }
+                    button { class: "oxtys-ab", r#type: "button", "aria-label": "Larger text", disabled: i == last,
+                        onclick: move |_| { let v = (step() + 1).min(TYPE_STEPS.len() - 1); step.set(v); fire(); },
+                        span { class: "oxtys-a", "A" }
+                    }
+                    span { class: "oxtys-px", "{pxv}" }
+                }
+                div { class: "oxtys-seg", role: "radiogroup", "aria-label": "Line spacing",
+                    for (k, l, _) in sps.iter().copied() {
+                        {
+                            let on = sp() == k;
+                            rsx! {
+                                button { key: "{k}", class: "oxtys-sb", r#type: "button", role: "radio", "aria-checked": "{on}",
+                                    onclick: move |_| { sp.set(k.to_string()); fire(); },
+                                    "{l}"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            article { class: "oxtys-pv", "data-f": "{fk}", style: "{vars}",
+                h4 { class: "oxtys-t", "After hours" }
+                p { class: "oxtys-p", {READ_TEXT} }
+            }
+            p { class: "oxtys-read", role: "status", "aria-live": "polite", "{read}" }
         }
     }
 }

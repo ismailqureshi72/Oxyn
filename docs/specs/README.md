@@ -235,4 +235,6 @@ specified just as deeply. When we point at one component as an example, the stan
 | [theme-grid.md](theme-grid.md) | built v0.1 (variants 3, Theme Selector) |
 | [theme-split.md](theme-split.md) | built v0.1 (variants 3, Theme Selector) |
 | [accent-density.md](accent-density.md) | built v0.1 (variants 3, Theme Selector) |
+| [theme-schedule.md](theme-schedule.md) | built v0.1 (variants 3, Theme Selector) |
+| [type-scale.md](type-scale.md) | built v0.1 (variants 3, Theme Selector) |
 | Every other component in [../component-taxonomy.md](../component-taxonomy.md) | to write in V2.2 |

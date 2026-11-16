@@ -1,9 +1,12 @@
 //! Theme Selector family (variants 3) demos: how the app looks – background pictures and texture,
-//! a theme grid with font size, two themes split over one window, and accent with density.
+//! a theme grid with font size, two themes split over one window, accent with density, light and
+//! dark by the clock, and a type scale.
 
 use dioxus::prelude::*;
 use oxyn_core::ClockMs;
-use oxyn_dioxus::{AccentDensity, BackgroundPicker, ThemeGrid, ThemeSplit};
+use oxyn_dioxus::{
+    AccentDensity, BackgroundPicker, ThemeGrid, ThemeSchedule, ThemeSplit, TypeScale,
+};
 
 use super::{Code, mk, rng, sel, tog, var};
 use crate::{Align, Demo, Vals};
@@ -410,6 +413,201 @@ fn accent_density_demo() -> Demo {
     }
 }
 
+// ---------- Theme schedule ----------
+
+fn hm(s: &str) -> u32 {
+    let mut it = s.split(':');
+    let h: u32 = it.next().and_then(|x| x.parse().ok()).unwrap_or(0);
+    let m: u32 = it.next().and_then(|x| x.parse().ok()).unwrap_or(0);
+    h * 60 + m
+}
+
+fn theme_schedule(v: &Vals, _now: ClockMs) -> Element {
+    let mut msg = use_signal(String::new);
+    let key = format!("{}{}{}{}", v.s("mode"), v.s("from"), v.s("to"), v.s("at"));
+    rsx! {
+        div { key: "{key}", "data-k": "{key}", style: "width:560px;max-width:100%;display:flex;flex-direction:column;gap:10px",
+            ThemeSchedule { default_mode: low(v.s("mode")), default_from: hm(v.s("from")), default_to: hm(v.s("to")), default_at: hm(v.s("at")),
+                on_change: move |(m, f, t): (String, u32, u32)| msg.set(format!("onChange({m}, {f}, {t})")) }
+            {status(msg)}
+        }
+    }
+}
+
+fn theme_schedule_code(v: &Vals) -> String {
+    Code::new("ThemeSchedule")
+        .s("default_mode", &low(v.s("mode")), "custom")
+        .raw("default_from", format!("{}", hm(v.s("from"))))
+        .raw("default_to", format!("{}", hm(v.s("to"))))
+        .raw("on_change", "move |(mode, from, to)| save(mode, from, to)")
+        .done()
+}
+
+fn theme_schedule_demo() -> Demo {
+    let times = &[
+        "06:00", "07:00", "08:00", "17:00", "18:00", "19:00", "21:00", "22:00", "23:30",
+    ];
+    Demo {
+        controls: vec![
+            sel(
+                "mode",
+                "Mode",
+                &["Custom", "Sun", "Light", "Dark"],
+                "Custom",
+            ),
+            sel("from", "Light from", times, "07:00"),
+            sel("to", "Dark from", times, "19:00"),
+            sel("at", "Preview time", times, "18:00"),
+        ],
+        variants: vec![
+            var(
+                "default",
+                "Your hours, light 07:00–19:00, previewed at 18:00: an hour of light left.",
+                &[],
+            ),
+            var(
+                "follows the sun",
+                "Sun: light from sunrise to sunset; at 18:00 the sample has already turned dark.",
+                &[("mode", "Sun")],
+            ),
+            var(
+                "night owl",
+                "Light from 22:00 to 08:00, a window that wraps past midnight, previewed at 23:30.",
+                &[("from", "22:00"), ("to", "08:00"), ("at", "23:30")],
+            ),
+            var(
+                "always dark",
+                "Dark all day: the hour sliders rest.",
+                &[("mode", "Dark"), ("at", "07:00")],
+            ),
+        ],
+        render: theme_schedule,
+        code: theme_schedule_code,
+        keyboard: vec![
+            ("Tab", "Modes, the strip, then the two hour sliders"),
+            (
+                "Left / Right on the strip",
+                "Preview 15 minutes earlier or later",
+            ),
+            ("Left / Right on a slider", "Moves that hour by 15 minutes"),
+        ],
+        a11y: vec![
+            "Modes are a radio group; the summary line is a polite live region that says when the next switch comes.",
+            "The strip is a native range named Preview time; its value text gives the time and the theme it shows.",
+            "Hour sliders carry their time as aria-valuetext and are disabled outside Custom.",
+        ],
+        responsive: vec!["560 px card; the sample stacks over the sliders under 480 px."],
+        height: 400,
+        live: false,
+        align: Align::Center,
+        ..mk(
+            "theme-schedule",
+            "Theme schedule",
+            CAT,
+            "Oxyn original: Light, Dark, Sun or your own hours on a 24-hour strip; drag along it to preview the day and the sample turns with it.",
+            "ThemeSchedule",
+            "ThemeScheduleEl",
+            "theme-schedule",
+            "parity/themefid.rs",
+        )
+    }
+}
+
+// ---------- Type scale ----------
+
+fn type_scale(v: &Vals, _now: ClockMs) -> Element {
+    let mut msg = use_signal(String::new);
+    let key = format!("{}{}{}", v.s("family"), v.s("size"), v.s("spacing"));
+    let step = match v.s("size") {
+        "13" => 0,
+        "14" => 1,
+        "15" => 2,
+        "18" => 4,
+        "20" => 5,
+        _ => 3,
+    };
+    rsx! {
+        div { key: "{key}", "data-k": "{key}", style: "width:560px;max-width:100%;display:flex;flex-direction:column;gap:10px",
+            TypeScale { default_family: low(v.s("family")), default_step: step, default_spacing: low(v.s("spacing")),
+                on_change: move |(f, px, lh): (String, u32, f64)| msg.set(format!("onChange({f}, {px}px, {lh})")) }
+            {status(msg)}
+        }
+    }
+}
+
+fn type_scale_code(v: &Vals) -> String {
+    Code::new("TypeScale")
+        .s("default_family", &low(v.s("family")), "sans")
+        .s("default_spacing", &low(v.s("spacing")), "normal")
+        .raw(
+            "on_change",
+            "move |(family, px, line_height)| save(family, px, line_height)",
+        )
+        .done()
+}
+
+fn type_scale_demo() -> Demo {
+    Demo {
+        controls: vec![
+            sel("family", "Family", &["Sans", "Serif", "Mono"], "Sans"),
+            sel(
+                "size",
+                "Size (px)",
+                &["13", "14", "15", "16", "18", "20"],
+                "16",
+            ),
+            sel(
+                "spacing",
+                "Line spacing",
+                &["Tight", "Normal", "Relaxed"],
+                "Normal",
+            ),
+        ],
+        variants: vec![
+            var("default", "Sans at 16 px with normal spacing.", &[]),
+            var(
+                "serif relaxed",
+                "Serif at 18 px with relaxed lines: a reading view.",
+                &[("family", "Serif"), ("size", "18"), ("spacing", "Relaxed")],
+            ),
+            var(
+                "mono tight",
+                "Mono at 14 px, tight: a code-first setting.",
+                &[("family", "Mono"), ("size", "14"), ("spacing", "Tight")],
+            ),
+        ],
+        render: type_scale,
+        code: type_scale_code,
+        keyboard: vec![
+            ("Tab", "Family, A−, the size slider, A+, spacing"),
+            ("Left / Right on the slider", "One size step"),
+            (
+                "Enter / Space",
+                "Picks a family or spacing, or steps the size",
+            ),
+        ],
+        a11y: vec![
+            "Family and spacing are radio groups; each family name is set in its own face.",
+            "A− and A+ are named Smaller text and Larger text and disable at the ends; the slider says its size in px.",
+            "The readout under the sample is a polite live region with size, spacing and line length.",
+        ],
+        responsive: vec!["560 px card; controls stack under 480 px."],
+        height: 360,
+        live: false,
+        align: Align::Center,
+        ..mk(
+            "type-scale",
+            "Type scale",
+            CAT,
+            "Oxyn original: Sans, Serif or Mono, A− / A+ around a stepped size slider and three line spacings, on a reading sample that counts its line length.",
+            "TypeScale",
+            "TypeScaleEl",
+            "type-scale",
+            "parity/themefid.rs",
+        )
+    }
+}
+
 /// Every Theme Selector (variants 3) demo, in sidebar order.
 pub(crate) fn demos() -> Vec<Demo> {
     vec![
@@ -417,5 +615,7 @@ pub(crate) fn demos() -> Vec<Demo> {
         theme_grid_demo(),
         theme_split_demo(),
         accent_density_demo(),
+        theme_schedule_demo(),
+        type_scale_demo(),
     ]
 }

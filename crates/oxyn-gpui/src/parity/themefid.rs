@@ -1,8 +1,10 @@
 //! Theme Selector family (variants 3) for GPUI over `oxyn_core::parity::themefid`: **Background
 //! picker** ([`BackgroundPickerEl`]), **Theme grid** ([`ThemeGridEl`]), **Theme split**
-//! ([`ThemeSplitEl`]) and **Accent and density** ([`AccentDensityEl`]). `RenderOnce` snapshots:
+//! ([`ThemeSplitEl`]), **Accent and density** ([`AccentDensityEl`]), **Theme schedule**
+//! ([`ThemeScheduleEl`]) and **Type scale** ([`TypeScaleEl`]). `RenderOnce` snapshots:
 //! the host keeps the state and routes [`Act`] ids back (`bg-<i>`, `own`, `tex-<i>`, `theme-<i>`,
-//! `font`, `cand-<i>`, `apply`, `acc-<i>`, `den-<i>`, `cor-<i>`). The drawn pictures are shown as
+//! `font`, `cand-<i>`, `apply`, `acc-<i>`, `den-<i>`, `cor-<i>`, `mode-<i>`, `fam-<i>`, `smaller`,
+//! `larger`, `sp-<i>`). The drawn pictures are shown as
 //! their main colours in GPUI.
 
 use gpui::{
@@ -10,8 +12,9 @@ use gpui::{
     div, prelude::*, px, relative,
 };
 use oxyn_core::parity::themefid::{
-    Texture, ThemeSwatch, accents, backdrops, corners, densities, font_sizes, split_clamp,
-    swatch_for, swatches,
+    SUN, TYPE_STEPS, Texture, ThemeSwatch, accents, backdrops, chars_per_line, corners, densities,
+    fmt_hm, font_sizes, sched_light, sched_modes, split_clamp, swatch_for, swatches, type_families,
+    type_spacing,
 };
 use oxyn_tokens::Theme;
 
@@ -30,6 +33,9 @@ const CAND_ID: [&str; 8] = [
 const ACC_ID: [&str; 6] = ["acc-0", "acc-1", "acc-2", "acc-3", "acc-4", "acc-5"];
 const DEN_ID: [&str; 3] = ["den-0", "den-1", "den-2"];
 const COR_ID: [&str; 3] = ["cor-0", "cor-1", "cor-2"];
+const MODE_ID: [&str; 4] = ["mode-0", "mode-1", "mode-2", "mode-3"];
+const FAM_ID: [&str; 3] = ["fam-0", "fam-1", "fam-2"];
+const SP_ID: [&str; 3] = ["sp-0", "sp-1", "sp-2"];
 
 fn card(theme: &Theme, w: f32) -> gpui::Div {
     let p = th_pal(theme);
@@ -703,5 +709,324 @@ impl RenderOnce for AccentDensityEl {
                     )),
             )
             .child(pv)
+    }
+}
+
+fn seg3(
+    theme: &Theme,
+    act: &Option<Act>,
+    labels: &[&'static str],
+    on: usize,
+    ids: &[&'static str],
+    tag: &str,
+) -> gpui::Stateful<gpui::Div> {
+    let p = th_pal(theme);
+    let mut s = div()
+        .id(SharedString::from(format!("oxseg-{tag}")))
+        .flex()
+        .gap(px(2.))
+        .p(px(3.))
+        .rounded(px(11.))
+        .bg(p.inset);
+    for (i, l) in labels.iter().enumerate() {
+        let f = fire(act, ids[i.min(ids.len() - 1)]);
+        s = s.child(
+            div()
+                .id(SharedString::from(format!("oxseg-{tag}{i}")))
+                .h(px(28.))
+                .px(px(11.))
+                .flex()
+                .items_center()
+                .rounded(px(8.))
+                .text_size(px(13.))
+                .text_color(if i == on { p.fg } else { p.mute })
+                .when(i == on, |x| x.bg(p.sel))
+                .child(*l)
+                .on_click(move |_, w, cx| f(w, cx)),
+        );
+    }
+    s
+}
+
+/// `theme-schedule` (Theme Selector – Theme schedule): mode, a 24-hour strip and a sample.
+#[derive(IntoElement)]
+pub struct ThemeScheduleEl {
+    mode: usize,
+    from: u32,
+    to: u32,
+    at: u32,
+    act: Option<Act>,
+    theme: &'static Theme,
+}
+
+impl Default for ThemeScheduleEl {
+    fn default() -> Self {
+        Self {
+            mode: 3,
+            from: 420,
+            to: 1140,
+            at: 1080,
+            act: None,
+            theme: &Theme::DARK,
+        }
+    }
+}
+
+impl ThemeScheduleEl {
+    /// Mode (index into `sched_modes()`).
+    pub fn mode(mut self, i: usize) -> Self {
+        self.mode = i;
+        self
+    }
+    /// Light window and previewed time, in minutes after midnight.
+    pub fn hours(mut self, from: u32, to: u32, at: u32) -> Self {
+        self.from = from;
+        self.to = to;
+        self.at = at;
+        self
+    }
+    /// Light or dark chrome.
+    pub fn theme(mut self, t: &'static Theme) -> Self {
+        self.theme = t;
+        self
+    }
+    /// `mode-<i>`.
+    pub fn on_act(mut self, a: Act) -> Self {
+        self.act = Some(a);
+        self
+    }
+}
+
+impl RenderOnce for ThemeScheduleEl {
+    fn render(self, _: &mut Window, _: &mut App) -> impl IntoElement {
+        let p = th_pal(self.theme);
+        let modes = sched_modes();
+        let mi = self.mode.min(modes.len() - 1);
+        let mk = modes[mi].0;
+        let (f, t) = if mk == "sun" {
+            SUN
+        } else {
+            (self.from, self.to)
+        };
+        let light = sched_light(mk, self.at, f, t);
+        let s = if light {
+            swatch_for("light", false)
+        } else {
+            swatch_for("dark", true)
+        };
+        let labels: Vec<&'static str> = modes.iter().map(|m| m.1).collect();
+        let w: f32 = 522.;
+        let x = |m: u32| w * m as f32 / 1440.;
+        let mut strip = div()
+            .relative()
+            .w(px(w))
+            .h(px(34.))
+            .rounded(px(9.))
+            .bg(p.inset)
+            .border_1()
+            .border_color(p.line)
+            .overflow_hidden();
+        if mk != "dark" {
+            let (a, b) = if mk == "light" { (0, 1440) } else { (f, t) };
+            if a <= b {
+                strip = strip.child(
+                    div()
+                        .absolute()
+                        .top_0()
+                        .bottom_0()
+                        .left(px(x(a)))
+                        .w(px(x(b - a)))
+                        .bg(p.sel),
+                );
+            } else {
+                strip = strip
+                    .child(
+                        div()
+                            .absolute()
+                            .top_0()
+                            .bottom_0()
+                            .left_0()
+                            .w(px(x(b)))
+                            .bg(p.sel),
+                    )
+                    .child(
+                        div()
+                            .absolute()
+                            .top_0()
+                            .bottom_0()
+                            .left(px(x(a)))
+                            .w(px(w - x(a)))
+                            .bg(p.sel),
+                    );
+            }
+        }
+        strip = strip.child(
+            div()
+                .absolute()
+                .top_0()
+                .bottom_0()
+                .left(px(x(self.at)))
+                .w(px(2.))
+                .bg(p.fg),
+        );
+        card(self.theme, 560.)
+            .p(px(18.))
+            .flex()
+            .flex_col()
+            .gap(px(12.))
+            .child(
+                div()
+                    .flex()
+                    .justify_between()
+                    .items_center()
+                    .child(
+                        div()
+                            .font_weight(FontWeight::SEMIBOLD)
+                            .child("Light and dark"),
+                    )
+                    .child(seg3(self.theme, &self.act, &labels, mi, &MODE_ID, "m")),
+            )
+            .child(div().text_size(px(13.)).text_color(p.fg2).child(format!(
+                "Light {}–{}",
+                fmt_hm(f),
+                fmt_hm(t)
+            )))
+            .child(strip)
+            .child(
+                div()
+                    .w(px(180.))
+                    .h(px(100.))
+                    .p(px(8.))
+                    .rounded(px(12.))
+                    .bg(hex(s.side))
+                    .text_color(hex(s.fg))
+                    .child(
+                        div()
+                            .text_size(px(11.))
+                            .text_color(hex(s.mute))
+                            .child(fmt_hm(self.at)),
+                    )
+                    .child(
+                        div()
+                            .mt(px(6.))
+                            .p(px(10.))
+                            .rounded(px(8.))
+                            .bg(hex(s.pane))
+                            .font_weight(FontWeight::SEMIBOLD)
+                            .child(if light { "Light" } else { "Dark" }),
+                    ),
+            )
+    }
+}
+
+/// `type-scale` (Theme Selector – Type scale): family, size steps, spacing and a reading sample.
+#[derive(IntoElement)]
+pub struct TypeScaleEl {
+    family: usize,
+    step: usize,
+    spacing: usize,
+    act: Option<Act>,
+    theme: &'static Theme,
+}
+
+impl Default for TypeScaleEl {
+    fn default() -> Self {
+        Self {
+            family: 0,
+            step: 3,
+            spacing: 1,
+            act: None,
+            theme: &Theme::DARK,
+        }
+    }
+}
+
+impl TypeScaleEl {
+    /// Family, size step and spacing (indices).
+    pub fn picks(mut self, family: usize, step: usize, spacing: usize) -> Self {
+        self.family = family;
+        self.step = step;
+        self.spacing = spacing;
+        self
+    }
+    /// Light or dark chrome.
+    pub fn theme(mut self, t: &'static Theme) -> Self {
+        self.theme = t;
+        self
+    }
+    /// `fam-<i>`, `smaller`, `larger`, `sp-<i>`.
+    pub fn on_act(mut self, a: Act) -> Self {
+        self.act = Some(a);
+        self
+    }
+}
+
+impl RenderOnce for TypeScaleEl {
+    fn render(self, _: &mut Window, _: &mut App) -> impl IntoElement {
+        let p = th_pal(self.theme);
+        let fams = type_families();
+        let sps = type_spacing();
+        let fi = self.family.min(fams.len() - 1);
+        let si = self.spacing.min(sps.len() - 1);
+        let px_ = TYPE_STEPS[self.step.min(TYPE_STEPS.len() - 1)];
+        let lh = sps[si].2 as f32;
+        let cpl = chars_per_line(520., px_, fams[fi].0);
+        let fl: Vec<&'static str> = fams.iter().map(|f| f.1).collect();
+        let sl: Vec<&'static str> = sps.iter().map(|f| f.1).collect();
+        let fs = fire(&self.act, "smaller");
+        let fb = fire(&self.act, "larger");
+        let btn = |id: &'static str, t: &'static str| {
+            div()
+                .id(id)
+                .size(px(30.))
+                .rounded(px(9.))
+                .border_1()
+                .border_color(p.line)
+                .bg(p.card2)
+                .flex()
+                .items_center()
+                .justify_center()
+                .child(t)
+        };
+        card(self.theme, 560.)
+            .p(px(18.))
+            .flex()
+            .flex_col()
+            .gap(px(12.))
+            .child(
+                div()
+                    .flex()
+                    .flex_wrap()
+                    .gap(px(10.))
+                    .items_center()
+                    .child(seg3(self.theme, &self.act, &fl, fi, &FAM_ID, "f"))
+                    .child(btn("oxtys-smaller", "A").on_click(move |_, w, cx| fs(w, cx)))
+                    .child(
+                        div()
+                            .text_size(px(12.5))
+                            .text_color(p.mute)
+                            .child(format!("{px_} px")),
+                    )
+                    .child(btn("oxtys-larger", "A").on_click(move |_, w, cx| fb(w, cx)))
+                    .child(seg3(self.theme, &self.act, &sl, si, &SP_ID, "s")),
+            )
+            .child(
+                div()
+                    .p(px(16.))
+                    .rounded(px(12.))
+                    .bg(p.inset)
+                    .text_size(px(px_ as f32))
+                    .line_height(relative(lh))
+                    .child(div().font_weight(FontWeight::SEMIBOLD).child("After hours"))
+                    .child(div().text_color(p.fg2).child(
+                        "Evening reading should feel easy. Pick a family, nudge the size until a line sits comfortably under your eye, and give the lines a little room to breathe.",
+                    )),
+            )
+            .child(
+                div()
+                    .text_size(px(12.))
+                    .text_color(p.mute)
+                    .child(format!("About {cpl} characters a line")),
+            )
     }
 }

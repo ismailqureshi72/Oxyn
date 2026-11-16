@@ -80,9 +80,11 @@ pub use parity::StorageForecastEl;
 pub use parity::StorageMeterEl;
 pub use parity::StorageWaffleEl;
 pub use parity::ThemeGridEl;
+pub use parity::ThemeScheduleEl;
 pub use parity::ThemeSplitEl;
 pub use parity::ToolAccessMapEl;
 pub use parity::TraceWaterfallEl;
+pub use parity::TypeScaleEl;
 pub use parity::UploadDropzoneEl;
 pub use parity::{
     Act, ActivityFeedEl, AgentApprovalsEl, AgentPlanEl, AgentRunEl, AgentStatusEl, AgentTrailEl,
