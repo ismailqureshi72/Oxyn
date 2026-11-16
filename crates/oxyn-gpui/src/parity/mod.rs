@@ -59,6 +59,7 @@ mod run;
 mod runningfid;
 mod schedfid;
 mod seqfid;
+mod stairsfid;
 mod text;
 mod toolmapfid;
 mod tools;
@@ -131,6 +132,7 @@ pub use run::{
 pub use runningfid::RunningNowEl;
 pub use schedfid::ScheduledRunsEl;
 pub use seqfid::AgentSequenceEl;
+pub use stairsfid::EffortStairsEl;
 pub use text::{LoadingStateEl, ShimmerEl, SlotTextEl, ThinkingLoaderEl};
 pub use toolmapfid::ToolAccessMapEl;
 pub use tools::{

@@ -50,6 +50,7 @@ mod run;
 mod runningfid;
 mod schedfid;
 mod seqfid;
+mod stairsfid;
 mod text;
 mod toolmapfid;
 mod tools;
@@ -122,6 +123,7 @@ pub use run::{
 pub use runningfid::RunningNow;
 pub use schedfid::ScheduledRuns;
 pub use seqfid::AgentSequence;
+pub use stairsfid::EffortStairs;
 pub use text::{
     ActionSwapButton, InViewTitle, LoadingState, SlotReels, Source, StreamingText, SweepText,
     TextMorph, ThinkingLoader, WordReveal,
