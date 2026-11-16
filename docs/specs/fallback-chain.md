@@ -1,43 +1,47 @@
-**Status:** built v0.1 (2026-11-16, plan #32 affectUI fidelity pass, family B part 8).
+**Status:** built v0.2 (2026-11-16, plan #32 affectUI fidelity pass, family B part 8 – exact pass against the ref-1 capture notes).
 
 # Spec: Fallback Chain (`fallback-chain`)
 
-Family: Agents. Closes the parity row: affectUI · Fallback Chain (Pro). Behaviour-only rebuild from a one-paragraph
-description (no visual capture); the models, timings, reasons and copy are our own. Related Oxyn component: trace-view.
+Family: Agents. Closes the parity row: affectUI · Fallback Chain (Pro). Behaviour-only rebuild; sizes, colours, states,
+motion and responsive rules follow the ref-1 capture notes (approximate, read off screenshots); models, timings,
+reasons and copy are our own. Related Oxyn component: trace-view.
 Components: `FallbackChain` (Dioxus) · `FallbackChainEl` (GPUI), model in `oxyn_core::parity::fallbackfid`.
 
 ## 1. Purpose
-Which model actually served a request: the fallback order drawn as a small flow, each failed try marked with why, the
-one that answered carried through to the reply.
+Which model actually served a request: the fallback order as a small flow with a running clock and cost, each failed
+try broken red with its reason, the one that answered carried on to the response.
 
 ## 2. Parts
-| Part | Look (Clean, light) |
+| Part | Look (Clean, light / dark) |
 |---|---|
-| Root | 760 px (max 100 %), container-sized, white, #E6E6E9 hairline, 12 px radius |
-| Bar | 48 px: blue fork glyph, "Fallback chain" 13/600, "n models in order" muted; a status pill (blue pulsing "Trying …", green "Answered by … · 2nd try", red "Every model failed") and a Replay icon button |
-| Flow | #FAFAFA band, grid: Request card 150 px · 64 px SVG links · model column · 64 px links · Response card 170 px |
-| Model | 52 px button, 10 px radius: order chip, 26 px brand tile (coloured mark), model 13/600 and a muted line (reason in red, "Answered in …" in green), a red ✕ / green ✓ / blue spinner |
-| Links | 1.5 px #D8DCE3 curves from the request to every model; failed ones red and broken; skipped ones dotted; a 2.5 px blue light runs along the branch being tried; the answering model's curve runs on to the response |
-| Response | caption, the reply's first words, "model · total time"; ringed blue once answered |
+| Root | 680 px (max 100 %), container-sized card: white / #17171A, 1 px #E6E6E6 / #2A2A2E, 14 px radius, soft shadow, 18–20 px padding |
+| Header | the request as the title (13/600); right: dot + status (blue "Attempt k of n", green "Answered", red "All failed", 12 px), clock + "7.5s", cost "$0.0049" (11 px muted, tabular) and – when every model failed – a Retry button |
+| Request / Response | 108 × 44 px nodes, 10 px radius: glyph, "Request" 12/600 over the route (10 px muted); the response turns green-tinted with "412 tokens" once answered |
+| Model card | 46 px, 10 px radius, 10 px gap: order chip, 22 px brand tile (vetted coloured mark), model 12/600 + provider 11 px muted, time over cost on the right (tabular); status line 11 px: red "Rate limited · 429" with a slash glyph, blue "Trying…", blue arrow "Up next", grey "Waiting" / "Not needed", green "Answered · 412 tokens" |
+| Card states | trying: blue #2563EB / #4C8DFF border on #EFF6FF; failed: red-tinted border; answered: green-tinted border; waiting / skipped: 55 % opacity (full on hover / focus) |
+| Links | 1.5 px dashed #D4D4D8 curves request → every model; failed ones red and broken; the answering one solid green and drawn on to the response; a blue dotted light grows along the branch being tried in step with the try |
+| Details card | 220 px popover, 12 px radius, shadow: provider + state tag, then Model, Time ("2.4s of 5.0s"), Cost, Code, Price ("$3 / $15 per 1M"), Why (red) |
 
 ## 3. Behaviour
-- `fb_states(attempts, elapsed, gap)` walks the chain: each try takes its `ms`, a failure hands over after `gap`, the
-  first `Ok` answers and everything after it is skipped. `fb_final` is the settled chain.
-- `live` plays the chain from the moment it mounts; Replay restarts it. A click on a model opens a small card with
-  its time and what happened next.
-- prefers-reduced-motion: no light, spinner or pulse.
+- `fb_states(attempts, elapsed, gap)` walks the chain; `fb_progress` gives the trying attempt's fraction; `fb_meter`
+  the clock (stops at the answer) and the money spent (finished tries in full, the trying one pro rata);
+  `fb_status` the header words; `fb_usd` / `fb_s` the formats.
+- `live` plays the chain and loops after a 4.2 s rest. Every node opens its details card on hover, focus or click
+  (click pins it; Escape closes). Retry restarts the chain and calls `on_retry`.
+- prefers-reduced-motion: no light, drawing, pulse or slide-ins.
 
 ## 4. Variants
-live (default) · settled · first-try · third-try · all-failed · details · narrow (380 px) · classic.
+live (default) · settled · first-try · second-try · all-failed (Retry) · details · medium (560 px) · narrow (380 px) · classic.
 
 ## 5. Keyboard and accessibility
-Tab reaches Replay then every model; Enter / Space opens details (aria-expanded). Model buttons are named with their
-place, model and outcome; the headline is a status region; the SVG links are aria-hidden.
+Tab: request, each model, response – each shows its details card on focus; Enter / Space pins it (aria-expanded);
+Escape closes. Model buttons are named with place, model, provider and outcome; the header status is a status region;
+the links are an aria-hidden SVG and every state is also in words.
 
 ## 6. Responsive
-Under 600 px the links give way to a vertical rail and the request, models and response stack; the subtitle hides.
+Under 600 px the provider leaves the row (it stays in the details card); under 520 px the diagram becomes a vertical
+tree on a dashed rail with request, models and response stacked.
 
 ## 7. Known gaps
-- Needs capture: built from the catalogue description only – sizes, colours and the exact light are our reading.
-- The travelling light restarts every 4 s rather than once per try.
-- GPUI: a static snapshot – straight layout, no curves or light.
+- The capture gives approximate sizes only (screenshot reading); provider/region strings and prices are illustrative.
+- GPUI: a static snapshot – straight layout, no curves, light or details card.

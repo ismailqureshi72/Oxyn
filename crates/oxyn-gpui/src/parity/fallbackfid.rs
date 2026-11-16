@@ -1,14 +1,14 @@
 //! affectUI fidelity pass, family B part 8 (plan #32) for GPUI: the exact **Fallback Chain**
 //! ([`FallbackChainEl`]) over `oxyn_core::parity::fallbackfid`. The element is `RenderOnce`: the
-//! host passes the attempts and their states and gets [`Act`] ids back (`replay`, `m-<n>` for the
-//! n-th model). A static snapshot: no curved links or travelling light.
+//! host passes the attempts and their states and gets [`Act`] ids back (`retry`, `m-<n>` for the
+//! n-th model). A static snapshot: no curved links, travelling light or details card.
 
 use gpui::{
     App, FontWeight, Hsla, IntoElement, ParentElement, RenderOnce, SharedString, Styled, Window,
     div, prelude::*, px, rgb,
 };
 use oxyn_core::parity::fallbackfid::{
-    FbAttempt, FbState, fb_demo, fb_final, fb_headline, fb_ms, fb_total_ms,
+    FbAttempt, FbState, fb_demo, fb_final, fb_meter, fb_s, fb_status, fb_usd,
 };
 use oxyn_tokens::{ColorRole, Theme};
 
@@ -22,7 +22,7 @@ pub struct FallbackChainEl {
     attempts: Vec<FbAttempt>,
     states: Option<Vec<FbState>>,
     request: String,
-    response: String,
+    route: String,
     classic: bool,
     act: Option<Act>,
     theme: &'static Theme,
@@ -33,8 +33,8 @@ impl Default for FallbackChainEl {
         Self {
             attempts: fb_demo(),
             states: None,
-            request: "Summarise this week's support tickets".into(),
-            response: "Three themes stand out: slow exports, SSO sign-in loops and…".into(),
+            request: "Summarise the support ticket".into(),
+            route: "router/auto".into(),
             classic: false,
             act: None,
             theme: &Theme::DARK,
@@ -53,10 +53,10 @@ impl FallbackChainEl {
         self.states = Some(s);
         self
     }
-    /// Request and response lines.
-    pub fn text(mut self, request: &str, response: &str) -> Self {
+    /// The request (header title) and the router it went through.
+    pub fn text(mut self, request: &str, route: &str) -> Self {
         self.request = request.into();
-        self.response = response.into();
+        self.route = route.into();
         self
     }
     /// Classic style.
@@ -69,7 +69,7 @@ impl FallbackChainEl {
         self.theme = t;
         self
     }
-    /// Replay and the models.
+    /// Retry and the models.
     pub fn on_act(mut self, a: Act) -> Self {
         self.act = Some(a);
         self
@@ -91,100 +91,116 @@ impl RenderOnce for FallbackChainEl {
         let h = |x: u32| -> Hsla { rgb(x).into() };
         let (card, bd, fg, mute, box_bg, blue, red, ok, band) = if dark {
             (
-                h(0x18181B),
-                h(0x2C2C31),
+                h(0x17171A),
+                h(0x2A2A2E),
                 h(0xEDEDEF),
-                h(0x8B8B94),
-                h(0x1B1B1F),
-                h(0x6C9BFF),
-                h(0xF97066),
-                h(0x4ADE80),
-                h(0x1D1D21),
+                h(0x8A8A93),
+                h(0x111113),
+                h(0x4C8DFF),
+                h(0xF87171),
+                h(0x34D399),
+                h(0x111113),
             )
         } else {
             (
                 h(0xFFFFFF),
-                h(0xE6E6E9),
-                h(0x18181B),
-                h(0x8A8A93),
+                h(0xE6E6E6),
+                h(0x111827),
+                h(0x6B7280),
                 h(0xFAFAFA),
-                h(0x4C7DF0),
-                h(0xD92D20),
+                h(0x2563EB),
+                h(0xDC2626),
                 h(0x16A34A),
-                h(0xF4F4F5),
+                h(0xFAFAFA),
             )
         };
         let states = self
             .states
             .clone()
             .unwrap_or_else(|| fb_final(&self.attempts));
-        let headline = fb_headline(&self.attempts, &states);
+        let (pill, word) = fb_status(&states);
+        let (clock, cost) = fb_meter(&self.attempts, u64::MAX / 4, 0);
         let answered = states.iter().position(|s| *s == FbState::Answered);
-        let rf = fire(&self.act, "replay");
+        let rf = fire(&self.act, "retry");
+        let tone = match pill {
+            "done" => ok,
+            "failed" => red,
+            _ => blue,
+        };
         let bar = div()
-            .h(px(48.))
+            .h(px(44.))
             .px(px(16.))
             .flex()
             .items_center()
-            .gap(px(8.))
-            .border_b_1()
-            .border_color(bd)
-            .when(self.classic, |d| d.bg(band))
+            .gap(px(12.))
+            .when(self.classic, |d| d.bg(band).border_b_1().border_color(bd))
             .child(
                 div()
                     .text_size(px(13.))
                     .font_weight(FontWeight::SEMIBOLD)
-                    .child("Fallback chain"),
-            )
-            .child(
-                div()
-                    .text_size(px(12.5))
-                    .text_color(mute)
-                    .child(format!("{} models in order", self.attempts.len())),
+                    .child(self.request.clone()),
             )
             .child(div().flex_1())
-            .child(div().text_size(px(12.)).text_color(blue).child(headline))
             .child(
                 div()
-                    .id("oxfb-replay")
-                    .px(px(6.))
+                    .text_size(px(12.))
+                    .text_color(tone)
+                    .child(format!("● {word}")),
+            )
+            .child(div().text_size(px(11.)).text_color(mute).child(fb_s(clock)))
+            .child(
+                div()
+                    .text_size(px(11.))
                     .text_color(mute)
-                    .on_click(move |_, w, cx| rf(w, cx))
-                    .child("↻"),
-            );
-        let node = |cap: &str, text: String| {
+                    .child(fb_usd(cost)),
+            )
+            .when(pill == "failed", |d| {
+                d.child(
+                    div()
+                        .id("oxfb-retry")
+                        .px(px(8.))
+                        .border_1()
+                        .border_color(bd)
+                        .rounded(px(7.))
+                        .text_size(px(11.5))
+                        .on_click(move |_, w, cx| rf(w, cx))
+                        .child("Retry"),
+                )
+            });
+        let node = |cap: &str, text: String, edge: Hsla| {
             div()
-                .w(px(160.))
-                .p(px(10.))
+                .w(px(96.))
+                .h(px(44.))
+                .px(px(9.))
                 .flex()
                 .flex_col()
-                .gap(px(4.))
+                .justify_center()
                 .border_1()
-                .border_color(bd)
+                .border_color(edge)
                 .rounded(px(10.))
                 .bg(card)
                 .child(
                     div()
-                        .text_size(px(10.5))
-                        .text_color(mute)
-                        .child(cap.to_uppercase()),
+                        .text_size(px(12.))
+                        .font_weight(FontWeight::SEMIBOLD)
+                        .child(cap.to_string()),
                 )
-                .child(div().text_size(px(12.5)).child(text))
+                .child(div().text_size(px(10.)).text_color(mute).child(text))
         };
         let mut models = div().flex_1().flex().flex_col().gap(px(10.));
         for (i, (x, s)) in self.attempts.iter().zip(states.iter()).enumerate().take(6) {
             let f = fire(&self.act, M[i]);
             let (edge, note, tone) = match s {
-                FbState::Failed => (red, x.outcome.reason(), red),
-                FbState::Answered => (blue, format!("Answered in {}", fb_ms(x.ms)), ok),
-                FbState::Trying => (blue, "Trying…".to_string(), mute),
+                FbState::Failed => (bd, x.outcome.reason(), red),
+                FbState::Answered => (ok, format!("Answered · {} tokens", x.tokens), ok),
+                FbState::Trying => (blue, "Trying…".to_string(), blue),
                 FbState::Skipped => (bd, "Not needed".to_string(), mute),
-                FbState::Waiting => (bd, "Next in line".to_string(), mute),
+                FbState::Waiting => (bd, "Waiting".to_string(), mute),
             };
             models = models.child(
                 div()
                     .id(SharedString::from(format!("oxfb-m{i}")))
-                    .h(px(52.))
+                    .h(px(46.))
                     .px(px(10.))
                     .flex()
                     .items_center()
@@ -193,7 +209,9 @@ impl RenderOnce for FallbackChainEl {
                     .border_color(edge)
                     .rounded(px(10.))
                     .bg(card)
-                    .when(*s == FbState::Skipped, |d| d.opacity(0.5))
+                    .when(matches!(s, FbState::Skipped | FbState::Waiting), |d| {
+                        d.opacity(0.55)
+                    })
                     .on_click(move |_, w, cx| f(w, cx))
                     .child(
                         div()
@@ -207,44 +225,68 @@ impl RenderOnce for FallbackChainEl {
                             .flex_col()
                             .child(
                                 div()
-                                    .text_size(px(13.))
-                                    .font_weight(FontWeight::SEMIBOLD)
-                                    .child(x.model.clone()),
+                                    .flex()
+                                    .gap(px(6.))
+                                    .child(
+                                        div()
+                                            .text_size(px(12.))
+                                            .font_weight(FontWeight::SEMIBOLD)
+                                            .child(x.model.clone()),
+                                    )
+                                    .child(
+                                        div()
+                                            .text_size(px(11.))
+                                            .text_color(mute)
+                                            .child(x.provider.clone()),
+                                    ),
                             )
-                            .child(div().text_size(px(11.5)).text_color(tone).child(note)),
+                            .child(div().text_size(px(11.)).text_color(tone).child(note)),
+                    )
+                    .child(div().flex_1())
+                    .child(
+                        div()
+                            .flex()
+                            .flex_col()
+                            .items_end()
+                            .text_size(px(11.))
+                            .text_color(mute)
+                            .child(match s {
+                                FbState::Failed | FbState::Answered => fb_s(x.ms),
+                                _ => "–".into(),
+                            })
+                            .child(match s {
+                                FbState::Failed | FbState::Answered => fb_usd(x.cost),
+                                _ => String::new(),
+                            }),
                     ),
             );
         }
         let res = match answered {
             Some(i) => node(
                 "Response",
-                format!(
-                    "{} – {} · {}",
-                    self.response,
-                    self.attempts[i].model,
-                    fb_ms(fb_total_ms(&self.attempts, 0))
-                ),
+                format!("{} tokens", self.attempts[i].tokens),
+                ok,
             ),
-            None => node("No response", "Every model in the chain failed.".into()),
+            None => node("Response", "None".into(), red),
         };
         div()
-            .w(px(760.))
+            .w(px(640.))
             .flex()
             .flex_col()
             .border_1()
             .border_color(bd)
-            .rounded(px(12.))
+            .rounded(px(14.))
             .bg(card)
             .text_color(fg)
             .child(bar)
             .child(
                 div()
-                    .p(px(24.))
+                    .p(px(20.))
                     .flex()
                     .items_center()
                     .gap(px(40.))
-                    .bg(box_bg)
-                    .child(node("Request", self.request.clone()))
+                    .when(self.classic, |d| d.bg(box_bg))
+                    .child(node("Request", self.route.clone(), bd))
                     .child(models)
                     .child(res),
             )
