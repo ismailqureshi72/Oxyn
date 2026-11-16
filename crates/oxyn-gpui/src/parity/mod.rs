@@ -146,7 +146,8 @@ pub use stairsfid::EffortStairsEl;
 pub use storagefid::{StorageCleanupEl, StorageForecastEl, StorageMeterEl, StorageWaffleEl};
 pub use text::{LoadingStateEl, ShimmerEl, SlotTextEl, ThinkingLoaderEl};
 pub use themefid::{
-    AccentDensityEl, BackgroundPickerEl, ThemeGridEl, ThemeScheduleEl, ThemeSplitEl, TypeScaleEl,
+    AccentDensityEl, AppIconPickerEl, BackgroundPickerEl, DisplayComfortEl, LightPlaygroundEl,
+    ThemeGridEl, ThemeScheduleEl, ThemeSplitEl, TypeScaleEl,
 };
 pub use toolmapfid::ToolAccessMapEl;
 pub use tools::{

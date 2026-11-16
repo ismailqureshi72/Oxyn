@@ -1,9 +1,10 @@
 //! Theme Selector family (variants 3): how an app looks – the Background picker (picture tiles,
 //! a tile for your own picture and a texture laid over it), the Theme grid (eight mini-window
-//! swatches and a font size), and four Oxyn originals: Theme split (two themes over one sample
+//! swatches and a font size), and Oxyn originals: Theme split (two themes over one sample
 //! window, a divider between them), Accent and density (accent, spacing and corners), Theme
-//! schedule (light and dark by the clock) and Type scale (family, size and spacing on a reading
-//! sample).
+//! schedule (light and dark by the clock), Type scale (family, size and spacing on a reading
+//! sample), Light playground (a lamp you drag; shadows follow), App icon (alternate icons we draw
+//! in Colour, Dark or Tinted) and Display comfort (contrast, motion, transparency, bold text).
 //! Behaviour only: the pictures are drawn by us, and every name, colour and line of copy is our own.
 
 /// One background tile.
@@ -444,6 +445,122 @@ pub fn measure_word(chars: u32) -> &'static str {
     }
 }
 
+/// Light playground: keeps the lamp inside the stage (4–96 %).
+pub fn lamp_clamp(v: f64) -> f64 {
+    v.clamp(4.0, 96.0)
+}
+
+/// The shadow a card at (`cx`, `cy`) % casts from a lamp at (`lx`, `ly`) %: (dx, dy, blur) in px.
+/// The shadow falls away from the lamp and softens as it gets further; `strength` is 0–100.
+pub fn lamp_shadow(lx: f64, ly: f64, cx: f64, cy: f64, strength: f64) -> (f64, f64, f64) {
+    let k = strength.clamp(0.0, 100.0) / 100.0;
+    let (dx, dy) = (cx - lx, cy - ly);
+    let dist = (dx * dx + dy * dy).sqrt();
+    let reach = 0.28 * k;
+    (
+        (dx * reach).clamp(-24.0, 24.0),
+        (dy * reach).clamp(-24.0, 24.0),
+        6.0 + dist * 0.35 * k,
+    )
+}
+
+/// The angle (degrees, CSS `linear-gradient` convention) from a card at (`cx`, `cy`) toward the lamp.
+pub fn lamp_angle(lx: f64, ly: f64, cx: f64, cy: f64) -> f64 {
+    let a = (lx - cx).atan2(-(ly - cy)).to_degrees();
+    (a + 360.0) % 360.0
+}
+
+/// An alternate app icon we draw: a ring-and-dot mark on a two-stop ground.
+#[derive(Clone, Debug, PartialEq)]
+pub struct AppIcon {
+    /// Stable key.
+    pub key: &'static str,
+    /// Label.
+    pub label: &'static str,
+    /// Ground, top-left stop.
+    pub from: &'static str,
+    /// Ground, bottom-right stop.
+    pub to: &'static str,
+    /// The mark.
+    pub mark: &'static str,
+}
+
+/// The six icons, in grid order.
+pub fn app_icons() -> Vec<AppIcon> {
+    let i = |key, label, from, to, mark| AppIcon {
+        key,
+        label,
+        from,
+        to,
+        mark,
+    };
+    vec![
+        i("classic", "Classic", "2A2A2E", "111113", "F2F2F3"),
+        i("paper", "Paper", "FFFFFF", "E4E4E8", "111113"),
+        i("daybreak", "Daybreak", "FF8A4C", "E8457C", "FFFFFF"),
+        i("ocean", "Ocean", "38BDF8", "2453D6", "FFFFFF"),
+        i("mint", "Mint", "5EEAD4", "16A36A", "06281C"),
+        i("nebula", "Nebula", "A855F7", "EC4899", "FFFFFF"),
+    ]
+}
+
+/// Icon styles: (key, label).
+pub fn icon_styles() -> Vec<(&'static str, &'static str)> {
+    vec![("color", "Colour"), ("dark", "Dark"), ("tinted", "Tinted")]
+}
+
+/// The colours one icon shows in a style: (ground from, ground to, mark), as CSS colours.
+/// Dark lays the icon's own colours on a near-black ground; Tinted draws it in one hue (`tint`).
+pub fn icon_colors(icon: &AppIcon, style: &str, tint: u32) -> (String, String, String) {
+    match style {
+        "dark" => {
+            let mark = if icon.key == "classic" || icon.key == "paper" {
+                "#F2F2F3".to_string()
+            } else {
+                format!("#{}", icon.from)
+            };
+            ("#1C1C1E".into(), "#0B0B0C".into(), mark)
+        }
+        "tinted" => {
+            let h = tint % 360;
+            (
+                format!("hsl({h} 45% 22%)"),
+                format!("hsl({h} 50% 10%)"),
+                format!("hsl({h} 90% 78%)"),
+            )
+        }
+        _ => (
+            format!("#{}", icon.from),
+            format!("#{}", icon.to),
+            format!("#{}", icon.mark),
+        ),
+    }
+}
+
+/// Display comfort switches: (key, label, what it does).
+pub fn comfort_opts() -> Vec<(&'static str, &'static str, &'static str)> {
+    vec![
+        (
+            "contrast",
+            "Increase contrast",
+            "Darker text and firmer edges",
+        ),
+        ("motion", "Reduce motion", "Stops loops and slides"),
+        ("solid", "Reduce transparency", "Glass turns solid"),
+        ("bold", "Bold text", "Heavier type everywhere"),
+    ]
+}
+
+/// "Off", "1 on" … "All on" for the comfort switches.
+pub fn comfort_said(on: &[bool]) -> String {
+    let n = on.iter().filter(|x| **x).count();
+    match n {
+        0 => "All off".to_string(),
+        n if n == on.len() => "All on".to_string(),
+        n => format!("{n} on"),
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -508,5 +625,26 @@ mod tests {
         assert_eq!(chars_per_line(520.0, 16, "sans"), 63);
         assert_eq!(measure_word(63), "comfortable");
         assert_eq!(measure_word(30), "short lines");
+    }
+
+    #[test]
+    fn light_icons_comfort() {
+        assert_eq!(lamp_clamp(0.0), 4.0);
+        let (dx, dy, b) = lamp_shadow(20.0, 20.0, 50.0, 50.0, 100.0);
+        assert!(dx > 0.0 && dy > 0.0 && b > 6.0);
+        let (dx0, _, b0) = lamp_shadow(50.0, 50.0, 50.0, 50.0, 100.0);
+        assert_eq!(dx0, 0.0);
+        assert_eq!(b0, 6.0);
+        assert_eq!(lamp_angle(50.0, 0.0, 50.0, 50.0).round(), 0.0);
+        assert_eq!(lamp_angle(100.0, 50.0, 50.0, 50.0).round(), 90.0);
+        let ic = app_icons();
+        assert_eq!(ic.len(), 6);
+        assert_eq!(icon_colors(&ic[3], "color", 0).0, "#38BDF8");
+        assert_eq!(icon_colors(&ic[0], "dark", 0).2, "#F2F2F3");
+        assert!(icon_colors(&ic[2], "tinted", 200).2.starts_with("hsl(200"));
+        assert_eq!(comfort_said(&[false, false]), "All off");
+        assert_eq!(comfort_said(&[true, false, true]), "2 on");
+        assert_eq!(comfort_said(&[true, true]), "All on");
+        assert_eq!(comfort_opts().len(), 4);
     }
 }

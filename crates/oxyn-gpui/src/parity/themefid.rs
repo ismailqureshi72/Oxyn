@@ -1,10 +1,12 @@
 //! Theme Selector family (variants 3) for GPUI over `oxyn_core::parity::themefid`: **Background
 //! picker** ([`BackgroundPickerEl`]), **Theme grid** ([`ThemeGridEl`]), **Theme split**
 //! ([`ThemeSplitEl`]), **Accent and density** ([`AccentDensityEl`]), **Theme schedule**
-//! ([`ThemeScheduleEl`]) and **Type scale** ([`TypeScaleEl`]). `RenderOnce` snapshots:
+//! ([`ThemeScheduleEl`]), **Type scale** ([`TypeScaleEl`]), **Light playground**
+//! ([`LightPlaygroundEl`]), **App icon** ([`AppIconPickerEl`]) and **Display comfort**
+//! ([`DisplayComfortEl`]). `RenderOnce` snapshots:
 //! the host keeps the state and routes [`Act`] ids back (`bg-<i>`, `own`, `tex-<i>`, `theme-<i>`,
 //! `font`, `cand-<i>`, `apply`, `acc-<i>`, `den-<i>`, `cor-<i>`, `mode-<i>`, `fam-<i>`, `smaller`,
-//! `larger`, `sp-<i>`). The drawn pictures are shown as
+//! `larger`, `sp-<i>`, `icon-<i>`, `style-<i>`, `comfort-<i>`). The drawn pictures are shown as
 //! their main colours in GPUI.
 
 use gpui::{
@@ -15,6 +17,9 @@ use oxyn_core::parity::themefid::{
     SUN, TYPE_STEPS, Texture, ThemeSwatch, accents, backdrops, chars_per_line, corners, densities,
     fmt_hm, font_sizes, sched_light, sched_modes, split_clamp, swatch_for, swatches, type_families,
     type_spacing,
+};
+use oxyn_core::parity::themefid::{
+    app_icons, comfort_opts, comfort_said, icon_styles, lamp_clamp, lamp_shadow,
 };
 use oxyn_tokens::Theme;
 
@@ -36,6 +41,9 @@ const COR_ID: [&str; 3] = ["cor-0", "cor-1", "cor-2"];
 const MODE_ID: [&str; 4] = ["mode-0", "mode-1", "mode-2", "mode-3"];
 const FAM_ID: [&str; 3] = ["fam-0", "fam-1", "fam-2"];
 const SP_ID: [&str; 3] = ["sp-0", "sp-1", "sp-2"];
+const ICON_ID: [&str; 6] = ["icon-0", "icon-1", "icon-2", "icon-3", "icon-4", "icon-5"];
+const STYLE_ID: [&str; 3] = ["style-0", "style-1", "style-2"];
+const COMFORT_ID: [&str; 4] = ["comfort-0", "comfort-1", "comfort-2", "comfort-3"];
 
 fn card(theme: &Theme, w: f32) -> gpui::Div {
     let p = th_pal(theme);
@@ -1027,6 +1035,330 @@ impl RenderOnce for TypeScaleEl {
                     .text_size(px(12.))
                     .text_color(p.mute)
                     .child(format!("About {cpl} characters a line")),
+            )
+    }
+}
+
+/// `light-playground` (Theme Selector – Light playground): a lamp and the shadows it casts.
+#[derive(IntoElement)]
+pub struct LightPlaygroundEl {
+    x: f64,
+    y: f64,
+    strength: f64,
+    theme: &'static Theme,
+}
+
+impl Default for LightPlaygroundEl {
+    fn default() -> Self {
+        Self {
+            x: 26.,
+            y: 18.,
+            strength: 60.,
+            theme: &Theme::DARK,
+        }
+    }
+}
+
+impl LightPlaygroundEl {
+    /// Lamp position in % and shadow strength (0–100).
+    pub fn lamp(mut self, x: f64, y: f64, strength: f64) -> Self {
+        self.x = lamp_clamp(x);
+        self.y = lamp_clamp(y);
+        self.strength = strength;
+        self
+    }
+    /// Light or dark chrome.
+    pub fn theme(mut self, t: &'static Theme) -> Self {
+        self.theme = t;
+        self
+    }
+}
+
+impl RenderOnce for LightPlaygroundEl {
+    fn render(self, _: &mut Window, _: &mut App) -> impl IntoElement {
+        let p = th_pal(self.theme);
+        let (w, h) = (522f32, 240f32);
+        let (dx, dy, bl) = lamp_shadow(self.x, self.y, 34., 58., self.strength);
+        let shadow = gpui::BoxShadow {
+            color: gpui::hsla(0., 0., 0., 0.12 + self.strength as f32 / 100. * 0.3),
+            offset: gpui::point(px(dx as f32), px(dy as f32)),
+            blur_radius: px(bl as f32),
+            spread_radius: px(0.),
+            inset: false,
+        };
+        let lx = w * self.x as f32 / 100.;
+        let ly = h * self.y as f32 / 100.;
+        card(self.theme, 560.)
+            .p(px(18.))
+            .child(
+                div()
+                    .font_weight(FontWeight::SEMIBOLD)
+                    .child("Light playground"),
+            )
+            .child(
+                div()
+                    .relative()
+                    .mt(px(12.))
+                    .w(px(w))
+                    .h(px(h))
+                    .rounded(px(14.))
+                    .bg(p.inset)
+                    .border_1()
+                    .border_color(p.line)
+                    .overflow_hidden()
+                    .child(
+                        div()
+                            .absolute()
+                            .left(px(w * 0.08))
+                            .top(px(h * 0.3))
+                            .w(px(w * 0.52))
+                            .p(px(14.))
+                            .rounded(px(14.))
+                            .bg(p.card)
+                            .border_1()
+                            .border_color(p.line)
+                            .shadow(vec![shadow])
+                            .child(div().font_weight(FontWeight::SEMIBOLD).child("Morning run"))
+                            .child(
+                                div()
+                                    .text_size(px(12.5))
+                                    .text_color(p.mute)
+                                    .child("Four checks passed, one waits for you."),
+                            ),
+                    )
+                    .child(
+                        div()
+                            .absolute()
+                            .left(px(lx - 15.))
+                            .top(px(ly - 15.))
+                            .size(px(30.))
+                            .rounded(px(15.))
+                            .bg(p.fg),
+                    ),
+            )
+    }
+}
+
+/// `app-icon-picker` (Theme Selector – App icon): six icons and the style row.
+#[derive(IntoElement)]
+pub struct AppIconPickerEl {
+    pick: usize,
+    style: usize,
+    act: Option<Act>,
+    theme: &'static Theme,
+}
+
+impl Default for AppIconPickerEl {
+    fn default() -> Self {
+        Self {
+            pick: 0,
+            style: 0,
+            act: None,
+            theme: &Theme::DARK,
+        }
+    }
+}
+
+impl AppIconPickerEl {
+    /// The icon and style (indices into `app_icons()` and `icon_styles()`).
+    pub fn picks(mut self, icon: usize, style: usize) -> Self {
+        self.pick = icon;
+        self.style = style;
+        self
+    }
+    /// Light or dark chrome.
+    pub fn theme(mut self, t: &'static Theme) -> Self {
+        self.theme = t;
+        self
+    }
+    /// `icon-<i>`, `style-<i>`.
+    pub fn on_act(mut self, a: Act) -> Self {
+        self.act = Some(a);
+        self
+    }
+}
+
+impl RenderOnce for AppIconPickerEl {
+    fn render(self, _: &mut Window, _: &mut App) -> impl IntoElement {
+        let p = th_pal(self.theme);
+        let styles = icon_styles();
+        let si = self.style.min(styles.len() - 1);
+        let dark = styles[si].0 != "color";
+        let mut grid = div().flex().gap(px(8.)).mt(px(14.));
+        for (i, ic) in app_icons().iter().enumerate() {
+            let f = fire(&self.act, ICON_ID[i.min(5)]);
+            let (ground, mark) = if dark {
+                (hex("111113"), hex(ic.from))
+            } else {
+                (hex(ic.from), hex(ic.mark))
+            };
+            let mut t = div()
+                .id(SharedString::from(format!("oxaip-{i}")))
+                .w(px(80.))
+                .p(px(8.))
+                .rounded(px(14.))
+                .flex()
+                .flex_col()
+                .items_center()
+                .gap(px(6.))
+                .text_size(px(12.))
+                .text_color(p.mute)
+                .child(
+                    div()
+                        .size(px(52.))
+                        .rounded(px(13.))
+                        .bg(ground)
+                        .flex()
+                        .items_center()
+                        .justify_center()
+                        .child(
+                            div()
+                                .size(px(24.))
+                                .rounded(px(12.))
+                                .border_2()
+                                .border_color(mark),
+                        ),
+                )
+                .child(ic.label)
+                .on_click(move |_, w, cx| f(w, cx));
+            if i == self.pick {
+                t = t.bg(p.sel).text_color(p.fg);
+            }
+            grid = grid.child(t);
+        }
+        let labels: Vec<&'static str> = styles.iter().map(|s| s.1).collect();
+        card(self.theme, 560.)
+            .p(px(18.))
+            .child(
+                div()
+                    .flex()
+                    .justify_between()
+                    .items_center()
+                    .child(div().font_weight(FontWeight::SEMIBOLD).child("App icon"))
+                    .child(seg3(self.theme, &self.act, &labels, si, &STYLE_ID, "st")),
+            )
+            .child(grid)
+    }
+}
+
+/// `display-comfort` (Theme Selector – Display comfort): four switches beside a sample.
+#[derive(IntoElement)]
+pub struct DisplayComfortEl {
+    on: Vec<bool>,
+    act: Option<Act>,
+    theme: &'static Theme,
+}
+
+impl Default for DisplayComfortEl {
+    fn default() -> Self {
+        Self {
+            on: vec![false; 4],
+            act: None,
+            theme: &Theme::DARK,
+        }
+    }
+}
+
+impl DisplayComfortEl {
+    /// The switches, in `comfort_opts()` order.
+    pub fn on(mut self, v: Vec<bool>) -> Self {
+        self.on = v;
+        self
+    }
+    /// Light or dark chrome.
+    pub fn theme(mut self, t: &'static Theme) -> Self {
+        self.theme = t;
+        self
+    }
+    /// `comfort-<i>`.
+    pub fn on_act(mut self, a: Act) -> Self {
+        self.act = Some(a);
+        self
+    }
+}
+
+impl RenderOnce for DisplayComfortEl {
+    fn render(self, _: &mut Window, _: &mut App) -> impl IntoElement {
+        let p = th_pal(self.theme);
+        let mut on = self.on.clone();
+        on.resize(4, false);
+        let mut list = div().flex_1().flex().flex_col().child(
+            div()
+                .flex()
+                .justify_between()
+                .pb(px(6.))
+                .child(div().font_weight(FontWeight::SEMIBOLD).child("Comfort"))
+                .child(
+                    div()
+                        .text_size(px(12.))
+                        .text_color(p.mute)
+                        .child(comfort_said(&on)),
+                ),
+        );
+        for (i, (_, l, d)) in comfort_opts().into_iter().enumerate() {
+            let f = fire(&self.act, COMFORT_ID[i]);
+            list = list.child(
+                div()
+                    .id(SharedString::from(format!("oxdcf-{i}")))
+                    .flex()
+                    .justify_between()
+                    .items_center()
+                    .py(px(8.))
+                    .border_t_1()
+                    .border_color(p.line)
+                    .child(
+                        div()
+                            .flex()
+                            .flex_col()
+                            .child(l)
+                            .child(div().text_size(px(12.)).text_color(p.mute).child(d)),
+                    )
+                    .child(div().w(px(34.)).h(px(20.)).rounded(px(10.)).bg(if on[i] {
+                        p.fg
+                    } else {
+                        p.off
+                    }))
+                    .on_click(move |_, w, cx| f(w, cx)),
+            );
+        }
+        let bold = on[3];
+        card(self.theme, 600.)
+            .p(px(18.))
+            .flex()
+            .gap(px(16.))
+            .child(list)
+            .child(
+                div()
+                    .w(px(240.))
+                    .p(px(12.))
+                    .rounded(px(14.))
+                    .bg(p.inset)
+                    .border_1()
+                    .border_color(if on[0] { p.fg } else { p.line })
+                    .flex()
+                    .flex_col()
+                    .justify_end()
+                    .child(
+                        div()
+                            .p(px(12.))
+                            .rounded(px(12.))
+                            .bg(p.card)
+                            .child(
+                                div()
+                                    .font_weight(if bold {
+                                        FontWeight::EXTRA_BOLD
+                                    } else {
+                                        FontWeight::SEMIBOLD
+                                    })
+                                    .child("Deploy preview"),
+                            )
+                            .child(
+                                div()
+                                    .text_size(px(12.))
+                                    .text_color(if on[0] { p.fg } else { p.mute })
+                                    .child("Building the site, step 3 of 5."),
+                            ),
+                    ),
             )
     }
 }

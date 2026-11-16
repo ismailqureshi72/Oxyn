@@ -44,6 +44,7 @@ pub use navigation::{
     UserMenuEl,
 };
 pub use parity::AccentDensityEl;
+pub use parity::AppIconPickerEl;
 pub use parity::AttachmentChipsEl;
 pub use parity::BackgroundPickerEl;
 pub use parity::ContextBarEl;
@@ -52,6 +53,7 @@ pub use parity::ContextEffortMenuEl;
 pub use parity::ContextStackEl;
 pub use parity::ContextTideEl;
 pub use parity::DiffTimelineRunEl;
+pub use parity::DisplayComfortEl;
 pub use parity::DropLanesEl;
 pub use parity::EffortListEl;
 pub use parity::EffortPillEl;
@@ -62,6 +64,7 @@ pub use parity::GooeyAttachMenuEl;
 pub use parity::GooeyComposerEl;
 pub use parity::GooeyModelMenuEl;
 pub use parity::JudgeBracketEl;
+pub use parity::LightPlaygroundEl;
 pub use parity::LiquidDropsEl;
 pub use parity::LiquidTabsEl;
 pub use parity::MemoryPanelEl;

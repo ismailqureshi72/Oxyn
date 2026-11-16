@@ -4,8 +4,11 @@
 //! [`ThemeSplit`] (two themes over one sample window with a divider you drag) and
 //! [`AccentDensity`] (accent, spacing and corners on a settings sample), [`ThemeSchedule`] (light
 //! and dark by the clock on a 24-hour strip) and [`TypeScale`] (family, size and spacing on a
-//! reading sample). Models: `oxyn_core::parity::themefid`. Styles: `themefid.css` (`oxbgk-`,
-//! `oxtsg-`, `oxtpv-`, `oxadn-`, `oxtsc-`, `oxtys-`).
+//! reading sample), [`LightPlayground`] (drag a lamp; shadows and highlights follow), [`AppIconPicker`]
+//! (alternate icons we draw, in Colour, Dark or Tinted) and [`DisplayComfort`] (contrast, motion,
+//! transparency and bold text on a sample). Models: `oxyn_core::parity::themefid`. Styles:
+//! `themefid.css` (`oxbgk-`, `oxtsg-`, `oxtpv-`, `oxadn-`, `oxtsc-`, `oxtys-`, `oxtlp-`, `oxaip-`,
+//! `oxdcf-`).
 
 use dioxus::prelude::*;
 use oxyn_core::parity::effmenufid::menu_move;
@@ -13,6 +16,10 @@ use oxyn_core::parity::themefid::{
     SUN, TYPE_STEPS, Texture, ThemeSwatch, accents, backdrops, chars_per_line, corners, data_url,
     densities, fmt_hm, fmt_in, font_sizes, measure_word, next_switch, own_check, sched_light,
     sched_modes, split_clamp, swatch_for, swatches, texture_press, type_families, type_spacing,
+};
+use oxyn_core::parity::themefid::{
+    app_icons, comfort_opts, comfort_said, icon_colors, icon_styles, lamp_angle, lamp_clamp,
+    lamp_shadow,
 };
 
 use super::efflistfid::{check_glyph, chevron, focus, menu_key, use_uid};
@@ -994,6 +1001,318 @@ pub fn TypeScale(
                 p { class: "oxtys-p", {READ_TEXT} }
             }
             p { class: "oxtys-read", role: "status", "aria-live": "polite", "{read}" }
+        }
+    }
+}
+
+/// Theme Selector – Light playground (Oxyn original): drag the lamp over a small interface and its
+/// cards cast shadows away from it, softer the further they are, with a highlight on the side that
+/// faces the light. Strength sets how far shadows reach; Glow swaps shadows for a lit rim.
+#[component]
+pub fn LightPlayground(
+    /// Lamp position, % across.
+    #[props(default = 26.0)]
+    default_x: f64,
+    /// Lamp position, % down.
+    #[props(default = 18.0)]
+    default_y: f64,
+    /// Shadow strength, 0–100.
+    #[props(default = 60.0)]
+    default_strength: f64,
+    /// `shadow` or `glow`.
+    #[props(default = "shadow".to_string())]
+    default_mode: String,
+    /// The lamp moved: (x %, y %).
+    #[props(default)]
+    on_move: EventHandler<(f64, f64)>,
+) -> Element {
+    let mut lx = use_signal(move || lamp_clamp(default_x));
+    let mut ly = use_signal(move || lamp_clamp(default_y));
+    let mut k = use_signal(move || default_strength.clamp(0.0, 100.0));
+    let mut mode = use_signal(move || default_mode);
+    let mut held = use_signal(|| false);
+    let mut size = use_signal(|| (520.0f64, 240.0f64));
+    let mut stage = use_signal(|| None::<std::rc::Rc<MountedData>>);
+    let mut put = move |x: f64, y: f64| {
+        let (w, h) = *size.peek();
+        let nx = lamp_clamp(x / w.max(1.0) * 100.0);
+        let ny = lamp_clamp(y / h.max(1.0) * 100.0);
+        lx.set(nx);
+        ly.set(ny);
+        on_move.call((nx, ny));
+    };
+    let (x, y) = (lx(), ly());
+    let st = k();
+    let m = mode();
+    // Card centres in % of the stage: the sample card, the button and the chip.
+    let cards = [
+        ("card", 34.0, 58.0),
+        ("btn", 76.0, 40.0),
+        ("chip", 74.0, 78.0),
+    ];
+    let styles: Vec<String> = cards
+        .iter()
+        .map(|(_, cx, cy)| {
+            let (dx, dy, b) = lamp_shadow(x, y, *cx, *cy, st);
+            let a = lamp_angle(x, y, *cx, *cy);
+            format!(
+                "--dx:{dx:.1}px;--dy:{dy:.1}px;--bl:{b:.1}px;--ang:{a:.0}deg;--al:{:.2}",
+                0.12 + st / 100.0 * 0.3
+            )
+        })
+        .collect();
+    let (s0, s1, s2) = (styles[0].clone(), styles[1].clone(), styles[2].clone());
+    let lamp = format!("left:{x:.1}%;top:{y:.1}%");
+    let pool = format!("--lx:{x:.1}%;--ly:{y:.1}%");
+    let said = format!("Lamp at {x:.0}% across, {y:.0}% down");
+    let kv = format!("{st:.0}");
+    let glow = m == "glow";
+
+    rsx! {
+        div { class: "oxtlp", "data-mode": "{m}",
+            div { class: "oxtlp-head",
+                p { class: "oxtlp-h", "Light playground" }
+                div { class: "oxtsc-seg", role: "radiogroup", "aria-label": "Light",
+                    for (key, lab) in [("shadow", "Shadow"), ("glow", "Glow")] {
+                        {
+                            let on = m == key;
+                            rsx! {
+                                button { key: "{key}", class: "oxtsc-sb", r#type: "button", role: "radio", "aria-checked": "{on}",
+                                    onclick: move |_| mode.set(key.to_string()), "{lab}" }
+                            }
+                        }
+                    }
+                }
+            }
+            div { class: "oxtlp-stage", style: "{pool}", "data-held": "{held}",
+                onmounted: move |e: MountedEvent| async move {
+                    let d = e.data();
+                    if let Ok(rc) = d.get_client_rect().await { size.set((rc.size.width, rc.size.height)); }
+                    stage.set(Some(d));
+                },
+                div { class: "oxtlp-card", "data-glow": "{glow}", style: "{s0}",
+                    span { class: "oxtlp-ct", "Morning run" }
+                    span { class: "oxtlp-cm", "Four checks passed, one waits for you." }
+                    span { class: "oxtlp-cb" } span { class: "oxtlp-cb", "data-s": "true" }
+                }
+                span { class: "oxtlp-btn", "data-glow": "{glow}", style: "{s1}", "Review" }
+                span { class: "oxtlp-chip", "data-glow": "{glow}", style: "{s2}", "3 new" }
+                div { class: "oxtlp-hit",
+                    onpointerdown: move |e: PointerEvent| {
+                        held.set(true);
+                        let p = e.element_coordinates();
+                        put(p.x, p.y);
+                        if let Some(d) = stage.peek().clone() {
+                            spawn(async move { if let Ok(rc) = d.get_client_rect().await { size.set((rc.size.width, rc.size.height)); } });
+                        }
+                    },
+                    onpointermove: move |e: PointerEvent| { if *held.peek() { let p = e.element_coordinates(); put(p.x, p.y); } },
+                    onpointerup: move |_| held.set(false),
+                    onpointerleave: move |_| held.set(false),
+                }
+                button { class: "oxtlp-lamp", r#type: "button", style: "{lamp}", "aria-label": "Lamp. Arrow keys move it.",
+                    onkeydown: move |e: KeyboardEvent| {
+                        let (dx, dy) = match e.key() {
+                            Key::ArrowLeft => (-4.0, 0.0),
+                            Key::ArrowRight => (4.0, 0.0),
+                            Key::ArrowUp => (0.0, -4.0),
+                            Key::ArrowDown => (0.0, 4.0),
+                            _ => return,
+                        };
+                        e.prevent_default();
+                        let (nx, ny) = (lamp_clamp(lx() + dx), lamp_clamp(ly() + dy));
+                        lx.set(nx);
+                        ly.set(ny);
+                        on_move.call((nx, ny));
+                    },
+                    {sun_glyph(false)}
+                }
+            }
+            label { class: "oxtlp-row",
+                span { "Strength" }
+                input { class: "oxtsc-sl", r#type: "range", min: "0", max: "100", step: "5", value: "{kv}",
+                    oninput: move |e: FormEvent| { if let Ok(v) = e.value().parse::<f64>() { k.set(v.clamp(0.0, 100.0)); } }
+                }
+                span { class: "oxtsc-rv", "{kv}" }
+            }
+            p { class: "oxtlp-said", role: "status", "aria-live": "polite", "{said}" }
+        }
+    }
+}
+
+/// One of our icons: a rounded square ground with a ring-and-dot mark.
+fn icon_art(from: &str, to: &str, mark: &str, gid: &str) -> Element {
+    let gu = format!("url(#{gid})");
+    rsx! {
+        svg { class: "oxaip-svg", view_box: "0 0 64 64", "aria-hidden": "true",
+            defs { linearGradient { id: "{gid}", x1: "0", y1: "0", x2: "1", y2: "1",
+                stop { offset: "0", stop_color: "{from}" } stop { offset: "1", stop_color: "{to}" } } }
+            rect { width: "64", height: "64", rx: "15", fill: "{gu}" }
+            circle { cx: "32", cy: "32", r: "13", fill: "none", stroke: "{mark}", stroke_width: "4.5" }
+            circle { cx: "43", cy: "21", r: "4.2", fill: "{mark}" }
+        }
+    }
+}
+
+fn other_app(i: usize) -> Element {
+    let d = match i {
+        0 => "M7 7h10v10H7z",
+        1 => "M5 12h14M12 5v14",
+        _ => "M6 16l4-8 4 6 2-3 2 5",
+    };
+    rsx! {
+        svg { class: "oxaip-svg", view_box: "0 0 24 24", "aria-hidden": "true",
+            rect { width: "24", height: "24", rx: "5.6", class: "oxaip-og" }
+            path { d: "{d}", fill: "none", class: "oxaip-om", stroke_width: "1.8", stroke_linecap: "round", stroke_linejoin: "round" }
+        }
+    }
+}
+
+/// Theme Selector – App icon (Oxyn original): six alternate icons we draw (a ring-and-dot mark on
+/// different grounds) and three styles – Colour, Dark (the icon's colours on near-black) and Tinted
+/// (one hue from a slider). The home row below shows the pick among other apps.
+#[component]
+pub fn AppIconPicker(
+    /// Starting icon key.
+    #[props(default = "classic".to_string())]
+    default_icon: String,
+    /// Starting style (`color`, `dark`, `tinted`).
+    #[props(default = "color".to_string())]
+    default_style: String,
+    /// Starting tint hue (0–359) for Tinted.
+    #[props(default = 210)]
+    default_tint: u32,
+    /// The icon or style changed: (icon, style).
+    #[props(default)]
+    on_change: EventHandler<(String, String)>,
+) -> Element {
+    let mut pick = use_signal(move || default_icon);
+    let mut style = use_signal(move || default_style);
+    let mut tint = use_signal(move || default_tint % 360);
+    let uid = use_uid("oxaip");
+    let icons = app_icons();
+    let cur = pick();
+    let stl = style();
+    let tv = tint();
+    let chosen = icons
+        .iter()
+        .find(|i| i.key == cur)
+        .cloned()
+        .unwrap_or_else(|| icons[0].clone());
+    let (cf, ct, cm) = icon_colors(&chosen, &stl, tv);
+    let tinted = stl == "tinted";
+    let tint_off = !tinted;
+    let tvs = format!("{tv}");
+    let hue = format!("--hue:{tv}");
+    let label = chosen.label;
+    let gid_home = format!("{uid}-home");
+
+    rsx! {
+        div { class: "oxaip", "data-icon": "{cur}", "data-style": "{stl}",
+            div { class: "oxaip-head",
+                p { class: "oxaip-h", "App icon" }
+                div { class: "oxtsc-seg", role: "radiogroup", "aria-label": "Icon style",
+                    for (k, l) in icon_styles() {
+                        {
+                            let on = stl == k;
+                            rsx! {
+                                button { key: "{k}", class: "oxtsc-sb", r#type: "button", role: "radio", "aria-checked": "{on}",
+                                    onclick: move |_| { style.set(k.to_string()); on_change.call((pick.peek().clone(), k.to_string())); }, "{l}" }
+                            }
+                        }
+                    }
+                }
+            }
+            div { class: "oxaip-grid", role: "radiogroup", "aria-label": "App icon",
+                for ic in icons.iter() {
+                    {
+                        let (f, t, mk) = icon_colors(ic, &stl, tv);
+                        let k = ic.key;
+                        let l = ic.label;
+                        let on = cur == k;
+                        let gid = format!("{uid}-{k}");
+                        rsx! {
+                            button { key: "{k}", class: "oxaip-tile", r#type: "button", role: "radio", "aria-checked": "{on}",
+                                onclick: move |_| { pick.set(k.to_string()); on_change.call((k.to_string(), style.peek().clone())); },
+                                span { class: "oxaip-ic", {icon_art(&f, &t, &mk, &gid)} }
+                                span { class: "oxaip-l", "{l}" }
+                            }
+                        }
+                    }
+                }
+            }
+            label { class: "oxaip-tint", "data-off": "{tint_off}", style: "{hue}",
+                span { "Tint" }
+                input { class: "oxaip-hue", r#type: "range", min: "0", max: "359", step: "1", value: "{tvs}", disabled: !tinted,
+                    "aria-label": "Tint hue",
+                    oninput: move |e: FormEvent| { if let Ok(v) = e.value().parse::<u32>() { tint.set(v % 360); } }
+                }
+            }
+            div { class: "oxaip-home", "data-style": "{stl}", role: "img", "aria-label": "Home row with the {label} icon",
+                for i in 0..3usize {
+                    span { key: "{i}", class: "oxaip-app", span { class: "oxaip-ic", {other_app(i)} } span { class: "oxaip-al", "App" } }
+                }
+                span { class: "oxaip-app", "data-me": "true",
+                    span { class: "oxaip-ic", {icon_art(&cf, &ct, &cm, &gid_home)} }
+                    span { class: "oxaip-al", "Oxyn" }
+                }
+            }
+        }
+    }
+}
+
+/// Theme Selector – Display comfort (Oxyn original): Increase contrast, Reduce motion, Reduce
+/// transparency and Bold text as switches beside a sample that takes each at once – firmer edges,
+/// a loop that stops, glass that turns solid, heavier type.
+#[component]
+pub fn DisplayComfort(
+    /// Starting switches, in `comfort_opts()` order.
+    #[props(default = vec![false, false, false, false])]
+    default_on: Vec<bool>,
+    /// A switch changed: (key, on).
+    #[props(default)]
+    on_change: EventHandler<(String, bool)>,
+) -> Element {
+    let opts = comfort_opts();
+    let n = opts.len();
+    let mut on = use_signal(move || {
+        let mut v = default_on;
+        v.resize(n, false);
+        v
+    });
+    let cur = on();
+    let said = comfort_said(&cur);
+    let (f0, f1, f2, f3) = (cur[0], cur[1], cur[2], cur[3]);
+
+    rsx! {
+        div { class: "oxdcf",
+            div { class: "oxdcf-list",
+                div { class: "oxdcf-top", p { class: "oxdcf-h", "Comfort" } span { class: "oxdcf-n", "{said}" } }
+                for (i, (k, l, d)) in opts.iter().copied().enumerate() {
+                    {
+                        let v = cur[i];
+                        rsx! {
+                            div { key: "{k}", class: "oxdcf-row",
+                                span { class: "oxdcf-rt", span { class: "oxdcf-rn", "{l}" } span { class: "oxdcf-rd", "{d}" } }
+                                button { class: "oxadn-tg oxdcf-tg", r#type: "button", role: "switch", "aria-checked": "{v}", "aria-label": "{l}",
+                                    onclick: move |_| { let mut x = on(); x[i] = !x[i]; let nv = x[i]; on.set(x); on_change.call((k.to_string(), nv)); },
+                                    span { class: "oxadn-kn" }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            div { class: "oxdcf-pv", "data-contrast": "{f0}", "data-still": "{f1}", "data-solid": "{f2}", "data-bold": "{f3}",
+                role: "img", "aria-label": "Sample: {said}",
+                div { class: "oxdcf-bg", span {} span {} }
+                div { class: "oxdcf-glass",
+                    span { class: "oxdcf-gt", "Deploy preview" }
+                    span { class: "oxdcf-gm", "Building the site, step 3 of 5." }
+                    span { class: "oxdcf-bar", span { class: "oxdcf-fill" } }
+                    span { class: "oxdcf-row2", span { class: "oxdcf-spin" } span { class: "oxdcf-gm", "Uploading assets" } }
+                }
+            }
         }
     }
 }

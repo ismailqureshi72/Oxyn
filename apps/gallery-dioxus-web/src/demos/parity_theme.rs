@@ -1,11 +1,12 @@
 //! Theme Selector family (variants 3) demos: how the app looks – background pictures and texture,
 //! a theme grid with font size, two themes split over one window, accent with density, light and
-//! dark by the clock, and a type scale.
+//! dark by the clock, a type scale, a light playground, app icons and display comfort.
 
 use dioxus::prelude::*;
 use oxyn_core::ClockMs;
 use oxyn_dioxus::{
-    AccentDensity, BackgroundPicker, ThemeGrid, ThemeSchedule, ThemeSplit, TypeScale,
+    AccentDensity, AppIconPicker, BackgroundPicker, DisplayComfort, LightPlayground, ThemeGrid,
+    ThemeSchedule, ThemeSplit, TypeScale,
 };
 
 use super::{Code, mk, rng, sel, tog, var};
@@ -608,6 +609,242 @@ fn type_scale_demo() -> Demo {
     }
 }
 
+// ---------- Light playground ----------
+
+fn light_playground(v: &Vals, _now: ClockMs) -> Element {
+    let mut msg = use_signal(String::new);
+    let key = format!("{}{}{}{}", v.s("x"), v.s("y"), v.s("strength"), v.s("mode"));
+    rsx! {
+        div { key: "{key}", "data-k": "{key}", style: "width:560px;max-width:100%;display:flex;flex-direction:column;gap:10px",
+            LightPlayground { default_x: v.f("x"), default_y: v.f("y"), default_strength: v.f("strength"), default_mode: low(v.s("mode")),
+                on_move: move |(x, y): (f64, f64)| msg.set(format!("onMove({x:.0}%, {y:.0}%)")) }
+            {status(msg)}
+        }
+    }
+}
+
+fn light_playground_code(v: &Vals) -> String {
+    Code::new("LightPlayground")
+        .s("default_mode", &low(v.s("mode")), "shadow")
+        .raw("on_move", "move |(x, y)| lamp_moved(x, y)")
+        .done()
+}
+
+fn light_playground_demo() -> Demo {
+    Demo {
+        controls: vec![
+            rng("x", "Lamp across %", 4.0, 96.0, 1.0, "26"),
+            rng("y", "Lamp down %", 4.0, 96.0, 1.0, "18"),
+            rng("strength", "Strength", 0.0, 100.0, 5.0, "60"),
+            sel("mode", "Light", &["Shadow", "Glow"], "Shadow"),
+        ],
+        variants: vec![
+            var(
+                "default",
+                "Lamp top left: shadows fall down and to the right.",
+                &[],
+            ),
+            var(
+                "low sun",
+                "Lamp low on the right with full strength: long, soft shadows to the left.",
+                &[("x", "92"), ("y", "70"), ("strength", "100")],
+            ),
+            var(
+                "glow",
+                "Glow: each card gets a lit rim on the side facing the lamp instead of a shadow.",
+                &[("mode", "Glow"), ("x", "60"), ("y", "12")],
+            ),
+        ],
+        render: light_playground,
+        code: light_playground_code,
+        keyboard: vec![
+            ("Tab", "Shadow / Glow, the lamp, Strength"),
+            ("Arrow keys on the lamp", "Move it 4 % at a time"),
+        ],
+        a11y: vec![
+            "The lamp is a button that moves with the arrow keys; its position is said in a polite note.",
+            "Dragging works anywhere on the stage; the cards are decoration and not focusable.",
+        ],
+        responsive: vec![
+            "560 px card; the stage keeps its shape and the sample card widens under 480 px.",
+        ],
+        height: 420,
+        live: false,
+        align: Align::Center,
+        ..mk(
+            "light-playground",
+            "Light playground",
+            CAT,
+            "Oxyn original: drag a lamp over a small interface and its cards cast shadows away from it, or glow on the side that faces it.",
+            "LightPlayground",
+            "LightPlaygroundEl",
+            "light-playground",
+            "parity/themefid.rs",
+        )
+    }
+}
+
+// ---------- App icon ----------
+
+fn app_icon(v: &Vals, _now: ClockMs) -> Element {
+    let mut msg = use_signal(String::new);
+    let key = format!("{}{}{}", v.s("icon"), v.s("style"), v.s("tint"));
+    let style = match v.s("style") {
+        "Dark" => "dark",
+        "Tinted" => "tinted",
+        _ => "color",
+    };
+    rsx! {
+        div { key: "{key}", "data-k": "{key}", style: "width:560px;max-width:100%;display:flex;flex-direction:column;gap:10px",
+            AppIconPicker { default_icon: low(v.s("icon")), default_style: style.to_string(), default_tint: v.u("tint") as u32,
+                on_change: move |(i, st): (String, String)| msg.set(format!("onChange({i}, {st})")) }
+            {status(msg)}
+        }
+    }
+}
+
+fn app_icon_code(v: &Vals) -> String {
+    Code::new("AppIconPicker")
+        .s("default_icon", &low(v.s("icon")), "classic")
+        .raw("on_change", "move |(icon, style)| set_icon(icon, style)")
+        .done()
+}
+
+fn app_icon_demo() -> Demo {
+    Demo {
+        controls: vec![
+            sel(
+                "icon",
+                "Icon",
+                &["Classic", "Paper", "Daybreak", "Ocean", "Mint", "Nebula"],
+                "Classic",
+            ),
+            sel("style", "Style", &["Colour", "Dark", "Tinted"], "Colour"),
+            rng("tint", "Tint hue", 0.0, 359.0, 1.0, "210"),
+        ],
+        variants: vec![
+            var("default", "Classic in colour among other apps.", &[]),
+            var(
+                "ocean dark",
+                "Ocean in the Dark style: its colours on a near-black ground.",
+                &[("icon", "Ocean"), ("style", "Dark")],
+            ),
+            var(
+                "tinted",
+                "Every icon drawn in one hue from the slider.",
+                &[("icon", "Daybreak"), ("style", "Tinted"), ("tint", "150")],
+            ),
+        ],
+        render: app_icon,
+        code: app_icon_code,
+        keyboard: vec![
+            ("Tab", "Style, each icon, the tint slider"),
+            ("Enter / Space", "Picks"),
+            ("Left / Right on Tint", "Turns the hue"),
+        ],
+        a11y: vec![
+            "Icons and styles are radio groups named in words; the tint slider is disabled unless Tinted is picked.",
+            "The home row is an image labelled with the icon it shows.",
+        ],
+        responsive: vec!["560 px card; icons drop to three columns under 480 px."],
+        height: 420,
+        live: false,
+        align: Align::Center,
+        ..mk(
+            "app-icon-picker",
+            "App icon",
+            CAT,
+            "Oxyn original: six alternate icons we draw, in Colour, Dark or one Tinted hue, shown in a home row among other apps.",
+            "AppIconPicker",
+            "AppIconPickerEl",
+            "app-icon-picker",
+            "parity/themefid.rs",
+        )
+    }
+}
+
+// ---------- Display comfort ----------
+
+fn display_comfort(v: &Vals, _now: ClockMs) -> Element {
+    let mut msg = use_signal(String::new);
+    let key = format!(
+        "{}{}{}{}",
+        v.s("contrast"),
+        v.s("motion"),
+        v.s("solid"),
+        v.s("bold")
+    );
+    let on = vec![v.b("contrast"), v.b("motion"), v.b("solid"), v.b("bold")];
+    rsx! {
+        div { key: "{key}", "data-k": "{key}", style: "width:600px;max-width:100%;display:flex;flex-direction:column;gap:10px",
+            DisplayComfort { default_on: on,
+                on_change: move |(k, b): (String, bool)| msg.set(format!("onChange({k}, {b})")) }
+            {status(msg)}
+        }
+    }
+}
+
+fn display_comfort_code(_: &Vals) -> String {
+    Code::new("DisplayComfort")
+        .raw("default_on", "saved_comfort()")
+        .raw("on_change", "move |(key, on)| save(key, on)")
+        .done()
+}
+
+fn display_comfort_demo() -> Demo {
+    Demo {
+        controls: vec![
+            tog("contrast", "Increase contrast", false),
+            tog("motion", "Reduce motion", false),
+            tog("solid", "Reduce transparency", false),
+            tog("bold", "Bold text", false),
+        ],
+        variants: vec![
+            var(
+                "default",
+                "Everything off: glass over colour, a moving bar and spinner.",
+                &[],
+            ),
+            var(
+                "calm",
+                "Reduce motion and transparency: the loops stop and the glass turns solid.",
+                &[("motion", "true"), ("solid", "true")],
+            ),
+            var(
+                "all on",
+                "All four: firm edges, still, solid and bold.",
+                &[
+                    ("contrast", "true"),
+                    ("motion", "true"),
+                    ("solid", "true"),
+                    ("bold", "true"),
+                ],
+            ),
+        ],
+        render: display_comfort,
+        code: display_comfort_code,
+        keyboard: vec![("Tab", "Each switch"), ("Enter / Space", "Flips it")],
+        a11y: vec![
+            "Switches use role=switch with aria-checked and are named by their label.",
+            "The sample is an image labelled with how many switches are on.",
+        ],
+        responsive: vec!["600 px card; the sample moves under the switches under 560 px."],
+        height: 360,
+        live: false,
+        align: Align::Center,
+        ..mk(
+            "display-comfort",
+            "Display comfort",
+            CAT,
+            "Oxyn original: Increase contrast, Reduce motion, Reduce transparency and Bold text beside a sample that takes each at once.",
+            "DisplayComfort",
+            "DisplayComfortEl",
+            "display-comfort",
+            "parity/themefid.rs",
+        )
+    }
+}
+
 /// Every Theme Selector (variants 3) demo, in sidebar order.
 pub(crate) fn demos() -> Vec<Demo> {
     vec![
@@ -617,5 +854,8 @@ pub(crate) fn demos() -> Vec<Demo> {
         accent_density_demo(),
         theme_schedule_demo(),
         type_scale_demo(),
+        light_playground_demo(),
+        app_icon_demo(),
+        display_comfort_demo(),
     ]
 }

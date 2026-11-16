@@ -185,7 +185,7 @@ pub const CATEGORIES: [Category; 26] = [
     Category {
         slug: "theme-selector",
         name: "Theme Selector",
-        blurb: "Background pictures and texture, theme swatches with font size, a split compare and accent with density.",
+        blurb: "Backgrounds and texture, theme swatches and font size, plus a split compare, accent and density, a schedule, type, light, icons and comfort.",
     },
 ];
 
