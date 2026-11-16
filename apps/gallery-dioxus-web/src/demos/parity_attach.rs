@@ -143,12 +143,12 @@ fn attachment_chips_demo() -> Demo {
         variants: vec![
             var(
                 "default",
-                "Six files: rings fill as they upload, the slides fail with Retry, the film is too big; the last one folds into +1.",
+                "Six files: the slides fail with Retry, the film is too big, the rest show rings as they upload; the sheet and the doc fold into +2.",
                 &[],
             ),
             var(
                 "compact",
-                "Three chips before +N, slow uploads.",
+                "Three chips before +N, slow uploads: the report and the failing slides stay in view, +4 holds the rest.",
                 &[("max", "3"), ("speed", "0.5")],
             ),
             var(

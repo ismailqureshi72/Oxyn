@@ -252,10 +252,10 @@ pub fn AttachmentChips(
         let d = demo_files();
         vec![
             d[0].clone(),
+            d[5].clone(),
+            d[4].clone(),
             d[1].clone(),
             d[2].clone(),
-            d[4].clone(),
-            d[5].clone(),
             d[3].clone(),
         ]
     });
