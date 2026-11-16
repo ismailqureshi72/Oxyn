@@ -60,7 +60,7 @@ pub use parity::{
 pub use parity::{
     AgentCrewEl, AgentCursorsEl, AgentFindingsEl, AgentGraphEl, AgentHandoffEl, AgentInboxEl,
     AgentLanesEl, AgentLedgerEl, AgentMonitorEl, AgentQueueEl, AgentRecapEl, AgentSequenceEl,
-    AutonomyDialEl, AwaySummaryEl, CollabStreamEl, ContextMapEl, CostWaterfallEl,
+    AutonomyDialEl, AwaySummaryEl, CollabStreamEl, ContextMapEl, CostWaterfallEl, DecisionTreeEl,
 };
 pub use parity::{
     AiComposerEl, AvatarUploadEl, ChatComposerEl, ContextFieldEl, ContextGridEl, ElasticSliderEl,

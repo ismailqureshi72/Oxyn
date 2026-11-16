@@ -45,7 +45,7 @@ affectUI,Data Table,https://www.affectui.com/components/data-table,Components ·
 affectUI,Date Range Picker,https://www.affectui.com/components/date-range-picker,Components · Inputs,Pro,date-range-picker,C2,#25,built
 affectUI,Decision Card,https://www.affectui.com/components/decision-card,Components · Agents,Pro,decision-card,,#25,built
 affectUI,Decision Inbox,https://www.affectui.com/components/decision-inbox,Components · Feedback,Free,approvals,C5,#33,planned
-affectUI,Decision Tree,https://www.affectui.com/components/decision-tree,Components · Agents,Pro,plan-approval,C5,#33,planned
+affectUI,Decision Tree,https://www.affectui.com/components/decision-tree,Components · Agents,Pro,"decision-tree (exact, family B part 8), plan-approval",C5,#32,built
 affectUI,Delegate Board,https://www.affectui.com/components/delegate-board,Components · Agents,Pro,background-jobs,C6,#34,planned
 affectUI,Dialog,https://www.affectui.com/components/dialog,Components · Feedback,Free,dialog,C3,#26,built
 affectUI,Diff Timeline,https://www.affectui.com/components/diff-timeline,Components · Agents,Pro,"diff-viewer, run-replay",C7,#34,planned

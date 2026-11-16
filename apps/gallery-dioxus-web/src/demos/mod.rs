@@ -20,6 +20,7 @@ mod navigation;
 mod overlays;
 mod parity_agents;
 mod parity_agents2;
+mod parity_agents3;
 mod parity_answers;
 mod parity_approvals;
 mod parity_diff;
@@ -159,6 +160,7 @@ pub fn catalog() -> Vec<Demo> {
     v.extend(parity_answers::demos());
     v.extend(parity_agents::demos());
     v.extend(parity_agents2::demos());
+    v.extend(parity_agents3::demos());
     v.extend(composer::demos());
     v.extend(composer_parts::demos());
     v.extend(shells::demos());
