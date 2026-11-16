@@ -11,9 +11,10 @@
 //! `oxcrn-` run). Every person, workspace and line of copy is fictional and our own.
 
 use dioxus::prelude::*;
+use oxyn_core::ClockMs;
 use oxyn_core::parity::screensfid::{
-    PERSON, PERSON_INI, ScreenState, ShellLayout, Thread, WORKSPACE, ago, can_send, open_thread,
-    pct_done, projects, setup_steps, split_pinned, threads, toggle_pin,
+    PERSON, PERSON_INI, ScreenState, ShellLayout, Thread, WORKSPACE, ago, can_send, chat_title,
+    open_thread, pct_done, projects, setup_steps, split_pinned, threads, toggle_pin,
 };
 
 use super::efflistfid::{check_glyph, chevron};
@@ -641,6 +642,43 @@ pub(crate) fn use_threads(st: ScreenState) -> Signal<Vec<Thread>> {
     })
 }
 
+/// A message in a screen's conversation.
+#[derive(Clone, PartialEq)]
+pub(crate) struct Msg {
+    pub me: bool,
+    pub text: String,
+    pub at: u64,
+}
+
+/// The reply a screen gives a message (canned, our own words).
+pub(crate) fn reply_for(text: &str) -> String {
+    let t = chat_title(text);
+    format!(
+        "On it. I'll start with “{t}”, show you the plan first and ask before anything goes out."
+    )
+}
+
+/// Adds a new thread for a first message and opens it.
+pub(crate) fn start_thread(mut thr: Signal<Vec<Thread>>, mut active: Signal<u32>, text: &str) {
+    let id = thr.peek().iter().map(|t| t.id).max().unwrap_or(0) + 1;
+    thr.write().insert(
+        0,
+        Thread {
+            id,
+            title: chat_title(text),
+            pinned: false,
+            unread: false,
+            mins: 0,
+        },
+    );
+    active.set(id);
+}
+
+/// Milliseconds between two clock readings.
+pub(crate) fn since(now: ClockMs, then: u64) -> u64 {
+    now.0.saturating_sub(then)
+}
+
 // ───────────────────────────────────────────────────────────── App frame demos ──
 
 fn page_placeholder(st: ScreenState) -> Element {
@@ -903,6 +941,439 @@ pub fn RailShellScreen(
     rsx! {
         RailFrame { layout, state: state.clone(), height, threads: thr, active, work_label: "Workspace", work: rsx! { Workspace { state: s2 } },
             {page_placeholder(st)}
+        }
+    }
+}
+
+// ───────────────────────────────────────────────────────────── AI Chat screens ──
+
+/// A conversation log with a pending reply (thinking until `reply_ms` after the last message).
+fn convo(msgs: &[Msg], now: ClockMs, reply_ms: u64) -> Element {
+    let pending = msgs
+        .last()
+        .map(|m| m.me && since(now, m.at) < reply_ms)
+        .unwrap_or(false);
+    rsx! {
+        div { class: "oxscn-log", role: "log", "aria-live": "polite",
+            for (i, m) in msgs.iter().enumerate() {
+                if m.me {
+                    div { key: "{i}", class: "oxscn-msg", "data-me": "true", p { "{m.text}" } }
+                } else if since(now, m.at) < reply_ms {
+                    div { key: "{i}", class: "oxscn-msg oxscn-hide" }
+                } else {
+                    div { key: "{i}", class: "oxscn-msg", "data-me": "false", span { class: "oxscn-mono oxscn-mono-s", "K" } p { "{m.text}" } }
+                }
+            }
+            if pending { div { class: "oxscn-thinking", role: "status", span { class: "oxscn-pulse" } "Thinking…" } }
+        }
+    }
+}
+
+/// Sends a message: appends it and a reply that shows `reply_ms` later.
+fn push_pair(mut msgs: Signal<Vec<Msg>>, now: ClockMs, text: String) {
+    let r = reply_for(&text);
+    msgs.write().push(Msg {
+        me: true,
+        text,
+        at: now.0,
+    });
+    msgs.write().push(Msg {
+        me: false,
+        text: r,
+        at: now.0,
+    });
+}
+
+fn apps_menu() -> Vec<MenuItem> {
+    vec![
+        ("notion", "Notion", "notion"),
+        ("linear", "Linear", "linear"),
+        ("gmail", "Gmail", "gmail"),
+        ("slack", "Slack", "slack"),
+        ("github", "GitHub", "github"),
+        ("drive", "Google Drive", "googledrive"),
+    ]
+}
+
+/// Screen – AI Chat / Start: a greeting, the composer with Add, approval, model and voice, a
+/// folder and apps to work with, and starter suggestions that fill the composer. Sending opens a
+/// new chat in the sidebar and the conversation takes over the page.
+#[component]
+pub fn ChatStartScreen(
+    /// `inset` or `flat`.
+    #[props(default = "inset".to_string())]
+    layout: String,
+    /// `sample`, `loading` or `empty`.
+    #[props(default = "sample".to_string())]
+    state: String,
+    /// Height px.
+    #[props(default = 640)]
+    height: u32,
+    /// Hour of day for the greeting (0–23).
+    #[props(default = 19)]
+    hour: u32,
+    /// The clock.
+    now: ClockMs,
+) -> Element {
+    let st = ScreenState::from_key(&state);
+    let thr = use_threads(st);
+    let mut active = use_signal(|| 0u32);
+    let mut text = use_signal(String::new);
+    let mut msgs = use_signal(Vec::<Msg>::new);
+    let mut folder = use_signal(String::new);
+    let mut apps = use_signal(move || {
+        if st == ScreenState::Sample {
+            vec!["notion".to_string(), "slack".to_string()]
+        } else {
+            vec![]
+        }
+    });
+    let hi = format!(
+        "{}, Rowan. What's next?",
+        oxyn_core::parity::screensfid::greeting(hour)
+    );
+    let started = !msgs().is_empty();
+    let folder_l = if folder().is_empty() {
+        "Work in a folder".to_string()
+    } else {
+        projects()
+            .into_iter()
+            .find(|p| p.key == folder())
+            .map(|p| p.label.to_string())
+            .unwrap_or_default()
+    };
+    let mut fitems: Vec<MenuItem> = vec![];
+    fitems.extend(projects().into_iter().map(|p| (p.key, p.label, "")));
+    let conn = apps();
+    let conn_n = conn.len();
+    let apps_l = if conn_n == 0 {
+        "Connect apps".to_string()
+    } else {
+        format!("{conn_n} apps on")
+    };
+    let send = move |t: String| {
+        if msgs.peek().is_empty() {
+            start_thread(thr, active, &t);
+        }
+        push_pair(msgs, now, t);
+    };
+    let title = if started {
+        thr()
+            .iter()
+            .find(|t| t.id == active())
+            .map(|t| t.title.clone())
+            .unwrap_or_default()
+    } else {
+        String::new()
+    };
+    rsx! {
+        AppFrame { layout, state: state.clone(), height, threads: thr, active, title,
+            on_nav: move |k: String| if k == "new" { msgs.set(vec![]); active.set(0); },
+            if started {
+                div { class: "oxcst-chat",
+                    {convo(&msgs(), now, 1200)}
+                    ScreenComposer { text, on_send: send }
+                }
+            } else {
+                div { class: "oxcst",
+                    h1 { class: "oxcst-hi", "{hi}" }
+                    ScreenComposer { text, on_send: send }
+                    div { class: "oxcst-ctx",
+                        MenuButton { label: folder_l, aria: "Work in a folder", icon: "folder", items: fitems, checked: folder(), on_pick: move |k| folder.set(k) }
+                        MenuButton { label: apps_l, aria: "Connect apps", icon: "apps", items: apps_menu(), checked: "",
+                            on_pick: move |k: String| { let mut a = apps.write(); if let Some(i) = a.iter().position(|x| *x == k) { a.remove(i); } else { a.push(k); } } }
+                        for k in conn.iter() {
+                            { let b = if k == "drive" { "googledrive".to_string() } else { k.clone() }; rsx! { span { key: "{k}", class: "oxcst-app", title: "{k}", BrandIcon { name: b, size: 14.0, coloured: true } } } }
+                        }
+                    }
+                    if st == ScreenState::Loading {
+                        div { class: "oxcst-starters", "aria-busy": "true", for i in 0..7 { span { key: "{i}", class: "oxcst-st oxscn-shim" } } }
+                    } else {
+                        div { class: "oxcst-starters",
+                            for (k, l, p) in oxyn_core::parity::screensfid::starters() {
+                                button { key: "{k}", r#type: "button", class: "oxcst-st", onclick: move |_| text.set(p.to_string()), "{l}" }
+                            }
+                        }
+                        if st == ScreenState::Empty { p { class: "oxscn-hint oxcst-note", "Your first chat will show up in the sidebar." } }
+                    }
+                }
+            }
+        }
+    }
+}
+
+/// Screen – AI Chat / Overview: the composer with the numbers under it – activity per day (a heat
+/// map you step through with the arrow keys), recent chats, credits used, files made for you and
+/// this month against last.
+#[component]
+pub fn ChatOverviewScreen(
+    /// `inset` or `flat`.
+    #[props(default = "inset".to_string())]
+    layout: String,
+    /// `sample`, `loading` or `empty`.
+    #[props(default = "sample".to_string())]
+    state: String,
+    /// Height px.
+    #[props(default = 640)]
+    height: u32,
+    /// The clock.
+    now: ClockMs,
+) -> Element {
+    use oxyn_core::parity::screensfid::{delta, heat, heat_total, thousands, used_pct};
+    let st = ScreenState::from_key(&state);
+    let thr = use_threads(st);
+    let active = use_signal(|| 0u32);
+    let text = use_signal(String::new);
+    let msgs = use_signal(Vec::<Msg>::new);
+    let mut cell = use_signal(|| 139usize);
+    let mut more_chats = use_signal(|| false);
+    let mut more_files = use_signal(|| false);
+    const WEEKS: usize = 20;
+    let levels = if st == ScreenState::Sample {
+        heat(WEEKS)
+    } else {
+        vec![0; WEEKS * 7]
+    };
+    let total = heat_total(&levels);
+    let c = cell();
+    const DAYS: [&str; 7] = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+    let lv = levels.get(c).copied().unwrap_or(0);
+    let cell_said = format!(
+        "Week {} of {WEEKS}, {}: {} chats",
+        c / 7 + 1,
+        DAYS[c % 7],
+        lv as u32 * 3
+    );
+    let used = if st == ScreenState::Sample { 1284 } else { 0 };
+    let pct = used_pct(used, 2000);
+    let used_s = thousands(used);
+    let bar = format!("width:{pct}%");
+    let recent: Vec<(String, String)> = thr()
+        .iter()
+        .map(|t| (t.title.clone(), ago(t.mins)))
+        .collect();
+    let nshow = if more_chats() {
+        recent.len()
+    } else {
+        3.min(recent.len())
+    };
+    let more_n = recent.len().saturating_sub(3);
+    let files = [
+        ("member-letter.md", "Autumn launch", "2h"),
+        ("fabric-compare.csv", "Field research", "1d"),
+        ("logo-grid.md", "Brand kit", "3d"),
+        ("hiring-plan.md", "Hiring loop", "5d"),
+    ];
+    let fshow = if more_files() { 4 } else { 3 };
+    let loading = st == ScreenState::Loading;
+    let blank = st == ScreenState::Empty;
+    let send = move |t: String| push_pair(msgs, now, t);
+    let started = !msgs().is_empty();
+    let d1 = delta(12);
+    let d2 = delta(-3);
+    rsx! {
+        AppFrame { layout, state: state.clone(), height, threads: thr, active, title: "Overview",
+            div { class: "oxcov",
+                p { class: "oxcov-mark", {ico("spark")} "Kestrel" }
+                ScreenComposer { text, on_send: send }
+                if started { {convo(&msgs(), now, 1200)} }
+                div { class: "oxcov-grid",
+                    section { class: "oxcov-card oxcov-act", "aria-label": "Activity",
+                        div { class: "oxcov-h", h3 { "Activity" } span { class: "oxscn-row-a", if loading { "…" } else { "{total} chats · 20 weeks" } } }
+                        if loading { {skel(3)} } else {
+                            div { class: "oxcov-heat", role: "grid", tabindex: "0", "aria-label": "Chats per day, arrow keys move",
+                                onkeydown: move |e: KeyboardEvent| {
+                                    let d: i64 = match e.key() { Key::ArrowUp => -1, Key::ArrowDown => 1, Key::ArrowLeft => -7, Key::ArrowRight => 7, _ => 0 };
+                                    if d != 0 { e.prevent_default(); let n = (cell() as i64 + d).clamp(0, (WEEKS * 7 - 1) as i64); cell.set(n as usize); }
+                                },
+                                for (i, l) in levels.iter().enumerate() {
+                                    span { key: "{i}", class: "oxcov-c", "data-l": "{l}", "data-on": "{i == c}", onclick: move |_| cell.set(i) }
+                                }
+                            }
+                            p { class: "oxcov-said", role: "status", if blank { "Nothing yet – your first chat lights up today's square." } else { "{cell_said}" } }
+                        }
+                    }
+                    section { class: "oxcov-card", "aria-label": "Recent chats",
+                        div { class: "oxcov-h", h3 { "Recent chats" } }
+                        if loading { {skel(3)} } else if recent.is_empty() { p { class: "oxscn-hint", "No chats yet." } } else {
+                            for (i, (t, a)) in recent.iter().take(nshow).enumerate() {
+                                div { key: "{i}", class: "oxcov-li", span { class: "oxscn-row-t", "{t}" } span { class: "oxscn-row-a", "{a}" } }
+                            }
+                            if more_n > 0 {
+                                button { r#type: "button", class: "oxscn-link", "aria-expanded": "{more_chats}", onclick: move |_| more_chats.toggle(),
+                                    if more_chats() { "Show less" } else { "{more_n} more" } }
+                            }
+                        }
+                    }
+                    section { class: "oxcov-card", "aria-label": "Credits",
+                        div { class: "oxcov-h", h3 { "Credits" } span { class: "oxscn-row-a", "Resets 1 Dec" } }
+                        if loading { {skel(2)} } else {
+                            p { class: "oxcov-big", "{used_s}" span { class: "oxscn-row-a", " of 2,000" } }
+                            div { class: "oxscn-prog", role: "meter", "aria-valuenow": "{used}", "aria-valuemin": "0", "aria-valuemax": "2000", "aria-label": "Credits used", span { style: "{bar}" } }
+                        }
+                    }
+                    section { class: "oxcov-card", "aria-label": "Made for you",
+                        div { class: "oxcov-h", h3 { "Made for you" } }
+                        if loading { {skel(3)} } else if blank { p { class: "oxscn-hint", "Docs and sheets the assistant makes land here." } } else {
+                            for (i, (f, p, a)) in files.iter().take(fshow).enumerate() {
+                                div { key: "{i}", class: "oxcov-li", title: "{p}", {ico("file")} span { class: "oxscn-row-t", "{f}" } span { class: "oxscn-row-a", "{a}" } }
+                            }
+                            button { r#type: "button", class: "oxscn-link", "aria-expanded": "{more_files}", onclick: move |_| more_files.toggle(), if more_files() { "Show less" } else { "1 more" } }
+                        }
+                    }
+                    section { class: "oxcov-card", "aria-label": "This month",
+                        div { class: "oxcov-h", h3 { "This month" } }
+                        if loading { {skel(2)} } else {
+                            dl { class: "oxcov-dl",
+                                div { dt { "Chats" } dd { if blank { "0" } else { "36" } span { class: "oxcov-d", "data-up": "true", if !blank { "{d1}" } } } }
+                                div { dt { "Files made" } dd { if blank { "0" } else { "14" } span { class: "oxcov-d", "data-up": "false", if !blank { "{d2}" } } } }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+/// Screen – AI Chat / Agents: a chat with the orchestrator and the crew at work, and a brief
+/// beside it – angle, audience, channels, palette, formats and details – that turns into ads.
+#[component]
+pub fn ChatAgentsScreen(
+    /// `inset` or `flat`.
+    #[props(default = "inset".to_string())]
+    layout: String,
+    /// `sample`, `loading` or `empty`.
+    #[props(default = "sample".to_string())]
+    state: String,
+    /// Height px.
+    #[props(default = 640)]
+    height: u32,
+    /// The clock.
+    now: ClockMs,
+) -> Element {
+    use oxyn_core::parity::screensfid::{ad_estimate, angles, channels, crew};
+    let st = ScreenState::from_key(&state);
+    let thr = use_threads(st);
+    let active = use_signal(|| 2u32);
+    let text = use_signal(String::new);
+    let msgs = use_signal(Vec::<Msg>::new);
+    let mut who = use_signal(String::new);
+    let mut tab = use_signal(|| "brief".to_string());
+    let mut angle = use_signal(|| "feel".to_string());
+    let mut chans = use_signal(|| channels().into_iter().map(|(_, on)| on).collect::<Vec<_>>());
+    let mut fmts = use_signal(|| vec![true, true, false]);
+    let mut gen_at = use_signal(|| None::<u64>);
+    let on_n = chans().iter().filter(|x| **x).count();
+    let f_n = fmts().iter().filter(|x| **x).count();
+    let (ads, mins) = ad_estimate(on_n, f_n);
+    let foot = format!("{ads} ads · ~{mins} min");
+    let made = gen_at().map(|t| (since(now, t) / 700) as usize);
+    let gen_s = match made {
+        Some(n) if n < ads => format!("Making {} of {ads}…", n + 1),
+        Some(_) => format!("{ads} ads ready"),
+        None => String::new(),
+    };
+    let loading = st == ScreenState::Loading;
+    let blank = st == ScreenState::Empty;
+    let send = move |t: String| push_pair(msgs, now, t);
+    let w = who();
+    let brief = rsx! {
+        div { class: "oxcag-brief",
+            div { class: "oxscn-seg", role: "tablist", "aria-label": "Brief sections",
+                for (k, l) in [("brief", "Brief"), ("assets", "Assets"), ("activity", "Activity")] {
+                    button { key: "{k}", r#type: "button", role: "tab", class: "oxscn-seg-b", "aria-selected": "{tab() == k}", onclick: move |_| tab.set(k.to_string()), "{l}" }
+                }
+            }
+            if loading { {skel(9)} }
+            else if blank { {empty("No brief yet", "Tell the orchestrator what you are launching; the brief fills in as it learns.")} }
+            else if tab() == "brief" {
+                div { class: "oxcag-prod",
+                    span { class: "oxcag-thumb", "aria-hidden": "true" }
+                    div { p { class: "oxcag-pn", "Field Overshirt" } p { class: "oxscn-row-a", "$118 · 640 sold" } }
+                    span { class: "oxscn-tag", "data-tone": "ok", "Top seller" }
+                }
+                p { class: "oxscn-gh", "Angle" }
+                div { class: "oxcag-angles", role: "radiogroup", "aria-label": "Selling angle",
+                    for a in angles() {
+                        button { key: "{a.key}", r#type: "button", role: "radio", class: "oxcag-angle", "aria-checked": "{angle() == a.key}", onclick: move |_| angle.set(a.key.to_string()),
+                            span { class: "oxcag-sig", "data-n": "{a.signal}", span {} span {} span {} }
+                            span { span { class: "oxcag-al", "{a.label}" } span { class: "oxscn-row-a", "{a.why}" } }
+                        }
+                    }
+                }
+                p { class: "oxscn-gh", "Audience" }
+                div { class: "oxcag-tags", span { class: "oxscn-chip", "Commuters 25–40" } span { class: "oxscn-chip", "Weekend hikers" } }
+                p { class: "oxscn-gh", "Channels" }
+                for (i, (l, _)) in channels().into_iter().enumerate() {
+                    { let on = chans().get(i).copied().unwrap_or(false); rsx! {
+                        div { key: "{i}", class: "oxcag-sw",
+                            span { "{l}" }
+                            button { r#type: "button", role: "switch", class: "oxscn-switch", "aria-checked": "{on}", "aria-label": "{l}", onclick: move |_| { chans.write()[i] = !on; }, span {} }
+                        }
+                    } }
+                }
+                p { class: "oxscn-gh", "Palette" }
+                div { class: "oxcag-pal",
+                    for (i, (n, h)) in [("Oat", "#D9CDB8"), ("Moss", "#6E7D57"), ("Chalk", "#F1EFEA"), ("Night", "#22262B")].into_iter().enumerate() {
+                        span { key: "{i}", class: "oxcag-swatch", title: "{n}", style: "background:{h}", "aria-label": "{n}" }
+                    }
+                }
+                p { class: "oxscn-gh", "Formats" }
+                div { class: "oxcag-tags",
+                    for (i, l) in ["Square", "Story", "Wide"].into_iter().enumerate() {
+                        { let on = fmts().get(i).copied().unwrap_or(false); rsx! {
+                            button { key: "{i}", r#type: "button", class: "oxscn-chip oxscn-chip-b", "aria-pressed": "{on}", onclick: move |_| { fmts.write()[i] = !on; }, "{l}" }
+                        } }
+                    }
+                }
+                dl { class: "oxcag-dl", div { dt { "Launch" } dd { "3 Nov" } } div { dt { "Budget" } dd { "$4,000" } } div { dt { "Markets" } dd { "US, CA" } } }
+            } else if tab() == "assets" {
+                for (i, f) in ["overshirt-front.png", "overshirt-detail.png", "style-guide.pdf"].iter().enumerate() {
+                    div { key: "{i}", class: "oxcov-li", {ico("file")} span { class: "oxscn-row-t", "{f}" } }
+                }
+            } else {
+                ul { class: "oxcag-act",
+                    li { "Brand scout read 42 past posts" } li { "Audience desk sized two groups" } li { "Studio started six frames" }
+                }
+            }
+            div { class: "oxcag-foot",
+                span { class: "oxscn-row-a", role: "status", if gen_s.is_empty() { "{foot}" } else { "{gen_s}" } }
+                button { r#type: "button", class: "oxscn-primary", disabled: loading || blank || ads == 0, onclick: move |_| gen_at.set(Some(now.0)), "Make ads" }
+            }
+        }
+    };
+    rsx! {
+        AppFrame { layout, state: state.clone(), height, threads: thr, active, title: "Ads for the overshirt", work_label: "Brief", work: brief,
+            actions: rsx! { MenuButton { label: "", aria: "Chat options", icon: "more", right: true, items: vec![("rename", "Rename", ""), ("share", "Share", ""), ("archive", "Archive", "")] } },
+            div { class: "oxcag",
+                if loading { {skel(8)} }
+                else if blank { {empty("Start with a goal", "Say what you want made; the orchestrator brings in the agents it needs.")} }
+                else {
+                    div { class: "oxscn-log",
+                        div { class: "oxscn-msg", "data-me": "true", p { "Make launch ads for the overshirt. Lead with how it feels." } }
+                        div { class: "oxscn-msg", "data-me": "false", span { class: "oxscn-mono oxscn-mono-s", "K" }
+                            p { "I split this across five agents. The brief on the right is filling in; numbers are provisional until the sales pull finishes." } }
+                        p { class: "oxscn-row-a oxcag-took", "Worked for 3m 12s" }
+                    }
+                    div { class: "oxcag-crew", "aria-label": "Agents working",
+                        p { class: "oxscn-gh", "Agents working" }
+                        div { class: "oxcag-row",
+                            for m in crew() {
+                                button { key: "{m.key}", r#type: "button", class: "oxcag-ag", "data-done": "{m.done}", "aria-pressed": "{w == m.key}", title: "{m.name}",
+                                    onclick: move |_| { let c = who.peek().clone(); who.set(if c == m.key { String::new() } else { m.key.to_string() }); },
+                                    span { class: "oxscn-mono", "{&m.name[..1]}" } span { class: "oxcag-agn", "{m.name}" } }
+                            }
+                        }
+                        if let Some(m) = crew().into_iter().find(|m| m.key == w) {
+                            p { class: "oxcag-said", role: "status", "{m.name}: {m.doing} · " if m.done { "done" } else { "working" } }
+                        }
+                        div { class: "oxcag-orch", span { class: "oxscn-mono", "O" } span { b { "Orchestrator" } span { class: "oxscn-row-a", " · routes each request" } } }
+                    }
+                    {convo(&msgs(), now, 1200)}
+                }
+                ScreenComposer { text, on_send: send }
+            }
         }
     }
 }

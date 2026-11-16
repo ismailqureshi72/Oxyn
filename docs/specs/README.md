@@ -243,4 +243,7 @@ specified just as deeply. When we point at one component as an example, the stan
 | [shell-inset.md](shell-inset.md) | built v0.1 (screens 1, Screens) |
 | [shell-flat.md](shell-flat.md) | built v0.1 (screens 1, Screens) |
 | [shell-three-pane.md](shell-three-pane.md) | built v0.1 (screens 1, Screens) |
+| [chat-start.md](chat-start.md) | built v0.1 (screens 1, Screens) |
+| [chat-overview.md](chat-overview.md) | built v0.1 (screens 1, Screens) |
+| [chat-agents.md](chat-agents.md) | built v0.1 (screens 1, Screens) |
 | Every other component in [../component-taxonomy.md](../component-taxonomy.md) | to write in V2.2 |

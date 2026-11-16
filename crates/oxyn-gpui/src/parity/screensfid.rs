@@ -9,7 +9,8 @@ use gpui::{
     div, prelude::*, px,
 };
 use oxyn_core::parity::screensfid::{
-    PERSON, PERSON_INI, ScreenState, ShellLayout, WORKSPACE, ago, projects, split_pinned, threads,
+    PERSON, PERSON_INI, ScreenState, ShellLayout, WORKSPACE, ago, angles, crew, heat, projects,
+    split_pinned, starters, threads,
 };
 use oxyn_tokens::Theme;
 
@@ -252,6 +253,58 @@ fn frame(theme: &Theme, lay: ShellLayout, left: Div, main: Div, work: Option<Div
     }
 }
 
+fn composer(p: &ThPal) -> Div {
+    div()
+        .w(px(600.))
+        .p(px(10.))
+        .rounded(px(16.))
+        .bg(p.card)
+        .border_1()
+        .border_color(p.line)
+        .flex()
+        .flex_col()
+        .gap(px(8.))
+        .child(
+            div()
+                .h(px(40.))
+                .text_color(p.mute)
+                .child("Ask anything, or type / for tools"),
+        )
+        .child(
+            div()
+                .flex()
+                .items_center()
+                .gap(px(8.))
+                .text_size(px(12.5))
+                .text_color(p.mute)
+                .child("+")
+                .child("Ask for big steps")
+                .child("Auto")
+                .child(div().flex_1())
+                .child(div().w(px(32.)).h(px(32.)).rounded(px(16.)).bg(p.sel)),
+        )
+}
+
+fn msg(p: &ThPal, me: bool, t: &'static str) -> Div {
+    if me {
+        div().flex().justify_end().child(
+            div()
+                .max_w(px(460.))
+                .px(px(13.))
+                .py(px(9.))
+                .rounded(px(16.))
+                .bg(p.sel)
+                .child(t),
+        )
+    } else {
+        div()
+            .flex()
+            .gap(px(10.))
+            .child(div().w(px(20.)).h(px(20.)).rounded(px(10.)).bg(p.sel))
+            .child(div().max_w(px(560.)).child(t))
+    }
+}
+
 macro_rules! screen_el {
     ($(#[$m:meta])* $name:ident) => {
         $(#[$m])*
@@ -298,6 +351,18 @@ screen_el!(
 screen_el!(
     /// Three-pane shell: icon rail, chats column, page and work area.
     ScreenRailEl
+);
+screen_el!(
+    /// AI Chat / Start.
+    ChatStartEl
+);
+screen_el!(
+    /// AI Chat / Overview.
+    ChatOverviewEl
+);
+screen_el!(
+    /// AI Chat / Agents.
+    ChatAgentsEl
 );
 
 fn workspace(p: &ThPal, st: ScreenState) -> Div {
@@ -486,6 +551,228 @@ impl RenderOnce for ScreenRailEl {
             rail_left(&p, self.state),
             page(&p, "Home", placeholder(&p, self.state)),
             Some(workspace(&p, self.state)),
+        )
+    }
+}
+
+impl RenderOnce for ChatStartEl {
+    fn render(self, _: &mut Window, _: &mut App) -> impl IntoElement {
+        let p = th_pal(self.theme);
+        let mut chips = div()
+            .flex()
+            .flex_wrap()
+            .justify_center()
+            .gap(px(8.))
+            .w(px(600.));
+        for (_, l, _) in starters() {
+            chips = chips.child(
+                div()
+                    .h(px(32.))
+                    .px(px(13.))
+                    .flex()
+                    .items_center()
+                    .rounded(px(16.))
+                    .border_1()
+                    .border_color(p.line)
+                    .when(self.state == ScreenState::Loading, |d| {
+                        d.bg(p.sel).text_color(p.sel)
+                    })
+                    .child(l),
+            );
+        }
+        let body = div()
+            .flex()
+            .flex_col()
+            .items_center()
+            .gap(px(14.))
+            .pt(px(56.))
+            .child(
+                div()
+                    .text_size(px(26.))
+                    .font_weight(FontWeight::SEMIBOLD)
+                    .child("Good evening, Rowan. What's next?"),
+            )
+            .child(composer(&p))
+            .child(chips);
+        frame(
+            self.theme,
+            self.layout,
+            sidebar(&p, self.state, &self.act, false),
+            page(&p, "", body),
+            None,
+        )
+    }
+}
+
+impl RenderOnce for ChatOverviewEl {
+    fn render(self, _: &mut Window, _: &mut App) -> impl IntoElement {
+        let p = th_pal(self.theme);
+        let mut grid = div().flex().gap(px(3.));
+        let lv = if self.state == ScreenState::Sample {
+            heat(20)
+        } else {
+            vec![0; 140]
+        };
+        for w in 0..20 {
+            let mut col = div().flex().flex_col().gap(px(3.));
+            for d in 0..7 {
+                let l = lv[w * 7 + d] as f32;
+                col = col.child(div().w(px(12.)).h(px(12.)).rounded(px(3.)).bg(if l == 0. {
+                    p.sel
+                } else {
+                    p.fg.opacity(0.2 + l * 0.2)
+                }));
+            }
+            grid = grid.child(col);
+        }
+        let card = |t: &'static str, b: Div| {
+            div()
+                .flex_1()
+                .p(px(12.))
+                .rounded(px(14.))
+                .border_1()
+                .border_color(p.line)
+                .flex()
+                .flex_col()
+                .gap(px(6.))
+                .child(div().font_weight(FontWeight::SEMIBOLD).child(t))
+                .child(b)
+        };
+        let ld = self.state == ScreenState::Loading;
+        let body = div()
+            .flex()
+            .flex_col()
+            .items_center()
+            .gap(px(14.))
+            .p(px(22.))
+            .child(composer(&p))
+            .child(card("Activity", if ld { skel(&p, 3) } else { grid }).w(px(720.)))
+            .child(
+                div()
+                    .flex()
+                    .gap(px(12.))
+                    .w(px(720.))
+                    .child(card(
+                        "Credits",
+                        if ld {
+                            skel(&p, 2)
+                        } else {
+                            div()
+                                .text_size(px(22.))
+                                .font_weight(FontWeight::SEMIBOLD)
+                                .child(if self.state == ScreenState::Empty {
+                                    "0 of 2,000"
+                                } else {
+                                    "1,284 of 2,000"
+                                })
+                        },
+                    ))
+                    .child(card(
+                        "This month",
+                        if ld {
+                            skel(&p, 2)
+                        } else {
+                            div().child("Chats 36  +12").child("Files made 14  −3")
+                        },
+                    )),
+            );
+        frame(
+            self.theme,
+            self.layout,
+            sidebar(&p, self.state, &self.act, false),
+            page(&p, "Overview", body),
+            None,
+        )
+    }
+}
+
+impl RenderOnce for ChatAgentsEl {
+    fn render(self, _: &mut Window, _: &mut App) -> impl IntoElement {
+        let p = th_pal(self.theme);
+        let body = match self.state {
+            ScreenState::Loading => skel(&p, 8).p(px(20.)),
+            ScreenState::Empty => empty(
+                &p,
+                "Start with a goal",
+                "The orchestrator brings in the agents it needs.",
+            ),
+            ScreenState::Sample => {
+                let mut crew_row = div().flex().flex_wrap().gap(px(6.));
+                for m in crew() {
+                    crew_row = crew_row.child(
+                        div()
+                            .h(px(30.))
+                            .px(px(10.))
+                            .flex()
+                            .items_center()
+                            .rounded(px(15.))
+                            .border_1()
+                            .border_color(if m.done { p.line } else { p.fg2 })
+                            .child(m.name),
+                    );
+                }
+                div()
+                    .p(px(20.))
+                    .flex()
+                    .flex_col()
+                    .gap(px(14.))
+                    .child(msg(
+                        &p,
+                        true,
+                        "Make launch ads for the overshirt. Lead with how it feels.",
+                    ))
+                    .child(msg(
+                        &p,
+                        false,
+                        "I split this across five agents. The brief on the right is filling in.",
+                    ))
+                    .child(
+                        div()
+                            .p(px(12.))
+                            .rounded(px(14.))
+                            .border_1()
+                            .border_color(p.line)
+                            .child(gh(&p, "Agents working"))
+                            .child(crew_row),
+                    )
+            }
+        };
+        let mut brief = div()
+            .flex()
+            .flex_col()
+            .gap(px(6.))
+            .child(div().font_weight(FontWeight::SEMIBOLD).child("Brief"));
+        if self.state == ScreenState::Sample {
+            for (i, a) in angles().into_iter().enumerate() {
+                brief = brief.child(
+                    div()
+                        .p(px(8.))
+                        .rounded(px(11.))
+                        .border_1()
+                        .border_color(if i == 0 { p.fg } else { p.line })
+                        .child(a.label),
+                );
+            }
+            brief = brief.child(
+                div()
+                    .mt(px(10.))
+                    .h(px(32.))
+                    .px(px(14.))
+                    .flex()
+                    .items_center()
+                    .justify_center()
+                    .rounded(px(9.))
+                    .bg(p.fg)
+                    .text_color(p.card)
+                    .child("Make ads"),
+            );
+        }
+        frame(
+            self.theme,
+            self.layout,
+            sidebar(&p, self.state, &self.act, false),
+            page(&p, "Ads for the overshirt", body),
+            Some(brief),
         )
     }
 }

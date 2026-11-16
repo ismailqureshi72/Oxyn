@@ -4,7 +4,9 @@
 
 use dioxus::prelude::*;
 use oxyn_core::ClockMs;
-use oxyn_dioxus::{AppShellScreen, RailShellScreen};
+use oxyn_dioxus::{
+    AppShellScreen, ChatAgentsScreen, ChatOverviewScreen, ChatStartScreen, RailShellScreen,
+};
 
 use super::{Code, mk, sel, var};
 use crate::{Align, Demo, Vals};
@@ -251,10 +253,220 @@ fn shell_three_pane_demo() -> Demo {
     }
 }
 
+// ---------- AI Chat · Start ----------
+
+fn chat_start(v: &Vals, now: ClockMs) -> Element {
+    let (st, lay, key) = frame(v);
+    rsx! {
+        div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
+            ChatStartScreen { layout: lay, state: st, now }
+        }
+    }
+}
+
+fn chat_start_code(v: &Vals) -> String {
+    code("ChatStartScreen", v, true)
+}
+
+fn chat_start_demo() -> Demo {
+    Demo {
+        controls: controls("inset"),
+        variants: vec![
+            var("sample", "Sample data in the Inset frame.", &[]),
+            var(
+                "flat",
+                "The same screen in the Flat frame.",
+                &[("frame", "Flat")],
+            ),
+            var(
+                "loading",
+                "Skeletons where the data will land.",
+                &[("data", "Loading")],
+            ),
+            var(
+                "empty",
+                "Nothing yet: each region says what will appear.",
+                &[("data", "Empty")],
+            ),
+        ],
+        render: chat_start,
+        code: chat_start_code,
+        keyboard: vec![
+            ("Tab", "Sidebar, page, then the work area"),
+            ("← / → on a hairline", "Resize the sidebar or work area"),
+            ("Escape", "Close an open menu; clear search"),
+            ("Enter", "Send (Shift+Enter: new line)"),
+        ],
+        a11y: vec![
+            "The sidebar is a labelled nav; the open chat has aria-current and unread chats say so.",
+            "Menus open from a trigger that reports aria-expanded; their items are menuitemradio and Escape shuts them.",
+            "Hairlines are separators with a value and arrow keys; skeletons are hidden from screen readers.",
+        ],
+        responsive: vec![
+            "Under 860 px of width the work area becomes a sheet opened from the top bar.",
+            "Under 640 px the sidebar slides in from the menu button and the composer drops its labels.",
+        ],
+        height: 660,
+        live: true,
+        align: Align::Start,
+        ..mk(
+            "chat-start",
+            "AI Chat · Start",
+            CAT,
+            "A greeting over the composer – Add, ask-before-acting, model and voice – with a folder and apps to work in and starters that fill the prompt; sending opens a new chat.",
+            "ChatStartScreen",
+            "ChatStartEl",
+            "chat-start",
+            "parity/screensfid.rs",
+        )
+    }
+}
+
+// ---------- AI Chat · Overview ----------
+
+fn chat_overview(v: &Vals, now: ClockMs) -> Element {
+    let (st, lay, key) = frame(v);
+    rsx! {
+        div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
+            ChatOverviewScreen { layout: lay, state: st, now }
+        }
+    }
+}
+
+fn chat_overview_code(v: &Vals) -> String {
+    code("ChatOverviewScreen", v, true)
+}
+
+fn chat_overview_demo() -> Demo {
+    Demo {
+        controls: controls("inset"),
+        variants: vec![
+            var("sample", "Sample data in the Inset frame.", &[]),
+            var(
+                "flat",
+                "The same screen in the Flat frame.",
+                &[("frame", "Flat")],
+            ),
+            var(
+                "loading",
+                "Skeletons where the data will land.",
+                &[("data", "Loading")],
+            ),
+            var(
+                "empty",
+                "Nothing yet: each region says what will appear.",
+                &[("data", "Empty")],
+            ),
+        ],
+        render: chat_overview,
+        code: chat_overview_code,
+        keyboard: vec![
+            ("Tab", "Sidebar, page, then the work area"),
+            ("← / → on a hairline", "Resize the sidebar or work area"),
+            ("Escape", "Close an open menu; clear search"),
+            ("Arrow keys on Activity", "Step through days and weeks"),
+        ],
+        a11y: vec![
+            "The sidebar is a labelled nav; the open chat has aria-current and unread chats say so.",
+            "Menus open from a trigger that reports aria-expanded; their items are menuitemradio and Escape shuts them.",
+            "Hairlines are separators with a value and arrow keys; skeletons are hidden from screen readers.",
+        ],
+        responsive: vec![
+            "Under 860 px of width the work area becomes a sheet opened from the top bar.",
+            "Under 640 px the sidebar slides in from the menu button and the composer drops its labels.",
+        ],
+        height: 660,
+        live: true,
+        align: Align::Start,
+        ..mk(
+            "chat-overview",
+            "AI Chat · Overview",
+            CAT,
+            "The composer with the numbers under it: activity per day you step through by keyboard, recent chats, credits, files made for you and this month against last.",
+            "ChatOverviewScreen",
+            "ChatOverviewEl",
+            "chat-overview",
+            "parity/screensfid.rs",
+        )
+    }
+}
+
+// ---------- AI Chat · Agents ----------
+
+fn chat_agents(v: &Vals, now: ClockMs) -> Element {
+    let (st, lay, key) = frame(v);
+    rsx! {
+        div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
+            ChatAgentsScreen { layout: lay, state: st, now }
+        }
+    }
+}
+
+fn chat_agents_code(v: &Vals) -> String {
+    code("ChatAgentsScreen", v, true)
+}
+
+fn chat_agents_demo() -> Demo {
+    Demo {
+        controls: controls("inset"),
+        variants: vec![
+            var("sample", "Sample data in the Inset frame.", &[]),
+            var(
+                "flat",
+                "The same screen in the Flat frame.",
+                &[("frame", "Flat")],
+            ),
+            var(
+                "loading",
+                "Skeletons where the data will land.",
+                &[("data", "Loading")],
+            ),
+            var(
+                "empty",
+                "Nothing yet: each region says what will appear.",
+                &[("data", "Empty")],
+            ),
+        ],
+        render: chat_agents,
+        code: chat_agents_code,
+        keyboard: vec![
+            ("Tab", "Sidebar, page, then the work area"),
+            ("← / → on a hairline", "Resize the sidebar or work area"),
+            ("Escape", "Close an open menu; clear search"),
+            ("Enter / Space on an agent", "Show what it is doing"),
+        ],
+        a11y: vec![
+            "The sidebar is a labelled nav; the open chat has aria-current and unread chats say so.",
+            "Menus open from a trigger that reports aria-expanded; their items are menuitemradio and Escape shuts them.",
+            "Hairlines are separators with a value and arrow keys; skeletons are hidden from screen readers.",
+        ],
+        responsive: vec![
+            "Under 860 px of width the work area becomes a sheet opened from the top bar.",
+            "Under 640 px the sidebar slides in from the menu button and the composer drops its labels.",
+        ],
+        height: 660,
+        live: true,
+        align: Align::Start,
+        ..mk(
+            "chat-agents",
+            "AI Chat · Agents",
+            CAT,
+            "A chat with the orchestrator and the crew at work, beside a brief – angle, audience, channels, palette and formats – that turns into ads.",
+            "ChatAgentsScreen",
+            "ChatAgentsEl",
+            "chat-agents",
+            "parity/screensfid.rs",
+        )
+    }
+}
+
 pub(crate) fn demos() -> Vec<Demo> {
     vec![
         shell_inset_demo(),
         shell_flat_demo(),
         shell_three_pane_demo(),
+        chat_start_demo(),
+        chat_overview_demo(),
+        chat_agents_demo(),
     ]
 }
