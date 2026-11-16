@@ -435,7 +435,7 @@ Whole app frames built from the components (affectUI's screen set by behaviour, 
 **Built in #42 (screens 1):** App shell · Inset (`shell-inset`), App shell · Flat (`shell-flat`), Three-pane shell (`shell-three-pane`), AI Chat · Start (`chat-start`), AI Chat · Overview (`chat-overview`), AI Chat · Agents (`chat-agents`), AI Chat · Double sidebar (`chat-double-sidebar`), AI Chat · Progress (`chat-progress`), AI Chat · Run (`chat-run`)
 
 **New variants to build:**
-- Settings shell (back to app, Personal / Workspace groups)
+- Settings shell (return link, personal and team sections)
 - Folders · Overview and Folders · Detail
 - Integrations (app directory with connect states)
 - CRM (views as tabs, editable table)
