@@ -257,7 +257,7 @@ impl RenderOnce for StorageCleanupEl {
             .child(
                 div()
                     .text_color(p.mute)
-                    .child("Skills and commands your agents load in every session."),
+                    .child("Skills and commands that ride along with each new chat."),
             )
             .child(list)
             .child(

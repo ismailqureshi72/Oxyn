@@ -176,7 +176,7 @@ fn storage_cleanup_demo() -> Demo {
             "The dot row is an image labelled with the tokens freed; moving and undoing are said in a status line.",
         ],
         responsive: vec![
-            "440 px card; under 480 px the place tag hides and the list scrolls inside the card.",
+            "440 px card; under 480 px the place tag hides and the list scrolls in place.",
         ],
         height: 560,
         live: false,
@@ -185,7 +185,7 @@ fn storage_cleanup_demo() -> Demo {
             "storage-cleanup",
             "Storage cleanup",
             CAT,
-            "Skills and commands your agents load in every session, filtered by how long they sat unused; tick some, watch the tokens they free as dots, move them to the Trash and undo.",
+            "Skills and commands that ride along with each new chat, filtered by how long they sat unused; tick some, watch the tokens they free as dots, move them to the Trash and undo.",
             "StorageCleanup",
             "StorageCleanupEl",
             "storage-cleanup",

@@ -258,7 +258,7 @@ pub fn StorageCleanup(
         div { class: "oxsc",
             div { class: "oxsc-head",
                 span { class: "oxsc-title", "Free up context" }
-                span { class: "oxsc-sub", "Skills and commands your agents load in every session." }
+                span { class: "oxsc-sub", "Skills and commands that ride along with each new chat." }
             }
             div { class: "oxsc-win",
                 span { class: "oxsc-wl", "Not used in" }

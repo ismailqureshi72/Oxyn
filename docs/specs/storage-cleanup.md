@@ -29,7 +29,7 @@ prefers-reduced-motion: no transitions or animation.
 Window is a radiogroup; rows and Select all are `role="checkbox"` buttons. The dot meter is an image with the token sentence; moves are said in a status line.
 
 ## 6. Responsive
-440 px card; the list scrolls inside 244 px; the place tag hides under 480 px.
+440 px card; the list scrolls in a 244 px box; the place tag hides under 480 px.
 
 ## 7. Known gaps
 Trash is local state only. GPUI: static snapshot (`trash`).
