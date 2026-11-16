@@ -43,7 +43,11 @@ pub use composer::{
 pub use glyph_loader::{GLYPH_LOADER_CSS, GlyphLoader, GlyphLoaderProps};
 /// Stylesheet for approvals and checkpoints.
 pub const HITL_CSS: &str = include_str!("hitl.css");
+pub use parity::ContextBar;
+pub use parity::ContextBreakdown;
 pub use parity::ContextEffortMenu;
+pub use parity::ContextStack;
+pub use parity::ContextTide;
 pub use parity::DiffTimelineRun;
 pub use parity::EffortList;
 pub use parity::EffortPill;

@@ -663,3 +663,7 @@ Oxyn,Thinking Selector · Context + Effort menu,,Thinking Selector,Free,context-
 Oxyn,Thinking Selector · Model effort menu,,Thinking Selector,Free,model-effort-menu,variants-1,#39,built
 Oxyn,Thinking Selector · Nozzle line,,Thinking Selector,Free,nozzle-slider,variants-1,#39,built
 Oxyn,Thinking Selector · Effort stairs,,Thinking Selector,Free,effort-stairs,variants-1,#39,built
+Oxyn,Context Visualizer · Context bar,,Context Visualizer,Free,context-bar,variants-2,#40,built
+Oxyn,Context Visualizer · Context breakdown,,Context Visualizer,Free,context-breakdown,variants-2,#40,built
+Oxyn,Context Visualizer · Context stack,,Context Visualizer,Free,context-stack,variants-2,#40,built
+Oxyn,Context Visualizer · Context tide,,Context Visualizer,Free,context-tide,variants-2,#40,built

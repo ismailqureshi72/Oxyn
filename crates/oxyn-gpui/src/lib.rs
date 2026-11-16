@@ -43,7 +43,11 @@ pub use navigation::{
     ReorderListEl, ResizableEl, TabsEl, TeamSwitcherEl, TocProgressEl, ToggleGroupEl, TreeViewEl,
     UserMenuEl,
 };
+pub use parity::ContextBarEl;
+pub use parity::ContextBreakdownEl;
 pub use parity::ContextEffortMenuEl;
+pub use parity::ContextStackEl;
+pub use parity::ContextTideEl;
 pub use parity::DiffTimelineRunEl;
 pub use parity::EffortListEl;
 pub use parity::EffortPillEl;
