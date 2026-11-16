@@ -4,6 +4,7 @@
 mod agentsfid;
 mod answers;
 mod approvals;
+mod attachfid;
 mod autonomyfid;
 mod awayfid;
 mod chatfid;
@@ -67,6 +68,7 @@ pub use approvals::{
     AgentApprovals, ApprovalGates, ConfirmMorph, ConfirmPopover, HoldToConfirm, PermissionRequest,
     gate_dot,
 };
+pub use attachfid::{AttachmentChips, DropLanes, FileIcon, PolaroidStack, UploadDropzone};
 pub use autonomyfid::AutonomyDial;
 pub use awayfid::AwaySummary;
 pub use chatfid::{AgentRunPanel, ModelPickerMenu};

@@ -23,6 +23,7 @@ mod parity_agents2;
 mod parity_agents3;
 mod parity_answers;
 mod parity_approvals;
+mod parity_attach;
 mod parity_context;
 mod parity_diff;
 mod parity_fidelity;
@@ -53,7 +54,7 @@ pub struct Category {
 }
 
 /// Categories in nav order.
-pub const CATEGORIES: [Category; 23] = [
+pub const CATEGORIES: [Category; 24] = [
     Category {
         slug: "composer",
         name: "Composer",
@@ -169,6 +170,11 @@ pub const CATEGORIES: [Category; 23] = [
         name: "Storage",
         blurb: "Disk and context usage drawn as dot matrices: capacity, cleanup, waffle and forecast.",
     },
+    Category {
+        slug: "attachments",
+        name: "Attachments",
+        blurb: "Files, images and links going into a prompt: drop zones, chips with upload progress, prints and lanes.",
+    },
 ];
 
 /// Every demo, in category order.
@@ -192,6 +198,7 @@ pub fn catalog() -> Vec<Demo> {
     v.extend(parity_diff::demos());
     v.extend(parity_thinking::demos());
     v.extend(parity_context::demos());
+    v.extend(parity_attach::demos());
     v.extend(parity_storage::demos());
     v.extend(parity_merge::demos());
     v.extend(parity_text::demos());

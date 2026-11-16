@@ -43,12 +43,14 @@ pub use navigation::{
     ReorderListEl, ResizableEl, TabsEl, TeamSwitcherEl, TocProgressEl, ToggleGroupEl, TreeViewEl,
     UserMenuEl,
 };
+pub use parity::AttachmentChipsEl;
 pub use parity::ContextBarEl;
 pub use parity::ContextBreakdownEl;
 pub use parity::ContextEffortMenuEl;
 pub use parity::ContextStackEl;
 pub use parity::ContextTideEl;
 pub use parity::DiffTimelineRunEl;
+pub use parity::DropLanesEl;
 pub use parity::EffortListEl;
 pub use parity::EffortPillEl;
 pub use parity::EffortRulerEl;
@@ -60,6 +62,7 @@ pub use parity::ModelEffortMenuEl;
 pub use parity::NozzleSliderEl;
 pub use parity::ParallelAttemptsEl;
 pub use parity::PlanVsActualEl;
+pub use parity::PolaroidStackEl;
 pub use parity::RateLimitPlannerEl;
 pub use parity::ReasoningPanelEl;
 pub use parity::RootCauseTreeEl;
@@ -71,6 +74,7 @@ pub use parity::StorageMeterEl;
 pub use parity::StorageWaffleEl;
 pub use parity::ToolAccessMapEl;
 pub use parity::TraceWaterfallEl;
+pub use parity::UploadDropzoneEl;
 pub use parity::{
     Act, ActivityFeedEl, AgentApprovalsEl, AgentPlanEl, AgentRunEl, AgentStatusEl, AgentTrailEl,
     AgentTreeEl, ApprovalGatesEl, ApprovalPagerEl, BreakdownEl, ChecklistEl, ConfirmMorphEl,
