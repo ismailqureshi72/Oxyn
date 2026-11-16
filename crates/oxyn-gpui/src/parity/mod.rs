@@ -33,6 +33,7 @@ mod graphfid;
 mod handofffid;
 mod home;
 mod ime;
+mod judgefid;
 mod lanesfid;
 mod ledgerfid;
 mod merge;
@@ -79,6 +80,7 @@ pub use home::{
     PollingCostEl, RunModeMenuEl, ThreadListEl, TokenUsageChartEl,
 };
 pub use ime::{ImeEvent, ImeInput, bind_ime_keys};
+pub use judgefid::JudgeBracketEl;
 pub use lanesfid::AgentLanesEl;
 pub use ledgerfid::AgentLedgerEl;
 pub use merge::{ConflictRadarEl, MergeAct, MergeConflictEl, RadarAct};

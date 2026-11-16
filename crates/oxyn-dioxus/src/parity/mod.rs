@@ -23,6 +23,7 @@ mod graphfid;
 mod handofffid;
 mod home;
 mod input;
+mod judgefid;
 mod lanesfid;
 mod ledgerfid;
 mod merge;
@@ -73,6 +74,7 @@ pub use home::{
     RunModeMenu, ThreadList, TokenUsageChart,
 };
 pub use input::{GhostText, LabeledInput, LabeledTextarea, TextArea};
+pub use judgefid::JudgeBracket;
 pub use lanesfid::AgentLanes;
 pub use ledgerfid::AgentLedger;
 pub use merge::{ConflictRadar, MergeConflict};

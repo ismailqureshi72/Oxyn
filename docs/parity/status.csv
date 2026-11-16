@@ -61,7 +61,7 @@ affectUI,Icon Button,https://www.affectui.com/components/icon-button,Components 
 affectUI,Inline Diff,https://www.affectui.com/components/inline-diff,Components · Agents,Pro,diff-viewer,C8,#35,planned
 affectUI,Integration Picker,https://www.affectui.com/components/integration-picker,Components · Navigation,Pro,"mcp-plugin-list, plugin-icons",C10,#35,planned
 affectUI,Integration Settings,https://www.affectui.com/components/integration-settings,Components · Inputs,Pro,mcp-plugin-list,C10,#35,planned
-affectUI,Judge Bracket,https://www.affectui.com/components/judge-bracket,Components · Agents,Pro,NEW,C8,#35,planned
+affectUI,Judge Bracket,https://www.affectui.com/components/judge-bracket,Components · Agents,Pro,"judge-bracket (exact, ref-1 notes, family B part 9)",C8,#32,built
 affectUI,KPI Chart,https://www.affectui.com/components/kpi-chart,Components · Data display,Pro,genui-blocks,C12,#36,planned
 affectUI,Memory Panel,https://www.affectui.com/components/memory-panel,Components · Agents,Pro,NEW,C10,#35,planned
 affectUI,Message Actions,https://www.affectui.com/components/message-actions,Components · Chat,Free,"message-actions (exact, overnight batch A), icon-states, message-bubble",,#32,built
