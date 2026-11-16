@@ -58,6 +58,11 @@ pub use parity::{
     file_badge,
 };
 pub use parity::{
+    AgentCrewEl, AgentCursorsEl, AgentFindingsEl, AgentGraphEl, AgentHandoffEl, AgentInboxEl,
+    AgentLanesEl, AgentLedgerEl, AgentMonitorEl, AgentQueueEl, AgentRecapEl, AgentSequenceEl,
+    AutonomyDialEl, AwaySummaryEl, CollabStreamEl, ContextMapEl, CostWaterfallEl,
+};
+pub use parity::{
     AiComposerEl, AvatarUploadEl, ChatComposerEl, ContextFieldEl, ContextGridEl, ElasticSliderEl,
     FileDropzoneEl, GaugeEl, ModelMenuEl, ModelPillEl, MorphSelectEl, NumberFieldEl, Pick,
     RichTextEl, RunControlsEl, ScrubInputEl, SplitBarEl, UsageMeterEl,
@@ -66,6 +71,10 @@ pub use parity::{
     AiInlineEditEl, ChangeSummaryEl, CodeSuggestionEl, CommentThreadEl, DiffTableEl,
     DiffTimelineEl, DiffViewerEl, HunkAct, IdAct, ImageCompareEl, InlineDiffEl, ReviewCardEl,
     ReviewCenterEl,
+};
+pub use parity::{
+    AnswerCardEl, CitedAnswerEl, MessageActionsEl, ThinkingPanelEl, ThinkingPillEl,
+    WritingAssistantEl,
 };
 pub use parity::{ConflictRadarEl, MergeAct, MergeConflictEl, RadarAct};
 pub use parity::{

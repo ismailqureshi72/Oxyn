@@ -492,8 +492,8 @@ pub fn demos() -> Vec<Demo> {
             align: Align::Center,
             live: true,
             ..mk(
-                "thinking-loader",
-                "Thinking loader",
+                "thinking-loader-oxyn",
+                "Thinking loader (Oxyn)",
                 "loaders",
                 "A small working pill for AI replies: an eight-ray spinner and a shimmering label that rolls through phases and settles on a check with “Thought for 4s”.",
                 "ThinkingLoader",

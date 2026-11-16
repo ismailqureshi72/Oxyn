@@ -170,4 +170,27 @@ specified just as deeply. When we point at one component as an example, the stan
 | [comments-panel.md](comments-panel.md) | built v0.1 (plan #32) |
 | [model-picker.md](model-picker.md) | built v0.1 (plan #32, chunk 2) |
 | [run-controls.md](run-controls.md) | built v0.2 (plan #32, chunk 2; v0.1 plan #28) |
+| [ai-answer.md](ai-answer.md) | built v0.1 (plan #32, overnight batch, family A) |
+| [cited-answer.md](cited-answer.md) | built v0.1 (plan #32, overnight batch, family A) |
+| [message-actions.md](message-actions.md) | built v0.1 (plan #32, overnight batch, family A) |
+| [thinking-state.md](thinking-state.md) | built v0.1 (plan #32, overnight batch, family A) |
+| [writing-assistant.md](writing-assistant.md) | built v0.1 (plan #32, overnight batch, family A) |
+| [thinking-loader.md](thinking-loader.md) | built v0.2 (plan #32, overnight batch, family A; v0.1 plan #28) |
+| [agent-findings.md](agent-findings.md) | built v0.1 (plan #32, overnight batch, family B) |
+| [agent-inbox.md](agent-inbox.md) | built v0.1 (plan #32, overnight batch, family B) |
+| [agent-crew.md](agent-crew.md) | built v0.1 (plan #32, overnight batch, family B part 2) |
+| [agent-cursors.md](agent-cursors.md) | built v0.1 (plan #32, overnight batch, family B part 3) |
+| [agent-graph.md](agent-graph.md) | built v0.1 (plan #32, overnight batch, family B part 3) |
+| [agent-handoff.md](agent-handoff.md) | built v0.1 (plan #32, overnight batch, family B part 3) |
+| [agent-lanes.md](agent-lanes.md) | built v0.1 (plan #32, overnight batch, family B part 3) |
+| [agent-ledger.md](agent-ledger.md) | built v0.1 (plan #32, overnight batch, family B part 4) |
+| [agent-monitor.md](agent-monitor.md) | built v0.1 (plan #32, overnight batch, family B part 4) |
+| [agent-queue.md](agent-queue.md) | built v0.1 (plan #32, overnight batch, family B part 4) |
+| [agent-recap.md](agent-recap.md) | built v0.1 (plan #32, overnight batch, family B part 4) |
+| [agent-sequence.md](agent-sequence.md) | built v0.1 (plan #32, overnight batch, family B part 4) |
+| [autonomy-dial.md](autonomy-dial.md) | built v0.1 (plan #32, overnight batch, family B part 6) |
+| [away-summary.md](away-summary.md) | built v0.1 (plan #32, overnight batch, family B part 6) |
+| [collaboration-stream.md](collaboration-stream.md) | built v0.1 (plan #32, overnight batch, family B part 6) |
+| [context-map.md](context-map.md) | built v0.1 (plan #32, overnight batch, family B part 6) |
+| [cost-waterfall.md](cost-waterfall.md) | built v0.1 (plan #32, overnight batch, family B part 6) |
 | Every other component in [../component-taxonomy.md](../component-taxonomy.md) | to write in V2.2 |

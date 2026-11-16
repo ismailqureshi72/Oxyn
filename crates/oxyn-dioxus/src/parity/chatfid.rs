@@ -122,6 +122,9 @@ pub fn ModelPickerMenu(
     let ms = use_signal(move || models.clone());
     let mut chosen = use_signal(move || first);
     let mut lit = use_signal(|| 0usize);
+    // A row is only filled once the user points at it (mouse or arrows); on open the chosen row
+    // shows just its check and blue dashes, as affectUI does.
+    let mut moved = use_signal(|| false);
     let mut open = use_signal(move || default_open);
     // The click-away scrim only follows a menu the user opened: a menu that starts open (as on
     // a docs page) must not cover the page and swallow its first click.
@@ -134,7 +137,7 @@ pub fn ModelPickerMenu(
     let mut text = use_signal(String::new);
     let all = ms();
     let cur = all[chosen().min(n - 1)].clone();
-    let pointed = all[lit().min(n - 1)].clone();
+    let pointed = all[if moved() { lit() } else { chosen() }.min(n - 1)].clone();
     let brands = marks == "brands";
     let tray = tray_values(&pointed, think(), eff());
     let mut set_open = move |o: bool| {
@@ -143,6 +146,7 @@ pub fn ModelPickerMenu(
         on_open_change.call(o);
         if o {
             lit.set(chosen());
+            moved.set(false);
             focus(menu());
         } else {
             focus(trig());
@@ -157,6 +161,7 @@ pub fn ModelPickerMenu(
         Key::ArrowDown => {
             e.prevent_default();
             if open() {
+                moved.set(true);
                 lit.set((lit() + 1) % n);
             } else {
                 set_open(true)
@@ -164,6 +169,7 @@ pub fn ModelPickerMenu(
         }
         Key::ArrowUp if open() => {
             e.prevent_default();
+            moved.set(true);
             lit.set((lit() + n - 1) % n)
         }
         Key::Home if open() => lit.set(0),
@@ -227,9 +233,9 @@ pub fn ModelPickerMenu(
                         }
                         div { class: "oxmq-list", role: "listbox", "aria-label": "Model", "aria-activedescendant": "oxmq-o{lit()}",
                             for (i, m) in all.iter().enumerate() {
-                                div { key: "{m.id}", id: "oxmq-o{i}", class: "oxmq-opt", role: "option", "aria-selected": "{chosen() == i}", "data-lit": "{lit() == i}",
+                                div { key: "{m.id}", id: "oxmq-o{i}", class: "oxmq-opt", role: "option", "aria-selected": "{chosen() == i}", "data-lit": "{moved() && lit() == i}",
                                     "aria-label": if m.varies() { format!("{}, {}, strengths vary", m.name, m.description) } else { format!("{}, {}. Speed {}, quality {}, cost {} of 5", m.name, m.description, m.speed.unwrap_or(0), m.quality.unwrap_or(0), m.cost.unwrap_or(0)) },
-                                    onmouseenter: move |_| lit.set(i),
+                                    onmouseenter: move |_| { moved.set(true); lit.set(i) },
                                     onclick: move |_| { pick(i); set_open(false) },
                                     {tile(m)}
                                     span { class: "oxmq-nm",
@@ -516,7 +522,7 @@ pub fn AgentRunPanel(
                     for (j, x) in para.into_iter().enumerate() {
                         match x {
                             Piece::Text(s) => rsx! { span { key: "{j}", "{s} " } },
-                            Piece::Steer(s) => rsx! { span { key: "{j}", class: "oxrq-steer", Stroke { name: "return", size: 12.0 } "{s}" } " " },
+                            Piece::Steer(s) => rsx! { span { key: "{j}", br {} span { class: "oxrq-steer", Stroke { name: "return", size: 12.0 } "{s}" } " " } },
                             Piece::Break => rsx! {},
                         }
                     }

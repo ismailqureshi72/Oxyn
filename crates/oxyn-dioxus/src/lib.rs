@@ -62,6 +62,11 @@ pub use parity::{
     PhotoAvatar, Portrait, ThreadNote,
 };
 pub use parity::{
+    AgentCrew, AgentCursors, AgentFindings, AgentGraph, AgentHandoff, AgentInbox, AgentLanes,
+    AgentLedger, AgentMonitor, AgentQueue, AgentRecap, AgentSequence, AutonomyDial, AwaySummary,
+    CollabStream, ContextMap, CostWaterfall,
+};
+pub use parity::{
     AiComposer, AvatarUpload, ChatComposer, ContextField, ContextWindowGrid, CtxModel,
     ElasticSlider, FileDropzone, Gauge, MenuModel, ModelMenu, ModelPill, MorphSelect, NumberField,
     PillModel, RichTextEditor, RunControls, ScrubInput, SplitBar, UsageMeter,
@@ -69,6 +74,9 @@ pub use parity::{
 pub use parity::{
     AiInlineEdit, ChangeSummary, CodeSuggestion, CommentThread, DiffTable, DiffTimeline,
     DiffViewer, ImageCompare, InlineDiff, ReviewCard, ReviewCenter,
+};
+pub use parity::{
+    AnswerCard, CitedAnswerCard, MessageActionBar, ThinkingPanel, ThinkingPill, WritingAssistant,
 };
 pub use parity::{
     ChipStep, DiffChip, ExpandableCard, JsonViewer, LinkUnfurl, RowOutput, ToolCall, ToolCallCard,

@@ -20,24 +20,61 @@
 //! - [`fidelity`]: the affectUI fidelity pass (plan #32): the exact Chat Composer's approval
 //!   modes, attachment kinds and recording trace; Comment Thread and Comments Panel.
 //! - [`chatfid`]: fidelity chunk 2: Model Picker rows and tray, Run Controls turns and phases.
+//! - [`agentsfid`]: fidelity batch, family B: Agent Findings progress and feed, Agent Inbox tasks.
+//! - [`crewfid`]: fidelity batch, family B part 2: Agent Crew tree, handoffs, steering, projects.
+//! - [`cursorsfid`]: fidelity batch, family B part 3: Agent Cursors document, pointers,
+//!   suggestions, comments and the demo loop.
+//! - [`graphfid`]: fidelity batch, family B part 3: Agent Graph nodes, calls, orbit layout, links.
+//! - [`handofffid`]: fidelity batch, family B part 3: Agent Handoff relay, items, tasks, assign.
+//! - [`lanesfid`]: fidelity batch, family B part 3: Agent Lanes tasks, window, hand-offs, counts.
+//! - [`ledgerfid`]: fidelity batch, family B part 4: Agent Ledger changes, undo chains, demo.
+//! - [`monitorfid`]: fidelity batch, family B part 4: Agent Monitor states, steps, strip, demo.
+//! - [`queuefid`]: fidelity batch, family B part 4: Agent Queue simulation, stats, depth chart.
+//! - [`autonomyfid`]: fidelity batch, family B part 6: Autonomy Dial levels, locks and the asks-first rule.
+//! - [`awayfid`]: fidelity batch, family B part 6: Away Summary items, order, counts and folding.
+//! - [`collabfid`]: fidelity batch, family B part 6: Collaboration Stream messages, quotes, mentions.
+//! - [`ctxmapfid`]: fidelity batch, family B part 6: Context Map blocks, ordered treemap, compaction.
+//! - [`costfid`]: fidelity batch, family B part 6: Cost Waterfall steps, rows, axis and formats.
+//! - [`recapfid`]: fidelity batch, family B part 4: Agent Recap events, curve, counts.
+//! - [`seqfid`]: fidelity batch, family B part 4: Agent Sequence rows, frames, bars, demo run.
+//! - [`answers`]: fidelity batch, family A: AI Answer markup and streaming, Cited Answer
+//!   sentences and quotes, Message Actions, Thinking Loader phases, Thinking State steps and the
+//!   Writing Assistant's sample writer and dictation.
 //! - [`tools`]: tool calls, the tool-kind map, JSON trees and link unfurls.
 //!
 //! Like the rest of the core, time is passed in as [`crate::ClockMs`]; nothing reads a clock.
 
+pub mod agentsfid;
+pub mod answers;
+pub mod autonomyfid;
+pub mod awayfid;
 pub mod chatfid;
+pub mod collabfid;
 pub mod compose;
 pub mod confirm;
+pub mod costfid;
+pub mod crewfid;
+pub mod ctxmapfid;
+pub mod cursorsfid;
 pub mod diff;
 pub mod edit;
 pub mod fidelity;
 pub mod fields;
 pub mod fleet;
 pub mod gates;
+pub mod graphfid;
+pub mod handofffid;
 pub mod home;
 pub mod input;
+pub mod lanesfid;
+pub mod ledgerfid;
 pub mod merge;
 pub mod meters;
+pub mod monitorfid;
 pub mod plan;
+pub mod queuefid;
+pub mod recapfid;
+pub mod seqfid;
 pub mod text;
 pub mod tools;
 pub mod upload;

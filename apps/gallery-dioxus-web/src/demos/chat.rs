@@ -778,8 +778,8 @@ pub fn demos() -> Vec<Demo> {
             align: Align::Start,
             live: true,
             ..mk(
-                "ai-answer",
-                "AI answer",
+                "ai-answer-oxyn",
+                "AI answer (Oxyn)",
                 "chat",
                 "An answer with its sources: search, stream, citations that highlight cards, actions and follow-ups; the cited variant shows each claim's provenance.",
                 "AiAnswer",

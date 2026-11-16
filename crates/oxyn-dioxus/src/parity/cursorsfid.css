@@ -1,0 +1,174 @@
+/* affectUI fidelity pass, overnight batch, family B part 3 (plan #32): Agent Cursors (oxcu-).
+   Clean is the default; Classic follows data-cstyle or data-style. The page is 700 px wide at most;
+   below 520 px the margins tighten and the suggestion count gives way to the faces. */
+[data-oxyn-theme="light"]{
+  --oxcu-bg:#FFFFFF;--oxcu-line:#E8E8EB;--oxcu-fg:#18181B;--oxcu-txt:#3F3F46;--oxcu-mute:#8A8A93;--oxcu-faint:#A1A1AA;
+  --oxcu-ink:#111114;--oxcu-inkfg:#FFFFFF;--oxcu-inkmute:#A1A1AA;--oxcu-inkchip:rgba(255,255,255,.14);--oxcu-ptr-edge:#FFFFFF;
+  --oxcu-sel:rgba(110,110,135,.17);--oxcu-insbg:rgba(24,24,27,.06);--oxcu-code:#FAFAFA;--oxcu-codeln:#F0F0F2;
+  --oxcu-img:#ECECEE;--oxcu-shim:rgba(255,255,255,.75);--oxcu-tab:#EDEDEF;--oxcu-tabfg:#8A8A93;
+  --oxcu-pop:#FFFFFF;--oxcu-popline:#E6E6E9;--oxcu-popsh:0 10px 28px rgba(16,16,20,.14),0 2px 6px rgba(16,16,20,.06);
+  --oxcu-flagsh:0 6px 16px rgba(16,16,20,.18);--oxcu-tint:#ECECEF;--oxcu-band:#F4F4F5;--oxcu-pagesh:0 1px 2px rgba(16,16,20,.05),0 8px 24px rgba(16,16,20,.08);
+  --oxcu-blue-bg:#E0F2FE;--oxcu-blue-fg:#0369A1;--oxcu-grey-bg:#F0F0F2;--oxcu-grey-fg:#52525B;--oxcu-amber-bg:#FEF3C7;--oxcu-amber-fg:#B45309;
+  --oxcu-green-bg:#DCFCE7;--oxcu-green-fg:#15803D;--oxcu-red-bg:#FEE2E2;--oxcu-red-fg:#B91C1C;--oxcu-alldis:#D4D4D8;
+}
+[data-oxyn-theme="dark"],[data-oxyn-theme="hc-dark"]{
+  --oxcu-bg:#1C1C1F;--oxcu-line:#2C2C31;--oxcu-fg:#F4F4F5;--oxcu-txt:#D4D4D8;--oxcu-mute:#8E8E97;--oxcu-faint:#6B6B73;
+  --oxcu-ink:#F4F4F5;--oxcu-inkfg:#111114;--oxcu-inkmute:#6B6B73;--oxcu-inkchip:rgba(0,0,0,.08);--oxcu-ptr-edge:#111114;
+  --oxcu-sel:rgba(200,200,225,.16);--oxcu-insbg:rgba(255,255,255,.08);--oxcu-code:#232327;--oxcu-codeln:#2C2C31;
+  --oxcu-img:#2A2A2E;--oxcu-shim:rgba(255,255,255,.07);--oxcu-tab:#26262A;--oxcu-tabfg:#8E8E97;
+  --oxcu-pop:#F4F4F5;--oxcu-popline:#DCDCE0;--oxcu-popsh:0 12px 32px rgba(0,0,0,.55),0 2px 6px rgba(0,0,0,.4);
+  --oxcu-flagsh:0 6px 16px rgba(0,0,0,.45);--oxcu-tint:#34343A;--oxcu-band:#232327;--oxcu-pagesh:0 1px 2px rgba(0,0,0,.5),0 8px 24px rgba(0,0,0,.4);
+  --oxcu-blue-bg:#0C2E45;--oxcu-blue-fg:#7DD3FC;--oxcu-grey-bg:#2A2A2E;--oxcu-grey-fg:#C4C4CC;--oxcu-amber-bg:#3A2A0C;--oxcu-amber-fg:#FBBF24;
+  --oxcu-green-bg:#123222;--oxcu-green-fg:#4ADE80;--oxcu-red-bg:#3B1515;--oxcu-red-fg:#F87171;--oxcu-alldis:#3F3F46;
+}
+.oxcu{position:relative;width:700px;max-width:100%;container-type:inline-size;color:var(--oxcu-fg);font-size:14.5px;line-height:1.52;-webkit-font-smoothing:antialiased;overflow:clip;overflow-clip-margin:24px}
+.oxcu *{box-sizing:border-box}
+.oxcu-sp{flex:1}
+.oxcu-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.oxcu-mute{color:var(--oxcu-mute)}
+
+/* tabs */
+.oxcu-tabs{display:flex;gap:4px;margin-bottom:7px}
+.oxcu-tab{height:28px;padding:0 10px;border:1px solid transparent;border-radius:7px;background:var(--oxcu-tab);color:var(--oxcu-tabfg);font:inherit;font-size:13px;font-weight:500;line-height:1;cursor:pointer;transition:background .15s,color .15s,box-shadow .15s}
+.oxcu-tab[aria-selected="true"]{background:var(--oxcu-bg);border-color:var(--oxcu-line);color:var(--oxcu-fg);box-shadow:0 1px 2px rgba(16,16,20,.06)}
+.oxcu-tab:focus-visible,.oxcu-face:focus-visible,.oxcu-all:focus-visible,.oxcu-btn:focus-visible,.oxcu-del:focus-visible,.oxcu-ins:focus-visible,.oxcu-pinb:focus-visible,.oxcu-res:focus-visible{outline:2px solid #3B82F6;outline-offset:2px}
+
+/* page */
+.oxcu-page{position:relative;border:1px solid var(--oxcu-line);border-radius:12px;background:var(--oxcu-bg);overflow:clip}
+.oxcu-hd{display:flex;align-items:center;gap:8px;height:44px;padding:0 6px 0 14px;border-bottom:1px solid var(--oxcu-line);white-space:nowrap}
+.oxcu-ttl{display:inline-flex;align-items:center;gap:7px;min-width:0;color:var(--oxcu-mute);font-size:13px;font-weight:500}
+.oxcu-ttl svg{flex:none}
+.oxcu-ttl span{overflow:hidden;text-overflow:ellipsis}
+.oxcu-faces{display:flex;align-items:center;gap:3px;margin-right:4px}
+.oxcu-face{position:relative;display:grid;place-items:center;width:24px;height:24px;padding:0;border:0;border-radius:50%;background:none;cursor:pointer;opacity:.62;transition:opacity .2s,background .2s}
+.oxcu-face[data-in="true"]{opacity:1}
+.oxcu-face[data-in="true"]::before{content:"";position:absolute;inset:1px;border-radius:50%;box-shadow:inset 0 0 0 1px var(--oxcu-line)}
+.oxcu-face[aria-pressed="true"]{background:var(--oxcu-tint);opacity:1}
+.oxcu-face[data-dim="true"]{opacity:.35}
+.oxcu-face .oxyn-brand{position:relative}
+.oxcu-arc{position:absolute;inset:0;transform:rotate(-90deg);pointer-events:none}
+.oxcu-arc circle{stroke-dasharray:28 100;animation:oxcu-arc 1.6s linear infinite,oxcu-in .5s ease-out both}
+@keyframes oxcu-arc{from{stroke-dashoffset:0}to{stroke-dashoffset:-100}}
+@keyframes oxcu-in{from{opacity:0}to{opacity:1}}
+.oxcu-cnt{font-size:12.5px;color:var(--oxcu-mute);font-variant-numeric:tabular-nums}
+.oxcu-tot{font-size:13px;font-weight:600;color:var(--oxcu-fg);font-variant-numeric:tabular-nums}
+.oxcu-all{height:28px;margin-left:2px;padding:0 11px;border:0;border-radius:7px;background:var(--oxcu-ink);color:var(--oxcu-inkfg);font:inherit;font-size:13px;font-weight:600;line-height:1;cursor:pointer;transition:background .2s,opacity .2s}
+.oxcu-all:disabled{background:var(--oxcu-alldis);color:var(--oxcu-bg);cursor:default}
+@container (max-width:520px){.oxcu-cnt{display:none}.oxcu-ttl span{max-width:110px}.oxcu-doc{padding:22px 18px 28px 30px}}
+
+/* body */
+.oxcu-body{position:relative;overflow:clip;animation:oxcu-in .3s ease-out both}
+.oxcu-body[data-fade="true"]{-webkit-mask-image:linear-gradient(to bottom,#000 calc(100% - 110px),transparent);mask-image:linear-gradient(to bottom,#000 calc(100% - 110px),transparent)}
+.oxcu-doc{padding:30px 44px 40px;color:var(--oxcu-txt)}
+.oxcu-doc::after{content:"";display:block;clear:both}
+.oxcu-blk{position:relative;margin:0}
+.oxcu-h2{margin:0 0 12px;color:var(--oxcu-fg);font-size:20px;font-weight:600;line-height:1.3;letter-spacing:-.01em}
+.oxcu-h3{margin:22px 0 8px;color:var(--oxcu-fg);font-size:14.5px;font-weight:600;line-height:1.4}
+.oxcu-p{margin:0 0 14px}
+.oxcu-code{margin:0 0 18px;padding:12px 14px;border-radius:8px;background:var(--oxcu-code);color:var(--oxcu-txt);font:12.5px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre-wrap}
+.oxcu-code code{font:inherit}
+.oxcu-ul{margin:0 0 14px;padding-left:20px}
+.oxcu-ul li{margin:0 0 4px}
+.oxcu-ul li::marker{color:var(--oxcu-faint)}
+
+/* image */
+.oxcu-iw[data-float="left"]{float:left;width:100%;max-width:none;margin:0;display:contents}
+.oxcu-img{position:relative;margin:4px 0 14px;border-radius:8px;background:var(--oxcu-img);transition:width .45s cubic-bezier(.2,.8,.2,1)}
+.oxcu-img[data-float="left"]{float:left;margin:4px 24px 12px 0}
+.oxcu-img[data-float="right"]{float:right;margin:4px 0 12px 24px}
+.oxcu-art{position:absolute;inset:0;border-radius:inherit;overflow:clip;opacity:1;transition:opacity .5s;background:radial-gradient(120% 90% at 18% 110%,#F4B7A6 0,transparent 55%),radial-gradient(90% 80% at 85% -10%,#B7C7F4 0,transparent 60%),linear-gradient(135deg,#F6E7DA,#E3E7F7)}
+.oxcu-img[data-loading="true"] .oxcu-art{background:linear-gradient(100deg,transparent 30%,var(--oxcu-shim) 50%,transparent 70%) var(--oxcu-img);background-size:220% 100%;animation:oxcu-shim 1.4s ease-in-out infinite}
+@keyframes oxcu-shim{from{background-position:120% 0}to{background-position:-120% 0}}
+.oxcu-img[data-held="true"]{outline:1.5px solid var(--oxcu-ink);outline-offset:0}
+.oxcu-hdl{position:absolute;width:8px;height:8px;border:1.5px solid var(--oxcu-ink);border-radius:2px;background:var(--oxcu-bg)}
+.oxcu-hdl[data-c="tl"]{left:-4px;top:-4px}.oxcu-hdl[data-c="tr"]{right:-4px;top:-4px}
+.oxcu-hdl[data-c="bl"]{left:-4px;bottom:-4px}.oxcu-hdl[data-c="br"]{right:-4px;bottom:-4px}
+.oxcu-size{position:absolute;left:50%;bottom:-24px;transform:translateX(-50%);padding:1px 6px;border-radius:5px;background:var(--oxcu-ink);color:var(--oxcu-inkfg);font-size:11px;font-weight:500;line-height:16px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.oxcu-ipt{position:absolute;left:50%;top:50%}
+.oxcu-ipt[data-corner="true"]{left:100%;top:100%}
+
+/* pointers */
+.oxcu-anc{position:relative;display:inline-block;width:0;height:1.25em;vertical-align:text-bottom;line-height:normal;z-index:3;pointer-events:none;transition:opacity .25s}
+.oxcu-ipt .oxcu-anc{display:block;height:0}
+.oxcu-anc[data-fade="true"]{opacity:.28}
+.oxcu-caret{position:absolute;left:-.75px;top:.05em;width:1.5px;height:1.15em;border-radius:1px}
+.oxcu-cur{position:absolute;left:-2px;top:.72em;animation:oxcu-pop .28s cubic-bezier(.2,.9,.3,1.3) both}
+.oxcu-ipt .oxcu-cur{top:-2px}
+@keyframes oxcu-pop{from{transform:scale(.4);opacity:0}to{transform:none;opacity:1}}
+.oxcu-ptr{display:block;filter:drop-shadow(0 1px 1.5px rgba(0,0,0,.22))}
+.oxcu-flag{position:absolute;left:13px;top:15px;display:flex;flex-direction:column;gap:1px;min-width:max-content;padding:6px 8px 6px 9px;border-radius:9px;background:var(--oxcu-ink);color:var(--oxcu-inkfg);box-shadow:var(--oxcu-flagsh);white-space:nowrap;font-size:12px;line-height:1.3}
+.oxcu-flag::after{content:"";position:absolute;left:10px;right:10px;bottom:-5px;height:8px;border-radius:50%;background:linear-gradient(90deg,#E879F9,#818CF8 55%,#60A5FA);filter:blur(5px);opacity:.75;z-index:-1}
+.oxcu-fl1{display:flex;align-items:center;gap:8px}
+.oxcu-fl1 b{font-weight:600}
+.oxcu-fc{padding:0 5px;border-radius:4px;background:var(--oxcu-inkchip);color:var(--oxcu-inkfg);opacity:.85;font-size:11px;font-weight:600;line-height:16px;font-variant-numeric:tabular-nums}
+.oxcu-fl2{color:var(--oxcu-inkmute);font-size:11.5px;animation:oxcu-slide .3s ease-out both}
+@keyframes oxcu-slide{from{transform:translateX(-6px);opacity:0}to{transform:none;opacity:1}}
+
+/* selections and suggestions */
+.oxcu-sel{border-radius:3px;background:var(--oxcu-sel);box-decoration-break:clone;-webkit-box-decoration-break:clone;animation:oxcu-in .3s ease-out both;transition:opacity .25s}
+.oxcu-sel[data-fade="true"],.oxcu-sg[data-fade="true"]{opacity:.45}
+.oxcu-sg{position:relative}
+.oxcu-del{color:var(--oxcu-sc,var(--oxcu-faint));text-decoration:line-through;text-decoration-thickness:1px;opacity:.75;cursor:pointer;border-radius:3px;outline-offset:1px}
+.oxcu-ins{color:var(--oxcu-sc,var(--oxcu-fg));text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:3px;background:var(--oxcu-insbg);border-radius:3px;animation:oxcu-in .3s ease-out both}
+.oxcu-ins[role="button"]{cursor:pointer}
+.oxcu-del[data-open="true"],.oxcu-ins[data-open="true"]{background:var(--oxcu-sel)}
+.oxcu-swin{position:absolute;left:0;top:calc(100% + 6px);z-index:6;display:flex;flex-direction:column;gap:6px;width:max-content;max-width:260px;padding:10px 10px 10px 12px;border:1px solid var(--oxcu-popline);border-radius:12px;background:var(--oxcu-pop);color:#18181B;box-shadow:var(--oxcu-popsh);font:13px/1.4 inherit;font-weight:400;letter-spacing:0;text-decoration:none;white-space:normal;cursor:default;animation:oxcu-pop .18s cubic-bezier(.2,.8,.2,1) both}
+.oxcu .oxcu-swin .oxcu-mute{color:#71717A}
+.oxcu-swh{display:flex;align-items:center;gap:6px;font-size:13px}
+.oxcu-swh b{font-weight:600}
+.oxcu-swm{display:grid;place-items:center;width:18px;height:18px;border-radius:50%;background:#F1F1F3}
+.oxcu-swn{color:#3F3F46;font-size:13px}
+.oxcu-swb{display:flex;justify-content:flex-end;gap:6px;margin-top:2px}
+.oxcu-btn{height:28px;padding:0 11px;border:1px solid #E4E4E7;border-radius:7px;background:#FFFFFF;color:#18181B;font:inherit;font-size:12.5px;font-weight:600;cursor:pointer}
+.oxcu-btn[data-k="accept"]{border-color:#111114;background:#111114;color:#FFFFFF}
+
+/* comments */
+.oxcu-pin{position:absolute;z-index:4;width:27px;height:27px}
+.oxcu-pin[data-fade="true"]{opacity:.4}
+.oxcu-pinb{display:grid;place-items:center;width:27px;height:27px;padding:0;border:0;border-radius:50% 50% 50% 4px;background:var(--oxcu-ink);box-shadow:var(--oxcu-flagsh);cursor:pointer;animation:oxcu-pop .3s cubic-bezier(.2,.9,.3,1.3) both}
+.oxcu-cwin{position:absolute;left:0;top:0;display:none;flex-direction:column;gap:6px;width:240px;padding:10px 10px 10px 12px;border-radius:12px 12px 12px 4px;background:var(--oxcu-ink);color:var(--oxcu-inkfg);box-shadow:var(--oxcu-popsh);font-size:13px;line-height:1.4;transform-origin:0 0}
+.oxcu-pin[data-open="true"] .oxcu-cwin,.oxcu-pin:hover .oxcu-cwin,.oxcu-pin:focus-within .oxcu-cwin{display:flex;animation:oxcu-grow .22s cubic-bezier(.2,.8,.2,1) both}
+.oxcu-pin[data-open="true"] .oxcu-pinb,.oxcu-pin:hover .oxcu-pinb,.oxcu-pin:focus-within .oxcu-pinb{visibility:hidden}
+.oxcu-pin:hover,.oxcu-pin:focus-within,.oxcu-pin[data-open="true"]{z-index:7}
+@keyframes oxcu-grow{from{transform:scale(.2);opacity:0}to{transform:none;opacity:1}}
+.oxcu-cwh{display:flex;align-items:center;gap:6px}
+.oxcu-cwh b{font-weight:600}
+.oxcu-cwin .oxcu-swm{background:var(--oxcu-inkchip)}
+.oxcu-cnow{color:var(--oxcu-inkmute);font-size:11.5px}
+.oxcu-ctx{min-height:18px;color:var(--oxcu-inkfg);opacity:.92;white-space:normal}
+.oxcu-crow{display:flex;gap:6px}
+.oxcu-rep{flex:1;min-width:0;height:30px;padding:0 9px;border:0;border-radius:8px;background:var(--oxcu-inkchip);color:var(--oxcu-inkfg);font:inherit;font-size:12.5px;outline:none}
+.oxcu-rep::placeholder{color:var(--oxcu-inkmute)}
+.oxcu-res{display:grid;place-items:center;width:30px;height:30px;padding:0;border:0;border-radius:8px;background:var(--oxcu-inkfg);color:var(--oxcu-ink);cursor:pointer}
+
+/* table */
+.oxcu-tw{margin-top:6px;border:1px solid var(--oxcu-line);border-radius:10px;overflow:clip}
+.oxcu-tbl{width:100%;border-collapse:collapse;table-layout:fixed;font-size:13.5px}
+.oxcu-tr{height:40px;border-top:1px solid var(--oxcu-line);animation:oxcu-row .35s cubic-bezier(.2,.8,.2,1) both}
+.oxcu-tr[data-head="true"]{border-top:0}
+.oxcu-td{position:relative;padding:0 12px;text-align:left;color:var(--oxcu-fg);font-weight:400;white-space:nowrap;overflow:visible}
+.oxcu-tr[data-head="true"] .oxcu-td{color:var(--oxcu-mute);font-size:12.5px}
+.oxcu-tbl col,.oxcu-tr .oxcu-td:first-child{width:36%}
+.oxcu-tr[data-add="true"] .oxcu-td{color:var(--oxcu-mute);font-size:13px}
+.oxcu-add{display:inline-flex;align-items:center;gap:6px}
+@keyframes oxcu-row{from{transform:translateY(-4px);opacity:0}to{transform:none;opacity:1}}
+.oxcu-pill{display:inline-block;padding:1px 7px;border-radius:5px;font-size:12px;font-weight:500;line-height:18px}
+.oxcu-pill[data-tone="blue"]{background:var(--oxcu-blue-bg);color:var(--oxcu-blue-fg)}
+.oxcu-pill[data-tone="grey"]{background:var(--oxcu-grey-bg);color:var(--oxcu-grey-fg)}
+.oxcu-pill[data-tone="amber"]{background:var(--oxcu-amber-bg);color:var(--oxcu-amber-fg)}
+.oxcu-pill[data-tone="green"]{background:var(--oxcu-green-bg);color:var(--oxcu-green-fg)}
+.oxcu-pill[data-tone="red"]{background:var(--oxcu-red-bg);color:var(--oxcu-red-fg)}
+.oxcu-pill .oxcu-ins{color:inherit;background:none}
+.oxcu-pill .oxcu-del{color:inherit}
+
+/* Classic: the page floats as raised paper with a grey header band */
+:is([data-cstyle="classic"] .oxcu:not([data-style="clean"]),.oxcu[data-style="classic"]) .oxcu-page{border-radius:16px;background:var(--oxcu-band);box-shadow:var(--oxcu-pagesh)}
+:is([data-cstyle="classic"] .oxcu:not([data-style="clean"]),.oxcu[data-style="classic"]) .oxcu-hd{border-bottom:0;height:46px}
+:is([data-cstyle="classic"] .oxcu:not([data-style="clean"]),.oxcu[data-style="classic"]) .oxcu-body{margin:0 5px 5px;border-radius:12px;background:var(--oxcu-bg);box-shadow:0 1px 2px rgba(16,16,20,.06)}
+:is([data-cstyle="classic"] .oxcu:not([data-style="clean"]),.oxcu[data-style="classic"]) .oxcu-tab[aria-selected="true"]{box-shadow:0 1px 3px rgba(16,16,20,.12)}
+:is([data-cstyle="classic"] .oxcu:not([data-style="clean"]),.oxcu[data-style="classic"]) .oxcu-flag{border-radius:7px}
+
+/* Narrow: compact flags (name only) and a suggestion window that stays inside the card. After the base rules so it wins. */
+@container (max-width:520px){.oxcu-fc,.oxcu-fl2{display:none}.oxcu-flag{padding:4px 7px}.oxcu-swin{max-width:min(260px,62cqw)}}
+
+@media (prefers-reduced-motion:reduce){.oxcu *{animation:none!important;transition:none!important}}
