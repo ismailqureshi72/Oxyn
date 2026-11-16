@@ -1,7 +1,9 @@
 //! Theme Selector family (variants 3): how an app looks – the Background picker (picture tiles,
 //! a tile for your own picture and a texture laid over it), the Theme grid (eight mini-window
-//! swatches and a font size), and two Oxyn originals: Theme split (two themes over one sample
-//! window, a divider between them) and Accent and density (accent, spacing and corners).
+//! swatches and a font size), and four Oxyn originals: Theme split (two themes over one sample
+//! window, a divider between them), Accent and density (accent, spacing and corners), Theme
+//! schedule (light and dark by the clock) and Type scale (family, size and spacing on a reading
+//! sample).
 //! Behaviour only: the pictures are drawn by us, and every name, colour and line of copy is our own.
 
 /// One background tile.
@@ -334,6 +336,114 @@ pub fn rows_fit(h: u32, d: &Density) -> u32 {
     (h + d.gap) / per
 }
 
+/// Theme schedule: minutes since midnight as `HH:MM`.
+pub fn fmt_hm(min: u32) -> String {
+    let m = min % (24 * 60);
+    format!("{:02}:{:02}", m / 60, m % 60)
+}
+
+/// Sunrise and sunset of the demo place, in minutes (06:42 and 17:18).
+pub const SUN: (u32, u32) = (6 * 60 + 42, 17 * 60 + 18);
+
+/// Whether the light theme shows at `at` for a light window `from`–`to` (minutes; a window that
+/// wraps past midnight works too).
+pub fn light_at(at: u32, from: u32, to: u32) -> bool {
+    let at = at % 1440;
+    if from == to {
+        return true;
+    }
+    if from < to {
+        at >= from && at < to
+    } else {
+        at >= from || at < to
+    }
+}
+
+/// The schedule modes: (key, label).
+pub fn sched_modes() -> Vec<(&'static str, &'static str)> {
+    vec![
+        ("light", "Light"),
+        ("dark", "Dark"),
+        ("sun", "Sun"),
+        ("custom", "Custom"),
+    ]
+}
+
+/// What a mode shows at `at`: `true` for light.
+pub fn sched_light(mode: &str, at: u32, from: u32, to: u32) -> bool {
+    match mode {
+        "light" => true,
+        "dark" => false,
+        "sun" => light_at(at, SUN.0, SUN.1),
+        _ => light_at(at, from, to),
+    }
+}
+
+/// Minutes until the next switch for a window (`None` when it never switches).
+pub fn next_switch(at: u32, from: u32, to: u32) -> Option<u32> {
+    if from == to {
+        return None;
+    }
+    let at = at % 1440;
+    let until = |t: u32| (t + 1440 - at) % 1440;
+    let a = until(from);
+    let b = until(to);
+    let a = if a == 0 { 1440 } else { a };
+    let b = if b == 0 { 1440 } else { b };
+    Some(a.min(b))
+}
+
+/// "in 3 h 20 min", "in 45 min".
+pub fn fmt_in(min: u32) -> String {
+    match (min / 60, min % 60) {
+        (0, m) => format!("in {m} min"),
+        (h, 0) => format!("in {h} h"),
+        (h, m) => format!("in {h} h {m} min"),
+    }
+}
+
+/// Type scale: the text sizes on the A− / A+ steps, in px.
+pub const TYPE_STEPS: [u32; 6] = [13, 14, 15, 16, 18, 20];
+
+/// Type families: (key, label, average glyph width as a share of the size).
+pub fn type_families() -> Vec<(&'static str, &'static str, f64)> {
+    vec![
+        ("sans", "Sans", 0.52),
+        ("serif", "Serif", 0.48),
+        ("mono", "Mono", 0.6),
+    ]
+}
+
+/// Line spacing: (key, label, line height).
+pub fn type_spacing() -> Vec<(&'static str, &'static str, f64)> {
+    vec![
+        ("tight", "Tight", 1.3),
+        ("normal", "Normal", 1.5),
+        ("relaxed", "Relaxed", 1.75),
+    ]
+}
+
+/// About how many characters fit one line `width` px wide.
+pub fn chars_per_line(width: f64, size: u32, family: &str) -> u32 {
+    let w = type_families()
+        .iter()
+        .find(|f| f.0 == family)
+        .map(|f| f.2)
+        .unwrap_or(0.52);
+    (width / (size.max(1) as f64 * w)).round() as u32
+}
+
+/// How a line length reads: under 45 short, over 85 long, else comfortable.
+pub fn measure_word(chars: u32) -> &'static str {
+    if chars < 45 {
+        "short lines"
+    } else if chars > 85 {
+        "long lines"
+    } else {
+        "comfortable"
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -381,5 +491,22 @@ mod tests {
         assert_eq!(rows_fit(46, &d[2]), 1);
         assert_eq!(accents()[0].key, "graphite");
         assert_eq!(corners().len(), 3);
+    }
+
+    #[test]
+    fn schedule_and_type() {
+        assert_eq!(fmt_hm(7 * 60 + 5), "07:05");
+        assert!(light_at(12 * 60, 7 * 60, 19 * 60));
+        assert!(!light_at(22 * 60, 7 * 60, 19 * 60));
+        assert!(light_at(23 * 60, 22 * 60, 6 * 60));
+        assert!(!sched_light("dark", 600, 0, 1));
+        assert!(sched_light("sun", 12 * 60, 0, 0));
+        assert_eq!(next_switch(18 * 60, 7 * 60, 19 * 60), Some(60));
+        assert_eq!(next_switch(0, 5, 5), None);
+        assert_eq!(fmt_in(200), "in 3 h 20 min");
+        assert_eq!(fmt_in(45), "in 45 min");
+        assert_eq!(chars_per_line(520.0, 16, "sans"), 63);
+        assert_eq!(measure_word(63), "comfortable");
+        assert_eq!(measure_word(30), "short lines");
     }
 }
