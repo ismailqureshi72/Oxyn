@@ -45,6 +45,7 @@
 //! - [`memoryfid`]: fidelity batch, family B part 9: Memory Panel groups, filter, search, status and undo quote.
 //! - [`runningfid`]: fidelity batch, family B part 9: Running Now tasks, steps, counts and pill label.
 //! - [`planfid`]: fidelity batch, family B part 9: Plan vs Actual schedule, slips, knock-on shifts and ETA.
+//! - [`rootfid`]: fidelity batch, family B part 9: Root Cause Tree checks, gates, found route and evidence.
 //! - [`answers`]: fidelity batch, family A: AI Answer markup and streaming, Cited Answer
 //!   sentences and quotes, Message Actions, Thinking Loader phases, Thinking State steps and the
 //!   Writing Assistant's sample writer and dictation.
@@ -89,6 +90,7 @@ pub mod plan;
 pub mod planfid;
 pub mod queuefid;
 pub mod recapfid;
+pub mod rootfid;
 pub mod runningfid;
 pub mod seqfid;
 pub mod text;

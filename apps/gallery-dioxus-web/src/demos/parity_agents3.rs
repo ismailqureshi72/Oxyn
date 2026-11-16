@@ -11,12 +11,13 @@ use oxyn_core::{
         judgefid::{jb_demo, jb_demo_verdicts},
         parallelfid::{PaStatus, pa_at, pa_demo},
         planfid::{pv_actual_total, pv_demo},
+        rootfid::{rc_demo, rc_len},
         runningfid::{RnState, rn_demo},
     },
 };
 use oxyn_dioxus::{
     DecisionTree, DelegateBoard, FallbackChain, JudgeBracket, MemoryPanel, ParallelAttempts,
-    PlanVsActual, RunningNow,
+    PlanVsActual, RootCauseTree, RunningNow,
 };
 
 use super::{Code, mk, sel, var};
@@ -925,6 +926,140 @@ fn plan_vs_actual_demo(style: crate::Control) -> Demo {
     }
 }
 
+// ---------- Root Cause Tree ----------
+
+fn root_cause_tree(v: &Vals, now: ClockMs) -> Element {
+    let mut msg = use_signal(String::new);
+    let key = format!("{}{}{}", v.s("style"), v.s("state"), v.s("width"));
+    let state = v.s("state");
+    let f = rc_demo();
+    let end = rc_len(&f);
+    let (at, selected) = match state {
+        "live" => (None, None),
+        "checking" => (Some(40), None),
+        "ruled-out" => (Some(160), Some("network".to_string())),
+        "pending" => (Some(end), Some("cache".to_string())),
+        "failure" => (Some(end), Some("fail".to_string())),
+        _ => (Some(end), Some("round".to_string())),
+    };
+    let w = if v.s("width") == "narrow" {
+        "380px"
+    } else {
+        "720px"
+    };
+    rsx! {
+        div { "data-k": "{key}", key: "{key}", "data-state": "{state}", style: "width:{w};max-width:100%;display:flex;flex-direction:column;gap:8px",
+            RootCauseTree { now, failure: Some(f), at, selected, style: cstyle(v),
+                on_select: move |id: String| msg.set(format!("onSelect({id:?})")),
+                on_retry: move |id: String| msg.set(format!("onRetry({id:?})")),
+                on_fix: move |id: String| msg.set(format!("onFix({id:?})")) }
+            {status(msg)}
+        }
+    }
+}
+
+fn root_cause_tree_code(_: &Vals) -> String {
+    Code::new("RootCauseTree")
+        .raw("failure", "Some(run.fault_tree())")
+        .raw("at", "Some(run.elapsed_secs())")
+        .raw("now", "clock.now()")
+        .raw("on_fix", "move |id| agent.fix(id)")
+        .done()
+}
+
+fn root_cause_tree_demo(style: crate::Control) -> Demo {
+    Demo {
+        controls: vec![
+            style,
+            sel(
+                "state",
+                "State",
+                &[
+                    "live",
+                    "checking",
+                    "ruled-out",
+                    "found",
+                    "pending",
+                    "failure",
+                ],
+                "live",
+            ),
+            sel("width", "Width", &["wide", "narrow"], "wide"),
+        ],
+        variants: vec![
+            var(
+                "live",
+                "The agent works through its guesses one by one; when both halves of the AND branch hold, the route up to the failure turns violet and the other branches fade. Then it starts over.",
+                &[],
+            ),
+            var(
+                "checking",
+                "Early on: the first hypothesis spins as Checking, the rest are Not checked and the header says Investigating.",
+                &[("state", "checking")],
+            ),
+            var(
+                "ruled-out",
+                "A ruled-out guess picked: its verdict and the tool call that settled it.",
+                &[("state", "ruled-out")],
+            ),
+            var(
+                "found",
+                "A root cause picked: the diff that caused it, with Retry from here and Fix it.",
+                &[("state", "found")],
+            ),
+            var(
+                "pending",
+                "A branch that was never needed: Not checked, dimmed off the found route.",
+                &[("state", "pending")],
+            ),
+            var(
+                "failure",
+                "The failure itself picked: Cause found, and what went wrong in one line.",
+                &[("state", "failure")],
+            ),
+            var(
+                "narrow",
+                "Under 600 px the tree becomes an indented outline with the gates inline.",
+                &[("state", "found"), ("width", "narrow")],
+            ),
+            var(
+                "classic",
+                "Classic style: one framed card with a header band and squarer nodes.",
+                &[("style", "classic"), ("state", "found")],
+            ),
+        ],
+        render: root_cause_tree,
+        code: root_cause_tree_code,
+        keyboard: vec![
+            ("Tab", "Into the tree, then the evidence buttons"),
+            ("← / → / ↑ / ↓", "Previous or next node, depth first"),
+            ("Home / End", "The failure, or the last hypothesis"),
+        ],
+        a11y: vec![
+            "The tree is role=tree; every node is a treeitem button with its level, selection and status in its name.",
+            "Status is always in words (Ruled out, Confirmed, Root cause), never colour alone; the counts are a status region.",
+            "Reduced motion stops the spinner, the fades and the scale-in.",
+        ],
+        responsive: vec![
+            "Wide: a top-down tree, cards 124 px, gates between levels and elbows joining siblings.",
+            "Under 600 px: an indented outline, full-width cards, the evidence below.",
+        ],
+        height: 560,
+        live: true,
+        align: Align::Start,
+        ..mk(
+            "root-cause-tree",
+            "Root Cause Tree",
+            "tools",
+            "Why a run failed, drawn as a fault tree: guesses under OR and AND gates are checked one at a time and ruled out or confirmed, the confirmed route to the failure is highlighted, and any node opens its verdict and evidence.",
+            "RootCauseTree",
+            "RootCauseTreeEl",
+            "root-cause-tree",
+            "parity/rootfid.rs",
+        )
+    }
+}
+
 /// Family B part 8 demos.
 pub(crate) fn demos() -> Vec<Demo> {
     let style = || sel("style", "Style", &["clean", "classic"], "clean");
@@ -935,6 +1070,7 @@ pub(crate) fn demos() -> Vec<Demo> {
         memory_panel_demo(style()),
         running_now_demo(style()),
         plan_vs_actual_demo(style()),
+        root_cause_tree_demo(style()),
         Demo {
             controls: vec![
                 style(),

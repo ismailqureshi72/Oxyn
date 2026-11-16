@@ -44,6 +44,7 @@ mod planfid;
 mod queuefid;
 mod recapfid;
 mod review;
+mod rootfid;
 mod run;
 mod runningfid;
 mod seqfid;
@@ -98,6 +99,7 @@ pub use review::{
     DiffTimelineEl, DiffViewerEl, HunkAct, IdAct, ImageCompareEl, InlineDiffEl, ReviewCardEl,
     ReviewCenterEl,
 };
+pub use rootfid::RootCauseTreeEl;
 pub use run::{
     ActivityFeedEl, AgentPlanEl, AgentRunEl, AgentStatusEl, AgentTrailEl, AgentTreeEl, BreakdownEl,
     ChecklistEl, CountdownEl, CounterEl, FleetEl, FlowStepperEl, OrchestratorEl, ReadinessEl,
