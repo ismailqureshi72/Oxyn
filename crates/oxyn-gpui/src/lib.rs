@@ -47,6 +47,7 @@ pub use parity::JudgeBracketEl;
 pub use parity::MemoryPanelEl;
 pub use parity::ParallelAttemptsEl;
 pub use parity::PlanVsActualEl;
+pub use parity::RateLimitPlannerEl;
 pub use parity::RootCauseTreeEl;
 pub use parity::RunningNowEl;
 pub use parity::ScheduledRunsEl;
