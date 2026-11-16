@@ -11,6 +11,7 @@ mod collabfid;
 mod compose;
 mod costfid;
 mod crewfid;
+mod ctxefffid;
 mod ctxmapfid;
 mod cursorsfid;
 mod delegatefid;
@@ -70,6 +71,7 @@ pub use compose::{
 };
 pub use costfid::CostWaterfall;
 pub use crewfid::AgentCrew;
+pub use ctxefffid::ContextEffortMenu;
 pub use ctxmapfid::ContextMap;
 pub use cursorsfid::AgentCursors;
 pub use delegatefid::DelegateBoard;

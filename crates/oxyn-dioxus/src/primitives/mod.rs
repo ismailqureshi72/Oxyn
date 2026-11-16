@@ -81,6 +81,7 @@ pub const PRIMITIVES_CSS: &str = concat!(
     include_str!("../parity/delegatefid.css"),
     include_str!("../parity/fallbackfid.css"),
     include_str!("../parity/seqfid.css"),
+    include_str!("../parity/ctxefffid.css"),
     include_str!("../parity/effpillfid.css"),
     include_str!("../parity/efflistfid.css"),
     include_str!("../parity/reasonfid.css"),

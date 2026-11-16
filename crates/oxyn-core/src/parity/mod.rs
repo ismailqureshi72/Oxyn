@@ -54,6 +54,7 @@
 //! - [`difftlfid`]: the exact Diff Timeline run view (affectUI, family B part 9)
 //! - [`thinkfid`]: Thinking Selector family: effort scales, stepping and snapping, tick tint, the dotted max fill.
 //! - [`reasonfid`]: Thinking Selector: Reasoning panel keys, context labels
+//! - [`effmenufid`]: Thinking Selector menus: roving highlight, context windows, models with effort.
 //! - [`answers`]: fidelity batch, family A: AI Answer markup and streaming, Cited Answer
 //!   sentences and quotes, Message Actions, Thinking Loader phases, Thinking State steps and the
 //!   Writing Assistant's sample writer and dictation.
@@ -78,6 +79,7 @@ pub mod diff;
 pub mod difftlfid;
 pub mod dtreefid;
 pub mod edit;
+pub mod effmenufid;
 pub mod fallbackfid;
 pub mod fanfid;
 pub mod fidelity;
