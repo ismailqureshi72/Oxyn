@@ -244,7 +244,7 @@ pub fn GooeyAttachMenu(
     let g = use_goo(default_open);
     let uid = use_uid("oxgma");
     let mut said = use_signal(String::new);
-    let h = panel_height(&items, 330.0);
+    let h = panel_height(&items, 360.0);
     let up = side != "down";
     let pos = if up {
         format!("left:0;bottom:50px;width:280px;height:{h}px")
@@ -391,7 +391,7 @@ pub fn GooeyComposer(
     let mut text = use_signal(String::new);
     let mut chips = use_signal(Vec::<(u32, &'static str, &'static str)>::new);
     let mut said = use_signal(String::new);
-    let ha = panel_height(&items, 300.0);
+    let ha = panel_height(&items, 360.0);
     let hm = panel_height(&models, 300.0);
     let pos_a = format!("left:0;right:0;bottom:calc(100% + 10px);height:{ha}px");
     let pos_m = format!("right:0;width:268px;bottom:calc(100% + 10px);height:{hm}px");

@@ -12,7 +12,7 @@ The attach drop-up on its own, for any toolbar: file types and sources pouring o
 | Part | Look |
 |---|---|
 | Button | 38 px, 13 px radius, grey; the + turns into × (45°) |
-| Sheet | 280 px, 16 px radius, card fill with a hairline drop-shadow, `panel_height` rows (scrolls inside 330 px) |
+| Sheet | 280 px, 16 px radius, card fill with a hairline drop-shadow, `panel_height` rows (all eight fit; scrolls past 360 px) |
 | Rows | 36 px: icon (file-type icon with badge, or a brand mark), label 13.5/500, hint 12.5 muted; group headings 11.5 muted |
 | Stem | 26 px wide neck between button and sheet while it opens |
 

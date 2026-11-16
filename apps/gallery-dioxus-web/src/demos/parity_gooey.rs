@@ -210,7 +210,7 @@ fn gooey_composer(v: &Vals, _now: ClockMs) -> Element {
         _ => String::new(),
     };
     rsx! {
-        div { key: "{key}", "data-k": "{key}", style: "width:560px;max-width:100%;display:flex;flex-direction:column;gap:10px;padding-top:330px",
+        div { key: "{key}", "data-k": "{key}", style: "width:560px;max-width:100%;display:flex;flex-direction:column;gap:10px;padding-top:370px",
             GooeyComposer { goo: v.f("goo") as f32, default_open: open,
                 on_send: move |t: String| msg.set(format!("onSend({t:?})")) }
             {status(msg)}
@@ -261,7 +261,7 @@ fn gooey_composer_demo() -> Demo {
         responsive: vec![
             "Up to 560 px; the + menu takes the composer's width, the model menu 268 px.",
         ],
-        height: 520,
+        height: 540,
         live: false,
         align: Align::Center,
         ..mk(

@@ -28,7 +28,7 @@ attach open · model open · closed.
 Triggers carry `aria-haspopup` and `aria-expanded`; the + menu is a `menu` of `menuitem`s, the model menu a `listbox` of `option`s with `aria-selected`, both followed with `aria-activedescendant`. ↑/↓ on a trigger opens its menu and moves focus in; Escape returns to the trigger; Tab closes. A press outside closes a menu the user opened.
 
 ## 6. Responsive
-The + menu takes the box's width; menus scroll inside 300 px.
+The + menu takes the box's width; the + menu shows all eight rows (scrolls past 360 px), the model menu scrolls past 300 px.
 
 ## 7. Known gaps
 Menus always open upward here (the solo menus take `side`); no measured flip to the roomier side yet. GPUI: static settled snapshot, no goo.
