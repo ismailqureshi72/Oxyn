@@ -47,6 +47,7 @@ mod review;
 mod rootfid;
 mod run;
 mod runningfid;
+mod schedfid;
 mod seqfid;
 mod text;
 mod toolmapfid;
@@ -107,6 +108,7 @@ pub use run::{
     TaskRowsEl, TreeTableEl,
 };
 pub use runningfid::RunningNowEl;
+pub use schedfid::ScheduledRunsEl;
 pub use seqfid::AgentSequenceEl;
 pub use text::{LoadingStateEl, ShimmerEl, SlotTextEl, ThinkingLoaderEl};
 pub use toolmapfid::ToolAccessMapEl;
