@@ -210,4 +210,5 @@ specified just as deeply. When we point at one component as an example, the stan
 | [reasoning-panel.md](reasoning-panel.md) | built v0.1 (variants 1, Thinking Selector) |
 | [effort-list.md](effort-list.md) | built v0.1 (variants 1, Thinking Selector) |
 | [effort-pill.md](effort-pill.md) | built v0.1 (variants 1, Thinking Selector) |
+| [context-effort-menu.md](context-effort-menu.md) | built v0.1 (variants 1, Thinking Selector) |
 | Every other component in [../component-taxonomy.md](../component-taxonomy.md) | to write in V2.2 |

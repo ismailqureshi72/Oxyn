@@ -4,9 +4,9 @@
 use dioxus::prelude::*;
 use oxyn_core::{
     ClockMs,
-    parity::thinkfid::{effort_scale, effort_scale_short, level_index},
+    parity::thinkfid::{effort_scale, effort_scale_api, effort_scale_short, level_index},
 };
-use oxyn_dioxus::{EffortList, EffortPill, EffortRuler, ReasoningPanel};
+use oxyn_dioxus::{ContextEffortMenu, EffortList, EffortPill, EffortRuler, ReasoningPanel};
 
 use super::{Code, mk, rng, sel, tog, var};
 use crate::{Align, Demo, Vals};
@@ -386,6 +386,93 @@ fn effort_pill_demo() -> Demo {
     }
 }
 
+// ---------- Context + Effort menu ----------
+
+fn context_effort_menu(v: &Vals, _now: ClockMs) -> Element {
+    let mut msg = use_signal(String::new);
+    let key = format!("{}{}{}", v.s("window"), v.s("effort"), v.s("open"));
+    let w = if v.s("window") == "1m" { 1 } else { 0 };
+    let e = level_index(&effort_scale_api(), v.s("effort"), 0);
+    let open = v.b("open");
+    rsx! {
+        div { key: "{key}", "data-k": "{key}", style: "min-height:390px;display:flex;flex-direction:column;gap:10px",
+            ContextEffortMenu { default_window: w, default_effort: e, default_open: open,
+                on_window_change: move |i: usize| msg.set(format!("onWindowChange({i})")),
+                on_effort_change: move |i: usize| msg.set(format!("onEffortChange({})", effort_scale_api()[i].label)) }
+            {status(msg)}
+        }
+    }
+}
+
+fn context_effort_menu_code(_: &Vals) -> String {
+    Code::new("ContextEffortMenu")
+        .s("model", "Atlas 6 Swift", "")
+        .raw("on_window_change", "move |i| window.set(i)")
+        .raw("on_effort_change", "move |i| effort.set(i)")
+        .done()
+}
+
+fn context_effort_menu_demo() -> Demo {
+    Demo {
+        controls: vec![
+            sel("window", "Context window", &["512k", "1m"], "512k"),
+            sel(
+                "effort",
+                "Effort",
+                &["default", "low", "medium", "high", "xhigh", "max"],
+                "default",
+            ),
+            tog("open", "Open", true),
+        ],
+        variants: vec![
+            var(
+                "open",
+                "Two groups in one dropdown: the context window, where 1M carries a “Higher usage” tag, and the effort from default to max.",
+                &[],
+            ),
+            var(
+                "big",
+                "1M window and max effort chosen; max is the one red word.",
+                &[("window", "1m"), ("effort", "max")],
+            ),
+            var(
+                "closed",
+                "Closed: the chip sums up both choices.",
+                &[("open", "false"), ("effort", "high")],
+            ),
+        ],
+        render: context_effort_menu,
+        code: context_effort_menu_code,
+        keyboard: vec![
+            ("↑ / ↓ on the chip", "Opens the menu"),
+            ("↑ / ↓ · Home / End", "One list across both groups (wraps)"),
+            (
+                "Enter / Space",
+                "Picks; the menu stays open so both can be set",
+            ),
+            ("Escape", "Closes back to the chip"),
+        ],
+        a11y: vec![
+            "Each group is role=group named by its heading; rows are menuitemradio with aria-checked.",
+            "The chip's name says the model and both choices, e.g. “Atlas 6 Swift, 512K · high”.",
+        ],
+        responsive: vec!["220 px menu; the chip ellipsises its summary when narrow."],
+        height: 440,
+        live: false,
+        align: Align::Center,
+        ..mk(
+            "context-effort-menu",
+            "Context + Effort menu",
+            CAT,
+            "One model chip whose dropdown sets both the context window (1M tagged “Higher usage”) and the effort, in two radio groups.",
+            "ContextEffortMenu",
+            "ContextEffortMenuEl",
+            "context-effort-menu",
+            "parity/ctxefffid.rs",
+        )
+    }
+}
+
 /// Every Thinking Selector demo, in sidebar order.
 pub(crate) fn demos() -> Vec<Demo> {
     vec![
@@ -393,5 +480,6 @@ pub(crate) fn demos() -> Vec<Demo> {
         reasoning_panel_demo(),
         effort_list_demo(),
         effort_pill_demo(),
+        context_effort_menu_demo(),
     ]
 }
