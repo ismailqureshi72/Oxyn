@@ -117,24 +117,28 @@ fn fallback_chain(v: &Vals, now: ClockMs) -> Element {
         "first" => {
             let mut a = fb_demo();
             a[0].outcome = FbOutcome::Ok;
+            a[0].tokens = 412;
+            a[0].cost = 0.0027;
             a
         }
-        "long" => {
+        "second" => {
             let mut a = fb_demo();
-            a[1].outcome = FbOutcome::Timeout;
-            a[2].outcome = FbOutcome::Error("400 · context too long".into());
+            a[1].outcome = FbOutcome::Ok;
+            a[1].tokens = 388;
+            a[1].cost = 0.0031;
             a
         }
         _ => fb_demo(),
     };
     let w = match v.s("width") {
         "narrow" => "380px",
-        _ => "760px",
+        "medium" => "560px",
+        _ => "680px",
     };
     rsx! {
         div { "data-k": "{key}", key: "{key}", "data-state": "{state}", style: "width:{w};max-width:100%;display:flex;flex-direction:column;gap:8px",
             FallbackChain { now, live, open, attempts: Some(attempts), style: cstyle(v),
-                on_replay: move |_| msg.set("onReplay()".into()),
+                on_retry: move |_| msg.set("onRetry()".into()),
                 on_open_change: move |i: Option<usize>| msg.set(format!("onOpenChange({i:?})")) }
             {status(msg)}
         }
@@ -145,6 +149,8 @@ fn fallback_chain_code(_: &Vals) -> String {
     Code::new("FallbackChain")
         .raw("attempts", "Some(router.attempts())")
         .raw("request", "req.summary()")
+        .raw("route", "\"router/auto\"")
+        .raw("on_retry", "move |_| router.retry(req)")
         .raw("now", "clock.now()")
         .done()
 }
@@ -302,67 +308,80 @@ pub(crate) fn demos() -> Vec<Demo> {
                 sel(
                     "chain",
                     "Chain",
-                    &["second", "first", "long", "fail"],
-                    "second",
+                    &["third", "first", "second", "fail"],
+                    "third",
                 ),
-                sel("width", "Width", &["wide", "narrow"], "wide"),
+                sel("width", "Width", &["wide", "medium", "narrow"], "wide"),
             ],
             variants: vec![
                 var(
                     "live",
-                    "The request leaves, a light runs to the first model, it is rate limited and the branch breaks red; the second one answers and runs on to the response.",
+                    "Plays and loops: a dotted light grows along each branch while that model is tried; the first is rate limited, the second runs out of time, the third answers and runs on to the response. Clock and cost tick in the header.",
                     &[],
                 ),
                 var(
                     "settled",
-                    "The finished chain: one failure, the answer, two models never asked.",
+                    "The finished run: two red breaks, the answer in green, one model never asked.",
                     &[("state", "settled")],
                 ),
                 var(
                     "first-try",
-                    "The first model answers – everything after it stays dashed and unused.",
+                    "The first model answers – everything after it stays dashed and is marked not needed.",
                     &[("state", "settled"), ("chain", "first")],
                 ),
                 var(
-                    "third-try",
-                    "Two failures with different reasons before the third model answers.",
-                    &[("state", "settled"), ("chain", "long")],
+                    "second-try",
+                    "One rate-limit break before the second model answers.",
+                    &[("state", "settled"), ("chain", "second")],
                 ),
                 var(
                     "all-failed",
-                    "Every model fails: red branches, a red status and no response.",
+                    "Every model fails: red branches, a red status, no response, and a Retry button in the header.",
                     &[("state", "settled"), ("chain", "fail")],
                 ),
                 var(
                     "details",
-                    "A model clicked: how long its try took and what happened next.",
+                    "A model opened: provider, its tag, then model, time against its budget, cost, status code, list price and the reason.",
                     &[("state", "details")],
                 ),
                 var(
+                    "medium",
+                    "Under 600 px the provider leaves the row and lives only in the details card.",
+                    &[("state", "settled"), ("width", "medium")],
+                ),
+                var(
                     "narrow",
-                    "Under 600 px the diagram becomes a list on a rail.",
+                    "Under 520 px the diagram becomes a vertical tree on a dashed rail.",
                     &[("state", "settled"), ("width", "narrow")],
                 ),
                 var(
                     "classic",
-                    "Classic style: grey header band, a stronger frame, flat nodes.",
+                    "Classic style: header band over a grey field, flatter nodes.",
                     &[("style", "classic"), ("state", "settled")],
                 ),
             ],
             render: fallback_chain,
             code: fallback_chain_code,
             keyboard: vec![
-                ("Tab", "Replay, then each model in order"),
-                ("Enter / Space", "Opens or closes a model's details"),
+                (
+                    "Tab",
+                    "Request, then each model in order, then the response – each shows its details card on focus",
+                ),
+                (
+                    "Enter / Space",
+                    "Pins a node's details card open or closes it",
+                ),
+                ("Escape", "Closes a pinned card"),
             ],
             a11y: vec![
-                "Each model is a button whose name carries its place in the order, the model and what happened to it.",
-                "The headline (trying, answered by, every model failed) is a status region.",
-                "The links are an aria-hidden SVG; the order is also the list order.",
+                "Each model is a button whose name carries its place in the order, model, provider and what happened to it; its details card is a role=tooltip that opens on hover, focus or click.",
+                "The header status (attempt k of n, answered, all failed) is a status region; failures are named in words, never colour alone.",
+                "The links are an aria-hidden SVG; the order is also the list order. Reduced motion stops the travelling light and the drawing.",
             ],
             responsive: vec![
                 "Wide: request, links, models, links, response in one row.",
-                "Under 600 px the links give way to a rail and the request, models and response stack.",
+                "Under 600 px the provider moves into the details card.",
+                "Under 520 px the links give way to a dashed rail and request, models and response stack.",
             ],
             height: 420,
             live: true,
@@ -371,7 +390,7 @@ pub(crate) fn demos() -> Vec<Demo> {
                 "fallback-chain",
                 "Fallback Chain",
                 "tools",
-                "Which model actually served a request: the fallback order drawn as a small flow, each failed try marked with why, the one that answered carried through to the reply.",
+                "Which model actually served a request: the fallback order drawn as a small flow with a running clock and cost, each failed try broken red with its reason, the one that answered carried through to the response.",
                 "FallbackChain",
                 "FallbackChainEl",
                 "fallback-chain",
