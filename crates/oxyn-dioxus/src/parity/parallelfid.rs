@@ -25,9 +25,9 @@ fn icon(d: &'static str, size: u32) -> Element {
     rsx! { svg { width: "{size}", height: "{size}", view_box: "0 0 16 16", fill: "none", stroke: "currentColor", stroke_width: "1.5", stroke_linecap: "round", stroke_linejoin: "round", "aria-hidden": "true", path { d } } }
 }
 
-/// Parallel Attempts (affectUI): the same task tried several ways at once – each attempt a row
-/// with its model, approach, a live bar, the step it is on and its running cost; finished ones get
-/// a score, the best is marked and used, and you can switch to another.
+/// Parallel Attempts (affectUI parity): a best-of-N race over one task. Each attempt is a row
+/// (model, approach, progress, current step, cost so far); finished rows carry a score, the top
+/// score is tagged Best and used unless another is picked.
 #[component]
 pub fn ParallelAttempts(
     /// Attempts as they stand (controlled). When `None` the demo race plays from `scripts`.

@@ -70,7 +70,7 @@ affectUI,Notification Stack,https://www.affectui.com/components/notification-sta
 affectUI,OTP Input,https://www.affectui.com/components/otp-input,Components · Inputs,Free,otp-input,C2,#25,built
 affectUI,Parallel Attempts,https://www.affectui.com/components/parallel-attempts,Components · Agents,Pro,"parallel-attempts (exact, ref-1 notes, family B part 9), fanout-grid",C8,#32,built
 affectUI,Permission Request,https://www.affectui.com/components/permission-request,Components · Agents,Pro,"approval-card, permission-rules",,#28,built
-affectUI,Plan vs Actual,https://www.affectui.com/components/plan-vs-actual,Components · Agents,Pro,"plan-todo, trace-view",C7,#34,planned
+affectUI,Plan vs Actual,https://www.affectui.com/components/plan-vs-actual,Components · Agents,Pro,"plan-vs-actual (exact, ref-2 notes, family B part 9), plan-todo, trace-view",C7,#32,built
 affectUI,Popover,https://www.affectui.com/components/popover,Components · Navigation,Free,tooltip-popover,C3,#26,built
 affectUI,Profile Menu,https://www.affectui.com/components/profile-menu,Components · Navigation,Free,workspace-chrome,C11,#41,planned
 affectUI,Progress Tracker,https://www.affectui.com/components/progress-tracker,Components · Feedback,Free,plan-todo,C11,#41,planned
