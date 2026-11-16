@@ -52,6 +52,7 @@
 //! - [`tracefid`]: Trace Waterfall: an agent run as a live span tree on a time axis, folding, details per span.
 //! - [`fanfid`]: Fan-out Grid: a job's tasks as a live grid of status cells, filters, details, retry.
 //! - [`difftlfid`]: the exact Diff Timeline run view (affectUI, family B part 9)
+//! - [`thinkfid`]: Thinking Selector family: effort scales, stepping and snapping, tick tint, the dotted max fill.
 //! - [`answers`]: fidelity batch, family A: AI Answer markup and streaming, Cited Answer
 //!   sentences and quotes, Message Actions, Thinking Loader phases, Thinking State steps and the
 //!   Writing Assistant's sample writer and dictation.
@@ -104,6 +105,7 @@ pub mod runningfid;
 pub mod schedfid;
 pub mod seqfid;
 pub mod text;
+pub mod thinkfid;
 pub mod toolmapfid;
 pub mod tools;
 pub mod tracefid;
