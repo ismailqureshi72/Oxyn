@@ -4,9 +4,9 @@
 use dioxus::prelude::*;
 use oxyn_core::{
     ClockMs,
-    parity::thinkfid::{effort_scale, level_index},
+    parity::thinkfid::{effort_scale, effort_scale_short, level_index},
 };
-use oxyn_dioxus::{EffortRuler, ReasoningPanel};
+use oxyn_dioxus::{EffortList, EffortRuler, ReasoningPanel};
 
 use super::{Code, mk, rng, sel, tog, var};
 use crate::{Align, Demo, Vals};
@@ -225,7 +225,89 @@ fn reasoning_panel_demo() -> Demo {
     }
 }
 
+// ---------- Effort list ----------
+
+fn effort_list(v: &Vals, _now: ClockMs) -> Element {
+    let mut msg = use_signal(String::new);
+    let key = format!("{}{}", v.s("level"), v.s("open"));
+    let start = level_index(&effort_scale_short(), v.s("level"), 3);
+    let open = v.b("open");
+    rsx! {
+        div { key: "{key}", "data-k": "{key}", style: "min-height:250px;display:flex;flex-direction:column;justify-content:flex-end;gap:10px",
+            EffortList { default_value: Some(start), default_open: open,
+                on_change: move |i: usize| msg.set(format!("onChange({})", effort_scale_short()[i].label)) }
+            {status(msg)}
+        }
+    }
+}
+
+fn effort_list_code(_: &Vals) -> String {
+    Code::new("EffortList")
+        .raw("levels", "Some(effort_scale_short())")
+        .raw("value", "Some(effort())")
+        .raw("on_change", "move |i| effort.set(i)")
+        .done()
+}
+
+fn effort_list_demo() -> Demo {
+    Demo {
+        controls: vec![
+            sel(
+                "level",
+                "Level",
+                &["minimal", "low", "medium", "high"],
+                "high",
+            ),
+            tog("open", "Open", true),
+        ],
+        variants: vec![
+            var(
+                "open",
+                "The list open above its chip; High is checked and highlighted.",
+                &[],
+            ),
+            var(
+                "closed",
+                "Closed: only the chip, its caret pointing up to where the list opens.",
+                &[("open", "false")],
+            ),
+            var("minimal", "Minimal chosen.", &[("level", "minimal")]),
+        ],
+        render: effort_list,
+        code: effort_list_code,
+        keyboard: vec![
+            ("↑ / ↓ on the chip", "Opens the list on the chosen level"),
+            ("↑ / ↓ · Home / End", "Moves the highlight (wraps)"),
+            ("Enter / Space", "Picks the highlighted level and closes"),
+            ("Escape", "Closes back to the chip"),
+        ],
+        a11y: vec![
+            "The chip is a menu button (aria-haspopup, aria-expanded) named “Thinking effort: High”.",
+            "Levels are menuitemradio rows with aria-checked; the highlight follows aria-activedescendant.",
+            "Focus returns to the chip after a pick or Escape.",
+        ],
+        responsive: vec!["300 px list, never wider than the viewport minus 32 px."],
+        height: 320,
+        live: false,
+        align: Align::Center,
+        ..mk(
+            "effort-list",
+            "Effort list",
+            CAT,
+            "A chip with the current effort that opens a plain list of levels above it, the chosen one checked.",
+            "EffortList",
+            "EffortListEl",
+            "effort-list",
+            "parity/efflistfid.rs",
+        )
+    }
+}
+
 /// Every Thinking Selector demo, in sidebar order.
 pub(crate) fn demos() -> Vec<Demo> {
-    vec![effort_ruler_demo(), reasoning_panel_demo()]
+    vec![
+        effort_ruler_demo(),
+        reasoning_panel_demo(),
+        effort_list_demo(),
+    ]
 }
