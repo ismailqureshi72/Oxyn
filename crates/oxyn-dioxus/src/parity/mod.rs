@@ -138,7 +138,8 @@ pub use text::{
     TextMorph, ThinkingLoader, WordReveal,
 };
 pub use themefid::{
-    AccentDensity, BackgroundPicker, ThemeGrid, ThemeSchedule, ThemeSplit, TypeScale,
+    AccentDensity, AppIconPicker, BackgroundPicker, DisplayComfort, LightPlayground, ThemeGrid,
+    ThemeSchedule, ThemeSplit, TypeScale,
 };
 pub use toolmapfid::ToolAccessMap;
 pub use tools::{
