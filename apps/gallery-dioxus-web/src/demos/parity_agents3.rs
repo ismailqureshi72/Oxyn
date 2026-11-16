@@ -5,11 +5,12 @@ use dioxus::prelude::*;
 use oxyn_core::{
     ClockMs,
     parity::{
+        delegatefid::{db_agents, db_tasks},
         dtreefid::{dt_demo, dt_extra},
         fallbackfid::{FbOutcome, fb_demo, fb_demo_all_fail},
     },
 };
-use oxyn_dioxus::{DecisionTree, FallbackChain};
+use oxyn_dioxus::{DecisionTree, DelegateBoard, FallbackChain};
 
 use super::{Code, mk, sel, var};
 use crate::{Align, Demo, Vals};
@@ -148,11 +149,152 @@ fn fallback_chain_code(_: &Vals) -> String {
         .done()
 }
 
+// ---------- Delegate Board ----------
+
+fn delegate_board(v: &Vals, now: ClockMs) -> Element {
+    let mut msg = use_signal(String::new);
+    let key = format!("{}{}{}", v.s("style"), v.s("state"), v.s("width"));
+    let state = v.s("state");
+    let assigned: Vec<(String, String)> = match state {
+        "busy" | "full" => {
+            let mut a = vec![
+                ("t5".to_string(), "code".to_string()),
+                ("t2".to_string(), "research".to_string()),
+            ];
+            if state == "full" {
+                a.push(("t1".into(), "code".into()));
+            }
+            a
+        }
+        "done" => db_tasks()
+            .iter()
+            .map(|t| {
+                let a = db_agents()
+                    .into_iter()
+                    .find(|a| a.skills.contains(&t.skill))
+                    .map(|a| a.id)
+                    .unwrap_or_default();
+                (t.id.clone(), a)
+            })
+            .collect(),
+        _ => vec![],
+    };
+    let selected = match state {
+        "selected" => "t5",
+        "full" => "t3",
+        _ => "",
+    }
+    .to_string();
+    let assigned_ago_ms = if state == "done" { 600_000 } else { 0 };
+    let w = match v.s("width") {
+        "narrow" => "380px",
+        _ => "780px",
+    };
+    rsx! {
+        div { "data-k": "{key}", key: "{key}", "data-state": "{state}", style: "width:{w};max-width:100%;display:flex;flex-direction:column;gap:8px",
+            DelegateBoard { now, assigned, assigned_ago_ms, selected, ms_per_s: if state == "full" { 20_000 } else { 450 }, style: cstyle(v),
+                on_assign: move |(t, a): (String, String)| msg.set(format!("onAssign({t:?}, {a:?})")),
+                on_unassign: move |t: String| msg.set(format!("onUnassign({t:?})")) }
+            {status(msg)}
+        }
+    }
+}
+
+fn delegate_board_code(_: &Vals) -> String {
+    Code::new("DelegateBoard")
+        .raw("agents", "Some(team.agents())")
+        .raw("tasks", "Some(backlog.unassigned())")
+        .raw("now", "clock.now()")
+        .raw("on_assign", "move |(task, agent)| team.give(task, agent)")
+        .done()
+}
+
 /// Family B part 8 demos.
 pub(crate) fn demos() -> Vec<Demo> {
     let style = || sel("style", "Style", &["clean", "classic"], "clean");
     vec![
         decision_tree_demo(style()),
+        Demo {
+            controls: vec![
+                style(),
+                sel(
+                    "state",
+                    "State",
+                    &["empty", "selected", "busy", "full", "done"],
+                    "empty",
+                ),
+                sel("width", "Width", &["wide", "narrow"], "wide"),
+            ],
+            variants: vec![
+                var(
+                    "default",
+                    "Five tasks waiting, three agents idle. Pick a task, then click an agent, press its digit or drop the card on it.",
+                    &[],
+                ),
+                var(
+                    "selected",
+                    "A coding task picked: the agents that can code light up and the one with the most free slots says Best fit.",
+                    &[("state", "selected")],
+                ),
+                var(
+                    "busy",
+                    "Two tasks already handed over and running in their agents' columns; queued ones can be taken back.",
+                    &[("state", "busy")],
+                ),
+                var(
+                    "full",
+                    "The code agent is at capacity and an infra task is picked: only the ops agent can take it, so it is the best fit.",
+                    &[("state", "full")],
+                ),
+                var(
+                    "done",
+                    "Everything handed out and finished – the tray is empty.",
+                    &[("state", "done")],
+                ),
+                var(
+                    "narrow",
+                    "Under 620 px the tray sits on top and the agents stack.",
+                    &[("state", "selected"), ("width", "narrow")],
+                ),
+                var(
+                    "classic",
+                    "Classic style: grey header band, framed, tinted agent columns.",
+                    &[("style", "classic"), ("state", "busy")],
+                ),
+            ],
+            render: delegate_board,
+            code: delegate_board_code,
+            keyboard: vec![
+                ("Tab / Enter", "Selects a task in the tray"),
+                (
+                    "1 – 3",
+                    "Hands the selected task to that agent (when it has the skill)",
+                ),
+                ("Escape", "Clears the selection"),
+            ],
+            a11y: vec![
+                "Tray tasks are toggle buttons (aria-pressed); each agent column is a named group with a Hand over button carrying aria-keyshortcuts.",
+                "Agents without the skill keep a disabled button that says what they can't do.",
+                "A polite status region reads out each hand-over; dragging is optional – clicks and digits do the same.",
+            ],
+            responsive: vec![
+                "Wide: tray left, agent columns right (auto-fit, 150 px minimum).",
+                "Under 620 px the tray goes on top and the columns stack.",
+            ],
+            height: 460,
+            live: true,
+            align: Align::Start,
+            ..mk(
+                "delegate-board",
+                "Delegate Board",
+                "tools",
+                "Give a task to the agent you choose: unassigned work in a tray, each agent with its skills and free slots, the right ones lit when you pick a task, and the job queuing, running and finishing in that agent's column.",
+                "DelegateBoard",
+                "DelegateBoardEl",
+                "delegate-board",
+                "parity/delegatefid.rs",
+            )
+        },
         Demo {
             controls: vec![
                 style(),

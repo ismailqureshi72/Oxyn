@@ -194,5 +194,6 @@ specified just as deeply. When we point at one component as an example, the stan
 | [context-map.md](context-map.md) | built v0.1 (plan #32, overnight batch, family B part 6) |
 | [cost-waterfall.md](cost-waterfall.md) | built v0.1 (plan #32, overnight batch, family B part 6) |
 | [decision-tree.md](decision-tree.md) | built v0.1 (plan #32, family B part 8) |
+| [delegate-board.md](delegate-board.md) | built v0.1 (plan #32, family B part 8) |
 | [fallback-chain.md](fallback-chain.md) | built v0.1 (plan #32, family B part 8) |
 | Every other component in [../component-taxonomy.md](../component-taxonomy.md) | to write in V2.2 |
