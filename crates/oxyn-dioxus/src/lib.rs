@@ -43,17 +43,13 @@ pub use composer::{
 pub use glyph_loader::{GLYPH_LOADER_CSS, GlyphLoader, GlyphLoaderProps};
 /// Stylesheet for approvals and checkpoints.
 pub const HITL_CSS: &str = include_str!("hitl.css");
-pub use parity::AccentDensity;
-pub use parity::AppIconPicker;
 pub use parity::AttachmentChips;
-pub use parity::BackgroundPicker;
 pub use parity::ContextBar;
 pub use parity::ContextBreakdown;
 pub use parity::ContextEffortMenu;
 pub use parity::ContextStack;
 pub use parity::ContextTide;
 pub use parity::DiffTimelineRun;
-pub use parity::DisplayComfort;
 pub use parity::DropLanes;
 pub use parity::EffortList;
 pub use parity::EffortPill;
@@ -65,7 +61,6 @@ pub use parity::GooeyAttachMenu;
 pub use parity::GooeyComposer;
 pub use parity::GooeyModelMenu;
 pub use parity::JudgeBracket;
-pub use parity::LightPlayground;
 pub use parity::LiquidDrops;
 pub use parity::LiquidTabs;
 pub use parity::MemoryPanel;
@@ -83,12 +78,8 @@ pub use parity::StorageCleanup;
 pub use parity::StorageForecast;
 pub use parity::StorageMeter;
 pub use parity::StorageWaffle;
-pub use parity::ThemeGrid;
-pub use parity::ThemeSchedule;
-pub use parity::ThemeSplit;
 pub use parity::ToolAccessMap;
 pub use parity::TraceWaterfall;
-pub use parity::TypeScale;
 pub use parity::UploadDropzone;
 pub use parity::{
     ActionSwapButton, InViewTitle, LoadingState, SlotReels, Source, StreamingText, SweepText,
