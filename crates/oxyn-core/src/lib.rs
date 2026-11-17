@@ -32,6 +32,7 @@ pub mod checkpoint;
 pub mod clock;
 pub mod composer;
 pub mod ease;
+pub mod icon_tone;
 pub mod indicator;
 pub mod loader;
 pub mod parity;

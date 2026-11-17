@@ -405,7 +405,7 @@ pub fn AiCommand(
                         _ => {}
                     },
                 }
-                span { class: "model", title: "{model}", Icon { name: "spark", size: 11.0 } "{model}" }
+                span { class: "model", title: "{model}", if crate::brand::has_brand(&model) { crate::brand::BrandIcon { name: model.to_string(), size: 11.0 } } else { Icon { name: "spark", size: 11.0 } } "{model}" }
             }
             div { class: "abody", style: "height:{height}px",
                 if !ask_mode {
@@ -630,7 +630,7 @@ pub fn AiSearchBar(
                             }
                         } else {
                             div { class: "answer", role: "region", "aria-label": "AI answer", "aria-busy": "{phase != AnswerPhase::Done}",
-                                div { class: "ah", Icon { name: "spark", size: 13.0 } span { "{model}" } if phase == AnswerPhase::Thinking { span { class: "oxyn-shtext", "Reading results…" } } }
+                                div { class: "ah", if crate::brand::has_brand(&model) { crate::brand::BrandIcon { name: model.to_string(), size: 13.0 } } else { Icon { name: "spark", size: 13.0 } } span { "{model}" } if phase == AnswerPhase::Thinking { span { class: "oxyn-shtext", "Reading results…" } } }
                                 if phase != AnswerPhase::Thinking {
                                     p { class: "atext", {answer_view(&st.answer.visible(now), &st.answer.sources, lit, |_| {})} if phase == AnswerPhase::Streaming { span { class: "caret", "aria-hidden": "true" } } }
                                 }
@@ -667,7 +667,7 @@ pub fn AiSearchBar(
             div { class: "cfoot", "aria-hidden": "true",
                 span { Keys { keys: "Up" } Keys { keys: "Down" } " Move" }
                 span { Keys { keys: "Tab" } " Ask AI" }
-                span { class: "lastk model", Icon { name: "spark", size: 11.0 } "{model}" }
+                span { class: "lastk model", if crate::brand::has_brand(&model) { crate::brand::BrandIcon { name: model.to_string(), size: 11.0 } } else { Icon { name: "spark", size: 11.0 } } "{model}" }
             }
         }
     }

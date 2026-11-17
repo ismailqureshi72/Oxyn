@@ -80,7 +80,7 @@ pub fn EffortPill(
                         disabled: cur == Some(home), onclick: move |_| pick.call(home), {reset_glyph()} }
                     p { class: "oxeq-lv", "{levels[shown].label}" }
                     button { class: "oxeq-model", r#type: "button", onclick: move |_| on_model.call(()),
-                        "{model}" span { "aria-hidden": "true", "›" } }
+                        crate::brand::MarkFor { name: model.to_string(), size: 12.0 } "{model}" span { "aria-hidden": "true", "›" } }
                     div { class: "oxeq-track", role: "slider", tabindex: "0", "aria-label": "Thinking effort",
                         "aria-valuemin": "0", "aria-valuemax": "{n - 1}", "aria-valuenow": "{shown}", "aria-valuetext": "{levels[shown].label}",
                         onmounted: move |e| track.mount(e.data()),

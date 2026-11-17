@@ -30,6 +30,16 @@ use super::efflistfid::{check_glyph, chevron};
 use crate::brand::BrandIcon;
 
 pub(crate) fn ico(name: &str) -> Element {
+    glyph(name, name)
+}
+
+/// A file glyph toned by the file's type (`report.pdf` red, `data.csv` green, `notes.md` blue).
+pub(crate) fn file_ico(file: &str) -> Element {
+    glyph("file", oxyn_core::icon_tone::IconTone::for_file(file).key())
+}
+
+/// The stroke glyph `name`, tagged `data-ic = tone` for icontone.css.
+fn glyph(name: &str, tone: &str) -> Element {
     let d: &[&str] = match name {
         "plus" => &["M12 5v14", "M5 12h14"],
         "chat" => &["M5 5h14v10H9l-4 4z"],
@@ -144,7 +154,7 @@ pub(crate) fn ico(name: &str) -> Element {
         _ => &["M12 12h.01"],
     };
     rsx! {
-        svg { class: "oxscn-ico", width: "16", height: "16", view_box: "0 0 24 24", fill: "none", stroke: "currentColor", stroke_width: "1.8",
+        svg { class: "oxscn-ico", "data-ic": "{tone}", width: "16", height: "16", view_box: "0 0 24 24", fill: "none", stroke: "currentColor", stroke_width: "1.8",
             stroke_linecap: "round", stroke_linejoin: "round", "aria-hidden": "true",
             for (i, p) in d.iter().enumerate() { path { key: "{i}", d: "{p}" } }
         }
@@ -287,7 +297,7 @@ pub fn ScreenComposer(
             if !files().is_empty() {
                 div { class: "oxscn-cmp-files",
                     for (i, f) in files().iter().enumerate() {
-                        span { key: "{i}", class: "oxscn-chip", {ico("file")} "{f}"
+                        span { key: "{i}", class: "oxscn-chip", {file_ico(f)} "{f}"
                             button { r#type: "button", class: "oxscn-chip-x", "aria-label": "Remove {f}",
                                 onclick: move |_| { files.write().remove(i); }, {ico("close")} }
                         }
@@ -1326,7 +1336,7 @@ pub fn ChatOverviewScreen(
                         div { class: "oxcov-h", h3 { "Made for you" } }
                         if loading { {skel(3)} } else if blank { p { class: "oxscn-hint", "Docs and sheets the assistant makes land here." } } else {
                             for (i, (f, p, a)) in files.iter().take(fshow).enumerate() {
-                                div { key: "{i}", class: "oxcov-li", title: "{p}", {ico("file")} span { class: "oxscn-row-t", "{f}" } span { class: "oxscn-row-a", "{a}" } }
+                                div { key: "{i}", class: "oxcov-li", title: "{p}", {file_ico(f)} span { class: "oxscn-row-t", "{f}" } span { class: "oxscn-row-a", "{a}" } }
                             }
                             button { r#type: "button", class: "oxscn-link", "aria-expanded": "{more_files}", onclick: move |_| more_files.toggle(), if more_files() { "Show less" } else { "1 more" } }
                         }
@@ -1440,7 +1450,7 @@ pub fn ChatAgentsScreen(
                 dl { class: "oxcag-dl", div { dt { "Launch" } dd { "3 Nov" } } div { dt { "Budget" } dd { "$4,000" } } div { dt { "Markets" } dd { "US, CA" } } }
             } else if tab() == "assets" {
                 for (i, f) in ["overshirt-front.png", "overshirt-detail.png", "style-guide.pdf"].iter().enumerate() {
-                    div { key: "{i}", class: "oxcov-li", {ico("file")} span { class: "oxscn-row-t", "{f}" } }
+                    div { key: "{i}", class: "oxcov-li", {file_ico(f)} span { class: "oxscn-row-t", "{f}" } }
                 }
             } else {
                 ul { class: "oxcag-act",
@@ -1647,8 +1657,8 @@ pub fn ChatRailScreen(
                                     }
                                     p { "Washed linen and hemp twill are the sturdiest; organic cotton is cheapest and quickest to arrive. I put all five side by side." }
                                     div { class: "oxcdr-chips",
-                                        button { r#type: "button", class: "oxscn-chip oxscn-chip-b", onclick: move |_| open_art("fabric-compare.csv"), {ico("file")} "fabric-compare.csv" }
-                                        button { r#type: "button", class: "oxscn-chip oxscn-chip-b", onclick: move |_| open_art("sources.md"), {ico("file")} "sources.md" }
+                                        button { r#type: "button", class: "oxscn-chip oxscn-chip-b", onclick: move |_| open_art("fabric-compare.csv"), {file_ico("fabric-compare.csv")} "fabric-compare.csv" }
+                                        button { r#type: "button", class: "oxscn-chip oxscn-chip-b", onclick: move |_| open_art("sources.md"), {file_ico("sources.md")} "sources.md" }
                                     }
                                 }
                             }
@@ -1930,7 +1940,7 @@ pub fn ChatRunScreen(
                     }
                 }
                 p { class: "oxscn-gh", "Files" }
-                for (i, f) in ["member-update.md", "october-sales.csv", "signups-chart.png"].iter().enumerate() { div { key: "{i}", class: "oxcov-li", {ico("file")} span { class: "oxscn-row-t", "{f}" } } }
+                for (i, f) in ["member-update.md", "october-sales.csv", "signups-chart.png"].iter().enumerate() { div { key: "{i}", class: "oxcov-li", {file_ico(f)} span { class: "oxscn-row-t", "{f}" } } }
             }
         }
     };
@@ -2342,7 +2352,7 @@ fn FolderFiles(
                                         tr { key: "{id}", "data-on": "{on}",
                                             td { class: "oxsfd-ck", input { r#type: "checkbox", "aria-label": "Select {f.name}", checked: on,
                                                 onchange: move |_| { let mut p = picked.write(); if let Some(i) = p.iter().position(|x| *x == id) { p.remove(i); } else { p.push(id); } } } }
-                                            td { class: "oxsfd-name", {ico(kind_icon(f.kind))} span { class: "oxscn-row-t", "{f.name}" } }
+                                            td { class: "oxsfd-name", {glyph(if f.kind == "Notes" { "note" } else { "file" }, kind_icon(f.kind))} span { class: "oxscn-row-t", "{f.name}" } }
                                             td { class: "oxscn-row-a", "{f.kind}" }
                                             td { class: "oxsfd-own", span { class: "oxscn-av oxsfo-face", title: "{member_name(f.owner)}", "{f.owner}" } }
                                             td { class: "oxscn-row-a", "{ed}" }
@@ -2363,8 +2373,8 @@ fn FolderFiles(
 
 fn kind_icon(kind: &str) -> &'static str {
     match kind {
-        "Sheet" => "chart",
-        "Image" => "globe",
+        "Sheet" => "sheet",
+        "Image" => "image",
         "Notes" => "note",
         _ => "file",
     }

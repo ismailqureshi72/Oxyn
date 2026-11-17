@@ -10,6 +10,7 @@ use gpui::{
     App, Div, FontWeight, IntoElement, ParentElement, RenderOnce, SharedString, Styled, Window,
     div, prelude::*, px,
 };
+use oxyn_core::icon_tone::IconTone;
 use oxyn_core::parity::screensfid::{
     APP_TABS, CRM_VIEWS, DealSort, KB_COLS, KB_PRI, PERSON, PERSON_INI, ScreenState, ShellLayout,
     StepState, WORKSPACE, ago, angles, app_view, apps, board, close_words, col_label, column,
@@ -22,6 +23,7 @@ use oxyn_tokens::Theme;
 
 use super::Act;
 use super::rulerfid::{ThPal, fire, th_pal};
+use crate::brand::{brand_mark, tone_color};
 
 pub(super) fn skel(p: &ThPal, n: usize) -> Div {
     let mut d = div().flex().flex_col().gap(px(10.)).p(px(10.));
@@ -58,6 +60,58 @@ pub(super) fn gh(p: &ThPal, t: &'static str) -> Div {
         .font_weight(FontWeight::SEMIBOLD)
         .text_color(p.mute)
         .child(t)
+}
+
+/// A small object glyph in its semantic tone (a folder tab over a body, or a rounded tile).
+pub(super) fn tone_ic(p: &ThPal, tone: IconTone) -> Div {
+    let c = tone_color(tone, p.fg.l > 0.5);
+    let tile = div().w(px(14.)).h(px(11.)).rounded(px(3.)).bg(c);
+    if tone == IconTone::Folder {
+        div()
+            .flex_none()
+            .flex()
+            .flex_col()
+            .child(
+                div()
+                    .w(px(6.))
+                    .h(px(2.))
+                    .rounded_t(px(1.5))
+                    .bg(c.opacity(0.75)),
+            )
+            .child(tile)
+    } else {
+        div().flex_none().child(tile)
+    }
+}
+
+/// A row with an object glyph in front (projects, files).
+pub(super) fn row_ic(p: &ThPal, tone: IconTone, t: String, a: String, on: bool) -> Div {
+    div()
+        .flex()
+        .items_center()
+        .gap(px(8.))
+        .h(px(30.))
+        .px(px(8.))
+        .rounded(px(8.))
+        .when(on, |d| d.bg(p.sel))
+        .text_color(p.fg2)
+        .child(tone_ic(p, tone))
+        .child(
+            div()
+                .flex_1()
+                .min_w_0()
+                .overflow_hidden()
+                .whitespace_nowrap()
+                .text_ellipsis()
+                .child(t),
+        )
+        .child(
+            div()
+                .flex_none()
+                .text_size(px(12.))
+                .text_color(p.mute)
+                .child(a),
+        )
 }
 
 pub(super) fn row(p: &ThPal, t: String, a: String, on: bool) -> Div {
@@ -157,8 +211,9 @@ fn sidebar(p: &ThPal, st: ScreenState, act: &Option<Act>, runs: bool) -> Div {
             }
             s = s.child(gh(p, "Projects"));
             for pr in projects() {
-                s = s.child(row(
+                s = s.child(row_ic(
                     p,
+                    IconTone::Folder,
                     pr.label.to_string(),
                     pr.chats.len().to_string(),
                     false,
@@ -1120,11 +1175,20 @@ impl RenderOnce for FoldersEl {
                             .flex()
                             .flex_col()
                             .gap(px(8.))
-                            .child(div().font_weight(FontWeight::SEMIBOLD).child(if f.starred {
-                                format!("★ {}", f.name)
-                            } else {
-                                f.name.clone()
-                            }))
+                            .child(
+                                div()
+                                    .flex()
+                                    .items_center()
+                                    .gap(px(8.))
+                                    .child(tone_ic(&p, IconTone::Folder))
+                                    .child(div().font_weight(FontWeight::SEMIBOLD).child(
+                                        if f.starred {
+                                            format!("★ {}", f.name)
+                                        } else {
+                                            f.name.clone()
+                                        },
+                                    )),
+                            )
                             .child(div().text_color(p.mute).child(f.note.clone()))
                             .child(
                                 div()
@@ -1194,8 +1258,10 @@ impl RenderOnce for FolderDetailEl {
                     .border_color(p.line)
                     .child(row(&p, "Name".into(), "Edited · Size".into(), false));
                 for x in &files {
-                    tb = tb.child(row(
+                    tb = tb.child(row_ic(
                         &p,
+                        IconTone::for_icon(&x.kind.to_lowercase())
+                            .unwrap_or_else(|| IconTone::for_file(&x.name)),
                         format!("{}  ·  {}", x.name, x.kind),
                         format!("{} · {}", ago(x.mins), size_label(x.kb)),
                         false,
@@ -1313,7 +1379,14 @@ impl RenderOnce for IntegrationsEl {
                         .flex()
                         .flex_col()
                         .gap(px(6.))
-                        .child(div().font_weight(FontWeight::SEMIBOLD).child(a.name))
+                        .child(
+                            div()
+                                .flex()
+                                .items_center()
+                                .gap(px(8.))
+                                .children(brand_mark(a.id, 20., p.fg))
+                                .child(div().font_weight(FontWeight::SEMIBOLD).child(a.name)),
+                        )
                         .child(div().text_color(p.fg2).child(a.blurb))
                         .child(div().text_color(p.mute).child(if a.connected {
                             "Connected · Manage"

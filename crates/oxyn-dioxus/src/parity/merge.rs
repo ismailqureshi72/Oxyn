@@ -880,7 +880,7 @@ pub fn ConflictRadar(
                                     span { class: "oxyn-crd-mark", "data-c": mk, "{a.monogram()}" }
                                     span { class: "oxyn-crd-an",
                                         span { class: "oxyn-crd-nm", "{a.name}" }
-                                        span { class: "oxyn-crd-md", "{a.model}" }
+                                        span { class: "oxyn-crd-md", crate::brand::MarkFor { name: a.model.clone(), size: 11.0 } "{a.model}" }
                                     }
                                     if a.running { span { class: "oxyn-crd-live", "aria-hidden": "true" } }
                                 }

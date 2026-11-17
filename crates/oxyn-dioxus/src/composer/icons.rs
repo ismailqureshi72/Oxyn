@@ -173,9 +173,17 @@ pub fn Icon(
     } else {
         "none"
     };
+    // Object glyphs take their semantic tone (icontone.css); chrome glyphs stay neutral.
+    let ic = match name.as_str() {
+        "folder" | "file" | "globe" | "clock" | "brain" | "code" | "terminal" | "branch" => {
+            name.as_str()
+        }
+        _ => "",
+    };
     rsx! {
         svg {
             class: "oxyn-ic",
+            "data-ic": if !ic.is_empty() { "{ic}" },
             width: "{size}",
             height: "{size}",
             view_box: "0 0 24 24",

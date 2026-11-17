@@ -17,7 +17,7 @@ use oxyn_core::parity::screens2fid::{
 
 use super::efflistfid::chevron;
 use super::screensfid::{
-    AppFrame, MenuButton, MenuItem, ScreenComposer, empty, ico, since, skel, use_threads,
+    AppFrame, MenuButton, MenuItem, ScreenComposer, empty, file_ico, ico, since, skel, use_threads,
 };
 
 /// A status tag in the status colours.
@@ -286,7 +286,7 @@ pub fn OrchestrationScreen(
                                     thead { tr { th { "Agent" } th { "Model" } th { class: "oxsor-num", "Tokens" } th { class: "oxsor-num", "Cost" } th { class: "oxsor-num", "Time" } } }
                                     tbody {
                                         for n in all.iter().cloned() {
-                                            tr { key: "{n.id}", td { "{n.name}" } td { "{n.model}" } td { class: "oxsor-num", "{toks(n.tokens)}" } td { class: "oxsor-num", "{eur(n.cents)}" } td { class: "oxsor-num", "{dur(n.ms)}" } }
+                                            tr { key: "{n.id}", td { "{n.name}" } td { crate::brand::MarkFor { name: n.model.to_string(), size: 11.0 } "{n.model}" } td { class: "oxsor-num", "{toks(n.tokens)}" } td { class: "oxsor-num", "{eur(n.cents)}" } td { class: "oxsor-num", "{dur(n.ms)}" } }
                                         }
                                     }
                                 }
@@ -407,7 +407,7 @@ fn OrchAgentDetail(
             }
             p { class: "oxscn-gh", "Context" }
             ul { class: "oxsag-list",
-                for (i, x) in context_for(node.role).iter().enumerate() { li { key: "{i}", class: "oxsag-ctx", {ico("file")} span { "{x}" } } }
+                for (i, x) in context_for(node.role).iter().enumerate() { li { key: "{i}", class: "oxsag-ctx", {file_ico(x)} span { "{x}" } } }
             }
         }
     }
@@ -546,7 +546,7 @@ pub fn AgentThreadScreen(
                 else {
                     div { class: "oxstd-files", role: "group", "aria-label": "Files",
                         for (i, (f, _)) in ARTIFACTS.iter().enumerate() {
-                            button { key: "{i}", r#type: "button", class: "oxscn-chip oxscn-chip-b", "aria-pressed": "{file() == i}", onclick: move |_| file.set(i), {ico("file")} "{f}" }
+                            button { key: "{i}", r#type: "button", class: "oxscn-chip oxscn-chip-b", "aria-pressed": "{file() == i}", onclick: move |_| file.set(i), {file_ico(f)} "{f}" }
                         }
                     }
                     pre { class: "oxstd-pre", "aria-label": "{ARTIFACTS[file()].0}",
@@ -619,7 +619,7 @@ pub fn AgentThreadScreen(
                                     div { key: "{i}", class: "oxstd-files",
                                         for (j, f) in fs.into_iter().enumerate() {
                                             button { key: "{j}", r#type: "button", class: "oxscn-chip oxscn-chip-b",
-                                                onclick: move |_| { wtab.set("files"); file.set(ARTIFACTS.iter().position(|(n, _)| *n == f).unwrap_or(0)); }, {ico("file")} "{f}" }
+                                                onclick: move |_| { wtab.set("files"); file.set(ARTIFACTS.iter().position(|(n, _)| *n == f).unwrap_or(0)); }, {file_ico(f)} "{f}" }
                                         }
                                     }
                                 },

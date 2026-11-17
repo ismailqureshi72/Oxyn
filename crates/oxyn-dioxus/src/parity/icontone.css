@@ -1,0 +1,35 @@
+/* Semantic icon tones (oxyn_core::icon_tone, generated from it; keep the two in step). An object icon
+   (folder, file, terminal, browser, git, schedule, skill…) carries one meaningful hue per theme; chrome glyphs
+   (search, settings, bell, plus, more) stay neutral. Brand marks keep their official colours: single-colour
+   marks read --ox-brand-tone, black-or-white marks (OpenAI, xAI, Vercel…) read --ox-brand-ink, never grey.
+   Opt out per host with data-ox-icon-tone="mono". */
+:root,[data-oxyn-theme="dark"],[data-oxyn-theme="hc-dark"]{--ox-ic-folder:#4CBDFF;--ox-ic-doc:#47B0FF;--ox-ic-sheet:#6FD89A;--ox-ic-slides:#FF9F45;--ox-ic-pdf:#FF5A4E;--ox-ic-image:#FF5CB4;--ox-ic-video:#BF7BFF;--ox-ic-audio:#2ED3BF;--ox-ic-archive:#AC8E68;--ox-ic-data:#FF9F45;--ox-ic-code:#8E8CFF;--ox-ic-terminal:#30D158;--ox-ic-browser:#0A84FF;--ox-ic-git:#FF5A4E;--ox-ic-schedule:#FF9F0A;--ox-ic-skills:#BF5AF2;--ox-ic-memory:#7D7BFF;--ox-ic-agent:#47B0FF;--ox-ic-approval:#FFD60A;--ox-ic-running:#47B0FF;--ox-ic-done:#30D158;--ox-ic-failed:#FF453A;--ox-ic-cloud:#64D2FF;--ox-ic-danger:#FF453A;--ox-ic-money:#30D158;--ox-ic-chart:#7D7BFF;--ox-brand-ink:#FFFFFF}
+[data-oxyn-theme="light"]{--ox-ic-folder:#00A1FF;--ox-ic-doc:#0190FE;--ox-ic-sheet:#1FA463;--ox-ic-slides:#F28A2E;--ox-ic-pdf:#F04438;--ox-ic-image:#EE3E9E;--ox-ic-video:#A651F0;--ox-ic-audio:#13B3A0;--ox-ic-archive:#A2845E;--ox-ic-data:#F28A2E;--ox-ic-code:#5856D6;--ox-ic-terminal:#1F9D55;--ox-ic-browser:#007AFF;--ox-ic-git:#F03C2E;--ox-ic-schedule:#FF9500;--ox-ic-skills:#AF52DE;--ox-ic-memory:#5856D6;--ox-ic-agent:#0190FE;--ox-ic-approval:#E8B000;--ox-ic-running:#0190FE;--ox-ic-done:#1E8A4F;--ox-ic-failed:#F04438;--ox-ic-cloud:#32ADE6;--ox-ic-danger:#F04438;--ox-ic-money:#34C759;--ox-ic-chart:#5856D6;--ox-brand-ink:#000000}
+[data-ox-icon-tone="mono"]{--ox-ic-folder:currentColor;--ox-ic-doc:currentColor;--ox-ic-sheet:currentColor;--ox-ic-slides:currentColor;--ox-ic-pdf:currentColor;--ox-ic-image:currentColor;--ox-ic-video:currentColor;--ox-ic-audio:currentColor;--ox-ic-archive:currentColor;--ox-ic-data:currentColor;--ox-ic-code:currentColor;--ox-ic-terminal:currentColor;--ox-ic-browser:currentColor;--ox-ic-git:currentColor;--ox-ic-schedule:currentColor;--ox-ic-skills:currentColor;--ox-ic-memory:currentColor;--ox-ic-agent:currentColor;--ox-ic-approval:currentColor;--ox-ic-running:currentColor;--ox-ic-done:currentColor;--ox-ic-failed:currentColor;--ox-ic-cloud:currentColor;--ox-ic-danger:currentColor;--ox-ic-money:currentColor;--ox-ic-chart:currentColor;--ox-brand-ink:currentColor;--ox-brand-tone:currentColor}
+/* Any svg tagged data-ic takes its tone; the tile behind an object icon tints with it at 12 %. */
+svg[data-ic="folder"],svg[data-ic="folder-open"],svg[data-ic="project"],svg[data-ic="workspace"]{color:var(--ox-ic-folder)}
+svg[data-ic="file"],svg[data-ic="note"],svg[data-ic="doc"],svg[data-ic="docs"],svg[data-ic="md"],svg[data-ic="txt"]{color:var(--ox-ic-doc)}
+svg[data-ic="sheet"],svg[data-ic="csv"],svg[data-ic="xlsx"],svg[data-ic="table"]{color:var(--ox-ic-sheet)}
+svg[data-ic="slides"],svg[data-ic="deck"],svg[data-ic="pptx"]{color:var(--ox-ic-slides)}
+svg[data-ic="pdf"]{color:var(--ox-ic-pdf)}
+svg[data-ic="image"],svg[data-ic="img"],svg[data-ic="png"],svg[data-ic="jpg"],svg[data-ic="svg"],svg[data-ic="photo"]{color:var(--ox-ic-image)}
+svg[data-ic="video"],svg[data-ic="mp4"],svg[data-ic="mov"]{color:var(--ox-ic-video)}
+svg[data-ic="audio"],svg[data-ic="mp3"],svg[data-ic="wav"]{color:var(--ox-ic-audio)}
+svg[data-ic="archive"],svg[data-ic="zip"],svg[data-ic="tar"]{color:var(--ox-ic-archive)}
+svg[data-ic="data"],svg[data-ic="json"],svg[data-ic="yaml"],svg[data-ic="toml"]{color:var(--ox-ic-data)}
+svg[data-ic="code"]{color:var(--ox-ic-code)}
+svg[data-ic="term"],svg[data-ic="terminal"],svg[data-ic="shell"],svg[data-ic="cmd"]{color:var(--ox-ic-terminal)}
+svg[data-ic="globe"],svg[data-ic="browser"],svg[data-ic="web"],svg[data-ic="preview"]{color:var(--ox-ic-browser)}
+svg[data-ic="git"],svg[data-ic="branch"],svg[data-ic="commit"],svg[data-ic="worktree"],svg[data-ic="tree"]{color:var(--ox-ic-git)}
+svg[data-ic="clock"],svg[data-ic="schedule"],svg[data-ic="calendar"],svg[data-ic="cal"]{color:var(--ox-ic-schedule)}
+svg[data-ic="spark"],svg[data-ic="skills"],svg[data-ic="skill"],svg[data-ic="plugin"],svg[data-ic="plugins"],svg[data-ic="bolt"]{color:var(--ox-ic-skills)}
+svg[data-ic="memory"],svg[data-ic="brain"]{color:var(--ox-ic-memory)}
+svg[data-ic="bot"],svg[data-ic="agent"],svg[data-ic="agents"]{color:var(--ox-ic-agent)}
+svg[data-ic="pulse"],svg[data-ic="runs"],svg[data-ic="running"]{color:var(--ox-ic-running)}
+svg[data-ic="tasks"],svg[data-ic="done"]{color:var(--ox-ic-done)}
+svg[data-ic="failed"],svg[data-ic="error"]{color:var(--ox-ic-failed)}
+svg[data-ic="cloud"]{color:var(--ox-ic-cloud)}
+svg[data-ic="trash"],svg[data-ic="delete"],svg[data-ic="danger"]{color:var(--ox-ic-danger)}
+svg[data-ic="coin"],svg[data-ic="credits"],svg[data-ic="usage"],svg[data-ic="money"]{color:var(--ox-ic-money)}
+svg[data-ic="chart"],svg[data-ic="analytics"]{color:var(--ox-ic-chart)}
+.ox-ic-tile{display:inline-grid;place-items:center;flex:none;width:24px;height:24px;border-radius:7px;background:color-mix(in srgb,currentColor 12%,transparent)}
