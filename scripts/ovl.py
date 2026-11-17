@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 # Overlap + overflow guard for the screen demos on a running site preview (Playwright + Chromium).
 # Usage: OXYN_PREVIEW=http://localhost:4321 python3 scripts/ovl.py [slugs,...|all|full] [themes] [widths]
-#   all  = every screen page plus the agent orchestrator page; full = every screen's /full/ view.
+#   all  = every screen page plus the agent orchestrator page; full = every screen's /full/ view;
+#   landing = the landing page: its demos plus the site chrome marked data-ovl (navbar, question pills, footer).
 #   Slugs come from OXYN_SLUGS (space separated), else from the links on the preview's /screens/ index.
 #   Writes ovl_<all|full|some>.json to OXYN_OVL_OUT (default: current directory); exit 1 when anything is found.
 # Per rendered demo (oxyn-demo): spill = elements outside the demo box; overlap = pairs of visible text
@@ -18,8 +19,8 @@ def screens():
     for m in re.findall(r'href="/screens/([a-z0-9-]+)/"', html):
         if m not in seen: seen.append(m)
     return seen
-SCREENS = screens()
 arg = sys.argv[1] if len(sys.argv) > 1 else 'all'
+SCREENS = [] if arg == 'landing' else screens()
 slugs = SCREENS if arg == 'all' else arg.split(',')
 def path(s):
     if s == 'orchestrator': return '/components/tools/agent-orchestrator/'
@@ -27,7 +28,11 @@ def path(s):
     return '/screens/' + s + '/'
 if arg == 'full':
     slugs = [x + ':full' for x in SCREENS]
+if arg == 'landing':
+    slugs = []
 PAGES = {s: path(s) for s in slugs}
+if arg == 'landing':
+    PAGES['landing'] = '/'
 if arg == 'all':
     PAGES['orchestrator'] = '/components/tools/agent-orchestrator/'
 THEMES = sys.argv[2].split(',') if len(sys.argv) > 2 else ['light', 'dark']
@@ -37,7 +42,7 @@ JS = r"""()=>{
 const out=[];
 const vis=e=>{for(let x=e;x&&x.nodeType==1;x=x.parentElement){const s=getComputedStyle(x);if(s.display=='none'||s.visibility=='hidden'||+s.opacity===0)return false;}return true};
 const name=e=>{const c=(e.className&&e.className.baseVal===undefined)?e.className:'';return (c||e.tagName.toLowerCase()).toString().split(' ')[0]};
-for(const pv of document.querySelectorAll('oxyn-demo')){
+for(const pv of document.querySelectorAll('oxyn-demo,[data-ovl]')){
  const b=pv.getBoundingClientRect(); if(!b.width) continue;
  const spill=new Set(), clip=new Set(), runs=[];
  for(const e of pv.querySelectorAll('*')){
@@ -62,7 +67,7 @@ for(const pv of document.querySelectorAll('oxyn-demo')){
   let hit=null;for(const p of a.rs)for(const q of c.rs){const w=Math.min(p[2],q[2])-Math.max(p[0],q[0]),h=Math.min(p[3],q[3])-Math.max(p[1],q[1]);if(w>2&&h>2)hit=[w,h];}
   if(hit) ov.push(`"${a.t}" x "${c.t}" ${Math.round(hit[0])}x${Math.round(hit[1])}`);
  }
- out.push({v:pv.getAttribute('data-variant'),spill:[...spill].slice(0,8),clip:[...clip].slice(0,8),overlap:ov.slice(0,10),n:ov.length});
+ out.push({v:pv.getAttribute('data-variant')??(pv.tagName.toLowerCase()+'.'+String(pv.className).split(' ').pop()),spill:[...spill].slice(0,8),clip:[...clip].slice(0,8),overlap:ov.slice(0,10),n:ov.length});
 }
 return {doc:document.documentElement.scrollWidth,W:innerWidth,demos:out}}"""
 async def main():
@@ -86,7 +91,7 @@ async def main():
                           '|', '; '.join(f"v{d['v']}: spill={d['spill'][:3]} clip={d['clip'][:3]} ov{d['n']}={d['overlap'][:3]}" for d in issues) or 'clean', flush=True)
                 await ctx.close()
         await b.close()
-    json.dump(res, open(os.path.join(OUT, 'ovl_') + ('all' if arg == 'all' else 'full' if arg == 'full' else 'some') + '.json', 'w'), indent=1)
+    json.dump(res, open(os.path.join(OUT, 'ovl_') + (arg if arg in ('all', 'full', 'landing') else 'some') + '.json', 'w'), indent=1)
     print('BAD', bad)
     return bad
 sys.exit(1 if asyncio.run(main()) else 0)

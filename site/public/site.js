@@ -235,7 +235,7 @@ document.addEventListener('oxyn-demo-live', (e) => {
   // needs a scrollbar just because the column is narrower than the component.
   const fitStage = (stage) => {
     const m = stage.querySelector(':scope > .oxd-mount');
-    if (!m || stage.closest('.site-card, .lp-screen')) return;
+    if (!m || stage.closest('.site-card, .lp-screen, .x-lap-scr')) return;
     m.style.zoom = '';
     const cs = getComputedStyle(stage);
     const avail = stage.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
@@ -420,4 +420,80 @@ document.addEventListener('oxyn-demo-live', (e) => {
     const set = () => c.style.setProperty('--pos', `${r.value}%`);
     r?.addEventListener('input', set);
   });
+})();
+
+// ── Landing pass 2: laptop screens, condensing top bar ────────────────────────────────────────
+(function () {
+  const d = document.documentElement;
+  const reduced = () => d.hasAttribute('data-oxyn-reduced') || matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // Laptop: tabs pick the screen on the lid (crossfade); the caption is the tab panel.
+  document.querySelectorAll('[data-lap]').forEach((box) => {
+    const tabs = [...box.querySelectorAll('.x-lap-tab')];
+    const shots = [...box.querySelectorAll('.x-lap-shot')];
+    const pick = (t, focus) => {
+      tabs.forEach((x) => {
+        const on = x === t;
+        x.setAttribute('aria-selected', String(on));
+        x.tabIndex = on ? 0 : -1;
+        const p = document.getElementById(x.getAttribute('aria-controls'));
+        if (p) p.hidden = !on;
+      });
+      shots.forEach((s) => s.toggleAttribute('data-on', s.dataset.shot === t.dataset.shot));
+      if (focus) t.focus();
+    };
+    tabs.forEach((t, i) => {
+      t.addEventListener('click', () => pick(t));
+      t.addEventListener('keydown', (e) => {
+        const n = e.key === 'ArrowRight' || e.key === 'ArrowDown' ? 1 : e.key === 'ArrowLeft' || e.key === 'ArrowUp' ? -1 : 0;
+        if (n) { e.preventDefault(); pick(tabs[(i + n + tabs.length) % tabs.length], true); }
+        if (e.key === 'Home') { e.preventDefault(); pick(tabs[0], true); }
+        if (e.key === 'End') { e.preventDefault(); pick(tabs[tabs.length - 1], true); }
+      });
+    });
+    // Scroll fallback where CSS view timelines are missing: the same --x-lap-p the CSS animates
+    // (entry 0% → cover 45% of the scene), only while the scene is near the viewport.
+    const scene = box.querySelector('.x-lap-scene');
+    const native = window.CSS && CSS.supports && CSS.supports('animation-timeline: view()');
+    if (!scene || native) return;
+    let raf = 0;
+    let live = false;
+    const step = () => {
+      raf = 0;
+      if (reduced()) { scene.style.removeProperty('--x-lap-p'); return; }
+      const r = scene.getBoundingClientRect();
+      const vh = innerHeight;
+      const p = Math.min(1, Math.max(0, (vh - r.top) / (0.45 * (vh + r.height))));
+      scene.style.setProperty('--x-lap-p', p.toFixed(3));
+    };
+    const queue = () => { if (!raf) raf = requestAnimationFrame(step); };
+    const listen = (on) => {
+      if (on === live) return;
+      live = on;
+      (on ? addEventListener : removeEventListener)('scroll', queue, { passive: true });
+      (on ? addEventListener : removeEventListener)('resize', queue);
+      queue();
+    };
+    if ('IntersectionObserver' in window) new IntersectionObserver((es) => es.forEach((e) => listen(e.isIntersecting)), { rootMargin: '120px 0px' }).observe(scene);
+    else listen(true);
+    step();
+  });
+  // Top bar on the white pages: condenses into a floating bar once the page scrolls.
+  const tb = document.querySelector('.page-white .x-tb');
+  if (tb) {
+    let q = 0;
+    const set = () => { q = 0; tb.toggleAttribute('data-condensed', scrollY > 24); };
+    addEventListener('scroll', () => { if (!q) q = requestAnimationFrame(set); }, { passive: true });
+    set();
+  }
+  // Close the phone menu when one of its links is followed or Escape is pressed.
+  const mm = document.getElementById('mobilemenu');
+  const closeMm = () => {
+    if (!mm?.classList.contains('open')) return;
+    mm.classList.remove('open');
+    const b = document.querySelector('[data-menu-toggle]');
+    b?.setAttribute('aria-expanded', 'false');
+    b?.focus();
+  };
+  mm?.addEventListener('click', (e) => { if (e.target.closest('a,[data-open-search]')) closeMm(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMm(); });
 })();
