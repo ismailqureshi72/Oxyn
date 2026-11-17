@@ -1,37 +1,37 @@
-**Status:** built v0.1 (2026-11-17, screens 1: Screens).
+**Status:** built v0.2 (2026-11-18, S2: Workspace parity; v0.1 screens 1).
 
 # Spec: Integrations (`integrations`)
 
-Family: Screens. Reference: affectUI Integrations, behaviour only.
-Components: `IntegrationsScreen` (Dioxus) · `IntegrationsEl` (GPUI), models in `oxyn_core::parity::screensfid`.
+Family: Screens. Reference: affectUI Integrations (`/screens/integrations`), layout and behaviour only; no source or assets copied.
+Components: `IntegrationsScreen` (Dioxus) · `IntegrationsEl` (GPUI), models in `oxyn_core::parity::workscr`.
 
 ## 1. Purpose
-Where a workspace connects apps and decides what each may do.
+A directory of the apps a workspace can link, with what each one does and whether it is linked.
 
 ## 2. Parts
 | Part | Look |
 |---|---|
-| Sidebar | Workspace switcher (menu), fold-to-rail button, live search (Escape clears), nav, Pinned / Projects (expand) / Chats with pin and unread dot, dismissible notice, setup checklist with progress, account menu |
-| Page | Top bar (menu button when narrow, title, actions, work-area toggle) over a scrolling body |
-| Header | Title and a connected count |
-| Find | Search by name or description (Escape clears) |
-| Tabs | All, Connected (with count), Files, Messaging, Work, Calendar, Developer; ←/→ move |
-| Cards | Brand mark, name, category, one line on what it enables, Connected tag + Manage, or Connect |
-| Connect dialog | Modal over the page: the permissions as checkboxes (Allow needs one), Cancel / Allow, Escape or the scrim cancel |
-| App area | Mark, name, last sync; a switch per permission; Sync now; Disconnect with an inline Yes / Keep |
+| Sidebar | Folders persona with Integrations current |
+| Column | 958 px centred, 40 px from the top: Integrations (24 px) and one lead line |
+| Sticky header | All · Connected n · Available tabs, Search integrations and the black Request; it stays on top while the page scrolls |
+| Categories | Popular, Google, Communication, Engineering, Sales and payments: a 15 px heading, then two columns of apps |
+| App row | A 30 px white tile with the official mark in its own colours, the name with a verified glyph, one line that ellipsises, and on the right + (link) or a filled ✓ (linked) |
+| More row | Popular shows six; the rest fold into a row of overlapping marks and "Stripe, Zapier and 2 more ›" |
+
+Chrome is monochrome neutral; colour only means something: official brand marks, semantic object glyphs (folder #00A1FF, file types), status (running blue, needs-you amber, done green, failed red).
 
 ## 3. Behaviour
-Connected apps sort first. Allow connects with the chosen permissions and opens the app beside the list; Disconnect asks once, then returns the card to Connect and closes the area. Empty shows the full catalogue with nothing connected; the Connected tab explains how to start.
++ opens a small confirm (Link {app}? with what agents may do; Link is focused) and links it; ✓ opens Settings / Unlink; the tabs and search filter every category live and empty categories drop out; Request opens a field (Enter sends) and thanks you; the more row unfolds Popular.
 prefers-reduced-motion: no transitions or animation.
 
 ## 4. Variants
-Data: Sample · Loading (skeletons) · Empty (each region says what lands there). Frame: Inset (page is a rounded card on the grey canvas) · Flat (edge to edge, hairlines). Light and dark follow the page theme.
+States: Data · Loading (heading and row skeletons) · Empty (nothing allowed yet, with Request) · **Link failed** (one app shows the error line and Try again). Frame: Inset · Flat. Oxyn extras: the confirm before linking, the Unlink menu, the Request dialog, a category menu option that narrows the page to one group.
 
 ## 5. Keyboard and accessibility
-Sidebar is a labelled nav with aria-current on the open chat; menus open from a trigger reporting aria-expanded (items are menuitemradio; Escape shuts them); hairlines are focusable separators with a value (←/→ resize); skeletons are aria-hidden; live notes use role=status.
+Each action button names the app and its state (Link Slack; Slack is linked. Options); the confirm and Request are labelled dialogs that Escape closes; errors are role=alert; the Connected tab carries its count. Escape closes any open menu or popover and clears a search; skeletons are aria-hidden.
 
 ## 6. Responsive
-Root fills its container (definite width, overflow clip, container queries). Under 860 px the work area becomes a sheet opened from the top bar; under 640 px the sidebar slides in from a menu button and composer menus drop their labels.
+Authored on the 1440 × 900 stage (rule R1) and scaled to its column; the full view (`/screens/integrations/full`) renders at the real viewport with the state bar under it (R2). Under 640 px the sidebar slides in from a menu button and top-bar actions keep their icons with hidden labels. Two columns become one under 900 px; under 620 px the sticky header wraps with the tabs on their own line and popovers open to the left. Every label in a row, chip or card ellipsises in a flex child with min-width 0 (R5); scripts/ovl.py finds no text overlap at 1440, 768 and 390 in light and dark.
 
 ## 7. Known gaps
-GPUI is a static snapshot (no dialog or switches); the host owns state. The dialog moves focus to Allow and closes on Escape but does not trap Tab.
+GPUI is a static snapshot: `.extra(...)` draws the screen's own state or an option; drag, menus, typing and charts' crosshair belong to the host.

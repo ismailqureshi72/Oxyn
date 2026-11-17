@@ -64,6 +64,7 @@
 //! - [`themefid`]: Theme Selector family (variants 3): Background picker, Theme grid, Theme split, Accent and density.
 //! - [`screensfid`]: Screens 1: app frames (Inset, Flat, three-pane) and the AI Chat screens
 //! - [`screens2fid`]: Screens 2: the agent screens (Orchestration, Thread and the rest) on the Screens 1 frame
+//! - [`workscr`]: Screens S2: the workspace screens (Folders, Integrations, Kanban, CRM, Analytics)
 //! - [`answers`]: fidelity batch, family A: AI Answer markup and streaming, Cited Answer
 //!   sentences and quotes, Message Actions, Thinking Loader phases, Thinking State steps and the
 //!   Writing Assistant's sample writer and dictation.
@@ -132,6 +133,7 @@ pub mod toolmapfid;
 pub mod tools;
 pub mod tracefid;
 pub mod upload;
+pub mod workscr;
 
 /// Smoothstep ease used for rewinds and fills (0..1 in, 0..1 out).
 pub fn smooth(t: f32) -> f32 {
