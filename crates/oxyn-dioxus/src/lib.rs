@@ -43,26 +43,44 @@ pub use composer::{
 pub use glyph_loader::{GLYPH_LOADER_CSS, GlyphLoader, GlyphLoaderProps};
 /// Stylesheet for approvals and checkpoints.
 pub const HITL_CSS: &str = include_str!("hitl.css");
+pub use parity::AttachmentChips;
+pub use parity::ContextBar;
+pub use parity::ContextBreakdown;
 pub use parity::ContextEffortMenu;
+pub use parity::ContextStack;
+pub use parity::ContextTide;
 pub use parity::DiffTimelineRun;
+pub use parity::DropLanes;
 pub use parity::EffortList;
 pub use parity::EffortPill;
 pub use parity::EffortRuler;
 pub use parity::EffortStairs;
 pub use parity::FanoutGrid;
+pub use parity::FileIcon;
+pub use parity::GooeyAttachMenu;
+pub use parity::GooeyComposer;
+pub use parity::GooeyModelMenu;
 pub use parity::JudgeBracket;
+pub use parity::LiquidDrops;
+pub use parity::LiquidTabs;
 pub use parity::MemoryPanel;
 pub use parity::ModelEffortMenu;
 pub use parity::NozzleSlider;
 pub use parity::ParallelAttempts;
 pub use parity::PlanVsActual;
+pub use parity::PolaroidStack;
 pub use parity::RateLimitPlanner;
 pub use parity::ReasoningPanel;
 pub use parity::RootCauseTree;
 pub use parity::RunningNow;
 pub use parity::ScheduledRuns;
+pub use parity::StorageCleanup;
+pub use parity::StorageForecast;
+pub use parity::StorageMeter;
+pub use parity::StorageWaffle;
 pub use parity::ToolAccessMap;
 pub use parity::TraceWaterfall;
+pub use parity::UploadDropzone;
 pub use parity::{
     ActionSwapButton, InViewTitle, LoadingState, SlotReels, Source, StreamingText, SweepText,
     TextMorph, ThinkingLoader, WordReveal,

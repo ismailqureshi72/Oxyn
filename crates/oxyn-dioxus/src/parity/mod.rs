@@ -4,6 +4,7 @@
 mod agentsfid;
 mod answers;
 mod approvals;
+mod attachfid;
 mod autonomyfid;
 mod awayfid;
 mod chatfid;
@@ -13,6 +14,7 @@ mod costfid;
 mod crewfid;
 mod ctxefffid;
 mod ctxmapfid;
+mod ctxvisfid;
 mod cursorsfid;
 mod delegatefid;
 mod diff;
@@ -24,6 +26,7 @@ mod fallbackfid;
 mod fanfid;
 mod fidelity;
 mod fields;
+mod gooeyfid;
 mod graphfid;
 mod handofffid;
 mod home;
@@ -51,6 +54,7 @@ mod runningfid;
 mod schedfid;
 mod seqfid;
 mod stairsfid;
+mod storagefid;
 mod text;
 mod toolmapfid;
 mod tools;
@@ -65,6 +69,7 @@ pub use approvals::{
     AgentApprovals, ApprovalGates, ConfirmMorph, ConfirmPopover, HoldToConfirm, PermissionRequest,
     gate_dot,
 };
+pub use attachfid::{AttachmentChips, DropLanes, FileIcon, PolaroidStack, UploadDropzone};
 pub use autonomyfid::AutonomyDial;
 pub use awayfid::AwaySummary;
 pub use chatfid::{AgentRunPanel, ModelPickerMenu};
@@ -76,6 +81,7 @@ pub use costfid::CostWaterfall;
 pub use crewfid::AgentCrew;
 pub use ctxefffid::ContextEffortMenu;
 pub use ctxmapfid::ContextMap;
+pub use ctxvisfid::{ContextBar, ContextBreakdown, ContextStack, ContextTide};
 pub use cursorsfid::AgentCursors;
 pub use delegatefid::DelegateBoard;
 pub use diff::{ChangeSummary, CodeSuggestion, DiffTable, DiffTimeline, DiffViewer, InlineDiff};
@@ -90,6 +96,7 @@ pub use fidelity::{
     ThreadNote,
 };
 pub use fields::{ElasticSlider, MorphSelect, NumberField, ScrubInput};
+pub use gooeyfid::{GooeyAttachMenu, GooeyComposer, GooeyModelMenu, LiquidDrops, LiquidTabs};
 pub use graphfid::AgentGraph;
 pub use handofffid::AgentHandoff;
 pub use home::{
@@ -124,6 +131,7 @@ pub use runningfid::RunningNow;
 pub use schedfid::ScheduledRuns;
 pub use seqfid::AgentSequence;
 pub use stairsfid::EffortStairs;
+pub use storagefid::{StorageCleanup, StorageForecast, StorageMeter, StorageWaffle};
 pub use text::{
     ActionSwapButton, InViewTitle, LoadingState, SlotReels, Source, StreamingText, SweepText,
     TextMorph, ThinkingLoader, WordReveal,

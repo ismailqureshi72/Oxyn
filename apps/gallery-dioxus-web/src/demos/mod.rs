@@ -23,13 +23,17 @@ mod parity_agents2;
 mod parity_agents3;
 mod parity_answers;
 mod parity_approvals;
+mod parity_attach;
+mod parity_context;
 mod parity_diff;
 mod parity_fidelity;
 mod parity_fields;
+mod parity_gooey;
 mod parity_home;
 mod parity_input;
 mod parity_merge;
 mod parity_run;
+mod parity_storage;
 mod parity_text;
 mod parity_thinking;
 mod parity_tools;
@@ -51,7 +55,7 @@ pub struct Category {
 }
 
 /// Categories in nav order.
-pub const CATEGORIES: [Category; 21] = [
+pub const CATEGORIES: [Category; 25] = [
     Category {
         slug: "composer",
         name: "Composer",
@@ -75,7 +79,7 @@ pub const CATEGORIES: [Category; 21] = [
     Category {
         slug: "approvals",
         name: "Approvals",
-        blurb: "The agent asks before it acts: risk, preview, decide with a key.",
+        blurb: "Approve or deny a risky step: its tier, a preview, a shortcut key.",
     },
     Category {
         slug: "checkpoints-git",
@@ -157,6 +161,26 @@ pub const CATEGORIES: [Category; 21] = [
         name: "Thinking Selector",
         blurb: "How hard the model thinks: effort sliders, rulers, menus and pickers, each a different take on the same choice.",
     },
+    Category {
+        slug: "context-visualizer",
+        name: "Context Visualizer",
+        blurb: "How full the context window is and what fills it: bars, fields of dots, breakdowns, stacks and a tide glass.",
+    },
+    Category {
+        slug: "storage",
+        name: "Storage",
+        blurb: "Disk and context usage drawn as dot matrices: capacity, cleanup, waffle and forecast.",
+    },
+    Category {
+        slug: "attachments",
+        name: "Attachments",
+        blurb: "Files, images and links going into a prompt: drop zones, chips with upload progress, prints and lanes.",
+    },
+    Category {
+        slug: "menu-motion",
+        name: "Menu Motion",
+        blurb: "Menus and controls that move like liquid: the gooey menu motion on attach and model menus, a composer, tabs and drops.",
+    },
 ];
 
 /// Every demo, in category order.
@@ -179,6 +203,10 @@ pub fn catalog() -> Vec<Demo> {
     v.extend(parity_tools::demos());
     v.extend(parity_diff::demos());
     v.extend(parity_thinking::demos());
+    v.extend(parity_context::demos());
+    v.extend(parity_gooey::demos());
+    v.extend(parity_attach::demos());
+    v.extend(parity_storage::demos());
     v.extend(parity_merge::demos());
     v.extend(parity_text::demos());
     v.extend(checkpoints::demos());

@@ -214,4 +214,21 @@ specified just as deeply. When we point at one component as an example, the stan
 | [model-effort-menu.md](model-effort-menu.md) | built v0.1 (variants 1, Thinking Selector) |
 | [nozzle-slider.md](nozzle-slider.md) | built v0.2 (variants 1, Thinking Selector) |
 | [effort-stairs.md](effort-stairs.md) | built v0.1 (variants 1, Thinking Selector) |
+| [context-bar.md](context-bar.md) | built v0.1 (variants 2, Context Visualizer) |
+| [context-breakdown.md](context-breakdown.md) | built v0.1 (variants 2, Context Visualizer) |
+| [context-stack.md](context-stack.md) | built v0.1 (variants 2, Context Visualizer) |
+| [context-tide.md](context-tide.md) | built v0.1 (variants 2, Context Visualizer) |
+| [storage-meter.md](storage-meter.md) | built v0.1 (variants 2, Storage) |
+| [storage-cleanup.md](storage-cleanup.md) | built v0.1 (variants 2, Storage) |
+| [storage-waffle.md](storage-waffle.md) | built v0.1 (variants 2, Storage) |
+| [storage-forecast.md](storage-forecast.md) | built v0.1 (variants 2, Storage) |
+| [upload-dropzone.md](upload-dropzone.md) | built v0.1 (variants 2, Attachments) |
+| [attachment-chips.md](attachment-chips.md) | built v0.1 (variants 2, Attachments) |
+| [polaroid-stack.md](polaroid-stack.md) | built v0.1 (variants 2, Attachments) |
+| [drop-lanes.md](drop-lanes.md) | built v0.1 (variants 2, Attachments) |
+| [gooey-composer.md](gooey-composer.md) | built v0.1 (variants 2, Menu Motion) |
+| [gooey-attach-menu.md](gooey-attach-menu.md) | built v0.1 (variants 2, Menu Motion) |
+| [gooey-model-menu.md](gooey-model-menu.md) | built v0.1 (variants 2, Menu Motion) |
+| [liquid-tabs.md](liquid-tabs.md) | built v0.1 (variants 2, Menu Motion) |
+| [liquid-drops.md](liquid-drops.md) | built v0.1 (variants 2, Menu Motion) |
 | Every other component in [../component-taxonomy.md](../component-taxonomy.md) | to write in V2.2 |
