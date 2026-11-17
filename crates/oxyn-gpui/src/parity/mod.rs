@@ -13,6 +13,7 @@ use oxyn_tokens::{ColorRole, Theme};
 
 use crate::hsla;
 
+mod agentscr;
 mod agentsfid;
 mod answers;
 mod approvals;
@@ -74,6 +75,7 @@ mod tools;
 mod tracefid;
 mod workscr;
 
+pub use agentscr::{ActivityEl, AgentThreadEl, InboxBoardEl, InboxScreenEl, MemoryEl, TasksEl};
 pub use agentsfid::{AgentFindingsEl, AgentInboxEl};
 pub use answers::{
     AnswerCardEl, CitedAnswerEl, MessageActionsEl, ThinkingPanelEl, ThinkingPillEl,
@@ -148,7 +150,7 @@ pub use run::{
 };
 pub use runningfid::RunningNowEl;
 pub use schedfid::ScheduledRunsEl;
-pub use screens2fid::{AgentThreadEl, OrchestrationEl};
+pub use screens2fid::OrchestrationEl;
 pub use screensfid::{
     AccountMenuEl, ScreenRailEl, ScreenShellEl, ScreenStageEl, SettingsEl, WorkflowEl,
 };

@@ -1258,6 +1258,7 @@ pub fn AppFrame(
         "board" => Side::Domain("board"),
         "sales" => Side::Domain("sales"),
         "revenue" => Side::Domain("revenue"),
+        "fieldwork" => Side::Domain("fieldwork"),
         _ => Side::Chat,
     };
     let style = format!(

@@ -1,14 +1,15 @@
 //! Screens demos (#42 Screens 1, Screens 2): app frames (Inset, Flat, three-pane) and the AI Chat screens (Start, Overview,
-//! Agents, Double sidebar, Progress, Run) Folders (Overview, Detail), Integrations, Kanban, CRM, the Workflow builder and the Settings shell, then the agent screens (Orchestration, Thread…). Every screen has Sample / Loading / Empty data and an
+//! Agents, Double sidebar, Progress, Run) Folders (Overview, Detail), Integrations, Kanban, CRM, the Workflow builder and the Settings shell, then the agent screens (Orchestration; S3: Thread, Inbox, Inbox Board, Tasks, Activity, Memory). Every screen has Sample / Loading / Empty data and an
 //! Inset / Flat frame; light and dark follow the page theme.
 
 use dioxus::prelude::*;
 use oxyn_core::ClockMs;
 use oxyn_dioxus::{
-    AgentThreadScreen, AnalyticsScreen, AppShellScreen, ChatAgentsScreen, ChatOverviewScreen,
-    ChatProgressScreen, ChatRailScreen, ChatRunScreen, ChatStartScreen, CrmScreen, FoldersScreen,
-    IntegrationsScreen, KanbanScreen, OrchestrationScreen, RailShellScreen, ScreenStage,
-    SettingsScreen, WorkflowScreen, s2_states,
+    ActivityScreen, AgentThreadScreen, AnalyticsScreen, AppShellScreen, ChatAgentsScreen,
+    ChatOverviewScreen, ChatProgressScreen, ChatRailScreen, ChatRunScreen, ChatStartScreen,
+    CrmScreen, FoldersScreen, InboxBoardScreen, InboxScreen, IntegrationsScreen, KanbanScreen,
+    MemoryScreen, OrchestrationScreen, RailShellScreen, ScreenStage, SettingsScreen, TasksScreen,
+    WorkflowScreen, s2_states, s3_states,
 };
 
 use super::{Code, mk, sel, var};
@@ -39,6 +40,15 @@ fn code(name: &str, v: &Vals, live: bool, detail: bool) -> String {
     } else {
         c.done()
     }
+}
+
+/// The state key for a data control label on an S3 screen (its own states by label).
+fn s3_key(slug: &str, label: &str) -> String {
+    s3_states(slug)
+        .iter()
+        .find(|(_, l)| l.eq_ignore_ascii_case(label))
+        .map(|(k, _)| k.to_string())
+        .unwrap_or_else(|| low(label))
 }
 
 fn controls(lay: &'static str) -> Vec<crate::Control> {
@@ -1432,76 +1442,6 @@ fn agent_orchestration_demo() -> Demo {
     }
 }
 
-// ---------- Agent · Thread ----------
-
-fn agent_thread(v: &Vals, now: ClockMs) -> Element {
-    let (st, lay, key) = frame(v);
-    rsx! {
-        div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
-            ScreenStage { state: st, screen: move |s: String| rsx! { AgentThreadScreen { layout: lay.clone(), state: s, now } } }
-        }
-    }
-}
-
-fn agent_thread_code(v: &Vals) -> String {
-    code("AgentThreadScreen", v, true, false)
-}
-
-fn agent_thread_demo() -> Demo {
-    Demo {
-        controls: controls("inset"),
-        variants: vec![
-            var("sample", "Sample data in the Inset frame.", &[]),
-            var(
-                "flat",
-                "The same screen in the Flat frame.",
-                &[("frame", "Flat")],
-            ),
-            var(
-                "loading",
-                "Skeletons where the data will land.",
-                &[("data", "Loading")],
-            ),
-            var(
-                "empty",
-                "Nothing yet: each region says what will appear.",
-                &[("data", "Empty")],
-            ),
-        ],
-        render: agent_thread,
-        code: agent_thread_code,
-        keyboard: vec![
-            ("Tab", "Sidebar, page, then the work area"),
-            ("← / → on a hairline", "Resize the sidebar or work area"),
-            ("Escape", "Close an open menu; clear search"),
-            ("Enter", "Send (Shift+Enter: new line)"),
-            ("← / → in the work area tabs", "Artifacts or Tasks"),
-        ],
-        a11y: vec![
-            "The sidebar is a labelled nav; the open chat has aria-current and unread chats say so.",
-            "Menus open from a trigger that reports aria-expanded; their items are menuitemradio and Escape shuts them.",
-            "Hairlines are separators with a value and arrow keys; skeletons are hidden from screen readers.",
-        ],
-        responsive: vec![
-            "Under 860 px of width the work area becomes a sheet opened from the top bar.",
-            "Under 640 px the sidebar slides in from the menu button and the composer drops its labels.",
-        ],
-        height: 240,
-        live: true,
-        align: Align::Start,
-        ..mk(
-            "agent-thread",
-            "Agent · Thread",
-            CAT,
-            "One conversation with the orchestrator: plain answers, tools that ran side by side folded into one line, task cards and files, counts that open the work, and a reply that keeps streaming through a dropped connection, a slow upload and time away.",
-            "AgentThreadScreen",
-            "AgentThreadEl",
-            "agent-thread",
-            "parity/screensfid.rs",
-        )
-    }
-}
-
 // ---------- Analytics ----------
 
 fn analytics(v: &Vals, _now: ClockMs) -> Element {
@@ -1609,6 +1549,629 @@ fn analytics_demo() -> Demo {
     }
 }
 
+// ---------- Agent · Thread ----------
+
+fn agent_thread(v: &Vals, now: ClockMs) -> Element {
+    let (_, lay, key) = frame(v);
+    let st = s3_key("agent-thread", v.s("data"));
+    let key = format!("{key}-{}-{}", v.b("x1"), v.b("x2"));
+    let (to, sm) = (v.b("x1"), v.b("x2"));
+    rsx! {
+        div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
+            ScreenStage { state: st, states: s3_states("agent-thread"), screen: move |s: String| rsx! { AgentThreadScreen { layout: lay.clone(), state: s, now, tools_open: to, stamps: sm } } }
+        }
+    }
+}
+
+fn agent_thread_code(v: &Vals) -> String {
+    let c = Code::new("AgentThreadScreen")
+        .s("layout", &low(v.s("frame")), "inset")
+        .s("state", &s3_key("agent-thread", v.s("data")), "sample");
+    let c = c.raw("now", "clock()");
+    let c = c.b("tools_open", v.b("x1")).b("stamps", v.b("x2"));
+    c.done()
+}
+
+fn agent_thread_demo() -> Demo {
+    let mut c = controls_x(
+        "inset",
+        &[
+            "Decision",
+            "Scrolled up",
+            "Offline",
+            "Uploading",
+            "Dictating",
+            "Away summary",
+            "Error",
+        ],
+    );
+    c.push(super::tog("x1", "Tools unfolded", false));
+    c.push(super::tog("x2", "Time stamps", false));
+    Demo {
+        controls: c,
+        variants: vec![
+            var("sample", "Sample data in the Inset frame.", &[]),
+            var(
+                "flat",
+                "The same screen in the Flat frame.",
+                &[("frame", "Flat")],
+            ),
+            var(
+                "loading",
+                "Skeletons where the data will land.",
+                &[("data", "Loading")],
+            ),
+            var(
+                "empty",
+                "Nothing yet: each region says what will appear and how to start.",
+                &[("data", "Empty")],
+            ),
+            var(
+                "decision",
+                "A decision card: press 1, 2 or 3 to answer.",
+                &[("data", "Decision")],
+            ),
+            var(
+                "scrolled",
+                "Scrolled up with a Jump to latest pill.",
+                &[("data", "Scrolled up")],
+            ),
+            var(
+                "offline",
+                "Offline: a banner, and messages queue until Reconnect.",
+                &[("data", "Offline")],
+            ),
+            var(
+                "uploading",
+                "A file uploading in the composer.",
+                &[("data", "Uploading")],
+            ),
+            var(
+                "dictating",
+                "Dictating: a live waveform and timer.",
+                &[("data", "Dictating")],
+            ),
+            var(
+                "away",
+                "What finished while you were away, on top.",
+                &[("data", "Away summary")],
+            ),
+            var(
+                "error",
+                "A reply that failed, with Retry.",
+                &[("data", "Error")],
+            ),
+            var(
+                "tools",
+                "Oxyn: tool lines start unfolded.",
+                &[("x1", "true")],
+            ),
+            var(
+                "stamps",
+                "Oxyn: a time on each of your messages.",
+                &[("x2", "true")],
+            ),
+        ],
+        render: agent_thread,
+        code: agent_thread_code,
+        keyboard: vec![
+            ("Tab", "Sidebar, page, then each control in reading order"),
+            ("← / → in a tab row", "Move between tabs"),
+            ("Escape", "Close an open menu or popover; clear a search"),
+            ("Enter", "Send (Shift+Enter: new line)"),
+            ("1 / 2 / 3 on a decision", "Answer it"),
+            ("Enter on a tool line", "Unfold the calls"),
+        ],
+        a11y: vec![
+            "The Fieldwork sidebar is a labelled nav with aria-current on this page.",
+            "Tabs are a tablist with arrow keys; menus report aria-expanded and close on Escape.",
+            "Skeletons are hidden from screen readers; every action reports what it did in a polite live region.",
+            "The thread is a log; the decision card lists its answers with aria-keyshortcuts; upload progress is a progressbar.",
+        ],
+        responsive: vec![
+            "Authored on the 1440 × 900 canvas; the full view lays it out at the real width.",
+            "Under 640 px the sidebar slides in from the menu button and top-bar actions keep their icons with hidden labels.",
+            "The column is 680 px wide and centred; under 520 px it takes the full width and the composer drops its labels.",
+        ],
+        height: 240,
+        live: true,
+        align: Align::Start,
+        ..mk(
+            "agent-thread",
+            "Agent · Thread",
+            CAT,
+            "One full-width thread with the orchestrator: task cards, tools folded into one line, file chips and a composer, across all nine states (Live, Decision, Scrolled up, Offline, Uploading, Dictating, Away summary, Error, Loading). The Artifacts work area is folded behind its one toggle.",
+            "AgentThreadScreen",
+            "AgentThreadEl",
+            "agent-thread",
+            "parity/agentscr.rs",
+        )
+    }
+}
+
+// ---------- Agent · Inbox ----------
+
+fn inbox_screen(v: &Vals, _now: ClockMs) -> Element {
+    let (_, lay, key) = frame(v);
+    let st = s3_key("inbox", v.s("data"));
+    let key = format!("{key}-{}-{}", v.b("x1"), v.b("x2"));
+    let (pk, hd) = (v.b("x1"), v.b("x2"));
+    rsx! {
+        div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
+            ScreenStage { state: st, states: s3_states("inbox"), screen: move |s: String| rsx! { InboxScreen { layout: lay.clone(), state: s, peek_next: pk, hold: hd } } }
+        }
+    }
+}
+
+fn inbox_screen_code(v: &Vals) -> String {
+    let c = Code::new("InboxScreen")
+        .s("layout", &low(v.s("frame")), "inset")
+        .s("state", &s3_key("inbox", v.s("data")), "sample");
+    let c = c.b("peek_next", v.b("x1")).b("hold", v.b("x2"));
+    c.done()
+}
+
+fn inbox_screen_demo() -> Demo {
+    let mut c = controls_x("inset", &["Just answered"]);
+    c.push(super::tog("x1", "Peek at next", false));
+    c.push(super::tog("x2", "Hold after answer", false));
+    Demo {
+        controls: c,
+        variants: vec![
+            var("sample", "Sample data in the Inset frame.", &[]),
+            var(
+                "flat",
+                "The same screen in the Flat frame.",
+                &[("frame", "Flat")],
+            ),
+            var(
+                "loading",
+                "Skeletons where the data will land.",
+                &[("data", "Loading")],
+            ),
+            var(
+                "empty",
+                "Nothing yet: each region says what will appear and how to start.",
+                &[("data", "Empty")],
+            ),
+            var(
+                "answered",
+                "Just answered: the next question has glided in, with Undo.",
+                &[("data", "Just answered")],
+            ),
+            var(
+                "peek",
+                "Oxyn: a peek at the next question.",
+                &[("x1", "true")],
+            ),
+            var(
+                "hold",
+                "Oxyn: stay on the answered question.",
+                &[("x2", "true")],
+            ),
+        ],
+        render: inbox_screen,
+        code: inbox_screen_code,
+        keyboard: vec![
+            ("Tab", "Sidebar, page, then each control in reading order"),
+            ("← / → in a tab row", "Move between tabs"),
+            ("Escape", "Close an open menu or popover; clear a search"),
+            (
+                "1–9 on a question",
+                "Answer with that choice; the next question glides in",
+            ),
+            ("Y / N", "First or second answer"),
+            ("↑ / ↓ then Enter", "Pick and send"),
+            ("L", "Later: move it to the end"),
+        ],
+        a11y: vec![
+            "The Fieldwork sidebar is a labelled nav with aria-current on this page.",
+            "Tabs are a tablist with arrow keys; menus report aria-expanded and close on Escape.",
+            "Skeletons are hidden from screen readers; every action reports what it did in a polite live region.",
+            "Answers are a radiogroup; the question region names its shortcuts with aria-keyshortcuts; Undo sits in a status toast.",
+        ],
+        responsive: vec![
+            "Authored on the 1440 × 900 canvas; the full view lays it out at the real width.",
+            "Under 640 px the sidebar slides in from the menu button and top-bar actions keep their icons with hidden labels.",
+            "Under 760 px the list stacks above the question.",
+        ],
+        height: 240,
+        live: false,
+        align: Align::Start,
+        ..mk(
+            "inbox",
+            "Agent · Inbox",
+            CAT,
+            "Questions agents are waiting on: a 320 px list tinted by project with Open / Done tabs, one question at a time with its answers, and the task behind it in the work area. One keystroke answers and the next question glides in.",
+            "InboxScreen",
+            "InboxScreenEl",
+            "inbox",
+            "parity/agentscr.rs",
+        )
+    }
+}
+
+// ---------- Agent · Inbox Board ----------
+
+fn inbox_board(v: &Vals, _now: ClockMs) -> Element {
+    let (_, lay, key) = frame(v);
+    let st = s3_key("agent-inbox-board", v.s("data"));
+    let key = format!("{key}-{}-{}", v.b("x1"), v.b("x2"));
+    let (cp, wp) = (v.b("x1"), v.b("x2"));
+    rsx! {
+        div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
+            ScreenStage { state: st, states: s3_states("agent-inbox-board"), screen: move |s: String| rsx! { InboxBoardScreen { layout: lay.clone(), state: s, compact: cp, wip: wp } } }
+        }
+    }
+}
+
+fn inbox_board_code(v: &Vals) -> String {
+    let c = Code::new("InboxBoardScreen")
+        .s("layout", &low(v.s("frame")), "inset")
+        .s("state", &s3_key("agent-inbox-board", v.s("data")), "sample");
+    let c = c.b("compact", v.b("x1")).b("wip", v.b("x2"));
+    c.done()
+}
+
+fn inbox_board_demo() -> Demo {
+    let mut c = controls_x("inset", &["Run failed"]);
+    c.push(super::tog("x1", "Compact cards", false));
+    c.push(super::tog("x2", "WIP limit", false));
+    Demo {
+        controls: c,
+        variants: vec![
+            var("sample", "Sample data in the Inset frame.", &[]),
+            var(
+                "flat",
+                "The same screen in the Flat frame.",
+                &[("frame", "Flat")],
+            ),
+            var(
+                "loading",
+                "Skeletons where the data will land.",
+                &[("data", "Loading")],
+            ),
+            var(
+                "empty",
+                "Nothing yet: each region says what will appear and how to start.",
+                &[("data", "Empty")],
+            ),
+            var(
+                "failed",
+                "A run that failed, with Retry in the work area.",
+                &[("data", "Run failed")],
+            ),
+            var("compact", "Oxyn: one-line cards.", &[("x1", "true")]),
+            var(
+                "wip",
+                "Oxyn: a limit on Running, shown as 3 / 4.",
+                &[("x2", "true")],
+            ),
+        ],
+        render: inbox_board,
+        code: inbox_board_code,
+        keyboard: vec![
+            ("Tab", "Sidebar, page, then each control in reading order"),
+            ("← / → in a tab row", "Move between tabs"),
+            ("Escape", "Close an open menu or popover; clear a search"),
+            ("Enter on a card", "Open it in the work area"),
+            ("Enter in New task", "Start it (Escape cancels)"),
+        ],
+        a11y: vec![
+            "The Fieldwork sidebar is a labelled nav with aria-current on this page.",
+            "Tabs are a tablist with arrow keys; menus report aria-expanded and close on Escape.",
+            "Skeletons are hidden from screen readers; every action reports what it did in a polite live region.",
+            "Lanes are labelled regions with counts; cards are buttons with aria-current when open.",
+        ],
+        responsive: vec![
+            "Authored on the 1440 × 900 canvas; the full view lays it out at the real width.",
+            "Under 640 px the sidebar slides in from the menu button and top-bar actions keep their icons with hidden labels.",
+            "Lanes stack under 760 px.",
+        ],
+        height: 240,
+        live: false,
+        align: Align::Start,
+        ..mk(
+            "agent-inbox-board",
+            "Agent · Inbox Board",
+            CAT,
+            "Tasks as three lanes (Needs you, Running, Done) with the agent’s mark, time, sources and tool calls. Tabs narrow to a lane, Agents filters, board or list, New task, and Approve, Reject or Retry in the work area.",
+            "InboxBoardScreen",
+            "InboxBoardEl",
+            "agent-inbox-board",
+            "parity/agentscr.rs",
+        )
+    }
+}
+
+// ---------- Agent · Tasks ----------
+
+fn tasks_screen(v: &Vals, _now: ClockMs) -> Element {
+    let (_, lay, key) = frame(v);
+    let st = s3_key("agent-tasks", v.s("data"));
+    let key = format!("{key}-{}-{}", v.b("x1"), v.b("x2"));
+    let (co, fo) = (v.b("x1"), v.b("x2"));
+    rsx! {
+        div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
+            ScreenStage { state: st, states: s3_states("agent-tasks"), screen: move |s: String| rsx! { TasksScreen { layout: lay.clone(), state: s, cost: co, folded: fo } } }
+        }
+    }
+}
+
+fn tasks_screen_code(v: &Vals) -> String {
+    let c = Code::new("TasksScreen")
+        .s("layout", &low(v.s("frame")), "inset")
+        .s("state", &s3_key("agent-tasks", v.s("data")), "sample");
+    let c = c.b("cost", v.b("x1")).b("folded", v.b("x2"));
+    c.done()
+}
+
+fn tasks_screen_demo() -> Demo {
+    let mut c = controls_x("inset", &["Done tab"]);
+    c.push(super::tog("x1", "Cost column", false));
+    c.push(super::tog("x2", "Groups folded", false));
+    Demo {
+        controls: c,
+        variants: vec![
+            var("sample", "Sample data in the Inset frame.", &[]),
+            var(
+                "flat",
+                "The same screen in the Flat frame.",
+                &[("frame", "Flat")],
+            ),
+            var(
+                "loading",
+                "Skeletons where the data will land.",
+                &[("data", "Loading")],
+            ),
+            var(
+                "empty",
+                "Nothing yet: each region says what will appear and how to start.",
+                &[("data", "Empty")],
+            ),
+            var(
+                "finished",
+                "The Done tab with a finished task open.",
+                &[("data", "Done tab")],
+            ),
+            var(
+                "cost",
+                "Oxyn: what each task has cost so far.",
+                &[("x1", "true")],
+            ),
+            var("folded", "Oxyn: groups start folded.", &[("x2", "true")]),
+        ],
+        render: tasks_screen,
+        code: tasks_screen_code,
+        keyboard: vec![
+            ("Tab", "Sidebar, page, then each control in reading order"),
+            ("← / → in a tab row", "Move between tabs"),
+            ("Escape", "Close an open menu or popover; clear a search"),
+            ("Enter on a group", "Fold or unfold it"),
+            ("Enter on Decide", "Show the answers inline"),
+        ],
+        a11y: vec![
+            "The Fieldwork sidebar is a labelled nav with aria-current on this page.",
+            "Tabs are a tablist with arrow keys; menus report aria-expanded and close on Escape.",
+            "Skeletons are hidden from screen readers; every action reports what it did in a polite live region.",
+            "Progress rings are hidden; each row states its steps as text; group heads report aria-expanded.",
+        ],
+        responsive: vec![
+            "Authored on the 1440 × 900 canvas; the full view lays it out at the real width.",
+            "Under 640 px the sidebar slides in from the menu button and top-bar actions keep their icons with hidden labels.",
+            "Under 520 px the steps, files and age columns hide.",
+        ],
+        height: 240,
+        live: false,
+        align: Align::Start,
+        ..mk(
+            "agent-tasks",
+            "Agent · Tasks",
+            CAT,
+            "Tasks grouped by project with progress rings, what each is doing and a Needs you tag. The work area holds the decision waiting (Decide answers it inline), steps, what happened so far, artifacts and what was decided.",
+            "TasksScreen",
+            "TasksEl",
+            "agent-tasks",
+            "parity/agentscr.rs",
+        )
+    }
+}
+
+// ---------- Agent · Activity ----------
+
+fn activity_screen(v: &Vals, now: ClockMs) -> Element {
+    let (_, lay, key) = frame(v);
+    let st = s3_key("agent-activity", v.s("data"));
+    let key = format!("{key}-{}-{}", v.b("x1"), v.b("x2"));
+    let (co, ck) = (v.b("x1"), v.b("x2"));
+    rsx! {
+        div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
+            ScreenStage { state: st, states: s3_states("agent-activity"), screen: move |s: String| rsx! { ActivityScreen { layout: lay.clone(), state: s, now, cost: co, clock: ck } } }
+        }
+    }
+}
+
+fn activity_screen_code(v: &Vals) -> String {
+    let c = Code::new("ActivityScreen")
+        .s("layout", &low(v.s("frame")), "inset")
+        .s("state", &s3_key("agent-activity", v.s("data")), "sample");
+    let c = c.raw("now", "clock()");
+    let c = c.b("cost", v.b("x1")).b("clock", v.b("x2"));
+    c.done()
+}
+
+fn activity_screen_demo() -> Demo {
+    let mut c = controls_x("inset", &["Undone"]);
+    c.push(super::tog("x1", "Cost column", false));
+    c.push(super::tog("x2", "Clock countdown", false));
+    Demo {
+        controls: c,
+        variants: vec![
+            var("sample", "Sample data in the Inset frame.", &[]),
+            var(
+                "flat",
+                "The same screen in the Flat frame.",
+                &[("frame", "Flat")],
+            ),
+            var(
+                "loading",
+                "Skeletons where the data will land.",
+                &[("data", "Loading")],
+            ),
+            var(
+                "empty",
+                "Nothing yet: each region says what will appear and how to start.",
+                &[("data", "Empty")],
+            ),
+            var(
+                "undone",
+                "The first step undone: struck through and counted under Undone.",
+                &[("data", "Undone")],
+            ),
+            var(
+                "cost",
+                "Oxyn: each step’s cost on its row.",
+                &[("x1", "true")],
+            ),
+            var(
+                "clock",
+                "Oxyn: the undo window as a clock.",
+                &[("x2", "true")],
+            ),
+        ],
+        render: activity_screen,
+        code: activity_screen_code,
+        keyboard: vec![
+            ("Tab", "Sidebar, page, then each control in reading order"),
+            ("← / → in a tab row", "Move between tabs"),
+            ("Escape", "Close an open menu or popover; clear a search"),
+            ("Enter on a row", "Open the step"),
+            ("Enter on Undo", "Take it back while the window is open"),
+        ],
+        a11y: vec![
+            "The Fieldwork sidebar is a labelled nav with aria-current on this page.",
+            "Tabs are a tablist with arrow keys; menus report aria-expanded and close on Escape.",
+            "Skeletons are hidden from screen readers; every action reports what it did in a polite live region.",
+            "Each Undo button names the step it reverses; the countdown is a timer.",
+        ],
+        responsive: vec![
+            "Authored on the 1440 × 900 canvas; the full view lays it out at the real width.",
+            "Under 640 px the sidebar slides in from the menu button and top-bar actions keep their icons with hidden labels.",
+            "Under 520 px the time column hides and Undo keeps its icon.",
+        ],
+        height: 240,
+        live: true,
+        align: Align::Start,
+        ..mk(
+            "agent-activity",
+            "Agent · Activity",
+            CAT,
+            "What agents did in your apps, grouped by day: filter tabs with counts, a search, official app marks and Undo or Final on each row. The work area shows When, Task and Cost, What happened, Why it could and Taking it back with a live countdown.",
+            "ActivityScreen",
+            "ActivityEl",
+            "agent-activity",
+            "parity/agentscr.rs",
+        )
+    }
+}
+
+// ---------- Agent · Memory ----------
+
+fn memory_screen(v: &Vals, _now: ClockMs) -> Element {
+    let (_, lay, key) = frame(v);
+    let st = s3_key("agent-memory", v.s("data"));
+    let key = format!("{key}-{}-{}", v.b("x1"), v.b("x2"));
+    let (sm, cp) = (v.b("x1"), v.b("x2"));
+    rsx! {
+        div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
+            ScreenStage { state: st, states: s3_states("agent-memory"), screen: move |s: String| rsx! { MemoryScreen { layout: lay.clone(), state: s, scope_menu: sm, compact: cp } } }
+        }
+    }
+}
+
+fn memory_screen_code(v: &Vals) -> String {
+    let c = Code::new("MemoryScreen")
+        .s("layout", &low(v.s("frame")), "inset")
+        .s("state", &s3_key("agent-memory", v.s("data")), "sample");
+    let c = c.b("scope_menu", v.b("x1")).b("compact", v.b("x2"));
+    c.done()
+}
+
+fn memory_screen_demo() -> Demo {
+    let mut c = controls_x("inset", &["To review"]);
+    c.push(super::tog("x1", "Scope menu", false));
+    c.push(super::tog("x2", "Compact rows", false));
+    Demo {
+        controls: c,
+        variants: vec![
+            var("sample", "Sample data in the Inset frame.", &[]),
+            var(
+                "flat",
+                "The same screen in the Flat frame.",
+                &[("frame", "Flat")],
+            ),
+            var(
+                "loading",
+                "Skeletons where the data will land.",
+                &[("data", "Loading")],
+            ),
+            var(
+                "empty",
+                "Nothing yet: each region says what will appear and how to start.",
+                &[("data", "Empty")],
+            ),
+            var(
+                "review",
+                "The To review tab: memories waiting for Keep or Forget.",
+                &[("data", "To review")],
+            ),
+            var(
+                "scope",
+                "Oxyn: a scope menu narrows to one group.",
+                &[("x1", "true")],
+            ),
+            var(
+                "compact",
+                "Oxyn: rows without source and use counts.",
+                &[("x2", "true")],
+            ),
+        ],
+        render: memory_screen,
+        code: memory_screen_code,
+        keyboard: vec![
+            ("Tab", "Sidebar, page, then each control in reading order"),
+            ("← / → in a tab row", "Move between tabs"),
+            ("Escape", "Close an open menu or popover; clear a search"),
+            ("Enter in Remember", "Save it (Escape cancels)"),
+            ("Enter on Forget", "Remove it; Undo brings it back"),
+        ],
+        a11y: vec![
+            "The Fieldwork sidebar is a labelled nav with aria-current on this page.",
+            "Tabs are a tablist with arrow keys; menus report aria-expanded and close on Escape.",
+            "Skeletons are hidden from screen readers; every action reports what it did in a polite live region.",
+            "Group heads report aria-expanded; Forget announces itself and offers Undo.",
+        ],
+        responsive: vec![
+            "Authored on the 1440 × 900 canvas; the full view lays it out at the real width.",
+            "Under 640 px the sidebar slides in from the menu button and top-bar actions keep their icons with hidden labels.",
+            "Under 760 px search hides; under 520 px use counts hide.",
+        ],
+        height: 240,
+        live: false,
+        align: Align::Start,
+        ..mk(
+            "agent-memory",
+            "Agent · Memory",
+            CAT,
+            "What agents remember, grouped by scope (About you and each project), with where each came from, how often it was used and when. Saved / To review, a search and Remember; the work area shows its source, its uses and Forget.",
+            "MemoryScreen",
+            "MemoryEl",
+            "agent-memory",
+            "parity/agentscr.rs",
+        )
+    }
+}
+
 pub(crate) fn demos() -> Vec<Demo> {
     vec![
         shell_inset_demo(),
@@ -1630,5 +2193,10 @@ pub(crate) fn demos() -> Vec<Demo> {
         analytics_demo(),
         agent_orchestration_demo(),
         agent_thread_demo(),
+        inbox_screen_demo(),
+        inbox_board_demo(),
+        tasks_screen_demo(),
+        activity_screen_demo(),
+        memory_screen_demo(),
     ]
 }
