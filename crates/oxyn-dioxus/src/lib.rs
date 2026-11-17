@@ -75,6 +75,7 @@ pub use parity::GooeyComposer;
 pub use parity::GooeyModelMenu;
 pub use parity::IntegrationsScreen;
 pub use parity::JudgeBracket;
+pub use parity::KanbanScreen;
 pub use parity::LightPlayground;
 pub use parity::LiquidDrops;
 pub use parity::LiquidTabs;

@@ -1,12 +1,13 @@
 //! Screens 1 demos: app frames (Inset, Flat, three-pane) and the AI Chat screens (Start, Overview,
-//! Agents, Double sidebar, Progress, Run) Folders (Overview, Detail) and Integrations. Every screen has Sample / Loading / Empty data and an
+//! Agents, Double sidebar, Progress, Run) Folders (Overview, Detail), Integrations and Kanban. Every screen has Sample / Loading / Empty data and an
 //! Inset / Flat frame; light and dark follow the page theme.
 
 use dioxus::prelude::*;
 use oxyn_core::ClockMs;
 use oxyn_dioxus::{
     AppShellScreen, ChatAgentsScreen, ChatOverviewScreen, ChatProgressScreen, ChatRailScreen,
-    ChatRunScreen, ChatStartScreen, FoldersScreen, IntegrationsScreen, RailShellScreen,
+    ChatRunScreen, ChatStartScreen, FoldersScreen, IntegrationsScreen, KanbanScreen,
+    RailShellScreen,
 };
 
 use super::{Code, mk, sel, var};
@@ -887,6 +888,78 @@ fn integrations_demo() -> Demo {
     }
 }
 
+// ---------- Kanban ----------
+
+fn kanban(v: &Vals, _now: ClockMs) -> Element {
+    let (st, lay, key) = frame(v);
+    rsx! {
+        div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
+            KanbanScreen { layout: lay, state: st }
+        }
+    }
+}
+
+fn kanban_code(v: &Vals) -> String {
+    code("KanbanScreen", v, false, false)
+}
+
+fn kanban_demo() -> Demo {
+    Demo {
+        controls: controls("inset"),
+        variants: vec![
+            var("sample", "Sample data in the Inset frame.", &[]),
+            var(
+                "flat",
+                "The same screen in the Flat frame.",
+                &[("frame", "Flat")],
+            ),
+            var(
+                "loading",
+                "Skeletons where the data will land.",
+                &[("data", "Loading")],
+            ),
+            var(
+                "empty",
+                "Nothing yet: each region says what will appear.",
+                &[("data", "Empty")],
+            ),
+        ],
+        render: kanban,
+        code: kanban_code,
+        keyboard: vec![
+            ("Tab", "Sidebar, page, then the work area"),
+            ("← / → on a hairline", "Resize the sidebar or work area"),
+            ("Escape", "Close an open menu; clear search"),
+            ("Enter / Space on a card", "Open it beside the board"),
+            ("Alt + ← / →", "Move the card to the next column"),
+            ("Alt + ↑ / ↓", "Move the card up or down"),
+            ("Enter in a new card", "Add it (Escape cancels)"),
+        ],
+        a11y: vec![
+            "The sidebar is a labelled nav; the open chat has aria-current and unread chats say so.",
+            "Menus open from a trigger that reports aria-expanded; their items are menuitemradio and Escape shuts them.",
+            "Hairlines are separators with a value and arrow keys; skeletons are hidden from screen readers.",
+        ],
+        responsive: vec![
+            "Under 860 px of width the work area becomes a sheet opened from the top bar.",
+            "Under 640 px the sidebar slides in from the menu button and the composer drops its labels.",
+        ],
+        height: 660,
+        live: false,
+        align: Align::Start,
+        ..mk(
+            "kanban",
+            "Kanban",
+            CAT,
+            "A board in four columns with counts and work limits: drag cards between and within columns or move them with Alt and the arrows, find, show only yours, add a card in place, and open one beside the board to change its status, priority and assignee.",
+            "KanbanScreen",
+            "KanbanEl",
+            "kanban",
+            "parity/screensfid.rs",
+        )
+    }
+}
+
 pub(crate) fn demos() -> Vec<Demo> {
     vec![
         shell_inset_demo(),
@@ -901,5 +974,6 @@ pub(crate) fn demos() -> Vec<Demo> {
         folders_overview_demo(),
         folders_detail_demo(),
         integrations_demo(),
+        kanban_demo(),
     ]
 }

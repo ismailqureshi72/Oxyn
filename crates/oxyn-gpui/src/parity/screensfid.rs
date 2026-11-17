@@ -1,20 +1,21 @@
 //! Screens 1 for GPUI over `oxyn_core::parity::screensfid`: static snapshots of the app frames
 //! ([`ScreenShellEl`], [`ScreenRailEl`]) and the AI Chat screens ([`ChatStartEl`], [`ChatOverviewEl`],
 //! [`ChatAgentsEl`], [`ChatRailEl`], [`ChatProgressEl`], [`ChatRunEl`]) Folders ([`FoldersEl`],
-//! [`FolderDetailEl`]) and [`IntegrationsEl`]. Each takes the data state (Sample, Loading, Empty), the frame (Inset or
+//! [`FolderDetailEl`]), [`IntegrationsEl`] and [`KanbanEl`]. Each takes the data state (Sample, Loading, Empty), the frame (Inset or
 //! Flat) and the theme; the host owns any live state.
 //! Rows a host can route carry `Act` ids: `nav-<key>`, `thread-<id>`, `folder-<id>`,
-//! `app-<brand id>`.
+//! `app-<brand id>`, `kb-<column>`.
 
 use gpui::{
     App, Div, FontWeight, IntoElement, ParentElement, RenderOnce, SharedString, Styled, Window,
     div, prelude::*, px,
 };
 use oxyn_core::parity::screensfid::{
-    APP_TABS, PERSON, PERSON_INI, ScreenState, ShellLayout, StepState, WORKSPACE, ago, angles,
-    app_view, apps, connected_count, crew, folder_files, folder_view, folders, heat, member_name,
-    progress_steps, projects, run_plan, sheet, size_label, split_pinned, starters, step_state,
-    synced_words, threads, total_size,
+    APP_TABS, KB_COLS, KB_PRI, PERSON, PERSON_INI, ScreenState, ShellLayout, StepState, WORKSPACE,
+    ago, angles, app_view, apps, board, col_label, column, connected_count, crew, due_words,
+    folder_files, folder_view, folders, heat, member_name, over_limit, progress_steps, projects,
+    run_plan, sheet, size_label, split_pinned, starters, step_state, synced_words, task_key,
+    threads, total_size,
 };
 use oxyn_tokens::Theme;
 
@@ -1343,6 +1344,128 @@ impl RenderOnce for IntegrationsEl {
             self.layout,
             sidebar(&p, self.state, &self.act, false),
             page(&p, "Integrations", body),
+            work,
+        )
+    }
+}
+
+screen_el!(
+    /// Kanban: the board's columns with counts and limits, its cards, and the open card beside
+    /// it. Columns a host can route carry `kb-<column key>`.
+    KanbanEl
+);
+
+impl RenderOnce for KanbanEl {
+    fn render(self, _: &mut Window, _: &mut App) -> impl IntoElement {
+        let p = th_pal(self.theme);
+        let list = board(self.state == ScreenState::Sample);
+        let mut body = div().flex().flex_col().gap(px(12.)).p(px(22.)).child(
+            div()
+                .text_size(px(22.))
+                .font_weight(FontWeight::SEMIBOLD)
+                .child("Board"),
+        );
+        if self.state == ScreenState::Loading {
+            body = body.child(skel(&p, 6));
+        } else {
+            let mut cols = div().flex().gap(px(10.));
+            for (k, l, lim) in KB_COLS {
+                let n = list.iter().filter(|t| t.col == k).count();
+                let id: &'static str = match k {
+                    "todo" => "kb-todo",
+                    "doing" => "kb-doing",
+                    "review" => "kb-review",
+                    _ => "kb-done",
+                };
+                let fi = fire(&self.act, id);
+                let mut c = div()
+                    .id(SharedString::from(id))
+                    .w(px(212.))
+                    .p(px(8.))
+                    .rounded(px(12.))
+                    .bg(p.inset)
+                    .flex()
+                    .flex_col()
+                    .gap(px(8.))
+                    .child(
+                        div()
+                            .flex()
+                            .justify_between()
+                            .child(div().font_weight(FontWeight::SEMIBOLD).child(l))
+                            .child(
+                                div()
+                                    .text_color(if over_limit(&list, k) { p.red } else { p.mute })
+                                    .child(if lim > 0 {
+                                        format!("{n}/{lim}")
+                                    } else {
+                                        n.to_string()
+                                    }),
+                            ),
+                    )
+                    .on_click(move |_, w, cx| fi(w, cx));
+                let cards = column(&list, k, "", None);
+                if cards.is_empty() {
+                    c = c.child(div().text_color(p.mute).child("Drop cards here"));
+                }
+                for t in cards {
+                    c = c.child(
+                        div()
+                            .p(px(10.))
+                            .rounded(px(10.))
+                            .border_1()
+                            .border_color(if t.id == 11 { p.fg } else { p.line })
+                            .bg(p.card)
+                            .flex()
+                            .flex_col()
+                            .gap(px(4.))
+                            .child(div().text_color(p.mute).child(task_key(t.id)))
+                            .child(div().child(t.title.clone()))
+                            .child(div().text_color(p.mute).child(match t.due {
+                                Some(d) => format!("{} · {}", t.tag, due_words(d)),
+                                None => t.tag.to_string(),
+                            })),
+                    );
+                }
+                cols = cols.child(c);
+            }
+            body = body.child(cols);
+        }
+        let work = if self.state == ScreenState::Sample {
+            list.iter().find(|t| t.id == 11).cloned().map(|t| {
+                div()
+                    .flex()
+                    .flex_col()
+                    .gap(px(4.))
+                    .child(row(&p, task_key(t.id), col_label(t.col).to_string(), false))
+                    .child(
+                        div()
+                            .font_weight(FontWeight::SEMIBOLD)
+                            .child(t.title.clone()),
+                    )
+                    .child(row(
+                        &p,
+                        "Priority".into(),
+                        KB_PRI[usize::from(t.pri.min(3))].into(),
+                        false,
+                    ))
+                    .child(row(&p, "Assignee".into(), member_name(t.who).into(), false))
+                    .child(row(
+                        &p,
+                        "Sub-tasks".into(),
+                        format!("{} of {} done", t.sub.0, t.sub.1),
+                        false,
+                    ))
+                    .child(gh(&p, "Notes"))
+                    .child(div().text_color(p.fg2).child(t.note))
+            })
+        } else {
+            None
+        };
+        frame(
+            self.theme,
+            self.layout,
+            sidebar(&p, self.state, &self.act, false),
+            page(&p, "Autumn launch / Board", body),
             work,
         )
     }

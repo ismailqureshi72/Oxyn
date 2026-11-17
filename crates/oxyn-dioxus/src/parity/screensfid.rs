@@ -6,20 +6,21 @@
 //! [`AppShellScreen`], [`RailShellScreen`] and the AI Chat screens [`ChatStartScreen`],
 //! [`ChatOverviewScreen`], [`ChatAgentsScreen`], [`ChatRailScreen`], [`ChatProgressScreen`] and
 //! [`ChatRunScreen`], the Folders screens ([`FoldersScreen`], Overview and Detail) and
-//! [`IntegrationsScreen`], each with
+//! [`IntegrationsScreen`] and [`KanbanScreen`], each with
 //! Sample, Loading and Empty data. Models: `oxyn_core::parity::screensfid`. Styles:
 //! `screensfid.css` (`oxscn-` frame, `oxsrl-` rail frame, `oxcst-` start, `oxcov-` overview,
 //! `oxcag-` agents, `oxcdr-` double sidebar, `oxcpr-` progress, `oxcrn-` run, `oxsfo-` / `oxsfd-` /
-//! `oxsfi-` folders, `oxsin-` integrations). Every person, workspace and line of copy is fictional and our own.
+//! `oxsfi-` folders, `oxsin-` integrations, `oxskb-` kanban). Every person, workspace and line of copy is fictional and our own.
 
 use dioxus::prelude::*;
 use oxyn_core::ClockMs;
 use oxyn_core::parity::screensfid::{
-    APP_TABS, AppInfo, FileRow, FileSort, Folder, PERSON, PERSON_INI, Review, ScreenState,
-    ShellLayout, Thread, WORKSPACE, ago, app_view, apps, can_send, chat_title, connected_count,
-    folder_activity, folder_files, folder_view, folders, invite_initials, member_name, open_thread,
-    pct_done, projects, setup_steps, size_label, sort_files, split_pinned, synced_words, threads,
-    toggle_pin, total_size, untitled,
+    APP_TABS, AppInfo, FileRow, FileSort, Folder, KB_COLS, KB_PRI, PERSON, PERSON_INI, Review,
+    ScreenState, ShellLayout, Task, Thread, WORKSPACE, add_task, ago, app_view, apps, board,
+    can_send, chat_title, col_label, column, connected_count, due_words, folder_activity,
+    folder_files, folder_view, folders, invite_initials, member_name, move_task, next_col,
+    open_thread, over_limit, pct_done, projects, setup_steps, size_label, sort_files, split_pinned,
+    synced_words, task_key, threads, toggle_pin, total_size, untitled,
 };
 
 use super::efflistfid::{check_glyph, chevron};
@@ -2595,6 +2596,290 @@ fn AppDetail(app: AppInfo, list: Signal<Vec<AppInfo>>, on_gone: EventHandler<Str
                 } else {
                     button { r#type: "button", class: "oxscn-btn", onclick: move |_| sure.set(true), "Disconnect" }
                 }
+            }
+        }
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────── Kanban ──
+
+/// Kanban board: columns with counts and limits, cards you drag between columns (or move with
+/// Alt + arrows), find, an Only mine filter, add a card in place, and the open card beside the
+/// board with its status, priority and assignee.
+#[component]
+pub fn KanbanScreen(
+    /// `inset` or `flat`.
+    #[props(default = "inset".to_string())]
+    layout: String,
+    /// `sample`, `loading` or `empty`.
+    #[props(default = "sample".to_string())]
+    state: String,
+    /// Height px.
+    #[props(default = 640)]
+    height: u32,
+) -> Element {
+    let st = ScreenState::from_key(&state);
+    let thr = use_threads(st);
+    let active = use_signal(|| 0u32);
+    let mut list = use_signal(move || board(st == ScreenState::Sample));
+    let mut q = use_signal(String::new);
+    let mut mine = use_signal(|| false);
+    let mut pick = use_signal(move || {
+        if st == ScreenState::Sample {
+            Some(11u32)
+        } else {
+            None
+        }
+    });
+    let mut drag = use_signal(|| None::<u32>);
+    let mut over = use_signal(|| None::<&'static str>);
+    let mut adding = use_signal(|| None::<&'static str>);
+    let mut draft = use_signal(String::new);
+    let mut said = use_signal(String::new);
+    let mut refocus = use_signal(|| None::<u32>);
+    let all = list();
+    let loading = st == ScreenState::Loading;
+    let who = if mine() { Some(PERSON_INI) } else { None };
+    let qs = q();
+    let shown: usize = KB_COLS
+        .iter()
+        .map(|(k, _, _)| column(&all, k, &qs, who).len())
+        .sum();
+    let filtering = !qs.trim().is_empty() || who.is_some();
+    let done = all.iter().filter(|t| t.col == "done").count();
+    let lead = if loading {
+        "Loading the board…".to_string()
+    } else if all.is_empty() {
+        "No cards yet".to_string()
+    } else {
+        format!("{} cards · {done} done", all.len())
+    };
+    let mut shift = move |id: u32, col: &'static str, at: usize| {
+        if move_task(&mut list.write(), id, col, at) {
+            said.set(format!("{} moved to {}", task_key(id), col_label(col)));
+        }
+    };
+    let picked = pick().and_then(|id| all.iter().find(|t| t.id == id).cloned());
+    let work = picked.map(|t| {
+        rsx! { KanbanCardDetail { key: "{t.id}", task: t, list, on_gone: move |k: String| { pick.set(None); said.set(format!("{k} deleted")); } } }
+    });
+    let is_mine = mine();
+    rsx! {
+        AppFrame { layout, state: state.clone(), height, threads: thr, active, title: "Autumn launch / Board", work, work_label: "Card",
+            div { class: "oxskb",
+                div { class: "oxsfo-head",
+                    div { class: "oxsfo-ht",
+                        h1 { class: "oxscn-h1", "Board" }
+                        p { class: "oxscn-row-a", "{lead}" }
+                    }
+                }
+                div { class: "oxskb-bar",
+                    label { class: "oxscn-search oxskb-q",
+                        {ico("search")}
+                        input { r#type: "search", placeholder: "Find a card", "aria-label": "Find a card", value: "{q}",
+                            oninput: move |e| q.set(e.value()),
+                            onkeydown: move |e: KeyboardEvent| if e.key() == Key::Escape { q.set(String::new()) } }
+                    }
+                    button { r#type: "button", class: "oxscn-btn oxskb-mine", "aria-pressed": "{is_mine}", onclick: move |_| mine.toggle(),
+                        span { class: "oxscn-av oxsfo-face", "{PERSON_INI}" } span { "Only mine" } }
+                }
+                if !loading && filtering && shown == 0 && !all.is_empty() {
+                    p { class: "oxscn-hint", role: "status", "No card matches." }
+                }
+                if loading {
+                    div { class: "oxskb-cols", "aria-hidden": "true",
+                        for i in 0..4 { div { key: "{i}", class: "oxskb-col", {skel(4)} } }
+                    }
+                } else {
+                    div { class: "oxskb-cols",
+                        for (k, l, lim) in KB_COLS {
+                            {
+                                let cards = column(&all, k, &qs, who);
+                                let n = all.iter().filter(|t| t.col == k).count();
+                                let hot = over_limit(&all, k);
+                                let is_drop = over() == Some(k);
+                                let is_adding = adding() == Some(k);
+                                let count = if lim > 0 { format!("{n}/{lim}") } else { n.to_string() };
+                                let none = cards.is_empty();
+                                rsx! {
+                                    section { key: "{k}", class: "oxskb-col", "data-col": "{k}", "data-drop": "{is_drop}", "aria-label": "{l}, {n} cards",
+                                        ondragover: move |e: DragEvent| { e.prevent_default(); if *over.peek() != Some(k) { over.set(Some(k)); } },
+                                        ondrop: move |e: DragEvent| {
+                                            e.prevent_default();
+                                            over.set(None);
+                                            if let Some(id) = *drag.peek() { let at = column(&list.peek(), k, "", None).len(); shift(id, k, at); }
+                                            drag.set(None);
+                                        },
+                                        header { class: "oxskb-ch",
+                                            h2 { class: "oxskb-cn", "{l}" }
+                                            span { class: "oxskb-n", "data-over": "{hot}", title: if lim > 0 { "Limit {lim}" } else { "" }, "{count}" }
+                                            button { r#type: "button", class: "oxscn-ib oxskb-add", "aria-label": "Add a card to {l}",
+                                                onclick: move |_| { draft.set(String::new()); adding.set(Some(k)); }, {ico("plus")} }
+                                        }
+                                        if hot { p { class: "oxskb-warn", "Over the limit of {lim}" } }
+                                        ul { class: "oxskb-list", "aria-label": "{l}",
+                                            for t in cards {
+                                                {
+                                                    let id = t.id;
+                                                    let key_s = task_key(id);
+                                                    let sel = pick() == Some(id);
+                                                    let dragging = drag() == Some(id);
+                                                    let pri = usize::from(t.pri.min(3));
+                                                    let pri_l = KB_PRI[pri];
+                                                    let who_n = member_name(t.who);
+                                                    rsx! {
+                                                        li { key: "{id}", class: "oxskb-card", draggable: "true", tabindex: "0", "data-sel": "{sel}", "data-drag": "{dragging}",
+                                                            "aria-label": "{key_s} {t.title}", "aria-keyshortcuts": "Alt+ArrowLeft Alt+ArrowRight Alt+ArrowUp Alt+ArrowDown",
+                                                            onmounted: move |e: MountedEvent| { if *refocus.peek() == Some(id) { refocus.set(None); let d = e.data(); spawn(async move { let _ = d.set_focus(true).await; }); } },
+                                                            ondragstart: move |_| drag.set(Some(id)),
+                                                            ondragend: move |_| { drag.set(None); over.set(None); },
+                                                            ondrop: move |e: DragEvent| {
+                                                                e.prevent_default();
+                                                                e.stop_propagation();
+                                                                over.set(None);
+                                                                if let Some(d) = *drag.peek() && d != id {
+                                                                    let at = column(&list.peek(), k, "", None).iter().position(|x| x.id == id).unwrap_or(0);
+                                                                    shift(d, k, at);
+                                                                }
+                                                                drag.set(None);
+                                                            },
+                                                            onclick: move |_| pick.set(Some(id)),
+                                                            onkeydown: move |e: KeyboardEvent| {
+                                                                let alt = e.modifiers().alt();
+                                                                let key = e.key();
+                                                                if key == Key::Enter || key == Key::Character(" ".into()) {
+                                                                    e.prevent_default();
+                                                                    pick.set(Some(id));
+                                                                } else if alt && (key == Key::ArrowLeft || key == Key::ArrowRight) {
+                                                                    e.prevent_default();
+                                                                    if let Some(c) = next_col(k, if key == Key::ArrowLeft { -1 } else { 1 }) {
+                                                                        let at = column(&list.peek(), c, "", None).len();
+                                                                        refocus.set(Some(id));
+                                                                        shift(id, c, at);
+                                                                    }
+                                                                } else if alt && (key == Key::ArrowUp || key == Key::ArrowDown) {
+                                                                    e.prevent_default();
+                                                                    let pos = column(&list.peek(), k, "", None).iter().position(|x| x.id == id).unwrap_or(0);
+                                                                    let to = if key == Key::ArrowUp { pos.saturating_sub(1) } else { pos + 1 };
+                                                                    shift(id, k, to);
+                                                                }
+                                                            },
+                                                            div { class: "oxskb-top",
+                                                                span { class: "oxskb-key", "{key_s}" }
+                                                                span { class: "oxskb-pri", "data-p": "{pri}", role: "img", "aria-label": "{pri_l}", title: "{pri_l}", span {} span {} span {} }
+                                                            }
+                                                            p { class: "oxskb-t", "{t.title}" }
+                                                            div { class: "oxskb-meta",
+                                                                span { class: "oxskb-tag", "{t.tag}" }
+                                                                if t.sub.1 > 0 { span { class: "oxskb-sub", "data-all": "{t.sub.0 == t.sub.1}", {ico("check")} "{t.sub.0}/{t.sub.1}" } }
+                                                                if let Some(d) = t.due { span { class: "oxskb-due", "data-late": "{d < 0}", "{due_words(d)}" } }
+                                                                if !t.who.is_empty() { span { class: "oxscn-av oxsfo-face oxskb-who", title: "{who_n}", "{t.who}" } }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        if is_adding {
+                                            div { class: "oxskb-new",
+                                                input { class: "oxskb-in", placeholder: "Card title", "aria-label": "New card in {l}", value: "{draft}",
+                                                    onmounted: move |e: MountedEvent| { let d = e.data(); spawn(async move { let _ = d.set_focus(true).await; }); },
+                                                    oninput: move |e| draft.set(e.value()),
+                                                    onkeydown: move |e: KeyboardEvent| {
+                                                        if e.key() == Key::Escape { adding.set(None); }
+                                                        if e.key() == Key::Enter {
+                                                            let v = draft.peek().clone();
+                                                            if let Some(id) = add_task(&mut list.write(), k, &v) { said.set(format!("{} added to {l}", task_key(id))); draft.set(String::new()); }
+                                                        }
+                                                    } }
+                                                div { class: "oxsfo-add-a",
+                                                    button { r#type: "button", class: "oxscn-btn", onclick: move |_| adding.set(None), "Cancel" }
+                                                    button { r#type: "button", class: "oxscn-primary", disabled: draft().trim().is_empty(),
+                                                        onclick: move |_| { let v = draft.peek().clone(); if let Some(id) = add_task(&mut list.write(), k, &v) { said.set(format!("{} added to {l}", task_key(id))); adding.set(None); } }, "Add" }
+                                                }
+                                            }
+                                        } else if none {
+                                            p { class: "oxskb-none", if all.is_empty() && k == "todo" { "Add the first card with +." } else if filtering { "None match" } else { "Drop cards here" } }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                p { class: "oxscn-sr", role: "status", "{said}" }
+            }
+        }
+    }
+}
+
+/// The open card beside the board: title (editable), status, priority and assignee menus,
+/// sub-tasks, notes and Delete.
+#[component]
+fn KanbanCardDetail(task: Task, list: Signal<Vec<Task>>, on_gone: EventHandler<String>) -> Element {
+    let id = task.id;
+    let key_s = task_key(id);
+    let pri = usize::from(task.pri.min(3));
+    let cols: Vec<MenuItem> = KB_COLS.iter().map(|(k, l, _)| (*k, *l, "")).collect();
+    let pris: Vec<MenuItem> = vec![
+        ("0", KB_PRI[0], ""),
+        ("1", KB_PRI[1], ""),
+        ("2", KB_PRI[2], ""),
+        ("3", KB_PRI[3], ""),
+    ];
+    let people: Vec<MenuItem> = vec![
+        ("none", "Nobody", ""),
+        ("RV", member_name("RV"), ""),
+        ("JO", member_name("JO"), ""),
+        ("TA", member_name("TA"), ""),
+        ("SE", member_name("SE"), ""),
+    ];
+    let who_k = if task.who.is_empty() {
+        "none".to_string()
+    } else {
+        task.who.to_string()
+    };
+    let who_l = if task.who.is_empty() {
+        "Nobody".to_string()
+    } else {
+        member_name(task.who).to_string()
+    };
+    let (a, b) = task.sub;
+    let pct = if b == 0 {
+        0
+    } else {
+        u32::from(a) * 100 / u32::from(b)
+    };
+    rsx! {
+        div { class: "oxsfi oxskb-det",
+            p { class: "oxskb-key", "{key_s} · {col_label(task.col)}" }
+            input { class: "oxskb-title", "aria-label": "Card title", value: "{task.title}",
+                oninput: move |e| { if let Some(t) = list.write().iter_mut().find(|t| t.id == id) { t.title = e.value(); } } }
+            dl { class: "oxskb-dl",
+                div { dt { "Status" } dd { MenuButton { label: col_label(task.col).to_string(), aria: "Status", class: "oxskb-st".to_string(), items: cols, checked: task.col.to_string(), right: true,
+                    on_pick: move |k: String| { if let Some(c) = KB_COLS.iter().map(|(x, _, _)| *x).find(|x| *x == k) { let at = column(&list.peek(), c, "", None).len(); let _ = move_task(&mut list.write(), id, c, at); } } } } }
+                div { dt { "Priority" } dd { MenuButton { label: KB_PRI[pri].to_string(), aria: "Priority", class: "oxskb-pr".to_string(), items: pris, checked: pri.to_string(), right: true,
+                    on_pick: move |k: String| { if let Ok(p) = k.parse::<u8>() && let Some(t) = list.write().iter_mut().find(|t| t.id == id) { t.pri = p; } } } } }
+                div { dt { "Assignee" } dd { MenuButton { label: who_l, aria: "Assignee", class: "oxskb-as".to_string(), items: people, checked: who_k, right: true,
+                    on_pick: move |k: String| {
+                        let w: &'static str = match k.as_str() { "RV" => "RV", "JO" => "JO", "TA" => "TA", "SE" => "SE", _ => "" };
+                        if let Some(t) = list.write().iter_mut().find(|t| t.id == id) { t.who = w; }
+                    } } } }
+                div { dt { "Due" } dd { if let Some(d) = task.due { "{due_words(d)}" } else { "No date" } } }
+            }
+            if b > 0 {
+                p { class: "oxscn-gh", "Sub-tasks" }
+                div { class: "oxskb-prog", role: "progressbar", "aria-label": "Sub-tasks done", "aria-valuenow": "{a}", "aria-valuemin": "0", "aria-valuemax": "{b}",
+                    span { style: "width:{pct}%" } }
+                p { class: "oxscn-row-a oxskb-pl", "{a} of {b} done" }
+            }
+            if !task.note.is_empty() {
+                p { class: "oxscn-gh", "Notes" }
+                p { class: "oxsfi-about", "{task.note}" }
+            }
+            div { class: "oxsin-acts",
+                button { r#type: "button", class: "oxscn-btn oxsfd-del",
+                    onclick: move |_| { list.write().retain(|t| t.id != id); on_gone.call(task_key(id)); }, "Delete card" }
             }
         }
     }

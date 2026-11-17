@@ -1,7 +1,7 @@
 //! Screens 1 (whole app frames): the shared app frame (Inset or Flat, plus a three-pane frame with
 //! an icon rail), the AI Chat screens built on it – Start, Overview, Agents, Double sidebar,
-//! Progress and Run – then Folders (Overview, Detail) and Integrations. Each screen shows Sample,
-//! Loading or Empty data. Behaviour only: every person, workspace, project and line of copy here
+//! Progress and Run – then Folders (Overview, Detail), Integrations and Kanban. Each screen shows
+//! Sample, Loading or Empty data. Behaviour only: every person, workspace, project and line of copy here
 //! is fictional and our own.
 
 /// Which data a screen shows.
@@ -1067,6 +1067,279 @@ pub fn synced_words(mins: u32) -> String {
     }
 }
 
+// ─────────────────────────────────────────────────────────────────── Kanban ──
+
+/// A card on the Kanban board.
+#[derive(Clone, Debug, PartialEq)]
+pub struct Task {
+    /// Stable id; the issue key is `KS-<id>`.
+    pub id: u32,
+    /// Title.
+    pub title: String,
+    /// Column key (see [`KB_COLS`]).
+    pub col: &'static str,
+    /// Position inside its column (lower first).
+    pub ord: u32,
+    /// Label: `copy`, `design`, `ads` or `research`.
+    pub tag: &'static str,
+    /// Assignee initials, or empty when nobody has it.
+    pub who: &'static str,
+    /// Priority 0 (none) to 3 (urgent).
+    pub pri: u8,
+    /// Days until due (negative: overdue), when it has a date.
+    pub due: Option<i32>,
+    /// Sub-tasks done and total.
+    pub sub: (u8, u8),
+    /// A line of notes.
+    pub note: &'static str,
+}
+
+/// The board's columns: key, label and work-in-progress limit (0: none).
+pub const KB_COLS: [(&str, &str, usize); 4] = [
+    ("todo", "To do", 0),
+    ("doing", "In progress", 3),
+    ("review", "In review", 2),
+    ("done", "Done", 0),
+];
+
+/// Priority labels, 0 to 3.
+pub const KB_PRI: [&str; 4] = ["No priority", "Low", "High", "Urgent"];
+
+/// The sample board (`sample` false: an empty board).
+pub fn board(sample: bool) -> Vec<Task> {
+    if !sample {
+        return Vec::new();
+    }
+    #[allow(clippy::too_many_arguments)]
+    let t = |id, title: &str, col, ord, tag, who, pri, due, sub, note| Task {
+        id,
+        title: title.to_string(),
+        col,
+        ord,
+        tag,
+        who,
+        pri,
+        due,
+        sub,
+        note,
+    };
+    vec![
+        t(
+            14,
+            "Shortlist three taglines",
+            "todo",
+            0,
+            "copy",
+            "",
+            2,
+            Some(3),
+            (0, 3),
+            "Keep each under six words.",
+        ),
+        t(
+            15,
+            "Book the studio day",
+            "todo",
+            1,
+            "research",
+            "JO",
+            1,
+            Some(9),
+            (0, 0),
+            "Two half days work too.",
+        ),
+        t(
+            16,
+            "Size the story frames",
+            "todo",
+            2,
+            "design",
+            "",
+            0,
+            None,
+            (0, 4),
+            "Four sizes from the master frame.",
+        ),
+        t(
+            11,
+            "Draft the launch email",
+            "doing",
+            0,
+            "copy",
+            "RV",
+            3,
+            Some(1),
+            (2, 4),
+            "Lead with the fabric, not the price.",
+        ),
+        t(
+            12,
+            "Colour pass on hero shots",
+            "doing",
+            1,
+            "design",
+            "TA",
+            2,
+            Some(2),
+            (1, 3),
+            "Match the swatch card under daylight.",
+        ),
+        t(
+            9,
+            "Cut the 15 s teaser",
+            "review",
+            0,
+            "ads",
+            "RV",
+            2,
+            Some(-1),
+            (3, 3),
+            "Needs a captions check.",
+        ),
+        t(
+            8,
+            "Audience notes from interviews",
+            "done",
+            0,
+            "research",
+            "SE",
+            1,
+            None,
+            (5, 5),
+            "Summed up in the folder.",
+        ),
+        t(
+            7,
+            "Budget split by channel",
+            "done",
+            1,
+            "ads",
+            "RV",
+            0,
+            None,
+            (2, 2),
+            "Signed off on Monday.",
+        ),
+    ]
+}
+
+/// Cards in one column whose title, note or key contains the query (case-insensitive),
+/// optionally only those assigned to `who`, in board order.
+pub fn column(list: &[Task], col: &str, q: &str, who: Option<&str>) -> Vec<Task> {
+    let q = q.trim().to_lowercase();
+    let mut v: Vec<Task> = list
+        .iter()
+        .filter(|t| t.col == col)
+        .filter(|t| who.is_none_or(|w| t.who == w))
+        .filter(|t| {
+            q.is_empty()
+                || t.title.to_lowercase().contains(&q)
+                || t.note.to_lowercase().contains(&q)
+                || task_key(t.id).to_lowercase().contains(&q)
+        })
+        .cloned()
+        .collect();
+    v.sort_by_key(|t| t.ord);
+    v
+}
+
+/// The issue key shown on a card: `KS-14`.
+pub fn task_key(id: u32) -> String {
+    format!("KS-{id}")
+}
+
+/// Moves a card into `col` at position `at` (clamped), renumbering both columns.
+/// Returns false when the id is unknown or nothing changed.
+pub fn move_task(list: &mut [Task], id: u32, col: &'static str, at: usize) -> bool {
+    let Some(from) = list.iter().find(|t| t.id == id).map(|t| (t.col, t.ord)) else {
+        return false;
+    };
+    let mut ids: Vec<u32> = column(list, col, "", None)
+        .iter()
+        .map(|t| t.id)
+        .filter(|x| *x != id)
+        .collect();
+    let at = at.min(ids.len());
+    ids.insert(at, id);
+    let before: Vec<u32> = column(list, col, "", None).iter().map(|t| t.id).collect();
+    if from.0 == col && before == ids {
+        return false;
+    }
+    for (i, x) in ids.iter().enumerate() {
+        if let Some(t) = list.iter_mut().find(|t| t.id == *x) {
+            t.col = col;
+            t.ord = i as u32;
+        }
+    }
+    if from.0 != col {
+        let rest: Vec<u32> = column(list, from.0, "", None)
+            .iter()
+            .map(|t| t.id)
+            .collect();
+        for (i, x) in rest.iter().enumerate() {
+            if let Some(t) = list.iter_mut().find(|t| t.id == *x) {
+                t.ord = i as u32;
+            }
+        }
+    }
+    true
+}
+
+/// The column next to `col` (`step` -1 left, +1 right), if any.
+pub fn next_col(col: &str, step: i32) -> Option<&'static str> {
+    let i = KB_COLS.iter().position(|(k, _, _)| *k == col)? as i32 + step;
+    KB_COLS.get(usize::try_from(i).ok()?).map(|(k, _, _)| *k)
+}
+
+/// The column's label.
+pub fn col_label(col: &str) -> &'static str {
+    KB_COLS
+        .iter()
+        .find(|(k, _, _)| *k == col)
+        .map(|(_, l, _)| *l)
+        .unwrap_or("Other")
+}
+
+/// True when a column with a limit holds more cards than it allows.
+pub fn over_limit(list: &[Task], col: &str) -> bool {
+    KB_COLS
+        .iter()
+        .find(|(k, _, _)| *k == col)
+        .is_some_and(|(_, _, n)| *n > 0 && list.iter().filter(|t| t.col == col).count() > *n)
+}
+
+/// Adds a card at the bottom of `col` and returns its id.
+pub fn add_task(list: &mut Vec<Task>, col: &'static str, title: &str) -> Option<u32> {
+    let title = title.trim();
+    if title.is_empty() {
+        return None;
+    }
+    let id = list.iter().map(|t| t.id).max().unwrap_or(0) + 1;
+    let ord = list.iter().filter(|t| t.col == col).count() as u32;
+    list.push(Task {
+        id,
+        title: title.to_string(),
+        col,
+        ord,
+        tag: "copy",
+        who: "",
+        pri: 0,
+        due: None,
+        sub: (0, 0),
+        note: "",
+    });
+    Some(id)
+}
+
+/// "Due today", "Due in 3d", "1d late".
+pub fn due_words(d: i32) -> String {
+    match d {
+        0 => "Due today".to_string(),
+        1.. => format!("Due in {d}d"),
+        _ => format!("{}d late", -d),
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -1231,5 +1504,40 @@ mod tests {
         assert!(app_view(&apps(false), "on", "").is_empty());
         assert_eq!(synced_words(0), "Synced just now");
         assert_eq!(synced_words(12), "Synced 12m ago");
+    }
+
+    #[test]
+    fn board_moves_and_limits() {
+        let mut b = board(true);
+        assert_eq!(column(&b, "todo", "", None).len(), 3);
+        assert_eq!(column(&b, "doing", "", None)[0].id, 11);
+        assert_eq!(column(&b, "todo", "tagline", None).len(), 1);
+        assert_eq!(column(&b, "review", "ks-9", None).len(), 1);
+        assert_eq!(column(&b, "todo", "", Some("JO")).len(), 1);
+        assert!(!over_limit(&b, "doing"));
+        assert!(move_task(&mut b, 14, "doing", 0));
+        assert!(!over_limit(&b, "doing"));
+        let d: Vec<u32> = column(&b, "doing", "", None).iter().map(|t| t.id).collect();
+        assert_eq!(d, vec![14, 11, 12]);
+        let t: Vec<u32> = column(&b, "todo", "", None).iter().map(|t| t.ord).collect();
+        assert_eq!(t, vec![0, 1]);
+        assert!(!move_task(&mut b, 14, "doing", 0));
+        assert!(move_task(&mut b, 15, "doing", 9));
+        assert!(over_limit(&b, "doing"));
+        assert!(move_task(&mut b, 14, "doing", 9));
+        assert_eq!(column(&b, "doing", "", None)[3].id, 14);
+        assert!(!move_task(&mut b, 99, "done", 0));
+        assert_eq!(next_col("todo", -1), None);
+        assert_eq!(next_col("todo", 1), Some("doing"));
+        assert_eq!(next_col("done", 1), None);
+        assert_eq!(col_label("review"), "In review");
+        assert_eq!(add_task(&mut b, "todo", "  "), None);
+        assert_eq!(add_task(&mut b, "todo", "Write alt text"), Some(17));
+        assert_eq!(column(&b, "todo", "", None).last().map(|t| t.id), Some(17));
+        assert!(board(false).is_empty());
+        assert_eq!(task_key(9), "KS-9");
+        assert_eq!(due_words(0), "Due today");
+        assert_eq!(due_words(3), "Due in 3d");
+        assert_eq!(due_words(-1), "1d late");
     }
 }
