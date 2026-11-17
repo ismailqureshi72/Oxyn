@@ -1478,7 +1478,7 @@ impl RenderOnce for ModelPillEl {
                                     &self.provider,
                                     12.,
                                     c(t, ColorRole::BgBase),
-                                    false,
+                                    true,
                                 ) {
                                     Some(icon) => d.child(icon),
                                     None => d.child(mark),

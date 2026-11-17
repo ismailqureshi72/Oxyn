@@ -70,7 +70,7 @@ into the plus menu.
 - Long folder names ellipsize with the full name in a tooltip. A closed menu leaves the layout.
 
 ## 8. Colour
-Chrome is monochrome (exact affectUI greys per theme, `--oxf-*`). Colour only where it means something: brand marks, file-type icons, the blue folder, the orange Full access.
+Chrome is monochrome (exact affectUI greys per theme, `--oxf-*`). Colour only where it means something: brand marks in their official colours, file-type icons and the light-blue folder (`#00A1FF`, `--ox-ic-folder`) in their semantic tones, the orange Full access.
 
 ## 9. Responsive
 - `container-type: inline-size` on a 540 px root (`max-width: 100%`); the approval menu is `min(352px, 100cqi - 40px)`; labels ellipsize before the row wraps.

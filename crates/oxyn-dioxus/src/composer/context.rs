@@ -159,7 +159,7 @@ fn Breakdown(
             div { class: "head",
                 span { class: "tot", "{total} tokens" }
                 span { class: "pct", "{pct}" }
-                if !model.is_empty() { span { class: "model", "{model}" } }
+                if !model.is_empty() { span { class: "model", crate::brand::MarkFor { name: model.clone(), size: 11.0 } "{model}" } }
             }
             div { class: "stack",
                 for (cat, _, p) in rows.iter().copied() {

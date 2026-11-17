@@ -388,7 +388,7 @@ pub fn DecisionTree(
                         span { class: "oxdt-agic {icon_cls(&d.icon)}", {glyph(&d.icon, 14)} }
                         span { class: "oxdt-whot",
                             b { "{d.agent}" }
-                            if !d.model.is_empty() { small { "{d.model}" } }
+                            if !d.model.is_empty() { small { crate::brand::MarkFor { name: d.model.clone(), size: 11.0 } "{d.model}" } }
                         }
                     }
                     h3 { class: "oxdt-qh", "{d.question}" }

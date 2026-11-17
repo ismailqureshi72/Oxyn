@@ -20,7 +20,7 @@ mod status_indicator;
 mod status_text;
 mod surfaces;
 
-pub use brand::{BrandAssets, brand_icon, brand_mark, brand_path};
+pub use brand::{BrandAssets, brand_icon, brand_mark, brand_path, ink, tone_color};
 pub use chat::{
     AnswerEl, ChatThreadEl, FeedbackEl, MarkdownEl, MessageEl, ReasoningEl, SourceCardsEl,
     StartersEl, TraceEl,
