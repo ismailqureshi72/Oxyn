@@ -40,3 +40,6 @@ opt-level = "z"
 lto = true
 codegen-units = 1
 panic = "abort"
+# No DWARF or name section in the shipped bundle: Cloudflare Workers caps one asset at 25 MiB.
+debug = false
+strip = true

@@ -61,6 +61,14 @@ jobs:
       - uses: taiki-e/install-action@v2
         with:
           tool: wasm-bindgen@0.2.130
+      # binaryen's wasm-opt: required by site/scripts/gen.mjs under CI (taiki-e has no binaryen).
+      - name: install wasm-opt (binaryen version_133)
+        env:
+          BINARYEN: version_133
+        run: |
+          curl -fsSL "https://github.com/WebAssembly/binaryen/releases/download/${BINARYEN}/binaryen-${BINARYEN}-x86_64-linux.tar.gz" | tar -xz -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/binaryen-${BINARYEN}/bin" >> "$GITHUB_PATH"
+          "$RUNNER_TEMP/binaryen-${BINARYEN}/bin/wasm-opt" --version
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -70,6 +78,24 @@ jobs:
         working-directory: site
       - run: npm run build
         working-directory: site
+      # Runs on every PR so an oversized asset fails before merge, not at deploy on main.
+      # Cloudflare Workers rejects any single asset over 25 MiB; keep 1 MiB of headroom.
+      - name: asset size guard (every file in site/dist under 24 MiB)
+        working-directory: site
+        run: |
+          echo "largest files in dist/:"
+          find dist -type f -printf '%s\t%p\n' | sort -rn | awk 'NR <= 10' | awk -F'\t' '{ printf "  %8.2f MiB  %s\n", $1/1048576, $2 }'
+          for f in dist/wasm/*.wasm; do
+            [ -f "$f" ] || continue
+            raw=$(stat -c %s "$f"); gz=$(gzip -9 -c "$f" | wc -c)
+            awk -v f="$f" -v r="$raw" -v g="$gz" 'BEGIN { printf "wasm %s: %.2f MiB raw, %.2f MiB gzip\n", f, r/1048576, g/1048576 }'
+          done
+          big=$(find dist -type f -size +24M)
+          if [ -n "$big" ]; then
+            echo "::error::assets over 24 MiB (Cloudflare Workers caps one asset at 25 MiB):"
+            echo "$big"
+            exit 1
+          fi
       - name: deploy to Cloudflare (main, when credentials are set)
         if: github.event_name == 'push' && github.ref == 'refs/heads/main' && env.CF_TOKEN != ''
         working-directory: site
