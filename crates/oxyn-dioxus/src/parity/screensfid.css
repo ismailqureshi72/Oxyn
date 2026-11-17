@@ -900,3 +900,4 @@ li[data-s="active"] .oxcpr-tick{border-color:var(--oxth-fg);border-top-color:tra
 [data-screen-full] .oxstage-box{flex:1 1 auto;aspect-ratio:auto;border-radius:0}
 [data-screen-full] .oxstage-canvas{position:static;width:100%!important;height:100%!important;transform:none}
 [data-screen-full] .oxstage-canvas .oxscn,[data-screen-full] .oxstage-canvas .oxsrl{border-radius:0;border:0}
+[data-screen-full] .oxstage-bar-r{display:none}
