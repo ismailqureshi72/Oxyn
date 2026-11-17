@@ -24,7 +24,7 @@ use super::Act;
 use super::chatscr::{clip, mark};
 use super::rulerfid::{ThPal, fire, th_pal};
 use super::screensfid::{frame, gh, side_foot, skel};
-use crate::brand::tone_color;
+use crate::brand::{brand_mark, tone_color};
 
 macro_rules! work_el {
     ($(#[$m:meta])* $name:ident) => {
@@ -768,7 +768,7 @@ impl RenderOnce for IntegrationsEl {
                                     .border_1()
                                     .border_color(p.line)
                                     .bg(gpui::white())
-                                    .children(mark(&p, i.id, 18.)),
+                                    .children(brand_mark(i.id, 18., gpui::black())),
                             )
                             .child(
                                 div()

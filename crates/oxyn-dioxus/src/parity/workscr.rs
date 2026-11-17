@@ -812,7 +812,7 @@ pub fn KanbanScreen(
                 x0: 0.0,
                 y0: 0.0,
                 dx: 292.0,
-                dy: 46.0,
+                dy: 300.0,
             })
         } else {
             None
