@@ -321,16 +321,15 @@ Dates, times and when agents run.
 - Next-run countdown chip
 
 ## Theme Selector (`theme-selector`)
-Backgrounds, textures, theme swatches and font size.
+Background pictures and texture, theme swatches with font size, and originals: split compare, accent and density, schedule, type scale, light playground, app icon and display comfort.
 
 **Existing:** _none yet_
 
+**Built in #41 (variants 3):** Background picker (`background-picker`), Theme grid (`theme-grid`), Theme split (`theme-split`), Accent and density (`accent-density`), Theme schedule (`theme-schedule`), Type scale (`type-scale`), Light playground (`light-playground`), App icon (`app-icon-picker`), Display comfort (`display-comfort`)
+
 **New variants to build:**
-- Background tiles (Default, images, Your own +) with Texture Film/Static/Dither
-- Theme grid of 8 mini-window swatches (system split, light, dark, tinted…) + Font size dropdown
-- Accent picker that stays monochrome by default
-- Density slider with live preview
-- Theme playground: drag a light source over the UI
+- Wallpaper from a prompt: describe a picture and add the result as a tile
+- Per-workspace themes: a different theme for each workspace or project
 
 ## Buttons (`buttons`)
 Buttons, icon buttons, split buttons and the groups they sit in.
@@ -429,6 +428,14 @@ Tabs, breadcrumbs, accordions, panes, trees and docks.
 - Dock with magnification
 - Resizable panes with snap
 - Tabs with overflow menu
+
+## Screens (`screens`)
+Whole app frames built from the components (affectUI's screen set by behaviour, in Oxyn's own words and greys). Every screen has Sample / Loading / Empty data, an Inset or Flat frame, and light / dark. Pages live at `/screens/<slug>/` with a full-viewport view.
+
+**Built in #42 (screens 1):** App shell · Inset (`shell-inset`), App shell · Flat (`shell-flat`), Three-pane shell (`shell-three-pane`), AI Chat · Start (`chat-start`), AI Chat · Overview (`chat-overview`), AI Chat · Agents (`chat-agents`), AI Chat · Double sidebar (`chat-double-sidebar`), AI Chat · Progress (`chat-progress`), AI Chat · Run (`chat-run`), Folders · Overview (`folders-overview`), Folders · Detail (`folders-detail`), Integrations (`integrations`), Kanban (`kanban`), CRM (`crm`), Workflow builder (`workflow`), Settings shell (`settings`)
+
+**New variants to build:**
+- Agent screens (Screens 2), Settings pages and Onboarding, coding-agent apps (later screens PRs)
 
 ## App Shell (`app-shell`)
 Sidebars, rails, side panels and account chrome.

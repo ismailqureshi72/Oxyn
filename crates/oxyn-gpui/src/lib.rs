@@ -43,23 +43,39 @@ pub use navigation::{
     ReorderListEl, ResizableEl, TabsEl, TeamSwitcherEl, TocProgressEl, ToggleGroupEl, TreeViewEl,
     UserMenuEl,
 };
+pub use parity::AccentDensityEl;
+pub use parity::AppIconPickerEl;
 pub use parity::AttachmentChipsEl;
+pub use parity::BackgroundPickerEl;
+pub use parity::ChatAgentsEl;
+pub use parity::ChatOverviewEl;
+pub use parity::ChatProgressEl;
+pub use parity::ChatRailEl;
+pub use parity::ChatRunEl;
+pub use parity::ChatStartEl;
 pub use parity::ContextBarEl;
 pub use parity::ContextBreakdownEl;
 pub use parity::ContextEffortMenuEl;
 pub use parity::ContextStackEl;
 pub use parity::ContextTideEl;
+pub use parity::CrmEl;
 pub use parity::DiffTimelineRunEl;
+pub use parity::DisplayComfortEl;
 pub use parity::DropLanesEl;
 pub use parity::EffortListEl;
 pub use parity::EffortPillEl;
 pub use parity::EffortRulerEl;
 pub use parity::EffortStairsEl;
 pub use parity::FanoutGridEl;
+pub use parity::FolderDetailEl;
+pub use parity::FoldersEl;
 pub use parity::GooeyAttachMenuEl;
 pub use parity::GooeyComposerEl;
 pub use parity::GooeyModelMenuEl;
+pub use parity::IntegrationsEl;
 pub use parity::JudgeBracketEl;
+pub use parity::KanbanEl;
+pub use parity::LightPlaygroundEl;
 pub use parity::LiquidDropsEl;
 pub use parity::LiquidTabsEl;
 pub use parity::MemoryPanelEl;
@@ -73,13 +89,21 @@ pub use parity::ReasoningPanelEl;
 pub use parity::RootCauseTreeEl;
 pub use parity::RunningNowEl;
 pub use parity::ScheduledRunsEl;
+pub use parity::ScreenRailEl;
+pub use parity::ScreenShellEl;
+pub use parity::SettingsEl;
 pub use parity::StorageCleanupEl;
 pub use parity::StorageForecastEl;
 pub use parity::StorageMeterEl;
 pub use parity::StorageWaffleEl;
+pub use parity::ThemeGridEl;
+pub use parity::ThemeScheduleEl;
+pub use parity::ThemeSplitEl;
 pub use parity::ToolAccessMapEl;
 pub use parity::TraceWaterfallEl;
+pub use parity::TypeScaleEl;
 pub use parity::UploadDropzoneEl;
+pub use parity::WorkflowEl;
 pub use parity::{
     Act, ActivityFeedEl, AgentApprovalsEl, AgentPlanEl, AgentRunEl, AgentStatusEl, AgentTrailEl,
     AgentTreeEl, ApprovalGatesEl, ApprovalPagerEl, BreakdownEl, ChecklistEl, ConfirmMorphEl,

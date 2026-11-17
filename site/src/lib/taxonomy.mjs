@@ -11,6 +11,7 @@ export const FAMILIES = [
   { slug: 'storage', name: 'Storage', blurb: 'Disk and context usage drawn as dot matrices: capacity, cleanup, waffle and forecast.' },
   { slug: 'attachments', name: 'Attachments', blurb: 'Files, images and links going into a prompt: drop zones, chips with upload progress, prints and lanes.' },
   { slug: 'menu-motion', name: 'Menu Motion', blurb: 'Menus and controls that move like liquid: the gooey menu motion on attach and model menus, a composer, tabs and drops.' },
+  { slug: 'theme-selector', name: 'Theme Selector', blurb: 'Backgrounds and texture, theme swatches and font size, plus a split compare, accent and density, a schedule, type, light, icons and comfort.' },
 ];
 function FAMILY_GROUPS() {
   return FAMILIES.map((f) => ({ ...f, family: true }));
@@ -73,7 +74,7 @@ export const MOVED = [
 ];
 
 /** Whole app frames: these get screen pages (/screens/<slug>/) and a full-viewport view. */
-export const SCREENS = ['app-shell', 'ai-chat-screens', 'activity-home', 'harness', 'thread-list', 'inbox-sidebar', 'ai-side-panel', 'doc-grid'];
+export const SCREENS = ['shell-inset', 'shell-flat', 'shell-three-pane', 'chat-start', 'chat-overview', 'chat-agents', 'chat-double-sidebar', 'chat-progress', 'chat-run', 'folders-overview', 'folders-detail', 'integrations', 'kanban', 'crm', 'workflow', 'settings', 'app-shell', 'ai-chat-screens', 'activity-home', 'harness', 'thread-list', 'inbox-sidebar', 'ai-side-panel', 'doc-grid'];
 
 export const groupSlugOf = (d) => ITEM_GROUP[d.slug] ?? OLD_TO_GROUP[d.category] ?? 'navigation';
 /** True for a demo that belongs to a multi-variant family. */
@@ -92,7 +93,7 @@ export function redirects(demos, oldCategories) {
   }
   const groupSlugs = new Set(GROUPS.map((g) => g.slug));
   for (const c of oldCategories) {
-    if (!groupSlugs.has(c.slug)) out.push([`/components/${c.slug}/`, c.slug === 'shells' ? '/screens/' : `/components/${OLD_TO_GROUP[c.slug]}/`]);
+    if (!groupSlugs.has(c.slug)) out.push([`/components/${c.slug}/`, c.slug === 'shells' || c.slug === 'screens' ? '/screens/' : `/components/${OLD_TO_GROUP[c.slug]}/`]);
   }
   for (const m of MOVED) out.push(m);
   return out;

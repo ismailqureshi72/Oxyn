@@ -231,4 +231,29 @@ specified just as deeply. When we point at one component as an example, the stan
 | [gooey-model-menu.md](gooey-model-menu.md) | built v0.1 (variants 2, Menu Motion) |
 | [liquid-tabs.md](liquid-tabs.md) | built v0.1 (variants 2, Menu Motion) |
 | [liquid-drops.md](liquid-drops.md) | built v0.1 (variants 2, Menu Motion) |
+| [background-picker.md](background-picker.md) | built v0.1 (variants 3, Theme Selector) |
+| [theme-grid.md](theme-grid.md) | built v0.1 (variants 3, Theme Selector) |
+| [theme-split.md](theme-split.md) | built v0.1 (variants 3, Theme Selector) |
+| [accent-density.md](accent-density.md) | built v0.1 (variants 3, Theme Selector) |
+| [theme-schedule.md](theme-schedule.md) | built v0.1 (variants 3, Theme Selector) |
+| [type-scale.md](type-scale.md) | built v0.1 (variants 3, Theme Selector) |
+| [light-playground.md](light-playground.md) | built v0.1 (variants 3, Theme Selector) |
+| [app-icon-picker.md](app-icon-picker.md) | built v0.1 (variants 3, Theme Selector) |
+| [display-comfort.md](display-comfort.md) | built v0.1 (variants 3, Theme Selector) |
+| [shell-inset.md](shell-inset.md) | built v0.1 (screens 1, Screens) |
+| [shell-flat.md](shell-flat.md) | built v0.1 (screens 1, Screens) |
+| [shell-three-pane.md](shell-three-pane.md) | built v0.1 (screens 1, Screens) |
+| [chat-start.md](chat-start.md) | built v0.1 (screens 1, Screens) |
+| [chat-overview.md](chat-overview.md) | built v0.1 (screens 1, Screens) |
+| [chat-agents.md](chat-agents.md) | built v0.1 (screens 1, Screens) |
+| [chat-double-sidebar.md](chat-double-sidebar.md) | built v0.1 (screens 1, Screens) |
+| [chat-progress.md](chat-progress.md) | built v0.1 (screens 1, Screens) |
+| [chat-run.md](chat-run.md) | built v0.1 (screens 1, Screens) |
+| [folders-overview.md](folders-overview.md) | built v0.1 (screens 1, Screens) |
+| [folders-detail.md](folders-detail.md) | built v0.1 (screens 1, Screens) |
+| [integrations.md](integrations.md) | built v0.1 (screens 1, Screens) |
+| [kanban.md](kanban.md) | built v0.1 (screens 1, Screens) |
+| [crm.md](crm.md) | built v0.1 (screens 1, Screens) |
+| [workflow.md](workflow.md) | built v0.1 (screens 1, Screens) |
+| [settings.md](settings.md) | built v0.1 (screens 1, Screens) |
 | Every other component in [../component-taxonomy.md](../component-taxonomy.md) | to write in V2.2 |

@@ -52,10 +52,12 @@ mod rulerfid;
 mod run;
 mod runningfid;
 mod schedfid;
+mod screensfid;
 mod seqfid;
 mod stairsfid;
 mod storagefid;
 mod text;
+mod themefid;
 mod toolmapfid;
 mod tools;
 mod tracefid;
@@ -129,12 +131,22 @@ pub use run::{
 };
 pub use runningfid::RunningNow;
 pub use schedfid::ScheduledRuns;
+pub use screensfid::{
+    AppFrame, AppShellScreen, ChatAgentsScreen, ChatOverviewScreen, ChatProgressScreen,
+    ChatRailScreen, ChatRunScreen, ChatStartScreen, CrmScreen, FoldersScreen, IntegrationsScreen,
+    KanbanScreen, MenuButton, RailFrame, RailShellScreen, ScreenComposer, SettingsScreen,
+    WorkflowScreen,
+};
 pub use seqfid::AgentSequence;
 pub use stairsfid::EffortStairs;
 pub use storagefid::{StorageCleanup, StorageForecast, StorageMeter, StorageWaffle};
 pub use text::{
     ActionSwapButton, InViewTitle, LoadingState, SlotReels, Source, StreamingText, SweepText,
     TextMorph, ThinkingLoader, WordReveal,
+};
+pub use themefid::{
+    AccentDensity, AppIconPicker, BackgroundPicker, DisplayComfort, LightPlayground, ThemeGrid,
+    ThemeSchedule, ThemeSplit, TypeScale,
 };
 pub use toolmapfid::ToolAccessMap;
 pub use tools::{
