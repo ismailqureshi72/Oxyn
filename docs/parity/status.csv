@@ -705,3 +705,5 @@ Oxyn,Screens · Kanban,,Screens,Free,kanban,screens-1,#42,built
 Oxyn,Screens · CRM,,Screens,Free,crm,screens-1,#42,built
 Oxyn,Screens · Workflow builder,,Screens,Free,workflow,screens-1,#42,built
 Oxyn,Screens · Settings shell,,Screens,Free,settings,screens-1,#42,built
+Oxyn,Screens · Agent · Orchestration,,Screens,Free,agent-orchestration,screens-2,#43,built
+Oxyn,Screens · Agent · Thread,,Screens,Free,agent-thread,screens-2,#43,built

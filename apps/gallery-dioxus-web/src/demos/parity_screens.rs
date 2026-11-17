@@ -1,13 +1,13 @@
-//! Screens 1 demos: app frames (Inset, Flat, three-pane) and the AI Chat screens (Start, Overview,
-//! Agents, Double sidebar, Progress, Run) Folders (Overview, Detail), Integrations, Kanban, CRM, the Workflow builder and the Settings shell. Every screen has Sample / Loading / Empty data and an
+//! Screens demos (#42 Screens 1, Screens 2): app frames (Inset, Flat, three-pane) and the AI Chat screens (Start, Overview,
+//! Agents, Double sidebar, Progress, Run) Folders (Overview, Detail), Integrations, Kanban, CRM, the Workflow builder and the Settings shell, then the agent screens (Orchestration, Thread…). Every screen has Sample / Loading / Empty data and an
 //! Inset / Flat frame; light and dark follow the page theme.
 
 use dioxus::prelude::*;
 use oxyn_core::ClockMs;
 use oxyn_dioxus::{
-    AppShellScreen, ChatAgentsScreen, ChatOverviewScreen, ChatProgressScreen, ChatRailScreen,
-    ChatRunScreen, ChatStartScreen, CrmScreen, FoldersScreen, IntegrationsScreen, KanbanScreen,
-    RailShellScreen, SettingsScreen, WorkflowScreen,
+    AgentThreadScreen, AppShellScreen, ChatAgentsScreen, ChatOverviewScreen, ChatProgressScreen,
+    ChatRailScreen, ChatRunScreen, ChatStartScreen, CrmScreen, FoldersScreen, IntegrationsScreen,
+    KanbanScreen, OrchestrationScreen, RailShellScreen, SettingsScreen, WorkflowScreen,
 };
 
 use super::{Code, mk, sel, var};
@@ -1185,6 +1185,152 @@ fn crm_demo() -> Demo {
     }
 }
 
+// ---------- Agent · Orchestration ----------
+
+fn agent_orchestration(v: &Vals, now: ClockMs) -> Element {
+    let (st, lay, key) = frame(v);
+    rsx! {
+        div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
+            OrchestrationScreen { layout: lay, state: st, now }
+        }
+    }
+}
+
+fn agent_orchestration_code(v: &Vals) -> String {
+    code("OrchestrationScreen", v, true, false)
+}
+
+fn agent_orchestration_demo() -> Demo {
+    Demo {
+        controls: controls("inset"),
+        variants: vec![
+            var("sample", "Sample data in the Inset frame.", &[]),
+            var(
+                "flat",
+                "The same screen in the Flat frame.",
+                &[("frame", "Flat")],
+            ),
+            var(
+                "loading",
+                "Skeletons where the data will land.",
+                &[("data", "Loading")],
+            ),
+            var(
+                "empty",
+                "Nothing yet: each region says what will appear.",
+                &[("data", "Empty")],
+            ),
+        ],
+        render: agent_orchestration,
+        code: agent_orchestration_code,
+        keyboard: vec![
+            ("Tab", "Sidebar, page, then the work area"),
+            ("← / → on a hairline", "Resize the sidebar or work area"),
+            ("Escape", "Close an open menu; clear search"),
+            (
+                "← / → in the run panel tabs",
+                "Trace, Tokens & cost, Events",
+            ),
+            (
+                "↑ / ↓ on the panel edge",
+                "Make the run panel taller or shorter",
+            ),
+        ],
+        a11y: vec![
+            "The sidebar is a labelled nav; the open chat has aria-current and unread chats say so.",
+            "Menus open from a trigger that reports aria-expanded; their items are menuitemradio and Escape shuts them.",
+            "Hairlines are separators with a value and arrow keys; skeletons are hidden from screen readers.",
+        ],
+        responsive: vec![
+            "Under 860 px of width the work area becomes a sheet opened from the top bar.",
+            "Under 640 px the sidebar slides in from the menu button and the composer drops its labels.",
+        ],
+        height: 660,
+        live: true,
+        align: Align::Start,
+        ..mk(
+            "agent-orchestration",
+            "Agent · Orchestration",
+            CAT,
+            "One run shared out between agents, drawn as a branching outline on a dotted canvas: see which agent holds which piece, hop to whichever is busy, zoom and fit, pause or stop the run, and read every call in the trace, the tokens and cost per agent and the events below.",
+            "OrchestrationScreen",
+            "OrchestrationEl",
+            "agent-orchestration",
+            "parity/screensfid.rs",
+        )
+    }
+}
+
+// ---------- Agent · Thread ----------
+
+fn agent_thread(v: &Vals, now: ClockMs) -> Element {
+    let (st, lay, key) = frame(v);
+    rsx! {
+        div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
+            AgentThreadScreen { layout: lay, state: st, now }
+        }
+    }
+}
+
+fn agent_thread_code(v: &Vals) -> String {
+    code("AgentThreadScreen", v, true, false)
+}
+
+fn agent_thread_demo() -> Demo {
+    Demo {
+        controls: controls("inset"),
+        variants: vec![
+            var("sample", "Sample data in the Inset frame.", &[]),
+            var(
+                "flat",
+                "The same screen in the Flat frame.",
+                &[("frame", "Flat")],
+            ),
+            var(
+                "loading",
+                "Skeletons where the data will land.",
+                &[("data", "Loading")],
+            ),
+            var(
+                "empty",
+                "Nothing yet: each region says what will appear.",
+                &[("data", "Empty")],
+            ),
+        ],
+        render: agent_thread,
+        code: agent_thread_code,
+        keyboard: vec![
+            ("Tab", "Sidebar, page, then the work area"),
+            ("← / → on a hairline", "Resize the sidebar or work area"),
+            ("Escape", "Close an open menu; clear search"),
+            ("Enter", "Send (Shift+Enter: new line)"),
+            ("← / → in the work area tabs", "Artifacts or Tasks"),
+        ],
+        a11y: vec![
+            "The sidebar is a labelled nav; the open chat has aria-current and unread chats say so.",
+            "Menus open from a trigger that reports aria-expanded; their items are menuitemradio and Escape shuts them.",
+            "Hairlines are separators with a value and arrow keys; skeletons are hidden from screen readers.",
+        ],
+        responsive: vec![
+            "Under 860 px of width the work area becomes a sheet opened from the top bar.",
+            "Under 640 px the sidebar slides in from the menu button and the composer drops its labels.",
+        ],
+        height: 660,
+        live: true,
+        align: Align::Start,
+        ..mk(
+            "agent-thread",
+            "Agent · Thread",
+            CAT,
+            "One conversation with the orchestrator: plain answers, tools that ran side by side folded into one line, task cards and files, counts that open the work, and a reply that keeps streaming through a dropped connection, a slow upload and time away.",
+            "AgentThreadScreen",
+            "AgentThreadEl",
+            "agent-thread",
+            "parity/screensfid.rs",
+        )
+    }
+}
+
 pub(crate) fn demos() -> Vec<Demo> {
     vec![
         shell_inset_demo(),
@@ -1203,5 +1349,7 @@ pub(crate) fn demos() -> Vec<Demo> {
         workflow_demo(),
         settings_demo(),
         crm_demo(),
+        agent_orchestration_demo(),
+        agent_thread_demo(),
     ]
 }

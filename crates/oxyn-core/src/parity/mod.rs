@@ -63,6 +63,7 @@
 //! - [`gooeyfid`]: Menu Motion: gooey menu rows, heights, stagger, open side, liquid tabs and drops (variants 2)
 //! - [`themefid`]: Theme Selector family (variants 3): Background picker, Theme grid, Theme split, Accent and density.
 //! - [`screensfid`]: Screens 1: app frames (Inset, Flat, three-pane) and the AI Chat screens
+//! - [`screens2fid`]: Screens 2: the agent screens (Orchestration, Thread and the rest) on the Screens 1 frame
 //! - [`answers`]: fidelity batch, family A: AI Answer markup and streaming, Cited Answer
 //!   sentences and quotes, Message Actions, Thinking Loader phases, Thinking State steps and the
 //!   Writing Assistant's sample writer and dictation.
@@ -119,6 +120,7 @@ pub mod recapfid;
 pub mod rootfid;
 pub mod runningfid;
 pub mod schedfid;
+pub mod screens2fid;
 pub mod screensfid;
 pub mod seqfid;
 pub mod stairsfid;

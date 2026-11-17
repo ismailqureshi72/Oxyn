@@ -434,8 +434,10 @@ Whole app frames built from the components (affectUI's screen set by behaviour, 
 
 **Built in #42 (screens 1):** App shell · Inset (`shell-inset`), App shell · Flat (`shell-flat`), Three-pane shell (`shell-three-pane`), AI Chat · Start (`chat-start`), AI Chat · Overview (`chat-overview`), AI Chat · Agents (`chat-agents`), AI Chat · Double sidebar (`chat-double-sidebar`), AI Chat · Progress (`chat-progress`), AI Chat · Run (`chat-run`), Folders · Overview (`folders-overview`), Folders · Detail (`folders-detail`), Integrations (`integrations`), Kanban (`kanban`), CRM (`crm`), Workflow builder (`workflow`), Settings shell (`settings`)
 
+**Built in screens 2 (agent screens):** Agent · Orchestration (`agent-orchestration`), Agent · Thread (`agent-thread`)
+
 **New variants to build:**
-- Agent screens (Screens 2), Settings pages and Onboarding, coding-agent apps (later screens PRs)
+- Agent screens still to build (Screens 2): Inbox, Inbox board, Agents, Run detail, Tasks, Memory, Permissions, Usage, Activity, Schedules, Skills, Analytics, Evals; Settings pages and Onboarding, coding-agent apps (later screens PRs)
 
 ## App Shell (`app-shell`)
 Sidebars, rails, side panels and account chrome.

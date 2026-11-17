@@ -102,6 +102,45 @@ pub(crate) fn ico(name: &str) -> Element {
             "M7 12h7a3.5 3.5 0 0 1 0 7H7z",
         ],
         "row" => &["M4 6h16", "M4 12h16", "M4 18h16"],
+        "inbox" => &["M4 13h4l2 3h4l2-3h4", "M5 5h14l1 8v6H4v-6z"],
+        "bot" => &[
+            "M6 9h12v10H6z",
+            "M12 5v4",
+            "M9.5 13h.01",
+            "M14.5 13h.01",
+            "M10 16h4",
+        ],
+        "bolt" => &["M13 3 5 14h6l-1 7 8-11h-6z"],
+        "clock" => &["M12 3a9 9 0 1 0 0 18 9 9 0 1 0 0-18", "M12 7v5l3 2"],
+        "pulse" => &["M3 12h4l2-6 4 12 2-6h6"],
+        "coin" => &[
+            "M12 3a9 9 0 1 0 0 18 9 9 0 1 0 0-18",
+            "M15 9.5c-.5-1-1.6-1.5-3-1.5-1.7 0-3 .8-3 2s1.3 1.7 3 2 3 .8 3 2-1.3 2-3 2c-1.4 0-2.5-.5-3-1.5",
+            "M12 6v2",
+            "M12 16v2",
+        ],
+        "tree" => &[
+            "M9 4h6v4H9z",
+            "M4 16h6v4H4z",
+            "M14 16h6v4h-6z",
+            "M12 8v4",
+            "M7 16v-4h10v4",
+        ],
+        "pause" => &["M8 5v14", "M16 5v14"],
+        "zoomin" => &[
+            "M10.5 4a6.5 6.5 0 1 0 0 13 6.5 6.5 0 1 0 0-13",
+            "m15.5 15.5 4.5 4.5",
+            "M10.5 8v5",
+            "M8 10.5h5",
+        ],
+        "zoomout" => &[
+            "M10.5 4a6.5 6.5 0 1 0 0 13 6.5 6.5 0 1 0 0-13",
+            "m15.5 15.5 4.5 4.5",
+            "M8 10.5h5",
+        ],
+        "fit" => &["M4 9V4h5", "M15 4h5v5", "M20 15v5h-5", "M9 20H4v-5"],
+        "next" => &["m9 6 6 6-6 6"],
+        "copy" => &["M8 8h11v11H8z", "M5 16V5h11"],
         _ => &["M12 12h.01"],
     };
     rsx! {
@@ -289,7 +328,28 @@ pub fn ScreenComposer(
 pub(crate) enum Side {
     Chat,
     Runs,
+    Agent,
 }
+
+/// The agent screens' sidebar: primary pages, then the workspace pages (key, label, icon, badge).
+pub(crate) const AGENT_NAV: [(&str, &str, &str, u32); 7] = [
+    ("thread", "Thread", "chat", 0),
+    ("inbox", "Inbox", "inbox", 5),
+    ("tasks", "Tasks", "tasks", 0),
+    ("agents", "Agents", "bot", 0),
+    ("runs", "Runs", "runs", 0),
+    ("memory", "Memory", "note", 0),
+    ("skills", "Skills", "bolt", 0),
+];
+
+/// The agent sidebar's Workspace group.
+pub(crate) const AGENT_WS: [(&str, &str, &str); 5] = [
+    ("schedules", "Schedules", "clock"),
+    ("activity", "Activity", "pulse"),
+    ("usage", "Usage", "coin"),
+    ("permissions", "Permissions", "shield"),
+    ("settings", "Settings", "gear"),
+];
 
 #[allow(clippy::too_many_arguments)]
 fn sidebar(
@@ -307,6 +367,7 @@ fn sidebar(
     mut steps: Signal<Vec<bool>>,
     mut open_proj: Signal<String>,
     on_nav: EventHandler<String>,
+    nav_on: String,
 ) -> Element {
     let q = query().to_lowercase();
     let hit = |s: &str| q.is_empty() || s.to_lowercase().contains(&q);
@@ -338,6 +399,7 @@ fn sidebar(
             ("stats", "Numbers", "chart", 0),
             ("made", "Made for you", "file", 0),
         ],
+        Side::Agent => AGENT_NAV.to_vec(),
     };
     let loading = state == ScreenState::Loading;
     let blank = state == ScreenState::Empty;
@@ -393,7 +455,8 @@ fn sidebar(
             }
             div { class: "oxscn-nav",
                 for (k, l, i, n) in nav {
-                    button { key: "{k}", r#type: "button", class: "oxscn-nav-b", title: "{l}", "data-on": if side == Side::Runs && k == "runs" { "true" } else { "false" },
+                    button { key: "{k}", r#type: "button", class: "oxscn-nav-b", title: "{l}", "data-on": if (side == Side::Runs && k == "runs") || k == nav_on { "true" } else { "false" },
+                        "aria-current": if k == nav_on { "page" } else { "false" },
                         onclick: move |_| { on_nav.call(k.to_string()); peek.set(false); },
                         {ico(i)} span { class: "oxscn-lbl", "{l}" }
                         if n > 0 { span { class: "oxscn-badge", "{n}" } }
@@ -401,7 +464,18 @@ fn sidebar(
                 }
             }
             div { class: "oxscn-lists",
-                if loading {
+                if side == Side::Agent {
+                    p { class: "oxscn-gh", "Workspace" }
+                    div { class: "oxscn-nav",
+                        for (k, l, i) in AGENT_WS {
+                            button { key: "{k}", r#type: "button", class: "oxscn-nav-b", title: "{l}", "data-on": if k == nav_on { "true" } else { "false" },
+                                "aria-current": if k == nav_on { "page" } else { "false" },
+                                onclick: move |_| { on_nav.call(k.to_string()); peek.set(false); },
+                                {ico(i)} span { class: "oxscn-lbl", "{l}" }
+                            }
+                        }
+                    }
+                } else if loading {
                     p { class: "oxscn-gh", "Chats" }
                     {skel(6)}
                 } else if blank {
@@ -560,6 +634,9 @@ pub fn AppFrame(
     /// [`SidePeek`] from context closes the narrow slide-in sheet.
     #[props(default)]
     side_el: Option<Element>,
+    /// The sidebar entry for this page (`inbox`, `tasks`…), shown current.
+    #[props(default)]
+    nav_on: String,
     /// The page.
     children: Element,
 ) -> Element {
@@ -586,10 +663,10 @@ pub fn AppFrame(
     let mut wopen = use_signal(move || !work_closed);
     let mut wpeek = use_signal(|| false);
     let has_work = work.is_some();
-    let side_k = if side == "runs" {
-        Side::Runs
-    } else {
-        Side::Chat
+    let side_k = match side.as_str() {
+        "runs" => Side::Runs,
+        "agent" => Side::Agent,
+        _ => Side::Chat,
     };
     let style = format!(
         "--oxscn-h:{height}px;--oxscn-sw:{}px;--oxscn-ww:{}px",
@@ -613,12 +690,12 @@ pub fn AppFrame(
                     else { let v = (w0 as f64 - dx).clamp(260.0, 480.0); let mut s = ww; s.set(v as u32); }
                 }
             },
-            onpointerup: move |_| drag.set(None),
-            onpointerleave: move |_| drag.set(None),
+            onpointerup: move |_| if drag.peek().is_some() { drag.set(None) },
+            onpointerleave: move |_| if drag.peek().is_some() { drag.set(None) },
             if let Some(se) = side_el {
                 nav { class: "oxscn-side oxsst-side", "aria-label": "Settings", "data-rail": "false", "data-peek": "{peek}", {se} }
             } else {
-                {sidebar(side_k, st, threads, active, query, rail, peek, ws_open, acct_open, notice, setup_open, steps, open_proj, on_nav)}
+                {sidebar(side_k, st, threads, active, query, rail, peek, ws_open, acct_open, notice, setup_open, steps, open_proj, on_nav, nav_on)}
             }
             if !is_rail { {separator("Resize sidebar", "side", sw(), 200, 340, sw, drag, 1)} }
             div { class: "oxscn-page",

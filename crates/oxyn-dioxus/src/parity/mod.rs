@@ -52,6 +52,7 @@ mod rulerfid;
 mod run;
 mod runningfid;
 mod schedfid;
+mod screens2fid;
 mod screensfid;
 mod seqfid;
 mod stairsfid;
@@ -131,6 +132,7 @@ pub use run::{
 };
 pub use runningfid::RunningNow;
 pub use schedfid::ScheduledRuns;
+pub use screens2fid::{AgentThreadScreen, OrchestrationScreen};
 pub use screensfid::{
     AppFrame, AppShellScreen, ChatAgentsScreen, ChatOverviewScreen, ChatProgressScreen,
     ChatRailScreen, ChatRunScreen, ChatStartScreen, CrmScreen, FoldersScreen, IntegrationsScreen,
