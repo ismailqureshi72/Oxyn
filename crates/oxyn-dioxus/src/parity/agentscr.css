@@ -44,6 +44,9 @@
 @container (max-width: 640px){
   .oxscn-top:has(>.oxv-tabs)>.oxscn-title{display:none}
   .oxscn-top .oxay-q,.oxscn-top .oxam-q{display:none}
+  /* buttons beside the tabs go icon-only so the tabs keep their room */
+  .oxscn-top:has(>.oxv-tabs) .oxscn-mb .oxscn-btn-l,.oxscn-top:has(>.oxv-tabs) .oxv-pop-w .oxa-bl{display:none}
+  .oxscn-top:has(>.oxv-tabs) .oxscn-mb>.oxscn-btn,.oxscn-top:has(>.oxv-tabs) .oxv-pop-w>button{padding:0 9px}
 }
 
 /* work area */
