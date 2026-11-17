@@ -1,5 +1,5 @@
 /* Screens 1: app frames and AI Chat screens. Frame oxscn-, rail frame oxsrl-, Start oxcst-, Overview oxcov-, Agents oxcag-,
-   Double sidebar oxcdr-, Progress oxcpr-, Run oxcrn-, Folders oxsfo-/oxsfd-/oxsfi-. Chrome: the neutral --oxth-* greys (rulerfid.css); colour only for
+   Double sidebar oxcdr-, Progress oxcpr-, Run oxcrn-, Folders oxsfo-/oxsfd-/oxsfi-, Integrations oxsin-. Chrome: the neutral --oxth-* greys (rulerfid.css); colour only for
    status (semantic tokens), brand marks and the palette swatches that are content. */
 .oxscn{--oxscn-sw:248px;--oxscn-ww:340px;position:relative;box-sizing:border-box;display:flex;width:100%;min-width:0;height:var(--oxscn-h,640px);
   container-type:inline-size;overflow:clip;border-radius:16px;border:1px solid var(--oxth-line);background:var(--oxth-inset);color:var(--oxth-fg);
@@ -428,13 +428,16 @@ li[data-s="active"] .oxcpr-tick{border-color:var(--oxth-fg);border-top-color:tra
 .oxsfd-back{align-self:flex-start;padding:0;text-decoration:none;color:var(--oxth-mute)}
 .oxsfd-back:hover{color:var(--oxth-fg)}
 .oxsfd-selbar{display:flex;align-items:center;gap:8px;min-height:40px;padding:4px 6px 4px 12px;border-radius:10px;background:var(--oxth-sel);font-weight:500}
-.oxsfd-wrap{min-width:0;overflow-x:auto;border:1px solid var(--oxth-line);border-radius:12px;background:var(--oxth-card)}
+.oxsfd-wrap{container:oxsfd/inline-size;min-width:0;overflow-x:auto;border:1px solid var(--oxth-line);border-radius:12px;background:var(--oxth-card)}
 .oxsfd-tb{width:100%;table-layout:fixed;border-collapse:collapse;font-size:12.5px}
-.oxsfd-tb th:nth-child(1){width:38px}
-.oxsfd-tb th:nth-child(3){width:76px}
+.oxsfd-tb th:nth-child(1){width:36px}
+.oxsfd-tb th:nth-child(3){width:72px}
 .oxsfd-tb th:nth-child(4){width:64px}
-.oxsfd-tb th:nth-child(5){width:80px}
-.oxsfd-tb th:nth-child(6){width:80px}
+.oxsfd-tb th:nth-child(5){width:68px}
+.oxsfd-tb th:nth-child(6){width:72px}
+.oxsfd-tb th,.oxsfd-tb td{vertical-align:middle}
+@container oxsfd (max-width: 560px){.oxsfd-tb th:nth-child(4),.oxsfd-tb td:nth-child(4){display:none}}
+@container oxsfd (max-width: 400px){.oxsfd-tb th:nth-child(3),.oxsfd-tb td:nth-child(3){display:none}}
 .oxsfd-tb th{height:34px;padding:0 10px;text-align:left;font-weight:500;color:var(--oxth-mute);border-bottom:1px solid var(--oxth-line);white-space:nowrap}
 .oxsfd-tb td{height:40px;padding:0 10px;border-top:1px solid var(--oxth-line)}
 .oxsfd-tb tbody tr:first-child td{border-top:0}
@@ -469,8 +472,42 @@ li[data-s="active"] .oxcpr-tick{border-color:var(--oxth-fg);border-top-color:tra
   .oxsfo,.oxsfd{padding:14px 12px}
   .oxsfo-grid{grid-template-columns:minmax(0,1fr)}
   .oxsfo-new span{display:none}
-  .oxsfd-tb th:nth-child(3),.oxsfd-tb td:nth-child(3){display:none}
-  .oxsfd-tb th:nth-child(5),.oxsfd-tb th:nth-child(6){width:64px}
+}
+
+/* Integrations: oxsin- */
+.oxsin{display:flex;flex-direction:column;gap:12px;padding:22px 24px;min-width:0}
+.oxsin-q{margin:0}
+.oxsin-tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;padding-right:28px;border-bottom:1px solid var(--oxth-line);-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent)}
+.oxsin-tabs::-webkit-scrollbar{display:none}
+.oxsin-tab{display:inline-flex;align-items:center;gap:6px;flex:none;height:34px;padding:0 10px;border:0;border-bottom:2px solid transparent;margin-bottom:-1px;
+  background:transparent;cursor:pointer;color:var(--oxth-mute);font-weight:500;white-space:nowrap}
+.oxsin-tab:hover{color:var(--oxth-fg)}
+.oxsin-tab[aria-selected="true"]{color:var(--oxth-fg);border-bottom-color:var(--oxth-fg)}
+.oxsin-n{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:var(--oxth-sel);font-size:11px;color:var(--oxth-fg2)}
+.oxsin-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin:0;padding:0;list-style:none}
+.oxsin-card{display:flex;flex-direction:column;gap:8px;min-width:0;padding:12px;border-radius:12px;border:1px solid var(--oxth-line);background:var(--oxth-card)}
+.oxsin-card[data-sel="true"]{border-color:var(--oxth-fg)}
+.oxsin-top{display:flex;align-items:center;gap:10px;min-width:0}
+.oxsin-mark{display:grid;place-items:center;flex:none;width:36px;height:36px;border-radius:10px;border:1px solid var(--oxth-line);background:var(--oxth-card);color:var(--oxth-fg)}
+.oxsin-t{display:flex;flex-direction:column;min-width:0}
+.oxsin-b{margin:0;color:var(--oxth-fg2);font-size:12.5px}
+.oxsin-card .oxsin-b{flex:1 1 auto}
+.oxsin-foot{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.oxsin-foot .oxscn-btn[aria-pressed="true"]{background:var(--oxth-sel);color:var(--oxth-fg)}
+.oxsin-scrim{position:absolute;inset:0;z-index:8;background:rgba(0,0,0,.28)}
+.oxsin-dlg{position:absolute;z-index:9;inset:0;margin:auto;height:max-content;max-height:calc(100% - 24px);overflow:auto;display:flex;flex-direction:column;gap:10px;width:min(380px,calc(100% - 24px));
+  padding:16px;border-radius:14px;border:1px solid var(--oxth-line);background:var(--oxth-card);box-shadow:var(--oxth-sh);animation:oxscn-pop .16s cubic-bezier(.2,.8,.2,1) both}
+.oxsin-dt{margin:0;font-size:15px;font-weight:600}
+.oxsin-scopes{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:2px}
+.oxsin-scope{display:flex;align-items:center;gap:9px;min-height:34px;padding:0 8px;border-radius:8px;cursor:pointer;color:var(--oxth-fg2)}
+.oxsin-scope:hover{background:var(--oxth-hov)}
+.oxsin-scope input{accent-color:var(--oxth-fg);width:15px;height:15px;margin:0}
+.oxsin-det .oxsin-top{padding:0 4px 6px}
+.oxsin-acts{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:14px 4px 0}
+.oxsin-sure{display:inline-flex;align-items:center;gap:6px}
+@container (max-width: 640px){
+  .oxsin{padding:14px 12px}
+  .oxsin-grid{grid-template-columns:minmax(0,1fr)}
 }
 
 /* narrow: the work area becomes a sheet, then the sidebar slides in */
@@ -484,7 +521,6 @@ li[data-s="active"] .oxcpr-tick{border-color:var(--oxth-fg);border-top-color:tra
   .oxcst-hi{font-size:22px}
   .oxcov-grid{grid-template-columns:minmax(0,1fr)}
   .oxcrn-tool{display:none}
-  .oxsfd-tb th:nth-child(4),.oxsfd-tb td:nth-child(4){display:none}
 }
 @container (max-width: 640px){
   .oxscn-side{position:absolute;top:0;bottom:0;left:0;width:min(270px,86%);transform:translateX(-104%);visibility:hidden;box-shadow:var(--oxth-sh);

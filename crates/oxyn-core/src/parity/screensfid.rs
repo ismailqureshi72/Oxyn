@@ -1,6 +1,6 @@
 //! Screens 1 (whole app frames): the shared app frame (Inset or Flat, plus a three-pane frame with
 //! an icon rail), the AI Chat screens built on it – Start, Overview, Agents, Double sidebar,
-//! Progress and Run – and the Folders screens (Overview, Detail). Each screen shows Sample,
+//! Progress and Run – then Folders (Overview, Detail) and Integrations. Each screen shows Sample,
 //! Loading or Empty data. Behaviour only: every person, workspace, project and line of copy here
 //! is fictional and our own.
 
@@ -868,6 +868,205 @@ pub fn folder_activity() -> Vec<(&'static str, &'static str, &'static str)> {
     ]
 }
 
+// ───────────────────────────────────────────────────────────── Integrations ──
+
+/// An app in the Integrations directory.
+#[derive(Clone, Debug, PartialEq)]
+pub struct AppInfo {
+    /// Brand id (also the stable key).
+    pub id: &'static str,
+    /// Display name.
+    pub name: &'static str,
+    /// Category key: `files`, `chat`, `work`, `calendar` or `dev`.
+    pub kind: &'static str,
+    /// One line on what connecting it lets the assistant do (our own words).
+    pub blurb: &'static str,
+    /// Connected now.
+    pub connected: bool,
+    /// What it may do, with each permission on or off.
+    pub scopes: Vec<(&'static str, bool)>,
+    /// Minutes since the last sync (connected apps).
+    pub synced: u32,
+}
+
+/// The directory's categories: key and label. `all` and `on` are views, the rest are kinds.
+pub const APP_TABS: [(&str, &str); 7] = [
+    ("all", "All"),
+    ("on", "Connected"),
+    ("files", "Files"),
+    ("chat", "Messaging"),
+    ("work", "Work"),
+    ("calendar", "Calendar"),
+    ("dev", "Developer"),
+];
+
+/// The sample directory; `connected` false everywhere gives the Empty state's catalogue.
+pub fn apps(connected: bool) -> Vec<AppInfo> {
+    let a = |id, name, kind, blurb, on: bool, scopes: &[&'static str], synced| AppInfo {
+        id,
+        name,
+        kind,
+        blurb,
+        connected: on && connected,
+        scopes: scopes.iter().map(|s| (*s, true)).collect(),
+        synced,
+    };
+    vec![
+        a(
+            "googledrive",
+            "Google Drive",
+            "files",
+            "Find and read the docs you point it at.",
+            true,
+            &["Read files you pick", "Make new files", "See folder names"],
+            12,
+        ),
+        a(
+            "dropbox",
+            "Dropbox",
+            "files",
+            "Pull in shared folders and attachments.",
+            false,
+            &["Read files you pick", "Save copies of outputs"],
+            0,
+        ),
+        a(
+            "notion",
+            "Notion",
+            "work",
+            "Read pages and write drafts into them.",
+            true,
+            &["Read pages you share", "Create pages", "Edit pages it made"],
+            45,
+        ),
+        a(
+            "slack",
+            "Slack",
+            "chat",
+            "Catch up on threads and draft replies for you to send.",
+            true,
+            &[
+                "Read channels you add",
+                "Draft messages",
+                "Post when you approve",
+            ],
+            3,
+        ),
+        a(
+            "discord",
+            "Discord",
+            "chat",
+            "Sum up busy servers and flag mentions.",
+            false,
+            &["Read channels you add", "See mentions"],
+            0,
+        ),
+        a(
+            "gmail",
+            "Gmail",
+            "chat",
+            "Sort the inbox and draft answers.",
+            false,
+            &["Read mail", "Draft replies", "Send when you approve"],
+            0,
+        ),
+        a(
+            "googlecalendar",
+            "Google Calendar",
+            "calendar",
+            "Find free time and hold slots.",
+            true,
+            &["See busy times", "Create events", "Invite guests"],
+            30,
+        ),
+        a(
+            "zoom",
+            "Zoom",
+            "calendar",
+            "Add call links and pull recordings' notes.",
+            false,
+            &["Create meetings", "Read meeting notes"],
+            0,
+        ),
+        a(
+            "linear",
+            "Linear",
+            "work",
+            "Turn notes into issues and track them.",
+            false,
+            &["Read issues", "Create issues", "Change status"],
+            0,
+        ),
+        a(
+            "figma",
+            "Figma",
+            "work",
+            "Read frames and comments for briefs.",
+            false,
+            &["Read files you share", "Read comments"],
+            0,
+        ),
+        a(
+            "github",
+            "GitHub",
+            "dev",
+            "Read code, open branches and pull requests.",
+            false,
+            &[
+                "Read repositories you pick",
+                "Open pull requests",
+                "Comment",
+            ],
+            0,
+        ),
+        a(
+            "sentry",
+            "Sentry",
+            "dev",
+            "Group new errors and suggest a first look.",
+            false,
+            &["Read issues", "Resolve issues"],
+            0,
+        ),
+    ]
+}
+
+/// Apps in a tab (`all`, `on` or a kind) whose name or blurb contains the query
+/// (case-insensitive), connected first, then by name.
+pub fn app_view(list: &[AppInfo], tab: &str, q: &str) -> Vec<AppInfo> {
+    let q = q.trim().to_lowercase();
+    let mut v: Vec<AppInfo> = list
+        .iter()
+        .filter(|a| match tab {
+            "all" => true,
+            "on" => a.connected,
+            k => a.kind == k,
+        })
+        .filter(|a| {
+            q.is_empty()
+                || a.name.to_lowercase().contains(&q)
+                || a.blurb.to_lowercase().contains(&q)
+        })
+        .cloned()
+        .collect();
+    v.sort_by(|a, b| b.connected.cmp(&a.connected).then(a.name.cmp(b.name)));
+    v
+}
+
+/// How many apps are connected.
+pub fn connected_count(list: &[AppInfo]) -> usize {
+    list.iter().filter(|a| a.connected).count()
+}
+
+/// "Synced just now" / "Synced 12m ago".
+pub fn synced_words(mins: u32) -> String {
+    if mins == 0 {
+        "Synced just now".to_string()
+    } else {
+        format!("Synced {} ago", ago(mins))
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -1015,5 +1214,22 @@ mod tests {
         assert_eq!(invite_initials("@b.example"), None);
         assert_eq!(member_name("TA"), "Tamsin Arvo");
         assert_eq!(member_name("ZZ"), "Invited guest");
+    }
+
+    #[test]
+    fn apps_filter_and_count() {
+        let a = apps(true);
+        assert_eq!(connected_count(&a), 4);
+        assert_eq!(connected_count(&apps(false)), 0);
+        let all = app_view(&a, "all", "");
+        assert_eq!(all.len(), 12);
+        assert!(all[..4].iter().all(|x| x.connected));
+        assert_eq!(all[0].name, "Google Calendar");
+        assert_eq!(app_view(&a, "on", "").len(), 4);
+        assert_eq!(app_view(&a, "chat", "").len(), 3);
+        assert_eq!(app_view(&a, "all", "ISSUES").len(), 1);
+        assert!(app_view(&apps(false), "on", "").is_empty());
+        assert_eq!(synced_words(0), "Synced just now");
+        assert_eq!(synced_words(12), "Synced 12m ago");
     }
 }
