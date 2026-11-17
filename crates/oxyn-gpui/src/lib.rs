@@ -130,6 +130,7 @@ pub use parity::{
     AutonomyDialEl, AwaySummaryEl, CollabStreamEl, ContextMapEl, CostWaterfallEl, DecisionTreeEl,
     DelegateBoardEl, FallbackChainEl,
 };
+pub use parity::{AgentsEl, PermissionsEl, RunDetailEl, SchedulesEl, SkillsEl, UsageEl};
 pub use parity::{
     AiComposerEl, AvatarUploadEl, ChatComposerEl, ContextFieldEl, ContextGridEl, ElasticSliderEl,
     FileDropzoneEl, GaugeEl, ModelMenuEl, ModelPillEl, MorphSelectEl, NumberFieldEl, Pick,

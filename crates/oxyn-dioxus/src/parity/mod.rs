@@ -41,6 +41,7 @@ mod meters;
 mod modeleffid;
 mod monitorfid;
 mod nozzlefid;
+mod opsscr;
 mod parallelfid;
 mod planfid;
 mod queuefid;
@@ -122,6 +123,10 @@ pub use meters::{ContextField, ContextWindowGrid, CtxModel, Gauge, SplitBar, Usa
 pub use modeleffid::ModelEffortMenu;
 pub use monitorfid::AgentMonitor;
 pub use nozzlefid::NozzleSlider;
+pub use opsscr::{
+    AgentsScreen, PermissionsScreen, RunDetailScreen, SchedulesScreen, SkillsScreen, UsageScreen,
+    s4_states,
+};
 pub use parallelfid::ParallelAttempts;
 pub use planfid::PlanVsActual;
 pub use queuefid::AgentQueue;
