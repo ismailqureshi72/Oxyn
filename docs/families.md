@@ -1,8 +1,8 @@
 # Oxyn component families (sidebar categories)
 
-Generated 2026-11-16 for PR #39 (variants 1). Every existing component sits in exactly one family; each family will hold many variants. The site sidebar groups components by these families (`site/src/lib/families.mjs`).
+Generated 2026-11-16 for PR #39 (variants 1); PR #40 (variants 2) added the Storage and Menu Motion families and built variants in Context Visualizer and Attachments. Every existing component sits in exactly one family; each family will hold many variants. The site sidebar groups components by these families (`site/src/lib/families.mjs`).
 
-36 families, 268 existing components.
+38 families, 268 existing components before variants (PR #39 added 8, PR #40 added 17).
 
 ## Composer (`composer`)
 The prompt box itself, the field and what sits in it.
@@ -60,10 +60,10 @@ How full the context window is and what fills it.
 
 **Existing:** Context meter (`context-meter`), Context window (cells) (`context-field`), Context window (grid) (`context-grid`), Context Map (`context-map`), Context cards (`context-cards`)
 
+**Built in #40 (variants 2):** Context bar (`context-bar`), Context breakdown (`context-breakdown`), Context stack (`context-stack`), Context tide (`context-tide`)
+
 **New variants to build:**
-- Stacked segment bar with Chat/Files/Tools/System/Memory chips and Compact button
 - Context meter ring with hover legend
-- Tide gauge: water line in a tall glass, compaction drains it
 - Shelf view: each file a book on a shelf, width = tokens; drag off to drop
 - Heat strip of the transcript showing which turns weigh most
 - Pressure bar that blinks before auto-compact with a countdown
@@ -73,13 +73,38 @@ Files, images and links going into a prompt.
 
 **Existing:** Attachments (`attachments`), Attachment strip (`attachment-strip`), File dropzone (`file-dropzone`), Avatar upload (`avatar-upload`), Link unfurl (`link-unfurl`), Document extraction (`document-extraction`)
 
+**Built in #40 (variants 2):** Upload dropzone (`upload-dropzone`), Attachment chips (`attachment-chips`), Polaroid stack (`polaroid-stack`), Drop lanes (`drop-lanes`)
+
 **New variants to build:**
-- Polaroid stack: images fan out on hover
-- Ring upload: BoardUI-style progress ring per file
-- Upload dropzone with scan line and type icons
 - Paper clip tray: files dangle from a clip on the composer edge
 - Inline chips that expand into a mini preview sheet
 - Storage scanner style: sunburst of what you attach most
+
+## Storage (`storage`)
+Disk and context usage drawn as dot matrices: capacity, cleanup, waffle and forecast.
+
+**Existing:** _none yet_
+
+**Built in #40 (variants 2):** Storage meter (`storage-meter`), Storage cleanup (`storage-cleanup`), Storage waffle (`storage-waffle`), Storage forecast (`storage-forecast`)
+
+**New variants to build:**
+- Setup map: where agent skills, rules and servers live, folder by folder, with counts
+- Leftovers sweep: old sessions, logs and build output an agent left behind, grouped by age
+- Notch tabs: Now / Skills / Storage / Cleanup in one compact panel
+
+## Menu Motion (`menu-motion`)
+Menus and controls that move like liquid: the gooey menu motion on attach and model menus, a composer, tabs and drops.
+
+**Existing:** _none yet_
+
+**Built in #40 (variants 2):** Gooey composer (`gooey-composer`), Gooey attach menu (`gooey-attach-menu`), Gooey model menu (`gooey-model-menu`), Liquid tabs (`liquid-tabs`), Liquid drops (`liquid-drops`)
+
+The gooey motion is a shared Oxyn menu motion (`gooeyfid.css`, `oxgm-*`): any menu can take it (see the spec).
+
+**New variants to build:**
+- Gooey context menu at the pointer
+- Melt switch: the knob stretches before it lands
+- Approval menu whose Full access row bleeds red into the button
 
 ## Voice (`voice`)
 Speaking to the agent: record, dictate, listen.

@@ -1,0 +1,140 @@
+/* Attachments family (variants 2): file icon (oxfic-), Upload dropzone (oxud-), Attachment chips
+   (oxac-), Polaroid stack (oxps-), Drop lanes (oxdrl-). Chrome: the neutral --oxth-* greys
+   (rulerfid.css); hue only on file-type badges, the progress (blue, status) and errors (red).
+   Percent text counts with a registered custom property, so no timer is needed. */
+[data-oxyn-theme="dark"],[data-oxyn-theme="hc-dark"]{--oxat-blue:#4C7DFF;--oxat-err:#F26B5B;--oxat-errbg:rgba(242,107,91,.12)}
+[data-oxyn-theme="light"]{--oxat-blue:#2F5BEA;--oxat-err:#D83A2A;--oxat-errbg:#FDECEA}
+@property --oxat-p{syntax:'<integer>';inherits:false;initial-value:0}
+.oxud-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.oxfic{display:block;flex:none;overflow:visible}
+.oxfic-page{fill:var(--oxth-card);stroke:var(--oxth-mute);stroke-width:1.5}
+.oxfic-fold{fill:none;stroke:var(--oxth-mute);stroke-width:1.5;stroke-linejoin:round}
+.oxfic-lines{fill:none;stroke:var(--oxth-tick);stroke-width:1.8;stroke-linecap:round}
+
+/* Upload dropzone */
+.oxud{position:relative;display:flex;flex-direction:column;align-items:center;gap:18px;width:340px;max-width:100%;
+  font:14px/1.3 Inter,ui-sans-serif,system-ui,sans-serif;color:var(--oxth-fg)}
+.oxud-box{box-sizing:border-box;width:100%;min-height:118px;display:flex;align-items:center;justify-content:center;padding:16px 18px;
+  background:var(--oxth-sel);cursor:pointer;outline:none;transition:background .2s,box-shadow .2s,transform .25s cubic-bezier(.3,1.4,.5,1)}
+.oxud[data-stroke="true"] .oxud-box{box-shadow:inset 0 0 0 1px var(--oxth-line2)}
+.oxud-box:hover{background:color-mix(in srgb,var(--oxth-sel) 80%,var(--oxth-fg) 6%)}
+.oxud-box[data-over="true"]{box-shadow:inset 0 0 0 2px var(--oxat-blue);transform:scale(1.02)}
+.oxud-box:focus-visible{box-shadow:0 0 0 2px var(--oxth-card),0 0 0 4px var(--oxth-fg)}
+.oxud-idle{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;animation:oxud-in .28s ease-out}
+@keyframes oxud-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.oxud-tile{display:grid;place-items:center;width:44px;height:44px;margin-bottom:6px;border-radius:14px;background:var(--oxth-line2);color:var(--oxth-fg2)}
+.oxud-h{font-size:15px;font-weight:600}
+.oxud-no{color:var(--oxat-err)}
+.oxud-s{font-size:13px;color:var(--oxth-mute)}
+.oxud-file{display:flex;align-items:center;gap:14px;width:100%;animation:oxud-in .28s ease-out}
+.oxud-ft{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.oxud-fn{font-size:15.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.oxud-fm{font-size:12.5px;color:var(--oxth-mute);font-variant-numeric:tabular-nums}
+.oxud-ok{color:var(--oxth-fg2)}
+.oxud-pct{counter-reset:p var(--oxat-p);animation:oxud-count var(--dur) linear forwards}
+.oxud-pct::after{content:counter(p) "%"}
+.oxud-pct[data-flaky="true"]{animation-name:oxud-count-flaky}
+@keyframes oxud-count{to{--oxat-p:100}}
+@keyframes oxud-count-flaky{to{--oxat-p:63}}
+.oxud-bar{display:block;height:5px;margin-top:4px;border-radius:3px;background:var(--oxth-line2);overflow:hidden}
+.oxud-fill{display:block;height:100%;width:100%;border-radius:3px;background:var(--oxat-blue);transform-origin:left;animation:oxud-fill var(--dur) linear forwards}
+@keyframes oxud-fill{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.oxud-wait{position:absolute;width:0;height:0;animation:oxud-wait 1.1s linear forwards}
+.oxud-long{animation-duration:1.8s}
+@keyframes oxud-wait{to{opacity:0}}
+.oxud-chips{display:flex;justify-content:center;gap:26px;flex-wrap:wrap}
+.oxud-chip{display:flex;flex-direction:column;align-items:center;gap:6px;padding:6px;border:0;border-radius:12px;background:transparent;color:var(--oxth-mute);
+  font:12px/1.2 inherit;font-family:inherit;cursor:grab;transition:opacity .2s,transform .2s}
+.oxud-chip:hover{transform:translateY(-2px)}
+.oxud-chip:active{cursor:grabbing}
+.oxud-chip[data-busy="true"]{opacity:.35}
+.oxud-chip:focus-visible{outline:2px solid var(--oxat-blue);outline-offset:3px}
+.oxud-cn{max-width:96px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* Attachment chips */
+.oxac{position:relative;box-sizing:border-box;width:520px;max-width:100%;padding:10px;border-radius:20px;background:var(--oxth-card);border:1px solid var(--oxth-line);
+  box-shadow:var(--oxth-sh);font:14px/1.3 Inter,ui-sans-serif,system-ui,sans-serif;color:var(--oxth-fg)}
+.oxac-tray{display:flex;flex-wrap:wrap;gap:8px;padding:2px 2px 8px}
+.oxac-chip{position:relative;display:flex;align-items:center;gap:9px;max-width:100%;height:46px;padding:0 8px 0 7px;border-radius:12px;background:var(--oxth-inset);
+  border:1px solid var(--oxth-line);box-sizing:border-box;animation:oxac-in .3s cubic-bezier(.3,1.3,.5,1)}
+@keyframes oxac-in{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:none}}
+.oxac-chip[data-state="fail"],.oxac-chip[data-state="big"]{border-color:color-mix(in srgb,var(--oxat-err) 55%,transparent);background:var(--oxat-errbg)}
+.oxac-ic{position:relative;display:grid;place-items:center;width:34px;height:34px;flex:none}
+.oxac-ring{position:absolute;inset:-3px;width:40px;height:40px;transform:rotate(-90deg)}
+.oxac-rt{fill:none;stroke:var(--oxth-line2);stroke-width:2.5}
+.oxac-rf{fill:none;stroke:var(--oxat-blue);stroke-width:2.5;stroke-linecap:round;stroke-dasharray:106.8;stroke-dashoffset:106.8;animation:oxac-ring var(--dur) linear forwards}
+.oxac-rf[data-flaky="true"]{animation-name:oxac-ring-flaky}
+@keyframes oxac-ring{to{stroke-dashoffset:0}}
+@keyframes oxac-ring-flaky{to{stroke-dashoffset:39.5}}
+.oxac-txt{display:flex;flex-direction:column;min-width:0;gap:1px}
+.oxac-nm{font-size:13px;font-weight:500;max-width:150px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.oxac-meta{font-size:11.5px;color:var(--oxth-mute);white-space:nowrap;font-variant-numeric:tabular-nums}
+.oxac-chip[data-state="fail"] .oxac-meta,.oxac-chip[data-state="big"] .oxac-meta{color:var(--oxat-err)}
+.oxac-retry{height:24px;padding:0 9px;border-radius:7px;border:1px solid var(--oxth-line2);background:var(--oxth-card);color:var(--oxth-fg);
+  font:500 12px/1 inherit;font-family:inherit;cursor:pointer}
+.oxac-x{display:grid;place-items:center;width:22px;height:22px;flex:none;border:0;border-radius:6px;background:transparent;color:var(--oxth-mute);cursor:pointer}
+.oxac-x:hover{background:var(--oxth-hov);color:var(--oxth-fg)}
+.oxac-more{height:46px;min-width:46px;padding:0 12px;border-radius:12px;border:1px dashed var(--oxth-line2);background:transparent;color:var(--oxth-fg2);
+  font:600 13px/1 inherit;font-family:inherit;cursor:pointer}
+.oxac-retry:focus-visible,.oxac-x:focus-visible,.oxac-more:focus-visible,.oxac-add:focus-visible{outline:2px solid var(--oxth-fg);outline-offset:1px}
+.oxac-field{padding:6px 6px 2px;border-top:1px solid var(--oxth-line)}
+.oxac-ph{display:block;padding:8px 4px 12px;color:var(--oxth-mute)}
+.oxac-bar{display:flex;align-items:center;gap:10px}
+.oxac-add{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 11px;border-radius:999px;border:1px solid var(--oxth-line2);background:var(--oxth-card2);
+  color:var(--oxth-fg);font:500 12.5px/1 inherit;font-family:inherit;cursor:pointer}
+.oxac-add span{font-size:16px;line-height:1}
+.oxac-count{flex:1;font-size:12px;color:var(--oxth-mute)}
+.oxac-send{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--oxth-sel);color:var(--oxth-mute);transition:background .2s,color .2s}
+.oxac-send[data-ready="true"]{background:var(--oxth-fg);color:var(--oxth-card)}
+
+/* Polaroid stack (Oxyn original) */
+.oxps{position:relative;display:flex;flex-direction:column;align-items:center;gap:14px;width:340px;max-width:100%;font:14px/1.3 Inter,ui-sans-serif,system-ui,sans-serif;color:var(--oxth-fg)}
+.oxps-stage{position:relative;width:100%;height:210px;display:grid;place-items:center;outline:none}
+.oxps-card{position:absolute;width:132px;padding:8px 8px 26px;border-radius:6px;background:var(--oxth-card);border:1px solid var(--oxth-line);
+  box-shadow:0 10px 24px rgba(0,0,0,.18),0 1px 2px rgba(0,0,0,.12);transition:transform .45s cubic-bezier(.3,1.3,.45,1)}
+.oxps-card[data-front="true"]{box-shadow:0 14px 32px rgba(0,0,0,.26),0 0 0 1.5px var(--oxth-fg2)}
+.oxps-pic{display:block;width:100%;padding:0;border:0;background:none;cursor:pointer;border-radius:3px}
+.oxps-img{display:block;width:100%;aspect-ratio:1;border-radius:3px}
+.oxps-pic:focus-visible{outline:2px solid var(--oxth-fg);outline-offset:3px}
+.oxps-x{position:absolute;right:4px;bottom:3px;display:grid;place-items:center;width:20px;height:20px;border:0;border-radius:5px;background:transparent;
+  color:var(--oxth-mute);cursor:pointer;opacity:0;transition:opacity .2s}
+.oxps[data-open="true"] .oxps-x,.oxps-x:focus-visible{opacity:1}
+.oxps-x:hover{background:var(--oxth-hov);color:var(--oxth-fg)}
+.oxps-empty{font-size:13px;color:var(--oxth-mute)}
+.oxps-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%}
+.oxps-cap{font-size:12.5px;color:var(--oxth-mute);font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.oxps-add{height:30px;padding:0 12px;border-radius:999px;border:1px solid var(--oxth-line2);background:var(--oxth-card2);color:var(--oxth-fg);
+  font:500 12.5px/1 inherit;font-family:inherit;cursor:pointer;flex:none}
+.oxps-add:disabled{opacity:.4;cursor:default}
+
+/* Drop lanes (Oxyn original) */
+.oxdrl{position:relative;box-sizing:border-box;width:560px;max-width:100%;padding:14px;border-radius:20px;background:var(--oxth-card);border:1px solid var(--oxth-line);
+  box-shadow:var(--oxth-sh);font:14px/1.3 Inter,ui-sans-serif,system-ui,sans-serif;color:var(--oxth-fg)}
+.oxdrl-tray{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.oxdrl-tl{font-size:12.5px;color:var(--oxth-mute)}
+.oxdrl-chips{display:flex;flex-wrap:wrap;gap:6px;min-height:34px}
+.oxdrl-chip{display:inline-flex;align-items:center;gap:7px;height:34px;padding:0 10px 0 7px;border-radius:10px;border:1px solid var(--oxth-line2);background:var(--oxth-inset);
+  color:var(--oxth-fg);font:500 12.5px/1 inherit;font-family:inherit;cursor:grab;transition:background .15s,box-shadow .15s,transform .2s}
+.oxdrl-chip:hover{background:var(--oxth-sel)}
+.oxdrl-chip[aria-pressed="true"]{box-shadow:0 0 0 2px var(--oxat-blue);transform:translateY(-1px)}
+.oxdrl-chip:focus-visible,.oxdrl-head:focus-visible{outline:2px solid var(--oxth-fg);outline-offset:2px}
+.oxdrl-lanes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.oxdrl-lane{display:flex;flex-direction:column;gap:4px;min-height:120px;padding:8px;border-radius:14px;border:1.5px dashed var(--oxth-line2);background:transparent;
+  transition:border-color .2s,background .2s,min-height .3s cubic-bezier(.3,1.2,.5,1)}
+.oxdrl[data-active="true"] .oxdrl-lane{min-height:150px;border-color:var(--oxth-mute)}
+.oxdrl-lane[data-over="true"]{border-style:solid;border-color:var(--oxat-blue);background:color-mix(in srgb,var(--oxat-blue) 8%,transparent)}
+.oxdrl-head{display:flex;align-items:center;justify-content:space-between;gap:6px;width:100%;padding:4px;border:0;border-radius:8px;background:transparent;
+  color:var(--oxth-fg);font:600 13px/1.2 inherit;font-family:inherit;text-align:left;cursor:pointer}
+.oxdrl-head:disabled{cursor:default}
+.oxdrl[data-active="true"] .oxdrl-head:hover{background:var(--oxth-hov)}
+.oxdrl-n{min-width:20px;height:20px;padding:0 6px;box-sizing:border-box;border-radius:999px;background:var(--oxth-sel);color:var(--oxth-fg2);font-size:11.5px;
+  display:grid;place-items:center;font-variant-numeric:tabular-nums}
+.oxdrl-hint{padding:0 4px;font-size:11.5px;color:var(--oxth-mute)}
+.oxdrl-in{list-style:none;margin:4px 0 0;padding:0;display:flex;flex-direction:column;gap:3px}
+.oxdrl-item{display:flex;align-items:center;gap:6px;height:28px;padding:0 2px 0 6px;border-radius:8px;background:var(--oxth-inset);animation:oxac-in .3s cubic-bezier(.3,1.3,.5,1)}
+.oxdrl-nm{flex:1;min-width:0;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:480px){.oxps-card{width:116px}.oxdrl-lanes{grid-template-columns:1fr}.oxdrl-lane,.oxdrl[data-active="true"] .oxdrl-lane{min-height:72px}}
+@media (prefers-reduced-motion:reduce){
+  .oxud-box,.oxud-idle,.oxud-file,.oxud-chip,.oxac-chip,.oxps-card,.oxdrl-lane,.oxdrl-item,.oxdrl-chip{animation:none;transition:none}
+  .oxud-wait{animation-duration:1ms}
+}

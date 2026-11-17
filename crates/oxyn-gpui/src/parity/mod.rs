@@ -16,6 +16,7 @@ use crate::hsla;
 mod agentsfid;
 mod answers;
 mod approvals;
+mod attachfid;
 mod autonomyfid;
 mod awayfid;
 mod chatfid;
@@ -24,6 +25,7 @@ mod costfid;
 mod crewfid;
 mod ctxefffid;
 mod ctxmapfid;
+mod ctxvisfid;
 mod cursorsfid;
 mod delegatefid;
 mod difftlfid;
@@ -34,6 +36,7 @@ mod fallbackfid;
 mod fanfid;
 mod fidelity;
 mod fields;
+mod gooeyfid;
 mod graphfid;
 mod handofffid;
 mod home;
@@ -60,6 +63,7 @@ mod runningfid;
 mod schedfid;
 mod seqfid;
 mod stairsfid;
+mod storagefid;
 mod text;
 mod toolmapfid;
 mod tools;
@@ -74,6 +78,7 @@ pub use approvals::{
     AgentApprovalsEl, ApprovalGatesEl, ApprovalPagerEl, ConfirmMorphEl, ConfirmPopoverEl,
     HoldConfirmEl, PermissionRequestEl,
 };
+pub use attachfid::{AttachmentChipsEl, DropLanesEl, PolaroidStackEl, UploadDropzoneEl};
 pub use autonomyfid::AutonomyDialEl;
 pub use awayfid::AwaySummaryEl;
 pub use chatfid::{AgentRunPanelEl, ModelPickerMenuEl};
@@ -82,6 +87,7 @@ pub use costfid::CostWaterfallEl;
 pub use crewfid::AgentCrewEl;
 pub use ctxefffid::ContextEffortMenuEl;
 pub use ctxmapfid::ContextMapEl;
+pub use ctxvisfid::{ContextBarEl, ContextBreakdownEl, ContextStackEl, ContextTideEl};
 pub use cursorsfid::AgentCursorsEl;
 pub use delegatefid::DelegateBoardEl;
 pub use difftlfid::DiffTimelineRunEl;
@@ -95,6 +101,9 @@ pub use fields::{
     AiComposerEl, AvatarUploadEl, ContextFieldEl, ContextGridEl, ElasticSliderEl, FileDropzoneEl,
     GaugeEl, ModelMenuEl, ModelPillEl, MorphSelectEl, NumberFieldEl, Pick, RichTextEl,
     RunControlsEl, ScrubInputEl, SplitBarEl, UsageMeterEl,
+};
+pub use gooeyfid::{
+    GooeyAttachMenuEl, GooeyComposerEl, GooeyModelMenuEl, LiquidDropsEl, LiquidTabsEl,
 };
 pub use graphfid::AgentGraphEl;
 pub use handofffid::AgentHandoffEl;
@@ -133,6 +142,7 @@ pub use runningfid::RunningNowEl;
 pub use schedfid::ScheduledRunsEl;
 pub use seqfid::AgentSequenceEl;
 pub use stairsfid::EffortStairsEl;
+pub use storagefid::{StorageCleanupEl, StorageForecastEl, StorageMeterEl, StorageWaffleEl};
 pub use text::{LoadingStateEl, ShimmerEl, SlotTextEl, ThinkingLoaderEl};
 pub use toolmapfid::ToolAccessMapEl;
 pub use tools::{
