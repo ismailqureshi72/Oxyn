@@ -1,5 +1,5 @@
 /* Screens 1: app frames and AI Chat screens. Frame oxscn-, rail frame oxsrl-, Start oxcst-, Overview oxcov-, Agents oxcag-,
-   Double sidebar oxcdr-, Progress oxcpr-, Run oxcrn-, Folders oxsfo-/oxsfd-/oxsfi-, Integrations oxsin-. Chrome: the neutral --oxth-* greys (rulerfid.css); colour only for
+   Double sidebar oxcdr-, Progress oxcpr-, Run oxcrn-, Folders oxsfo-/oxsfd-/oxsfi-, Integrations oxsin-, Kanban oxskb-, CRM oxscr-, Workflow oxswf-, Settings oxsst-. Chrome: the neutral --oxth-* greys (rulerfid.css); colour only for
    status (semantic tokens), brand marks and the palette swatches that are content. */
 .oxscn{--oxscn-sw:248px;--oxscn-ww:340px;position:relative;box-sizing:border-box;display:flex;width:100%;min-width:0;height:var(--oxscn-h,640px);
   container-type:inline-size;overflow:clip;border-radius:16px;border:1px solid var(--oxth-line);background:var(--oxth-inset);color:var(--oxth-fg);
@@ -608,6 +608,100 @@ li[data-s="active"] .oxcpr-tick{border-color:var(--oxth-fg);border-top-color:tra
 @container oxsfd (max-width: 480px){.oxscr-tb.oxsfd-tb th:nth-child(5),.oxscr-tb.oxsfd-tb td:nth-child(5){display:none}.oxscr-tb.oxsfd-tb th:nth-child(2){width:104px}.oxscr-tb.oxsfd-tb th:nth-child(3){width:84px}.oxscr-tb.oxsfd-tb th,.oxscr-tb.oxsfd-tb td{padding:0 8px}}
 @container (max-width: 640px){
   .oxscr{padding:14px 12px}
+}
+
+/* Workflow builder (oxswf-): palette, canvas with nodes and curves, inspector. Kinds differ by chip shape (greys); colour only for run status. */
+.oxswf{display:flex;flex-direction:column;height:100%;min-height:0;min-width:0}
+.oxswf-bar{display:flex;align-items:center;gap:6px;flex:none;padding:8px 10px;border-bottom:1px solid var(--oxth-line);flex-wrap:wrap}
+.oxswf-z{min-width:58px;justify-content:center;font-variant-numeric:tabular-nums}
+.oxswf-run{margin-left:4px}
+.oxswf-out{flex:none;margin:0;padding:6px 14px;font-size:12.5px;border-bottom:1px solid var(--oxth-line);color:var(--oxth-fg2);background:var(--oxth-inset)}
+.oxswf-out[data-fail="true"]{color:var(--oxth-red)}
+.oxswf-main{position:relative;display:flex;flex:1 1 auto;min-height:0;min-width:0}
+.oxswf-pal{display:flex;flex-direction:column;flex:none;width:206px;min-height:0;overflow:auto;padding:8px 6px 12px;border-right:1px solid var(--oxth-line);background:var(--oxth-card);scrollbar-width:thin}
+.oxswf-pt-n{display:none}
+.oxswf-pal[data-w="false"]{display:none}
+.oxswf-pal-h{display:flex;align-items:center;justify-content:space-between;padding:0 2px 0 8px;font-weight:600}
+.oxswf-pal-hint{margin:4px 8px 2px;font-size:12px;color:var(--oxth-mute)}
+.oxswf-n{font-weight:500;color:var(--oxth-mute);font-variant-numeric:tabular-nums}
+.oxswf-pi{display:flex;align-items:center;gap:8px;width:100%;height:30px;padding:0 8px;border:0;border-radius:8px;background:transparent;color:var(--oxth-fg2);cursor:grab;text-align:left}
+.oxswf-pi:hover{background:var(--oxth-hov);color:var(--oxth-fg)}
+.oxswf-chip{display:inline-block;flex:none;width:10px;height:10px;border:1.5px solid var(--oxth-fg2);border-radius:3px;background:transparent}
+.oxswf-chip[data-kind="trigger"]{border-radius:999px;background:var(--oxth-fg2)}
+.oxswf-chip[data-kind="agent"]{border-radius:999px}
+.oxswf-chip[data-kind="logic"]{transform:rotate(45deg) scale(.85);border-radius:2px}
+.oxswf-chip[data-kind="action"]{background:var(--oxth-fg2)}
+.oxswf-cv{position:relative;flex:1 1 auto;min-width:0;overflow:auto;outline:none;scrollbar-width:thin;
+  background-color:var(--oxth-inset);background-image:radial-gradient(var(--oxth-line2) 1px,transparent 1.2px);background-size:20px 20px}
+.oxswf-wrap{position:relative}
+.oxswf-plane{position:absolute;top:0;left:0;transform-origin:0 0}
+.oxswf-edges{position:absolute;inset:0;overflow:visible}
+.oxswf-edge{cursor:pointer;outline:none}
+.oxswf-hit{fill:none;stroke:transparent;stroke-width:14px}
+.oxswf-line{fill:none;stroke:var(--oxth-line2);stroke-width:2px;transition:stroke .2s}
+.oxswf-edge:hover .oxswf-line{stroke:var(--oxth-mute)}
+.oxswf-edge[data-on="true"] .oxswf-line,.oxswf-edge:focus-visible .oxswf-line{stroke:var(--oxth-fg);stroke-width:2.5px}
+.oxswf-edge[data-lit="true"] .oxswf-line{stroke:var(--oxyn-color-status-success-fg,#1F9D55);stroke-dasharray:6 4;animation:oxswf-flow .6s linear infinite}
+@keyframes oxswf-flow{to{stroke-dashoffset:-10}}
+.oxswf-node{position:absolute;display:flex;flex-direction:column;gap:3px;padding:8px 10px;border-radius:12px;border:1px solid var(--oxth-line);background:var(--oxth-card);
+  box-shadow:0 1px 2px rgba(0,0,0,.06);cursor:grab;touch-action:none;user-select:none;outline:none;transition:border-color .15s,box-shadow .15s}
+.oxswf-node:hover{border-color:var(--oxth-line2)}
+.oxswf-node[data-sel="true"]{border-color:var(--oxth-fg);box-shadow:0 0 0 1px var(--oxth-fg)}
+.oxswf-node:focus-visible{box-shadow:0 0 0 2px var(--oxth-fg)}
+.oxswf-node[data-drag="true"]{cursor:grabbing;box-shadow:var(--oxth-sh);z-index:2}
+.oxswf-node[data-run="running"]{border-color:var(--oxyn-color-status-info-fg,#2B6CB0);box-shadow:0 0 0 3px color-mix(in srgb,var(--oxyn-color-status-info-fg,#2B6CB0) 22%,transparent)}
+.oxswf-node[data-run="done"]{border-color:var(--oxyn-color-status-success-fg,#1F9D55)}
+.oxswf-node[data-run="failed"]{border-color:var(--oxth-red)}
+.oxswf-node[data-run="skipped"],.oxswf-node[data-run="queued"]{opacity:.62}
+.oxswf-nt{display:flex;align-items:center;gap:6px;min-width:0;font-size:11.5px;color:var(--oxth-mute)}
+.oxswf-kl{white-space:nowrap}
+.oxswf-rs{font-size:11px;font-weight:600;white-space:nowrap;color:var(--oxth-mute)}
+.oxswf-rs[data-run="running"]{color:var(--oxyn-color-status-info-fg,#2B6CB0)}
+.oxswf-rs[data-run="done"]{color:var(--oxyn-color-status-success-fg,#1F9D55)}
+.oxswf-rs[data-run="failed"],.oxswf-rs[data-run="unset"]{color:var(--oxth-red)}
+.oxswf-rl-n{display:none}
+.oxswf-node p{line-height:1.3}
+.oxswf-nt{line-height:16px}
+.oxswf-title{margin:0;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.oxswf-sum{margin:0;font-size:12px;color:var(--oxth-fg2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.oxswf-sum[data-unset="true"]{color:var(--oxth-mute);font-style:italic}
+.oxswf-skel{display:grid;grid-template-columns:repeat(4,160px);gap:40px;padding:120px 40px}
+.oxswf-sk{height:70px;border-radius:12px}
+.oxswf-blank{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none}
+.oxswf-blank .oxscn-empty{margin:0 auto 10px;padding:16px;border-radius:14px;background:var(--oxth-card);border:1px solid var(--oxth-line)}
+.oxswf-blank-a{pointer-events:auto}
+.oxswf-insp{display:flex;flex-direction:column;padding:12px 10px 16px}
+.oxswf-kind{display:flex;align-items:center;gap:7px;margin:0 4px;font-size:12px;color:var(--oxth-mute)}
+.oxswf-h2{margin:6px 4px 10px;font-size:16px;font-weight:600;overflow-wrap:anywhere}
+.oxswf-pl{margin:2px 4px 8px}
+.oxswf-st{display:flex;align-items:center;gap:8px;margin:0 4px 10px}
+.oxswf-field{display:flex;flex-direction:column;gap:5px;margin:0 4px 10px}
+.oxswf-fl{font-size:12px;color:var(--oxth-mute)}
+.oxswf-field .oxskb-in[aria-invalid="true"]{border-color:var(--oxth-red)}
+.oxswf-links{display:flex;flex-direction:column;margin:0 4px;padding:0;list-style:none}
+.oxswf-links li{display:flex;align-items:center;gap:6px;min-height:32px;border-bottom:1px solid var(--oxth-line)}
+.oxswf-links .oxscn-ib{width:26px;height:26px}
+.oxswf-con{margin:10px 4px 0}
+.oxswf-log{display:flex;flex-direction:column;margin:0 4px;padding:0;list-style:none}
+.oxswf-log li{display:flex;align-items:center;gap:8px;min-height:30px;border-bottom:1px solid var(--oxth-line)}
+.oxswf-dot{flex:none;width:8px;height:8px;border-radius:999px;background:var(--oxth-line2)}
+.oxswf-log li[data-run="running"] .oxswf-dot{background:var(--oxyn-color-status-info-fg,#2B6CB0)}
+.oxswf-log li[data-run="done"] .oxswf-dot{background:var(--oxyn-color-status-success-fg,#1F9D55)}
+.oxswf-log li[data-run="failed"] .oxswf-dot{background:var(--oxth-red)}
+@container (max-width: 860px){
+  .oxswf-pal{position:absolute;top:0;bottom:0;left:0;z-index:3;width:min(220px,80%);box-shadow:var(--oxth-sh)}
+  .oxswf-pal[data-n="false"]{display:none}
+  .oxswf-pal[data-n="true"]{display:flex}
+  .oxswf-pt-w{display:none}
+  .oxswf-pt-n{display:inline-flex}
+  .oxswf-rl-w{display:none}
+  .oxswf-rl-n{display:inline}
+  .oxswf-bar .oxscn-mb .oxscn-btn span{display:none}
+}
+@container (max-width: 640px){
+  .oxswf-bar{flex-wrap:nowrap;gap:2px;padding:8px 6px}
+  .oxswf-z{min-width:50px;padding:0 6px}
+  .oxswf-run{padding:0 10px}
 }
 
 /* narrow: the work area becomes a sheet, then the sidebar slides in */

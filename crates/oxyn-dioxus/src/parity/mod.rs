@@ -134,7 +134,7 @@ pub use schedfid::ScheduledRuns;
 pub use screensfid::{
     AppFrame, AppShellScreen, ChatAgentsScreen, ChatOverviewScreen, ChatProgressScreen,
     ChatRailScreen, ChatRunScreen, ChatStartScreen, CrmScreen, FoldersScreen, IntegrationsScreen,
-    KanbanScreen, MenuButton, RailFrame, RailShellScreen, ScreenComposer,
+    KanbanScreen, MenuButton, RailFrame, RailShellScreen, ScreenComposer, WorkflowScreen,
 };
 pub use seqfid::AgentSequence;
 pub use stairsfid::EffortStairs;

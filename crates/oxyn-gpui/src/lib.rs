@@ -102,6 +102,7 @@ pub use parity::ToolAccessMapEl;
 pub use parity::TraceWaterfallEl;
 pub use parity::TypeScaleEl;
 pub use parity::UploadDropzoneEl;
+pub use parity::WorkflowEl;
 pub use parity::{
     Act, ActivityFeedEl, AgentApprovalsEl, AgentPlanEl, AgentRunEl, AgentStatusEl, AgentTrailEl,
     AgentTreeEl, ApprovalGatesEl, ApprovalPagerEl, BreakdownEl, ChecklistEl, ConfirmMorphEl,

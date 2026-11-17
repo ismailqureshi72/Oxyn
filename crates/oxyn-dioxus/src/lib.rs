@@ -106,6 +106,7 @@ pub use parity::ToolAccessMap;
 pub use parity::TraceWaterfall;
 pub use parity::TypeScale;
 pub use parity::UploadDropzone;
+pub use parity::WorkflowScreen;
 pub use parity::{
     ActionSwapButton, InViewTitle, LoadingState, SlotReels, Source, StreamingText, SweepText,
     TextMorph, ThinkingLoader, WordReveal,

@@ -432,12 +432,11 @@ Tabs, breadcrumbs, accordions, panes, trees and docks.
 ## Screens (`screens`)
 Whole app frames built from the components (affectUI's screen set by behaviour, in Oxyn's own words and greys). Every screen has Sample / Loading / Empty data, an Inset or Flat frame, and light / dark. Pages live at `/screens/<slug>/` with a full-viewport view.
 
-**Built in #42 (screens 1):** App shell · Inset (`shell-inset`), App shell · Flat (`shell-flat`), Three-pane shell (`shell-three-pane`), AI Chat · Start (`chat-start`), AI Chat · Overview (`chat-overview`), AI Chat · Agents (`chat-agents`), AI Chat · Double sidebar (`chat-double-sidebar`), AI Chat · Progress (`chat-progress`), AI Chat · Run (`chat-run`), Folders · Overview (`folders-overview`), Folders · Detail (`folders-detail`), Integrations (`integrations`), Kanban (`kanban`), CRM (`crm`)
+**Built in #42 (screens 1):** App shell · Inset (`shell-inset`), App shell · Flat (`shell-flat`), Three-pane shell (`shell-three-pane`), AI Chat · Start (`chat-start`), AI Chat · Overview (`chat-overview`), AI Chat · Agents (`chat-agents`), AI Chat · Double sidebar (`chat-double-sidebar`), AI Chat · Progress (`chat-progress`), AI Chat · Run (`chat-run`), Folders · Overview (`folders-overview`), Folders · Detail (`folders-detail`), Integrations (`integrations`), Kanban (`kanban`), CRM (`crm`), Workflow builder (`workflow`)
 
 **New variants to build:**
 - Settings shell (return link, personal and team sections)
-- Workflow builder (node palette, canvas, run)
-- Agent screens (#43), Settings and Onboarding (#44), coding-agent apps (#45)
+- Agent screens (Screens 2), Settings pages and Onboarding, coding-agent apps (later screens PRs)
 
 ## App Shell (`app-shell`)
 Sidebars, rails, side panels and account chrome.
