@@ -2,11 +2,12 @@
 //! states), Inbox (list 320 and one question at a time), Inbox Board, Tasks, Activity and Memory,
 //! each with full-view states (`oxyn_core::parity::agentscr::states_for`) and real interactions.
 //! Styles in `agentscr.css` (`oxa-` shared, `oxat-` Thread, `oxai-` Inbox, `oxab-` Board, `oxak-`
-//! Tasks, `oxac-` Activity, `oxam-` Memory). Chrome stays monochrome; colour is for official marks,
+//! Tasks, `oxay-` Activity, `oxam-` Memory). Chrome stays monochrome; colour is for official marks,
 //! file glyphs, project hues and status.
 
 use std::rc::Rc;
 
+use dioxus::html::geometry::PixelsVector2D;
 use dioxus::prelude::*;
 use oxyn_core::ClockMs;
 use oxyn_core::parity::agentscr::{
@@ -182,7 +183,7 @@ pub fn AgentThreadScreen(
     let start = use_signal(|| now.0);
     let mut said = use_signal(String::new);
     let mut art = use_signal(|| 0usize);
-    let mut end_el = use_signal(|| None::<Rc<MountedData>>);
+    let mut log_el = use_signal(|| None::<Rc<MountedData>>);
     let at = all_tasks();
     let (running, need) = thread_counts(&at);
     let el = since(now, start());
@@ -215,9 +216,11 @@ pub fn AgentThreadScreen(
         stream.set(Some((reply(&t), now.0)));
     };
     let scroll_end = move || {
-        if let Some(m) = end_el.peek().clone() {
+        if let Some(m) = log_el.peek().clone() {
             spawn(async move {
-                let _ = m.scroll_to(ScrollBehavior::Smooth).await;
+                let _ = m
+                    .scroll(PixelsVector2D::new(0.0, 1.0e6), ScrollBehavior::Smooth)
+                    .await;
             });
         }
     };
@@ -269,7 +272,7 @@ pub fn AgentThreadScreen(
                     }
                 }
                 div { class: "oxat-log", role: "log", "aria-label": "Thread with the orchestrator", tabindex: "0",
-                    onmounted: move |e: MountedEvent| { if sk != "scrolled" { let d = e.data(); spawn(async move { let _ = d.scroll_to(ScrollBehavior::Instant).await; }); } },
+                    onmounted: move |e: MountedEvent| { let d = e.data(); log_el.set(Some(d.clone())); if sk != "scrolled" { spawn(async move { let _ = d.scroll(PixelsVector2D::new(0.0, 1.0e6), ScrollBehavior::Instant).await; }); } },
                     if loading { div { class: "oxat-col", {skel(8)} } }
                     else if list.is_empty() && shown.is_none() {
                         div { class: "oxat-col oxat-start",
@@ -364,7 +367,6 @@ pub fn AgentThreadScreen(
                                     }
                                 }
                             }
-                            div { class: "oxat-end", onmounted: move |e: MountedEvent| end_el.set(Some(e.data())) }
                         }
                     }
                 }
@@ -486,6 +488,7 @@ pub fn InboxScreen(
     let tab = use_signal(|| "open");
     let mut other = use_signal(String::new);
     let mut glide = use_signal(move || sk == "answered");
+    let mut refocus = use_signal(|| false);
     let mut toast = use_signal(move || {
         if sk == "answered" {
             Some((1u32, "Kafka".to_string()))
@@ -503,6 +506,7 @@ pub fn InboxScreen(
         if !hold {
             sel.set(nx);
             glide.set(true);
+            refocus.set(true);
         }
         pick.set(0);
         other.set(String::new());
@@ -527,6 +531,7 @@ pub fn InboxScreen(
         drop(v);
         sel.set(nx);
         glide.set(true);
+        refocus.set(true);
         said.set(format!("{} moved to the end", q.from));
     };
     let mut undo = move |id: u32| {
@@ -612,7 +617,7 @@ pub fn InboxScreen(
                             rsx! {
                                 div { key: "{q.id}", class: "oxai-qw", "data-glide": "{glide}", tabindex: "0", role: "group", "aria-label": "{q.title}",
                                     "aria-keyshortcuts": "1 2 3 Y N L Enter",
-                                    onmounted: focus_on,
+                                    onmounted: move |e: MountedEvent| if *refocus.peek() { refocus.set(false); focus_on(e) },
                                     onkeydown: move |e: KeyboardEvent| {
                                         if let Key::Character(c) = e.key() {
                                             if c == "l" || c == "L" { e.prevent_default(); later(q3.clone()); return; }
@@ -1024,7 +1029,7 @@ pub fn TasksScreen(
     };
     rsx! {
         AppFrame { layout, state: st.key().to_string(), height, threads: thr, active, side: "fieldwork", nav_on: "tasks", title: "Tasks",
-            badge: rsx! { span { class: "oxa-n", "{na + nd}" } {tabs("Show", vec![("active", "Active".to_string(), None), ("done", "Done".to_string(), if nd > 0 { Some(nd) } else { None })], tab)} },
+            badge: rsx! { span { class: "oxa-n", "{na}" } {tabs("Show", vec![("active", "Active".to_string(), None), ("done", "Done".to_string(), if nd > 0 { Some(nd) } else { None })], tab)} },
             actions: rsx! {
                 div { class: "oxv-pop-w",
                     button { r#type: "button", class: "oxscn-btn", "aria-haspopup": "dialog", "aria-expanded": "{adding}", onclick: move |_| adding.toggle(), {nico("plus")} span { "New task" } }
@@ -1153,9 +1158,9 @@ pub fn ActivityScreen(
             if let Some(a) = cur.clone() {
                 {wtab("doc", a.text.to_string(), sel)}
                 div { class: "oxa-wbody",
-                    div { class: "oxac-hd",
-                        span { class: "oxac-logo oxac-logo-l", BrandIcon { name: a.app.to_string(), size: 22.0, coloured: true, fallback: true } }
-                        span { class: "oxak-rt", b { class: "oxac-ht", "{a.text}" } span { class: "oxv-q oxv-ell", "{a.app_name} · {PERSON_EMAIL}" } }
+                    div { class: "oxay-hd",
+                        span { class: "oxay-logo oxay-logo-l", BrandIcon { name: a.app.to_string(), size: 22.0, coloured: true, fallback: true } }
+                        span { class: "oxak-rt", b { class: "oxay-ht", "{a.text}" } span { class: "oxv-q oxv-ell", "{a.app_name} · {PERSON_EMAIL}" } }
                     }
                     div { class: "oxa-kvs",
                         {kv("When", rsx! { span { if a.day == 0 { "Today {a.at}" } else { "Yesterday {a.at}" } } span { class: "oxv-q", "· {age(a.mins)} ago" } })}
@@ -1165,13 +1170,13 @@ pub fn ActivityScreen(
                     h3 { class: "oxa-h3", "What happened" }
                     div { class: "oxa-card",
                         for (k, v) in a.what.iter().copied() { div { key: "{k}", class: "oxa-kv", span { class: "oxa-k", "{k}" } span { class: "oxa-v oxv-ell", "{v}" } } }
-                        if !a.body.is_empty() { p { class: "oxac-body", "{a.body}" } }
+                        if !a.body.is_empty() { p { class: "oxay-body", "{a.body}" } }
                     }
                     h3 { class: "oxa-h3", "Why it could" }
                     div { class: "oxa-card",
-                        p { class: "oxac-why", {dot(if a.mode == Mode::Approved { "warn" } else { "run" })} b { "{a.mode.label()}" } }
-                        p { class: "oxa-mute oxac-wl", if a.mode == Mode::Approved { "You approved it {age(a.mins + 2)} ago." } else { "Your permissions let it do this without asking." } }
-                        div { class: "oxac-rule", {nico("shield")} span { class: "oxv-ell", "{a.rule}" } span { class: "oxscn-grow" }
+                        p { class: "oxay-why", {dot(if a.mode == Mode::Approved { "warn" } else { "run" })} b { "{a.mode.label()}" } }
+                        p { class: "oxa-mute oxay-wl", if a.mode == Mode::Approved { "You approved it {age(a.mins + 2)} ago." } else { "Your permissions let it do this without asking." } }
+                        div { class: "oxay-rule", {nico("shield")} span { class: "oxv-ell", "{a.rule}" } span { class: "oxscn-grow" }
                             button { r#type: "button", class: "oxv-link", onclick: move |_| said.set("Opened Permissions".into()), "Permissions" } }
                     }
                     h3 { class: "oxa-h3", "Taking it back" }
@@ -1180,8 +1185,8 @@ pub fn ActivityScreen(
                         let words = if a.undone { "Already undone".to_string() } else if a.undo_min == 0 { "This one is final".to_string() } else if clock { undo_clock(left) } else { undo_words(left) };
                         let a2 = a.clone();
                         rsx! {
-                            div { class: "oxa-card oxac-back",
-                                span { class: "oxak-rt", b { class: "oxac-bt", "{a.undo_does}" } span { class: "oxv-q", role: "timer", "aria-live": "off", "{words}" } }
+                            div { class: "oxa-card oxay-back",
+                                span { class: "oxak-rt", b { class: "oxay-bt", "{a.undo_does}" } span { class: "oxv-q", role: "timer", "aria-live": "off", "{words}" } }
                                 button { r#type: "button", class: "oxv-pri", disabled: left == 0, onclick: move |_| undo(a2.clone()), {nico("undo")} span { "Undo" } }
                             }
                         }
@@ -1200,9 +1205,9 @@ pub fn ActivityScreen(
     rsx! {
         AppFrame { layout, state: st.key().to_string(), height, threads: thr, active, side: "fieldwork", nav_on: "activity", title: "Activity",
             badge: rsx! { {tabs("Filter", tab_items, tab)} },
-            actions: rsx! { {find("Search activity", "Search activity", q, "oxac-q")} },
+            actions: rsx! { {find("Search activity", "Search activity", q, "oxay-q")} },
             work, work_label: "Step", work_w: 388,
-            div { class: "oxac",
+            div { class: "oxay",
                 if loading { {sk_rows(9)} }
                 else if all.is_empty() {
                     {none("pulse", "Nothing done yet", "Every email, refund or post an agent makes shows here, with a way to take it back.")}
@@ -1210,9 +1215,9 @@ pub fn ActivityScreen(
                     p { class: "oxa-mute", role: "status", "Nothing matches." }
                 } else {
                     for (day, items) in view {
-                        section { key: "{day}", class: "oxac-day", "aria-label": "{day}",
-                            h3 { class: "oxac-dh", "{day}" span { class: "oxa-n", "{items.len()}" } }
-                            ul { class: "oxac-ul",
+                        section { key: "{day}", class: "oxay-day", "aria-label": "{day}",
+                            h3 { class: "oxay-dh", "{day}" span { class: "oxa-n", "{items.len()}" } }
+                            ul { class: "oxay-ul",
                                 for a in items {
                                     {
                                         let id = a.id;
@@ -1220,20 +1225,20 @@ pub fn ActivityScreen(
                                         let left = undo_left(&a, el_s);
                                         let a2 = a.clone();
                                         rsx! {
-                                            li { key: "{id}", class: "oxac-row", "data-on": "{on}", "data-undone": "{a.undone}",
-                                                button { r#type: "button", class: "oxac-sel", "aria-current": if on { "true" } else { "false" }, onclick: move |_| sel.set(Some(id)),
-                                                    span { class: "oxac-at", "{a.at}" }
-                                                    span { class: "oxac-logo", BrandIcon { name: a.app.to_string(), size: 16.0, coloured: true, fallback: true } }
+                                            li { key: "{id}", class: "oxay-row", "data-on": "{on}", "data-undone": "{a.undone}",
+                                                button { r#type: "button", class: "oxay-sel", "aria-current": if on { "true" } else { "false" }, onclick: move |_| sel.set(Some(id)),
+                                                    span { class: "oxay-at", "{a.at}" }
+                                                    span { class: "oxay-logo", BrandIcon { name: a.app.to_string(), size: 16.0, coloured: true, fallback: true } }
                                                     span { class: "oxak-rt",
-                                                        span { class: "oxv-ell oxac-t", "{a.text}" }
-                                                        span { class: "oxac-sub", {dot(if a.mode == Mode::Approved { "warn" } else { "run" })} span { class: "oxv-ell", "{a.mode.label()}" } span { class: "oxv-q oxv-ell", "· {a.task}" } }
+                                                        span { class: "oxv-ell oxay-t", "{a.text}" }
+                                                        span { class: "oxay-sub", {dot(if a.mode == Mode::Approved { "warn" } else { "run" })} span { class: "oxv-ell", "{a.mode.label()}" } span { class: "oxv-q oxv-ell", "· {a.task}" } }
                                                     }
                                                     if cost { span { class: "oxak-c", "{eur(a.cents)}" } }
-                                                    if a.undone { span { class: "oxac-tag", "Undone" } }
-                                                    else if left == 0 { span { class: "oxac-final", {nico("lock")} "Final" } }
+                                                    if a.undone { span { class: "oxay-tag", "Undone" } }
+                                                    else if left == 0 { span { class: "oxay-final", {nico("lock")} "Final" } }
                                                 }
                                                 if !a.undone && left > 0 {
-                                                    button { r#type: "button", class: "oxscn-btn oxac-undo", "aria-label": "Undo: {a.text}", onclick: move |_| undo(a2.clone()), {nico("undo")} span { "Undo" } }
+                                                    button { r#type: "button", class: "oxscn-btn oxay-undo", "aria-label": "Undo: {a.text}", onclick: move |_| undo(a2.clone()), {nico("undo")} span { "Undo" } }
                                                 }
                                             }
                                         }
@@ -1351,7 +1356,7 @@ pub fn MemoryScreen(
                     div { class: "oxa-card",
                         p { class: "oxa-mute", "Should the weekly note go out now?" }
                         p { class: "oxam-quote", "Not after three on a Friday. Monday at 9:00 instead." }
-                        div { class: "oxac-rule", {nico("inbox")} span { class: "oxv-q oxv-ell", "You, in the Inbox · 16 days ago" } span { class: "oxscn-grow" }
+                        div { class: "oxay-rule", {nico("inbox")} span { class: "oxv-q oxv-ell", "You, in the Inbox · 16 days ago" } span { class: "oxscn-grow" }
                             button { r#type: "button", class: "oxv-link", onclick: move |_| said.set("Opened the source".into()), "Open" } }
                     }
                     h3 { class: "oxa-h3", "Where it was used " span { class: "oxv-q", "2" } }
