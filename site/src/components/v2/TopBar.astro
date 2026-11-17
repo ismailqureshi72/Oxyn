@@ -1,5 +1,7 @@
 ---
-// The ~44px sticky top bar of the landing page, pricing and the docs.
+// The sticky top bar of the landing page, pricing and the docs. Three zones: the Oxyn mark on the
+// left, the site links centred in a floating pill group, actions on the right. On the white pages it
+// condenses into a floating glass bar once the page scrolls (site.js sets data-condensed).
 import ThemeRadios from './ThemeRadios.astro';
 import GitHubStars from './GitHubStars.astro';
 import { icon } from './icons';
@@ -13,12 +15,13 @@ const lib = [
   ['Illustrations', '/illustrations/', 'soon', 'Spot art for empty states'],
   ['Motion', '/motion/', 'tokens', 'Durations, easings and springs'],
 ];
+const on = (p: string) => (current.startsWith(p) ? 'page' : undefined);
 ---
-<div class:list={['tb-in', { sl: inStarlight }]}>
-  <a class="wm" href="/" aria-label="Oxyn home">oxyn</a>
-  <nav class="tb-links" aria-label="Site">
+<div class:list={['tb-in', 'x-nav', { sl: inStarlight }]} data-ovl>
+  <a class="wm x-nav-brand" href="/" aria-label="Oxyn home"><span class="x-nav-mark" aria-hidden="true"></span><span>oxyn</span></a>
+  <nav class="tb-links x-nav-pill" aria-label="Site">
     <div class="tb-dd">
-      <button type="button" class="tb-ddbtn" aria-expanded="false" aria-haspopup="true" aria-controls="tb-lib" data-dd>Library <Fragment set:html={icon.down} /></button>
+      <button type="button" class="tb-ddbtn x-nav-a" aria-expanded="false" aria-haspopup="true" aria-controls="tb-lib" data-dd>Library <Fragment set:html={icon.down} /></button>
       <div class="tb-menu" id="tb-lib" role="group" aria-label="Library">
         <div class="tb-menu-col">
           {lib.map(([l, h, n, d]) => (
@@ -31,21 +34,30 @@ const lib = [
         </div>
       </div>
     </div>
-    <a href="/docs/" aria-current={current.startsWith('/docs') ? 'page' : undefined}>Docs</a>
-    <a href="/pricing/" aria-current={current.startsWith('/pricing') ? 'page' : undefined}>Pricing</a>
+    <a class="x-nav-a" href="/screens/" aria-current={on('/screens')}>Screens</a>
+    <a class="x-nav-a" href="/docs/" aria-current={on('/docs')}>Docs</a>
+    <a class="x-nav-a" href="/pricing/" aria-current={on('/pricing')}>Pricing</a>
   </nav>
-  <div class="tb-r">
+  <div class="tb-r x-nav-act">
+    <button type="button" class="x-nav-search" data-open-search aria-label="Search"><Fragment set:html={icon.search} /><span class="x-nav-k" data-mod-k>⌘K</span></button>
     <ThemeRadios />
     <GitHubStars />
-    <a class="login" href="/pricing/#account" title="Accounts are not needed yet">Log In</a>
-    <a class="x-pill pill-black" href="/components/">Browse library</a>
-    <button class="iconbtn tb-menubtn" type="button" data-menu-toggle aria-expanded="false" aria-controls="mobilemenu" aria-label="Menu"><Fragment set:html={icon.menu} /></button>
+    <a class="x-pill pill-black x-nav-go" href="/components/">Browse library</a>
+    <button class="iconbtn tb-menubtn x-nav-menu" type="button" data-menu-toggle aria-expanded="false" aria-controls="mobilemenu" aria-label="Menu"><span class="x-nav-burger" aria-hidden="true"><i></i><i></i></span></button>
   </div>
 </div>
-<nav class="mobilemenu" id="mobilemenu" aria-label="Site menu" data-pagefind-ignore>
-  {lib.map(([l, h]) => <a href={h}>{l}</a>)}
-  <a href="/docs/">Docs</a>
-  <a href="/guides/">Guides</a>
-  <a href="/pricing/">Pricing</a>
-  <button type="button" class="mm-search" data-open-search>Search…</button>
+<nav class="mobilemenu x-mm" id="mobilemenu" aria-label="Site menu" data-pagefind-ignore>
+  <div class="x-mm-grid">
+    {lib.map(([l, h, n]) => <a href={h}><span>{l}</span><small>{n}</small></a>)}
+  </div>
+  <div class="x-mm-list">
+    <a href="/docs/">Docs</a>
+    <a href="/guides/">Guides</a>
+    <a href="/pricing/">Pricing</a>
+    <button type="button" class="mm-search" data-open-search>Search…</button>
+  </div>
+  <div class="x-mm-foot">
+    <ThemeRadios />
+    <a class="x-pill pill-black" href="/components/">Browse library</a>
+  </div>
 </nav>
