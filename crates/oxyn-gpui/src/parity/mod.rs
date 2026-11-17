@@ -20,6 +20,7 @@ mod attachfid;
 mod autonomyfid;
 mod awayfid;
 mod chatfid;
+mod chatscr;
 mod collabfid;
 mod costfid;
 mod crewfid;
@@ -85,6 +86,9 @@ pub use attachfid::{AttachmentChipsEl, DropLanesEl, PolaroidStackEl, UploadDropz
 pub use autonomyfid::AutonomyDialEl;
 pub use awayfid::AwaySummaryEl;
 pub use chatfid::{AgentRunPanelEl, ModelPickerMenuEl};
+pub use chatscr::{
+    ChatAgentsEl, ChatOverviewEl, ChatProgressEl, ChatRailEl, ChatRunEl, ChatStartEl,
+};
 pub use collabfid::CollabStreamEl;
 pub use costfid::CostWaterfallEl;
 pub use crewfid::AgentCrewEl;
@@ -145,8 +149,7 @@ pub use runningfid::RunningNowEl;
 pub use schedfid::ScheduledRunsEl;
 pub use screens2fid::{AgentThreadEl, OrchestrationEl};
 pub use screensfid::{
-    AccountMenuEl, ChatAgentsEl, ChatOverviewEl, ChatProgressEl, ChatRailEl, ChatRunEl,
-    ChatStartEl, CrmEl, FolderDetailEl, FoldersEl, IntegrationsEl, KanbanEl, ScreenRailEl,
+    AccountMenuEl, CrmEl, FolderDetailEl, FoldersEl, IntegrationsEl, KanbanEl, ScreenRailEl,
     ScreenShellEl, ScreenStageEl, SettingsEl, WorkflowEl,
 };
 pub use seqfid::AgentSequenceEl;
