@@ -60,6 +60,7 @@ pub use parity::ContextBreakdown;
 pub use parity::ContextEffortMenu;
 pub use parity::ContextStack;
 pub use parity::ContextTide;
+pub use parity::CrmScreen;
 pub use parity::DiffTimelineRun;
 pub use parity::DisplayComfort;
 pub use parity::DropLanes;

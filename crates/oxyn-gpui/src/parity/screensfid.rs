@@ -1,21 +1,22 @@
 //! Screens 1 for GPUI over `oxyn_core::parity::screensfid`: static snapshots of the app frames
 //! ([`ScreenShellEl`], [`ScreenRailEl`]) and the AI Chat screens ([`ChatStartEl`], [`ChatOverviewEl`],
 //! [`ChatAgentsEl`], [`ChatRailEl`], [`ChatProgressEl`], [`ChatRunEl`]) Folders ([`FoldersEl`],
-//! [`FolderDetailEl`]), [`IntegrationsEl`] and [`KanbanEl`]. Each takes the data state (Sample, Loading, Empty), the frame (Inset or
+//! [`FolderDetailEl`]), [`IntegrationsEl`], [`KanbanEl`] and [`CrmEl`]. Each takes the data state (Sample, Loading, Empty), the frame (Inset or
 //! Flat) and the theme; the host owns any live state.
 //! Rows a host can route carry `Act` ids: `nav-<key>`, `thread-<id>`, `folder-<id>`,
-//! `app-<brand id>`, `kb-<column>`.
+//! `app-<brand id>`, `kb-<column>`, `crm-<view>`.
 
 use gpui::{
     App, Div, FontWeight, IntoElement, ParentElement, RenderOnce, SharedString, Styled, Window,
     div, prelude::*, px,
 };
 use oxyn_core::parity::screensfid::{
-    APP_TABS, KB_COLS, KB_PRI, PERSON, PERSON_INI, ScreenState, ShellLayout, StepState, WORKSPACE,
-    ago, angles, app_view, apps, board, col_label, column, connected_count, crew, due_words,
-    folder_files, folder_view, folders, heat, member_name, over_limit, progress_steps, projects,
-    run_plan, sheet, size_label, split_pinned, starters, step_state, synced_words, task_key,
-    threads, total_size,
+    APP_TABS, CRM_VIEWS, DealSort, KB_COLS, KB_PRI, PERSON, PERSON_INI, ScreenState, ShellLayout,
+    StepState, WORKSPACE, ago, angles, app_view, apps, board, close_words, col_label, column,
+    connected_count, crew, deal_view, deals, due_words, folder_files, folder_view, folders, heat,
+    member_name, over_limit, progress_steps, projects, run_plan, sheet, size_label, split_pinned,
+    stage_label, stage_totals, starters, step_state, synced_words, task_key, threads, total_size,
+    usd, view_count,
 };
 use oxyn_tokens::Theme;
 
@@ -1466,6 +1467,138 @@ impl RenderOnce for KanbanEl {
             self.layout,
             sidebar(&p, self.state, &self.act, false),
             page(&p, "Autumn launch / Board", body),
+            work,
+        )
+    }
+}
+
+screen_el!(
+    /// CRM: the saved views as tabs with counts, the deals table (company and contact, stage,
+    /// value, owner, close) and the open deal beside it. Views a host can route carry
+    /// `crm-<view key>`.
+    CrmEl
+);
+
+impl RenderOnce for CrmEl {
+    fn render(self, _: &mut Window, _: &mut App) -> impl IntoElement {
+        let p = th_pal(self.theme);
+        let list = deals(self.state == ScreenState::Sample);
+        let mut body = div().flex().flex_col().gap(px(12.)).p(px(22.)).child(
+            div()
+                .text_size(px(22.))
+                .font_weight(FontWeight::SEMIBOLD)
+                .child("Deals"),
+        );
+        let mut tabs = div().flex().gap(px(4.));
+        for (k, l) in CRM_VIEWS {
+            let id: &'static str = match k {
+                "mine" => "crm-mine",
+                "soon" => "crm-soon",
+                "won" => "crm-won",
+                _ => "crm-all",
+            };
+            let fi = fire(&self.act, id);
+            let on = k == "all";
+            tabs = tabs.child(
+                div()
+                    .id(SharedString::from(id))
+                    .px(px(10.))
+                    .py(px(6.))
+                    .border_b_2()
+                    .border_color(if on { p.fg } else { p.line })
+                    .text_color(if on { p.fg } else { p.mute })
+                    .child(format!("{l} {}", view_count(&list, k)))
+                    .on_click(move |_, w, cx| fi(w, cx)),
+            );
+        }
+        body = body.child(tabs);
+        if self.state == ScreenState::Loading {
+            body = body.child(skel(&p, 6));
+        } else if list.is_empty() {
+            body = body.child(div().text_color(p.mute).child("No deals yet"));
+        } else {
+            let mut tb = div()
+                .flex()
+                .flex_col()
+                .rounded(px(12.))
+                .border_1()
+                .border_color(p.line)
+                .bg(p.card);
+            let cell = |t: String, w: f32, c| div().w(px(w)).text_color(c).child(t);
+            tb = tb.child(
+                div()
+                    .flex()
+                    .px(px(10.))
+                    .py(px(8.))
+                    .text_color(p.mute)
+                    .child(div().flex_1().child("Company"))
+                    .child(cell("Stage".into(), 100., p.mute))
+                    .child(cell("Value".into(), 90., p.mute))
+                    .child(cell("Owner".into(), 56., p.mute))
+                    .child(cell("Close".into(), 110., p.mute)),
+            );
+            for d in deal_view(&list, "all", "", DealSort::Value, false) {
+                tb = tb.child(
+                    div()
+                        .flex()
+                        .items_center()
+                        .px(px(10.))
+                        .py(px(8.))
+                        .border_t_1()
+                        .border_color(p.line)
+                        .bg(if d.id == 1 { p.sel } else { p.card })
+                        .child(
+                            div()
+                                .flex_1()
+                                .flex()
+                                .flex_col()
+                                .child(div().child(d.company.clone()))
+                                .child(div().text_color(p.mute).child(d.contact)),
+                        )
+                        .child(cell(stage_label(d.stage).into(), 100., p.fg))
+                        .child(cell(usd(d.value), 90., p.fg))
+                        .child(cell(d.owner.to_string(), 56., p.fg2))
+                        .child(cell(close_words(d.close, d.stage), 110., p.mute)),
+                );
+            }
+            body = body.child(tb);
+        }
+        let work = if self.state == ScreenState::Sample {
+            list.iter().find(|d| d.id == 1).cloned().map(|d| {
+                let mut w = div()
+                    .flex()
+                    .flex_col()
+                    .gap(px(4.))
+                    .child(
+                        div()
+                            .font_weight(FontWeight::SEMIBOLD)
+                            .child(d.company.clone()),
+                    )
+                    .child(row(&p, "Contact".into(), d.contact.into(), false))
+                    .child(row(&p, "Stage".into(), stage_label(d.stage).into(), false))
+                    .child(row(&p, "Value".into(), usd(d.value), false))
+                    .child(row(&p, "Owner".into(), member_name(d.owner).into(), false))
+                    .child(gh(&p, "Notes"))
+                    .child(div().text_color(p.fg2).child(d.note))
+                    .child(gh(&p, "Pipeline"));
+                for (k, v, n) in stage_totals(&list) {
+                    w = w.child(row(
+                        &p,
+                        stage_label(k).into(),
+                        format!("{} · {n}", usd(v)),
+                        false,
+                    ));
+                }
+                w
+            })
+        } else {
+            None
+        };
+        frame(
+            self.theme,
+            self.layout,
+            sidebar(&p, self.state, &self.act, false),
+            page(&p, "Sales / Deals", body),
             work,
         )
     }

@@ -6,21 +6,23 @@
 //! [`AppShellScreen`], [`RailShellScreen`] and the AI Chat screens [`ChatStartScreen`],
 //! [`ChatOverviewScreen`], [`ChatAgentsScreen`], [`ChatRailScreen`], [`ChatProgressScreen`] and
 //! [`ChatRunScreen`], the Folders screens ([`FoldersScreen`], Overview and Detail) and
-//! [`IntegrationsScreen`] and [`KanbanScreen`], each with
+//! [`IntegrationsScreen`], [`KanbanScreen`] and [`CrmScreen`], each with
 //! Sample, Loading and Empty data. Models: `oxyn_core::parity::screensfid`. Styles:
 //! `screensfid.css` (`oxscn-` frame, `oxsrl-` rail frame, `oxcst-` start, `oxcov-` overview,
 //! `oxcag-` agents, `oxcdr-` double sidebar, `oxcpr-` progress, `oxcrn-` run, `oxsfo-` / `oxsfd-` /
-//! `oxsfi-` folders, `oxsin-` integrations, `oxskb-` kanban). Every person, workspace and line of copy is fictional and our own.
+//! `oxsfi-` folders, `oxsin-` integrations, `oxskb-` kanban, `oxscr-` CRM). Every person, workspace and line of copy is fictional and our own.
 
 use dioxus::prelude::*;
 use oxyn_core::ClockMs;
 use oxyn_core::parity::screensfid::{
-    APP_TABS, AppInfo, FileRow, FileSort, Folder, KB_COLS, KB_PRI, PERSON, PERSON_INI, Review,
-    ScreenState, ShellLayout, Task, Thread, WORKSPACE, add_task, ago, app_view, apps, board,
-    can_send, chat_title, col_label, column, connected_count, due_words, folder_activity,
-    folder_files, folder_view, folders, invite_initials, member_name, move_task, next_col,
-    open_thread, over_limit, pct_done, projects, setup_steps, size_label, sort_files, split_pinned,
-    synced_words, task_key, threads, toggle_pin, total_size, untitled,
+    APP_TABS, AppInfo, CRM_STAGES, CRM_VIEWS, Deal, DealSort, FileRow, FileSort, Folder, KB_COLS,
+    KB_PRI, PERSON, PERSON_INI, Review, ScreenState, ShellLayout, Task, Thread, WORKSPACE,
+    add_deal, add_task, ago, app_view, apps, board, can_send, chat_title, close_words, col_label,
+    column, connected_count, deal_view, deals, due_words, folder_activity, folder_files,
+    folder_view, folders, invite_initials, member_name, move_task, next_col, open_thread,
+    over_limit, parse_money, pct_done, pipeline, projects, setup_steps, size_label, sort_files,
+    split_pinned, stage_key, stage_label, stage_totals, synced_words, task_key, threads,
+    toggle_pin, total_size, untitled, usd, view_count,
 };
 
 use super::efflistfid::{check_glyph, chevron};
@@ -2880,6 +2882,321 @@ fn KanbanCardDetail(task: Task, list: Signal<Vec<Task>>, on_gone: EventHandler<S
             div { class: "oxsin-acts",
                 button { r#type: "button", class: "oxscn-btn oxsfd-del",
                     onclick: move |_| { list.write().retain(|t| t.id != id); on_gone.call(task_key(id)); }, "Delete card" }
+            }
+        }
+    }
+}
+
+// ────────────────────────────────────────────────────────────────────── CRM ──
+
+/// CRM: saved views as tabs with counts, find, a deals table you sort by column and edit in
+/// place (company and value fields, a stage menu), New deal, and the open deal beside the table.
+#[component]
+pub fn CrmScreen(
+    /// `inset` or `flat`.
+    #[props(default = "inset".to_string())]
+    layout: String,
+    /// `sample`, `loading` or `empty`.
+    #[props(default = "sample".to_string())]
+    state: String,
+    /// Height px.
+    #[props(default = 640)]
+    height: u32,
+) -> Element {
+    let st = ScreenState::from_key(&state);
+    let thr = use_threads(st);
+    let active = use_signal(|| 0u32);
+    let mut list = use_signal(move || deals(st == ScreenState::Sample));
+    let mut view = use_signal(|| "all");
+    let mut q = use_signal(String::new);
+    let mut sort = use_signal(|| (DealSort::Value, false));
+    let mut pick = use_signal(move || {
+        if st == ScreenState::Sample {
+            Some(1u32)
+        } else {
+            None
+        }
+    });
+    // The cell being edited: deal id and field (`company` or `value`), with its draft.
+    let mut edit = use_signal(|| None::<(u32, &'static str)>);
+    let mut draft = use_signal(String::new);
+    let mut bad = use_signal(|| false);
+    let mut said = use_signal(String::new);
+    let all = list();
+    let loading = st == ScreenState::Loading;
+    let (by, rev) = sort();
+    let cur = view();
+    let qs = q();
+    let rows = deal_view(&all, cur, &qs, by, rev);
+    let shown_total: u32 = rows.iter().map(|d| d.value).sum();
+    let lead = if loading {
+        "Loading deals…".to_string()
+    } else if all.is_empty() {
+        "No deals yet".to_string()
+    } else {
+        format!(
+            "{} deals · {} open pipeline",
+            all.len(),
+            usd(pipeline(&all))
+        )
+    };
+    let mut commit = move || {
+        let Some((id, field)) = *edit.peek() else {
+            return;
+        };
+        let v = draft.peek().trim().to_string();
+        if field == "value" {
+            match parse_money(&v) {
+                Some(n) => {
+                    if let Some(d) = list.write().iter_mut().find(|d| d.id == id) {
+                        d.value = n;
+                    }
+                    said.set(format!("Value set to {}", usd(n)));
+                }
+                None => {
+                    bad.set(true);
+                    said.set("Type an amount like 12,400 or 12k".to_string());
+                    return;
+                }
+            }
+        } else if !v.is_empty()
+            && let Some(d) = list.write().iter_mut().find(|d| d.id == id)
+        {
+            d.company = v;
+        }
+        bad.set(false);
+        edit.set(None);
+    };
+    let mut start = move |id: u32, field: &'static str, now: String| {
+        draft.set(now);
+        bad.set(false);
+        edit.set(Some((id, field)));
+    };
+    let th = move |k: DealSort, l: &'static str, num: bool| {
+        let on = by == k;
+        // Value starts largest first.
+        let desc = (k == DealSort::Value) != rev;
+        let aria = if !on {
+            "none"
+        } else if desc {
+            "descending"
+        } else {
+            "ascending"
+        };
+        rsx! {
+            th { scope: "col", class: if num { "oxscr-num" } else { "" }, "aria-sort": "{aria}",
+                button { r#type: "button", class: "oxsfd-sort", "data-on": "{on}", onclick: move |_| { let (b, r) = sort(); sort.set((k, if b == k { !r } else { false })); },
+                    "{l}" if on { span { class: "oxsfd-arr", "aria-hidden": "true", if desc { "↓" } else { "↑" } } } }
+            }
+        }
+    };
+    let picked = pick().and_then(|id| all.iter().find(|d| d.id == id).cloned());
+    let work = picked.map(|d| {
+        rsx! { CrmDealDetail { key: "{d.id}", deal: d, list, on_gone: move |n: String| { pick.set(None); said.set(format!("{n} deleted")); } } }
+    });
+    let views_k: Vec<&'static str> = CRM_VIEWS.iter().map(|(k, _)| *k).collect();
+    let stages: Vec<MenuItem> = CRM_STAGES.iter().map(|(k, l)| (*k, *l, "")).collect();
+    rsx! {
+        AppFrame { layout, state: state.clone(), height, threads: thr, active, title: "Sales / Deals", work, work_label: "Deal",
+            div { class: "oxscr",
+                div { class: "oxsfo-head",
+                    div { class: "oxsfo-ht",
+                        h1 { class: "oxscn-h1", "Deals" }
+                        p { class: "oxscn-row-a", "{lead}" }
+                    }
+                    if !loading {
+                        button { r#type: "button", class: "oxscn-primary oxscr-new",
+                            onclick: move |_| {
+                                let n = list.peek().len() + 1;
+                                if let Some(id) = add_deal(&mut list.write(), &format!("New company {n}"), PERSON_INI) {
+                                    view.set("all");
+                                    q.set(String::new());
+                                    pick.set(Some(id));
+                                    start(id, "company", String::new());
+                                    said.set("New deal added as a lead".to_string());
+                                }
+                            },
+                            {ico("plus")} "New deal" }
+                    }
+                }
+                div { class: "oxsin-tabs oxscr-tabs", role: "tablist", "aria-label": "Views",
+                    onkeydown: move |e: KeyboardEvent| {
+                        let d: i32 = match e.key() { Key::ArrowRight => 1, Key::ArrowLeft => -1, _ => 0 };
+                        if d != 0 {
+                            e.prevent_default();
+                            let i = views_k.iter().position(|k| *k == view()).unwrap_or(0) as i32;
+                            let n = (i + d).rem_euclid(views_k.len() as i32) as usize;
+                            view.set(views_k[n]);
+                        }
+                    },
+                    for (k, l) in CRM_VIEWS {
+                        {
+                            let on = cur == k;
+                            let n = view_count(&all, k);
+                            rsx! {
+                                button { key: "{k}", r#type: "button", role: "tab", class: "oxsin-tab", "aria-selected": "{on}", tabindex: if on { "0" } else { "-1" },
+                                    onclick: move |_| view.set(k),
+                                    "{l}"
+                                    if !loading { span { class: "oxsin-n", "{n}" } }
+                                }
+                            }
+                        }
+                    }
+                }
+                label { class: "oxscn-search oxscr-q",
+                    {ico("search")}
+                    input { r#type: "search", placeholder: "Find a company, contact or note", "aria-label": "Find a deal", value: "{q}",
+                        oninput: move |e| q.set(e.value()),
+                        onkeydown: move |e: KeyboardEvent| if e.key() == Key::Escape { q.set(String::new()) } }
+                }
+                if loading {
+                    div { class: "oxsfd-wrap", "aria-hidden": "true", div { class: "oxscr-sk", {skel(6)} } }
+                } else if all.is_empty() {
+                    {empty("No deals yet", "Add the first with New deal: it starts as a lead you own, and every cell edits in place.")}
+                } else if rows.is_empty() {
+                    p { class: "oxscn-hint", role: "status", if qs.trim().is_empty() { "Nothing in this view yet." } else { "No deal matches “{qs}”." } }
+                } else {
+                    div { class: "oxsfd-wrap oxscr-wrap",
+                        table { class: "oxsfd-tb oxscr-tb", "aria-label": "Deals",
+                            thead { tr {
+                                {th(DealSort::Company, "Company", false)}
+                                {th(DealSort::Stage, "Stage", false)}
+                                {th(DealSort::Value, "Value", true)}
+                                th { scope: "col", class: "oxscr-own", "Owner" }
+                                {th(DealSort::Close, "Close", false)}
+                            } }
+                            tbody {
+                                for d in rows {
+                                    {
+                                        let id = d.id;
+                                        let sel = pick() == Some(id);
+                                        let ed = edit();
+                                        let ed_co = ed == Some((id, "company"));
+                                        let ed_v = ed == Some((id, "value"));
+                                        let co = d.company.clone();
+                                        let co2 = d.company.clone();
+                                        let val = d.value;
+                                        let late = d.close < 0 && d.stage != "won" && d.stage != "lost";
+                                        let st_items = stages.clone();
+                                        rsx! {
+                                            tr { key: "{id}", "data-on": "{sel}", "data-stage": "{d.stage}",
+                                                td { class: "oxscr-co",
+                                                    if ed_co {
+                                                        input { class: "oxscr-in", "aria-label": "Company", value: "{draft}", placeholder: "Company name",
+                                                            onmounted: move |e: MountedEvent| { let m = e.data(); spawn(async move { let _ = m.set_focus(true).await; }); },
+                                                            oninput: move |e| draft.set(e.value()),
+                                                            onblur: move |_| commit(),
+                                                            onkeydown: move |e: KeyboardEvent| { if e.key() == Key::Enter { commit(); } else if e.key() == Key::Escape { edit.set(None); } } }
+                                                    } else {
+                                                        button { r#type: "button", class: "oxscr-cell", "aria-label": "{co}, open", onclick: move |_| pick.set(Some(id)),
+                                                            ondoubleclick: move |_| start(id, "company", co.clone()),
+                                                            onkeydown: move |e: KeyboardEvent| if e.key() == Key::F2 { e.prevent_default(); start(id, "company", co2.clone()); },
+                                                            span { class: "oxscn-row-t", "{d.company}" }
+                                                            if !d.contact.is_empty() { span { class: "oxscr-sub", "{d.contact}" } }
+                                                        }
+                                                    }
+                                                }
+                                                td { class: "oxscr-st",
+                                                    MenuButton { label: stage_label(d.stage).to_string(), aria: "Stage of {d.company}", class: "oxscr-stb".to_string(), items: st_items, checked: d.stage.to_string(),
+                                                        on_pick: move |k: String| {
+                                                            if let Some(s) = stage_key(&k) && let Some(x) = list.write().iter_mut().find(|x| x.id == id) { x.stage = s; }
+                                                            said.set(format!("Moved to {}", stage_label(&k)));
+                                                        } }
+                                                }
+                                                td { class: "oxscr-num",
+                                                    if ed_v {
+                                                        input { class: "oxscr-in oxscr-vin", "aria-label": "Value", "aria-invalid": "{bad}", "data-bad": "{bad}", inputmode: "decimal", value: "{draft}",
+                                                            onmounted: move |e: MountedEvent| { let m = e.data(); spawn(async move { let _ = m.set_focus(true).await; }); },
+                                                            oninput: move |e| { draft.set(e.value()); bad.set(false); },
+                                                            onblur: move |_| { if *bad.peek() { edit.set(None); bad.set(false); } else { commit(); } },
+                                                            onkeydown: move |e: KeyboardEvent| { if e.key() == Key::Enter { commit(); } else if e.key() == Key::Escape { bad.set(false); edit.set(None); } } }
+                                                    } else {
+                                                        button { r#type: "button", class: "oxscr-cell oxscr-val", "aria-label": "Value {usd(val)}, edit",
+                                                            onclick: move |_| start(id, "value", val.to_string()), "{usd(val)}" }
+                                                    }
+                                                }
+                                                td { class: "oxscr-own",
+                                                    if d.owner.is_empty() { span { class: "oxscr-sub", "–" } } else { span { class: "oxscn-av oxsfo-face", title: "{member_name(d.owner)}", "{d.owner}" } }
+                                                }
+                                                td { class: "oxscn-row-a oxscr-close", "data-late": "{late}", "{close_words(d.close, d.stage)}" }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    p { class: "oxsfd-total oxscn-row-a", "{deal_view(&all, cur, &qs, by, rev).len()} shown · {usd(shown_total)} · double-click a company or press F2 to rename" }
+                }
+                p { class: "oxscn-sr", role: "status", "{said}" }
+            }
+        }
+    }
+}
+
+/// The open deal beside the table: company, contact, stage and owner menus, value, close,
+/// a stage-by-stage pipeline, notes, Mark won and Delete.
+#[component]
+fn CrmDealDetail(deal: Deal, list: Signal<Vec<Deal>>, on_gone: EventHandler<String>) -> Element {
+    let id = deal.id;
+    let stages: Vec<MenuItem> = CRM_STAGES.iter().map(|(k, l)| (*k, *l, "")).collect();
+    let people: Vec<MenuItem> = vec![
+        ("none", "Nobody", ""),
+        ("RV", member_name("RV"), ""),
+        ("JO", member_name("JO"), ""),
+        ("TA", member_name("TA"), ""),
+        ("SE", member_name("SE"), ""),
+    ];
+    let own_k = if deal.owner.is_empty() {
+        "none".to_string()
+    } else {
+        deal.owner.to_string()
+    };
+    let own_l = if deal.owner.is_empty() {
+        "Nobody".to_string()
+    } else {
+        member_name(deal.owner).to_string()
+    };
+    let all = list();
+    let totals = stage_totals(&all);
+    let top = totals.iter().map(|t| t.1).max().unwrap_or(0).max(1);
+    let name = deal.company.clone();
+    let won = deal.stage == "won";
+    rsx! {
+        div { class: "oxsfi oxscr-det",
+            p { class: "oxscr-kick", "{stage_label(deal.stage)} · {usd(deal.value)}" }
+            h2 { class: "oxscr-h2", "{deal.company}" }
+            dl { class: "oxskb-dl",
+                div { dt { "Contact" } dd { if deal.contact.is_empty() { "Not set" } else { "{deal.contact}" } } }
+                div { dt { "Stage" } dd { MenuButton { label: stage_label(deal.stage).to_string(), aria: "Stage", class: "oxscr-dst".to_string(), items: stages, checked: deal.stage.to_string(), right: true,
+                    on_pick: move |k: String| { if let Some(s) = stage_key(&k) && let Some(x) = list.write().iter_mut().find(|x| x.id == id) { x.stage = s; } } } } }
+                div { dt { "Owner" } dd { MenuButton { label: own_l, aria: "Owner", class: "oxscr-down".to_string(), items: people, checked: own_k, right: true,
+                    on_pick: move |k: String| {
+                        let w: &'static str = match k.as_str() { "RV" => "RV", "JO" => "JO", "TA" => "TA", "SE" => "SE", _ => "" };
+                        if let Some(x) = list.write().iter_mut().find(|x| x.id == id) { x.owner = w; }
+                    } } } }
+                div { dt { "Close" } dd { "{close_words(deal.close, deal.stage)}" } }
+            }
+            if !deal.note.is_empty() {
+                p { class: "oxscn-gh", "Notes" }
+                p { class: "oxsfi-about", "{deal.note}" }
+            }
+            p { class: "oxscn-gh", "Pipeline" }
+            ul { class: "oxscr-pipe", "aria-label": "Value by stage",
+                for (k, v, n) in totals {
+                    li { key: "{k}", "data-on": "{k == deal.stage}",
+                        span { class: "oxscr-pl", "{stage_label(k)}" }
+                        span { class: "oxscr-bar", span { style: "width:{v * 100 / top}%" } }
+                        span { class: "oxscn-row-a oxscr-pv", "{usd(v)} · {n}" }
+                    }
+                }
+            }
+            div { class: "oxsin-acts",
+                button { r#type: "button", class: "oxscn-btn", disabled: won,
+                    onclick: move |_| { if let Some(x) = list.write().iter_mut().find(|x| x.id == id) { x.stage = "won"; } },
+                    if won { "Won" } else { "Mark won" } }
+                button { r#type: "button", class: "oxscn-btn oxsfd-del",
+                    onclick: move |_| { list.write().retain(|x| x.id != id); on_gone.call(name.clone()); }, "Delete deal" }
             }
         }
     }

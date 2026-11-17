@@ -1,12 +1,12 @@
 //! Screens 1 demos: app frames (Inset, Flat, three-pane) and the AI Chat screens (Start, Overview,
-//! Agents, Double sidebar, Progress, Run) Folders (Overview, Detail), Integrations and Kanban. Every screen has Sample / Loading / Empty data and an
+//! Agents, Double sidebar, Progress, Run) Folders (Overview, Detail), Integrations, Kanban and CRM. Every screen has Sample / Loading / Empty data and an
 //! Inset / Flat frame; light and dark follow the page theme.
 
 use dioxus::prelude::*;
 use oxyn_core::ClockMs;
 use oxyn_dioxus::{
     AppShellScreen, ChatAgentsScreen, ChatOverviewScreen, ChatProgressScreen, ChatRailScreen,
-    ChatRunScreen, ChatStartScreen, FoldersScreen, IntegrationsScreen, KanbanScreen,
+    ChatRunScreen, ChatStartScreen, CrmScreen, FoldersScreen, IntegrationsScreen, KanbanScreen,
     RailShellScreen,
 };
 
@@ -960,6 +960,78 @@ fn kanban_demo() -> Demo {
     }
 }
 
+// ---------- CRM ----------
+
+fn crm(v: &Vals, _now: ClockMs) -> Element {
+    let (st, lay, key) = frame(v);
+    rsx! {
+        div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
+            CrmScreen { layout: lay, state: st }
+        }
+    }
+}
+
+fn crm_code(v: &Vals) -> String {
+    code("CrmScreen", v, false, false)
+}
+
+fn crm_demo() -> Demo {
+    Demo {
+        controls: controls("inset"),
+        variants: vec![
+            var("sample", "Sample data in the Inset frame.", &[]),
+            var(
+                "flat",
+                "The same screen in the Flat frame.",
+                &[("frame", "Flat")],
+            ),
+            var(
+                "loading",
+                "Skeletons where the data will land.",
+                &[("data", "Loading")],
+            ),
+            var(
+                "empty",
+                "Nothing yet: each region says what will appear.",
+                &[("data", "Empty")],
+            ),
+        ],
+        render: crm,
+        code: crm_code,
+        keyboard: vec![
+            ("Tab", "Sidebar, page, then the work area"),
+            ("← / → on a hairline", "Resize the sidebar or work area"),
+            ("Escape", "Close an open menu; clear search"),
+            ("← / → in the tabs", "Move between views"),
+            ("Enter on a value", "Edit it (Enter keeps, Escape cancels)"),
+            ("F2 on a company", "Rename it in place"),
+            ("Escape in Find", "Clear the search"),
+        ],
+        a11y: vec![
+            "The sidebar is a labelled nav; the open chat has aria-current and unread chats say so.",
+            "Menus open from a trigger that reports aria-expanded; their items are menuitemradio and Escape shuts them.",
+            "Hairlines are separators with a value and arrow keys; skeletons are hidden from screen readers.",
+        ],
+        responsive: vec![
+            "Under 860 px of width the work area becomes a sheet opened from the top bar.",
+            "Under 640 px the sidebar slides in from the menu button and the composer drops its labels.",
+        ],
+        height: 660,
+        live: false,
+        align: Align::Start,
+        ..mk(
+            "crm",
+            "CRM",
+            CAT,
+            "Deals in a table with saved views as tabs: find, sort any column, edit a company or value in place, move a deal through its stages from the row, add a deal, and open one beside the table with its owner, notes and the pipeline by stage.",
+            "CrmScreen",
+            "CrmEl",
+            "crm",
+            "parity/screensfid.rs",
+        )
+    }
+}
+
 pub(crate) fn demos() -> Vec<Demo> {
     vec![
         shell_inset_demo(),
@@ -975,5 +1047,6 @@ pub(crate) fn demos() -> Vec<Demo> {
         folders_detail_demo(),
         integrations_demo(),
         kanban_demo(),
+        crm_demo(),
     ]
 }
