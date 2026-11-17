@@ -252,4 +252,5 @@ specified just as deeply. When we point at one component as an example, the stan
 | [folders-overview.md](folders-overview.md) | built v0.1 (screens 1, Screens) |
 | [folders-detail.md](folders-detail.md) | built v0.1 (screens 1, Screens) |
 | [integrations.md](integrations.md) | built v0.1 (screens 1, Screens) |
+| [kanban.md](kanban.md) | built v0.1 (screens 1, Screens) |
 | Every other component in [../component-taxonomy.md](../component-taxonomy.md) | to write in V2.2 |
