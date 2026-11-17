@@ -17,7 +17,8 @@ use oxyn_core::parity::screens2fid::{
 
 use super::efflistfid::chevron;
 use super::screensfid::{
-    AppFrame, MenuButton, MenuItem, ScreenComposer, empty, file_ico, ico, since, skel, use_threads,
+    AppFrame, MenuButton, MenuItem, ScreenComposer, empty, file_ico, ico, since, skel, stage_scale,
+    use_threads,
 };
 
 /// A status tag in the status colours.
@@ -190,7 +191,7 @@ pub fn OrchestrationScreen(
     rsx! {
         AppFrame { layout, state: state.clone(), height, side: "agent", nav_on: "runs", threads: thr, active, title: "Runs", actions, work, work_label: "Agent",
             div { class: "oxsor", style: "{style}", "data-drag": "{dragging}",
-                onpointermove: move |e: PointerEvent| if let Some((y0, h0)) = drag() { let v = (f64::from(h0) - (e.client_coordinates().y - y0)).clamp(120.0, 380.0); ph.set(v as u32); },
+                onpointermove: move |e: PointerEvent| if let Some((y0, h0)) = drag() { let v = (f64::from(h0) - (e.client_coordinates().y - y0) / stage_scale()).clamp(120.0, 380.0); ph.set(v as u32); },
                 onpointerup: move |_| if drag.peek().is_some() { drag.set(None) },
                 onpointerleave: move |_| if drag.peek().is_some() { drag.set(None) },
                 section { class: "oxsor-canvas", "aria-label": "Agent tree",

@@ -70,6 +70,31 @@ impl ShellLayout {
     }
 }
 
+/// Width of the native screen canvas (rule R1): every screen is authored at 1440 × 900 logical px
+/// (16:10) and scaled to fit, never laid out at its column's width.
+pub const STAGE_W: u32 = 1440;
+/// Height of the native screen canvas.
+pub const STAGE_H: u32 = 900;
+/// Height of the state bar under a screen in its full view (rule R2).
+pub const STATE_BAR_H: u32 = 52;
+/// The data states the state bar offers: key and label.
+pub const STAGE_STATES: [(&str, &str); 3] = [
+    ("sample", "Data"),
+    ("loading", "Loading"),
+    ("empty", "Empty"),
+];
+
+/// The scale that fits the 1440 × 900 canvas in `avail_w` × `avail_h` (aspect kept), never above 1.
+/// With no height bound the width alone decides.
+pub fn stage_scale(avail_w: f32, avail_h: Option<f32>) -> f32 {
+    let sw = avail_w / STAGE_W as f32;
+    let s = match avail_h {
+        Some(h) => sw.min(h / STAGE_H as f32),
+        None => sw,
+    };
+    s.clamp(0.0, 1.0)
+}
+
 /// The fictional workspace every screen opens on.
 pub const WORKSPACE: &str = "Kestrel Studio";
 /// The fictional signed-in person.
@@ -2678,6 +2703,18 @@ pub fn set_needs_name(key: &str) -> bool {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn stage_is_16_by_10_and_fits() {
+        assert_eq!(STAGE_W * 10, STAGE_H * 16);
+        assert!((stage_scale(720.0, None) - 0.5).abs() < 1e-6);
+        assert!((stage_scale(1440.0, Some(450.0)) - 0.5).abs() < 1e-6);
+        assert_eq!(stage_scale(3000.0, None), 1.0);
+        assert_eq!(
+            STAGE_STATES.map(|(k, _)| ScreenState::from_key(k).key()),
+            ["sample", "loading", "empty"]
+        );
+    }
+
     use super::*;
 
     #[test]

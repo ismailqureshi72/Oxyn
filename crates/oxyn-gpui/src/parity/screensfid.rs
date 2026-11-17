@@ -19,6 +19,7 @@ use oxyn_core::parity::screensfid::{
     stage_label, stage_totals, starters, step_state, synced_words, task_key, threads, total_size,
     usd, view_count,
 };
+use oxyn_core::parity::screensfid::{STAGE_H, STAGE_STATES, STAGE_W, STATE_BAR_H};
 use oxyn_tokens::Theme;
 
 use super::Act;
@@ -302,8 +303,8 @@ pub(super) fn frame(
         ShellLayout::Flat => pg.border_l_1().border_color(p.line),
     };
     let root = div()
-        .w(px(1100.))
-        .h(px(660.))
+        .w(px(STAGE_W as f32))
+        .h(px(STAGE_H as f32))
         .flex()
         .rounded(px(16.))
         .border_1()
@@ -369,6 +370,114 @@ fn msg(p: &ThPal, me: bool, t: &'static str) -> Div {
             .gap(px(10.))
             .child(div().w(px(20.)).h(px(20.)).rounded(px(10.)).bg(p.sel))
             .child(div().max_w(px(560.)).child(t))
+    }
+}
+
+/// The screen stage (rules R1/R2): a screen on its fixed 1440 × 900 canvas, with the 52 px state
+/// bar under it (Data · Loading · Empty) firing `state-sample`, `state-loading` or `state-empty`
+/// so the host re-renders the screen in that state. GPUI has no element transform, so the canvas
+/// draws at its native size: size the window (or a scroll view) with
+/// `oxyn_core::parity::screensfid::stage_scale`.
+#[derive(IntoElement)]
+pub struct ScreenStageEl {
+    screen: gpui::AnyElement,
+    state: ScreenState,
+    bar: bool,
+    act: Option<Act>,
+    theme: &'static Theme,
+}
+
+impl ScreenStageEl {
+    /// A stage around `screen` (any screen element, already in its state).
+    pub fn new(screen: impl IntoElement) -> Self {
+        Self {
+            screen: screen.into_any_element(),
+            state: ScreenState::Sample,
+            bar: true,
+            act: None,
+            theme: &Theme::DARK,
+        }
+    }
+    /// The state the bar shows as current.
+    pub fn state(mut self, s: ScreenState) -> Self {
+        self.state = s;
+        self
+    }
+    /// Show the state bar (default true).
+    pub fn bar(mut self, on: bool) -> Self {
+        self.bar = on;
+        self
+    }
+    /// Light or dark chrome.
+    pub fn theme(mut self, t: &'static Theme) -> Self {
+        self.theme = t;
+        self
+    }
+    /// `state-<key>` from the bar.
+    pub fn on_act(mut self, a: Act) -> Self {
+        self.act = Some(a);
+        self
+    }
+}
+
+impl RenderOnce for ScreenStageEl {
+    fn render(self, _: &mut Window, _: &mut App) -> impl IntoElement {
+        let p = th_pal(self.theme);
+        let canvas = div()
+            .w(px(STAGE_W as f32))
+            .h(px(STAGE_H as f32))
+            .flex_none()
+            .overflow_hidden()
+            .child(self.screen);
+        let mut seg = div().flex().gap(px(2.)).p(px(2.)).rounded(px(9.)).bg(p.sel);
+        for (k, l) in STAGE_STATES {
+            let id: &'static str = match k {
+                "loading" => "state-loading",
+                "empty" => "state-empty",
+                _ => "state-sample",
+            };
+            let on = self.state.key() == k;
+            let fi = fire(&self.act, id);
+            seg = seg.child(
+                div()
+                    .id(id)
+                    .h(px(28.))
+                    .px(px(12.))
+                    .flex()
+                    .items_center()
+                    .rounded(px(7.))
+                    .when(on, |d| d.bg(p.card).text_color(p.fg))
+                    .child(l)
+                    .on_click(move |_, w, cx| fi(w, cx)),
+            );
+        }
+        let bar = div()
+            .w(px(STAGE_W as f32))
+            .h(px(STATE_BAR_H as f32))
+            .flex_none()
+            .flex()
+            .items_center()
+            .gap(px(12.))
+            .px(px(16.))
+            .border_t_1()
+            .border_color(p.line)
+            .bg(p.card)
+            .text_size(px(12.5))
+            .text_color(p.mute)
+            .child(
+                div()
+                    .text_color(p.fg2)
+                    .font_weight(FontWeight::SEMIBOLD)
+                    .child("State"),
+            )
+            .child(seg)
+            .child(div().flex_1())
+            .child(format!("{STAGE_W} × {STAGE_H}"));
+        div()
+            .flex()
+            .flex_col()
+            .child(canvas)
+            .when(self.bar, |d| d.child(bar))
     }
 }
 

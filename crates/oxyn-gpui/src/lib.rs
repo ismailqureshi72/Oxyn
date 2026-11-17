@@ -93,6 +93,7 @@ pub use parity::RunningNowEl;
 pub use parity::ScheduledRunsEl;
 pub use parity::ScreenRailEl;
 pub use parity::ScreenShellEl;
+pub use parity::ScreenStageEl;
 pub use parity::SettingsEl;
 pub use parity::StorageCleanupEl;
 pub use parity::StorageForecastEl;

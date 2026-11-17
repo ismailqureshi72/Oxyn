@@ -25,6 +25,7 @@ use oxyn_core::parity::screensfid::{
     split_pinned, stage_key, stage_label, stage_totals, synced_words, task_key, threads,
     toggle_pin, total_size, untitled, usd, view_count,
 };
+use oxyn_core::parity::screensfid::{STAGE_H, STAGE_STATES, STAGE_W};
 
 use super::efflistfid::{check_glyph, chevron};
 use crate::brand::BrandIcon;
@@ -695,7 +696,7 @@ pub fn AppFrame(
         div { class: "oxscn", "data-layout": "{lay_k}", "data-state": "{st_k}", "data-drag": "{dragging}", "data-rail": "{is_rail}", style: "{style}",
             onpointermove: move |e: PointerEvent| {
                 if let Some((which, x0, w0)) = drag() {
-                    let dx = e.client_coordinates().x - x0;
+                    let dx = (e.client_coordinates().x - x0) / stage_scale();
                     if which == "side" { let v = (w0 as f64 + dx).clamp(200.0, 340.0); let mut s = sw; s.set(v as u32); }
                     else { let v = (w0 as f64 - dx).clamp(260.0, 480.0); let mut s = ww; s.set(v as u32); }
                 }
@@ -874,6 +875,67 @@ fn Workspace(state: String) -> Element {
                 }
             }
             p { class: "oxscn-sr", role: "status", "{said}" }
+        }
+    }
+}
+
+/// The stage's scale (canvas px → screen px), in context for frames that measure the pointer
+/// (resize handles divide by it). 0 until the stage has been measured.
+#[derive(Clone, Copy)]
+pub struct StageScale(pub Signal<f64>);
+
+/// The current stage scale, 1.0 outside a stage or before it is measured.
+pub(crate) fn stage_scale() -> f64 {
+    try_consume_context::<StageScale>()
+        .map(|s| s.0.peek().to_owned())
+        .filter(|v| *v > 0.0)
+        .unwrap_or(1.0)
+}
+
+/// The screen stage (rule R1): every screen is authored on one fixed 1440 × 900 (16:10) canvas,
+/// and the stage scales it to fit its column with the aspect ratio kept, so a screen never turns
+/// taller than wide. Under the canvas, a 52 px state bar (Data · Loading · Empty, rule R2)
+/// switches the data state; it shows in the full view (`data-screen-full` on an ancestor, or
+/// `bar: true`) and stays out of the gallery thumbnail. `screen` renders the screen for a state.
+#[component]
+pub fn ScreenStage(
+    /// `sample`, `loading` or `empty`: the state the screen opens in.
+    #[props(default = "sample".to_string())]
+    state: String,
+    /// Always show the state bar (it also shows under `data-screen-full`).
+    #[props(default)]
+    bar: bool,
+    /// Renders the screen for a state key.
+    screen: Callback<String, Element>,
+    /// The screen's name, for the canvas region label.
+    #[props(default = "Screen".to_string())]
+    label: String,
+) -> Element {
+    let mut st = use_signal(|| ScreenState::from_key(&state).key().to_string());
+    let mut scale = use_signal(|| 0.0f64);
+    use_context_provider(|| StageScale(scale));
+    let cur = st();
+    let canvas = format!("width:{STAGE_W}px;height:{STAGE_H}px");
+    rsx! {
+        div { class: "oxstage", "data-bar": "{bar}",
+            div { class: "oxstage-box", role: "region", "aria-label": "{label}",
+                onresize: move |e: Event<ResizeData>| {
+                    if let Ok(sz) = e.get_border_box_size() { scale.set(sz.width / STAGE_W as f64); }
+                },
+                div { class: "oxstage-canvas", style: "{canvas}",
+                    for k in [cur.clone()] { div { key: "{k}", class: "oxstage-k", {screen.call(k.clone())} } }
+                }
+            }
+            div { class: "oxstage-bar", role: "toolbar", "aria-label": "Data state",
+                span { class: "oxstage-bar-l", "State" }
+                div { class: "oxstage-seg", role: "radiogroup", "aria-label": "Data",
+                    for (k, l) in STAGE_STATES {
+                        button { key: "{k}", r#type: "button", role: "radio", class: "oxstage-opt", "aria-checked": "{cur == k}",
+                            onclick: move |_| st.set(k.to_string()), "{l}" }
+                    }
+                }
+                span { class: "oxstage-bar-r", "{STAGE_W} × {STAGE_H}" }
+            }
         }
     }
 }
@@ -3550,7 +3612,7 @@ pub fn WorkflowScreen(
                             let Some((kind, t, a)) = *pal_drag.peek() else { return };
                             pal_drag.set(None);
                             let p = e.client_coordinates();
-                            let zz = f64::from(*zoom.peek()) / 100.0;
+                            let zz = f64::from(*zoom.peek()) / 100.0 * stage_scale();
                             if let Some(r) = cv.peek().clone() {
                                 spawn(async move {
                                     let rc = r.get_client_rect().await.ok();
@@ -3568,7 +3630,7 @@ pub fn WorkflowScreen(
                         },
                         onpointermove: move |e: PointerEvent| {
                             if let Some((id, x0, y0, nx, ny, _)) = grab() {
-                                let zz = f64::from(*zoom.peek()) / 100.0;
+                                let zz = f64::from(*zoom.peek()) / 100.0 * stage_scale();
                                 let p = e.client_coordinates();
                                 let (dx, dy) = ((p.x - x0) / zz, (p.y - y0) / zz);
                                 if dx.abs() + dy.abs() > 3.0 {

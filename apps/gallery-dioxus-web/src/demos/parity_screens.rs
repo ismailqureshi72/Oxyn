@@ -7,7 +7,8 @@ use oxyn_core::ClockMs;
 use oxyn_dioxus::{
     AgentThreadScreen, AppShellScreen, ChatAgentsScreen, ChatOverviewScreen, ChatProgressScreen,
     ChatRailScreen, ChatRunScreen, ChatStartScreen, CrmScreen, FoldersScreen, IntegrationsScreen,
-    KanbanScreen, OrchestrationScreen, RailShellScreen, SettingsScreen, WorkflowScreen,
+    KanbanScreen, OrchestrationScreen, RailShellScreen, ScreenStage, SettingsScreen,
+    WorkflowScreen,
 };
 
 use super::{Code, mk, sel, var};
@@ -58,7 +59,7 @@ fn shell_inset(v: &Vals, _now: ClockMs) -> Element {
     let (st, lay, key) = frame(v);
     rsx! {
         div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
-            AppShellScreen { layout: lay, state: st }
+            ScreenStage { state: st, screen: move |s: String| rsx! { AppShellScreen { layout: lay.clone(), state: s } } }
         }
     }
 }
@@ -104,7 +105,7 @@ fn shell_inset_demo() -> Demo {
             "Under 860 px of width the work area becomes a sheet opened from the top bar.",
             "Under 640 px the sidebar slides in from the menu button and the composer drops its labels.",
         ],
-        height: 660,
+        height: 240,
         live: false,
         align: Align::Start,
         ..mk(
@@ -126,7 +127,7 @@ fn shell_flat(v: &Vals, _now: ClockMs) -> Element {
     let (st, lay, key) = frame(v);
     rsx! {
         div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
-            AppShellScreen { layout: lay, state: st }
+            ScreenStage { state: st, screen: move |s: String| rsx! { AppShellScreen { layout: lay.clone(), state: s } } }
         }
     }
 }
@@ -172,7 +173,7 @@ fn shell_flat_demo() -> Demo {
             "Under 860 px of width the work area becomes a sheet opened from the top bar.",
             "Under 640 px the sidebar slides in from the menu button and the composer drops its labels.",
         ],
-        height: 660,
+        height: 240,
         live: false,
         align: Align::Start,
         ..mk(
@@ -194,7 +195,7 @@ fn shell_three_pane(v: &Vals, _now: ClockMs) -> Element {
     let (st, lay, key) = frame(v);
     rsx! {
         div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
-            RailShellScreen { layout: lay, state: st }
+            ScreenStage { state: st, screen: move |s: String| rsx! { RailShellScreen { layout: lay.clone(), state: s } } }
         }
     }
 }
@@ -240,7 +241,7 @@ fn shell_three_pane_demo() -> Demo {
             "Under 860 px of width the work area becomes a sheet opened from the top bar.",
             "Under 640 px the sidebar slides in from the menu button and the composer drops its labels.",
         ],
-        height: 660,
+        height: 240,
         live: false,
         align: Align::Start,
         ..mk(
@@ -262,7 +263,7 @@ fn chat_start(v: &Vals, now: ClockMs) -> Element {
     let (st, lay, key) = frame(v);
     rsx! {
         div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
-            ChatStartScreen { layout: lay, state: st, now }
+            ScreenStage { state: st, screen: move |s: String| rsx! { ChatStartScreen { layout: lay.clone(), state: s, now } } }
         }
     }
 }
@@ -309,7 +310,7 @@ fn chat_start_demo() -> Demo {
             "Under 860 px of width the work area becomes a sheet opened from the top bar.",
             "Under 640 px the sidebar slides in from the menu button and the composer drops its labels.",
         ],
-        height: 660,
+        height: 240,
         live: true,
         align: Align::Start,
         ..mk(
@@ -331,7 +332,7 @@ fn chat_overview(v: &Vals, now: ClockMs) -> Element {
     let (st, lay, key) = frame(v);
     rsx! {
         div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
-            ChatOverviewScreen { layout: lay, state: st, now }
+            ScreenStage { state: st, screen: move |s: String| rsx! { ChatOverviewScreen { layout: lay.clone(), state: s, now } } }
         }
     }
 }
@@ -378,7 +379,7 @@ fn chat_overview_demo() -> Demo {
             "Under 860 px of width the work area becomes a sheet opened from the top bar.",
             "Under 640 px the sidebar slides in from the menu button and the composer drops its labels.",
         ],
-        height: 660,
+        height: 240,
         live: true,
         align: Align::Start,
         ..mk(
@@ -400,7 +401,7 @@ fn chat_agents(v: &Vals, now: ClockMs) -> Element {
     let (st, lay, key) = frame(v);
     rsx! {
         div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
-            ChatAgentsScreen { layout: lay, state: st, now }
+            ScreenStage { state: st, screen: move |s: String| rsx! { ChatAgentsScreen { layout: lay.clone(), state: s, now } } }
         }
     }
 }
@@ -447,7 +448,7 @@ fn chat_agents_demo() -> Demo {
             "Under 860 px of width the work area becomes a sheet opened from the top bar.",
             "Under 640 px the sidebar slides in from the menu button and the composer drops its labels.",
         ],
-        height: 660,
+        height: 240,
         live: true,
         align: Align::Start,
         ..mk(
@@ -469,7 +470,7 @@ fn chat_double_sidebar(v: &Vals, now: ClockMs) -> Element {
     let (st, lay, key) = frame(v);
     rsx! {
         div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
-            ChatRailScreen { layout: lay, state: st, now }
+            ScreenStage { state: st, screen: move |s: String| rsx! { ChatRailScreen { layout: lay.clone(), state: s, now } } }
         }
     }
 }
@@ -517,7 +518,7 @@ fn chat_double_sidebar_demo() -> Demo {
             "Under 860 px of width the work area becomes a sheet opened from the top bar.",
             "Under 640 px the sidebar slides in from the menu button and the composer drops its labels.",
         ],
-        height: 660,
+        height: 240,
         live: true,
         align: Align::Start,
         ..mk(
@@ -539,7 +540,7 @@ fn chat_progress(v: &Vals, now: ClockMs) -> Element {
     let (st, lay, key) = frame(v);
     rsx! {
         div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
-            ChatProgressScreen { layout: lay, state: st, now }
+            ScreenStage { state: st, screen: move |s: String| rsx! { ChatProgressScreen { layout: lay.clone(), state: s, now } } }
         }
     }
 }
@@ -586,7 +587,7 @@ fn chat_progress_demo() -> Demo {
             "Under 860 px of width the work area becomes a sheet opened from the top bar.",
             "Under 640 px the sidebar slides in from the menu button and the composer drops its labels.",
         ],
-        height: 660,
+        height: 240,
         live: true,
         align: Align::Start,
         ..mk(
@@ -608,7 +609,7 @@ fn chat_run(v: &Vals, now: ClockMs) -> Element {
     let (st, lay, key) = frame(v);
     rsx! {
         div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
-            ChatRunScreen { layout: lay, state: st, now }
+            ScreenStage { state: st, screen: move |s: String| rsx! { ChatRunScreen { layout: lay.clone(), state: s, now } } }
         }
     }
 }
@@ -658,7 +659,7 @@ fn chat_run_demo() -> Demo {
             "Under 860 px of width the work area becomes a sheet opened from the top bar.",
             "Under 640 px the sidebar slides in from the menu button and the composer drops its labels.",
         ],
-        height: 660,
+        height: 240,
         live: true,
         align: Align::Start,
         ..mk(
@@ -680,7 +681,7 @@ fn folders_overview(v: &Vals, _now: ClockMs) -> Element {
     let (st, lay, key) = frame(v);
     rsx! {
         div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
-            FoldersScreen { layout: lay, state: st }
+            ScreenStage { state: st, screen: move |s: String| rsx! { FoldersScreen { layout: lay.clone(), state: s } } }
         }
     }
 }
@@ -728,7 +729,7 @@ fn folders_overview_demo() -> Demo {
             "Under 860 px of width the work area becomes a sheet opened from the top bar.",
             "Under 640 px the sidebar slides in from the menu button and the composer drops its labels.",
         ],
-        height: 660,
+        height: 240,
         live: false,
         align: Align::Start,
         ..mk(
@@ -750,7 +751,7 @@ fn folders_detail(v: &Vals, _now: ClockMs) -> Element {
     let (st, lay, key) = frame(v);
     rsx! {
         div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
-            FoldersScreen { layout: lay, state: st, detail: true }
+            ScreenStage { state: st, screen: move |s: String| rsx! { FoldersScreen { layout: lay.clone(), state: s, detail: true } } }
         }
     }
 }
@@ -802,7 +803,7 @@ fn folders_detail_demo() -> Demo {
             "Under 860 px of width the work area becomes a sheet opened from the top bar.",
             "Under 640 px the sidebar slides in from the menu button and the composer drops its labels.",
         ],
-        height: 660,
+        height: 240,
         live: false,
         align: Align::Start,
         ..mk(
@@ -824,7 +825,7 @@ fn integrations(v: &Vals, _now: ClockMs) -> Element {
     let (st, lay, key) = frame(v);
     rsx! {
         div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
-            IntegrationsScreen { layout: lay, state: st }
+            ScreenStage { state: st, screen: move |s: String| rsx! { IntegrationsScreen { layout: lay.clone(), state: s } } }
         }
     }
 }
@@ -872,7 +873,7 @@ fn integrations_demo() -> Demo {
             "Under 860 px of width the work area becomes a sheet opened from the top bar.",
             "Under 640 px the sidebar slides in from the menu button and the composer drops its labels.",
         ],
-        height: 660,
+        height: 240,
         live: false,
         align: Align::Start,
         ..mk(
@@ -894,7 +895,7 @@ fn kanban(v: &Vals, _now: ClockMs) -> Element {
     let (st, lay, key) = frame(v);
     rsx! {
         div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
-            KanbanScreen { layout: lay, state: st }
+            ScreenStage { state: st, screen: move |s: String| rsx! { KanbanScreen { layout: lay.clone(), state: s } } }
         }
     }
 }
@@ -944,7 +945,7 @@ fn kanban_demo() -> Demo {
             "Under 860 px of width the work area becomes a sheet opened from the top bar.",
             "Under 640 px the sidebar slides in from the menu button and the composer drops its labels.",
         ],
-        height: 660,
+        height: 240,
         live: false,
         align: Align::Start,
         ..mk(
@@ -966,7 +967,7 @@ fn workflow(v: &Vals, now: ClockMs) -> Element {
     let (st, lay, key) = frame(v);
     rsx! {
         div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
-            WorkflowScreen { layout: lay, state: st, now }
+            ScreenStage { state: st, screen: move |s: String| rsx! { WorkflowScreen { layout: lay.clone(), state: s, now } } }
         }
     }
 }
@@ -1022,7 +1023,7 @@ fn workflow_demo() -> Demo {
             "Under 860 px of width the work area becomes a sheet opened from the top bar.",
             "Under 640 px the sidebar slides in from the menu button and the composer drops its labels.",
         ],
-        height: 660,
+        height: 240,
         live: true,
         align: Align::Start,
         ..mk(
@@ -1044,7 +1045,7 @@ fn settings(v: &Vals, _now: ClockMs) -> Element {
     let (st, lay, key) = frame(v);
     rsx! {
         div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
-            SettingsScreen { layout: lay, state: st }
+            ScreenStage { state: st, screen: move |s: String| rsx! { SettingsScreen { layout: lay.clone(), state: s } } }
         }
     }
 }
@@ -1097,7 +1098,7 @@ fn settings_demo() -> Demo {
             "Under 860 px of width the work area becomes a sheet opened from the top bar.",
             "Under 640 px the sidebar slides in from the menu button and the composer drops its labels.",
         ],
-        height: 660,
+        height: 240,
         live: false,
         align: Align::Start,
         ..mk(
@@ -1119,7 +1120,7 @@ fn crm(v: &Vals, _now: ClockMs) -> Element {
     let (st, lay, key) = frame(v);
     rsx! {
         div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
-            CrmScreen { layout: lay, state: st }
+            ScreenStage { state: st, screen: move |s: String| rsx! { CrmScreen { layout: lay.clone(), state: s } } }
         }
     }
 }
@@ -1169,7 +1170,7 @@ fn crm_demo() -> Demo {
             "Under 860 px of width the work area becomes a sheet opened from the top bar.",
             "Under 640 px the sidebar slides in from the menu button and the composer drops its labels.",
         ],
-        height: 660,
+        height: 240,
         live: false,
         align: Align::Start,
         ..mk(
@@ -1191,7 +1192,7 @@ fn agent_orchestration(v: &Vals, now: ClockMs) -> Element {
     let (st, lay, key) = frame(v);
     rsx! {
         div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
-            OrchestrationScreen { layout: lay, state: st, now }
+            ScreenStage { state: st, screen: move |s: String| rsx! { OrchestrationScreen { layout: lay.clone(), state: s, now } } }
         }
     }
 }
@@ -1245,7 +1246,7 @@ fn agent_orchestration_demo() -> Demo {
             "Under 860 px of width the work area becomes a sheet opened from the top bar.",
             "Under 640 px the sidebar slides in from the menu button and the composer drops its labels.",
         ],
-        height: 660,
+        height: 240,
         live: true,
         align: Align::Start,
         ..mk(
@@ -1267,7 +1268,7 @@ fn agent_thread(v: &Vals, now: ClockMs) -> Element {
     let (st, lay, key) = frame(v);
     rsx! {
         div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
-            AgentThreadScreen { layout: lay, state: st, now }
+            ScreenStage { state: st, screen: move |s: String| rsx! { AgentThreadScreen { layout: lay.clone(), state: s, now } } }
         }
     }
 }
@@ -1315,7 +1316,7 @@ fn agent_thread_demo() -> Demo {
             "Under 860 px of width the work area becomes a sheet opened from the top bar.",
             "Under 640 px the sidebar slides in from the menu button and the composer drops its labels.",
         ],
-        height: 660,
+        height: 240,
         live: true,
         align: Align::Start,
         ..mk(
