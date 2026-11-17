@@ -231,4 +231,13 @@ specified just as deeply. When we point at one component as an example, the stan
 | [gooey-model-menu.md](gooey-model-menu.md) | built v0.1 (variants 2, Menu Motion) |
 | [liquid-tabs.md](liquid-tabs.md) | built v0.1 (variants 2, Menu Motion) |
 | [liquid-drops.md](liquid-drops.md) | built v0.1 (variants 2, Menu Motion) |
+| [background-picker.md](background-picker.md) | built v0.1 (variants 3, Theme Selector) |
+| [theme-grid.md](theme-grid.md) | built v0.1 (variants 3, Theme Selector) |
+| [theme-split.md](theme-split.md) | built v0.1 (variants 3, Theme Selector) |
+| [accent-density.md](accent-density.md) | built v0.1 (variants 3, Theme Selector) |
+| [theme-schedule.md](theme-schedule.md) | built v0.1 (variants 3, Theme Selector) |
+| [type-scale.md](type-scale.md) | built v0.1 (variants 3, Theme Selector) |
+| [light-playground.md](light-playground.md) | built v0.1 (variants 3, Theme Selector) |
+| [app-icon-picker.md](app-icon-picker.md) | built v0.1 (variants 3, Theme Selector) |
+| [display-comfort.md](display-comfort.md) | built v0.1 (variants 3, Theme Selector) |
 | Every other component in [../component-taxonomy.md](../component-taxonomy.md) | to write in V2.2 |

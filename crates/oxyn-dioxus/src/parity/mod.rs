@@ -56,6 +56,7 @@ mod seqfid;
 mod stairsfid;
 mod storagefid;
 mod text;
+mod themefid;
 mod toolmapfid;
 mod tools;
 mod tracefid;
@@ -135,6 +136,10 @@ pub use storagefid::{StorageCleanup, StorageForecast, StorageMeter, StorageWaffl
 pub use text::{
     ActionSwapButton, InViewTitle, LoadingState, SlotReels, Source, StreamingText, SweepText,
     TextMorph, ThinkingLoader, WordReveal,
+};
+pub use themefid::{
+    AccentDensity, AppIconPicker, BackgroundPicker, DisplayComfort, LightPlayground, ThemeGrid,
+    ThemeSchedule, ThemeSplit, TypeScale,
 };
 pub use toolmapfid::ToolAccessMap;
 pub use tools::{

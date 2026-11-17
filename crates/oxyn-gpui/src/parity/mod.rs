@@ -65,6 +65,7 @@ mod seqfid;
 mod stairsfid;
 mod storagefid;
 mod text;
+mod themefid;
 mod toolmapfid;
 mod tools;
 mod tracefid;
@@ -144,6 +145,10 @@ pub use seqfid::AgentSequenceEl;
 pub use stairsfid::EffortStairsEl;
 pub use storagefid::{StorageCleanupEl, StorageForecastEl, StorageMeterEl, StorageWaffleEl};
 pub use text::{LoadingStateEl, ShimmerEl, SlotTextEl, ThinkingLoaderEl};
+pub use themefid::{
+    AccentDensityEl, AppIconPickerEl, BackgroundPickerEl, DisplayComfortEl, LightPlaygroundEl,
+    ThemeGridEl, ThemeScheduleEl, ThemeSplitEl, TypeScaleEl,
+};
 pub use toolmapfid::ToolAccessMapEl;
 pub use tools::{
     ExpandableCardEl, JsonViewerEl, LinkUnfurlEl, ToolCallCardEl, ToolCallEl, ToolChipsEl,
