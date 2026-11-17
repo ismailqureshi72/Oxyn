@@ -40,3 +40,6 @@ opt-level = "z"
 lto = true
 codegen-units = 1
 panic = "abort"
+# No DWARF in the shipped bundle: Cloudflare Workers caps one asset at 25 MiB. Not `strip = true`:
+# that drops the target_features section wasm-bindgen reads; wasm-opt --strip-debug strips names instead.
+debug = false
