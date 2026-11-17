@@ -906,7 +906,7 @@ pub const PLUS_ADD: [PlusItem; 7] = [
         "folder",
         false,
     ),
-    plus("connect", "Connect apps", "", "plug", false),
+    plus("connect", "Link apps", "", "plug", false),
     plus(
         "goal",
         "Goal",
@@ -945,7 +945,7 @@ pub fn plus_items() -> Vec<PlusItem> {
         .collect()
 }
 
-/// "1 connected", "3 connected" or "None yet" for the Connect apps entry.
+/// "1 connected", "3 connected" or "None yet" for the Link apps entry.
 pub fn connected_words(n: usize) -> String {
     match n {
         0 => "None yet".to_string(),
@@ -1027,7 +1027,7 @@ pub fn model(key: &str) -> ModelChoice {
         .unwrap_or(MODELS[0])
 }
 
-/// The apps Connect apps can add, in order, with the ones on at the start.
+/// The apps Link apps can add, in order, with the ones on at the start.
 pub const COMPOSER_APPS: [(&str, &str); 6] = [
     ("gmail", "Gmail"),
     ("slack", "Slack"),
