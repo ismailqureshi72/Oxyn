@@ -136,8 +136,8 @@ pub use screens2fid::{AgentThreadScreen, OrchestrationScreen};
 pub use screensfid::{
     AppFrame, AppShellScreen, ChatAgentsScreen, ChatOverviewScreen, ChatProgressScreen,
     ChatRailScreen, ChatRunScreen, ChatStartScreen, CrmScreen, FoldersScreen, IntegrationsScreen,
-    KanbanScreen, MenuButton, RailFrame, RailShellScreen, ScreenComposer, SettingsScreen,
-    WorkflowScreen,
+    KanbanScreen, MenuButton, RailFrame, RailShellScreen, ScreenComposer, ScreenStage,
+    SettingsScreen, StageScale, WorkflowScreen,
 };
 pub use seqfid::AgentSequence;
 pub use stairsfid::EffortStairs;

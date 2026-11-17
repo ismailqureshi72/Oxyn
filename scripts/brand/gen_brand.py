@@ -95,11 +95,32 @@ ICONS = [
   ("airbnb", "Airbnb", S, "airbnb", None, [], "company"),
   ("x", "X", S, "x", None, ["twitter"], "company"),
   ("bookingdotcom", "Booking.com", S, "bookingdotcom", None, ["booking", "booking.com"], "company"),
+  # Coding agents and their desktop apps (2026-11-17, from research/icons.md).
+  ("claudecode", "Claude Code", L, "claudecode", "D97757", ["claude-code"], "ai"),
+  ("codex", "Codex", L, "codex", "3941FF", ["openai codex"], "ai"),
+  ("minimax", "MiniMax", L, "minimax", "E73562", ["hailuo", "abab"], "ai"),
+  ("antigravity", "Antigravity", L, "antigravity", "3186FF", [], "ai"),
+  ("devin", "Devin", L, "devin", "0294DE", ["devin desktop"], "ai"),
+  ("windsurf", "Windsurf", L, "windsurf", "0B100F", [], "ai"),
+  ("cline", "Cline", L, "cline", "18181B", [], "ai"),
+  ("manus", "Manus", L, "manus", "000000", [], "ai"),
+  ("amp", "Amp", L, "amp", "F34E3F", ["ampcode"], "ai"),
+  ("githubcopilot", "GitHub Copilot", L, "githubcopilot", "000000", ["copilot"], "ai"),
+  ("gemma", "Gemma", L, "gemma", "446EFF", [], "ai"),
+  ("trae", "Trae", L, "trae", "32F08C", [], "ai"),
+  ("kiro", "Kiro", L, "kiro", "9046FF", [], "ai"),
+  ("replit", "Replit", L, "replit", "FD5402", [], "ai"),
+  ("lovable", "Lovable", L, "lovable", "FE529A", [], "ai"),
+  ("zed", "Zed", S, "zedindustries", None, ["zed industries"], "ai"),
+  ("warp", "Warp", S, "warp", None, [], "ai"),
+  ("git", "Git", S, "git", None, [], "integration"),
 ]
 
 # Full-colour versions (`COLOURED`): Lobe Icons' own -color files, and marks drawn by Oxyn from
 # basic shapes in the official colours where no permissive multi-colour file exists.
-COLOUR_LOBE = {"claude": "claude-color", "gemini": "gemini-color", "google": "google-color", "figma": "figma-color"}
+COLOUR_LOBE = {k: k + "-color" for k in [
+  "claude", "gemini", "google", "figma", "meta", "mistral", "deepseek", "cohere", "perplexity", "huggingface", "qwen",
+  "kimi", "claudecode", "codex", "minimax", "antigravity", "devin", "amp", "gemma", "trae", "kiro", "replit", "lovable"]}
 
 def body(src, f):
     if src == O:
@@ -124,10 +145,13 @@ out = ['//! Brand and model marks, inlined from permissively licensed icon sets 
        '//! (`@lobehub/icons-static-svg`, MIT); company and integration marks from Simple Icons (CC0).',
        '//! Credits are in `THIRD_PARTY_NOTICES.md`. Trademarks belong to their owners.',
        '//!',
-       '//! Marks are monochrome by default (`currentColor`, per the colour rule); [`BrandIcon::svg`]',
-       '//! with `coloured = true` fills them with the brand colour instead. Renderers draw them',
-       '//! (Dioxus `BrandIcon`, GPUI `brand_icon`); [`brand`] resolves an id, title, alias or a model',
-       '//! name ("claude-sonnet-4", "gpt-4o") to a mark, and callers fall back to a monogram on `None`.',
+       '//! Renderers draw marks in their official colours by default (Dioxus `BrandIcon`, GPUI',
+       '//! `brand_icon` / `brand_mark`): the multi-colour version where the logo has one, else the brand',
+       '//! colour. Brands whose guidelines ask for black or white (OpenAI, xAI, Vercel, Zed\'s mono form…)',
+       '//! draw in solid black on the light theme and solid white on the dark one, never grey. [`BrandIcon::svg`] with',
+       '//! `coloured = false` gives the `currentColor` form for hosts that opt out (`--ox-icon-tone: mono`).',
+       '//! [`brand`] resolves an id, title, alias or a model name ("claude-sonnet-4", "gpt-4o") to a mark,',
+       '//! and callers fall back to a monogram on `None`.',
        '',
        '/// Where a mark comes from (its licence).',
        '#[derive(Clone, Copy, Debug, PartialEq, Eq)]',
@@ -212,7 +236,8 @@ def colour_body(i):
     if i in OWN_COLOURED: return OWN_COLOURED[i]
     t = open(f"{B}/lobe/icons/{COLOUR_LOBE[i]}.svg").read()
     inner = re.search(r"<svg[^>]*>(.*)</svg>", t, re.S).group(1)
-    return re.sub(r"<title>.*?</title>", "", inner, flags=re.S).strip()
+    # Gradient ids are made unique to Oxyn so they never clash with a host page's own.
+    return re.sub(r"<title>.*?</title>", "", inner, flags=re.S).strip().replace("lobe-icons-", "oxyn-brand-")
 out.append("")
 out.append("/// Full-colour marks (id, inner SVG with its own fills) for brands whose logo has more than one")
 out.append("/// colour: Lobe Icons' `-color` files, and Gmail, Google Drive, Slack and ClickUp drawn by Oxyn")
@@ -238,6 +263,11 @@ impl BrandIcon {
             None if self.display_hex().is_some() => self.svg(true),
             None => self.svg(false),
         }
+    }
+    /// True for brands drawn in solid black or white by their guidelines (OpenAI, xAI, Vercel,
+    /// Cursor…): renderers fill them with the theme's ink (black on the light theme, white on the dark one), not grey.
+    pub fn ink(&self) -> bool {
+        self.coloured_body().is_none() && self.display_hex().is_none()
     }
 }
 ''')
@@ -306,6 +336,14 @@ mod tests {
         assert_eq!(brand("sonnet-4").map(|b| b.id), Some("claude"));
         assert_eq!(brand("gpt-4o mini").map(|b| b.id), Some("openai"));
         assert_eq!(brand("o3").map(|b| b.id), Some("openai"));
+        assert_eq!(brand("GPT-6 Luna").map(|b| b.id), Some("openai"));
+        assert_eq!(brand("Sonnet 5.5").map(|b| b.id), Some("claude"));
+        assert_eq!(brand("Gemini 3.8 Flash").map(|b| b.id), Some("gemini"));
+        assert_eq!(brand("Claude Code").map(|b| b.id), Some("claudecode"));
+        assert_eq!(brand("Codex").map(|b| b.id), Some("codex"));
+        assert_eq!(brand("GitHub Copilot").map(|b| b.id), Some("githubcopilot"));
+        assert_eq!(brand("Zed").map(|b| b.id), Some("zed"));
+        assert_eq!(brand("MiniMax").map(|b| b.id), Some("minimax"));
         assert_eq!(brand("Llama 3.1 70B").map(|b| b.id), Some("meta"));
         assert_eq!(brand("Mistral AI").map(|b| b.id), Some("mistral"));
         assert_eq!(brand("Google Drive").map(|b| b.id), Some("googledrive"));
@@ -326,6 +364,9 @@ mod tests {
         assert!(BRANDS.iter().all(|b| !b.body.contains("fill=\\"#")));
         assert_eq!(brand("openai").unwrap().display_hex(), None);
         assert_eq!(brand("claude").unwrap().display_hex(), Some("D97757"));
+        assert!(brand("openai").unwrap().ink());
+        assert!(!brand("claude").unwrap().ink());
+        assert!(!brand("kimi").unwrap().ink());
     }
 
     #[test]

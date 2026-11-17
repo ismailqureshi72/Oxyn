@@ -95,7 +95,7 @@ pub fn ContextEffortMenu(
                 onkeydown: move |e: KeyboardEvent| if matches!(e.key(), Key::ArrowDown | Key::ArrowUp) && !open() {
                     e.prevent_default(); hi.set(cur_w); want.set(true); armed.set(true); open.set(true);
                 },
-                span { class: "oxec-model", "{model}" }
+                span { class: "oxec-model", crate::brand::MarkFor { name: model.clone(), size: 12.0 } "{model}" }
                 span { class: "oxec-sum", "{summary}" }
                 {chevron(false)}
             }

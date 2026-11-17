@@ -72,23 +72,25 @@ pub fn FileTypeIcon(
     plain: bool,
 ) -> Element {
     let k = FileKind::parse(&kind).unwrap_or(FileKind::Doc);
-    let c = format!("#{}", k.hex());
+    // The tone variable (icontone.css) carries the light and dark hue; the hex is its fallback.
+    let tone = format!("color:var(--ox-ic-{},#{})", k.tone().key(), k.hex());
+    let c = "currentColor";
     match k {
         FileKind::Folder => rsx! {
-            svg { class: "oxfi", width: "{size}", height: "{size}", view_box: "0 0 24 24", "aria-hidden": "true",
+            svg { class: "oxfi", style: "{tone}", width: "{size}", height: "{size}", view_box: "0 0 24 24", "aria-hidden": "true",
                 path { d: "M2.5 6.5A2 2 0 0 1 4.5 4.5h4.2l2 2.2h8.8a2 2 0 0 1 2 2v1H2.5z", fill: "{c}", opacity: ".75" }
                 path { d: "M2.5 9.2h19v8.8a2 2 0 0 1-2 2h-15a2 2 0 0 1-2-2z", fill: "{c}" }
             }
         },
         FileKind::Image => rsx! {
-            svg { class: "oxfi", width: "{size}", height: "{size}", view_box: "0 0 24 24", "aria-hidden": "true",
+            svg { class: "oxfi", style: "{tone}", width: "{size}", height: "{size}", view_box: "0 0 24 24", "aria-hidden": "true",
                 rect { x: "3", y: "3.5", width: "18", height: "17", rx: "4", fill: "{c}" }
                 circle { cx: "9", cy: "9.5", r: "2", fill: "#fff", opacity: ".95" }
                 path { d: "M3 17.5 8.5 13l3.5 3 3-2.5 6 4.5v1a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 18.5z", fill: "#fff", opacity: ".9" }
             }
         },
         _ => rsx! {
-            svg { class: "oxfi", width: "{size}", height: "{size}", view_box: "0 0 24 24", "aria-hidden": "true",
+            svg { class: "oxfi", style: "{tone}", width: "{size}", height: "{size}", view_box: "0 0 24 24", "aria-hidden": "true",
                 path { d: "M6 2.5h8.5L20 8v12a1.5 1.5 0 0 1-1.5 1.5h-12A1.5 1.5 0 0 1 5 20V4A1.5 1.5 0 0 1 6 2.5z", fill: "{c}" }
                 path { d: "M14.5 2.5V7a1 1 0 0 0 1 1H20z", fill: "#fff", opacity: ".45" }
                 if plain {

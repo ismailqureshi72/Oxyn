@@ -615,7 +615,7 @@ pub fn AgentCrew(
                                         PixelMark { mask: s.mark, active: c.state == CrewState::Active }
                                         span { class: "oxcw-nm",
                                             b { title: "{c.name}", "{c.name}" }
-                                            if !helper && !c.model.is_empty() { span { "{c.model}" } }
+                                            if !helper && !c.model.is_empty() { span { crate::brand::MarkFor { name: c.model.clone(), size: 11.0 } "{c.model}" } }
                                         }
                                         StateBadge { state: c.state, icon_only: helper }
                                     }

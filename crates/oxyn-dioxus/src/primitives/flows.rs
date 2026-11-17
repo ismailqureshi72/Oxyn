@@ -886,7 +886,7 @@ pub fn SmartFormFill(
             div { class: "cols",
                 div { class: "well",
                     div { class: "wh",
-                        span { class: if reading { "model reading" } else { "model" }, Icon { name: "spark", size: 12.0 } if reading { "Reading with {model}…" } else { "{model}" } }
+                        span { class: if reading { "model reading" } else { "model" }, if crate::brand::has_brand(&model) { crate::brand::BrandIcon { name: model.to_string(), size: 12.0 } } else { Icon { name: "spark", size: 12.0 } } if reading { "Reading with {model}…" } else { "{model}" } }
                         span { class: "sp" }
                         button { class: "lnk", r#type: "button", onclick: move |_| { let i = *sample.peek() % SAMPLES.len(); sample.set(i + 1); m.write().paste(SAMPLES[i].1, ClockMs(0)) }, "Try sample" }
                     }

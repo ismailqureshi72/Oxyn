@@ -164,7 +164,7 @@ pub fn AgentSequence(
                                                         div { class: "oxsq-tags",
                                                             span { class: "oxsq-tg", "{kind}" }
                                                             span { class: "oxsq-tg", if busy { "Working" } else { "Idle" } }
-                                                            if !p.model.is_empty() { span { class: "oxsq-tg", "{p.model}" } }
+                                                            if !p.model.is_empty() { span { class: "oxsq-tg", crate::brand::MarkFor { name: p.model.clone(), size: 11.0 } "{p.model}" } }
                                                         }
                                                         if !p.description.is_empty() { p { "{p.description}" } }
                                                         dl { class: "oxsq-stats",

@@ -227,7 +227,7 @@ pub fn TraceWaterfall(
                                     } else { span { class: "oxtw-chev-sp" } }
                                     span { class: "oxtw-kg", "data-kind": s.kind.id(),
                                         if s.kind == TwKind::Tool && oxyn_core::brand::brand(&s.detail).is_some() {
-                                            BrandIcon { name: s.detail.clone(), size: 12.0, coloured: false }
+                                            BrandIcon { name: s.detail.clone(), size: 12.0 }
                                         } else { {icon(kind_glyph(s.kind), 12)} }
                                     }
                                     span { class: "oxtw-nm", "{s.name}" }

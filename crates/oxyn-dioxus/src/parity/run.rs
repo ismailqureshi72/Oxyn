@@ -480,7 +480,7 @@ fn crew_card(a: &CrewAgent, now: ClockMs, depth: usize, has_kids: bool, folded: 
             div { class: "oxr-body",
                 div { class: "oxr-line",
                     span { class: "oxr-title", "{a.name}" }
-                    if let Some(m) = a.model.clone() { span { class: "oxr-dim oxr-small", "{m}" } }
+                    if let Some(m) = a.model.clone() { span { class: "oxr-dim oxr-small oxr-site", title: "{m}", if crate::brand::has_brand(&m) { crate::brand::BrandIcon { name: m.clone(), size: 11.0 } } span { class: "oxr-clip", "{m}" } } }
                     if a.state == StepState::Waiting { span { class: "oxr-badge waiting", "Needs you" } }
                     if a.state == StepState::Failed { span { class: "oxr-badge failed", "Failed" } }
                 }
@@ -998,7 +998,7 @@ pub fn AgentRun(
     };
     rsx! {
         section { class: "oxr-run",
-            header { class: "oxr-hd", span { class: "oxr-av", "{model.chars().next().unwrap_or('M')}" } div { class: "oxr-body", h3 { "{task}" } div { class: "oxr-dim oxr-small", "{model}" } } }
+            header { class: "oxr-hd", span { class: "oxr-av", if crate::brand::has_brand(&model) { crate::brand::BrandIcon { name: model.to_string(), size: 13.0 } } else { "{model.chars().next().unwrap_or('M')}" } } div { class: "oxr-body", h3 { "{task}" } div { class: "oxr-dim oxr-small", "{model}" } } }
             AgentTrail { trail, now, dense: true }
             if let Some((file, diff)) = change {
                 div { class: "oxr-change",

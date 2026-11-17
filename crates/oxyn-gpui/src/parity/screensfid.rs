@@ -10,6 +10,7 @@ use gpui::{
     App, Div, FontWeight, IntoElement, ParentElement, RenderOnce, SharedString, Styled, Window,
     div, prelude::*, px,
 };
+use oxyn_core::icon_tone::IconTone;
 use oxyn_core::parity::screensfid::{
     APP_TABS, CRM_VIEWS, DealSort, KB_COLS, KB_PRI, PERSON, PERSON_INI, ScreenState, ShellLayout,
     StepState, WORKSPACE, ago, angles, app_view, apps, board, close_words, col_label, column,
@@ -18,10 +19,15 @@ use oxyn_core::parity::screensfid::{
     stage_label, stage_totals, starters, step_state, synced_words, task_key, threads, total_size,
     usd, view_count,
 };
+use oxyn_core::parity::screensfid::{
+    EnvMode, PERSON_EMAIL, PERSON_PLAN, SIDE_W, STAGE_H, STAGE_STATES, STAGE_W, STATE_BAR_H, TOP_H,
+    WORK_W, account_menu, context_card, thousands, usage,
+};
 use oxyn_tokens::Theme;
 
 use super::Act;
 use super::rulerfid::{ThPal, fire, th_pal};
+use crate::brand::{brand_mark, tone_color};
 
 pub(super) fn skel(p: &ThPal, n: usize) -> Div {
     let mut d = div().flex().flex_col().gap(px(10.)).p(px(10.));
@@ -60,6 +66,58 @@ pub(super) fn gh(p: &ThPal, t: &'static str) -> Div {
         .child(t)
 }
 
+/// A small object glyph in its semantic tone (a folder tab over a body, or a rounded tile).
+pub(super) fn tone_ic(p: &ThPal, tone: IconTone) -> Div {
+    let c = tone_color(tone, p.fg.l > 0.5);
+    let tile = div().w(px(14.)).h(px(11.)).rounded(px(3.)).bg(c);
+    if tone == IconTone::Folder {
+        div()
+            .flex_none()
+            .flex()
+            .flex_col()
+            .child(
+                div()
+                    .w(px(6.))
+                    .h(px(2.))
+                    .rounded_t(px(1.5))
+                    .bg(c.opacity(0.75)),
+            )
+            .child(tile)
+    } else {
+        div().flex_none().child(tile)
+    }
+}
+
+/// A row with an object glyph in front (projects, files).
+pub(super) fn row_ic(p: &ThPal, tone: IconTone, t: String, a: String, on: bool) -> Div {
+    div()
+        .flex()
+        .items_center()
+        .gap(px(8.))
+        .h(px(30.))
+        .px(px(8.))
+        .rounded(px(8.))
+        .when(on, |d| d.bg(p.sel))
+        .text_color(p.fg2)
+        .child(tone_ic(p, tone))
+        .child(
+            div()
+                .flex_1()
+                .min_w_0()
+                .overflow_hidden()
+                .whitespace_nowrap()
+                .text_ellipsis()
+                .child(t),
+        )
+        .child(
+            div()
+                .flex_none()
+                .text_size(px(12.))
+                .text_color(p.mute)
+                .child(a),
+        )
+}
+
 pub(super) fn row(p: &ThPal, t: String, a: String, on: bool) -> Div {
     div()
         .flex()
@@ -76,7 +134,7 @@ pub(super) fn row(p: &ThPal, t: String, a: String, on: bool) -> Div {
 
 fn sidebar(p: &ThPal, st: ScreenState, act: &Option<Act>, runs: bool) -> Div {
     let mut s = div()
-        .w(px(248.))
+        .w(px(SIDE_W.0 as f32))
         .flex_none()
         .flex()
         .flex_col()
@@ -133,6 +191,9 @@ fn sidebar(p: &ThPal, st: ScreenState, act: &Option<Act>, runs: bool) -> Div {
                 .on_click(move |_, w, cx| f(w, cx)),
         );
     }
+    if !runs {
+        s = s.child(env_seg(p, EnvMode::Local, act));
+    }
     match st {
         ScreenState::Loading => s = s.child(gh(p, "Chats")).child(skel(p, 6)),
         ScreenState::Empty => {
@@ -157,8 +218,9 @@ fn sidebar(p: &ThPal, st: ScreenState, act: &Option<Act>, runs: bool) -> Div {
             }
             s = s.child(gh(p, "Projects"));
             for pr in projects() {
-                s = s.child(row(
+                s = s.child(row_ic(
                     p,
+                    IconTone::Folder,
                     pr.label.to_string(),
                     pr.chats.len().to_string(),
                     false,
@@ -170,27 +232,378 @@ fn sidebar(p: &ThPal, st: ScreenState, act: &Option<Act>, runs: bool) -> Div {
             }
         }
     }
-    s.child(div().flex_1()).child(
+    s.child(div().flex_1()).child(side_foot(p, act))
+}
+
+/// The Local / Cloud control (`env-local`, `env-cloud`).
+fn env_seg(p: &ThPal, cur: EnvMode, act: &Option<Act>) -> Div {
+    let mut seg = div()
+        .flex()
+        .gap(px(2.))
+        .mt(px(8.))
+        .mb(px(2.))
+        .p(px(2.))
+        .rounded(px(9.))
+        .bg(p.sel);
+    for m in EnvMode::ALL {
+        let id: &'static str = if m == EnvMode::Cloud {
+            "env-cloud"
+        } else {
+            "env-local"
+        };
+        let f = fire(act, id);
+        let on = m == cur;
+        let tone = if m == EnvMode::Cloud {
+            IconTone::Cloud
+        } else {
+            IconTone::Terminal
+        };
+        seg = seg.child(
+            div()
+                .id(id)
+                .flex_1()
+                .h(px(26.))
+                .flex()
+                .items_center()
+                .justify_center()
+                .gap(px(6.))
+                .rounded(px(7.))
+                .text_size(px(12.5))
+                .text_color(p.mute)
+                .when(on, |d| d.bg(p.card).text_color(p.fg))
+                .child(div().w(px(8.)).h(px(8.)).rounded(px(4.)).bg(if on {
+                    tone_color(tone, p.fg.l > 0.5)
+                } else {
+                    p.mute
+                }))
+                .child(m.label())
+                .on_click(move |_, w, cx| f(w, cx)),
+        );
+    }
+    seg
+}
+
+fn avatar(p: &ThPal, d: f32) -> Div {
+    div()
+        .w(px(d))
+        .h(px(d))
+        .flex_none()
+        .rounded(px(d / 2.))
+        .bg(tone_color(IconTone::Skills, p.fg.l > 0.5).opacity(0.22))
+        .flex()
+        .items_center()
+        .justify_center()
+        .text_size(px(11.))
+        .font_weight(FontWeight::SEMIBOLD)
+        .child(PERSON_INI)
+}
+
+fn two_line(p: &ThPal, a: &'static str, b: &'static str) -> Div {
+    div()
+        .flex_1()
+        .min_w_0()
+        .flex()
+        .flex_col()
+        .child(
+            div()
+                .text_size(px(13.))
+                .font_weight(FontWeight::MEDIUM)
+                .whitespace_nowrap()
+                .overflow_hidden()
+                .text_ellipsis()
+                .child(a),
+        )
+        .child(
+            div()
+                .text_size(px(11.5))
+                .text_color(p.mute)
+                .whitespace_nowrap()
+                .overflow_hidden()
+                .text_ellipsis()
+                .child(b),
+        )
+}
+
+/// The sidebar bottom: the context card slot (first card by priority), then the account row
+/// (avatar, name over plan, up/down chevron) and the bell (`acct`, `bell`).
+fn side_foot(p: &ThPal, act: &Option<Act>) -> Div {
+    let mut f = div()
+        .flex()
+        .flex_col()
+        .gap(px(6.))
+        .mx(px(-8.))
+        .mb(px(-8.))
+        .p(px(8.))
+        .border_t_1()
+        .border_color(p.line);
+    if let Some((_, t, l)) = context_card(&[]) {
+        f = f.child(
+            div()
+                .p(px(10.))
+                .rounded(px(10.))
+                .bg(p.card)
+                .border_1()
+                .border_color(p.line)
+                .child(
+                    div()
+                        .flex()
+                        .items_center()
+                        .gap(px(7.))
+                        .text_size(px(12.5))
+                        .font_weight(FontWeight::SEMIBOLD)
+                        .child(
+                            div()
+                                .w(px(7.))
+                                .h(px(7.))
+                                .rounded(px(4.))
+                                .bg(tone_color(IconTone::Running, p.fg.l > 0.5)),
+                        )
+                        .child(t),
+                )
+                .child(div().text_size(px(12.)).text_color(p.mute).child(l)),
+        );
+    }
+    let fa = fire(act, "acct");
+    let fb = fire(act, "bell");
+    f.child(
         div()
             .flex()
             .items_center()
-            .gap(px(8.))
-            .h(px(36.))
-            .px(px(6.))
+            .gap(px(2.))
             .child(
                 div()
-                    .w(px(26.))
-                    .h(px(26.))
-                    .rounded(px(13.))
-                    .bg(p.sel)
+                    .id("acct")
+                    .flex_1()
+                    .min_w_0()
+                    .h(px(44.))
+                    .px(px(6.))
+                    .flex()
+                    .items_center()
+                    .gap(px(9.))
+                    .rounded(px(9.))
+                    .child(avatar(p, 28.))
+                    .child(two_line(p, PERSON, PERSON_PLAN))
+                    .child(div().text_color(p.mute).child("⌄"))
+                    .on_click(move |_, w, cx| fa(w, cx)),
+            )
+            .child(
+                div()
+                    .id("bell")
+                    .relative()
+                    .w(px(30.))
+                    .h(px(30.))
                     .flex()
                     .items_center()
                     .justify_center()
-                    .text_size(px(10.5))
-                    .child(PERSON_INI),
-            )
-            .child(PERSON),
+                    .rounded(px(8.))
+                    .text_color(p.mute)
+                    .child(
+                        div()
+                            .w(px(12.))
+                            .h(px(11.))
+                            .rounded_t(px(6.))
+                            .border_1()
+                            .border_color(p.mute),
+                    )
+                    .child(
+                        div()
+                            .absolute()
+                            .top(px(3.))
+                            .right(px(2.))
+                            .min_w(px(14.))
+                            .h(px(14.))
+                            .px(px(3.))
+                            .rounded(px(7.))
+                            .bg(tone_color(IconTone::Failed, p.fg.l > 0.5))
+                            .text_color(gpui::white())
+                            .text_size(px(9.5))
+                            .flex()
+                            .items_center()
+                            .justify_center()
+                            .child("3"),
+                    )
+                    .on_click(move |_, w, cx| fb(w, cx)),
+            ),
     )
+}
+
+/// The account menu that opens upward from the sidebar's account row: a header (avatar, name,
+/// email, plan), Settings, Usage ▸, Upgrade plan, Language, Appearance, Keyboard shortcuts,
+/// Integrations, Download apps, Changelog, Feedback & help ▸ and Log out, with the Usage flyout
+/// (plan, renewal, credits meter, quotas, View usage) beside it when `usage(true)`. Items fire
+/// their key (`settings`, `usage`, `logout`…).
+#[derive(IntoElement)]
+pub struct AccountMenuEl {
+    usage: bool,
+    act: Option<Act>,
+    theme: &'static Theme,
+}
+
+impl Default for AccountMenuEl {
+    fn default() -> Self {
+        Self {
+            usage: true,
+            act: None,
+            theme: &Theme::DARK,
+        }
+    }
+}
+
+impl AccountMenuEl {
+    /// Show the Usage flyout (default true).
+    pub fn usage(mut self, on: bool) -> Self {
+        self.usage = on;
+        self
+    }
+    /// Light or dark chrome.
+    pub fn theme(mut self, t: &'static Theme) -> Self {
+        self.theme = t;
+        self
+    }
+    /// An item's key (`settings`, `usage`…) when it is pressed.
+    pub fn on_act(mut self, a: Act) -> Self {
+        self.act = Some(a);
+        self
+    }
+}
+
+fn menu_box(p: &ThPal, w: f32) -> Div {
+    div()
+        .w(px(w))
+        .flex_none()
+        .flex()
+        .flex_col()
+        .p(px(5.))
+        .rounded(px(12.))
+        .bg(p.card)
+        .border_1()
+        .border_color(p.line)
+        .text_size(px(13.))
+        .text_color(p.fg2)
+}
+
+fn menu_sep(p: &ThPal) -> Div {
+    div().h(px(1.)).mx(px(6.)).my(px(4.)).bg(p.line)
+}
+
+impl RenderOnce for AccountMenuEl {
+    fn render(self, _: &mut Window, _: &mut App) -> impl IntoElement {
+        let p = th_pal(self.theme);
+        let dark = p.fg.l > 0.5;
+        let u = usage();
+        let accent = tone_color(IconTone::Skills, dark);
+        let mut m = menu_box(&p, 264.).child(
+            div()
+                .flex()
+                .items_center()
+                .gap(px(10.))
+                .px(px(8.))
+                .pt(px(8.))
+                .pb(px(10.))
+                .mb(px(4.))
+                .border_b_1()
+                .border_color(p.line)
+                .child(avatar(&p, 32.))
+                .child(two_line(&p, PERSON, PERSON_EMAIL))
+                .child(
+                    div()
+                        .h(px(20.))
+                        .px(px(7.))
+                        .rounded(px(10.))
+                        .bg(accent.opacity(0.16))
+                        .text_color(accent)
+                        .text_size(px(11.))
+                        .font_weight(FontWeight::SEMIBOLD)
+                        .flex()
+                        .items_center()
+                        .child(u.plan),
+                ),
+        );
+        for (k, l, _, h) in account_menu().iter().copied() {
+            if k.is_empty() {
+                m = m.child(menu_sep(&p));
+                continue;
+            }
+            let id = SharedString::from(format!("acct-{k}"));
+            let f = fire(&self.act, k);
+            let on = self.usage && k == "usage";
+            m = m.child(
+                div()
+                    .id(id)
+                    .h(px(32.))
+                    .px(px(8.))
+                    .flex()
+                    .items_center()
+                    .gap(px(8.))
+                    .rounded(px(8.))
+                    .when(on, |d| d.bg(p.sel).text_color(p.fg))
+                    .when(k == "upgrade", |d| d.text_color(accent))
+                    .child(
+                        div()
+                            .flex_1()
+                            .min_w_0()
+                            .overflow_hidden()
+                            .whitespace_nowrap()
+                            .child(l),
+                    )
+                    .child(div().text_size(px(11.5)).text_color(p.mute).child(h))
+                    .on_click(move |_, w, cx| f(w, cx)),
+            );
+        }
+        let mut out = div().flex().items_end().gap(px(6.)).child(m);
+        if self.usage {
+            let pct = u.pct();
+            let bar = if u.near() {
+                IconTone::Schedule
+            } else {
+                IconTone::Running
+            };
+            let mut fly = menu_box(&p, 248.)
+                .child(
+                    div()
+                        .px(px(8.))
+                        .pt(px(6.))
+                        .pb(px(8.))
+                        .child(two_line(&p, "Pro plan", u.renews)),
+                )
+                .child(
+                    div()
+                        .px(px(8.))
+                        .pb(px(8.))
+                        .flex()
+                        .flex_col()
+                        .gap(px(6.))
+                        .child(
+                            div()
+                                .flex()
+                                .text_size(px(12.5))
+                                .child(div().flex_1().child("Credits"))
+                                .child(div().text_color(p.mute).child(format!(
+                                    "{} of {} · {pct}%",
+                                    thousands(u.used),
+                                    thousands(u.total)
+                                ))),
+                        )
+                        .child(
+                            div().h(px(6.)).rounded(px(3.)).bg(p.line).child(
+                                div()
+                                    .h_full()
+                                    .w(px(232. * pct as f32 / 100.))
+                                    .rounded(px(3.))
+                                    .bg(tone_color(bar, dark)),
+                            ),
+                        ),
+                );
+            for &(l, used, lim) in &u.quotas {
+                fly = fly.child(row(&p, l.to_string(), format!("{used} / {lim}"), false));
+            }
+            fly = fly
+                .child(menu_sep(&p))
+                .child(row(&p, "View usage".into(), String::new(), false));
+            out = out.child(fly);
+        }
+        out
+    }
 }
 
 pub(super) fn page(p: &ThPal, title: &'static str, body: Div) -> Div {
@@ -200,7 +613,7 @@ pub(super) fn page(p: &ThPal, title: &'static str, body: Div) -> Div {
         .flex_col()
         .child(
             div()
-                .h(px(46.))
+                .h(px(TOP_H as f32))
                 .px(px(14.))
                 .flex()
                 .items_center()
@@ -214,7 +627,7 @@ pub(super) fn page(p: &ThPal, title: &'static str, body: Div) -> Div {
 
 fn work_pane(p: &ThPal, w: Div) -> Div {
     div()
-        .w(px(340.))
+        .w(px(WORK_W.0 as f32))
         .flex_none()
         .border_l_1()
         .border_color(p.line)
@@ -247,8 +660,8 @@ pub(super) fn frame(
         ShellLayout::Flat => pg.border_l_1().border_color(p.line),
     };
     let root = div()
-        .w(px(1100.))
-        .h(px(660.))
+        .w(px(STAGE_W as f32))
+        .h(px(STAGE_H as f32))
         .flex()
         .rounded(px(16.))
         .border_1()
@@ -314,6 +727,114 @@ fn msg(p: &ThPal, me: bool, t: &'static str) -> Div {
             .gap(px(10.))
             .child(div().w(px(20.)).h(px(20.)).rounded(px(10.)).bg(p.sel))
             .child(div().max_w(px(560.)).child(t))
+    }
+}
+
+/// The screen stage (rules R1/R2): a screen on its fixed 1440 × 900 canvas, with the 52 px state
+/// bar under it (Data · Loading · Empty) firing `state-sample`, `state-loading` or `state-empty`
+/// so the host re-renders the screen in that state. GPUI has no element transform, so the canvas
+/// draws at its native size: size the window (or a scroll view) with
+/// `oxyn_core::parity::screensfid::stage_scale`.
+#[derive(IntoElement)]
+pub struct ScreenStageEl {
+    screen: gpui::AnyElement,
+    state: ScreenState,
+    bar: bool,
+    act: Option<Act>,
+    theme: &'static Theme,
+}
+
+impl ScreenStageEl {
+    /// A stage around `screen` (any screen element, already in its state).
+    pub fn new(screen: impl IntoElement) -> Self {
+        Self {
+            screen: screen.into_any_element(),
+            state: ScreenState::Sample,
+            bar: true,
+            act: None,
+            theme: &Theme::DARK,
+        }
+    }
+    /// The state the bar shows as current.
+    pub fn state(mut self, s: ScreenState) -> Self {
+        self.state = s;
+        self
+    }
+    /// Show the state bar (default true).
+    pub fn bar(mut self, on: bool) -> Self {
+        self.bar = on;
+        self
+    }
+    /// Light or dark chrome.
+    pub fn theme(mut self, t: &'static Theme) -> Self {
+        self.theme = t;
+        self
+    }
+    /// `state-<key>` from the bar.
+    pub fn on_act(mut self, a: Act) -> Self {
+        self.act = Some(a);
+        self
+    }
+}
+
+impl RenderOnce for ScreenStageEl {
+    fn render(self, _: &mut Window, _: &mut App) -> impl IntoElement {
+        let p = th_pal(self.theme);
+        let canvas = div()
+            .w(px(STAGE_W as f32))
+            .h(px(STAGE_H as f32))
+            .flex_none()
+            .overflow_hidden()
+            .child(self.screen);
+        let mut seg = div().flex().gap(px(2.)).p(px(2.)).rounded(px(9.)).bg(p.sel);
+        for (k, l) in STAGE_STATES {
+            let id: &'static str = match k {
+                "loading" => "state-loading",
+                "empty" => "state-empty",
+                _ => "state-sample",
+            };
+            let on = self.state.key() == k;
+            let fi = fire(&self.act, id);
+            seg = seg.child(
+                div()
+                    .id(id)
+                    .h(px(28.))
+                    .px(px(12.))
+                    .flex()
+                    .items_center()
+                    .rounded(px(7.))
+                    .when(on, |d| d.bg(p.card).text_color(p.fg))
+                    .child(l)
+                    .on_click(move |_, w, cx| fi(w, cx)),
+            );
+        }
+        let bar = div()
+            .w(px(STAGE_W as f32))
+            .h(px(STATE_BAR_H as f32))
+            .flex_none()
+            .flex()
+            .items_center()
+            .gap(px(12.))
+            .px(px(16.))
+            .border_t_1()
+            .border_color(p.line)
+            .bg(p.card)
+            .text_size(px(12.5))
+            .text_color(p.mute)
+            .child(
+                div()
+                    .text_color(p.fg2)
+                    .font_weight(FontWeight::SEMIBOLD)
+                    .child("State"),
+            )
+            .child(seg)
+            .child(div().flex_1())
+            .child(format!("{STAGE_W} × {STAGE_H}"));
+        div()
+            .flex()
+            .flex_col()
+            .child(canvas)
+            .when(self.bar, |d| d.child(bar))
     }
 }
 
@@ -1120,11 +1641,20 @@ impl RenderOnce for FoldersEl {
                             .flex()
                             .flex_col()
                             .gap(px(8.))
-                            .child(div().font_weight(FontWeight::SEMIBOLD).child(if f.starred {
-                                format!("★ {}", f.name)
-                            } else {
-                                f.name.clone()
-                            }))
+                            .child(
+                                div()
+                                    .flex()
+                                    .items_center()
+                                    .gap(px(8.))
+                                    .child(tone_ic(&p, IconTone::Folder))
+                                    .child(div().font_weight(FontWeight::SEMIBOLD).child(
+                                        if f.starred {
+                                            format!("★ {}", f.name)
+                                        } else {
+                                            f.name.clone()
+                                        },
+                                    )),
+                            )
                             .child(div().text_color(p.mute).child(f.note.clone()))
                             .child(
                                 div()
@@ -1194,8 +1724,9 @@ impl RenderOnce for FolderDetailEl {
                     .border_color(p.line)
                     .child(row(&p, "Name".into(), "Edited · Size".into(), false));
                 for x in &files {
-                    tb = tb.child(row(
+                    tb = tb.child(row_ic(
                         &p,
+                        IconTone::for_file(&x.name),
                         format!("{}  ·  {}", x.name, x.kind),
                         format!("{} · {}", ago(x.mins), size_label(x.kb)),
                         false,
@@ -1313,7 +1844,14 @@ impl RenderOnce for IntegrationsEl {
                         .flex()
                         .flex_col()
                         .gap(px(6.))
-                        .child(div().font_weight(FontWeight::SEMIBOLD).child(a.name))
+                        .child(
+                            div()
+                                .flex()
+                                .items_center()
+                                .gap(px(8.))
+                                .children(brand_mark(a.id, 20., p.fg))
+                                .child(div().font_weight(FontWeight::SEMIBOLD).child(a.name)),
+                        )
                         .child(div().text_color(p.fg2).child(a.blurb))
                         .child(div().text_color(p.mute).child(if a.connected {
                             "Connected · Manage"

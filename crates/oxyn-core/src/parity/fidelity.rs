@@ -122,16 +122,22 @@ impl FileKind {
             Self::Folder => "Everything inside it",
         }
     }
-    /// The file-type colour (`RRGGBB`), as file icons draw it.
-    pub fn hex(self) -> &'static str {
+    /// The semantic icon tone (`crate::icon_tone`): folder light blue, PDF red, sheet green…
+    pub fn tone(self) -> crate::icon_tone::IconTone {
+        use crate::icon_tone::IconTone;
         match self {
-            Self::Pdf => "E5322D",
-            Self::Image => "8B5CF6",
-            Self::Sheet => "1D9A5B",
-            Self::Doc => "2F6FEB",
-            Self::Code => "64748B",
-            Self::Folder => "3BA7F5",
+            Self::Pdf => IconTone::Pdf,
+            Self::Image => IconTone::Image,
+            Self::Sheet => IconTone::Sheet,
+            Self::Doc => IconTone::Doc,
+            Self::Code => IconTone::Code,
+            Self::Folder => IconTone::Folder,
         }
+    }
+    /// The file-type colour on the light theme (`RRGGBB`), as file icons draw it; the dark
+    /// theme's is `self.tone().dark()`.
+    pub fn hex(self) -> &'static str {
+        self.tone().light()
     }
     /// The short badge on the icon.
     pub fn badge(self) -> &'static str {
