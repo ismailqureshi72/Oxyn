@@ -161,6 +161,7 @@
 .oxoh-x{position:absolute;left:0;right:0;bottom:0;height:16px;font-size:11px;color:var(--oxth-mute)}
 .oxoh-x span{position:absolute;transform:translateX(-50%);white-space:nowrap}
 .oxoh-x span:first-child{transform:none}
+.oxoh-x span:last-child{transform:translateX(-100%)}
 .oxoh-next{display:flex;align-items:center;gap:4px;min-width:0;margin:10px 0 0;font-size:13px;color:var(--oxth-fg)}
 .oxoh-next b{font-weight:600;flex:none}
 .oxoh-ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
@@ -342,9 +343,11 @@
   .oxscn-top .oxos-q{display:none}
   .oxscn-top .oxo-seg{display:none}
 }
+@container oxo (max-width: 680px){
+  .oxoh-rhy{display:none}
+}
 @container oxo (max-width: 760px){
   .oxog,.oxos,.oxoh,.oxou,.oxop{padding-left:12px;padding-right:12px}
-  .oxoh-rhy{display:none}
   .oxor-trace{--oxor-l:200px}
 }
 @container oxo (max-width: 560px){

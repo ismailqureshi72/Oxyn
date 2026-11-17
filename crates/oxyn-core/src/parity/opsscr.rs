@@ -229,7 +229,7 @@ pub fn agents(sample: bool) -> Vec<Agent> {
         runs,
         spend,
         now,
-        brief: "You work in the Fieldwork monorepo. Keep pull requests small, write tests first and never deploy to production without a person approving it. When a migration touches user data, run it on staging first and post the plan in the thread.",
+        brief: "You work in the Kestrel monorepo. Keep pull requests small, write tests first and never deploy to production without a person approving it. When a migration touches user data, run it on staging first and post the plan in the thread.",
         skills: &["Code review", "Release notes", "Spreadsheet analysis"],
         recent: &[
             ("Migrate users table", "now"),
@@ -453,7 +453,7 @@ pub fn skills(sample: bool) -> Vec<Skill> {
         s(
             1,
             "Brand voice",
-            "Writes in Fieldwork's tone – short, warm, no jargon",
+            "Writes in Kestrel's tone – short, warm, no jargon",
             "pen",
             "pink",
             "writing",

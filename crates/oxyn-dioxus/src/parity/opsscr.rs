@@ -1007,8 +1007,8 @@ pub fn UsageScreen(
                                         line { x1: "{lx}", y1: "{ly}", x2: "{fx}", y2: "{fy}", class: "oxou-fline", vector_effect: "non-scaling-stroke" }
                                     }
                                 }
-                                span { class: "oxou-bl", style: "top:calc({by / 62.0 * 100.0}% - 16px)", "Budget {euro0(BUDGET)}" }
-                                if !daily { span { class: "oxou-dot", style: "left:{lx}%;top:{ly / 62.0 * 100.0}%" } }
+                                span { class: "oxou-bl", style: "top:{by / 62.0 * 148.0 - 16.0}px", "Budget {euro0(BUDGET)}" }
+                                if !daily { span { class: "oxou-dot", style: "left:{lx}%;top:{ly / 62.0 * 148.0}px" } }
                                 div { class: "oxou-x", for (l, d) in [("Nov 1", 0u32), ("Nov 8", 7), ("Nov 15", 14), ("Nov 23", 22), ("Nov 30", 29)] { span { key: "{l}", style: "left:{px(d)}%", "{l}" } } }
                             }
                             div { class: "oxou-stats",
