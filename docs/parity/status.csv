@@ -115,12 +115,12 @@ affectUI,Agent / Skills,https://www.affectui.com/screens/agent-skills,Screens ·
 affectUI,Agent / Tasks,https://www.affectui.com/screens/agent-tasks,Screens · App screens,Pro,background-jobs,S1,#39,planned
 affectUI,Agent / Thread,https://www.affectui.com/screens/agent-thread,Screens · App screens,Pro,ai-chat-screens,,#27,built
 affectUI,Agent / Usage,https://www.affectui.com/screens/agent-usage,Screens · App screens,Pro,run-meter,S2,#39,planned
-affectUI,AI Chat / Agents,https://www.affectui.com/screens/agent-chat,Screens · App screens,Pro,ai-chat-screens,S3,#27,built
-affectUI,AI Chat / Double Sidebar,https://www.affectui.com/screens/agent-chat-rail,Screens · App screens,Pro,ai-chat-screens,S3,#27,built
-affectUI,AI Chat / Overview,https://www.affectui.com/screens/assistant-overview,Screens · App screens,Pro,ai-chat-screens,S3,#27,built
-affectUI,AI Chat / Progress,https://www.affectui.com/screens/agent-chat-progress,Screens · App screens,Pro,ai-chat-screens,S3,#27,built
-affectUI,AI Chat / Run,https://www.affectui.com/screens/agent-run,Screens · App screens,Pro,ai-chat-screens,S3,#27,built
-affectUI,AI Chat / Start,https://www.affectui.com/screens/assistant-home,Screens · App screens,Pro,ai-chat-screens,S3,#27,built
+affectUI,AI Chat / Agents,https://www.affectui.com/screens/agent-chat,Screens · App screens,Pro,"chat-agents, chat-composer",S3,S1,built
+affectUI,AI Chat / Double Sidebar,https://www.affectui.com/screens/agent-chat-rail,Screens · App screens,Pro,"chat-double-sidebar, chat-composer",S3,S1,built
+affectUI,AI Chat / Overview,https://www.affectui.com/screens/assistant-overview,Screens · App screens,Pro,"chat-overview, chat-composer",S3,S1,built
+affectUI,AI Chat / Progress,https://www.affectui.com/screens/agent-chat-progress,Screens · App screens,Pro,"chat-progress, chat-composer",S3,S1,built
+affectUI,AI Chat / Run,https://www.affectui.com/screens/agent-run,Screens · App screens,Pro,"chat-run, chat-composer",S3,S1,built
+affectUI,AI Chat / Start,https://www.affectui.com/screens/assistant-home,Screens · App screens,Pro,"chat-start, chat-composer",S3,S1,built
 affectUI,Analytics,https://www.affectui.com/screens/analytics,Screens · App screens,Pro,genui-blocks,S7,#41,planned
 affectUI,App Shell Flat,https://www.affectui.com/screens/app-shell-flat,Screens · App screens,Pro,workspace-chrome,,#27,built
 affectUI,App Shell Inset,https://www.affectui.com/screens/app-shell,Screens · App screens,Pro,workspace-chrome,,#27,built
@@ -692,12 +692,12 @@ Oxyn,Theme Selector · Display comfort,,Theme Selector,Free,display-comfort,vari
 Oxyn,Screens · App shell · Inset,,Screens,Free,shell-inset,screens-1,#42,built
 Oxyn,Screens · App shell · Flat,,Screens,Free,shell-flat,screens-1,#42,built
 Oxyn,Screens · Three-pane shell,,Screens,Free,shell-three-pane,screens-1,#42,built
-Oxyn,Screens · AI Chat · Start,,Screens,Free,chat-start,screens-1,#42,built
-Oxyn,Screens · AI Chat · Overview,,Screens,Free,chat-overview,screens-1,#42,built
-Oxyn,Screens · AI Chat · Agents,,Screens,Free,chat-agents,screens-1,#42,built
-Oxyn,Screens · AI Chat · Double sidebar,,Screens,Free,chat-double-sidebar,screens-1,#42,built
-Oxyn,Screens · AI Chat · Progress,,Screens,Free,chat-progress,screens-1,#42,built
-Oxyn,Screens · AI Chat · Run,,Screens,Free,chat-run,screens-1,#42,built
+Oxyn,Screens · AI Chat · Start,,Screens,Free,chat-start,screens-1,S1,built
+Oxyn,Screens · AI Chat · Overview,,Screens,Free,chat-overview,screens-1,S1,built
+Oxyn,Screens · AI Chat · Agents,,Screens,Free,chat-agents,screens-1,S1,built
+Oxyn,Screens · AI Chat · Double sidebar,,Screens,Free,chat-double-sidebar,screens-1,S1,built
+Oxyn,Screens · AI Chat · Progress,,Screens,Free,chat-progress,screens-1,S1,built
+Oxyn,Screens · AI Chat · Run,,Screens,Free,chat-run,screens-1,S1,built
 Oxyn,Screens · Folders · Overview,,Screens,Free,folders-overview,screens-1,#42,built
 Oxyn,Screens · Folders · Detail,,Screens,Free,folders-detail,screens-1,#42,built
 Oxyn,Screens · Integrations,,Screens,Free,integrations,screens-1,#42,built
