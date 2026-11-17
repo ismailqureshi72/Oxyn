@@ -1,43 +1,59 @@
 ---
-import { REPO } from '../../lib/data';
+// Site footer: a release-notes / GitHub star call to action, link columns, the agents Oxyn works
+// with (brand marks in their own colours), a status line with the theme switch, the MIT note and
+// credits, and the Oxyn wordmark set large at the very bottom. Monochrome apart from the marks.
+import ThemeRadios from './ThemeRadios.astro';
+import { icon } from './icons';
+import { mark, brands } from './brands';
+import { starCount } from './meta';
+import { REPO, counts } from '../../lib/data';
+const stars = await starCount();
+const cols: [string, [string, string][]][] = [
+  ['Library', [['Components', '/components/'], ['Screens', '/screens/'], ['Motion', '/motion/'], ['Compare', '/compare/'], ['Pricing', '/pricing/']]],
+  ['Docs', [['Introduction', '/docs/'], ['Installation', '/docs/installation/'], ['Theming and tokens', '/docs/theming/'], ['Accessibility', '/docs/accessibility/'], ['Guides', '/guides/']]],
+  ['Project', [['GitHub', REPO], ['Licence (MIT)', `${REPO}/blob/main/LICENSE`], ['Third-party notices', `${REPO}/blob/main/THIRD_PARTY_NOTICES.md`], ['Contributing', `${REPO}/blob/main/CONTRIBUTING.md`], ['Security', `${REPO}/blob/main/SECURITY.md`]]],
+];
+const agents = ['claude-code', 'codex', 'cursor', 'gemini-cli', 'github-copilot', 'zed'];
 ---
-<footer class="x-ft" data-pagefind-ignore>
-  <div class="ft-in">
-    <div class="ft-brand">
-      <a class="wm" href="/">oxyn</a>
-      <p>Agent-UI components for Rust – Dioxus on the web, GPUI on the desktop. Open source, MIT.</p>
-      <label class="ft-motion"><input type="checkbox" data-reduce-motion /> Reduce motion</label>
+<footer class="x-ft x-foot" data-pagefind-ignore>
+  <div class="x-foot-in" data-ovl>
+    <div class="x-foot-cta">
+      <div class="x-foot-pitch">
+        <h2 class="x-foot-h">Agent UI that feels finished.</h2>
+        <p>New screens and components land one plan PR at a time. Follow the releases or star the repository to keep up.</p>
+      </div>
+      <div class="x-foot-btns">
+        <a class="x-pill pill-black" href={REPO} aria-label={!stars ? 'Star Oxyn on GitHub' : `Star Oxyn on GitHub, ${stars} stars`}><Fragment set:html={icon.star} />Star on GitHub{!!stars && <span class="x-foot-n">{stars.toLocaleString('en-US')}</span>}</a>
+        <a class="x-pill pill-grey" href={`${REPO}/releases.atom`}><Fragment set:html={icon.rss} />Release notes feed</a>
+      </div>
     </div>
-    <div>
-      <h4>Site</h4>
-      <ul>
-        <li><a href="/components/">Components</a></li>
-        <li><a href="/screens/">Screens</a></li>
-        <li><a href="/motion/">Motion</a></li>
-        <li><a href="/compare/">Compare</a></li>
-        <li><a href="/pricing/">Pricing</a></li>
-      </ul>
+    <div class="x-foot-grid">
+      <div class="x-foot-about">
+        <a class="wm x-foot-wm" href="/"><span class="x-nav-mark" aria-hidden="true"></span>oxyn</a>
+        <p>Agent-UI components for Rust: Dioxus on the web, GPUI on the desktop. {counts.components} components and {counts.screens} screens, free.</p>
+        <span class="x-foot-lbl">Works with</span>
+        <ul class="x-foot-agents" aria-label="Agents that can use Oxyn">
+          {agents.map((id) => <li title={brands[id].title}><Fragment set:html={mark(id)} /><span class="sr-only">{brands[id].title}</span></li>)}
+        </ul>
+      </div>
+      {cols.map(([h, links]) => (
+        <nav class="x-foot-col" aria-label={h}>
+          <h3 class="x-foot-lbl">{h}</h3>
+          <ul>{links.map(([l, u]) => <li><a href={u}>{l}</a></li>)}</ul>
+        </nav>
+      ))}
     </div>
-    <div>
-      <h4>Docs</h4>
-      <ul>
-        <li><a href="/docs/">Introduction</a></li>
-        <li><a href="/docs/installation/">Installation</a></li>
-        <li><a href="/docs/theming/">Theming and tokens</a></li>
-        <li><a href="/docs/accessibility/">Accessibility</a></li>
-        <li><a href="/guides/">Guides</a></li>
-      </ul>
+    <div class="x-foot-bar">
+      <span class="x-foot-status"><span class="x-foot-dot" aria-hidden="true"></span>Previews run live: Rust → WebAssembly</span>
+      <div class="x-foot-tools">
+        <label class="x-foot-motion"><input type="checkbox" data-reduce-motion /> Reduce motion</label>
+        <ThemeRadios />
+      </div>
     </div>
-    <div>
-      <h4>Legal &amp; project</h4>
-      <ul>
-        <li><a href={REPO}>GitHub</a></li>
-        <li><a href={`${REPO}/blob/main/LICENSE`}>Licence (MIT)</a></li>
-        <li><a href={`${REPO}/blob/main/THIRD_PARTY_NOTICES.md`}>Third-party notices</a></li>
-        <li><a href={`${REPO}/blob/main/CONTRIBUTING.md`}>Contributing</a></li>
-        <li><a href={`${REPO}/blob/main/SECURITY.md`}>Security</a></li>
-      </ul>
+    <div class="x-foot-legal">
+      <span>© 2026 Oxyn · MIT licensed, free to use and change.</span>
+      <span>Built with Rust, Dioxus, GPUI and Astro. Brand marks belong to their owners.</span>
     </div>
   </div>
-  <div class="ft-base"><span>© 2026 Oxyn</span><span>Made in the open, one plan PR at a time.</span></div>
+  <div class="x-foot-big" aria-hidden="true">oxyn</div>
 </footer>
