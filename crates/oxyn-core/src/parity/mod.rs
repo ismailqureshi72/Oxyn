@@ -61,6 +61,8 @@
 //! - [`storagefid`]: Storage: categories, dot runs, clearing, unused skills and a fill forecast (variants 2)
 //! - [`attachfid`]: Attachments: file types and badges, size checks, upload timing, drop lanes and the print fan (variants 2)
 //! - [`gooeyfid`]: Menu Motion: gooey menu rows, heights, stagger, open side, liquid tabs and drops (variants 2)
+//! - [`themefid`]: Theme Selector family (variants 3): Background picker, Theme grid, Theme split, Accent and density.
+//! - [`screensfid`]: Screens 1: app frames (Inset, Flat, three-pane) and the AI Chat screens
 //! - [`answers`]: fidelity batch, family A: AI Answer markup and streaming, Cited Answer
 //!   sentences and quotes, Message Actions, Thinking Loader phases, Thinking State steps and the
 //!   Writing Assistant's sample writer and dictation.
@@ -117,10 +119,12 @@ pub mod recapfid;
 pub mod rootfid;
 pub mod runningfid;
 pub mod schedfid;
+pub mod screensfid;
 pub mod seqfid;
 pub mod stairsfid;
 pub mod storagefid;
 pub mod text;
+pub mod themefid;
 pub mod thinkfid;
 pub mod toolmapfid;
 pub mod tools;
