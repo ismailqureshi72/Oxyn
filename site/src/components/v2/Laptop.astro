@@ -1,0 +1,55 @@
+---
+// "Complete screens" on the landing: a laptop drawn in CSS that rises and opens as it scrolls in.
+// The lid shows the selected tab's real screen demo on its 1440 × 900 (16:10) stage, scaled to fit;
+// switching tabs crossfades the screen. Scroll-driven with CSS view timelines; site.js drives the
+// same --x-lap-p (0 closed → 1 open) where those are missing. Reduced motion: a static open laptop.
+import OxynDemo from '../OxynDemo.astro';
+import { icon } from './icons';
+import { demos, demoUrl, counts } from '../../lib/data';
+const tabs = (
+  [
+    ['chat-agents', 'Agent chat', 'chat'],
+    ['agent-orchestration', 'Orchestration', 'branch'],
+    ['chat-run', 'Agent run', 'play'],
+    ['kanban', 'Kanban', 'kanban'],
+    ['workflow', 'Workflow', 'flow'],
+    ['folders-overview', 'Folders', 'folder'],
+  ] as const
+)
+  .map(([slug, label, ic]) => ({ d: demos.find((x) => x.slug === slug), label, ic }))
+  .filter((t) => t.d) as { d: (typeof demos)[number]; label: string; ic: keyof typeof icon }[];
+---
+<div class="x-lap" data-lap>
+  <div class="x-lap-tabs" role="tablist" aria-label="Screens">
+    {tabs.map(({ d, label, ic }, i) => (
+      <button type="button" role="tab" class="x-lap-tab" id={`lt-${d.slug}`} aria-controls={`lp-${d.slug}`} aria-selected={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? 0 : -1} data-shot={d.slug}>
+        <span class="x-lap-ti"><Fragment set:html={icon[ic]} /></span><span class="x-lap-tl">{label}</span>
+      </button>
+    ))}
+  </div>
+  <div class="x-lap-scene">
+    <div class="x-lap-dev">
+      <div class="x-lap-lid">
+        <div class="x-lap-face">
+          <span class="x-lap-cam" aria-hidden="true"></span>
+          <div class="x-lap-scr" aria-hidden="true" inert>
+            {tabs.map(({ d }, i) => (
+              <div class="x-lap-shot" data-shot={d.slug} data-on={i === 0 ? '' : undefined}><OxynDemo slug={d.slug} html={d.html} /></div>
+            ))}
+            <span class="x-lap-glare"></span>
+          </div>
+        </div>
+        <div class="x-lap-back" aria-hidden="true"><span class="x-lap-logo">oxyn</span></div>
+      </div>
+      <div class="x-lap-base" aria-hidden="true"><span class="x-lap-lip"></span></div>
+      <div class="x-lap-shadow" aria-hidden="true"></div>
+    </div>
+  </div>
+  {tabs.map(({ d, label }, i) => (
+    <div class="x-lap-cap" role="tabpanel" id={`lp-${d.slug}`} aria-labelledby={`lt-${d.slug}`} hidden={i !== 0}>
+      <p><a href={demoUrl(d)}>{d.name}</a><span class="x-lap-sum">{d.summary}</span></p>
+      <a class="x-pill pill-grey pill-sm" href={`${demoUrl(d)}full/`} aria-label={`Open ${label} full screen`}><Fragment set:html={icon.expand} />Full screen</a>
+    </div>
+  ))}
+  <div class="lp-more"><a class="x-pill pill-pro" href="/screens/"><span aria-hidden="true">✦</span> All {counts.screens} screens, free</a></div>
+</div>

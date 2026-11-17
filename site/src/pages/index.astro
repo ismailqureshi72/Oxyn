@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import OxynDemo from '../components/OxynDemo.astro';
 import CompCard from '../components/v2/CompCard.astro';
+import Laptop from '../components/v2/Laptop.astro';
 import { icon } from '../components/v2/icons';
 import { mark, brands } from '../components/v2/brands';
 import { demos, counts, screens, inGroup, demoUrl, REPO } from '../lib/data';
@@ -16,7 +17,6 @@ const tabSets: [string, string, string[] | null][] = [
   ['illustrations', 'Illustrations', null],
   ['motion', 'Motion', ['text-shimmer', 'verb-cycler', 'text-reveal', 'elapsed-timer', 'text-morph', 'slot-text']],
 ];
-const screenTabs = ['app-shell', 'ai-chat-screens', 'activity-home', 'thread-list'].map(find);
 const compareTabs = [
   ['approval', 'Approval', find('approval-card')],
   ['tools', 'Tool calls', find('tool-call')],
@@ -29,14 +29,14 @@ const named = (s: string) =>
   s
     .replace(/</g, '&lt;')
     .replace(/\b(Claude|ChatGPT|Cursor|MCP)\b/g, (n) => `<span class="x-bn">${mark(n === 'MCP' ? 'mcp' : n.toLowerCase())}${n}</span>`);
-const faq: [string, string][] = [
-  ['What is Oxyn?', 'A library of agent-interface components written in Rust: composer, status, tool calls, plans, approvals, checkpoints and the everyday parts around them. Each one is a Dioxus component for the web, and many also have a GPUI version for the desktop.'],
-  ['Which frameworks does it support?', 'Dioxus (web, and anything Dioxus renders to) and GPUI (desktop). Both read the same models and state machines from oxyn-core, so a component behaves the same in each.'],
-  ['Is it free?', `Yes. All ${free} components and screens on this site are MIT licensed. A Pro tier with more variants and category kits is planned; its price is not decided yet.`],
-  ['Are the previews real?', 'Yes. Every preview is the Rust component itself: rendered to HTML when the site is built, then mounted live from one WebAssembly bundle when it scrolls into view.'],
-  ['How do I install a component?', 'Today: add the oxyn-dioxus and oxyn-core crates from the repository and import the component and its stylesheet. The oxyn CLI, which copies one component file into your project, is planned.'],
-  ['Can my coding agent use it?', 'Each page has a Notes for AI section and Open in Claude, ChatGPT and Cursor links. An MCP server through the oxyn CLI (oxyn mcp) is planned.'],
-  ['What about light, dark and accessibility?', 'Every component ships light, dark and high-contrast themes from one token set, follows the WAI-ARIA patterns for its role, and respects reduced motion.'],
+const faq: [string, string, keyof typeof icon][] = [
+  ['What is Oxyn?', 'A library of agent-interface components written in Rust: composer, status, tool calls, plans, approvals, checkpoints and the everyday parts around them. Each one is a Dioxus component for the web, and many also have a GPUI version for the desktop.', 'sparkle'],
+  ['Which frameworks does it support?', 'Dioxus (web, and anything Dioxus renders to) and GPUI (desktop). Both read the same models and state machines from oxyn-core, so a component behaves the same in each.', 'layers'],
+  ['Is it free?', `Yes. All ${free} components and screens on this site are MIT licensed. A Pro tier with more variants and category kits is planned; its price is not decided yet.`, 'pricing'],
+  ['Are the previews real?', 'Yes. Every preview is the Rust component itself: rendered to HTML when the site is built, then mounted live from one WebAssembly bundle when it scrolls into view.', 'eye'],
+  ['How do I install a component?', 'Today: add the oxyn-dioxus and oxyn-core crates from the repository and import the component and its stylesheet. The oxyn CLI, which copies one component file into your project, is planned.', 'terminal'],
+  ['Can my coding agent use it?', 'Each page has a Notes for AI section and Open in Claude, ChatGPT and Cursor links. An MCP server through the oxyn CLI (oxyn mcp) is planned.', 'plug'],
+  ['What about light, dark and accessibility?', 'Every component ships light, dark and high-contrast themes from one token set, follows the WAI-ARIA patterns for its role, and respects reduced motion.', 'design'],
 ];
 ---
 <Base title="Oxyn — UI for AI agents, in Rust" description="Agent-UI components for Rust: runs, tool calls, approvals and chat, for Dioxus and GPUI." type="Page" promo>
@@ -73,20 +73,10 @@ const faq: [string, string][] = [
     </div>
   </section>
 
-  <section class="lp-sec" aria-labelledby="h-screens">
+  <section class="lp-sec x-lap-sec" aria-labelledby="h-screens">
     <h2 id="h-screens">Complete screens,<br />not just parts</h2>
-    <div class="lp-tabs" data-tabs>
-      <div class="utabs" role="tablist" aria-label="Screens">
-        {screenTabs.map((d, i) => <button type="button" role="tab" id={`ts-${d.slug}`} aria-controls={`ps-${d.slug}`} aria-selected={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? 0 : -1}>{d.name}</button>)}
-      </div>
-      {screenTabs.map((d, i) => (
-        <div class="lp-panel" role="tabpanel" id={`ps-${d.slug}`} aria-labelledby={`ts-${d.slug}`} hidden={i !== 0}>
-          <div class="lp-screen" inert aria-hidden="true"><OxynDemo slug={d.slug} html={d.html} /></div>
-          <p class="lp-cap"><a href={demoUrl(d)}>{d.name}</a> – {d.summary}</p>
-        </div>
-      ))}
-      <div class="lp-more"><a class="x-pill pill-pro" href="/screens/"><span aria-hidden="true">✦</span> All {counts.screens} screens, free</a></div>
-    </div>
+    <p class="lp-sub x-muted">Whole app frames on a 1440 × 900 stage. Pick one and it opens on the laptop.</p>
+    <Laptop />
   </section>
 
   <section class="lp-sec" aria-labelledby="h-built">
@@ -172,13 +162,25 @@ const faq: [string, string][] = [
     </div>
   </section>
 
-  <section class="lp-sec" aria-labelledby="h-faq">
+  <section class="lp-sec x-ask" aria-labelledby="h-faq">
     <h2 id="h-faq">Questions, answered</h2>
-    <div class="faq">
+    <p class="lp-sub x-muted">Pick a question.</p>
+    <div class="x-ask-box" data-tabs data-ovl>
+      <div class="x-ask-pills" role="tablist" aria-label="Questions">
+        {faq.map(([q, , ic], i) => (
+          <button type="button" role="tab" class="x-ask-pill" id={`tq-${i}`} aria-controls={`pq-${i}`} aria-selected={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? 0 : -1}><span class="x-ask-i"><Fragment set:html={icon[ic]} /></span><span class="x-ask-q">{q}</span></button>
+        ))}
+      </div>
       {faq.map(([q, a], i) => (
-        <details open={i === 0}><summary>{q}<span class="chev" aria-hidden="true"><Fragment set:html={icon.down} /></span></summary><p set:html={named(a)}></p></details>
+        <div class="x-ask-a" role="tabpanel" id={`pq-${i}`} aria-labelledby={`tq-${i}`} hidden={i !== 0}>
+          <h3>{q}</h3>
+          <p set:html={named(a)}></p>
+        </div>
       ))}
     </div>
-    <p class="lp-cap">More in the <a href="/docs/">docs</a> or on <a href={REPO}>GitHub</a>.</p>
+    <div class="x-ask-cta">
+      <a class="x-pill pill-black" href="/docs/">Read the docs</a>
+      <a class="x-pill pill-grey" href={`${REPO}/issues`}><Fragment set:html={icon.github} />Ask on GitHub</a>
+    </div>
   </section>
 </Base>
