@@ -72,6 +72,7 @@ mod themefid;
 mod toolmapfid;
 mod tools;
 mod tracefid;
+mod workscr;
 
 pub use agentsfid::{AgentFindingsEl, AgentInboxEl};
 pub use answers::{
@@ -149,8 +150,7 @@ pub use runningfid::RunningNowEl;
 pub use schedfid::ScheduledRunsEl;
 pub use screens2fid::{AgentThreadEl, OrchestrationEl};
 pub use screensfid::{
-    AccountMenuEl, CrmEl, FolderDetailEl, FoldersEl, IntegrationsEl, KanbanEl, ScreenRailEl,
-    ScreenShellEl, ScreenStageEl, SettingsEl, WorkflowEl,
+    AccountMenuEl, ScreenRailEl, ScreenShellEl, ScreenStageEl, SettingsEl, WorkflowEl,
 };
 pub use seqfid::AgentSequenceEl;
 pub use stairsfid::EffortStairsEl;
@@ -165,6 +165,7 @@ pub use tools::{
     ExpandableCardEl, JsonViewerEl, LinkUnfurlEl, ToolCallCardEl, ToolCallEl, ToolChipsEl,
 };
 pub use tracefid::TraceWaterfallEl;
+pub use workscr::{AnalyticsEl, CrmEl, FolderDetailEl, FoldersEl, IntegrationsEl, KanbanEl};
 
 /// Button callback: the action id and the window.
 pub type Act = Rc<dyn Fn(&'static str, &mut Window, &mut App)>;

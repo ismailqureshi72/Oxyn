@@ -121,15 +121,15 @@ affectUI,AI Chat / Overview,https://www.affectui.com/screens/assistant-overview,
 affectUI,AI Chat / Progress,https://www.affectui.com/screens/agent-chat-progress,Screens · App screens,Pro,"chat-progress, chat-composer",S3,S1,built
 affectUI,AI Chat / Run,https://www.affectui.com/screens/agent-run,Screens · App screens,Pro,"chat-run, chat-composer",S3,S1,built
 affectUI,AI Chat / Start,https://www.affectui.com/screens/assistant-home,Screens · App screens,Pro,"chat-start, chat-composer",S3,S1,built
-affectUI,Analytics,https://www.affectui.com/screens/analytics,Screens · App screens,Pro,genui-blocks,S7,#41,planned
+affectUI,Analytics,https://www.affectui.com/screens/analytics,Screens · App screens,Pro,analytics,S7,S2,built
 affectUI,App Shell Flat,https://www.affectui.com/screens/app-shell-flat,Screens · App screens,Pro,workspace-chrome,,#27,built
 affectUI,App Shell Inset,https://www.affectui.com/screens/app-shell,Screens · App screens,Pro,workspace-chrome,,#27,built
-affectUI,CRM,https://www.affectui.com/screens/crm,Screens · App screens,Pro,genui-blocks,S7,#41,planned
+affectUI,CRM,https://www.affectui.com/screens/crm,Screens · App screens,Pro,crm,S7,S2,built
 affectUI,Evals,https://www.affectui.com/screens/evals,Screens · App screens,Pro,trace-view,S2,#39,planned
-affectUI,Folders / Detail,https://www.affectui.com/screens/folder,Screens · App screens,Pro,NEW,S7,#41,planned
-affectUI,Folders / Overview,https://www.affectui.com/screens/files,Screens · App screens,Pro,NEW,S7,#41,planned
-affectUI,Integrations,https://www.affectui.com/screens/integrations,Screens · App screens,Pro,"mcp-plugin-list, plugin-icons",S8,#41,planned
-affectUI,Kanban Board,https://www.affectui.com/screens/kanban,Screens · App screens,Pro,NEW,S7,#41,planned
+affectUI,Folders / Detail,https://www.affectui.com/screens/folder,Screens · App screens,Pro,folders-detail,S7,S2,built
+affectUI,Folders / Overview,https://www.affectui.com/screens/files,Screens · App screens,Pro,folders-overview,S7,S2,built
+affectUI,Integrations,https://www.affectui.com/screens/integrations,Screens · App screens,Pro,integrations,S8,S2,built
+affectUI,Kanban Board,https://www.affectui.com/screens/kanban,Screens · App screens,Pro,kanban,S7,S2,built
 affectUI,Onboarding,https://www.affectui.com/screens/onboarding,Screens · App screens,Pro,genui-forms,S6,#40,planned
 affectUI,Onboarding / Brand,https://www.affectui.com/screens/onboarding-brand,Screens · App screens,Pro,genui-forms,S6,#40,planned
 affectUI,Onboarding / Ready,https://www.affectui.com/screens/onboarding-ready,Screens · App screens,Pro,NEW,S6,#40,planned

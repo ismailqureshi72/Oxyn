@@ -63,6 +63,7 @@ mod toolmapfid;
 mod tools;
 mod tracefid;
 mod upload;
+mod workscr;
 
 pub use agentsfid::{AgentFindings, AgentInbox};
 pub use answers::{
@@ -135,9 +136,8 @@ pub use schedfid::ScheduledRuns;
 pub use screens2fid::{AgentThreadScreen, OrchestrationScreen};
 pub use screensfid::{
     AppFrame, AppShellScreen, ChatAgentsScreen, ChatOverviewScreen, ChatProgressScreen,
-    ChatRailScreen, ChatRunScreen, ChatStartScreen, CrmScreen, FoldersScreen, IntegrationsScreen,
-    KanbanScreen, MenuButton, RailFrame, RailShellScreen, ScreenComposer, ScreenStage,
-    SettingsScreen, StageScale, WorkflowScreen,
+    ChatRailScreen, ChatRunScreen, ChatStartScreen, MenuButton, RailFrame, RailShellScreen,
+    ScreenComposer, ScreenStage, SettingsScreen, StageScale, WorkflowScreen,
 };
 pub use seqfid::AgentSequence;
 pub use stairsfid::EffortStairs;
@@ -157,3 +157,6 @@ pub use tools::{
 };
 pub use tracefid::TraceWaterfall;
 pub use upload::{AvatarUpload, FileDropzone};
+pub use workscr::{
+    AnalyticsScreen, CrmScreen, FoldersScreen, IntegrationsScreen, KanbanScreen, s2_states,
+};
