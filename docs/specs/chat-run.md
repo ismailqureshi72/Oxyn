@@ -3,7 +3,7 @@
 # Spec: AI Chat · Run (`chat-run`)
 
 Family: Screens. Reference: affectUI AI Chat / Run, behaviour only.
-Components: `ChatRunScreen` (Dioxus) · `ChatRunScreenEl` (GPUI), models in `oxyn_core::parity::screensfid`.
+Components: `ChatRunScreen` (Dioxus) · `ChatRunEl` (GPUI), models in `oxyn_core::parity::screensfid`.
 
 ## 1. Purpose
 One autonomous run: the plan, live numbers, a gate that waits for you and the draft it wrote.

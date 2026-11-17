@@ -3,7 +3,7 @@
 # Spec: Folders · Detail (`folders-detail`)
 
 Family: Screens. Reference: affectUI Folders / Detail, behaviour only.
-Components: `FoldersScreen (detail=true)` (Dioxus) · `FoldersScreen (detail=true)El` (GPUI), models in `oxyn_core::parity::screensfid`.
+Components: `FoldersScreen (detail=true)` (Dioxus) · `FolderDetailEl` (GPUI), models in `oxyn_core::parity::screensfid`.
 
 ## 1. Purpose
 One folder open: its files, and who and what can read them.

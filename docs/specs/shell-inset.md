@@ -3,7 +3,7 @@
 # Spec: App shell · Inset (`shell-inset`)
 
 Family: Screens. Reference: affectUI App Shell (Inset), behaviour only.
-Components: `AppShellScreen` (Dioxus) · `AppShellScreenEl` (GPUI), models in `oxyn_core::parity::screensfid`.
+Components: `AppShellScreen` (Dioxus) · `ScreenShellEl` (GPUI), models in `oxyn_core::parity::screensfid`.
 
 ## 1. Purpose
 The frame every Oxyn screen sits in, with the page as an inset card and a workspace on the right.

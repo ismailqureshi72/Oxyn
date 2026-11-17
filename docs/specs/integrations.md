@@ -3,7 +3,7 @@
 # Spec: Integrations (`integrations`)
 
 Family: Screens. Reference: affectUI Integrations, behaviour only.
-Components: `IntegrationsScreen` (Dioxus) · `IntegrationsScreenEl` (GPUI), models in `oxyn_core::parity::screensfid`.
+Components: `IntegrationsScreen` (Dioxus) · `IntegrationsEl` (GPUI), models in `oxyn_core::parity::screensfid`.
 
 ## 1. Purpose
 Where a workspace connects apps and decides what each may do.

@@ -3,7 +3,7 @@
 # Spec: Folders · Overview (`folders-overview`)
 
 Family: Screens. Reference: affectUI Folders / Overview, behaviour only.
-Components: `FoldersScreen` (Dioxus) · `FoldersScreenEl` (GPUI), models in `oxyn_core::parity::screensfid`.
+Components: `FoldersScreen` (Dioxus) · `FoldersEl` (GPUI), models in `oxyn_core::parity::screensfid`.
 
 ## 1. Purpose
 The folders a workspace shares with its people and agents, and the way into each.

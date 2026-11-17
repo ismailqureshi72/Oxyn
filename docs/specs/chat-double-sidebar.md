@@ -3,7 +3,7 @@
 # Spec: AI Chat · Double sidebar (`chat-double-sidebar`)
 
 Family: Screens. Reference: affectUI AI Chat / Double Sidebar, behaviour only.
-Components: `ChatRailScreen` (Dioxus) · `ChatRailScreenEl` (GPUI), models in `oxyn_core::parity::screensfid`.
+Components: `ChatRailScreen` (Dioxus) · `ChatRailEl` (GPUI), models in `oxyn_core::parity::screensfid`.
 
 ## 1. Purpose
 A plain chat with web search inside the three-pane frame, artifacts on the right.

@@ -3,7 +3,7 @@
 # Spec: App shell · Flat (`shell-flat`)
 
 Family: Screens. Reference: affectUI App Shell (Flat), behaviour only.
-Components: `AppShellScreen (layout="flat")` (Dioxus) · `AppShellScreen (layout="flat")El` (GPUI), models in `oxyn_core::parity::screensfid`.
+Components: `AppShellScreen (layout="flat")` (Dioxus) · `ScreenShellEl` (GPUI), models in `oxyn_core::parity::screensfid`.
 
 ## 1. Purpose
 The same frame laid flat: grey sidebar and edge-to-edge regions split by single hairlines.

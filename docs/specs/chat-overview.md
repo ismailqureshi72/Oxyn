@@ -3,7 +3,7 @@
 # Spec: AI Chat · Overview (`chat-overview`)
 
 Family: Screens. Reference: affectUI AI Chat / Overview, behaviour only.
-Components: `ChatOverviewScreen` (Dioxus) · `ChatOverviewScreenEl` (GPUI), models in `oxyn_core::parity::screensfid`.
+Components: `ChatOverviewScreen` (Dioxus) · `ChatOverviewEl` (GPUI), models in `oxyn_core::parity::screensfid`.
 
 ## 1. Purpose
 The start page with the numbers under the composer.

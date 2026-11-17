@@ -3,7 +3,7 @@
 # Spec: AI Chat · Start (`chat-start`)
 
 Family: Screens. Reference: affectUI AI Chat / Start, behaviour only.
-Components: `ChatStartScreen` (Dioxus) · `ChatStartScreenEl` (GPUI), models in `oxyn_core::parity::screensfid`.
+Components: `ChatStartScreen` (Dioxus) · `ChatStartEl` (GPUI), models in `oxyn_core::parity::screensfid`.
 
 ## 1. Purpose
 Where a new chat begins: greeting, composer, folder and apps to work with, starters.

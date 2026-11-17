@@ -3,7 +3,7 @@
 # Spec: AI Chat · Agents (`chat-agents`)
 
 Family: Screens. Reference: affectUI AI Chat / Agents, behaviour only.
-Components: `ChatAgentsScreen` (Dioxus) · `ChatAgentsScreenEl` (GPUI), models in `oxyn_core::parity::screensfid`.
+Components: `ChatAgentsScreen` (Dioxus) · `ChatAgentsEl` (GPUI), models in `oxyn_core::parity::screensfid`.
 
 ## 1. Purpose
 A chat with an orchestrator, the crew working on it, and the brief it is filling in.

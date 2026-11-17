@@ -3,7 +3,7 @@
 # Spec: Three-pane shell (`shell-three-pane`)
 
 Family: Screens. Reference: affectUI double-sidebar frame, behaviour only.
-Components: `RailShellScreen / RailFrame` (Dioxus) · `RailShellScreen / RailFrameEl` (GPUI), models in `oxyn_core::parity::screensfid`.
+Components: `RailShellScreen / RailFrame` (Dioxus) · `ScreenRailEl` (GPUI), models in `oxyn_core::parity::screensfid`.
 
 ## 1. Purpose
 An icon rail, a chats column with a project switcher, the page and a work area.

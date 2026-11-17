@@ -3,7 +3,7 @@
 # Spec: AI Chat · Progress (`chat-progress`)
 
 Family: Screens. Reference: affectUI AI Chat / Progress, behaviour only.
-Components: `ChatProgressScreen` (Dioxus) · `ChatProgressScreenEl` (GPUI), models in `oxyn_core::parity::screensfid`.
+Components: `ChatProgressScreen` (Dioxus) · `ChatProgressEl` (GPUI), models in `oxyn_core::parity::screensfid`.
 
 ## 1. Purpose
 A chat with the assistant's progress beside it as part of the page.
