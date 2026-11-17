@@ -24,8 +24,8 @@ pub struct Persona {
     pub items: &'static [(&'static str, &'static str, &'static str)],
 }
 
-/// The four personas of the workspace screens.
-pub const PERSONAS: [Persona; 4] = [
+/// The personas of the workspace and agent screens.
+pub const PERSONAS: [Persona; 5] = [
     Persona {
         key: "files",
         nav: &[
@@ -88,6 +88,25 @@ pub const PERSONAS: [Persona; 4] = [
             ("market", "Marketplace", "bag"),
             ("wholesale", "Wholesale", "box"),
             ("subs", "Subscriptions", "cycle"),
+        ],
+    },
+    Persona {
+        key: "fieldwork",
+        nav: &[
+            ("thread", "Thread", "chat", 0),
+            ("inbox", "Inbox", "inbox", 5),
+            ("agents", "Agents", "bot", 0),
+            ("tasks", "Tasks", "tasks", 0),
+            ("memory", "Memory", "brain", 0),
+            ("skills", "Skills", "bolt", 0),
+        ],
+        group: "Workspace",
+        items: &[
+            ("schedules", "Schedules", "clock"),
+            ("activity", "Activity", "pulse"),
+            ("usage", "Usage", "chart"),
+            ("permissions", "Permissions", "shield"),
+            ("settings", "Settings", "gear"),
         ],
     },
 ];
