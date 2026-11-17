@@ -14,8 +14,8 @@ Where a new chat begins: a greeting over the exact composer, a folder and apps t
 | Column | Centred 672 px on the 1440 stage, a little above the middle; the top bar is bare (no hairline, no title) |
 | Greeting | By hour of day, 30 px / 600 |
 | Composer | Field, then left: + (Add menu) and the approval chip (✋ Request approval); right: Auto ⌄ (model picker with coloured official marks), mic, round send (grey until there is text) |
-| Add menu | Group 1: Files and folders, Attach app ›, Work in a folder, Connect apps (n connected), Goal, Record a skill, Draw. Group 2, Plugins: Documents, PDF, Spreadsheets. Folder glyph #00A1FF, plugin glyphs in their file tones, the rest neutral |
-| Strip under the box | Work in a folder (folder menu) on the left; Connect apps and the connected apps' official marks on the right |
+| Add menu | Group 1: Files and folders, Attach app ›, Work in a folder, Link apps (n connected), Goal, Record a skill, Draw. Group 2, Plugins: Documents, PDF, Spreadsheets. Folder glyph #00A1FF, plugin glyphs in their file tones, the rest neutral |
+| Strip under the box | Work in a folder (folder menu) on the left; Link apps and the connected apps' official marks on the right |
 | Suggestions | Seven quiet buttons in two rows (neutral glyph + label); each fills the composer |
 
 Chrome is monochrome neutral; colour only means something: official brand and model marks, semantic object glyphs (folder #00A1FF, file types), status (running blue, needs-you amber, done green, failed red).

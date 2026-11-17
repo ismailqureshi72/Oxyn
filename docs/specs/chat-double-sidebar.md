@@ -14,7 +14,7 @@ A chat with the web beside its artifacts, under a two-column sidebar.
 | Rail (52) | Workspace monogram, Chats, Tasks, Runs, Files, Apps (neutral glyphs, the current one filled); at the bottom notifications (blue dot), settings and the avatar |
 | Chats column (272) | All projects ⌄ switcher and a search toggle, New chat, Pinned, Projects (blue folders; the open one lists its chats, the current one filled), Chats with unread dots; it shares one card with the page |
 | Thread | Your messages on the right; each answer has the Kestrel mark and time, a green-ticked “Ran 3 searches · 4.1s” line that opens the calls, the answer, and chips for the files it made |
-| Work area (408) | Tabs (fabric-compare.csv, sources.md, +), the file header, a toolbar (undo, bold, sort A–Z / Z–A, insert row), the cell field (B2 · fx · value) and a grid with column letters and row numbers; the selected column and row light blue |
+| Work area (408) | Tabs (fabric-compare.csv, sources.md, +), the file header, a toolbar (undo, bold, sort up / down, add a row), the cell field (B2 · fx · value) and a grid with column letters and row numbers; the selected column and row light blue |
 
 Chrome is monochrome neutral; colour only means something: official brand and model marks, semantic object glyphs (folder #00A1FF, file types), status (running blue, needs-you amber, done green, failed red).
 

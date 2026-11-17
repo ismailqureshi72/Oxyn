@@ -1,6 +1,6 @@
 //! AI Chat parity (S1) for GPUI over `oxyn_core::parity::screensfid`: the exact composer (the Add
 //! menu with its two groups, Request approval, Auto ⌄ with coloured official model marks, mic and a
-//! round send, plus the Work in a folder / Connect apps strip) and static snapshots of the AI Chat
+//! round send, plus the Work in a folder / Link apps strip) and static snapshots of the AI Chat
 //! screens on the 1440 × 900 stage: [`ChatStartEl`] (centred 672 column) and [`ChatOverviewEl`]
 //! (centred 880 column with the numbers). Each takes the data state, the screen's own extra state
 //! (`.extra("attached")`, `"dictating"`, `"limit"`, or `"plus"` / `"model"` / `"approval"` to draw a
@@ -266,7 +266,7 @@ pub(super) fn approval_menu(p: &ThPal) -> Div {
 /// How a composer is drawn.
 #[derive(Clone, Copy, Default)]
 pub(super) struct Cmp {
-    /// The Work in a folder / Connect apps strip.
+    /// The Work in a folder / Link apps strip.
     pub foot: bool,
     /// Attached files (a leading `@` marks an app: `@notion`).
     pub files: &'static [&'static str],
@@ -439,7 +439,7 @@ pub(super) fn composer(p: &ThPal, c: Cmp) -> Div {
                     .child(div().text_color(tone(p, IconTone::Folder)).child("▭"))
                     .child("Work in a folder")
                     .child(div().flex_1())
-                    .child("Connect apps")
+                    .child("Link apps")
                     .child(marks),
             );
     } else {

@@ -389,7 +389,7 @@ static COMPOSER_IDS: std::sync::atomic::AtomicU32 = std::sync::atomic::AtomicU32
 fn PlusMenu(
     /// Ids prefix (unique per composer).
     uid: u32,
-    /// Apps connected (for the Connect apps hint).
+    /// Apps connected (for the Link apps hint).
     connected: usize,
     /// Picked.
     on_pick: EventHandler<String>,
@@ -508,7 +508,7 @@ pub fn ScreenComposer(
     /// Busy: Send turns into Stop.
     #[props(default)]
     busy: bool,
-    /// The Work in a folder / Connect apps strip under the box (Start, Overview).
+    /// The Work in a folder / Link apps strip under the box (Start, Overview).
     #[props(default)]
     foot: bool,
     /// Open with these files attached (the Attached state).
@@ -679,7 +679,7 @@ pub fn ScreenComposer(
             div { class: "oxscn-cfoot",
                 MenuButton { label: folder_l, aria: "Work in a folder", icon: "folder", items: fitems, checked: folder(), class: "oxscn-cf-b", on_pick: move |k| folder.set(k) }
                 span { class: "oxscn-grow" }
-                MenuButton { label: "Connect apps", aria: "Connect apps, {conn_n} on", right: true, checked: "", class: "oxscn-cf-b", items: app_items,
+                MenuButton { label: "Link apps", aria: "Link apps, {conn_n} on", right: true, checked: "", class: "oxscn-cf-b", items: app_items,
                     on_pick: move |k: String| { let mut a = apps.write(); if let Some(i) = a.iter().position(|x| *x == k) { a.remove(i); } else { a.push(k); } } }
                 span { class: "oxscn-cf-marks", "aria-hidden": "true",
                     for k in conn.iter().take(4) { BrandIcon { key: "{k}", name: k.clone(), size: 14.0, coloured: true } }
@@ -1732,7 +1732,7 @@ fn push_pair(mut msgs: Signal<Vec<Msg>>, now: ClockMs, text: String) {
 }
 
 /// Screen – AI Chat / Start: a centred 672 px column – a greeting, the composer (Add menu,
-/// Request approval, Auto ⌄, mic, send) with its Work in a folder / Connect apps strip, and two
+/// Request approval, Auto ⌄, mic, send) with its Work in a folder / Link apps strip, and two
 /// rows of quiet suggestions that fill the composer. Sending opens a new chat in the sidebar and
 /// the conversation takes over the page. States: Data, Loading, Empty, Attached, Dictating.
 #[component]
