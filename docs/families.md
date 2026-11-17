@@ -321,15 +321,16 @@ Dates, times and when agents run.
 - Next-run countdown chip
 
 ## Theme Selector (`theme-selector`)
-Background pictures and texture, theme swatches with font size, and originals: split compare, accent and density, schedule, type scale, light playground, app icon and display comfort.
+Backgrounds, textures, theme swatches and font size.
 
 **Existing:** _none yet_
 
-**Built in #41 (variants 3):** Background picker (`background-picker`), Theme grid (`theme-grid`), Theme split (`theme-split`), Accent and density (`accent-density`), Theme schedule (`theme-schedule`), Type scale (`type-scale`), Light playground (`light-playground`), App icon (`app-icon-picker`), Display comfort (`display-comfort`)
-
 **New variants to build:**
-- Wallpaper from a prompt: describe a picture and add the result as a tile
-- Per-workspace themes: a different theme for each workspace or project
+- Background tiles (Default, images, Your own +) with Texture Film/Static/Dither
+- Theme grid of 8 mini-window swatches (system split, light, dark, tinted…) + Font size dropdown
+- Accent picker that stays monochrome by default
+- Density slider with live preview
+- Theme playground: drag a light source over the UI
 
 ## Buttons (`buttons`)
 Buttons, icon buttons, split buttons and the groups they sit in.
