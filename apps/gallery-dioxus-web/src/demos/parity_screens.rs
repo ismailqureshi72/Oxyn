@@ -1,12 +1,12 @@
 //! Screens 1 demos: app frames (Inset, Flat, three-pane) and the AI Chat screens (Start, Overview,
-//! Agents, Double sidebar, Progress, Run) and Folders (Overview, Detail). Every screen has Sample / Loading / Empty data and an
+//! Agents, Double sidebar, Progress, Run) Folders (Overview, Detail) and Integrations. Every screen has Sample / Loading / Empty data and an
 //! Inset / Flat frame; light and dark follow the page theme.
 
 use dioxus::prelude::*;
 use oxyn_core::ClockMs;
 use oxyn_dioxus::{
     AppShellScreen, ChatAgentsScreen, ChatOverviewScreen, ChatProgressScreen, ChatRailScreen,
-    ChatRunScreen, ChatStartScreen, FoldersScreen, RailShellScreen,
+    ChatRunScreen, ChatStartScreen, FoldersScreen, IntegrationsScreen, RailShellScreen,
 };
 
 use super::{Code, mk, sel, var};
@@ -817,6 +817,76 @@ fn folders_detail_demo() -> Demo {
     }
 }
 
+// ---------- Integrations ----------
+
+fn integrations(v: &Vals, _now: ClockMs) -> Element {
+    let (st, lay, key) = frame(v);
+    rsx! {
+        div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
+            IntegrationsScreen { layout: lay, state: st }
+        }
+    }
+}
+
+fn integrations_code(v: &Vals) -> String {
+    code("IntegrationsScreen", v, false, false)
+}
+
+fn integrations_demo() -> Demo {
+    Demo {
+        controls: controls("inset"),
+        variants: vec![
+            var("sample", "Sample data in the Inset frame.", &[]),
+            var(
+                "flat",
+                "The same screen in the Flat frame.",
+                &[("frame", "Flat")],
+            ),
+            var(
+                "loading",
+                "Skeletons where the data will land.",
+                &[("data", "Loading")],
+            ),
+            var(
+                "empty",
+                "Nothing yet: each region says what will appear.",
+                &[("data", "Empty")],
+            ),
+        ],
+        render: integrations,
+        code: integrations_code,
+        keyboard: vec![
+            ("Tab", "Sidebar, page, then the work area"),
+            ("← / → on a hairline", "Resize the sidebar or work area"),
+            ("Escape", "Close an open menu; clear search"),
+            ("← / → in the tabs", "Move between categories"),
+            ("Escape in the dialog", "Cancel connecting"),
+        ],
+        a11y: vec![
+            "The sidebar is a labelled nav; the open chat has aria-current and unread chats say so.",
+            "Menus open from a trigger that reports aria-expanded; their items are menuitemradio and Escape shuts them.",
+            "Hairlines are separators with a value and arrow keys; skeletons are hidden from screen readers.",
+        ],
+        responsive: vec![
+            "Under 860 px of width the work area becomes a sheet opened from the top bar.",
+            "Under 640 px the sidebar slides in from the menu button and the composer drops its labels.",
+        ],
+        height: 660,
+        live: false,
+        align: Align::Start,
+        ..mk(
+            "integrations",
+            "Integrations",
+            CAT,
+            "An app directory with category tabs and search: Connect asks which permissions to grant first, and a connected app opens beside the list with switches for each permission, Sync now and a confirmed Disconnect.",
+            "IntegrationsScreen",
+            "IntegrationsEl",
+            "integrations",
+            "parity/screensfid.rs",
+        )
+    }
+}
+
 pub(crate) fn demos() -> Vec<Demo> {
     vec![
         shell_inset_demo(),
@@ -830,5 +900,6 @@ pub(crate) fn demos() -> Vec<Demo> {
         chat_run_demo(),
         folders_overview_demo(),
         folders_detail_demo(),
+        integrations_demo(),
     ]
 }

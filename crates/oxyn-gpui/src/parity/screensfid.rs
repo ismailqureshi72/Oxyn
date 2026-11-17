@@ -1,18 +1,20 @@
 //! Screens 1 for GPUI over `oxyn_core::parity::screensfid`: static snapshots of the app frames
 //! ([`ScreenShellEl`], [`ScreenRailEl`]) and the AI Chat screens ([`ChatStartEl`], [`ChatOverviewEl`],
-//! [`ChatAgentsEl`], [`ChatRailEl`], [`ChatProgressEl`], [`ChatRunEl`]) and Folders ([`FoldersEl`],
-//! [`FolderDetailEl`]). Each takes the data state (Sample, Loading, Empty), the frame (Inset or
+//! [`ChatAgentsEl`], [`ChatRailEl`], [`ChatProgressEl`], [`ChatRunEl`]) Folders ([`FoldersEl`],
+//! [`FolderDetailEl`]) and [`IntegrationsEl`]. Each takes the data state (Sample, Loading, Empty), the frame (Inset or
 //! Flat) and the theme; the host owns any live state.
-//! Rows a host can route carry `Act` ids: `nav-<key>`, `thread-<id>`, `folder-<id>`.
+//! Rows a host can route carry `Act` ids: `nav-<key>`, `thread-<id>`, `folder-<id>`,
+//! `app-<brand id>`.
 
 use gpui::{
     App, Div, FontWeight, IntoElement, ParentElement, RenderOnce, SharedString, Styled, Window,
     div, prelude::*, px,
 };
 use oxyn_core::parity::screensfid::{
-    PERSON, PERSON_INI, ScreenState, ShellLayout, StepState, WORKSPACE, ago, angles, crew,
-    folder_files, folder_view, folders, heat, member_name, progress_steps, projects, run_plan,
-    sheet, size_label, split_pinned, starters, step_state, threads, total_size,
+    APP_TABS, PERSON, PERSON_INI, ScreenState, ShellLayout, StepState, WORKSPACE, ago, angles,
+    app_view, apps, connected_count, crew, folder_files, folder_view, folders, heat, member_name,
+    progress_steps, projects, run_plan, sheet, size_label, split_pinned, starters, step_state,
+    synced_words, threads, total_size,
 };
 use oxyn_tokens::Theme;
 
@@ -1230,6 +1232,118 @@ impl RenderOnce for FolderDetailEl {
             sidebar(&p, self.state, &self.act, false),
             page(&p, "Folders", body),
             Some(info),
+        )
+    }
+}
+
+screen_el!(
+    /// Integrations: the app directory with connect states and a connected app's permissions.
+    /// Cards a host can route carry `app-<brand id>`.
+    IntegrationsEl
+);
+
+impl RenderOnce for IntegrationsEl {
+    fn render(self, _: &mut Window, _: &mut App) -> impl IntoElement {
+        let p = th_pal(self.theme);
+        let list = apps(self.state == ScreenState::Sample);
+        let n = connected_count(&list);
+        let mut tabs = div().flex().gap(px(14.)).text_color(p.mute);
+        for (k, l) in APP_TABS {
+            tabs = tabs.child(
+                div()
+                    .when(k == "all", |d| {
+                        d.text_color(p.fg).font_weight(FontWeight::SEMIBOLD)
+                    })
+                    .child(if k == "on" {
+                        format!("{l} {n}")
+                    } else {
+                        l.to_string()
+                    }),
+            );
+        }
+        let mut body = div()
+            .flex()
+            .flex_col()
+            .gap(px(12.))
+            .p(px(22.))
+            .child(
+                div()
+                    .text_size(px(22.))
+                    .font_weight(FontWeight::SEMIBOLD)
+                    .child("Integrations"),
+            )
+            .child(tabs);
+        if self.state == ScreenState::Loading {
+            body = body.child(skel(&p, 6));
+        } else {
+            let mut grid = div().flex().flex_wrap().gap(px(10.));
+            for a in app_view(&list, "all", "") {
+                let key: &'static str = match a.id {
+                    "googledrive" => "app-googledrive",
+                    "dropbox" => "app-dropbox",
+                    "notion" => "app-notion",
+                    "slack" => "app-slack",
+                    "discord" => "app-discord",
+                    "gmail" => "app-gmail",
+                    "googlecalendar" => "app-googlecalendar",
+                    "zoom" => "app-zoom",
+                    "linear" => "app-linear",
+                    "figma" => "app-figma",
+                    "github" => "app-github",
+                    _ => "app-sentry",
+                };
+                let fi = fire(&self.act, key);
+                grid = grid.child(
+                    div()
+                        .id(SharedString::from(key))
+                        .w(px(232.))
+                        .p(px(12.))
+                        .rounded(px(12.))
+                        .border_1()
+                        .border_color(if a.connected { p.fg2 } else { p.line })
+                        .flex()
+                        .flex_col()
+                        .gap(px(6.))
+                        .child(div().font_weight(FontWeight::SEMIBOLD).child(a.name))
+                        .child(div().text_color(p.fg2).child(a.blurb))
+                        .child(div().text_color(p.mute).child(if a.connected {
+                            "Connected · Manage"
+                        } else {
+                            "Connect"
+                        }))
+                        .on_click(move |_, w, cx| fi(w, cx)),
+                );
+            }
+            body = body.child(grid);
+        }
+        let work = if self.state == ScreenState::Sample {
+            let a = list.iter().find(|a| a.id == "slack").cloned();
+            a.map(|a| {
+                let mut w = div()
+                    .flex()
+                    .flex_col()
+                    .gap(px(4.))
+                    .child(row(&p, a.name.to_string(), synced_words(a.synced), false))
+                    .child(gh(&p, "It may"));
+                for (s, on) in a.scopes {
+                    w = w.child(row(
+                        &p,
+                        s.to_string(),
+                        if on { "On" } else { "Off" }.to_string(),
+                        false,
+                    ));
+                }
+                w.child(row(&p, "Sync now".into(), "Disconnect".into(), false))
+            })
+        } else {
+            None
+        };
+        frame(
+            self.theme,
+            self.layout,
+            sidebar(&p, self.state, &self.act, false),
+            page(&p, "Integrations", body),
+            work,
         )
     }
 }

@@ -71,6 +71,7 @@ pub use parity::FoldersEl;
 pub use parity::GooeyAttachMenuEl;
 pub use parity::GooeyComposerEl;
 pub use parity::GooeyModelMenuEl;
+pub use parity::IntegrationsEl;
 pub use parity::JudgeBracketEl;
 pub use parity::LightPlaygroundEl;
 pub use parity::LiquidDropsEl;

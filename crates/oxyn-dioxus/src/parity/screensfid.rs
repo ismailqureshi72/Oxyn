@@ -5,19 +5,21 @@
 //! is the three-pane frame: an icon rail, a chats column, the page and a work area. On top of them:
 //! [`AppShellScreen`], [`RailShellScreen`] and the AI Chat screens [`ChatStartScreen`],
 //! [`ChatOverviewScreen`], [`ChatAgentsScreen`], [`ChatRailScreen`], [`ChatProgressScreen`] and
-//! [`ChatRunScreen`], and the Folders screens ([`FoldersScreen`], Overview and Detail), each with
+//! [`ChatRunScreen`], the Folders screens ([`FoldersScreen`], Overview and Detail) and
+//! [`IntegrationsScreen`], each with
 //! Sample, Loading and Empty data. Models: `oxyn_core::parity::screensfid`. Styles:
 //! `screensfid.css` (`oxscn-` frame, `oxsrl-` rail frame, `oxcst-` start, `oxcov-` overview,
 //! `oxcag-` agents, `oxcdr-` double sidebar, `oxcpr-` progress, `oxcrn-` run, `oxsfo-` / `oxsfd-` /
-//! `oxsfi-` folders). Every person, workspace and line of copy is fictional and our own.
+//! `oxsfi-` folders, `oxsin-` integrations). Every person, workspace and line of copy is fictional and our own.
 
 use dioxus::prelude::*;
 use oxyn_core::ClockMs;
 use oxyn_core::parity::screensfid::{
-    FileRow, FileSort, Folder, PERSON, PERSON_INI, Review, ScreenState, ShellLayout, Thread,
-    WORKSPACE, ago, can_send, chat_title, folder_activity, folder_files, folder_view, folders,
-    invite_initials, member_name, open_thread, pct_done, projects, setup_steps, size_label,
-    sort_files, split_pinned, threads, toggle_pin, total_size, untitled,
+    APP_TABS, AppInfo, FileRow, FileSort, Folder, PERSON, PERSON_INI, Review, ScreenState,
+    ShellLayout, Thread, WORKSPACE, ago, app_view, apps, can_send, chat_title, connected_count,
+    folder_activity, folder_files, folder_view, folders, invite_initials, member_name, open_thread,
+    pct_done, projects, setup_steps, size_label, sort_files, split_pinned, synced_words, threads,
+    toggle_pin, total_size, untitled,
 };
 
 use super::efflistfid::{check_glyph, chevron};
@@ -2354,6 +2356,244 @@ fn FolderInfo(state: String, list: Signal<Vec<Folder>>, id: u32) -> Element {
                     for (i, (w, t, a)) in folder_activity().into_iter().enumerate() {
                         div { key: "{i}", class: "oxsfi-act", span { class: "oxscn-av oxsfo-face", "{w}" } span { class: "oxscn-row-t", "{t}" } span { class: "oxscn-row-a", "{a}" } }
                     }
+                }
+            }
+        }
+    }
+}
+
+// ───────────────────────────────────────────────────────────── Integrations ──
+
+/// Screen – Integrations: an app directory with category tabs and search; Connect asks for the
+/// permissions first, a connected app opens its details beside the list (permissions, sync,
+/// disconnect).
+#[component]
+pub fn IntegrationsScreen(
+    /// `inset` or `flat`.
+    #[props(default = "inset".to_string())]
+    layout: String,
+    /// `sample`, `loading` or `empty`.
+    #[props(default = "sample".to_string())]
+    state: String,
+    /// Height px.
+    #[props(default = 640)]
+    height: u32,
+) -> Element {
+    let st = ScreenState::from_key(&state);
+    let thr = use_threads(st);
+    let active = use_signal(|| 0u32);
+    let mut list = use_signal(move || apps(st == ScreenState::Sample));
+    let mut tab = use_signal(|| "all".to_string());
+    let mut q = use_signal(String::new);
+    let mut pick = use_signal(move || {
+        if st == ScreenState::Sample {
+            Some("slack")
+        } else {
+            None
+        }
+    });
+    let mut ask = use_signal(|| None::<&'static str>);
+    let mut grant = use_signal(Vec::<bool>::new);
+    let mut said = use_signal(String::new);
+    let all = list();
+    let view = app_view(&all, &tab(), &q());
+    let n_on = connected_count(&all);
+    let loading = st == ScreenState::Loading;
+    let cur_tab = tab();
+    let asking = ask().and_then(|id| all.iter().find(|a| a.id == id).cloned());
+    let picked = pick().and_then(|id| all.iter().find(|a| a.id == id && a.connected).cloned());
+    let mut open_ask = move |id: &'static str| {
+        let n = list
+            .peek()
+            .iter()
+            .find(|a| a.id == id)
+            .map(|a| a.scopes.len())
+            .unwrap_or(0);
+        grant.set(vec![true; n]);
+        ask.set(Some(id));
+    };
+    let mut allow = move || {
+        let Some(id) = *ask.peek() else { return };
+        let g = grant.peek().clone();
+        let mut name = "";
+        if let Some(a) = list.write().iter_mut().find(|a| a.id == id) {
+            a.connected = true;
+            a.synced = 0;
+            for (s, on) in a.scopes.iter_mut().zip(g) {
+                s.1 = on;
+            }
+            name = a.name;
+        }
+        ask.set(None);
+        pick.set(Some(id));
+        said.set(format!("{name} connected"));
+    };
+    let tabs_k: Vec<&'static str> = APP_TABS.iter().map(|(k, _)| *k).collect();
+    let work = picked.clone().map(|a| rsx! { AppDetail { key: "{a.id}", app: a, list, on_gone: move |n: String| { pick.set(None); said.set(format!("{n} disconnected")); } } });
+    let lead = if loading {
+        "Loading your apps…".to_string()
+    } else if n_on == 0 {
+        "Nothing connected yet".to_string()
+    } else if n_on == 1 {
+        "1 app connected".to_string()
+    } else {
+        format!("{n_on} apps connected")
+    };
+    rsx! {
+        AppFrame { layout, state: state.clone(), height, threads: thr, active, title: "Integrations", work, work_label: "App",
+            div { class: "oxsin",
+                div { class: "oxsfo-head",
+                    div { class: "oxsfo-ht",
+                        h1 { class: "oxscn-h1", "Integrations" }
+                        p { class: "oxscn-row-a", "{lead} · the assistant only touches what you allow" }
+                    }
+                }
+                label { class: "oxscn-search oxsin-q",
+                    {ico("search")}
+                    input { r#type: "search", placeholder: "Find an app", "aria-label": "Find an app", value: "{q}",
+                        oninput: move |e| q.set(e.value()),
+                        onkeydown: move |e: KeyboardEvent| if e.key() == Key::Escape { q.set(String::new()) } }
+                }
+                div { class: "oxsin-tabs", role: "tablist", "aria-label": "Categories",
+                    onkeydown: move |e: KeyboardEvent| {
+                        let d: i32 = match e.key() { Key::ArrowRight => 1, Key::ArrowLeft => -1, _ => 0 };
+                        if d != 0 {
+                            e.prevent_default();
+                            let i = tabs_k.iter().position(|k| *k == tab()).unwrap_or(0) as i32;
+                            let n = (i + d).rem_euclid(tabs_k.len() as i32) as usize;
+                            tab.set(tabs_k[n].to_string());
+                        }
+                    },
+                    for (k, l) in APP_TABS {
+                        {
+                            let on = cur_tab == k;
+                            let n = if k == "on" { Some(n_on) } else { None };
+                            rsx! {
+                                button { key: "{k}", r#type: "button", role: "tab", class: "oxsin-tab", "aria-selected": "{on}", tabindex: if on { "0" } else { "-1" },
+                                    onclick: move |_| tab.set(k.to_string()),
+                                    "{l}"
+                                    if let Some(n) = n { span { class: "oxsin-n", "{n}" } }
+                                }
+                            }
+                        }
+                    }
+                }
+                if loading {
+                    div { class: "oxsin-grid", "aria-hidden": "true", for i in 0..6 { div { key: "{i}", class: "oxsin-card", {skel(3)} } } }
+                } else if view.is_empty() {
+                    if cur_tab == "on" && q().trim().is_empty() {
+                        {empty("No apps connected", "Connect one from All: you choose what it may read and do, and can switch any of it off later.")}
+                    } else {
+                        p { class: "oxscn-hint", role: "status", "No app matches “{q}”." }
+                    }
+                } else {
+                    ul { class: "oxsin-grid", "aria-label": "Apps",
+                        for a in view {
+                            {
+                                let id = a.id;
+                                let on = a.connected;
+                                let sel = pick() == Some(id) && on;
+                                let nm = a.name;
+                                rsx! {
+                                    li { key: "{id}", class: "oxsin-card", "data-on": "{on}", "data-sel": "{sel}",
+                                        div { class: "oxsin-top",
+                                            span { class: "oxsin-mark", BrandIcon { name: id.to_string(), size: 20.0, coloured: true, fallback: true } }
+                                            span { class: "oxsin-t", span { class: "oxsfo-n", "{nm}" } span { class: "oxscn-row-a", "{kind_label(a.kind)}" } }
+                                        }
+                                        p { class: "oxsin-b", "{a.blurb}" }
+                                        div { class: "oxsin-foot",
+                                            if on {
+                                                span { class: "oxscn-tag", "data-tone": "ok", "Connected" }
+                                                button { r#type: "button", class: "oxscn-btn", "aria-pressed": "{sel}", "aria-label": "Manage {nm}", onclick: move |_| pick.set(Some(id)), "Manage" }
+                                            } else {
+                                                span { class: "oxscn-row-a", "Not connected" }
+                                                button { r#type: "button", class: "oxscn-btn oxsin-conn", "aria-label": "Connect {nm}", onclick: move |_| open_ask(id), {ico("plus")} span { "Connect" } }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                p { class: "oxscn-sr", role: "status", "{said}" }
+            }
+            if let Some(a) = asking {
+                div { class: "oxsin-scrim", onclick: move |_| ask.set(None) }
+                div { class: "oxsin-dlg", role: "dialog", "aria-modal": "true", "aria-labelledby": "oxsin-dlg-t",
+                    onkeydown: move |e: KeyboardEvent| if e.key() == Key::Escape { e.stop_propagation(); ask.set(None); },
+                    div { class: "oxsin-top",
+                        span { class: "oxsin-mark", BrandIcon { name: a.id.to_string(), size: 20.0, coloured: true, fallback: true } }
+                        h2 { id: "oxsin-dlg-t", class: "oxsin-dt", "Connect {a.name}" }
+                    }
+                    p { class: "oxsin-b", "Pick what it may do. You can change this any time from Manage." }
+                    ul { class: "oxsin-scopes",
+                        for (i, (s, _)) in a.scopes.iter().enumerate() {
+                            {
+                                let g = grant().get(i).copied().unwrap_or(true);
+                                rsx! {
+                                    li { key: "{i}",
+                                        label { class: "oxsin-scope",
+                                            input { r#type: "checkbox", checked: g, onchange: move |_| { if let Some(x) = grant.write().get_mut(i) { *x = !*x; } } }
+                                            span { "{s}" }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    div { class: "oxsfo-add-a",
+                        button { r#type: "button", class: "oxscn-btn", onclick: move |_| ask.set(None), "Cancel" }
+                        button { r#type: "button", class: "oxscn-primary", disabled: !grant().iter().any(|x| *x),
+                            onmounted: move |e: MountedEvent| { let d = e.data(); spawn(async move { let _ = d.set_focus(true).await; }); },
+                            onclick: move |_| allow(), "Allow" }
+                    }
+                }
+            }
+        }
+    }
+}
+
+fn kind_label(k: &str) -> &'static str {
+    APP_TABS
+        .iter()
+        .find(|(x, _)| *x == k)
+        .map(|(_, l)| *l)
+        .unwrap_or("Other")
+}
+
+/// A connected app beside the directory: what it may do (switches), sync and disconnect.
+#[component]
+fn AppDetail(app: AppInfo, list: Signal<Vec<AppInfo>>, on_gone: EventHandler<String>) -> Element {
+    let mut sure = use_signal(|| false);
+    let id = app.id;
+    let nm = app.name;
+    let synced = synced_words(app.synced);
+    rsx! {
+        div { class: "oxsfi oxsin-det",
+            div { class: "oxsin-top",
+                span { class: "oxsin-mark", BrandIcon { name: id.to_string(), size: 22.0, coloured: true, fallback: true } }
+                span { class: "oxsin-t", span { class: "oxsfo-n", "{nm}" } span { class: "oxscn-row-a", "{synced}" } }
+            }
+            p { class: "oxsfi-about", "{app.blurb}" }
+            p { class: "oxscn-gh", "It may" }
+            for (i, (s, on)) in app.scopes.iter().enumerate() {
+                div { key: "{i}", class: "oxcag-sw oxsfi-sw",
+                    span { "{s}" }
+                    button { r#type: "button", role: "switch", class: "oxscn-switch", "aria-checked": "{on}", "aria-label": "{s}",
+                        onclick: move |_| { if let Some(a) = list.write().iter_mut().find(|a| a.id == id) && let Some(x) = a.scopes.get_mut(i) { x.1 = !x.1; } }, span {} }
+                }
+            }
+            div { class: "oxsin-acts",
+                button { r#type: "button", class: "oxscn-btn", onclick: move |_| { if let Some(a) = list.write().iter_mut().find(|a| a.id == id) { a.synced = 0; } }, {ico("undo")} span { "Sync now" } }
+                if sure() {
+                    span { class: "oxsin-sure", role: "group", "aria-label": "Confirm disconnect",
+                        span { "Disconnect?" }
+                        button { r#type: "button", class: "oxscn-btn oxsfd-del", onclick: move |_| { if let Some(a) = list.write().iter_mut().find(|a| a.id == id) { a.connected = false; } on_gone.call(nm.to_string()); }, "Yes" }
+                        button { r#type: "button", class: "oxscn-link", onclick: move |_| sure.set(false), "Keep" }
+                    }
+                } else {
+                    button { r#type: "button", class: "oxscn-btn", onclick: move |_| sure.set(true), "Disconnect" }
                 }
             }
         }
