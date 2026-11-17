@@ -256,4 +256,6 @@ specified just as deeply. When we point at one component as an example, the stan
 | [crm.md](crm.md) | built v0.1 (screens 1, Screens) |
 | [workflow.md](workflow.md) | built v0.1 (screens 1, Screens) |
 | [settings.md](settings.md) | built v0.1 (screens 1, Screens) |
+| [agent-orchestration.md](agent-orchestration.md) | built v0.1 (screens 2, Screens) |
+| [agent-thread.md](agent-thread.md) | built v0.1 (screens 2, Screens) |
 | Every other component in [../component-taxonomy.md](../component-taxonomy.md) | to write in V2.2 |

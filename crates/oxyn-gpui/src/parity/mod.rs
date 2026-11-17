@@ -61,6 +61,7 @@ mod rulerfid;
 mod run;
 mod runningfid;
 mod schedfid;
+mod screens2fid;
 mod screensfid;
 mod seqfid;
 mod stairsfid;
@@ -142,6 +143,7 @@ pub use run::{
 };
 pub use runningfid::RunningNowEl;
 pub use schedfid::ScheduledRunsEl;
+pub use screens2fid::{AgentThreadEl, OrchestrationEl};
 pub use screensfid::{
     ChatAgentsEl, ChatOverviewEl, ChatProgressEl, ChatRailEl, ChatRunEl, ChatStartEl, CrmEl,
     FolderDetailEl, FoldersEl, IntegrationsEl, KanbanEl, ScreenRailEl, ScreenShellEl, SettingsEl,
