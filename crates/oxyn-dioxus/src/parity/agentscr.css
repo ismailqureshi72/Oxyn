@@ -1,4 +1,4 @@
-/* Screens S3: agent ops I. Shared oxa-, Thread oxat-, Inbox oxai-, Board oxab-, Tasks oxak-, Activity oxac-, Memory oxam-.
+/* Screens S3: agent ops I. Shared oxa-, Thread oxat-, Inbox oxai-, Board oxab-, Tasks oxak-, Activity oxay-, Memory oxam-.
    Chrome is the neutral --oxth-* greys; colour only for official marks, file glyphs, project hues and status. */
 [data-hue="purple"]{--oxa-hue:var(--ox-ic-skills)}
 [data-hue="blue"]{--oxa-hue:var(--ox-ic-doc)}
@@ -34,6 +34,11 @@
 .oxa-toast .oxv-link{color:var(--oxth-card);text-decoration-color:currentColor;font-weight:500}
 .oxa-toast .oxa-x{color:var(--oxth-card);opacity:.7}
 .oxa-toast svg{flex:none;width:14px;height:14px}
+
+/* tabs in the top bar scroll rather than run under the actions */
+.oxscn-top>.oxv-tabs{flex:0 1 auto;min-width:0;overflow-x:auto;scrollbar-width:none}
+.oxscn-top>.oxv-tabs::-webkit-scrollbar{display:none}
+.oxscn-top>.oxa-n{margin-right:0}
 
 /* work area */
 .oxa-work{display:flex;flex-direction:column;min-width:0;height:100%;overflow:hidden}
@@ -82,7 +87,7 @@
 .oxat-banner{display:flex;align-items:center;gap:10px;flex:none;min-width:0;margin:0 auto 8px;width:min(680px,calc(100% - 32px));padding:6px 6px 6px 12px;
   border-radius:10px;background:color-mix(in srgb,var(--ox-ic-approval) 14%,var(--oxth-card));font-size:13px;color:var(--oxth-fg)}
 .oxat-banner .oxv-ell{flex:1 1 auto}
-.oxat-log{flex:1 1 auto;min-height:0;overflow:auto;outline:0;scroll-behavior:smooth}
+.oxat-log{flex:1 1 auto;min-height:0;overflow:auto;outline:none!important}
 .oxat-col{display:flex;flex-direction:column;gap:14px;width:min(680px,calc(100% - 32px));margin:0 auto;padding:6px 0 18px}
 .oxat-start{min-height:100%;justify-content:center}
 .oxat-me{align-self:flex-end;display:flex;flex-direction:column;align-items:flex-end;gap:3px;max-width:82%}
@@ -170,7 +175,7 @@
 .oxai-q{color:var(--oxth-fg)}
 .oxai-unread{flex:none;width:7px;height:7px;margin-top:6px;border-radius:50%;background:var(--ox-ic-running)}
 .oxai-det{position:relative;min-height:0;overflow:auto;display:flex;justify-content:center}
-.oxai-qw{display:flex;flex-direction:column;width:min(388px,calc(100% - 40px));padding:56px 0 64px;outline:0}
+.oxai-qw{display:flex;flex-direction:column;width:min(388px,calc(100% - 40px));padding:56px 0 64px;outline:none!important;box-shadow:none!important}
 .oxai-qw[data-glide="true"]{animation:oxai-in .28s cubic-bezier(.2,.8,.2,1)}
 @keyframes oxai-in{from{opacity:0;transform:translateX(28px)}}
 .oxai-from{display:flex;align-items:center;gap:6px;min-width:0;margin:0;font-size:12.5px;color:var(--oxth-fg2)}
@@ -260,41 +265,42 @@
 .oxak-decided{display:flex;align-items:center;gap:10px;padding:12px;border:1px solid var(--oxth-line);border-radius:10px}
 
 /* Activity */
-.oxac{height:100%;min-height:0;overflow:auto;padding:8px 8px 20px;box-sizing:border-box}
-.oxac-q{flex:0 1 220px}
-.oxac-day{margin-bottom:12px}
-.oxac-dh{display:flex;align-items:center;gap:8px;height:32px;margin:0 0 4px;padding:0 12px;border-radius:9px;background:var(--oxth-card2);font-size:13px;font-weight:500;color:var(--oxth-fg)}
-.oxac-dh .oxa-n{padding:1px 6px;border-radius:5px;border:1px solid var(--oxth-line);font-size:11.5px}
-.oxac-ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
-.oxac-row{position:relative;display:flex;align-items:center;border-radius:10px}
-.oxac-row:hover{background:var(--oxth-hov)}
-.oxac-row[data-on="true"]{background:var(--oxth-sel)}
-.oxac-sel{display:flex;align-items:center;gap:12px;flex:1 1 auto;min-width:0;height:54px;padding:0 96px 0 12px;border:0;border-radius:10px;background:none;text-align:left;cursor:pointer;color:var(--oxth-fg)}
-.oxac-at{flex:none;width:38px;color:var(--oxth-mute);font-size:12.5px;font-variant-numeric:tabular-nums}
-.oxac-logo{display:grid;place-items:center;flex:none;width:28px;height:28px;border-radius:8px;border:1px solid var(--oxth-line);background:#fff;--ox-brand-ink:#000}
-.oxac-logo-l{width:40px;height:40px;border-radius:10px}
-.oxac-sel .oxak-rt{flex-direction:column;align-items:stretch;gap:2px}
-.oxac-t{font-size:13.5px}
-.oxac-sub{display:flex;align-items:center;gap:6px;min-width:0;font-size:12px;color:var(--oxth-fg2)}
-.oxac-sub .oxa-dot{width:6px;height:6px}
-.oxac-row[data-undone="true"] .oxac-t{text-decoration:line-through;color:var(--oxth-mute)}
-.oxac-tag{position:absolute;right:12px;top:50%;transform:translateY(-50%);padding:1px 6px;border-radius:5px;border:1px solid var(--oxth-line);font-size:11.5px;color:var(--oxth-mute)}
-.oxac-final{position:absolute;right:12px;top:50%;transform:translateY(-50%);display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--oxth-mute)}
-.oxac-final .oxscn-ico{width:12px;height:12px}
-.oxac-undo{position:absolute;right:10px;top:50%;transform:translateY(-50%)}
-.oxac-undo .oxscn-ico{width:13px;height:13px}
-.oxac-hd{display:flex;align-items:center;gap:12px;min-width:0;margin-bottom:6px}
-.oxac-hd .oxak-rt{flex-direction:column;align-items:stretch;gap:2px}
-.oxac-ht{font-size:15px;font-weight:600;line-height:1.35;white-space:normal}
-.oxac-body{margin:4px 0 0;padding:2px 0 2px 10px;border-left:2px solid var(--oxth-line2);color:var(--oxth-fg2);font-size:13px;line-height:1.55}
-.oxac-why{display:flex;align-items:center;gap:8px;margin:0;font-size:13px}
-.oxac-why b{font-weight:500}
-.oxac-wl{margin:0}
-.oxac-rule{display:flex;align-items:center;gap:8px;min-width:0;padding-top:8px;border-top:1px solid var(--oxth-line);font-size:13px}
-.oxac-rule .oxscn-ico{flex:none;width:14px;height:14px}
-.oxac-back{flex-direction:row;align-items:center;gap:12px}
-.oxac-back .oxak-rt{flex-direction:column;align-items:stretch;gap:2px}
-.oxac-bt{font-weight:500;font-size:13px;white-space:normal}
+.oxay{height:100%;min-height:0;overflow:auto;padding:8px 8px 20px;box-sizing:border-box}
+.oxay-q{flex:0 1 220px}
+.oxay-day{margin-bottom:12px}
+.oxay-dh{display:flex;align-items:center;gap:8px;height:32px;margin:0 0 4px;padding:0 12px;border-radius:9px;background:var(--oxth-card2);font-size:13px;font-weight:500;color:var(--oxth-fg)}
+.oxay-dh .oxa-n{padding:1px 6px;border-radius:5px;border:1px solid var(--oxth-line);font-size:11.5px}
+.oxay-ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.oxay-row{position:relative;display:flex;align-items:center;border-radius:10px}
+.oxay-row:hover{background:var(--oxth-hov)}
+.oxay-row[data-on="true"]{background:var(--oxth-sel)}
+.oxay-sel{display:flex;align-items:center;gap:12px;flex:1 1 auto;min-width:0;height:54px;padding:0 12px;border:0;border-radius:10px;background:none;text-align:left;cursor:pointer;color:var(--oxth-fg)}
+.oxay-at{flex:none;width:38px;color:var(--oxth-mute);font-size:12.5px;font-variant-numeric:tabular-nums}
+.oxay-logo{display:grid;place-items:center;flex:none;width:28px;height:28px;border-radius:8px;border:1px solid var(--oxth-line);background:#fff;--ox-brand-ink:#000}
+.oxay-logo-l{width:40px;height:40px;border-radius:10px}
+.oxay-sel .oxak-rt{flex-direction:column;align-items:stretch;gap:2px}
+.oxay-t{font-size:13.5px}
+.oxay-sub{display:flex;align-items:center;gap:6px;min-width:0;font-size:12px;color:var(--oxth-fg2)}
+.oxay-sub .oxa-dot{width:6px;height:6px}
+.oxay-row[data-undone="true"] .oxay-t{text-decoration:line-through;color:var(--oxth-mute)}
+.oxay-row:has(.oxay-undo) .oxay-sel{padding-right:96px}
+.oxay-tag{flex:none;padding:1px 6px;border-radius:5px;border:1px solid var(--oxth-line);font-size:11.5px;color:var(--oxth-mute)}
+.oxay-final{flex:none;display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--oxth-mute)}
+.oxay-final .oxscn-ico{width:12px;height:12px}
+.oxay-undo{position:absolute;right:10px;top:50%;transform:translateY(-50%)}
+.oxay-undo .oxscn-ico{width:13px;height:13px}
+.oxay-hd{display:flex;align-items:center;gap:12px;min-width:0;margin-bottom:6px}
+.oxay-hd .oxak-rt{flex-direction:column;align-items:stretch;gap:2px}
+.oxay-ht{font-size:15px;font-weight:600;line-height:1.35;white-space:normal}
+.oxay-body{margin:4px 0 0;padding:2px 0 2px 10px;border-left:2px solid var(--oxth-line2);color:var(--oxth-fg2);font-size:13px;line-height:1.55}
+.oxay-why{display:flex;align-items:center;gap:8px;margin:0;font-size:13px}
+.oxay-why b{font-weight:500}
+.oxay-wl{margin:0}
+.oxay-rule{display:flex;align-items:center;gap:8px;min-width:0;padding-top:8px;border-top:1px solid var(--oxth-line);font-size:13px}
+.oxay-rule .oxscn-ico{flex:none;width:14px;height:14px}
+.oxay-back{flex-direction:row;align-items:center;gap:12px}
+.oxay-back .oxak-rt{flex-direction:column;align-items:stretch;gap:2px}
+.oxay-bt{font-weight:500;font-size:13px;white-space:normal}
 
 /* Memory */
 .oxam{position:relative;height:100%;min-height:0;overflow:auto;padding:8px 8px 20px;box-sizing:border-box}
@@ -324,22 +330,24 @@
 .oxam-u b{font-weight:500}
 
 /* narrow canvases (the full view at tablet and phone widths) */
-.oxscn-body:has(>.oxat,>.oxai,>.oxab,>.oxak,>.oxac,>.oxam){container:oxa/inline-size}
-@container oxa (max-width: 760px){
-  .oxai{grid-template-columns:minmax(0,1fr)}
-  .oxai-list{border-right:0;border-bottom:1px solid var(--oxth-line);max-height:42%}
+.oxscn-body:has(>.oxat,>.oxai,>.oxab,>.oxak,>.oxay,>.oxam){container:oxa/inline-size}
+@container oxa (max-width: 600px){
+  .oxai{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr)}
+  .oxai-list{border-right:0;border-bottom:1px solid var(--oxth-line);max-height:220px}
   .oxai-qw{padding-top:20px}
+}
+@container oxa (max-width: 640px){
   .oxab{grid-template-columns:minmax(0,1fr)}
-  .oxac-q,.oxam-q{display:none}
+  .oxay-q,.oxam-q{display:none}
   .oxam-src,.oxak-age{display:none}
 }
 @container oxa (max-width: 520px){
   .oxat-col,.oxat-cmp,.oxat-banner{width:calc(100% - 20px)}
   .oxat-appr span,.oxat-count span{display:none}
   .oxat-me{max-width:92%}
-  .oxac-at{display:none}
-  .oxac-sel{padding-right:46px}
-  .oxac-undo span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+  .oxay-at{display:none}
+  .oxay-row:has(.oxay-undo) .oxay-sel{padding-right:46px}
+  .oxay-undo span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
   .oxak-c:not(.oxak-age){display:none}
   .oxak-rt .oxv-q2{display:none}
   .oxam-sel .oxak-c{display:none}
