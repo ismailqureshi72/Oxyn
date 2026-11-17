@@ -645,7 +645,8 @@ pub fn AgentOrchestrator(
             div { class: "oxr-lanes",
                 for l in model.lanes.iter() {
                     div { class: "oxr-lane", "data-state": l.state.id(),
-                        div { class: "oxr-line", {mark(l.state)} if crate::brand::has_brand(&l.title) { span { class: "oxr-bmk", crate::brand::BrandIcon { name: l.title.clone(), size: 12.0, coloured: true } } } span { class: "oxr-title", "{l.title}" } span { class: "oxr-sp" } span { class: "oxr-dim oxr-small oxr-site", if crate::brand::has_brand(&l.worker) { crate::brand::BrandIcon { name: l.worker.clone(), size: 11.0, coloured: true } } "{l.worker}" } }
+                        div { class: "oxr-line", {mark(l.state)} if crate::brand::has_brand(&l.title) { span { class: "oxr-bmk", crate::brand::BrandIcon { name: l.title.clone(), size: 12.0, coloured: true } } } span { class: "oxr-title oxr-clip", title: "{l.title}", "{l.title}" } }
+                        div { class: "oxr-dim oxr-small oxr-site oxr-lwk", title: "{l.worker}", if crate::brand::has_brand(&l.worker) { crate::brand::BrandIcon { name: l.worker.clone(), size: 11.0, coloured: true } } span { class: "oxr-clip", "{l.worker}" } }
                         div { class: "oxr-dim oxr-small oxr-clip", "{l.instruction}" }
                         div { class: "oxr-bar", span { style: "width:{l.progress * 100.0}%" } }
                         if let Some(r) = l.result.clone() { div { class: "oxr-small", "{r}" } }

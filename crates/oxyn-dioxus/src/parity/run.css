@@ -168,6 +168,8 @@
 .oxr-lanes{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
 .oxr-lane{display:flex;flex-direction:column;gap:5px;padding:9px;border-radius:10px;border:1px solid var(--oxyn-color-border-default);background:var(--oxyn-color-surface-base);min-width:0}
 .oxr-lane[data-state="pending"]{opacity:.6}
+.oxr-lane>.oxr-line{flex-wrap:nowrap}.oxr-lane>.oxr-line>*{flex:none}.oxr-lane>.oxr-line>.oxr-title{flex:0 1 auto}
+.oxr-lane>.oxr-lwk{display:flex;min-width:0;max-width:100%;margin-top:-2px}.oxr-lane>.oxr-lwk>svg{flex:none}
 .oxr-sum{display:flex;gap:7px;align-items:flex-start;padding:9px 10px;border-radius:10px;background:var(--oxyn-color-surface-sunken);font-size:12.5px}
 /* tree table */
 .oxr-tt{width:100%;overflow:auto;border-radius:10px;border:1px solid var(--oxyn-color-border-default)}
