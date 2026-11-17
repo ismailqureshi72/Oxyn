@@ -42,8 +42,15 @@ fn code(name: &str, v: &Vals, live: bool, detail: bool) -> String {
 }
 
 fn controls(lay: &'static str) -> Vec<crate::Control> {
+    controls_x(lay, &[])
+}
+
+/// The data control with a screen's own states after Sample, Loading and Empty.
+fn controls_x(lay: &'static str, extra: &[&'static str]) -> Vec<crate::Control> {
+    let mut data: Vec<&'static str> = vec!["Sample", "Loading", "Empty"];
+    data.extend_from_slice(extra);
     vec![
-        sel("data", "Data", &["Sample", "Loading", "Empty"], "Sample"),
+        sel("data", "Data", &data, "Sample"),
         sel(
             "frame",
             "Frame",
@@ -263,7 +270,7 @@ fn chat_start(v: &Vals, now: ClockMs) -> Element {
     let (st, lay, key) = frame(v);
     rsx! {
         div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
-            ScreenStage { state: st, screen: move |s: String| rsx! { ChatStartScreen { layout: lay.clone(), state: s, now } } }
+            ScreenStage { state: st, states: oxyn_core::parity::screensfid::START_STATES.to_vec(), screen: move |s: String| rsx! { ChatStartScreen { layout: lay.clone(), state: s, now } } }
         }
     }
 }
@@ -274,7 +281,7 @@ fn chat_start_code(v: &Vals) -> String {
 
 fn chat_start_demo() -> Demo {
     Demo {
-        controls: controls("inset"),
+        controls: controls_x("inset", &["Attached", "Dictating"]),
         variants: vec![
             var("sample", "Sample data in the Inset frame.", &[]),
             var(
@@ -291,6 +298,16 @@ fn chat_start_demo() -> Demo {
                 "empty",
                 "Nothing yet: each region says what will appear.",
                 &[("data", "Empty")],
+            ),
+            var(
+                "attached",
+                "Files, a sheet and an app page attached in the composer.",
+                &[("data", "Attached")],
+            ),
+            var(
+                "dictating",
+                "The composer taking dictation: a live waveform in place of the field.",
+                &[("data", "Dictating")],
             ),
         ],
         render: chat_start,
@@ -332,7 +349,7 @@ fn chat_overview(v: &Vals, now: ClockMs) -> Element {
     let (st, lay, key) = frame(v);
     rsx! {
         div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
-            ScreenStage { state: st, screen: move |s: String| rsx! { ChatOverviewScreen { layout: lay.clone(), state: s, now } } }
+            ScreenStage { state: st, states: oxyn_core::parity::screensfid::OVERVIEW_STATES.to_vec(), screen: move |s: String| rsx! { ChatOverviewScreen { layout: lay.clone(), state: s, now } } }
         }
     }
 }
@@ -343,7 +360,7 @@ fn chat_overview_code(v: &Vals) -> String {
 
 fn chat_overview_demo() -> Demo {
     Demo {
-        controls: controls("inset"),
+        controls: controls_x("inset", &["Near limit"]),
         variants: vec![
             var("sample", "Sample data in the Inset frame.", &[]),
             var(
@@ -360,6 +377,11 @@ fn chat_overview_demo() -> Demo {
                 "empty",
                 "Nothing yet: each region says what will appear.",
                 &[("data", "Empty")],
+            ),
+            var(
+                "limit",
+                "Credits near the monthly cap: the meter turns amber with Upgrade.",
+                &[("data", "Near limit")],
             ),
         ],
         render: chat_overview,
@@ -401,7 +423,7 @@ fn chat_agents(v: &Vals, now: ClockMs) -> Element {
     let (st, lay, key) = frame(v);
     rsx! {
         div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
-            ScreenStage { state: st, screen: move |s: String| rsx! { ChatAgentsScreen { layout: lay.clone(), state: s, now } } }
+            ScreenStage { state: st, states: oxyn_core::parity::screensfid::AGENTS_STATES.to_vec(), screen: move |s: String| rsx! { ChatAgentsScreen { layout: lay.clone(), state: s, now } } }
         }
     }
 }
@@ -412,7 +434,7 @@ fn chat_agents_code(v: &Vals) -> String {
 
 fn chat_agents_demo() -> Demo {
     Demo {
-        controls: controls("inset"),
+        controls: controls_x("inset", &["Generating"]),
         variants: vec![
             var("sample", "Sample data in the Inset frame.", &[]),
             var(
@@ -429,6 +451,11 @@ fn chat_agents_demo() -> Demo {
                 "empty",
                 "Nothing yet: each region says what will appear.",
                 &[("data", "Empty")],
+            ),
+            var(
+                "making",
+                "The brief turning into ads, one at a time.",
+                &[("data", "Generating")],
             ),
         ],
         render: chat_agents,
@@ -470,7 +497,7 @@ fn chat_double_sidebar(v: &Vals, now: ClockMs) -> Element {
     let (st, lay, key) = frame(v);
     rsx! {
         div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
-            ScreenStage { state: st, screen: move |s: String| rsx! { ChatRailScreen { layout: lay.clone(), state: s, now } } }
+            ScreenStage { state: st, states: oxyn_core::parity::screensfid::RAIL_STATES.to_vec(), screen: move |s: String| rsx! { ChatRailScreen { layout: lay.clone(), state: s, now } } }
         }
     }
 }
@@ -481,7 +508,7 @@ fn chat_double_sidebar_code(v: &Vals) -> String {
 
 fn chat_double_sidebar_demo() -> Demo {
     Demo {
-        controls: controls("inset"),
+        controls: controls_x("inset", &["Chats folded"]),
         variants: vec![
             var("sample", "Sample data in the Inset frame.", &[]),
             var(
@@ -498,6 +525,11 @@ fn chat_double_sidebar_demo() -> Demo {
                 "empty",
                 "Nothing yet: each region says what will appear.",
                 &[("data", "Empty")],
+            ),
+            var(
+                "folded",
+                "The chats column folded to the rail; the thread takes the room.",
+                &[("data", "Chats folded")],
             ),
         ],
         render: chat_double_sidebar,
@@ -540,7 +572,7 @@ fn chat_progress(v: &Vals, now: ClockMs) -> Element {
     let (st, lay, key) = frame(v);
     rsx! {
         div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
-            ScreenStage { state: st, screen: move |s: String| rsx! { ChatProgressScreen { layout: lay.clone(), state: s, now } } }
+            ScreenStage { state: st, states: oxyn_core::parity::screensfid::PROGRESS_STATES.to_vec(), screen: move |s: String| rsx! { ChatProgressScreen { layout: lay.clone(), state: s, now } } }
         }
     }
 }
@@ -551,7 +583,7 @@ fn chat_progress_code(v: &Vals) -> String {
 
 fn chat_progress_demo() -> Demo {
     Demo {
-        controls: controls("inset"),
+        controls: controls_x("inset", &["Working"]),
         variants: vec![
             var("sample", "Sample data in the Inset frame.", &[]),
             var(
@@ -568,6 +600,11 @@ fn chat_progress_demo() -> Demo {
                 "empty",
                 "Nothing yet: each region says what will appear.",
                 &[("data", "Empty")],
+            ),
+            var(
+                "working",
+                "A turn still working: the column ticks steps off live.",
+                &[("data", "Working")],
             ),
         ],
         render: chat_progress,
@@ -609,7 +646,7 @@ fn chat_run(v: &Vals, now: ClockMs) -> Element {
     let (st, lay, key) = frame(v);
     rsx! {
         div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
-            ScreenStage { state: st, screen: move |s: String| rsx! { ChatRunScreen { layout: lay.clone(), state: s, now } } }
+            ScreenStage { state: st, states: oxyn_core::parity::screensfid::RUN_STATES.to_vec(), screen: move |s: String| rsx! { ChatRunScreen { layout: lay.clone(), state: s, now } } }
         }
     }
 }
@@ -620,7 +657,7 @@ fn chat_run_code(v: &Vals) -> String {
 
 fn chat_run_demo() -> Demo {
     Demo {
-        controls: controls("inset"),
+        controls: controls_x("inset", &["Needs input", "Done"]),
         variants: vec![
             var("sample", "Sample data in the Inset frame.", &[]),
             var(
@@ -637,6 +674,16 @@ fn chat_run_demo() -> Demo {
                 "empty",
                 "Nothing yet: each region says what will appear.",
                 &[("data", "Empty")],
+            ),
+            var(
+                "input",
+                "The run waiting on a yes: Needs your input asks before it sends.",
+                &[("data", "Needs input")],
+            ),
+            var(
+                "done",
+                "Every step done and the draft reviewed.",
+                &[("data", "Done")],
             ),
         ],
         render: chat_run,

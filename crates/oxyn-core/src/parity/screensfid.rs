@@ -800,6 +800,390 @@ pub fn progress_tools() -> Vec<(&'static str, &'static str, f32)> {
     ]
 }
 
+// ───────────────────────────────────────────────────────────── AI Chat parity (S1) ──
+
+/// The state bar of AI Chat / Start: Data, Loading, Empty, then a composer with files attached and
+/// one taking dictation.
+pub const START_STATES: [(&str, &str); 5] = [
+    ("sample", "Data"),
+    ("loading", "Loading"),
+    ("empty", "Empty"),
+    ("attached", "Attached"),
+    ("dictating", "Dictating"),
+];
+/// The state bar of AI Chat / Overview: the data states, then credits near the limit.
+pub const OVERVIEW_STATES: [(&str, &str); 4] = [
+    ("sample", "Data"),
+    ("loading", "Loading"),
+    ("empty", "Empty"),
+    ("limit", "Near limit"),
+];
+/// The state bar of AI Chat / Agents: the data states, then the ads being made.
+pub const AGENTS_STATES: [(&str, &str); 4] = [
+    ("sample", "Data"),
+    ("loading", "Loading"),
+    ("empty", "Empty"),
+    ("making", "Generating"),
+];
+/// The state bar of AI Chat / Double Sidebar: the data states, then the chats column folded.
+pub const RAIL_STATES: [(&str, &str); 4] = [
+    ("sample", "Data"),
+    ("loading", "Loading"),
+    ("empty", "Empty"),
+    ("folded", "Chats folded"),
+];
+/// The state bar of AI Chat / Progress: the data states, then a turn still working.
+pub const PROGRESS_STATES: [(&str, &str); 4] = [
+    ("sample", "Data"),
+    ("loading", "Loading"),
+    ("empty", "Empty"),
+    ("working", "Working"),
+];
+/// The state bar of AI Chat / Run: the data states, then the run waiting on a yes, then done.
+pub const RUN_STATES: [(&str, &str); 5] = [
+    ("sample", "Data"),
+    ("loading", "Loading"),
+    ("empty", "Empty"),
+    ("input", "Needs input"),
+    ("done", "Done"),
+];
+
+/// Work area widths the AI Chat screens open at (rule: the affectUI measurements at 1440).
+pub const AGENTS_WORK_W: u32 = 368;
+/// The Double Sidebar's work area.
+pub const RAIL_WORK_W: u32 = 408;
+/// The Run screen's work area.
+pub const RUN_WORK_W: u32 = 348;
+/// The Double Sidebar's icon rail.
+pub const RAIL_W: u32 = 52;
+/// The Progress screen's in-page column.
+pub const PROGRESS_COL_W: u32 = 300;
+/// The Start screen's centred column.
+pub const START_COL_W: u32 = 672;
+/// The Overview screen's centred column.
+pub const OVERVIEW_COL_W: u32 = 880;
+
+/// One entry of the composer's Add (+) menu: key, label, a short hint, the glyph, and whether it
+/// opens a second list (Attach app).
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct PlusItem {
+    /// Stable key.
+    pub key: &'static str,
+    /// Label.
+    pub label: &'static str,
+    /// One short line under or beside the label.
+    pub hint: &'static str,
+    /// Glyph name.
+    pub icon: &'static str,
+    /// Opens a second list.
+    pub more: bool,
+}
+
+const fn plus(
+    key: &'static str,
+    label: &'static str,
+    hint: &'static str,
+    icon: &'static str,
+    more: bool,
+) -> PlusItem {
+    PlusItem {
+        key,
+        label,
+        hint,
+        icon,
+        more,
+    }
+}
+
+/// The Add menu's first group: what to bring into the chat.
+pub const PLUS_ADD: [PlusItem; 7] = [
+    plus("files", "Files and folders", "", "clip", false),
+    plus("attach", "Attach app", "", "apps", true),
+    plus(
+        "folder",
+        "Work in a folder",
+        "Pick where it works",
+        "folder",
+        false,
+    ),
+    plus("connect", "Link apps", "", "plug", false),
+    plus(
+        "goal",
+        "Goal",
+        "Keeps going until it is met",
+        "target",
+        false,
+    ),
+    plus(
+        "skill",
+        "Record a skill",
+        "Show it once, reuse it",
+        "rec",
+        false,
+    ),
+    plus("draw", "Draw", "Sketch what you mean", "pen", false),
+];
+/// The Add menu's second group: plugins that make things.
+pub const PLUS_PLUGINS: [PlusItem; 3] = [
+    plus("docs", "Documents", "Write and edit docs", "doc", false),
+    plus("pdf", "PDF", "Read, fill and check PDFs", "pdf", false),
+    plus(
+        "sheets",
+        "Spreadsheets",
+        "Tables with formulas",
+        "sheet",
+        false,
+    ),
+];
+
+/// Every Add menu entry in keyboard order.
+pub fn plus_items() -> Vec<PlusItem> {
+    PLUS_ADD
+        .iter()
+        .chain(PLUS_PLUGINS.iter())
+        .copied()
+        .collect()
+}
+
+/// "1 connected", "3 connected" or "None yet" for the Link apps entry.
+pub fn connected_words(n: usize) -> String {
+    match n {
+        0 => "None yet".to_string(),
+        n => format!("{n} connected"),
+    }
+}
+
+/// The approval modes behind the composer's chip: key, label, one line, glyph. The first is the
+/// default; the other two are Oxyn's own steps beyond it.
+pub const APPROVAL_MODES: [(&str, &str, &str, &str); 3] = [
+    (
+        "ask",
+        "Request approval",
+        "Asks before it sends or books",
+        "hand",
+    ),
+    (
+        "safe",
+        "Approve safe steps",
+        "Reads and drafts on its own",
+        "shield",
+    ),
+    ("full", "Full access", "Acts without asking", "flash"),
+];
+
+/// A model in the composer's picker.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct ModelChoice {
+    /// Stable key.
+    pub key: &'static str,
+    /// Name (fictional versions of real model families).
+    pub name: &'static str,
+    /// One line on what it is good at.
+    pub hint: &'static str,
+    /// Brand mark id (`oxyn_core::brand`), empty for Auto.
+    pub mark: &'static str,
+}
+
+/// The models the picker offers, Auto first.
+pub const MODELS: [ModelChoice; 5] = [
+    ModelChoice {
+        key: "auto",
+        name: "Auto",
+        hint: "Picks a model per message",
+        mark: "",
+    },
+    ModelChoice {
+        key: "sonnet",
+        name: "Claude Sonnet 5.5",
+        hint: "Long writing and code",
+        mark: "claude",
+    },
+    ModelChoice {
+        key: "luna",
+        name: "GPT-6 Luna",
+        hint: "Quick everyday answers",
+        mark: "openai",
+    },
+    ModelChoice {
+        key: "flash",
+        name: "Gemini 3.8 Flash",
+        hint: "Big files, fast",
+        mark: "gemini",
+    },
+    ModelChoice {
+        key: "large",
+        name: "Mistral Large 4",
+        hint: "Runs in the EU",
+        mark: "mistral",
+    },
+];
+
+/// The model for a key (Auto for anything unknown).
+pub fn model(key: &str) -> ModelChoice {
+    MODELS
+        .iter()
+        .copied()
+        .find(|m| m.key == key)
+        .unwrap_or(MODELS[0])
+}
+
+/// The apps Link apps can add, in order, with the ones on at the start.
+pub const COMPOSER_APPS: [(&str, &str); 6] = [
+    ("gmail", "Gmail"),
+    ("slack", "Slack"),
+    ("notion", "Notion"),
+    ("googledrive", "Google Drive"),
+    ("linear", "Linear"),
+    ("github", "GitHub"),
+];
+
+/// What an attached app adds to the chat ("Notion page", "Slack thread"…).
+pub fn attach_label(app: &str) -> &'static str {
+    match app {
+        "gmail" => "Gmail thread",
+        "slack" => "Slack thread",
+        "notion" => "Notion page",
+        "googledrive" => "Drive file",
+        "linear" => "Linear issue",
+        "github" => "GitHub pull request",
+        _ => "App item",
+    }
+}
+
+/// The Start screen's suggestions: key, label, glyph, the prompt it fills in. Two rows of quiet
+/// buttons under the composer.
+pub fn start_suggestions() -> Vec<(&'static str, &'static str, &'static str, &'static str)> {
+    vec![
+        (
+            "know",
+            "Team knowledge",
+            "book",
+            "What does our handbook say about ",
+        ),
+        (
+            "doc",
+            "Write a document",
+            "doc",
+            "Draft a one-page brief about ",
+        ),
+        (
+            "deck",
+            "Make a deck",
+            "slides",
+            "Turn these notes into six slides: ",
+        ),
+        ("table", "Build a table", "table", "Make a table comparing "),
+        (
+            "image",
+            "Make an image",
+            "image",
+            "Make a flat illustration of ",
+        ),
+        (
+            "deep",
+            "Research in depth",
+            "scope",
+            "Research in depth and cite sources: ",
+        ),
+        (
+            "chart",
+            "Chart some data",
+            "chart",
+            "Chart this data by month: ",
+        ),
+    ]
+}
+
+/// Weeks the Overview heat map covers (February to November).
+pub const OVERVIEW_WEEKS: usize = 38;
+
+/// The Overview's headline counts: chats, files, automations.
+pub fn overview_counts(sample: bool) -> (u32, u32, u32) {
+    if sample { (872, 214, 38) } else { (0, 0, 0) }
+}
+
+/// "872 chats · 214 files · 38 automations".
+pub fn overview_line(c: (u32, u32, u32)) -> String {
+    format!(
+        "{} chats · {} files · {} automations",
+        thousands(c.0),
+        thousands(c.1),
+        thousands(c.2)
+    )
+}
+
+/// Files the assistant made, newest first: name, project, when.
+pub fn made_files() -> Vec<(&'static str, &'static str, &'static str)> {
+    vec![
+        ("member-letter.md", "Autumn launch", "1 hour ago"),
+        ("budget-by-team.csv", "Autumn launch", "Yesterday"),
+        ("fabric-compare.csv", "Field research", "Tue"),
+        ("logo-grid.png", "Brand kit", "Mon"),
+        ("hiring-plan.md", "Hiring loop", "Last week"),
+    ]
+}
+
+/// Credits used, by state: the sample, the near-limit state, or nothing.
+pub fn credits_used(state: &str) -> u32 {
+    match state {
+        "limit" => 1_870,
+        "sample" | "" => 1_284,
+        _ => 0,
+    }
+}
+
+/// Monthly credit allowance on the Pro plan.
+pub const CREDITS_CAP: u32 = 2_000;
+
+/// True when credits used are at or past 90 % of the cap.
+pub fn near_limit(used: u32, cap: u32) -> bool {
+    used_pct(used, cap) >= 90
+}
+
+/// The brand mark a tool call shows (empty: a plain glyph).
+pub fn tool_mark(tool: &str) -> &'static str {
+    match tool.split('.').next().unwrap_or("") {
+        "ledger" => "stripe",
+        "files" | "drive" => "googledrive",
+        "docs" | "wiki" => "notion",
+        "mail" => "gmail",
+        "calendar" => "googlecalendar",
+        "chat" => "slack",
+        _ => "",
+    }
+}
+
+/// Apps a run uses, in the order its plan reaches them (no repeats).
+pub fn run_marks(plan: &[RunStep]) -> Vec<&'static str> {
+    let mut out: Vec<&'static str> = vec![];
+    for s in plan {
+        let m = tool_mark(s.tool);
+        if !m.is_empty() && !out.contains(&m) {
+            out.push(m);
+        }
+    }
+    out
+}
+
+/// "Running · 2 of 5", "Needs you · 4 of 5", "Done · 5 of 5".
+pub fn run_line(status: &str, done: usize, total: usize) -> String {
+    let at = if done < total { done + 1 } else { total };
+    format!("{status} · {at} of {total}")
+}
+
+/// Outputs on the Progress column: name, kind (what made it or opens it), file name for the tone.
+pub fn progress_outputs() -> Vec<(&'static str, &'static str, &'static str)> {
+    vec![
+        ("Welcome plan", "Docs", "welcome-plan.docx"),
+        ("Buddy pairs", "Sheets", "buddy-pairs.csv"),
+        ("Starter pack.pdf", "PDF", "starter-pack.pdf"),
+        ("first-week-notes.md", "Markdown", "first-week-notes.md"),
+    ]
+}
+
+/// Steps the Progress column folds into "n earlier steps" before the recent ones show.
+pub const PROGRESS_FOLDED: usize = 2;
+
 // ───────────────────────────────────────────────────────────── Folders ──
 
 /// A shared folder on the Folders screens.
@@ -2911,6 +3295,49 @@ mod tests {
     }
 
     use super::*;
+
+    #[test]
+    fn s1_chat_parity() {
+        for st in [
+            &START_STATES[..],
+            &OVERVIEW_STATES,
+            &AGENTS_STATES,
+            &RAIL_STATES,
+            &PROGRESS_STATES,
+            &RUN_STATES,
+        ] {
+            assert_eq!(st[..3], STAGE_STATES[..]);
+            for (k, _) in &st[3..] {
+                assert_eq!(ScreenState::from_key(k), ScreenState::Sample);
+            }
+        }
+        assert_eq!(plus_items().len(), 10);
+        assert_eq!(PLUS_ADD[0].label, "Files and folders");
+        assert!(PLUS_ADD.iter().any(|p| p.more));
+        assert_eq!(connected_words(0), "None yet");
+        assert_eq!(connected_words(2), "2 connected");
+        assert_eq!(model("x").name, "Auto");
+        assert_eq!(model("sonnet").mark, "claude");
+        assert_eq!(attach_label("notion"), "Notion page");
+        assert_eq!(start_suggestions().len(), 7);
+        assert_eq!(
+            overview_line(overview_counts(true)),
+            "872 chats · 214 files · 38 automations"
+        );
+        assert!(near_limit(credits_used("limit"), CREDITS_CAP));
+        assert!(!near_limit(credits_used("sample"), CREDITS_CAP));
+        assert_eq!(credits_used("empty"), 0);
+        assert_eq!(tool_mark("mail.send"), "gmail");
+        assert_eq!(tool_mark("people.match"), "");
+        assert_eq!(
+            run_marks(&run_plan()),
+            ["stripe", "googledrive", "notion", "gmail", "googlecalendar"]
+        );
+        assert_eq!(run_line("Running", 1, 5), "Running · 2 of 5");
+        assert_eq!(run_line("Done", 5, 5), "Done · 5 of 5");
+        assert_eq!(STAGE_W - SIDE_W.0 - AGENTS_WORK_W, 800);
+        assert_eq!(progress_outputs().len(), 4);
+    }
 
     #[test]
     fn states_and_layouts() {
