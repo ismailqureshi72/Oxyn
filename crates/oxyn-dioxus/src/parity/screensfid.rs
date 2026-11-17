@@ -913,7 +913,7 @@ fn sidebar(
                     button { key: "{k}", r#type: "button", class: "oxscn-nav-b", title: "{l}", "data-on": if (side == Side::Runs && k == "runs") || k == nav_on { "true" } else { "false" },
                         "aria-current": if k == nav_on { "page" } else { "false" },
                         onclick: move |_| { on_nav.call(k.to_string()); peek.set(false); },
-                        {ico(i)} span { class: "oxscn-lbl", "{l}" }
+                        if matches!(side, Side::Domain(_)) { {nico(i)} } else { {ico(i)} } span { class: "oxscn-lbl", "{l}" }
                         if n > 0 { span { class: "oxscn-badge", "{n}" } }
                     }
                 }
