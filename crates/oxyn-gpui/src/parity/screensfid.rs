@@ -1,10 +1,10 @@
 //! Screens 1 for GPUI over `oxyn_core::parity::screensfid`: static snapshots of the app frames
 //! ([`ScreenShellEl`], [`ScreenRailEl`]) and the AI Chat screens ([`ChatStartEl`], [`ChatOverviewEl`],
 //! [`ChatAgentsEl`], [`ChatRailEl`], [`ChatProgressEl`], [`ChatRunEl`]) Folders ([`FoldersEl`],
-//! [`FolderDetailEl`]), [`IntegrationsEl`], [`KanbanEl`], [`CrmEl`] and [`WorkflowEl`]. Each takes the data state (Sample, Loading, Empty), the frame (Inset or
+//! [`FolderDetailEl`]), [`IntegrationsEl`], [`KanbanEl`], [`CrmEl`], [`WorkflowEl`] and [`SettingsEl`]. Each takes the data state (Sample, Loading, Empty), the frame (Inset or
 //! Flat) and the theme; the host owns any live state.
 //! Rows a host can route carry `Act` ids: `nav-<key>`, `thread-<id>`, `folder-<id>`,
-//! `app-<brand id>`, `kb-<column>`, `crm-<view>`, `wf-<kind>`.
+//! `app-<brand id>`, `kb-<column>`, `crm-<view>`, `wf-<kind>`, `set-<page>`.
 
 use gpui::{
     App, Div, FontWeight, IntoElement, ParentElement, RenderOnce, SharedString, Styled, Window,
@@ -1744,6 +1744,129 @@ impl RenderOnce for WorkflowEl {
             sidebar(&p, self.state, &self.act, false),
             page(&p, "Flows / Member welcome", body),
             work,
+        )
+    }
+}
+
+screen_el!(
+    /// Settings shell: the settings sidebar (Back to app, Personal and Workspace pages) and the
+    /// Notifications page's rows. Pages fire `set-<page>`.
+    SettingsEl
+);
+
+impl RenderOnce for SettingsEl {
+    fn render(self, _: &mut Window, _: &mut App) -> impl IntoElement {
+        use oxyn_core::parity::screensfid::{SET_GROUPS, SetCtl, settings};
+        let p = th_pal(self.theme);
+        let pages = settings(self.state != ScreenState::Empty);
+        let mut left = div()
+            .w(px(232.))
+            .flex_none()
+            .flex()
+            .flex_col()
+            .gap(px(2.))
+            .p(px(10.))
+            .child(div().text_color(p.fg2).child("← Back to app"))
+            .child(
+                div()
+                    .mt(px(8.))
+                    .px(px(8.))
+                    .font_weight(FontWeight::SEMIBOLD)
+                    .child("Settings"),
+            );
+        if self.state == ScreenState::Loading {
+            left = left.child(skel(&p, 8));
+        } else {
+            for (g, gl) in SET_GROUPS {
+                left = left.child(gh(&p, gl));
+                for pg in pages.iter().filter(|x| x.group == g) {
+                    let id: &'static str = match pg.key {
+                        "profile" => "set-profile",
+                        "preferences" => "set-preferences",
+                        "notifications" => "set-notifications",
+                        "privacy" => "set-privacy",
+                        "general" => "set-general",
+                        "members" => "set-members",
+                        "models" => "set-models",
+                        "security" => "set-security",
+                        _ => "set-billing",
+                    };
+                    let fi = fire(&self.act, id);
+                    let on = pg.key == "notifications";
+                    left = left.child(
+                        div()
+                            .id(SharedString::from(id))
+                            .px(px(8.))
+                            .py(px(6.))
+                            .rounded(px(8.))
+                            .bg(if on { p.sel } else { p.inset })
+                            .text_color(if on { p.fg } else { p.fg2 })
+                            .child(pg.label)
+                            .on_click(move |_, w, cx| fi(w, cx)),
+                    );
+                }
+            }
+        }
+        left = left
+            .child(div().flex_1())
+            .child(row(&p, PERSON.into(), PERSON_INI.into(), false));
+        let left = left.bg(p.inset);
+        let mut body = div().flex().flex_col().gap(px(10.)).p(px(24.)).w(px(620.));
+        if self.state == ScreenState::Loading {
+            body = body.child(skel(&p, 8));
+        } else if let Some(pg) = pages.iter().find(|x| x.key == "notifications") {
+            body = body
+                .child(
+                    div()
+                        .text_size(px(22.))
+                        .font_weight(FontWeight::SEMIBOLD)
+                        .child(pg.label),
+                )
+                .child(div().text_color(p.mute).child(pg.lead));
+            for (sec, rows) in &pg.sections {
+                body = body.child(gh(&p, sec));
+                let mut card = div()
+                    .flex()
+                    .flex_col()
+                    .rounded(px(12.))
+                    .border_1()
+                    .border_color(p.line)
+                    .bg(p.card);
+                for r in rows {
+                    let val = match &r.ctl {
+                        SetCtl::Switch(v) => if *v { "On" } else { "Off" }.to_string(),
+                        SetCtl::Choice(o, i) => o.get(*i).copied().unwrap_or("").to_string(),
+                        SetCtl::Text(v, _) => v.clone(),
+                        SetCtl::Action(l) | SetCtl::Danger(l) => l.to_string(),
+                    };
+                    card = card.child(
+                        div()
+                            .flex()
+                            .items_center()
+                            .px(px(12.))
+                            .py(px(10.))
+                            .border_t_1()
+                            .border_color(p.line)
+                            .child(
+                                div()
+                                    .flex_1()
+                                    .flex()
+                                    .flex_col()
+                                    .child(div().child(r.label))
+                                    .child(div().text_color(p.mute).child(r.hint)),
+                            )
+                            .child(div().text_color(p.fg2).child(val)),
+                    );
+                }
+                body = body.child(card);
+            }
+        }
+        frame(
+            self.theme,
+            self.layout,
+            left,
+            page(&p, "Settings / Alerts", body),
+            None,
         )
     }
 }

@@ -704,6 +704,76 @@ li[data-s="active"] .oxcpr-tick{border-color:var(--oxth-fg);border-top-color:tra
   .oxswf-run{padding:0 10px}
 }
 
+/* Settings shell (oxsst-): its own sidebar in the app frame, a centred settings column and a save bar. */
+.oxsst-top{display:flex;align-items:center;padding:0 0 4px}
+.oxsst-back{height:30px;padding:0 10px 0 6px;border-color:transparent;background:transparent}
+.oxsst-st{margin:8px 8px 0;font-size:15px;font-weight:600}
+.oxsst-nav{margin-top:2px}
+.oxsst-nb{width:100%}
+.oxsst-nb[data-dim="true"]{opacity:.45}
+.oxsst-nb[data-on="true"]{background:var(--oxth-sel)}
+.oxsst{position:relative;display:flex;flex-direction:column;min-height:100%}
+.oxsst-col{display:flex;flex-direction:column;gap:6px;width:100%;max-width:680px;margin:0 auto;padding:26px 24px 32px}
+.oxsst-head{margin-bottom:8px}
+.oxsst-found{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin:10px 0 0;font-size:12.5px;color:var(--oxth-fg2)}
+.oxsst-new{margin:0 0 6px;padding:10px 12px;border-radius:10px;border:1px dashed var(--oxth-line2);font-size:12.5px;color:var(--oxth-fg2)}
+.oxsst-sec{display:flex;flex-direction:column;gap:6px;margin-top:12px}
+.oxsst-h2{margin:0 2px;font-size:13px;font-weight:600;color:var(--oxth-fg2)}
+.oxsst-sec[data-danger="true"] .oxsst-h2{color:var(--oxth-red)}
+.oxsst-card{display:flex;flex-direction:column;border-radius:12px;border:1px solid var(--oxth-line);background:var(--oxth-card)}
+.oxsst-sec[data-danger="true"] .oxsst-card{border-color:color-mix(in srgb,var(--oxth-red) 35%,var(--oxth-line))}
+.oxsst-row{display:flex;align-items:center;flex-wrap:wrap;gap:8px 16px;padding:12px 14px;border-top:1px solid var(--oxth-line);transition:background .2s}
+.oxsst-row:first-child{border-top:0;border-radius:12px 12px 0 0}
+.oxsst-row:last-child{border-radius:0 0 12px 12px}
+.oxsst-row:only-child{border-radius:12px}
+.oxsst-row[data-hit="true"]{background:var(--oxth-sel)}
+.oxsst-row[data-off="true"] .oxsst-rl{opacity:.5}
+.oxsst-rl{flex:1 1 170px;min-width:0}
+.oxsst-lb{display:block;font-weight:500}
+.oxsst-row[data-dirty="true"] .oxsst-lb::after{content:"";display:inline-block;width:6px;height:6px;margin-left:7px;border-radius:999px;background:var(--oxth-fg2);vertical-align:middle}
+.oxsst-hint{margin:2px 0 0;font-size:12px;color:var(--oxth-mute)}
+.oxsst-rc{display:flex;align-items:center;justify-content:flex-end;flex:0 1 auto;min-width:0;max-width:100%}
+.oxsst-tf{display:flex;flex-direction:column;gap:4px;width:260px;max-width:100%}
+.oxsst-tf[data-long="true"]{width:100%}
+.oxsst-row:has(.oxsst-tf[data-long="true"]) .oxsst-rc{flex:1 1 100%}
+.oxsst-in{width:100%;min-width:0;height:32px;padding:0 10px;border-radius:9px;border:1px solid var(--oxth-line);background:var(--oxth-card);color:var(--oxth-fg);font:inherit}
+.oxsst-ta{height:auto;min-height:72px;padding:8px 10px;resize:vertical;line-height:1.45}
+.oxsst-in:focus{outline:none;border-color:var(--oxth-fg2)}
+.oxsst-in[aria-invalid="true"]{border-color:var(--oxth-red)}
+.oxsst-in:disabled{opacity:.5}
+.oxsst-tfm{display:flex;align-items:center;gap:8px;min-height:0;font-size:11.5px}
+.oxsst-tfm:empty{display:none}
+.oxsst-err{color:var(--oxth-red)}
+.oxsst-cnt{margin-left:auto;color:var(--oxth-mute);font-variant-numeric:tabular-nums}
+.oxsst-cnt[data-over="true"]{color:var(--oxth-red)}
+.oxsst-mb{min-width:96px;justify-content:space-between}
+.oxsst-danger{color:var(--oxth-red);border-color:color-mix(in srgb,var(--oxth-red) 40%,var(--oxth-line))}
+.oxsst-danger:hover:not(:disabled){background:var(--oxth-redbg);color:var(--oxth-red)}
+.oxsst-ask{flex:1 1 100%;display:flex;flex-direction:column;gap:8px;padding:10px 12px;border-radius:10px;background:var(--oxth-inset)}
+.oxsst-ask .oxsin-acts{margin:0}
+.oxsst-fl{display:flex;flex-direction:column;gap:6px;margin:0;font-size:12.5px;color:var(--oxth-fg2)}
+.oxsst-go:not(:disabled){background:var(--oxth-red);color:#fff;border-color:transparent}
+.oxsst-go:hover:not(:disabled){background:var(--oxth-red);color:#fff;opacity:.9}
+.oxsst-save{position:sticky;bottom:12px;z-index:3;display:flex;align-items:center;flex-wrap:wrap;gap:8px;width:calc(100% - 32px);max-width:640px;margin:-8px auto 16px;padding:8px 8px 8px 14px;
+  border-radius:12px;border:1px solid var(--oxth-line);background:var(--oxth-card);box-shadow:var(--oxth-sh);animation:oxscn-pop .16s ease both}
+.oxsst-save-t{font-weight:600}
+.oxsst-save-e{font-size:12px;color:var(--oxth-red)}
+/* the gallery page styles bare `p`; these keep the settings paragraphs on their own margins */
+.oxsst-side .oxsst-st{margin:8px 8px 0}
+.oxsst-nav .oxscn-gh{margin:14px 8px 4px}
+.oxsst-nav .oxscn-gh:first-child{margin-top:10px}
+.oxsst-head .oxscn-lead{margin:6px 0 0}
+.oxsst-col .oxsst-hint{margin:2px 0 0}
+.oxsst-col .oxsst-new{margin:0 0 6px}
+@container (max-width: 640px){
+  .oxsst-col{padding:16px 12px 24px}
+  .oxsst-row{padding:10px 12px}
+  .oxsst-rc{flex:1 1 100%;justify-content:flex-start}
+  .oxsst-row:has(.oxscn-switch) .oxsst-rc{flex:0 0 auto}
+  .oxsst-tf{width:100%}
+  .oxsst-save{width:calc(100% - 16px)}
+}
+
 /* narrow: the work area becomes a sheet, then the sidebar slides in */
 @container (max-width: 860px){
   .oxscn-work{position:absolute;top:8px;right:8px;bottom:8px;z-index:7;width:min(360px,calc(100% - 16px));border:1px solid var(--oxth-line);border-radius:14px;box-shadow:var(--oxth-sh)}

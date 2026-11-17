@@ -6,11 +6,12 @@
 //! [`AppShellScreen`], [`RailShellScreen`] and the AI Chat screens [`ChatStartScreen`],
 //! [`ChatOverviewScreen`], [`ChatAgentsScreen`], [`ChatRailScreen`], [`ChatProgressScreen`] and
 //! [`ChatRunScreen`], the Folders screens ([`FoldersScreen`], Overview and Detail) and
-//! [`IntegrationsScreen`], [`KanbanScreen`] and [`CrmScreen`], each with
+//! [`IntegrationsScreen`], [`KanbanScreen`], [`CrmScreen`], [`WorkflowScreen`] and the
+//! Settings shell [`SettingsScreen`], each with
 //! Sample, Loading and Empty data. Models: `oxyn_core::parity::screensfid`. Styles:
 //! `screensfid.css` (`oxscn-` frame, `oxsrl-` rail frame, `oxcst-` start, `oxcov-` overview,
 //! `oxcag-` agents, `oxcdr-` double sidebar, `oxcpr-` progress, `oxcrn-` run, `oxsfo-` / `oxsfd-` /
-//! `oxsfi-` folders, `oxsin-` integrations, `oxskb-` kanban, `oxscr-` CRM). Every person, workspace and line of copy is fictional and our own.
+//! `oxsfi-` folders, `oxsin-` integrations, `oxskb-` kanban, `oxscr-` CRM, `oxswf-` workflow, `oxsst-` settings). Every person, workspace and line of copy is fictional and our own.
 
 use dioxus::prelude::*;
 use oxyn_core::ClockMs;
@@ -555,6 +556,10 @@ pub fn AppFrame(
     /// Sidebar nav pressed (`new`, `files`, `apps`…).
     #[props(default)]
     on_nav: EventHandler<String>,
+    /// A sidebar of the screen's own in place of the chats sidebar (the Settings shell). Inside it,
+    /// [`SidePeek`] from context closes the narrow slide-in sheet.
+    #[props(default)]
+    side_el: Option<Element>,
     /// The page.
     children: Element,
 ) -> Element {
@@ -563,6 +568,7 @@ pub fn AppFrame(
     let query = use_signal(String::new);
     let rail = use_signal(|| false);
     let mut peek = use_signal(|| false);
+    use_context_provider(|| SidePeek(peek));
     let ws_open = use_signal(|| false);
     let acct_open = use_signal(|| false);
     let notice = use_signal(|| true);
@@ -609,7 +615,11 @@ pub fn AppFrame(
             },
             onpointerup: move |_| drag.set(None),
             onpointerleave: move |_| drag.set(None),
-            {sidebar(side_k, st, threads, active, query, rail, peek, ws_open, acct_open, notice, setup_open, steps, open_proj, on_nav)}
+            if let Some(se) = side_el {
+                nav { class: "oxscn-side oxsst-side", "aria-label": "Settings", "data-rail": "false", "data-peek": "{peek}", {se} }
+            } else {
+                {sidebar(side_k, st, threads, active, query, rail, peek, ws_open, acct_open, notice, setup_open, steps, open_proj, on_nav)}
+            }
             if !is_rail { {separator("Resize sidebar", "side", sw(), 200, 340, sw, drag, 1)} }
             div { class: "oxscn-page",
                 main { class: "oxscn-main",
@@ -638,6 +648,10 @@ pub fn AppFrame(
         }
     }
 }
+
+/// The frame's narrow-sidebar flag, in context for a custom sidebar (`side_el`) to close it.
+#[derive(Clone, Copy)]
+pub(crate) struct SidePeek(pub Signal<bool>);
 
 /// Thread signal seeded for a state: sample threads, or none when empty or loading.
 pub(crate) fn use_threads(st: ScreenState) -> Signal<Vec<Thread>> {
@@ -3707,6 +3721,295 @@ fn WorkflowInspector(
             div { class: "oxsin-acts",
                 button { r#type: "button", class: "oxscn-btn oxsfd-del",
                     onclick: move |_| { wf_remove(&mut nodes.write(), &mut edges.write(), id); on_gone.call(title.clone()); }, "Delete step" }
+            }
+        }
+    }
+}
+
+// ───────────────────────────────────────────────────────────────── Settings shell ──
+
+/// The settings shell: its own sidebar (Back to app, search that finds any setting, Personal and
+/// Workspace pages, the account) in the same Inset or Flat frame, and a centred settings column of
+/// switches, menus, fields with checks and counters, actions, and destructive actions confirmed inline.
+/// Edits collect in a save bar (Discard / Save changes).
+#[component]
+pub fn SettingsScreen(
+    /// `inset` or `flat`.
+    #[props(default = "inset".to_string())]
+    layout: String,
+    /// `sample`, `loading` or `empty`.
+    #[props(default = "sample".to_string())]
+    state: String,
+    /// Height px.
+    #[props(default = 640)]
+    height: u32,
+    /// The page to open (`notifications` when unknown).
+    #[props(default = "notifications".to_string())]
+    page: String,
+    /// Back to app pressed.
+    #[props(default)]
+    on_back: EventHandler<()>,
+) -> Element {
+    use oxyn_core::parity::screensfid::{set_changes, set_find, set_valid, settings};
+    let st = ScreenState::from_key(&state);
+    let thr = use_threads(st);
+    let active = use_signal(|| 0u32);
+    let sample = st != ScreenState::Empty;
+    let mut saved = use_signal(move || settings(sample));
+    let mut cur = use_signal(move || settings(sample));
+    let start = if settings(true).iter().any(|p| p.key == page) {
+        page.clone()
+    } else {
+        "notifications".to_string()
+    };
+    let mut open = use_signal(move || start.clone());
+    let q = use_signal(String::new);
+    let mut said = use_signal(String::new);
+    let acct = use_signal(|| false);
+    let loading = st == ScreenState::Loading;
+    let pages = cur();
+    let qs = q();
+    let hits = set_find(&pages, &qs);
+    let searching = !qs.trim().is_empty();
+    let changes = set_changes(&saved(), &pages);
+    let valid = set_valid(&pages);
+    let pg = pages
+        .iter()
+        .find(|p| p.key == open())
+        .cloned()
+        .unwrap_or_else(|| pages[0].clone());
+    let title = format!("Settings / {}", pg.label);
+    let first_hit = hits.first().map(|(p, _)| *p);
+    let side = rsx! {
+        SettingsNav { pages: pages.clone(), open, q, hits: hits.clone(), acct, loading,
+            on_back: move |_| { said.set("Back to the app".to_string()); on_back.call(()); } }
+    };
+    let n_hits = hits.len();
+    rsx! {
+        AppFrame { layout, state: state.clone(), height, threads: thr, active, title, side_el: side,
+            div { class: "oxsst",
+                if loading {
+                    div { class: "oxsst-col", {skel(3)} div { class: "oxsst-card", {skel(6)} } div { class: "oxsst-card", {skel(4)} } }
+                } else {
+                    div { class: "oxsst-col",
+                        header { class: "oxsst-head",
+                            h1 { class: "oxscn-h1", "{pg.label}" }
+                            p { class: "oxscn-lead", "{pg.lead}" }
+                            if searching {
+                                p { class: "oxsst-found", role: "status",
+                                    if n_hits == 0 { "No setting matches “{qs}”." } else if n_hits == 1 { "1 setting matches “{qs}”." } else { "{n_hits} settings match “{qs}”." }
+                                    if let Some(f) = first_hit { if f != pg.key { button { r#type: "button", class: "oxscn-link", onclick: move |_| open.set(f.to_string()), "Go to the first" } } }
+                                }
+                            }
+                        }
+                        if st == ScreenState::Empty {
+                            p { class: "oxsst-new", "A new workspace: nothing is set yet. Fill in what you need; the defaults cover the rest." }
+                        }
+                        for (sec, rows) in pg.sections.iter().cloned() {
+                            section { key: "{sec}", class: "oxsst-sec", "data-danger": "{sec == \"Danger zone\"}",
+                                h2 { class: "oxsst-h2", "{sec}" }
+                                div { class: "oxsst-card",
+                                    for r in rows {
+                                        {
+                                            let hit = hits.iter().any(|(_, k)| *k == r.key);
+                                            rsx! { SettingsRow { key: "{r.key}", row: r.clone(), cur, saved, hit, on_said: move |t: String| said.set(t) } }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if changes > 0 {
+                        div { class: "oxsst-save", role: "region", "aria-label": "Unsaved changes",
+                            span { class: "oxsst-save-t", if changes == 1 { "1 unsaved change" } else { "{changes} unsaved changes" } }
+                            if !valid { span { class: "oxsst-save-e", "Fix the marked field first" } }
+                            span { class: "oxscn-grow" }
+                            button { r#type: "button", class: "oxscn-btn", onclick: move |_| { let s = saved.peek().clone(); cur.set(s); said.set("Changes discarded".to_string()); }, "Discard" }
+                            button { r#type: "button", class: "oxscn-primary", disabled: !valid,
+                                onclick: move |_| { let c = cur.peek().clone(); saved.set(c); said.set(if changes == 1 { "1 change saved".to_string() } else { format!("{changes} changes saved") }); }, "Save changes" }
+                        }
+                    }
+                }
+                p { class: "oxscn-sr", role: "status", "{said}" }
+            }
+        }
+    }
+}
+
+/// The settings sidebar: Back to app, a search over every setting, the two groups of pages (with
+/// how many settings match on each while searching) and the account menu.
+#[component]
+fn SettingsNav(
+    pages: Vec<oxyn_core::parity::screensfid::SetPage>,
+    open: Signal<String>,
+    q: Signal<String>,
+    hits: Vec<(&'static str, &'static str)>,
+    acct: Signal<bool>,
+    loading: bool,
+    on_back: EventHandler<()>,
+) -> Element {
+    use oxyn_core::parity::screensfid::SET_GROUPS;
+    let mut open = open;
+    let mut q = q;
+    let mut acct = acct;
+    let mut peek = try_use_context::<SidePeek>().map(|s| s.0);
+    let searching = !q().trim().is_empty();
+    let first = hits.first().map(|(p, _)| *p);
+    let ac = acct();
+    rsx! {
+        div { class: "oxsst-top",
+            button { r#type: "button", class: "oxscn-btn oxsst-back", onclick: move |_| on_back.call(()), {ico("back")} span { "Back to app" } }
+        }
+        p { class: "oxsst-st", "Settings" }
+        label { class: "oxscn-search",
+            {ico("search")}
+            input { r#type: "search", placeholder: "Search settings", "aria-label": "Search settings", value: "{q}",
+                oninput: move |e| q.set(e.value()),
+                onkeydown: move |e: KeyboardEvent| {
+                    if e.key() == Key::Escape { q.set(String::new()); }
+                    if e.key() == Key::Enter && let Some(f) = first { open.set(f.to_string()); if let Some(p) = peek.as_mut() { p.set(false); } }
+                } }
+        }
+        div { class: "oxscn-lists oxsst-nav",
+            if loading { {skel(8)} } else {
+                for (g, gl) in SET_GROUPS {
+                    p { key: "{g}", class: "oxscn-gh", "{gl}" }
+                    for pg in pages.iter().filter(|p| p.group == g) {
+                        {
+                            let k = pg.key;
+                            let n = hits.iter().filter(|(p, _)| *p == k).count();
+                            let on = open() == k;
+                            let dim = searching && n == 0;
+                            rsx! {
+                                button { key: "{k}", r#type: "button", class: "oxscn-nav-b oxsst-nb", "data-on": "{on}", "data-dim": "{dim}", "aria-current": if on { "page" } else { "false" },
+                                    onclick: move |_| { open.set(k.to_string()); if let Some(p) = peek.as_mut() { p.set(false); } },
+                                    {ico(pg.icon)} span { class: "oxscn-lbl", "{pg.label}" }
+                                    if searching && n > 0 { span { class: "oxscn-badge", "aria-label": "{n} matches", "{n}" } }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        div { class: "oxscn-foot",
+            div { class: "oxscn-acct",
+                button { r#type: "button", class: "oxscn-acct-b", "aria-haspopup": "menu", "aria-expanded": "{ac}", "aria-label": "Account, {PERSON}", onclick: move |_| acct.toggle(),
+                    span { class: "oxscn-av", "{PERSON_INI}" } span { class: "oxscn-lbl", "{PERSON}" } }
+                if ac {
+                    div { class: "oxscn-menu oxscn-acct-menu", role: "menu", "aria-label": "Account",
+                        onkeydown: move |e: KeyboardEvent| if e.key() == Key::Escape { acct.set(false); },
+                        for (i, l) in ["Switch workspace", "Keyboard shortcuts", "Sign out"].iter().enumerate() {
+                            button { key: "{i}", r#type: "button", class: "oxscn-mi", role: "menuitem", onclick: move |_| acct.set(false), span { class: "oxscn-mi-l", "{l}" } }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+/// One settings row: label and hint, then its control. Switches, menus and fields edit the
+/// working copy; a changed field is checked (and counted against its cap); an action reports
+/// what it did; a danger action asks first (Delete workspace wants the name typed).
+#[component]
+fn SettingsRow(
+    row: oxyn_core::parity::screensfid::SetRow,
+    cur: Signal<Vec<oxyn_core::parity::screensfid::SetPage>>,
+    saved: Signal<Vec<oxyn_core::parity::screensfid::SetPage>>,
+    hit: bool,
+    on_said: EventHandler<String>,
+) -> Element {
+    use oxyn_core::parity::screensfid::{
+        SetCtl, set_enabled, set_needs_name, set_row, set_row_mut, set_text_error,
+    };
+    let key = row.key;
+    let mut asking = use_signal(|| false);
+    let mut typed = use_signal(String::new);
+    let mut done = use_signal(|| false);
+    let on = set_enabled(&cur(), &row);
+    let was = set_row(&saved(), key).map(|(_, r)| r.ctl.clone());
+    let dirty = was.as_ref() != Some(&row.ctl);
+    let fid = format!("oxsst-{key}");
+    let label = row.label;
+    let ctl = match row.ctl.clone() {
+        SetCtl::Switch(v) => rsx! {
+            button { r#type: "button", class: "oxscn-switch", role: "switch", id: "{fid}", "aria-checked": "{v}", "aria-label": "{label}", disabled: !on,
+                onclick: move |_| { if let Some(r) = set_row_mut(&mut cur.write(), key) { r.ctl = SetCtl::Switch(!v); } }, span {} }
+        },
+        SetCtl::Choice(opts, i) => {
+            let items: Vec<MenuItem> = opts.iter().map(|o| (*o, *o, "")).collect();
+            let cur_l = opts.get(i).copied().unwrap_or("");
+            if on {
+                rsx! { MenuButton { label: cur_l.to_string(), aria: "{label}: {cur_l}", items, checked: cur_l.to_string(), right: true, class: "oxsst-mb".to_string(),
+                on_pick: move |k: String| { if let Some(j) = opts.iter().position(|o| *o == k) && let Some(r) = set_row_mut(&mut cur.write(), key) { r.ctl = SetCtl::Choice(opts, j); } } } }
+            } else {
+                rsx! { button { r#type: "button", class: "oxscn-btn oxsst-mb", disabled: true, "aria-label": "{label}: {cur_l}", span { "{cur_l}" } } }
+            }
+        }
+        SetCtl::Text(v, cap) => {
+            let err = if dirty { set_text_error(key, &v) } else { None };
+            let n = v.chars().count();
+            let over = cap > 0 && n > cap;
+            let long = cap > 120;
+            let bad = err.is_some() || over;
+            rsx! {
+                div { class: "oxsst-tf", "data-long": "{long}",
+                    if long {
+                        textarea { class: "oxsst-in oxsst-ta", id: "{fid}", rows: "3", value: "{v}", disabled: !on, "aria-invalid": "{bad}", placeholder: "Write a few lines",
+                            oninput: move |e| { if let Some(r) = set_row_mut(&mut cur.write(), key) { r.ctl = SetCtl::Text(e.value(), cap); } } }
+                    } else {
+                        input { class: "oxsst-in", id: "{fid}", value: "{v}", disabled: !on, "aria-invalid": "{bad}", placeholder: "Not set",
+                            oninput: move |e| { if let Some(r) = set_row_mut(&mut cur.write(), key) { r.ctl = SetCtl::Text(e.value(), cap); } } }
+                    }
+                    div { class: "oxsst-tfm",
+                        if let Some(m) = err { span { class: "oxsst-err", "{m}" } }
+                        if cap > 0 && (long || over) { span { class: "oxsst-cnt", "data-over": "{over}", "{n}/{cap}" } }
+                    }
+                }
+            }
+        }
+        SetCtl::Action(l) => rsx! {
+            button { r#type: "button", class: "oxscn-btn", disabled: !on,
+                onclick: move |_| { done.set(true); on_said.call(match key { "export" => "Export started: the link arrives by email".to_string(), "invite-link" => "Invite link copied".to_string(), _ => format!("{label}: done") }); },
+                if done() && key == "invite-link" { "Copied" } else { "{l}" } }
+        },
+        SetCtl::Danger(l) => rsx! {
+            button { r#type: "button", class: "oxscn-btn oxsst-danger", disabled: !on || done(), "aria-expanded": "{asking}",
+                onclick: move |_| { typed.set(String::new()); asking.set(true); }, if done() { "Done" } else { "{l}" } }
+        },
+    };
+    let needs_name = set_needs_name(key);
+    let name_ok = typed().trim() == WORKSPACE;
+    let verb = match &row.ctl {
+        SetCtl::Danger(l) => *l,
+        _ => "",
+    };
+    rsx! {
+        div { class: "oxsst-row", "data-hit": "{hit}", "data-off": "{!on}", "data-dirty": "{dirty}",
+            div { class: "oxsst-rl",
+                label { class: "oxsst-lb", r#for: "{fid}", "{row.label}" }
+                if !row.hint.is_empty() { p { class: "oxsst-hint", "{row.hint}" } }
+            }
+            div { class: "oxsst-rc", {ctl} }
+            if asking() {
+                div { class: "oxsst-ask", role: "group", "aria-label": "Confirm {verb}",
+                    onkeydown: move |e: KeyboardEvent| if e.key() == Key::Escape { asking.set(false); },
+                    if needs_name {
+                        label { class: "oxsst-fl", "Type {WORKSPACE} to confirm"
+                            input { class: "oxsst-in", value: "{typed}", "aria-label": "Workspace name",
+                                onmounted: move |e: MountedEvent| { let d = e.data(); spawn(async move { let _ = d.set_focus(true).await; }); },
+                                oninput: move |e| typed.set(e.value()) } }
+                    } else {
+                        p { class: "oxsst-fl", "This cannot be undone." }
+                    }
+                    div { class: "oxsin-acts",
+                        button { r#type: "button", class: "oxscn-btn", onclick: move |_| asking.set(false), "Cancel" }
+                        button { r#type: "button", class: "oxscn-btn oxsst-danger oxsst-go", disabled: needs_name && !name_ok,
+                            onmounted: move |e: MountedEvent| { if !needs_name { let d = e.data(); spawn(async move { let _ = d.set_focus(true).await; }); } },
+                            onclick: move |_| { asking.set(false); done.set(true); on_said.call(format!("{verb}: done (sample, nothing was removed)")); }, "{verb}" }
+                    }
+                }
             }
         }
     }

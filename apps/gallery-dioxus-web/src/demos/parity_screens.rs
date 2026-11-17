@@ -1,5 +1,5 @@
 //! Screens 1 demos: app frames (Inset, Flat, three-pane) and the AI Chat screens (Start, Overview,
-//! Agents, Double sidebar, Progress, Run) Folders (Overview, Detail), Integrations, Kanban, CRM and the Workflow builder. Every screen has Sample / Loading / Empty data and an
+//! Agents, Double sidebar, Progress, Run) Folders (Overview, Detail), Integrations, Kanban, CRM, the Workflow builder and the Settings shell. Every screen has Sample / Loading / Empty data and an
 //! Inset / Flat frame; light and dark follow the page theme.
 
 use dioxus::prelude::*;
@@ -7,7 +7,7 @@ use oxyn_core::ClockMs;
 use oxyn_dioxus::{
     AppShellScreen, ChatAgentsScreen, ChatOverviewScreen, ChatProgressScreen, ChatRailScreen,
     ChatRunScreen, ChatStartScreen, CrmScreen, FoldersScreen, IntegrationsScreen, KanbanScreen,
-    RailShellScreen, WorkflowScreen,
+    RailShellScreen, SettingsScreen, WorkflowScreen,
 };
 
 use super::{Code, mk, sel, var};
@@ -1038,6 +1038,81 @@ fn workflow_demo() -> Demo {
     }
 }
 
+// ---------- Settings shell ----------
+
+fn settings(v: &Vals, _now: ClockMs) -> Element {
+    let (st, lay, key) = frame(v);
+    rsx! {
+        div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
+            SettingsScreen { layout: lay, state: st }
+        }
+    }
+}
+
+fn settings_code(v: &Vals) -> String {
+    code("SettingsScreen", v, false, false)
+}
+
+fn settings_demo() -> Demo {
+    Demo {
+        controls: controls("inset"),
+        variants: vec![
+            var("sample", "Sample data in the Inset frame.", &[]),
+            var(
+                "flat",
+                "The same screen in the Flat frame.",
+                &[("frame", "Flat")],
+            ),
+            var(
+                "loading",
+                "Skeletons where the data will land.",
+                &[("data", "Loading")],
+            ),
+            var(
+                "empty",
+                "Nothing yet: each region says what will appear.",
+                &[("data", "Empty")],
+            ),
+        ],
+        render: settings,
+        code: settings_code,
+        keyboard: vec![
+            ("Tab", "Sidebar, page, then the work area"),
+            ("← / → on a hairline", "Resize the sidebar or work area"),
+            ("Escape", "Close an open menu; clear search"),
+            (
+                "Enter in Search settings",
+                "Open the first page with a match",
+            ),
+            ("Escape in Search settings", "Clear the search"),
+            ("Space on a switch", "Turn it on or off"),
+            ("Escape in a confirm", "Cancel the destructive action"),
+        ],
+        a11y: vec![
+            "The sidebar is a labelled nav; the open chat has aria-current and unread chats say so.",
+            "Menus open from a trigger that reports aria-expanded; their items are menuitemradio and Escape shuts them.",
+            "Hairlines are separators with a value and arrow keys; skeletons are hidden from screen readers.",
+        ],
+        responsive: vec![
+            "Under 860 px of width the work area becomes a sheet opened from the top bar.",
+            "Under 640 px the sidebar slides in from the menu button and the composer drops its labels.",
+        ],
+        height: 660,
+        live: false,
+        align: Align::Start,
+        ..mk(
+            "settings",
+            "Settings shell",
+            CAT,
+            "The frame for settings: Back to app, a search that finds any setting, Personal and Workspace pages, and a centred column of switches, menus and checked fields, destructive actions confirmed in place, and a save bar that collects every change.",
+            "SettingsScreen",
+            "SettingsEl",
+            "settings",
+            "parity/screensfid.rs",
+        )
+    }
+}
+
 // ---------- CRM ----------
 
 fn crm(v: &Vals, _now: ClockMs) -> Element {
@@ -1126,6 +1201,7 @@ pub(crate) fn demos() -> Vec<Demo> {
         integrations_demo(),
         kanban_demo(),
         workflow_demo(),
+        settings_demo(),
         crm_demo(),
     ]
 }
