@@ -44,6 +44,7 @@ pub use glyph_loader::{GLYPH_LOADER_CSS, GlyphLoader, GlyphLoaderProps};
 /// Stylesheet for approvals and checkpoints.
 pub const HITL_CSS: &str = include_str!("hitl.css");
 pub use parity::AccentDensity;
+pub use parity::AgentThreadScreen;
 pub use parity::AppFrame;
 pub use parity::AppIconPicker;
 pub use parity::AppShellScreen;
@@ -84,6 +85,7 @@ pub use parity::MemoryPanel;
 pub use parity::MenuButton;
 pub use parity::ModelEffortMenu;
 pub use parity::NozzleSlider;
+pub use parity::OrchestrationScreen;
 pub use parity::ParallelAttempts;
 pub use parity::PlanVsActual;
 pub use parity::PolaroidStack;

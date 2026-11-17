@@ -44,6 +44,7 @@ pub use navigation::{
     UserMenuEl,
 };
 pub use parity::AccentDensityEl;
+pub use parity::AgentThreadEl;
 pub use parity::AppIconPickerEl;
 pub use parity::AttachmentChipsEl;
 pub use parity::BackgroundPickerEl;
@@ -81,6 +82,7 @@ pub use parity::LiquidTabsEl;
 pub use parity::MemoryPanelEl;
 pub use parity::ModelEffortMenuEl;
 pub use parity::NozzleSliderEl;
+pub use parity::OrchestrationEl;
 pub use parity::ParallelAttemptsEl;
 pub use parity::PlanVsActualEl;
 pub use parity::PolaroidStackEl;
