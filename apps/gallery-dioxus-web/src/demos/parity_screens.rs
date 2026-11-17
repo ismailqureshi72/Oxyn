@@ -1,5 +1,5 @@
 //! Screens 1 demos: app frames (Inset, Flat, three-pane) and the AI Chat screens (Start, Overview,
-//! Agents, Double sidebar, Progress, Run) Folders (Overview, Detail), Integrations, Kanban and CRM. Every screen has Sample / Loading / Empty data and an
+//! Agents, Double sidebar, Progress, Run) Folders (Overview, Detail), Integrations, Kanban, CRM and the Workflow builder. Every screen has Sample / Loading / Empty data and an
 //! Inset / Flat frame; light and dark follow the page theme.
 
 use dioxus::prelude::*;
@@ -7,7 +7,7 @@ use oxyn_core::ClockMs;
 use oxyn_dioxus::{
     AppShellScreen, ChatAgentsScreen, ChatOverviewScreen, ChatProgressScreen, ChatRailScreen,
     ChatRunScreen, ChatStartScreen, CrmScreen, FoldersScreen, IntegrationsScreen, KanbanScreen,
-    RailShellScreen,
+    RailShellScreen, WorkflowScreen,
 };
 
 use super::{Code, mk, sel, var};
@@ -960,6 +960,84 @@ fn kanban_demo() -> Demo {
     }
 }
 
+// ---------- Workflow builder ----------
+
+fn workflow(v: &Vals, now: ClockMs) -> Element {
+    let (st, lay, key) = frame(v);
+    rsx! {
+        div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
+            WorkflowScreen { layout: lay, state: st, now }
+        }
+    }
+}
+
+fn workflow_code(v: &Vals) -> String {
+    code("WorkflowScreen", v, true, false)
+}
+
+fn workflow_demo() -> Demo {
+    Demo {
+        controls: controls("inset"),
+        variants: vec![
+            var("sample", "Sample data in the Inset frame.", &[]),
+            var(
+                "flat",
+                "The same screen in the Flat frame.",
+                &[("frame", "Flat")],
+            ),
+            var(
+                "loading",
+                "Skeletons where the data will land.",
+                &[("data", "Loading")],
+            ),
+            var(
+                "empty",
+                "Nothing yet: each region says what will appear.",
+                &[("data", "Empty")],
+            ),
+        ],
+        render: workflow,
+        code: workflow_code,
+        keyboard: vec![
+            ("Tab", "Sidebar, page, then the work area"),
+            ("← / → on a hairline", "Resize the sidebar or work area"),
+            ("Escape", "Close an open menu; clear search"),
+            (
+                "Arrow keys on a node",
+                "Move it one grid step (Shift: five)",
+            ),
+            (
+                "Enter / Space on a node",
+                "Select it and open the inspector",
+            ),
+            ("Delete on a node or connection", "Remove it"),
+            ("Escape on a node", "Clear the selection"),
+        ],
+        a11y: vec![
+            "The sidebar is a labelled nav; the open chat has aria-current and unread chats say so.",
+            "Menus open from a trigger that reports aria-expanded; their items are menuitemradio and Escape shuts them.",
+            "Hairlines are separators with a value and arrow keys; skeletons are hidden from screen readers.",
+        ],
+        responsive: vec![
+            "Under 860 px of width the work area becomes a sheet opened from the top bar.",
+            "Under 640 px the sidebar slides in from the menu button and the composer drops its labels.",
+        ],
+        height: 660,
+        live: true,
+        align: Align::Start,
+        ..mk(
+            "workflow",
+            "Workflow builder",
+            CAT,
+            "Nodes on a canvas joined by curves: add them from a palette (click or drag), move them with the pointer or the arrow keys, connect and set each one up in the inspector, zoom and fit, then run a test and watch every step light up in turn.",
+            "WorkflowScreen",
+            "WorkflowEl",
+            "workflow",
+            "parity/screensfid.rs",
+        )
+    }
+}
+
 // ---------- CRM ----------
 
 fn crm(v: &Vals, _now: ClockMs) -> Element {
@@ -1047,6 +1125,7 @@ pub(crate) fn demos() -> Vec<Demo> {
         folders_detail_demo(),
         integrations_demo(),
         kanban_demo(),
+        workflow_demo(),
         crm_demo(),
     ]
 }

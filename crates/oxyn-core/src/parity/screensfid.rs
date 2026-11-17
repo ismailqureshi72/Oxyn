@@ -1633,6 +1633,459 @@ pub fn close_words(d: i32, stage: &str) -> String {
     }
 }
 
+// ───────────────────────────────────────────────────────────────── Workflow ──
+
+/// Canvas size of the workflow builder, in canvas units (px at 100 %).
+pub const WF_W: i32 = 1240;
+/// Canvas height.
+pub const WF_H: i32 = 560;
+/// A node's width on the canvas.
+pub const WF_NODE_W: i32 = 184;
+/// A node's height on the canvas.
+pub const WF_NODE_H: i32 = 76;
+/// Grid step nodes snap to (and arrow keys move by).
+pub const WF_GRID: i32 = 20;
+/// Zoom steps, percent.
+pub const WF_ZOOMS: [u32; 6] = [50, 67, 80, 100, 125, 150];
+
+/// Node kinds: key, label.
+pub const WF_KINDS: [(&str, &str); 5] = [
+    ("trigger", "Trigger"),
+    ("agent", "Agent"),
+    ("tool", "Tool"),
+    ("logic", "Logic"),
+    ("action", "Action"),
+];
+
+/// A palette group: label, kind and the nodes it offers (title, what the setting asks for).
+pub type WfGroup = (
+    &'static str,
+    &'static str,
+    &'static [(&'static str, &'static str)],
+);
+
+/// The palette, in order.
+pub const WF_PALETTE: [WfGroup; 4] = [
+    (
+        "Triggers",
+        "trigger",
+        &[
+            ("New member", "Which list"),
+            ("On a schedule", "When"),
+            ("Webhook", "Path"),
+        ],
+    ),
+    (
+        "Tools",
+        "tool",
+        &[
+            ("AI agent", "Instructions"),
+            ("HTTP request", "URL"),
+            ("Read a file", "File types"),
+        ],
+    ),
+    (
+        "Logic",
+        "logic",
+        &[("Branch", "Condition"), ("Wait", "How long")],
+    ),
+    (
+        "Actions",
+        "action",
+        &[
+            ("Send email", "To"),
+            ("Post a message", "Channel"),
+            ("Save a row", "Table"),
+        ],
+    ),
+];
+
+/// A node on the workflow canvas.
+#[derive(Clone, Debug, PartialEq)]
+pub struct WfNode {
+    /// Stable id.
+    pub id: u32,
+    /// `trigger`, `agent`, `tool`, `logic` or `action`.
+    pub kind: &'static str,
+    /// Title shown on the card.
+    pub title: String,
+    /// What its one setting asks for ("URL", "To"…).
+    pub ask: &'static str,
+    /// The setting's value; empty means not configured.
+    pub value: String,
+    /// Left edge on the canvas.
+    pub x: i32,
+    /// Top edge on the canvas.
+    pub y: i32,
+}
+
+impl WfNode {
+    /// Ready to run: its setting is filled in.
+    pub fn ready(&self) -> bool {
+        !self.value.trim().is_empty()
+    }
+}
+
+/// A connection: from node id to node id.
+pub type WfEdge = (u32, u32);
+
+/// The kind's label ("Trigger"…).
+pub fn wf_kind_label(kind: &str) -> &'static str {
+    WF_KINDS
+        .iter()
+        .find(|(k, _)| *k == kind)
+        .map(|(_, l)| *l)
+        .unwrap_or("Step")
+}
+
+fn wn(
+    id: u32,
+    kind: &'static str,
+    title: &str,
+    ask: &'static str,
+    value: &str,
+    x: i32,
+    y: i32,
+) -> WfNode {
+    WfNode {
+        id,
+        kind,
+        title: title.to_string(),
+        ask,
+        value: value.to_string(),
+        x,
+        y,
+    }
+}
+
+/// The sample workflow ("Member welcome"): nodes and connections; empty for a new one.
+pub fn workflow(sample: bool) -> (Vec<WfNode>, Vec<WfEdge>) {
+    if !sample {
+        return (vec![], vec![]);
+    }
+    let n = vec![
+        wn(
+            1,
+            "trigger",
+            "New member",
+            "Which list",
+            "Studio members",
+            40,
+            220,
+        ),
+        wn(
+            2,
+            "agent",
+            "Draft a welcome",
+            "Instructions",
+            "Warm, three short lines, mention the first session",
+            280,
+            220,
+        ),
+        wn(3, "logic", "Branch", "Condition", "Plan is Team", 520, 220),
+        wn(4, "action", "Send email", "To", "The new member", 760, 120),
+        wn(5, "action", "Post a message", "Channel", "", 760, 320),
+        wn(6, "action", "Save a row", "Table", "Members log", 1000, 220),
+    ];
+    let e = vec![(1, 2), (2, 3), (3, 4), (3, 5), (4, 6), (5, 6)];
+    (n, e)
+}
+
+/// Snaps a coordinate to the grid.
+pub fn wf_snap(v: i32) -> i32 {
+    ((v as f32 / WF_GRID as f32).round() as i32) * WF_GRID
+}
+
+/// The widest the canvas grows to the right.
+pub const WF_MAX_W: i32 = 2400;
+
+/// Keeps a node inside the canvas (it may grow to the right up to [`WF_MAX_W`]).
+pub fn wf_clamp(x: i32, y: i32) -> (i32, i32) {
+    (
+        x.clamp(0, WF_MAX_W - WF_NODE_W),
+        y.clamp(0, WF_H - WF_NODE_H),
+    )
+}
+
+/// The canvas size for these nodes: at least [`WF_W`] wide, growing to fit the rightmost node.
+pub fn wf_canvas(nodes: &[WfNode]) -> (i32, i32) {
+    let maxx = nodes
+        .iter()
+        .map(|n| n.x + WF_NODE_W + 80)
+        .max()
+        .unwrap_or(0);
+    (maxx.max(WF_W), WF_H)
+}
+
+/// Moves a node to (x, y), snapped and kept on the canvas. False when the id is unknown.
+pub fn wf_place(list: &mut [WfNode], id: u32, x: i32, y: i32) -> bool {
+    let Some(n) = list.iter_mut().find(|n| n.id == id) else {
+        return false;
+    };
+    let (x, y) = wf_clamp(wf_snap(x), wf_snap(y));
+    n.x = x;
+    n.y = y;
+    true
+}
+
+/// True when adding `a → b` would close a loop (or is a self-link).
+pub fn wf_would_loop(edges: &[WfEdge], a: u32, b: u32) -> bool {
+    if a == b {
+        return true;
+    }
+    let mut stack = vec![b];
+    let mut seen = vec![];
+    while let Some(c) = stack.pop() {
+        if c == a {
+            return true;
+        }
+        if seen.contains(&c) {
+            continue;
+        }
+        seen.push(c);
+        stack.extend(edges.iter().filter(|(f, _)| *f == c).map(|(_, t)| *t));
+    }
+    false
+}
+
+/// Connects `a → b` unless it exists, loops or a trigger would get an input. True when added.
+pub fn wf_connect(nodes: &[WfNode], edges: &mut Vec<WfEdge>, a: u32, b: u32) -> bool {
+    let into_trigger = nodes.iter().any(|n| n.id == b && n.kind == "trigger");
+    if into_trigger || edges.contains(&(a, b)) || wf_would_loop(edges, a, b) {
+        return false;
+    }
+    edges.push((a, b));
+    true
+}
+
+/// Adds a palette node. After `after`: one column right of it (lower if that spot is taken) and
+/// connected from it; otherwise at the first free grid spot from the left. Returns the new id.
+pub fn wf_add(
+    nodes: &mut Vec<WfNode>,
+    edges: &mut Vec<WfEdge>,
+    kind: &'static str,
+    title: &str,
+    ask: &'static str,
+    after: Option<u32>,
+) -> u32 {
+    let id = nodes.iter().map(|n| n.id).max().unwrap_or(0) + 1;
+    let taken = |nodes: &[WfNode], x: i32, y: i32| {
+        nodes
+            .iter()
+            .any(|n| (n.x - x).abs() < WF_NODE_W && (n.y - y).abs() < WF_NODE_H)
+    };
+    let from = after.and_then(|a| nodes.iter().find(|n| n.id == a).cloned());
+    let (mut x, mut y) = match &from {
+        Some(f) => (f.x + WF_NODE_W + 56, f.y),
+        None => (40, 40),
+    };
+    let mut tries = 0;
+    while taken(nodes, x, y) && tries < 40 {
+        y += WF_NODE_H + 24;
+        if y > WF_H - WF_NODE_H {
+            y = 40;
+            x += WF_NODE_W + 56;
+        }
+        tries += 1;
+    }
+    let (x, y) = wf_clamp(wf_snap(x), wf_snap(y));
+    nodes.push(WfNode {
+        id,
+        kind,
+        title: title.to_string(),
+        ask,
+        value: String::new(),
+        x,
+        y,
+    });
+    if let Some(f) = from {
+        let _ = wf_connect(nodes, edges, f.id, id);
+    }
+    id
+}
+
+/// Removes a node and its connections.
+pub fn wf_remove(nodes: &mut Vec<WfNode>, edges: &mut Vec<WfEdge>, id: u32) {
+    nodes.retain(|n| n.id != id);
+    edges.retain(|(a, b)| *a != id && *b != id);
+}
+
+/// Run order: breadth first from the triggers (nodes no trigger reaches are left out).
+pub fn wf_order(nodes: &[WfNode], edges: &[WfEdge]) -> Vec<u32> {
+    let mut out: Vec<u32> = vec![];
+    let mut q: Vec<u32> = nodes
+        .iter()
+        .filter(|n| n.kind == "trigger")
+        .map(|n| n.id)
+        .collect();
+    while !q.is_empty() {
+        let c = q.remove(0);
+        if out.contains(&c) {
+            continue;
+        }
+        // wait until every reachable input has run
+        let ins: Vec<u32> = edges
+            .iter()
+            .filter(|(_, b)| *b == c)
+            .map(|(a, _)| *a)
+            .collect();
+        let pending = ins.iter().any(|a| !out.contains(a) && q.contains(a));
+        if pending {
+            q.push(c);
+            continue;
+        }
+        out.push(c);
+        for (_, b) in edges.iter().filter(|(a, _)| *a == c) {
+            if !out.contains(b) && !q.contains(b) {
+                q.push(*b);
+            }
+        }
+    }
+    out
+}
+
+/// One node's state in a test run.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum WfRun {
+    /// Not run (or no run yet).
+    Idle,
+    /// Waiting for its turn.
+    Queued,
+    /// Running now.
+    Running,
+    /// Finished fine.
+    Done,
+    /// Stopped here: not configured.
+    Failed,
+    /// Not run because a step before it failed.
+    Skipped,
+}
+
+impl WfRun {
+    /// Stable key.
+    pub fn key(self) -> &'static str {
+        match self {
+            WfRun::Idle => "idle",
+            WfRun::Queued => "queued",
+            WfRun::Running => "running",
+            WfRun::Done => "done",
+            WfRun::Failed => "failed",
+            WfRun::Skipped => "skipped",
+        }
+    }
+    /// Words for the node card.
+    pub fn label(self) -> &'static str {
+        match self {
+            WfRun::Idle => "",
+            WfRun::Queued => "Queued",
+            WfRun::Running => "Running",
+            WfRun::Done => "Done",
+            WfRun::Failed => "Failed",
+            WfRun::Skipped => "Skipped",
+        }
+    }
+}
+
+/// Each node's state `tick` steps into a test run (one node per tick, in run order). A node that
+/// is not configured fails when its turn comes and everything after it is skipped. `None` for
+/// `tick` means no run.
+pub fn wf_states(nodes: &[WfNode], edges: &[WfEdge], tick: Option<usize>) -> Vec<(u32, WfRun)> {
+    let order = wf_order(nodes, edges);
+    let Some(t) = tick else {
+        return nodes.iter().map(|n| (n.id, WfRun::Idle)).collect();
+    };
+    let fail_at = order
+        .iter()
+        .position(|id| nodes.iter().any(|n| n.id == *id && !n.ready()));
+    nodes
+        .iter()
+        .map(|n| {
+            let st = match order.iter().position(|id| *id == n.id) {
+                None => WfRun::Idle,
+                Some(i) => match fail_at {
+                    Some(f) if i > f => {
+                        if t > f {
+                            WfRun::Skipped
+                        } else {
+                            WfRun::Queued
+                        }
+                    }
+                    Some(f) if i == f && t > f => WfRun::Failed,
+                    _ if i < t => WfRun::Done,
+                    _ if i == t => WfRun::Running,
+                    _ => WfRun::Queued,
+                },
+            };
+            (n.id, st)
+        })
+        .collect()
+}
+
+/// True once a run at `tick` has nothing left to do.
+pub fn wf_finished(nodes: &[WfNode], edges: &[WfEdge], tick: usize) -> bool {
+    wf_states(nodes, edges, Some(tick))
+        .iter()
+        .all(|(_, s)| !matches!(s, WfRun::Queued | WfRun::Running))
+}
+
+/// The run's outcome in words.
+pub fn wf_outcome(nodes: &[WfNode], edges: &[WfEdge], tick: usize) -> String {
+    let st = wf_states(nodes, edges, Some(tick));
+    let done = st.iter().filter(|(_, s)| *s == WfRun::Done).count();
+    let total = wf_order(nodes, edges).len();
+    if let Some((id, _)) = st.iter().find(|(_, s)| *s == WfRun::Failed) {
+        let t = nodes
+            .iter()
+            .find(|n| n.id == *id)
+            .map(|n| n.title.clone())
+            .unwrap_or_default();
+        format!("Stopped at “{t}”: not configured")
+    } else if wf_finished(nodes, edges, tick) {
+        format!("All {total} steps ran")
+    } else {
+        format!("Running · {done} of {total}")
+    }
+}
+
+/// The SVG path of a connection: a curve from the right middle of `a` to the left middle of `b`.
+pub fn wf_path(a: &WfNode, b: &WfNode) -> String {
+    let (x1, y1) = (a.x + WF_NODE_W, a.y + WF_NODE_H / 2);
+    let (x2, y2) = (b.x, b.y + WF_NODE_H / 2);
+    let d = ((x2 - x1).abs() / 2).max(40);
+    format!("M{x1} {y1} C{} {y1} {} {y2} {x2} {y2}", x1 + d, x2 - d)
+}
+
+/// The next zoom step up (`dir` > 0) or down.
+pub fn wf_zoom(cur: u32, dir: i32) -> u32 {
+    if dir > 0 {
+        *WF_ZOOMS
+            .iter()
+            .find(|z| **z > cur)
+            .unwrap_or(&WF_ZOOMS[WF_ZOOMS.len() - 1])
+    } else {
+        *WF_ZOOMS
+            .iter()
+            .rev()
+            .find(|z| **z < cur)
+            .unwrap_or(&WF_ZOOMS[0])
+    }
+}
+
+/// The zoom that fits every node into a viewport `vw` × `vh` px (from the zoom steps).
+pub fn wf_fit(nodes: &[WfNode], vw: i32, vh: i32) -> u32 {
+    if nodes.is_empty() {
+        return 100;
+    }
+    let maxx = nodes.iter().map(|n| n.x + WF_NODE_W).max().unwrap_or(WF_W) + 40;
+    let maxy = nodes.iter().map(|n| n.y + WF_NODE_H).max().unwrap_or(WF_H) + 40;
+    let fit = ((vw * 100) / maxx).min((vh * 100) / maxy).max(0) as u32;
+    *WF_ZOOMS
+        .iter()
+        .rev()
+        .find(|z| **z <= fit)
+        .unwrap_or(&WF_ZOOMS[0])
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -1878,5 +2331,85 @@ mod tests {
         assert_eq!(close_words(-2, "proposal"), "2d overdue");
         assert_eq!(close_words(-3, "won"), "Closed 3d ago");
         assert!(deals(false).is_empty());
+    }
+
+    #[test]
+    fn workflow_edit_and_run() {
+        let (mut n, mut e) = workflow(true);
+        assert_eq!(wf_order(&n, &e), vec![1, 2, 3, 4, 5, 6]);
+        assert!(!n[4].ready());
+        // no run yet
+        assert!(
+            wf_states(&n, &e, None)
+                .iter()
+                .all(|(_, s)| *s == WfRun::Idle)
+        );
+        let s = wf_states(&n, &e, Some(1));
+        assert_eq!(s[0].1, WfRun::Done);
+        assert_eq!(s[1].1, WfRun::Running);
+        assert_eq!(s[2].1, WfRun::Queued);
+        // node 5 (index 4) is not configured: fails at its turn, 6 skipped
+        let s = wf_states(&n, &e, Some(5));
+        assert_eq!(s[3].1, WfRun::Done);
+        assert_eq!(s[4].1, WfRun::Failed);
+        assert_eq!(s[5].1, WfRun::Skipped);
+        assert!(wf_finished(&n, &e, 5));
+        assert_eq!(
+            wf_outcome(&n, &e, 5),
+            "Stopped at “Post a message”: not configured"
+        );
+        assert_eq!(wf_outcome(&n, &e, 2), "Running · 2 of 6");
+        n[4].value = "#welcome".into();
+        assert!(!wf_finished(&n, &e, 5));
+        assert!(wf_finished(&n, &e, 6));
+        assert_eq!(wf_outcome(&n, &e, 6), "All 6 steps ran");
+        // connections
+        assert!(wf_would_loop(&e, 6, 1));
+        assert!(wf_would_loop(&e, 2, 2));
+        assert!(!wf_connect(&n, &mut e, 6, 2));
+        assert!(!wf_connect(&n, &mut e, 2, 1));
+        assert!(!wf_connect(&n, &mut e, 1, 2));
+        assert!(wf_connect(&n, &mut e, 2, 6));
+        // add after a node: right of it, connected, configured later
+        let id = wf_add(&mut n, &mut e, "tool", "HTTP request", "URL", Some(6));
+        assert_eq!(id, 7);
+        let m = n.iter().find(|x| x.id == 7).cloned().unwrap();
+        assert_eq!(m.x, 1240);
+        assert_eq!(wf_canvas(&n), (1240 + WF_NODE_W + 80, WF_H));
+        assert!(e.contains(&(6, 7)));
+        assert!(!m.ready());
+        // a spot that is taken moves down
+        let id2 = wf_add(&mut n, &mut e, "tool", "Wait", "How long", Some(6));
+        let m2 = n.iter().find(|x| x.id == id2).unwrap();
+        assert!(m2.y > m.y);
+        wf_remove(&mut n, &mut e, 7);
+        assert!(!e.iter().any(|(a, b)| *a == 7 || *b == 7));
+        // place, snap and clamp
+        assert!(wf_place(&mut n, 1, 51, 9999));
+        assert_eq!((n[0].x, n[0].y), (60, WF_H - WF_NODE_H));
+        assert!(wf_place(&mut n, 1, -30, 33));
+        assert_eq!((n[0].x, n[0].y), (0, 40));
+        assert!(!wf_place(&mut n, 99, 0, 0));
+        assert_eq!(wf_snap(29), 20);
+        assert_eq!(wf_snap(31), 40);
+        // zoom
+        assert_eq!(wf_zoom(100, 1), 125);
+        assert_eq!(wf_zoom(100, -1), 80);
+        assert_eq!(wf_zoom(150, 1), 150);
+        assert_eq!(wf_zoom(50, -1), 50);
+        assert_eq!(wf_zoom(90, -1), 80);
+        assert_eq!(wf_fit(&workflow(true).0, 700, 500), 50);
+        assert_eq!(wf_fit(&workflow(true).0, 1400, 700), 100);
+        assert_eq!(wf_fit(&[], 10, 10), 100);
+        assert!(wf_path(&n[1], &n[2]).starts_with("M"));
+        assert_eq!(wf_kind_label("logic"), "Logic");
+        assert!(workflow(false).0.is_empty());
+        // empty canvas: first node goes top left
+        let (mut n0, mut e0) = (vec![], vec![]);
+        assert_eq!(
+            wf_add(&mut n0, &mut e0, "trigger", "Webhook", "Path", None),
+            1
+        );
+        assert_eq!((n0[0].x, n0[0].y), (40, 40));
     }
 }

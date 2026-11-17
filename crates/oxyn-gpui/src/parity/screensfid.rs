@@ -1,10 +1,10 @@
 //! Screens 1 for GPUI over `oxyn_core::parity::screensfid`: static snapshots of the app frames
 //! ([`ScreenShellEl`], [`ScreenRailEl`]) and the AI Chat screens ([`ChatStartEl`], [`ChatOverviewEl`],
 //! [`ChatAgentsEl`], [`ChatRailEl`], [`ChatProgressEl`], [`ChatRunEl`]) Folders ([`FoldersEl`],
-//! [`FolderDetailEl`]), [`IntegrationsEl`], [`KanbanEl`] and [`CrmEl`]. Each takes the data state (Sample, Loading, Empty), the frame (Inset or
+//! [`FolderDetailEl`]), [`IntegrationsEl`], [`KanbanEl`], [`CrmEl`] and [`WorkflowEl`]. Each takes the data state (Sample, Loading, Empty), the frame (Inset or
 //! Flat) and the theme; the host owns any live state.
 //! Rows a host can route carry `Act` ids: `nav-<key>`, `thread-<id>`, `folder-<id>`,
-//! `app-<brand id>`, `kb-<column>`, `crm-<view>`.
+//! `app-<brand id>`, `kb-<column>`, `crm-<view>`, `wf-<kind>`.
 
 use gpui::{
     App, Div, FontWeight, IntoElement, ParentElement, RenderOnce, SharedString, Styled, Window,
@@ -1599,6 +1599,150 @@ impl RenderOnce for CrmEl {
             self.layout,
             sidebar(&p, self.state, &self.act, false),
             page(&p, "Sales / Deals", body),
+            work,
+        )
+    }
+}
+
+screen_el!(
+    /// Workflow builder: node palette, the canvas with each node placed where the model puts it,
+    /// and the inspector for the selected node. Palette rows fire `wf-<kind>`.
+    WorkflowEl
+);
+
+impl RenderOnce for WorkflowEl {
+    fn render(self, _: &mut Window, _: &mut App) -> impl IntoElement {
+        use oxyn_core::parity::screensfid::{
+            WF_NODE_H, WF_NODE_W, WF_PALETTE, wf_kind_label, workflow,
+        };
+        let p = th_pal(self.theme);
+        let (nodes, edges) = workflow(self.state == ScreenState::Sample);
+        let mut pal = div()
+            .w(px(180.))
+            .flex_none()
+            .flex()
+            .flex_col()
+            .p(px(8.))
+            .border_r_1()
+            .border_color(p.line)
+            .child(
+                div()
+                    .font_weight(FontWeight::SEMIBOLD)
+                    .px(px(8.))
+                    .child("Add nodes"),
+            );
+        if self.state == ScreenState::Loading {
+            pal = pal.child(skel(&p, 8));
+        } else {
+            for (g, kind, xs) in WF_PALETTE {
+                let id: &'static str = match kind {
+                    "trigger" => "wf-trigger",
+                    "tool" => "wf-tool",
+                    "logic" => "wf-logic",
+                    _ => "wf-action",
+                };
+                pal = pal.child(gh(&p, g));
+                for (t, _) in xs.iter() {
+                    let fi = fire(&self.act, id);
+                    pal = pal.child(
+                        div()
+                            .id(SharedString::from(format!("{id}-{t}")))
+                            .px(px(8.))
+                            .py(px(5.))
+                            .rounded(px(8.))
+                            .text_color(p.fg2)
+                            .child(*t)
+                            .on_click(move |_, w, cx| fi(w, cx)),
+                    );
+                }
+            }
+        }
+        let scale = 0.62;
+        let mut cv = div()
+            .relative()
+            .flex_1()
+            .h(px(560.))
+            .bg(p.inset)
+            .overflow_hidden();
+        if self.state == ScreenState::Loading {
+            cv = cv.child(skel(&p, 4));
+        } else if nodes.is_empty() {
+            cv = cv.child(empty(
+                &p,
+                "Start with a trigger",
+                "Add one from the palette",
+            ));
+        }
+        for n in &nodes {
+            let on = n.id == 5;
+            let outs = edges.iter().filter(|(a, _)| *a == n.id).count();
+            cv = cv.child(
+                div()
+                    .absolute()
+                    .left(px(n.x as f32 * scale + 12.))
+                    .top(px(n.y as f32 * scale + 12.))
+                    .w(px(WF_NODE_W as f32 * scale + 20.))
+                    .h(px(WF_NODE_H as f32 * scale + 12.))
+                    .p(px(6.))
+                    .rounded(px(10.))
+                    .border_1()
+                    .border_color(if on {
+                        p.fg
+                    } else if n.ready() {
+                        p.line
+                    } else {
+                        p.red
+                    })
+                    .bg(p.card)
+                    .flex()
+                    .flex_col()
+                    .text_size(px(11.5))
+                    .child(div().text_color(p.mute).child(format!(
+                        "{}{}",
+                        wf_kind_label(n.kind),
+                        if outs > 1 { " · branches" } else { "" }
+                    )))
+                    .child(
+                        div()
+                            .font_weight(FontWeight::SEMIBOLD)
+                            .child(n.title.clone()),
+                    )
+                    .child(
+                        div()
+                            .text_color(if n.ready() { p.fg2 } else { p.red })
+                            .child(if n.ready() {
+                                n.value.clone()
+                            } else {
+                                format!("{} not set", n.ask)
+                            }),
+                    ),
+            );
+        }
+        let body = div().flex().child(pal).child(cv);
+        let work = if self.state == ScreenState::Sample {
+            nodes.iter().find(|n| n.id == 5).map(|n| {
+                div()
+                    .flex()
+                    .flex_col()
+                    .gap(px(4.))
+                    .child(div().text_color(p.mute).child(wf_kind_label(n.kind)))
+                    .child(
+                        div()
+                            .font_weight(FontWeight::SEMIBOLD)
+                            .child(n.title.clone()),
+                    )
+                    .child(row(&p, n.ask.into(), "Not set".into(), false))
+                    .child(row(&p, "Comes from".into(), "Branch".into(), false))
+                    .child(row(&p, "Goes to".into(), "Save a row".into(), false))
+            })
+        } else {
+            None
+        };
+        frame(
+            self.theme,
+            self.layout,
+            sidebar(&p, self.state, &self.act, false),
+            page(&p, "Flows / Member welcome", body),
             work,
         )
     }

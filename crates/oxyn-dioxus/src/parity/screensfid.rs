@@ -3201,3 +3201,513 @@ fn CrmDealDetail(deal: Deal, list: Signal<Vec<Deal>>, on_gone: EventHandler<Stri
         }
     }
 }
+
+// ───────────────────────────────────────────────────────────── Workflow builder ──
+
+/// Workflow builder: a palette of nodes, a canvas you drag them around on (or move with the arrow
+/// keys), connections drawn as curves, an inspector for the selected node, and a test run that
+/// lights each step up in turn.
+#[component]
+pub fn WorkflowScreen(
+    /// `inset` or `flat`.
+    #[props(default = "inset".to_string())]
+    layout: String,
+    /// `sample`, `loading` or `empty`.
+    #[props(default = "sample".to_string())]
+    state: String,
+    /// Height px.
+    #[props(default = 640)]
+    height: u32,
+    /// The clock (drives the test run).
+    now: ClockMs,
+) -> Element {
+    use oxyn_core::parity::screensfid::{
+        WF_GRID, WF_NODE_H, WF_NODE_W, WF_PALETTE, WfRun, wf_add, wf_canvas, wf_clamp, wf_finished,
+        wf_fit, wf_kind_label, wf_order, wf_outcome, wf_path, wf_place, wf_remove, wf_states,
+        wf_zoom, workflow,
+    };
+    use std::rc::Rc;
+    let st = ScreenState::from_key(&state);
+    let thr = use_threads(st);
+    let active = use_signal(|| 0u32);
+    let seed = workflow(st == ScreenState::Sample);
+    let mut nodes = use_signal(|| seed.0.clone());
+    let mut edges = use_signal(|| seed.1.clone());
+    let mut sel = use_signal(move || {
+        if st == ScreenState::Sample {
+            Some(5u32)
+        } else {
+            None
+        }
+    });
+    let mut sel_edge = use_signal(|| None::<(u32, u32)>);
+    let mut zoom = use_signal(|| 100u32);
+    let mut pal = use_signal(|| true);
+    let mut pal_n = use_signal(|| false);
+    let mut run_at = use_signal(|| None::<u64>);
+    let mut published = use_signal(|| false);
+    let mut said = use_signal(String::new);
+    // (node id, pointer x0, y0, node x0, y0, moved)
+    let mut grab = use_signal(|| None::<(u32, f64, f64, i32, i32, bool)>);
+    let mut pal_drag = use_signal(|| None::<(&'static str, &'static str, &'static str)>);
+    let mut cv = use_signal(|| None::<Rc<MountedData>>);
+    let mut refocus = use_signal(|| None::<u32>);
+    let loading = st == ScreenState::Loading;
+    let ns = nodes();
+    let es = edges();
+    let z = zoom();
+    let tick = run_at().map(|t| (since(now, t) / 900) as usize);
+    let states = wf_states(&ns, &es, tick);
+    let state_of = |id: u32| {
+        states
+            .iter()
+            .find(|(i, _)| *i == id)
+            .map(|(_, s)| *s)
+            .unwrap_or(WfRun::Idle)
+    };
+    let running = tick.is_some_and(|t| !wf_finished(&ns, &es, t));
+    let outcome = tick.map(|t| wf_outcome(&ns, &es, t));
+    let ready_n = ns.iter().filter(|n| n.ready()).count();
+    let all_ready = !ns.is_empty() && ready_n == ns.len();
+    let (cw, ch) = wf_canvas(&ns);
+    let plane = format!(
+        "width:{cw}px;height:{ch}px;transform:scale({})",
+        f64::from(z) / 100.0
+    );
+    let wrap = format!(
+        "width:{}px;height:{}px",
+        cw * z as i32 / 100,
+        ch * z as i32 / 100
+    );
+    let title_of = move |id: u32| {
+        nodes
+            .peek()
+            .iter()
+            .find(|n| n.id == id)
+            .map(|n| n.title.clone())
+            .unwrap_or_default()
+    };
+    let mut add = move |kind: &'static str, title: &'static str, ask: &'static str| {
+        let after = *sel.peek();
+        let id = wf_add(
+            &mut nodes.write(),
+            &mut edges.write(),
+            kind,
+            title,
+            ask,
+            after,
+        );
+        sel.set(Some(id));
+        sel_edge.set(None);
+        refocus.set(Some(id));
+        run_at.set(None);
+        published.set(false);
+        said.set(match after {
+            Some(a) => format!("{title} added after {}", title_of(a)),
+            None => format!("{title} added"),
+        });
+    };
+    let fit = move || {
+        if let Some(r) = cv.peek().clone() {
+            spawn(async move {
+                if let Ok(rc) = r.get_client_rect().await {
+                    let f = wf_fit(&nodes.peek(), rc.size.width as i32, rc.size.height as i32);
+                    zoom.set(f);
+                    said.set(format!("Zoom {f}%"));
+                }
+            });
+        }
+    };
+    let items: Vec<MenuItem> = WF_PALETTE
+        .iter()
+        .flat_map(|(_, _, xs)| xs.iter().map(|(t, _)| (*t, *t, "")))
+        .collect();
+    let find_pal = |t: &str| {
+        WF_PALETTE
+            .iter()
+            .find_map(|(_, k, xs)| xs.iter().find(|(x, _)| *x == t).map(|(x, a)| (*k, *x, *a)))
+    };
+    let picked = sel().and_then(|id| ns.iter().find(|n| n.id == id).cloned());
+    let order = wf_order(&ns, &es);
+    let work = if loading {
+        Some(rsx! { div { class: "oxswf-insp", {skel(6)} } })
+    } else if let Some(n) = picked {
+        Some(
+            rsx! { WorkflowInspector { key: "{n.id}", node: n.clone(), nodes, edges, run: state_of(n.id).key().to_string(),
+            on_gone: move |t: String| { sel.set(None); run_at.set(None); said.set(format!("{t} removed")); },
+            on_said: move |t: String| said.set(t) } },
+        )
+    } else if let Some((a, b)) = sel_edge() {
+        let (ta, tb) = (title_of(a), title_of(b));
+        Some(rsx! {
+            div { class: "oxswf-insp",
+                p { class: "oxswf-kind", "Connection" }
+                h2 { class: "oxswf-h2", "{ta} → {tb}" }
+                p { class: "oxscn-hint oxswf-pl", "Runs “{tb}” after “{ta}” finishes." }
+                div { class: "oxsin-acts",
+                    button { r#type: "button", class: "oxscn-btn oxsfd-del",
+                        onclick: move |_| { edges.write().retain(|e| *e != (a, b)); sel_edge.set(None); run_at.set(None); said.set(format!("Connection from {ta} to {tb} removed")); }, "Remove connection" }
+                }
+            }
+        })
+    } else {
+        Some(rsx! {
+            div { class: "oxswf-insp",
+                p { class: "oxswf-kind", "Workflow" }
+                h2 { class: "oxswf-h2", "Member welcome" }
+                dl { class: "oxskb-dl",
+                    div { dt { "Steps" } dd { "{ns.len()}" } }
+                    div { dt { "Ready" } dd { "{ready_n} of {ns.len()}" } }
+                    div { dt { "Last test" } dd { if let Some(o) = outcome.clone() { "{o}" } else { "Not run yet" } } }
+                }
+                if order.is_empty() {
+                    p { class: "oxscn-hint oxswf-pl", "Add a trigger, then the steps after it. Select a step to set it up." }
+                } else {
+                    p { class: "oxscn-gh", "Run order" }
+                    ol { class: "oxswf-log",
+                        for id in order.iter().copied() {
+                            {
+                                let s = state_of(id);
+                                let t = title_of(id);
+                                rsx! { li { key: "{id}", "data-run": "{s.key()}", span { class: "oxswf-dot" } span { class: "oxscn-row-t", "{t}" } span { class: "oxscn-row-a", "{s.label()}" } } }
+                            }
+                        }
+                    }
+                }
+            }
+        })
+    };
+    let pal_open = pal();
+    let pal_nar = pal_n();
+    let actions = rsx! {
+        if published() { span { class: "oxscn-tag", "data-tone": "ok", "Published" } }
+        button { r#type: "button", class: "oxscn-btn oxswf-pub", disabled: !all_ready || loading, title: if all_ready { "Publish this version" } else { "Every step needs its setting first" },
+            onclick: move |_| { published.set(true); said.set("Published".to_string()); }, "Publish" }
+    };
+    rsx! {
+        AppFrame { layout, state: state.clone(), height, threads: thr, active, title: "Flows / Member welcome", actions, work, work_label: "Inspector",
+            div { class: "oxswf", "data-pal": "{pal_open}",
+                div { class: "oxswf-bar", role: "toolbar", "aria-label": "Canvas",
+                    button { r#type: "button", class: "oxscn-ib oxswf-pt-w", "aria-label": if pal_open { "Hide the node palette" } else { "Show the node palette" }, "aria-pressed": "{pal_open}",
+                        onclick: move |_| pal.toggle(), {ico("side")} }
+                    button { r#type: "button", class: "oxscn-ib oxswf-pt-n", "aria-label": if pal_nar { "Hide the node palette" } else { "Show the node palette" }, "aria-pressed": "{pal_nar}",
+                        onclick: move |_| pal_n.toggle(), {ico("side")} }
+                    MenuButton { label: "Add node", aria: "Add node", icon: "plus", items,
+                        on_pick: move |k: String| { if let Some((kind, t, a)) = find_pal(&k) { add(kind, t, a); } } }
+                    span { class: "oxscn-grow" }
+                    button { r#type: "button", class: "oxscn-ib", "aria-label": "Fit to view", title: "Fit to view", disabled: loading, onclick: move |_| fit(), {ico("panel")} }
+                    button { r#type: "button", class: "oxscn-ib", "aria-label": "Zoom out", disabled: z <= 50, onclick: move |_| zoom.set(wf_zoom(z, -1)), "−" }
+                    button { r#type: "button", class: "oxscn-btn oxswf-z", "aria-label": "Zoom {z}%, reset to 100%", onclick: move |_| zoom.set(100), "{z}%" }
+                    button { r#type: "button", class: "oxscn-ib", "aria-label": "Zoom in", disabled: z >= 150, onclick: move |_| zoom.set(wf_zoom(z, 1)), "+" }
+                    if running {
+                        button { r#type: "button", class: "oxscn-primary oxswf-run", onclick: move |_| { run_at.set(None); said.set("Test run stopped".to_string()); }, {ico("stop")} span { "Stop" } }
+                    } else {
+                        button { r#type: "button", class: "oxscn-primary oxswf-run", disabled: order.is_empty() || loading,
+                            onclick: move |_| { run_at.set(Some(now.0)); sel_edge.set(None); said.set("Test run started".to_string()); }, {ico("runs")} span { class: "oxswf-rl-w", if tick.is_some() { "Run again" } else { "Run workflow" } } span { class: "oxswf-rl-n", "Run" } }
+                    }
+                }
+                if let Some(o) = outcome.clone() {
+                    p { class: "oxswf-out", role: "status", "data-fail": "{o.starts_with(\"Stopped\")}", "{o}" }
+                }
+                div { class: "oxswf-main",
+                    if pal_open || pal_nar {
+                        aside { class: "oxswf-pal", "aria-label": "Node palette", "data-w": "{pal_open}", "data-n": "{pal_nar}",
+                            div { class: "oxswf-pal-h", span { "Add nodes" }
+                                button { r#type: "button", class: "oxscn-ib", "aria-label": "Close the palette", onclick: move |_| { pal.set(false); pal_n.set(false); }, {ico("close")} } }
+                            if loading { {skel(8)} } else {
+                                p { class: "oxswf-pal-hint", "Click to add after the selected step, or drag onto the canvas." }
+                                for (g, kind, xs) in WF_PALETTE {
+                                    div { key: "{g}", class: "oxswf-grp",
+                                        p { class: "oxscn-gh", "{g} " span { class: "oxswf-n", "{xs.len()}" } }
+                                        for (t, a) in xs.iter().copied() {
+                                            button { key: "{t}", r#type: "button", class: "oxswf-pi", draggable: "true", "data-kind": "{kind}",
+                                                ondragstart: move |_| pal_drag.set(Some((kind, t, a))),
+                                                ondragend: move |_| pal_drag.set(None),
+                                                onclick: move |_| { pal_n.set(false); add(kind, t, a); },
+                                                span { class: "oxswf-chip", "data-kind": "{kind}" } span { class: "oxscn-row-t", "{t}" } }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    div { class: "oxswf-cv", tabindex: "-1", "aria-label": "Workflow canvas",
+                        onmounted: move |e: MountedEvent| {
+                            let d = e.data();
+                            cv.set(Some(d.clone()));
+                            // open fitted, so the whole flow shows in a narrow frame
+                            spawn(async move {
+                                if let Ok(rc) = d.get_client_rect().await && rc.size.width > 0.0 {
+                                    let f = wf_fit(&nodes.peek(), rc.size.width as i32, rc.size.height as i32);
+                                    zoom.set(f.clamp(67, 100));
+                                }
+                            });
+                        },
+                        ondragover: move |e: DragEvent| e.prevent_default(),
+                        ondrop: move |e: DragEvent| {
+                            e.prevent_default();
+                            let Some((kind, t, a)) = *pal_drag.peek() else { return };
+                            pal_drag.set(None);
+                            let p = e.client_coordinates();
+                            let zz = f64::from(*zoom.peek()) / 100.0;
+                            if let Some(r) = cv.peek().clone() {
+                                spawn(async move {
+                                    let rc = r.get_client_rect().await.ok();
+                                    let so = r.get_scroll_offset().await.ok();
+                                    let (ox, oy) = rc.map(|rc| (rc.origin.x, rc.origin.y)).unwrap_or((0.0, 0.0));
+                                    let (sx, sy) = so.map(|s| (s.x, s.y)).unwrap_or((0.0, 0.0));
+                                    let x = ((p.x - ox + sx) / zz) as i32 - WF_NODE_W / 2;
+                                    let y = ((p.y - oy + sy) / zz) as i32 - WF_NODE_H / 2;
+                                    let id = wf_add(&mut nodes.write(), &mut edges.write(), kind, t, a, None);
+                                    let _ = wf_place(&mut nodes.write(), id, x, y);
+                                    sel.set(Some(id)); sel_edge.set(None); run_at.set(None); published.set(false);
+                                    said.set(format!("{t} added"));
+                                });
+                            }
+                        },
+                        onpointermove: move |e: PointerEvent| {
+                            if let Some((id, x0, y0, nx, ny, _)) = grab() {
+                                let zz = f64::from(*zoom.peek()) / 100.0;
+                                let p = e.client_coordinates();
+                                let (dx, dy) = ((p.x - x0) / zz, (p.y - y0) / zz);
+                                if dx.abs() + dy.abs() > 3.0 {
+                                    let (x, y) = wf_clamp(nx + dx as i32, ny + dy as i32);
+                                    if let Some(n) = nodes.write().iter_mut().find(|n| n.id == id) { n.x = x; n.y = y; }
+                                    grab.set(Some((id, x0, y0, nx, ny, true)));
+                                }
+                            }
+                        },
+                        onpointerup: move |_| {
+                            if let Some((id, _, _, _, _, moved)) = grab() {
+                                if moved {
+                                    let (x, y) = nodes.peek().iter().find(|n| n.id == id).map(|n| (n.x, n.y)).unwrap_or((0, 0));
+                                    let _ = wf_place(&mut nodes.write(), id, x, y);
+                                    said.set(format!("{} moved", title_of(id)));
+                                }
+                                grab.set(None);
+                            }
+                        },
+                        onpointerleave: move |_| grab.set(None),
+                        if loading {
+                            div { class: "oxswf-skel", "aria-hidden": "true", for i in 0..4 { span { key: "{i}", class: "oxscn-shim oxswf-sk" } } }
+                        } else {
+                            div { class: "oxswf-wrap", style: "{wrap}",
+                                div { class: "oxswf-plane", style: "{plane}",
+                                    onclick: move |_| { sel.set(None); sel_edge.set(None); },
+                                    svg { class: "oxswf-edges", width: "{cw}", height: "{ch}", view_box: "0 0 {cw} {ch}", "aria-label": "Connections",
+                                        for (a, b) in es.iter().copied() {
+                                            {
+                                                let na = ns.iter().find(|n| n.id == a).cloned();
+                                                let nb = ns.iter().find(|n| n.id == b).cloned();
+                                                match (na, nb) {
+                                                    (Some(na), Some(nb)) => {
+                                                        let d = wf_path(&na, &nb);
+                                                        let on = sel_edge() == Some((a, b));
+                                                        let lit = matches!(state_of(a), WfRun::Done) && !matches!(state_of(b), WfRun::Idle | WfRun::Queued | WfRun::Skipped);
+                                                        let lbl = format!("Connection from {} to {}", na.title, nb.title);
+                                                        rsx! {
+                                                            g { key: "{a}-{b}", class: "oxswf-edge", "data-on": "{on}", "data-lit": "{lit}", tabindex: "0", role: "button", "aria-label": "{lbl}", "aria-pressed": "{on}",
+                                                                onclick: move |e: MouseEvent| { e.stop_propagation(); sel.set(None); sel_edge.set(Some((a, b))); },
+                                                                onkeydown: move |e: KeyboardEvent| {
+                                                                    let k = e.key();
+                                                                    if k == Key::Enter || k == Key::Character(" ".into()) { e.prevent_default(); sel.set(None); sel_edge.set(Some((a, b))); }
+                                                                    if k == Key::Delete || k == Key::Backspace { e.prevent_default(); edges.write().retain(|x| *x != (a, b)); sel_edge.set(None); run_at.set(None); said.set("Connection removed".to_string()); }
+                                                                },
+                                                                path { class: "oxswf-hit", d: "{d}" }
+                                                                path { class: "oxswf-line", d: "{d}" }
+                                                            }
+                                                        }
+                                                    }
+                                                    _ => rsx! {},
+                                                }
+                                            }
+                                        }
+                                    }
+                                    for n in ns.iter().cloned() {
+                                        {
+                                            let id = n.id;
+                                            let on = sel() == Some(id);
+                                            let rs = state_of(id);
+                                            let ready = n.ready();
+                                            let pos = format!("left:{}px;top:{}px;width:{WF_NODE_W}px;height:{WF_NODE_H}px", n.x, n.y);
+                                            let kl = wf_kind_label(n.kind);
+                                            let dragging = grab().is_some_and(|g| g.0 == id && g.5);
+                                            let summary = if ready { n.value.clone() } else { format!("{} not set", n.ask) };
+                                            let lbl = format!("{kl}: {}, {}{}", n.title, if ready { "ready" } else { "not configured" }, if rs.label().is_empty() { String::new() } else { format!(", {}", rs.label().to_lowercase()) });
+                                            rsx! {
+                                                div { key: "{id}", class: "oxswf-node", style: "{pos}", "data-kind": "{n.kind}", "data-sel": "{on}", "data-run": "{rs.key()}", "data-ready": "{ready}", "data-drag": "{dragging}",
+                                                    tabindex: "0", role: "button", "aria-pressed": "{on}", "aria-label": "{lbl}", "aria-keyshortcuts": "ArrowLeft ArrowRight ArrowUp ArrowDown Delete",
+                                                    onmounted: move |e: MountedEvent| { if *refocus.peek() == Some(id) { refocus.set(None); let d = e.data(); spawn(async move { let _ = d.set_focus(true).await; }); } },
+                                                    onclick: move |e: MouseEvent| { e.stop_propagation(); },
+                                                    onpointerdown: move |e: PointerEvent| {
+                                                        e.stop_propagation();
+                                                        let p = e.client_coordinates();
+                                                        let (nx, ny) = nodes.peek().iter().find(|n| n.id == id).map(|n| (n.x, n.y)).unwrap_or((0, 0));
+                                                        sel.set(Some(id)); sel_edge.set(None);
+                                                        grab.set(Some((id, p.x, p.y, nx, ny, false)));
+                                                    },
+                                                    onkeydown: move |e: KeyboardEvent| {
+                                                        let k = e.key();
+                                                        let step = if e.modifiers().shift() { WF_GRID * 5 } else { WF_GRID };
+                                                        let (dx, dy) = match k { Key::ArrowLeft => (-step, 0), Key::ArrowRight => (step, 0), Key::ArrowUp => (0, -step), Key::ArrowDown => (0, step), _ => (0, 0) };
+                                                        if dx != 0 || dy != 0 {
+                                                            e.prevent_default();
+                                                            let (x, y) = nodes.peek().iter().find(|n| n.id == id).map(|n| (n.x, n.y)).unwrap_or((0, 0));
+                                                            let _ = wf_place(&mut nodes.write(), id, x + dx, y + dy);
+                                                            let (x, y) = nodes.peek().iter().find(|n| n.id == id).map(|n| (n.x, n.y)).unwrap_or((0, 0));
+                                                            sel.set(Some(id));
+                                                            said.set(format!("{} at {x}, {y}", title_of(id)));
+                                                        } else if k == Key::Enter || k == Key::Character(" ".into()) {
+                                                            e.prevent_default(); sel.set(Some(id)); sel_edge.set(None);
+                                                        } else if k == Key::Delete || k == Key::Backspace {
+                                                            e.prevent_default();
+                                                            let t = title_of(id);
+                                                            wf_remove(&mut nodes.write(), &mut edges.write(), id);
+                                                            sel.set(None); run_at.set(None);
+                                                            said.set(format!("{t} removed"));
+                                                        } else if k == Key::Escape {
+                                                            sel.set(None);
+                                                        }
+                                                    },
+                                                    div { class: "oxswf-nt",
+                                                        span { class: "oxswf-chip", "data-kind": "{n.kind}" }
+                                                        span { class: "oxswf-kl", "{kl}" }
+                                                        span { class: "oxscn-grow" }
+                                                        if !rs.label().is_empty() {
+                                                            span { class: "oxswf-rs", "data-run": "{rs.key()}", "{rs.label()}" }
+                                                        } else if !ready {
+                                                            span { class: "oxswf-rs", "data-run": "unset", "Not configured" }
+                                                        }
+                                                    }
+                                                    p { class: "oxswf-title", "{n.title}" }
+                                                    p { class: "oxswf-sum", "data-unset": "{!ready}", "{summary}" }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            if ns.is_empty() {
+                                div { class: "oxswf-blank",
+                                    {empty("Start with a trigger", "Pick New member, a schedule or a webhook from the palette; each step you add after it joins on.")}
+                                    div { class: "oxswf-blank-a",
+                                        button { r#type: "button", class: "oxscn-primary", onclick: move |_| add("trigger", "New member", "Which list"), {ico("plus")} span { "Add New member" } }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                p { class: "oxscn-sr", role: "status", "{said}" }
+            }
+        }
+    }
+}
+
+/// The inspector beside the canvas for one node: its title and setting, ready state, where it
+/// comes from and goes to (remove, or connect to another step) and Delete.
+#[component]
+fn WorkflowInspector(
+    node: oxyn_core::parity::screensfid::WfNode,
+    nodes: Signal<Vec<oxyn_core::parity::screensfid::WfNode>>,
+    edges: Signal<Vec<(u32, u32)>>,
+    run: String,
+    on_gone: EventHandler<String>,
+    on_said: EventHandler<String>,
+) -> Element {
+    use oxyn_core::parity::screensfid::{wf_connect, wf_kind_label, wf_remove};
+    let id = node.id;
+    let ready = node.ready();
+    let all = nodes();
+    let es = edges();
+    let name = |i: u32| {
+        all.iter()
+            .find(|n| n.id == i)
+            .map(|n| n.title.clone())
+            .unwrap_or_default()
+    };
+    let ins: Vec<(u32, String)> = es
+        .iter()
+        .filter(|(_, b)| *b == id)
+        .map(|(a, _)| (*a, name(*a)))
+        .collect();
+    let outs: Vec<(u32, String)> = es
+        .iter()
+        .filter(|(a, _)| *a == id)
+        .map(|(_, b)| (*b, name(*b)))
+        .collect();
+    let targets: Vec<(u32, String)> = all
+        .iter()
+        .filter(|n| n.id != id && n.kind != "trigger" && !es.contains(&(id, n.id)))
+        .map(|n| (n.id, n.title.clone()))
+        .collect();
+    let mut connecting = use_signal(|| false);
+    let kl = wf_kind_label(node.kind);
+    let title = node.title.clone();
+    let run_l = match run.as_str() {
+        "running" => "Running",
+        "done" => "Done",
+        "failed" => "Failed: needs its setting",
+        "skipped" => "Skipped",
+        "queued" => "Queued",
+        _ => "",
+    };
+    rsx! {
+        div { class: "oxswf-insp",
+            p { class: "oxswf-kind", span { class: "oxswf-chip", "data-kind": "{node.kind}" } "{kl}" }
+            input { class: "oxskb-title", "aria-label": "Step name", value: "{node.title}",
+                oninput: move |e| { if let Some(n) = nodes.write().iter_mut().find(|n| n.id == id) { n.title = e.value(); } } }
+            div { class: "oxswf-st",
+                if ready { span { class: "oxscn-tag", "data-tone": "ok", "Ready" } } else { span { class: "oxscn-tag", "data-tone": "warn", "Not configured" } }
+                if !run_l.is_empty() { span { class: "oxswf-rs", "data-run": "{run}", "{run_l}" } }
+            }
+            label { class: "oxswf-field",
+                span { class: "oxswf-fl", "{node.ask}" }
+                input { class: "oxskb-in", value: "{node.value}", placeholder: "Needed to run", "aria-invalid": "{!ready}",
+                    oninput: move |e| { if let Some(n) = nodes.write().iter_mut().find(|n| n.id == id) { n.value = e.value(); } } }
+            }
+            dl { class: "oxskb-dl",
+                div { dt { "Position" } dd { "{node.x}, {node.y}" } }
+            }
+            p { class: "oxscn-gh", "Comes from" }
+            if ins.is_empty() { p { class: "oxscn-hint", if node.kind == "trigger" { "Starts the workflow" } else { "Nothing yet: this step will not run" } } }
+            ul { class: "oxswf-links",
+                for (a, t) in ins {
+                    li { key: "{a}", span { class: "oxscn-row-t", "{t}" }
+                        button { r#type: "button", class: "oxscn-ib", "aria-label": "Disconnect {t}", onclick: move |_| { edges.write().retain(|e| *e != (a, id)); on_said.call("Connection removed".to_string()); }, {ico("close")} } }
+                }
+            }
+            p { class: "oxscn-gh", "Goes to" }
+            if outs.is_empty() { p { class: "oxscn-hint", "Nothing: the workflow ends here" } }
+            ul { class: "oxswf-links",
+                for (b, t) in outs {
+                    li { key: "{b}", span { class: "oxscn-row-t", "{t}" }
+                        button { r#type: "button", class: "oxscn-ib", "aria-label": "Disconnect {t}", onclick: move |_| { edges.write().retain(|e| *e != (id, b)); on_said.call("Connection removed".to_string()); }, {ico("close")} } }
+                }
+            }
+            if !targets.is_empty() {
+                div { class: "oxscn-mb oxswf-con",
+                    onkeydown: move |e: KeyboardEvent| if e.key() == Key::Escape { connecting.set(false); },
+                    button { r#type: "button", class: "oxscn-btn", "aria-haspopup": "menu", "aria-expanded": "{connecting}", onclick: move |_| connecting.toggle(), {ico("plus")} span { "Connect to…" } }
+                    if connecting() {
+                        div { class: "oxscn-menu", role: "menu", "aria-label": "Connect to",
+                            for (b, t) in targets {
+                                button { key: "{b}", r#type: "button", class: "oxscn-mi", role: "menuitem",
+                                    onclick: move |_| {
+                                        connecting.set(false);
+                                        let ok = wf_connect(&nodes.peek(), &mut edges.write(), id, b);
+                                        on_said.call(if ok { format!("Connected to {}", t) } else { format!("Can't connect to {}: that would make a loop", t) });
+                                    },
+                                    span { class: "oxscn-mi-l", "{t}" } }
+                            }
+                        }
+                    }
+                }
+            }
+            div { class: "oxsin-acts",
+                button { r#type: "button", class: "oxscn-btn oxsfd-del",
+                    onclick: move |_| { wf_remove(&mut nodes.write(), &mut edges.write(), id); on_gone.call(title.clone()); }, "Delete step" }
+            }
+        }
+    }
+}
