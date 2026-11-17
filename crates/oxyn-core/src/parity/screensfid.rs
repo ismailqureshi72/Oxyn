@@ -1,6 +1,6 @@
 //! Screens 1 (whole app frames): the shared app frame (Inset or Flat, plus a three-pane frame with
 //! an icon rail), the AI Chat screens built on it – Start, Overview, Agents, Double sidebar,
-//! Progress and Run – then Folders (Overview, Detail), Integrations and Kanban. Each screen shows
+//! Progress and Run – then Folders (Overview, Detail), Integrations, Kanban and CRM. Each screen shows
 //! Sample, Loading or Empty data. Behaviour only: every person, workspace, project and line of copy here
 //! is fictional and our own.
 
@@ -1340,6 +1340,299 @@ pub fn due_words(d: i32) -> String {
     }
 }
 
+// ────────────────────────────────────────────────────────────────────── CRM ──
+
+/// A deal row in the CRM table.
+#[derive(Clone, Debug, PartialEq)]
+pub struct Deal {
+    /// Stable id.
+    pub id: u32,
+    /// Company name (editable).
+    pub company: String,
+    /// The person you talk to there.
+    pub contact: &'static str,
+    /// Stage key (see [`CRM_STAGES`]).
+    pub stage: &'static str,
+    /// Value in whole dollars (editable).
+    pub value: u32,
+    /// Owner initials, or empty when nobody owns it.
+    pub owner: &'static str,
+    /// Days until the expected close (negative: past it).
+    pub close: i32,
+    /// A line of notes.
+    pub note: &'static str,
+}
+
+/// Deal stages: key and label, in pipeline order.
+pub const CRM_STAGES: [(&str, &str); 5] = [
+    ("lead", "Lead"),
+    ("qualified", "Qualified"),
+    ("proposal", "Proposal"),
+    ("won", "Won"),
+    ("lost", "Lost"),
+];
+
+/// Saved views shown as tabs: key and label.
+pub const CRM_VIEWS: [(&str, &str); 4] = [
+    ("all", "All deals"),
+    ("mine", "My deals"),
+    ("soon", "Closing soon"),
+    ("won", "Won"),
+];
+
+/// A sortable CRM column.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum DealSort {
+    /// Company, A to Z.
+    Company,
+    /// Pipeline order of the stage.
+    Stage,
+    /// Largest value first.
+    Value,
+    /// Soonest close first.
+    Close,
+}
+
+/// The sample deals (`sample` false: none).
+pub fn deals(sample: bool) -> Vec<Deal> {
+    if !sample {
+        return Vec::new();
+    }
+    #[allow(clippy::too_many_arguments)]
+    let d = |id, company: &str, contact, stage, value, owner, close, note| Deal {
+        id,
+        company: company.to_string(),
+        contact,
+        stage,
+        value,
+        owner,
+        close,
+        note,
+    };
+    vec![
+        d(
+            1,
+            "Harrow & Finch",
+            "Pell Okafor",
+            "proposal",
+            24_000,
+            "RV",
+            6,
+            "Wants the yearly plan with two seats added.",
+        ),
+        d(
+            2,
+            "Lumen Pantry",
+            "Dara Quist",
+            "qualified",
+            8_400,
+            "JO",
+            18,
+            "Trial ends next month; prefers email.",
+        ),
+        d(
+            3,
+            "Corvid Freight",
+            "Wren Haldane",
+            "lead",
+            3_200,
+            "",
+            40,
+            "Came in from the spring webinar.",
+        ),
+        d(
+            4,
+            "Basalt Studio",
+            "Odile Marsh",
+            "won",
+            12_600,
+            "RV",
+            -3,
+            "Signed; kickoff booked.",
+        ),
+        d(
+            5,
+            "Quillfield School",
+            "Kit Ferreira",
+            "proposal",
+            15_000,
+            "TA",
+            11,
+            "Needs a quote split by term.",
+        ),
+        d(
+            6,
+            "Tidewell Bikes",
+            "Noor Sallis",
+            "lost",
+            5_800,
+            "SE",
+            -12,
+            "Went with a cheaper plan for now.",
+        ),
+        d(
+            7,
+            "Marrowind Labs",
+            "Bram Tolliver",
+            "qualified",
+            31_500,
+            "RV",
+            25,
+            "Security review in progress.",
+        ),
+    ]
+}
+
+/// The stage's label.
+pub fn stage_label(stage: &str) -> &'static str {
+    CRM_STAGES
+        .iter()
+        .find(|(k, _)| *k == stage)
+        .map(|(_, l)| *l)
+        .unwrap_or("Other")
+}
+
+/// The stage's key as a static string, if it is one.
+pub fn stage_key(stage: &str) -> Option<&'static str> {
+    CRM_STAGES.iter().map(|(k, _)| *k).find(|k| *k == stage)
+}
+
+fn open_deal(d: &Deal) -> bool {
+    d.stage != "won" && d.stage != "lost"
+}
+
+/// True when a deal belongs in a saved view.
+pub fn in_view(d: &Deal, view: &str) -> bool {
+    match view {
+        "mine" => d.owner == PERSON_INI,
+        "soon" => open_deal(d) && d.close <= 14,
+        "won" => d.stage == "won",
+        _ => true,
+    }
+}
+
+/// How many deals a view holds.
+pub fn view_count(list: &[Deal], view: &str) -> usize {
+    list.iter().filter(|d| in_view(d, view)).count()
+}
+
+/// The deals in a view whose company, contact or note contains the query, sorted.
+pub fn deal_view(list: &[Deal], view: &str, q: &str, by: DealSort, rev: bool) -> Vec<Deal> {
+    let q = q.trim().to_lowercase();
+    let mut v: Vec<Deal> = list
+        .iter()
+        .filter(|d| in_view(d, view))
+        .filter(|d| {
+            q.is_empty()
+                || d.company.to_lowercase().contains(&q)
+                || d.contact.to_lowercase().contains(&q)
+                || d.note.to_lowercase().contains(&q)
+        })
+        .cloned()
+        .collect();
+    let pos = |s: &str| CRM_STAGES.iter().position(|(k, _)| *k == s).unwrap_or(9);
+    match by {
+        DealSort::Company => v.sort_by_key(|d| d.company.to_lowercase()),
+        DealSort::Stage => v.sort_by_key(|d| (pos(d.stage), d.company.to_lowercase())),
+        DealSort::Value => v.sort_by_key(|d| std::cmp::Reverse(d.value)),
+        DealSort::Close => v.sort_by_key(|d| d.close),
+    }
+    if rev {
+        v.reverse();
+    }
+    v
+}
+
+/// Reads an amount typed into a value cell: `12400`, `12,400`, `$12,400`, `12.4k`, `3k`.
+/// None when it is not an amount.
+pub fn parse_money(s: &str) -> Option<u32> {
+    let t: String = s
+        .trim()
+        .trim_start_matches('$')
+        .chars()
+        .filter(|c| *c != ',' && *c != ' ')
+        .collect::<String>()
+        .to_lowercase();
+    let (num, mul) = match t.strip_suffix('k') {
+        Some(n) => (n, 1000.0),
+        None => (t.as_str(), 1.0),
+    };
+    if num.is_empty() || !num.chars().all(|c| c.is_ascii_digit() || c == '.') {
+        return None;
+    }
+    let v: f64 = num.parse().ok()?;
+    let v = (v * mul).round();
+    if v > f64::from(u32::MAX) {
+        return None;
+    }
+    Some(v as u32)
+}
+
+/// `$12,400`.
+pub fn usd(v: u32) -> String {
+    let s = v.to_string();
+    let mut out = String::new();
+    for (i, c) in s.chars().enumerate() {
+        if i > 0 && (s.len() - i).is_multiple_of(3) {
+            out.push(',');
+        }
+        out.push(c);
+    }
+    format!("${out}")
+}
+
+/// Total value of the deals still open (not won or lost).
+pub fn pipeline(list: &[Deal]) -> u32 {
+    list.iter().filter(|d| open_deal(d)).map(|d| d.value).sum()
+}
+
+/// Total value per stage, in pipeline order.
+pub fn stage_totals(list: &[Deal]) -> Vec<(&'static str, u32, usize)> {
+    CRM_STAGES
+        .iter()
+        .map(|(k, _)| {
+            let v: Vec<&Deal> = list.iter().filter(|d| d.stage == *k).collect();
+            (*k, v.iter().map(|d| d.value).sum(), v.len())
+        })
+        .collect()
+}
+
+/// Adds a lead owned by `owner` and returns its id.
+pub fn add_deal(list: &mut Vec<Deal>, company: &str, owner: &'static str) -> Option<u32> {
+    let company = company.trim();
+    if company.is_empty() {
+        return None;
+    }
+    let id = list.iter().map(|d| d.id).max().unwrap_or(0) + 1;
+    list.push(Deal {
+        id,
+        company: company.to_string(),
+        contact: "",
+        stage: "lead",
+        value: 0,
+        owner,
+        close: 30,
+        note: "",
+    });
+    Some(id)
+}
+
+/// "Closes today", "Closes in 6d", "6d overdue"; won and lost deals say when they closed.
+pub fn close_words(d: i32, stage: &str) -> String {
+    if stage == "won" || stage == "lost" {
+        return if d >= 0 {
+            "Closed today".to_string()
+        } else {
+            format!("Closed {}d ago", -d)
+        };
+    }
+    match d {
+        0 => "Closes today".to_string(),
+        1.. => format!("Closes in {d}d"),
+        _ => format!("{}d overdue", -d),
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -1539,5 +1832,51 @@ mod tests {
         assert_eq!(due_words(0), "Due today");
         assert_eq!(due_words(3), "Due in 3d");
         assert_eq!(due_words(-1), "1d late");
+    }
+
+    #[test]
+    fn crm_views_sort_and_edit() {
+        let mut l = deals(true);
+        assert_eq!(view_count(&l, "all"), 7);
+        assert_eq!(view_count(&l, "mine"), 3);
+        assert_eq!(view_count(&l, "soon"), 2);
+        assert_eq!(view_count(&l, "won"), 1);
+        let v = deal_view(&l, "all", "", DealSort::Value, false);
+        assert_eq!(v[0].id, 7);
+        let v = deal_view(&l, "all", "", DealSort::Value, true);
+        assert_eq!(v[0].id, 3);
+        let v = deal_view(&l, "all", "", DealSort::Company, false);
+        assert_eq!(v[0].company, "Basalt Studio");
+        let v = deal_view(&l, "all", "", DealSort::Stage, false);
+        assert_eq!(v[0].stage, "lead");
+        assert_eq!(v[6].stage, "lost");
+        assert_eq!(
+            deal_view(&l, "all", "security", DealSort::Close, false).len(),
+            1
+        );
+        assert_eq!(
+            deal_view(&l, "all", "dara", DealSort::Close, false)[0].id,
+            2
+        );
+        assert_eq!(parse_money("12,400"), Some(12_400));
+        assert_eq!(parse_money("$12400"), Some(12_400));
+        assert_eq!(parse_money("12.4k"), Some(12_400));
+        assert_eq!(parse_money("3K"), Some(3_000));
+        assert_eq!(parse_money("lots"), None);
+        assert_eq!(parse_money(""), None);
+        assert_eq!(usd(1_234_567), "$1,234,567");
+        assert_eq!(usd(800), "$800");
+        assert_eq!(pipeline(&l), 24_000 + 8_400 + 3_200 + 15_000 + 31_500);
+        assert_eq!(stage_totals(&l)[3], ("won", 12_600, 1));
+        assert_eq!(add_deal(&mut l, " ", "RV"), None);
+        assert_eq!(add_deal(&mut l, "Fernhall Co", "RV"), Some(8));
+        assert_eq!(view_count(&l, "mine"), 4);
+        assert_eq!(stage_label("proposal"), "Proposal");
+        assert_eq!(stage_key("won"), Some("won"));
+        assert_eq!(stage_key("x"), None);
+        assert_eq!(close_words(6, "lead"), "Closes in 6d");
+        assert_eq!(close_words(-2, "proposal"), "2d overdue");
+        assert_eq!(close_words(-3, "won"), "Closed 3d ago");
+        assert!(deals(false).is_empty());
     }
 }

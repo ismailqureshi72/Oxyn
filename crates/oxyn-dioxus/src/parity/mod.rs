@@ -133,7 +133,7 @@ pub use runningfid::RunningNow;
 pub use schedfid::ScheduledRuns;
 pub use screensfid::{
     AppFrame, AppShellScreen, ChatAgentsScreen, ChatOverviewScreen, ChatProgressScreen,
-    ChatRailScreen, ChatRunScreen, ChatStartScreen, FoldersScreen, IntegrationsScreen,
+    ChatRailScreen, ChatRunScreen, ChatStartScreen, CrmScreen, FoldersScreen, IntegrationsScreen,
     KanbanScreen, MenuButton, RailFrame, RailShellScreen, ScreenComposer,
 };
 pub use seqfid::AgentSequence;

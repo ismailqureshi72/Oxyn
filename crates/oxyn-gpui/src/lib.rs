@@ -58,6 +58,7 @@ pub use parity::ContextBreakdownEl;
 pub use parity::ContextEffortMenuEl;
 pub use parity::ContextStackEl;
 pub use parity::ContextTideEl;
+pub use parity::CrmEl;
 pub use parity::DiffTimelineRunEl;
 pub use parity::DisplayComfortEl;
 pub use parity::DropLanesEl;
