@@ -1,34 +1,37 @@
-**Status:** built v0.1 (2026-11-17, screens 1: Screens).
+**Status:** built v0.2 (2026-11-17, S1: AI Chat parity; v0.1 screens 1).
 
 # Spec: AI Chat · Overview (`chat-overview`)
 
-Family: Screens. Reference: affectUI AI Chat / Overview, behaviour only.
+Family: Screens. Reference: affectUI AI Chat / Overview (`/screens/assistant-overview`), layout and behaviour only.
 Components: `ChatOverviewScreen` (Dioxus) · `ChatOverviewEl` (GPUI), models in `oxyn_core::parity::screensfid`.
 
 ## 1. Purpose
-The start page with the numbers under the composer.
+The start composer with the numbers under it, in one centred 880 px column.
 
 ## 2. Parts
 | Part | Look |
 |---|---|
-| Activity | 20-week heat map (monochrome levels), arrow keys / click move a focus cell, status line says week, day and chats |
-| Recent chats | Three rows and an "N more" toggle |
-| Credits | Used of cap with a meter and reset date |
-| Made for you | Files with their project as a tooltip, "1 more" toggle |
-| This month | Chats and files with signed deltas |
+| Column | Centred 880 px; the mark (monogram + name) over the 672 px start composer (with its strip) |
+| Activity | Day-by-day heat map, 38 weeks × 7 days in blue steps; a status line (872 chats · 214 files · 38 automations) and a range menu (Feb – Nov, Last 12 weeks) |
+| Recent chats | Three rows with a chat glyph and the time, n more / Show less |
+| Usage | 1,284 / 2,000 credits, a blue meter, Resets 1 Dec; amber with Upgrade near the limit |
+| Files made for you | Rows with file glyphs in their tones (md blue, csv green, png pink), 2 more |
+| This month | Chats 36 +12 (green) and Files made 14 −3 (red) |
+
+Chrome is monochrome neutral; colour only means something: official brand and model marks, semantic object glyphs (folder #00A1FF, file types), status (running blue, needs-you amber, done green, failed red).
 
 ## 3. Behaviour
-Sending from the composer starts a conversation above the cards. Loading shows skeletons per card; Empty zeroes the numbers with a line on what will land.
+Arrow keys step through the heat map (↑/↓ a day, ←/→ a week) and the status line reads the day; the range menu narrows the map; the more buttons expand the lists. The composer works as on Start.
 prefers-reduced-motion: no transitions or animation.
 
 ## 4. Variants
-Data: Sample · Loading (skeletons) · Empty (each region says what lands there). Frame: Inset (page is a rounded card on the grey canvas) · Flat (edge to edge, hairlines). Light and dark follow the page theme.
+States (the full view's state bar): Data · Loading · Empty (zeros and one line per card) · **Near limit** (1,870 of 2,000: amber meter, 93% used, Upgrade). Frame: Inset · Flat. Oxyn extras: the range menu, the keyboard heat map, the Near limit state.
 
 ## 5. Keyboard and accessibility
-Sidebar is a labelled nav with aria-current on the open chat; menus open from a trigger reporting aria-expanded (items are menuitemradio; Escape shuts them); hairlines are focusable separators with a value (←/→ resize); skeletons are aria-hidden; live notes use role=status.
+Sidebar is a labelled nav with aria-current on the open chat; the composer's Add menu is a menu with aria-activedescendant (↑/↓/Home/End move, Enter or Space picks, → opens Attach app and ← or Escape goes back, Escape closes); the approval chip and Auto ⌄ open menus of menuitemradio rows (Escape shuts them, a click outside closes them); Enter sends and Shift+Enter breaks a line; Send is disabled until there is text and the mic reports aria-pressed; hairlines are focusable separators with a value (←/→ resize, double-click resets); skeletons are aria-hidden; live notes use role=status.
 
 ## 6. Responsive
-Root fills its container (definite width, overflow clip, container queries). Under 860 px the work area becomes a sheet opened from the top bar; under 640 px the sidebar slides in from a menu button and composer menus drop their labels.
+Every screen is authored on the 1440 × 900 stage (rule R1) and scaled to its column; the full view (`/screens/<slug>/full`) renders at the real viewport with the state bar under it (R2). Under 860 px of real width the work area becomes a sheet opened from the top bar; under 640 px the sidebar slides in from a menu button and the composer's approval and model chips drop their labels (icons stay). Every label in a row, chip or card title ellipsises in a flex child with min-width 0 (R5); scripts/ovl.py finds no text overlap at 1440, 768 and 390 in light and dark.
 
 ## 7. Known gaps
-GPUI is a static snapshot (no menus, resize or live clock); the host owns state.
+GPUI is a static snapshot (`.extra("limit")` for the near-limit meter).

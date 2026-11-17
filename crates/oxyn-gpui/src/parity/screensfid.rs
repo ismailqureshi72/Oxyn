@@ -13,11 +13,10 @@ use gpui::{
 use oxyn_core::icon_tone::IconTone;
 use oxyn_core::parity::screensfid::{
     APP_TABS, CRM_VIEWS, DealSort, KB_COLS, KB_PRI, PERSON, PERSON_INI, ScreenState, ShellLayout,
-    StepState, WORKSPACE, ago, angles, app_view, apps, board, close_words, col_label, column,
-    connected_count, crew, deal_view, deals, due_words, folder_files, folder_view, folders, heat,
-    member_name, over_limit, progress_steps, projects, run_plan, sheet, size_label, split_pinned,
-    stage_label, stage_totals, starters, step_state, synced_words, task_key, threads, total_size,
-    usd, view_count,
+    WORKSPACE, ago, app_view, apps, board, close_words, col_label, column, connected_count,
+    deal_view, deals, due_words, folder_files, folder_view, folders, member_name, over_limit,
+    projects, size_label, split_pinned, stage_label, stage_totals, synced_words, task_key, threads,
+    total_size, usd, view_count,
 };
 use oxyn_core::parity::screensfid::{
     EnvMode, PERSON_EMAIL, PERSON_PLAN, SIDE_W, STAGE_H, STAGE_STATES, STAGE_W, STATE_BAR_H, TOP_H,
@@ -132,7 +131,7 @@ pub(super) fn row(p: &ThPal, t: String, a: String, on: bool) -> Div {
         .child(div().text_size(px(12.)).text_color(p.mute).child(a))
 }
 
-fn sidebar(p: &ThPal, st: ScreenState, act: &Option<Act>, runs: bool) -> Div {
+pub(super) fn sidebar(p: &ThPal, st: ScreenState, act: &Option<Act>, runs: bool) -> Div {
     let mut s = div()
         .w(px(SIDE_W.0 as f32))
         .flex_none()
@@ -678,58 +677,6 @@ pub(super) fn frame(
     }
 }
 
-fn composer(p: &ThPal) -> Div {
-    div()
-        .w(px(600.))
-        .p(px(10.))
-        .rounded(px(16.))
-        .bg(p.card)
-        .border_1()
-        .border_color(p.line)
-        .flex()
-        .flex_col()
-        .gap(px(8.))
-        .child(
-            div()
-                .h(px(40.))
-                .text_color(p.mute)
-                .child("Ask anything, or type / for tools"),
-        )
-        .child(
-            div()
-                .flex()
-                .items_center()
-                .gap(px(8.))
-                .text_size(px(12.5))
-                .text_color(p.mute)
-                .child("+")
-                .child("Ask for big steps")
-                .child("Auto")
-                .child(div().flex_1())
-                .child(div().w(px(32.)).h(px(32.)).rounded(px(16.)).bg(p.sel)),
-        )
-}
-
-fn msg(p: &ThPal, me: bool, t: &'static str) -> Div {
-    if me {
-        div().flex().justify_end().child(
-            div()
-                .max_w(px(460.))
-                .px(px(13.))
-                .py(px(9.))
-                .rounded(px(16.))
-                .bg(p.sel)
-                .child(t),
-        )
-    } else {
-        div()
-            .flex()
-            .gap(px(10.))
-            .child(div().w(px(20.)).h(px(20.)).rounded(px(10.)).bg(p.sel))
-            .child(div().max_w(px(560.)).child(t))
-    }
-}
-
 /// The screen stage (rules R1/R2): a screen on its fixed 1440 × 900 canvas, with the 52 px state
 /// bar under it (Data · Loading · Empty) firing `state-sample`, `state-loading` or `state-empty`
 /// so the host re-renders the screen in that state. GPUI has no element transform, so the canvas
@@ -739,6 +686,8 @@ fn msg(p: &ThPal, me: bool, t: &'static str) -> Div {
 pub struct ScreenStageEl {
     screen: gpui::AnyElement,
     state: ScreenState,
+    states: &'static [(&'static str, &'static str)],
+    cur: &'static str,
     bar: bool,
     act: Option<Act>,
     theme: &'static Theme,
@@ -750,6 +699,8 @@ impl ScreenStageEl {
         Self {
             screen: screen.into_any_element(),
             state: ScreenState::Sample,
+            states: &STAGE_STATES,
+            cur: "",
             bar: true,
             act: None,
             theme: &Theme::DARK,
@@ -758,6 +709,17 @@ impl ScreenStageEl {
     /// The state the bar shows as current.
     pub fn state(mut self, s: ScreenState) -> Self {
         self.state = s;
+        self
+    }
+    /// The states the bar offers (default Data · Loading · Empty); a screen passes its own row,
+    /// e.g. `oxyn_core::parity::screensfid::RUN_STATES`.
+    pub fn states(mut self, s: &'static [(&'static str, &'static str)]) -> Self {
+        self.states = s;
+        self
+    }
+    /// The current state when it is one of the screen's own (`input`, `attached`…).
+    pub fn current(mut self, k: &'static str) -> Self {
+        self.cur = k;
         self
     }
     /// Show the state bar (default true).
@@ -787,13 +749,14 @@ impl RenderOnce for ScreenStageEl {
             .overflow_hidden()
             .child(self.screen);
         let mut seg = div().flex().gap(px(2.)).p(px(2.)).rounded(px(9.)).bg(p.sel);
-        for (k, l) in STAGE_STATES {
-            let id: &'static str = match k {
-                "loading" => "state-loading",
-                "empty" => "state-empty",
-                _ => "state-sample",
-            };
-            let on = self.state.key() == k;
+        let cur = if self.cur.is_empty() {
+            self.state.key()
+        } else {
+            self.cur
+        };
+        for &(k, l) in self.states {
+            let id = state_id(k);
+            let on = cur == k;
             let fi = fire(&self.act, id);
             seg = seg.child(
                 div()
@@ -835,6 +798,23 @@ impl RenderOnce for ScreenStageEl {
             .flex_col()
             .child(canvas)
             .when(self.bar, |d| d.child(bar))
+    }
+}
+
+/// The `Act` id a state button fires.
+fn state_id(k: &str) -> &'static str {
+    match k {
+        "loading" => "state-loading",
+        "empty" => "state-empty",
+        "attached" => "state-attached",
+        "dictating" => "state-dictating",
+        "limit" => "state-limit",
+        "making" => "state-making",
+        "folded" => "state-folded",
+        "working" => "state-working",
+        "input" => "state-input",
+        "done" => "state-done",
+        _ => "state-sample",
     }
 }
 
@@ -885,30 +865,6 @@ screen_el!(
 screen_el!(
     /// Three-pane shell: icon rail, chats column, page and work area.
     ScreenRailEl
-);
-screen_el!(
-    /// AI Chat / Start.
-    ChatStartEl
-);
-screen_el!(
-    /// AI Chat / Overview.
-    ChatOverviewEl
-);
-screen_el!(
-    /// AI Chat / Agents.
-    ChatAgentsEl
-);
-screen_el!(
-    /// AI Chat / Double sidebar.
-    ChatRailEl
-);
-screen_el!(
-    /// AI Chat / Progress.
-    ChatProgressEl
-);
-screen_el!(
-    /// AI Chat / Run.
-    ChatRunEl
 );
 
 fn workspace(p: &ThPal, st: ScreenState) -> Div {
@@ -1097,477 +1053,6 @@ impl RenderOnce for ScreenRailEl {
             rail_left(&p, self.state),
             page(&p, "Home", placeholder(&p, self.state)),
             Some(workspace(&p, self.state)),
-        )
-    }
-}
-
-impl RenderOnce for ChatStartEl {
-    fn render(self, _: &mut Window, _: &mut App) -> impl IntoElement {
-        let p = th_pal(self.theme);
-        let mut chips = div()
-            .flex()
-            .flex_wrap()
-            .justify_center()
-            .gap(px(8.))
-            .w(px(600.));
-        for (_, l, _) in starters() {
-            chips = chips.child(
-                div()
-                    .h(px(32.))
-                    .px(px(13.))
-                    .flex()
-                    .items_center()
-                    .rounded(px(16.))
-                    .border_1()
-                    .border_color(p.line)
-                    .when(self.state == ScreenState::Loading, |d| {
-                        d.bg(p.sel).text_color(p.sel)
-                    })
-                    .child(l),
-            );
-        }
-        let body = div()
-            .flex()
-            .flex_col()
-            .items_center()
-            .gap(px(14.))
-            .pt(px(56.))
-            .child(
-                div()
-                    .text_size(px(26.))
-                    .font_weight(FontWeight::SEMIBOLD)
-                    .child("Good evening, Rowan. What's next?"),
-            )
-            .child(composer(&p))
-            .child(chips);
-        frame(
-            self.theme,
-            self.layout,
-            sidebar(&p, self.state, &self.act, false),
-            page(&p, "", body),
-            None,
-        )
-    }
-}
-
-impl RenderOnce for ChatOverviewEl {
-    fn render(self, _: &mut Window, _: &mut App) -> impl IntoElement {
-        let p = th_pal(self.theme);
-        let mut grid = div().flex().gap(px(3.));
-        let lv = if self.state == ScreenState::Sample {
-            heat(20)
-        } else {
-            vec![0; 140]
-        };
-        for w in 0..20 {
-            let mut col = div().flex().flex_col().gap(px(3.));
-            for d in 0..7 {
-                let l = lv[w * 7 + d] as f32;
-                col = col.child(div().w(px(12.)).h(px(12.)).rounded(px(3.)).bg(if l == 0. {
-                    p.sel
-                } else {
-                    p.fg.opacity(0.2 + l * 0.2)
-                }));
-            }
-            grid = grid.child(col);
-        }
-        let card = |t: &'static str, b: Div| {
-            div()
-                .flex_1()
-                .p(px(12.))
-                .rounded(px(14.))
-                .border_1()
-                .border_color(p.line)
-                .flex()
-                .flex_col()
-                .gap(px(6.))
-                .child(div().font_weight(FontWeight::SEMIBOLD).child(t))
-                .child(b)
-        };
-        let ld = self.state == ScreenState::Loading;
-        let body = div()
-            .flex()
-            .flex_col()
-            .items_center()
-            .gap(px(14.))
-            .p(px(22.))
-            .child(composer(&p))
-            .child(card("Activity", if ld { skel(&p, 3) } else { grid }).w(px(720.)))
-            .child(
-                div()
-                    .flex()
-                    .gap(px(12.))
-                    .w(px(720.))
-                    .child(card(
-                        "Credits",
-                        if ld {
-                            skel(&p, 2)
-                        } else {
-                            div()
-                                .text_size(px(22.))
-                                .font_weight(FontWeight::SEMIBOLD)
-                                .child(if self.state == ScreenState::Empty {
-                                    "0 of 2,000"
-                                } else {
-                                    "1,284 of 2,000"
-                                })
-                        },
-                    ))
-                    .child(card(
-                        "This month",
-                        if ld {
-                            skel(&p, 2)
-                        } else {
-                            div().child("Chats 36  +12").child("Files made 14  −3")
-                        },
-                    )),
-            );
-        frame(
-            self.theme,
-            self.layout,
-            sidebar(&p, self.state, &self.act, false),
-            page(&p, "Overview", body),
-            None,
-        )
-    }
-}
-
-impl RenderOnce for ChatAgentsEl {
-    fn render(self, _: &mut Window, _: &mut App) -> impl IntoElement {
-        let p = th_pal(self.theme);
-        let body = match self.state {
-            ScreenState::Loading => skel(&p, 8).p(px(20.)),
-            ScreenState::Empty => empty(
-                &p,
-                "Start with a goal",
-                "The orchestrator brings in the agents it needs.",
-            ),
-            ScreenState::Sample => {
-                let mut crew_row = div().flex().flex_wrap().gap(px(6.));
-                for m in crew() {
-                    crew_row = crew_row.child(
-                        div()
-                            .h(px(30.))
-                            .px(px(10.))
-                            .flex()
-                            .items_center()
-                            .rounded(px(15.))
-                            .border_1()
-                            .border_color(if m.done { p.line } else { p.fg2 })
-                            .child(m.name),
-                    );
-                }
-                div()
-                    .p(px(20.))
-                    .flex()
-                    .flex_col()
-                    .gap(px(14.))
-                    .child(msg(
-                        &p,
-                        true,
-                        "Make launch ads for the overshirt. Lead with how it feels.",
-                    ))
-                    .child(msg(
-                        &p,
-                        false,
-                        "I split this across five agents. The brief on the right is filling in.",
-                    ))
-                    .child(
-                        div()
-                            .p(px(12.))
-                            .rounded(px(14.))
-                            .border_1()
-                            .border_color(p.line)
-                            .child(gh(&p, "Agents working"))
-                            .child(crew_row),
-                    )
-            }
-        };
-        let mut brief = div()
-            .flex()
-            .flex_col()
-            .gap(px(6.))
-            .child(div().font_weight(FontWeight::SEMIBOLD).child("Brief"));
-        if self.state == ScreenState::Sample {
-            for (i, a) in angles().into_iter().enumerate() {
-                brief = brief.child(
-                    div()
-                        .p(px(8.))
-                        .rounded(px(11.))
-                        .border_1()
-                        .border_color(if i == 0 { p.fg } else { p.line })
-                        .child(a.label),
-                );
-            }
-            brief = brief.child(
-                div()
-                    .mt(px(10.))
-                    .h(px(32.))
-                    .px(px(14.))
-                    .flex()
-                    .items_center()
-                    .justify_center()
-                    .rounded(px(9.))
-                    .bg(p.fg)
-                    .text_color(p.card)
-                    .child("Make ads"),
-            );
-        }
-        frame(
-            self.theme,
-            self.layout,
-            sidebar(&p, self.state, &self.act, false),
-            page(&p, "Ads for the overshirt", body),
-            Some(brief),
-        )
-    }
-}
-
-impl RenderOnce for ChatRailEl {
-    fn render(self, _: &mut Window, _: &mut App) -> impl IntoElement {
-        let p = th_pal(self.theme);
-        let body = match self.state {
-            ScreenState::Loading => skel(&p, 8).p(px(20.)),
-            ScreenState::Empty => empty(
-                &p,
-                "Ask with the web",
-                "Searches fold into one line you can open.",
-            ),
-            ScreenState::Sample => div()
-                .p(px(20.))
-                .flex()
-                .flex_col()
-                .gap(px(14.))
-                .child(msg(&p, true, "Compare five fabrics for the overshirt."))
-                .child(
-                    div()
-                        .h(px(28.))
-                        .w(px(180.))
-                        .px(px(10.))
-                        .flex()
-                        .items_center()
-                        .rounded(px(14.))
-                        .border_1()
-                        .border_color(p.line)
-                        .text_color(p.mute)
-                        .child("Ran 3 searches · 4.1s"),
-                )
-                .child(msg(
-                    &p,
-                    false,
-                    "Washed linen and hemp twill are the sturdiest; organic cotton is cheapest.",
-                )),
-        };
-        let mut grid = div()
-            .flex()
-            .flex_col()
-            .border_1()
-            .border_color(p.line)
-            .rounded(px(9.))
-            .overflow_hidden();
-        if self.state == ScreenState::Sample {
-            for (r, rowv) in sheet().into_iter().enumerate() {
-                let mut tr = div().flex();
-                for v in rowv {
-                    tr = tr.child(
-                        div()
-                            .w(px(76.))
-                            .h(px(26.))
-                            .px(px(6.))
-                            .flex()
-                            .items_center()
-                            .border_r_1()
-                            .border_b_1()
-                            .border_color(p.line)
-                            .when(r == 0, |d| d.font_weight(FontWeight::SEMIBOLD))
-                            .text_size(px(11.5))
-                            .overflow_hidden()
-                            .child(v),
-                    );
-                }
-                grid = grid.child(tr);
-            }
-        }
-        frame(
-            self.theme,
-            self.layout,
-            rail_left(&p, self.state),
-            page(&p, "Venue shortlist for the offsite", body),
-            Some(div().child(gh(&p, "fabric-compare.csv")).child(grid)),
-        )
-    }
-}
-
-impl RenderOnce for ChatProgressEl {
-    fn render(self, _: &mut Window, _: &mut App) -> impl IntoElement {
-        let p = th_pal(self.theme);
-        let body = match self.state {
-            ScreenState::Loading => skel(&p, 8).p(px(20.)),
-            ScreenState::Empty => empty(
-                &p,
-                "Ask for something that takes a few steps",
-                "Each step and tool shows as it goes.",
-            ),
-            ScreenState::Sample => div()
-                .p(px(20.))
-                .flex()
-                .flex_col()
-                .gap(px(10.))
-                .child(msg(
-                    &p,
-                    true,
-                    "Three people start Monday. Plan their first week.",
-                ))
-                .child(
-                    row(
-                        &p,
-                        "wiki.search · Looked up the first-week pages".to_string(),
-                        "1.8s".to_string(),
-                        false,
-                    )
-                    .border_1()
-                    .border_color(p.line),
-                )
-                .child(
-                    row(
-                        &p,
-                        "drive.read · Read the intake form".to_string(),
-                        "0.9s".to_string(),
-                        false,
-                    )
-                    .border_1()
-                    .border_color(p.line),
-                )
-                .child(msg(&p, false, "Here is the week at a glance.")),
-        };
-        let mut steps = div()
-            .flex()
-            .flex_col()
-            .gap(px(6.))
-            .child(div().font_weight(FontWeight::SEMIBOLD).child("Progress"));
-        if self.state == ScreenState::Sample {
-            for (i, s) in progress_steps().into_iter().enumerate() {
-                let k = step_state(i, 3);
-                steps = steps.child(
-                    div()
-                        .flex()
-                        .gap(px(8.))
-                        .items_center()
-                        .child(
-                            div()
-                                .w(px(16.))
-                                .h(px(16.))
-                                .rounded(px(8.))
-                                .border_1()
-                                .border_color(p.fg2)
-                                .when(k == StepState::Done, |d| d.bg(p.fg)),
-                        )
-                        .text_color(if k == StepState::Pending {
-                            p.mute
-                        } else {
-                            p.fg
-                        })
-                        .child(s),
-                );
-            }
-        }
-        frame(
-            self.theme,
-            self.layout,
-            sidebar(&p, self.state, &self.act, false),
-            page(&p, "Plan the new starters' week", body),
-            Some(steps),
-        )
-    }
-}
-
-impl RenderOnce for ChatRunEl {
-    fn render(self, _: &mut Window, _: &mut App) -> impl IntoElement {
-        let p = th_pal(self.theme);
-        let body = match self.state {
-            ScreenState::Loading => skel(&p, 10).p(px(20.)),
-            ScreenState::Empty => empty(
-                &p,
-                "No runs yet",
-                "Give an agent a goal; its plan shows up here.",
-            ),
-            ScreenState::Sample => {
-                let mut plan = div()
-                    .flex()
-                    .flex_col()
-                    .border_1()
-                    .border_color(p.line)
-                    .rounded(px(12.));
-                for (i, s) in run_plan().into_iter().enumerate() {
-                    let k = step_state(i, 2);
-                    plan = plan.child(
-                        div()
-                            .h(px(46.))
-                            .px(px(12.))
-                            .flex()
-                            .items_center()
-                            .gap(px(10.))
-                            .border_b_1()
-                            .border_color(p.line)
-                            .child(
-                                div()
-                                    .w(px(10.))
-                                    .h(px(10.))
-                                    .rounded(px(5.))
-                                    .border_1()
-                                    .border_color(p.fg)
-                                    .when(k == StepState::Done, |d| d.bg(p.fg)),
-                            )
-                            .child(div().flex_1().child(s.title))
-                            .child(div().text_size(px(11.5)).text_color(p.fg2).child(s.tool))
-                            .child(
-                                div()
-                                    .w(px(70.))
-                                    .text_size(px(12.))
-                                    .text_color(p.mute)
-                                    .child(k.label()),
-                            ),
-                    );
-                }
-                div()
-                    .p(px(20.))
-                    .flex()
-                    .flex_col()
-                    .gap(px(12.))
-                    .child(
-                        div()
-                            .text_size(px(20.))
-                            .font_weight(FontWeight::SEMIBOLD)
-                            .child("Write the November member update"),
-                    )
-                    .child(
-                        div()
-                            .flex()
-                            .gap(px(8.))
-                            .child("Steps 2/5")
-                            .child("Tool calls 5")
-                            .child("Time 0:17")
-                            .child("Cost $0.10"),
-                    )
-                    .child(plan)
-            }
-        };
-        let side = div()
-            .flex()
-            .flex_col()
-            .gap(px(8.))
-            .child(div().font_weight(FontWeight::SEMIBOLD).child("Draft"))
-            .child(
-                div()
-                    .text_color(p.fg2)
-                    .child("In October membership grew 18% · we expect · by 12 December"),
-            );
-        frame(
-            self.theme,
-            self.layout,
-            sidebar(&p, self.state, &self.act, true),
-            page(&p, "Runs / Member update", body),
-            Some(side),
         )
     }
 }
