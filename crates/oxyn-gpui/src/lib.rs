@@ -20,7 +20,7 @@ mod status_indicator;
 mod status_text;
 mod surfaces;
 
-pub use brand::{BrandAssets, brand_icon, brand_mark, brand_path};
+pub use brand::{BrandAssets, brand_icon, brand_mark, brand_path, ink, tone_color};
 pub use chat::{
     AnswerEl, ChatThreadEl, FeedbackEl, MarkdownEl, MessageEl, ReasoningEl, SourceCardsEl,
     StartersEl, TraceEl,
@@ -44,6 +44,7 @@ pub use navigation::{
     UserMenuEl,
 };
 pub use parity::AccentDensityEl;
+pub use parity::AccountMenuEl;
 pub use parity::AgentThreadEl;
 pub use parity::AppIconPickerEl;
 pub use parity::AttachmentChipsEl;
@@ -93,6 +94,7 @@ pub use parity::RunningNowEl;
 pub use parity::ScheduledRunsEl;
 pub use parity::ScreenRailEl;
 pub use parity::ScreenShellEl;
+pub use parity::ScreenStageEl;
 pub use parity::SettingsEl;
 pub use parity::StorageCleanupEl;
 pub use parity::StorageForecastEl;

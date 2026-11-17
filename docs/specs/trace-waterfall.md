@@ -18,7 +18,7 @@ nested under whoever called it, live while the run goes and inspectable after.
 | Header | violet spark, "Trace" 13/600, the task muted (ellipsis); right: "Fold finished" (once a branch ends) and a pill – blue "Live" with a pulsing dot, green "Done" |
 | Stats | six figures in a row – time taken, spend, tokens, then the counts of model calls, tool calls and errors (uppercase 9.5 px muted labels, 13.5/600 values; errors red when > 0; a light shimmer while live) |
 | Head | "SPAN" and the axis ticks (0s / 15s / …) between hairlines |
-| Row | 26 px: chevron (branches; turns when folded), kind glyph (tool calls with a known service show its monochrome mark), name 12/600, muted model / tool, "+n" when folded, a warning icon when failed; the lane holds an 8 px bar (agents slate, model calls violet, tool calls teal, failed red) and "duration · cost"; the slowest finished call has an amber SLOWEST chip |
+| Row | 26 px: chevron (branches; turns when folded), kind glyph (tool calls with a known service show its mark in its official colours), name 12/600, muted model / tool, "+n" when folded, a warning icon when failed; the lane holds an 8 px bar (agents slate, model calls violet, tool calls teal, failed red) and "duration · cost"; the slowest finished call has an amber SLOWEST chip |
 | Marks | faint gridlines per tick; a glowing blue now line while live; a folded branch draws a tick on its bar for each hidden call |
 | Details | 300 px window under the row: name, kind · model/tool, status pill, ✕; DURATION / STARTED / COST (+ TOKENS IN / OUT for model calls); Input and Output (Error, red-tinted, when failed) |
 
@@ -34,7 +34,7 @@ nested under whoever called it, live while the run goes and inspectable after.
 ## 4. Variants
 live · early · mid · folded · done · details · failed · narrow · classic. Controls: style, state (7), width.
 Extras beyond the reference: "Fold finished" in the header; Home / End in the tree; known tool services show their
-monochrome mark.
+mark in its official colours.
 
 ## 5. Keyboard and accessibility
 The tree is a single tab stop (role tree, aria-activedescendant); Up / Down / Home / End move, Right / Left unfold /

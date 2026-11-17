@@ -1,7 +1,8 @@
 //! Brand and model marks (`oxyn_core::brand`) for GPUI. GPUI draws SVGs from the app's
 //! [`AssetSource`], so hosts serve [`BrandAssets`] (directly, or by trying it first in their own
-//! source) and draw a mark with [`brand_icon`]. Marks are monochrome and take the text colour,
-//! per the colour rule; pass `coloured` for the brand colour.
+//! source) and draw a mark with [`brand_mark`] (official colours) or [`brand_icon`]. Marks draw in
+//! their official colours; brands whose guidelines ask for black or white (OpenAI, xAI, Vercel…)
+//! draw in solid black or white to match the theme, never grey.
 
 use std::borrow::Cow;
 
@@ -70,8 +71,10 @@ pub fn brand_path(name: &str) -> Option<SharedString> {
     brand(name).map(|b| SharedString::from(format!("brand/{}.svg", b.id)))
 }
 
-/// A mark `size` px square in `color` (the brand colour instead when `coloured` and the mark has
-/// one that reads on both themes). `None` when the name is unknown: keep the monogram.
+/// A mark `size` px square: the brand colour when `coloured` and the mark has one that reads on
+/// both themes; black-or-white marks take solid black or white, picked from `color`'s lightness
+/// so they follow the theme; `color` itself only when not `coloured`. `None` when the name is
+/// unknown: keep the monogram.
 pub fn brand_icon(name: &str, size: f32, color: Hsla, coloured: bool) -> Option<Svg> {
     let b = brand(name)?;
     let s = svg()
@@ -80,6 +83,23 @@ pub fn brand_icon(name: &str, size: f32, color: Hsla, coloured: bool) -> Option<
         .flex_none();
     Some(match (coloured, b.display_hex()) {
         (true, Some(h)) => s.text_color(rgb(u32::from_str_radix(h, 16).unwrap_or(0))),
+        (true, None) => s.text_color(ink(color)),
         _ => s.text_color(color),
     })
+}
+
+/// The semantic hue of a generic object icon (folder, file, terminal…) for the theme, from
+/// `oxyn_core::icon_tone`.
+pub fn tone_color(tone: oxyn_core::icon_tone::IconTone, dark: bool) -> Hsla {
+    rgb(u32::from_str_radix(tone.hex(dark), 16).unwrap_or(0)).into()
+}
+
+/// Solid black or white for a black-or-white brand mark, from the lightness of the text colour
+/// it sits on (light text means a dark surface).
+pub fn ink(color: Hsla) -> Hsla {
+    if color.l >= 0.5 {
+        gpui::white()
+    } else {
+        gpui::black()
+    }
 }

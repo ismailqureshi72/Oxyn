@@ -36,6 +36,13 @@ closed; 584 are planned.
    `docs/specs/README.md`. The depth shown for one component applies to all of them.
 6. **Colour.** Chrome is monochrome (dark: black and grey; light: white and grey). Semantic colour stays:
    status, risk, diff, merge, git, review, impact, agent identity, monograms. Other hues only in Studio.
+   **Logos are always in their official colours** (decision 2026-11-17): wherever a company, service or
+   model is named, show its mark (`BrandIcon` / `MarkFor`, GPUI `brand_mark`) in colour, never greyed.
+   Brands whose guidelines ask for black or white (OpenAI, xAI, Vercel, Cursor, Zed's mono form) draw in
+   solid black on the light theme and solid white on the dark one (`--ox-brand-ink`). **Generic object icons** (folder, file types,
+   terminal, browser, git, schedule, skills, memory, cloud, usage) take their semantic tone in both themes
+   (`oxyn_core::icon_tone`, `--ox-ic-*` in `icontone.css`; folder `#00A1FF`). Chrome glyphs (search,
+   settings, bell, plus, more) stay neutral. A host can opt out with `data-ox-icon-tone="mono"`.
 7. **Site page** (from plan #24): live preview, controls panel, variants, code, props, keyboard,
    accessibility, responsive notes, install line. Review sheets are for the maintainers only and are
    not the site.

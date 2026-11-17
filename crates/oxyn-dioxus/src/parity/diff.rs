@@ -941,7 +941,7 @@ pub fn CodeSuggestion(
                 span { class: "oxyn-sug-mark", Icon { name: "spark", size: 14.0 } }
                 div { class: "oxyn-sug-ttl",
                     div { class: "oxyn-sug-t", "{instruction}" }
-                    if !model.is_empty() { div { class: "oxyn-sug-m", "{model}" } }
+                    if !model.is_empty() { div { class: "oxyn-sug-m", crate::brand::MarkFor { name: model.clone(), size: 11.0 } "{model}" } }
                 }
             }
             div { class: "oxyn-sug-panel",

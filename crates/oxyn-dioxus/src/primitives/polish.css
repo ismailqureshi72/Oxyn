@@ -27,3 +27,4 @@
 .oxk-appmark:has(.oxyn-brand){color:var(--oxyn-color-fg-default)}
 .oxc-starters .stk .oxyn-brand{vertical-align:-1px}
 .tl-l{display:inline-flex;align-items:center;gap:7px}
+.oxyn-mk{display:inline-flex;align-items:center;flex:none;margin-right:4px;vertical-align:-2px}

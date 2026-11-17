@@ -17,10 +17,10 @@ const { demo } = Astro.props as { demo: Demo };
 <html lang="en" data-theme="light" data-oxyn-theme="light">
   <head><Head title={`${demo.name} · full screen · Oxyn`} description={demo.summary} /><meta name="robots" content="noindex" /></head>
   <body class="site fullscreen">
-    <main id="main" class="fs-main">
+    <main id="main" class="fs-main" data-screen-full>
       <h1 class="sr-only">{demo.name}</h1>
       <OxynDemo slug={demo.slug} html={demo.html} />
     </main>
-    <a class="fs-back x-pill" href={demoUrl(demo)}>← {demo.name}</a>
+    <a class="fs-back x-pill" href={demoUrl(demo)} aria-label={`Back to ${demo.name}`}>← <span class="fs-back-n">{demo.name}</span></a>
   </body>
 </html>
