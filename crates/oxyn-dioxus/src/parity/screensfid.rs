@@ -25,7 +25,10 @@ use oxyn_core::parity::screensfid::{
     split_pinned, stage_key, stage_label, stage_totals, synced_words, task_key, threads,
     toggle_pin, total_size, untitled, usd, view_count,
 };
-use oxyn_core::parity::screensfid::{STAGE_H, STAGE_STATES, STAGE_W};
+use oxyn_core::parity::screensfid::{
+    EnvMode, PERSON_EMAIL, PERSON_PLAN, SIDE_W, STAGE_H, STAGE_STATES, STAGE_W, WORK_W,
+    account_menu, context_card, thousands, usage,
+};
 
 use super::efflistfid::{check_glyph, chevron};
 use crate::brand::BrandIcon;
@@ -152,6 +155,34 @@ fn glyph(name: &str, tone: &str) -> Element {
         "fit" => &["M4 9V4h5", "M15 4h5v5", "M20 15v5h-5", "M9 20H4v-5"],
         "next" => &["m9 6 6 6-6 6"],
         "copy" => &["M8 8h11v11H8z", "M5 16V5h11"],
+        "sun" => &[
+            "M12 8a4 4 0 1 0 0 8 4 4 0 1 0 0-8",
+            "M12 3v2",
+            "M12 19v2",
+            "M3 12h2",
+            "M19 12h2",
+            "m5.6 5.6 1.4 1.4",
+            "m17 17 1.4 1.4",
+            "m5.6 18.4 1.4-1.4",
+            "m17 7 1.4-1.4",
+        ],
+        "kbd" => &[
+            "M3 7h18v10H3z",
+            "M7 11h.01",
+            "M11 11h.01",
+            "M15 11h.01",
+            "M8 14h8",
+        ],
+        "download" => &["M12 4v11", "m7 10 5 5 5-5", "M5 20h14"],
+        "help" => &[
+            "M12 3a9 9 0 1 0 0 18 9 9 0 1 0 0-18",
+            "M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5v.4",
+            "M12 17h.01",
+        ],
+        "logout" => &["M14 4h5v16h-5", "M10 8l-4 4 4 4", "M6 12h10"],
+        "laptop" => &["M5 6h14v9H5z", "M3 18h18"],
+        "cloud" => &["M7 18h10a4 4 0 0 0 .5-8A6 6 0 0 0 6 9.5 4.3 4.3 0 0 0 7 18z"],
+        "updown" => &["m8 9 4-4 4 4", "m8 15 4 4 4-4"],
         _ => &["M12 12h.01"],
     };
     rsx! {
@@ -373,7 +404,7 @@ fn sidebar(
     mut peek: Signal<bool>,
     mut ws_open: Signal<bool>,
     mut acct_open: Signal<bool>,
-    mut notice: Signal<bool>,
+    foot: Foot,
     mut setup_open: Signal<bool>,
     mut steps: Signal<Vec<bool>>,
     mut open_proj: Signal<String>,
@@ -417,6 +448,20 @@ fn sidebar(
     let ws = ws_open();
     let ac = acct_open();
     let peek_s = if peek() { "true" } else { "false" };
+    let Foot {
+        mut env,
+        mut gone,
+        mut sub,
+        mut bell,
+    } = foot;
+    let env_k = env();
+    let gone_v = gone();
+    let card = context_card(&gone_v);
+    let sub_k = sub();
+    let bell_o = bell();
+    let use_v = usage();
+    let use_pct = use_v.pct();
+    let use_w = format!("width:{use_pct}%");
     let row = move |t: Thread| {
         let id = t.id;
         let on = id == cur;
@@ -471,6 +516,15 @@ fn sidebar(
                         onclick: move |_| { on_nav.call(k.to_string()); peek.set(false); },
                         {ico(i)} span { class: "oxscn-lbl", "{l}" }
                         if n > 0 { span { class: "oxscn-badge", "{n}" } }
+                    }
+                }
+            }
+            if side != Side::Runs {
+                div { class: "oxscn-env", role: "radiogroup", "aria-label": "Where agents work",
+                    for m in EnvMode::ALL {
+                        button { key: "{m.key()}", r#type: "button", role: "radio", class: "oxscn-env-o", title: "{m.hint()}",
+                            "aria-checked": "{env_k == m}", onclick: move |_| env.set(m),
+                            {ico(if m == EnvMode::Cloud { "cloud" } else { "laptop" })} span { class: "oxscn-lbl", "{m.label()}" } }
                     }
                 }
             }
@@ -533,40 +587,109 @@ fn sidebar(
                 }
             }
             div { class: "oxscn-foot",
-                if notice() && !is_rail {
-                    div { class: "oxscn-notice",
-                        p { class: "oxscn-notice-t", "New: shared folders" }
-                        p { class: "oxscn-notice-l", "Give a folder to the team; agents read it too." }
-                        button { r#type: "button", class: "oxscn-link", "aria-label": "Dismiss the notice", onclick: move |_| notice.set(false), "Dismiss" }
-                    }
-                }
                 if !is_rail {
-                    div { class: "oxscn-setup",
-                        button { r#type: "button", class: "oxscn-setup-b", "aria-expanded": "{setup_open}", onclick: move |_| setup_open.toggle(),
-                            span { "Set up Kestrel" } span { class: "oxscn-row-a", "{pct_s}" } {chevron(setup_open())} }
-                        div { class: "oxscn-prog", role: "progressbar", "aria-valuenow": "{pct}", "aria-valuemin": "0", "aria-valuemax": "100", "aria-label": "Setup", span { style: "{bar}" } }
-                        if setup_open() {
-                            ul { class: "oxscn-steps",
-                                for (i, (l, _)) in setup_steps().into_iter().enumerate() {
-                                    li { key: "{i}",
-                                        label { class: "oxscn-step",
-                                            input { r#type: "checkbox", checked: st.get(i).copied().unwrap_or(false), onchange: move |e| { steps.write()[i] = e.checked(); } }
-                                            span { "{l}" }
+                    if let Some((ck, ct, cl)) = card {
+                        div { key: "{ck}", class: "oxscn-card", "data-card": "{ck}", role: "status",
+                            button { r#type: "button", class: "oxscn-card-x", "aria-label": "Dismiss {ct}", onclick: move |_| gone.write().push(ck), {ico("close")} }
+                            if ck == "setup" {
+                                button { r#type: "button", class: "oxscn-setup-b", "aria-expanded": "{setup_open}", onclick: move |_| setup_open.toggle(),
+                                    span { class: "oxscn-card-t", "{ct}" } span { class: "oxscn-row-a", "{pct_s}" } {chevron(setup_open())} }
+                                div { class: "oxscn-prog", role: "progressbar", "aria-valuenow": "{pct}", "aria-valuemin": "0", "aria-valuemax": "100", "aria-label": "Setup", span { style: "{bar}" } }
+                                if setup_open() {
+                                    ul { class: "oxscn-steps",
+                                        for (i, (l, _)) in setup_steps().into_iter().enumerate() {
+                                            li { key: "{i}",
+                                                label { class: "oxscn-step",
+                                                    input { r#type: "checkbox", checked: st.get(i).copied().unwrap_or(false), onchange: move |e| { steps.write()[i] = e.checked(); } }
+                                                    span { "{l}" }
+                                                }
+                                            }
                                         }
                                     }
                                 }
+                            } else {
+                                p { class: "oxscn-card-t",
+                                    if ck == "running" { span { class: "oxscn-live", "aria-hidden": "true" } }
+                                    span { class: "oxscn-row-t", "{ct}" }
+                                }
+                                p { class: "oxscn-card-l", "{cl}" }
+                                button { r#type: "button", class: "oxscn-card-a", onclick: move |_| on_nav.call(if ck == "running" { "runs".to_string() } else { "changelog".to_string() }),
+                                    if ck == "running" { "Open runs" } else { "Full changelog" } {ico("next")} }
                             }
                         }
                     }
                 }
                 div { class: "oxscn-acct",
-                    button { r#type: "button", class: "oxscn-acct-b", "aria-haspopup": "menu", "aria-expanded": "{ac}", "aria-label": "Account, {PERSON}", onclick: move |_| acct_open.toggle(),
-                        span { class: "oxscn-av", "{PERSON_INI}" } span { class: "oxscn-lbl", "{PERSON}" } }
+                    button { r#type: "button", class: "oxscn-acct-b", "aria-haspopup": "menu", "aria-expanded": "{ac}", "aria-label": "Account, {PERSON}, {PERSON_PLAN}",
+                        onclick: move |_| { acct_open.toggle(); sub.set(""); bell.set(false); },
+                        span { class: "oxscn-av oxscn-av-id", "{PERSON_INI}" }
+                        span { class: "oxscn-acct-txt",
+                            span { class: "oxscn-acct-n", "{PERSON}" }
+                            span { class: "oxscn-acct-p", "{PERSON_PLAN}" }
+                        }
+                        span { class: "oxscn-acct-ud", {ico("updown")} }
+                    }
+                    button { r#type: "button", class: "oxscn-ib oxscn-bell", "aria-label": "Notifications, 3 new", "aria-expanded": "{bell_o}", "aria-haspopup": "dialog",
+                        onclick: move |_| { bell.toggle(); acct_open.set(false); },
+                        {ico("bell")} span { class: "oxscn-bell-n", "aria-hidden": "true", "3" } }
+                    if bell_o {
+                        div { class: "oxscn-menu oxscn-bell-pop", role: "dialog", "aria-label": "Notifications",
+                            onkeydown: move |e: KeyboardEvent| if e.key() == Key::Escape { bell.set(false); },
+                            p { class: "oxscn-pop-h", "Notifications" }
+                            for (i, (t, w)) in [("Draft agent needs your approval", "2m"), ("Weekly digest is ready", "1h"), ("Shared folder Autumn launch", "3h")].iter().enumerate() {
+                                button { key: "{i}", r#type: "button", class: "oxscn-mi oxscn-note", onclick: move |_| bell.set(false),
+                                    span { class: "oxscn-dot" } span { class: "oxscn-mi-l", "{t}" } span { class: "oxscn-mi-k", "{w}" } }
+                            }
+                        }
+                    }
                     if ac {
                         div { class: "oxscn-menu oxscn-acct-menu", role: "menu", "aria-label": "Account",
-                            onkeydown: move |e: KeyboardEvent| if e.key() == Key::Escape { acct_open.set(false); },
-                            for (i, l) in ["Profile", "Settings", "Keyboard shortcuts", "Sign out"].iter().enumerate() {
-                                button { key: "{i}", r#type: "button", class: "oxscn-mi", role: "menuitem", onclick: move |_| acct_open.set(false), span { class: "oxscn-mi-l", "{l}" } }
+                            onkeydown: move |e: KeyboardEvent| match e.key() { Key::Escape => { if sub.peek().is_empty() { acct_open.set(false); } else { sub.set(""); } } Key::ArrowLeft => sub.set(""), _ => {} },
+                            div { class: "oxscn-acct-hd",
+                                span { class: "oxscn-av oxscn-av-id oxscn-av-l", "{PERSON_INI}" }
+                                span { class: "oxscn-acct-txt",
+                                    span { class: "oxscn-acct-n", "{PERSON}" }
+                                    span { class: "oxscn-acct-p", title: "{PERSON_EMAIL}", "{PERSON_EMAIL}" }
+                                }
+                                span { class: "oxscn-plan", "{use_v.plan}" }
+                            }
+                            for (i, (k, l, g, h)) in account_menu().iter().copied().enumerate() {
+                                if k.is_empty() {
+                                    div { key: "{i}", class: "oxscn-msep", role: "separator" }
+                                } else {
+                                    button { key: "{i}", r#type: "button", class: "oxscn-mi", role: "menuitem", "data-k": "{k}",
+                                        "aria-haspopup": if h == "›" { "menu" } else { "false" }, "aria-expanded": if h == "›" { if sub_k == k { "true" } else { "false" } } else { "" },
+                                        onmouseenter: move |_| sub.set(if h == "›" { k } else { "" }),
+                                        onkeydown: move |e: KeyboardEvent| if e.key() == Key::ArrowRight && h == "›" { sub.set(k); },
+                                        onclick: move |_| if h == "›" { sub.set(k); } else { acct_open.set(false); sub.set(""); on_nav.call(k.to_string()); },
+                                        {ico(g)} span { class: "oxscn-mi-l", "{l}" }
+                                        if h == "›" { span { class: "oxscn-mi-k oxscn-mi-sub", {ico("next")} } } else if !h.is_empty() { span { class: "oxscn-mi-k", "{h}" } }
+                                    }
+                                }
+                            }
+                            if sub_k == "usage" {
+                                div { class: "oxscn-menu oxscn-fly", role: "menu", "aria-label": "Usage", "data-k": "usage",
+                                    div { class: "oxscn-fly-hd",
+                                        span { class: "oxscn-acct-n", "{use_v.plan} plan" }
+                                        span { class: "oxscn-acct-p", "{use_v.renews}" }
+                                    }
+                                    div { class: "oxscn-meter", "data-near": "{use_v.near()}",
+                                        div { class: "oxscn-meter-l", span { "Credits" } span { class: "oxscn-row-a", "{thousands(use_v.used)} of {thousands(use_v.total)} · {use_pct}%" } }
+                                        div { class: "oxscn-prog", role: "progressbar", "aria-valuenow": "{use_pct}", "aria-valuemin": "0", "aria-valuemax": "100", "aria-label": "Credits used", span { style: "{use_w}" } }
+                                    }
+                                    for (i, (l, u, m)) in use_v.quotas.iter().copied().enumerate() {
+                                        div { key: "{i}", class: "oxscn-quota", span { class: "oxscn-row-t", "{l}" } span { class: "oxscn-row-a", "{u} / {m}" } }
+                                    }
+                                    div { class: "oxscn-msep", role: "separator" }
+                                    button { r#type: "button", class: "oxscn-mi", role: "menuitem", onclick: move |_| { acct_open.set(false); sub.set(""); on_nav.call("usage".to_string()); }, {ico("chart")} span { class: "oxscn-mi-l", "View usage" } }
+                                }
+                            }
+                            if sub_k == "feedback" {
+                                div { class: "oxscn-menu oxscn-fly oxscn-fly-b", role: "menu", "aria-label": "Feedback & help", "data-k": "feedback",
+                                    for (i, (l, g)) in [("Send feedback", "chat"), ("Help centre", "help"), ("Contact support", "inbox")].iter().copied().enumerate() {
+                                        button { key: "{i}", r#type: "button", class: "oxscn-mi", role: "menuitem", onclick: move |_| { acct_open.set(false); sub.set(""); }, {ico(g)} span { class: "oxscn-mi-l", "{l}" } }
+                                    }
+                                }
                             }
                         }
                     }
@@ -574,6 +697,16 @@ fn sidebar(
             }
         }
     }
+}
+
+/// The sidebar bottom's own state: Local / Cloud, dismissed context cards, the open account
+/// submenu (`usage`, `feedback` or none) and the notifications popover.
+#[derive(Clone, Copy)]
+pub(crate) struct Foot {
+    env: Signal<EnvMode>,
+    gone: Signal<Vec<&'static str>>,
+    sub: Signal<&'static str>,
+    bell: Signal<bool>,
 }
 
 /// The resize handle between two regions (drag or arrow keys).
@@ -587,11 +720,14 @@ fn separator(
     mut w: Signal<u32>,
     mut drag: Signal<Option<(&'static str, f64, u32)>>,
     sign: i32,
+    def: u32,
 ) -> Element {
     rsx! {
         div { class: "oxscn-sep", "data-for": "{which}", role: "separator", tabindex: "0", "aria-orientation": "vertical", "aria-label": "{label}",
             "aria-valuenow": "{val}", "aria-valuemin": "{min}", "aria-valuemax": "{max}",
+            title: "Drag to resize, double-click to reset",
             onpointerdown: move |e: PointerEvent| { e.prevent_default(); drag.set(Some((which, e.client_coordinates().x, w()))); },
+            ondoubleclick: move |_| w.set(def),
             onkeydown: move |e: KeyboardEvent| {
                 let step: i32 = match e.key() { Key::ArrowLeft => -16, Key::ArrowRight => 16, _ => 0 } * sign;
                 if step != 0 { e.prevent_default(); let v = (w() as i32 + step).clamp(min as i32, max as i32); w.set(v as u32); }
@@ -659,7 +795,12 @@ pub fn AppFrame(
     use_context_provider(|| SidePeek(peek));
     let ws_open = use_signal(|| false);
     let acct_open = use_signal(|| false);
-    let notice = use_signal(|| true);
+    let foot = Foot {
+        env: use_signal(|| EnvMode::Local),
+        gone: use_signal(Vec::new),
+        sub: use_signal(|| ""),
+        bell: use_signal(|| false),
+    };
     let setup_open = use_signal(|| false);
     let steps = use_signal(|| {
         setup_steps()
@@ -668,8 +809,8 @@ pub fn AppFrame(
             .collect::<Vec<_>>()
     });
     let open_proj = use_signal(|| "autumn".to_string());
-    let sw = use_signal(|| 248u32);
-    let ww = use_signal(|| 340u32);
+    let sw = use_signal(|| SIDE_W.0);
+    let ww = use_signal(|| WORK_W.0);
     let mut drag = use_signal(|| None::<(&'static str, f64, u32)>);
     let mut wopen = use_signal(move || !work_closed);
     let mut wpeek = use_signal(|| false);
@@ -697,8 +838,8 @@ pub fn AppFrame(
             onpointermove: move |e: PointerEvent| {
                 if let Some((which, x0, w0)) = drag() {
                     let dx = (e.client_coordinates().x - x0) / stage_scale();
-                    if which == "side" { let v = (w0 as f64 + dx).clamp(200.0, 340.0); let mut s = sw; s.set(v as u32); }
-                    else { let v = (w0 as f64 - dx).clamp(260.0, 480.0); let mut s = ww; s.set(v as u32); }
+                    if which == "side" { let v = (w0 as f64 + dx).clamp(f64::from(SIDE_W.1), f64::from(SIDE_W.2)); let mut s = sw; s.set(v as u32); }
+                    else { let v = (w0 as f64 - dx).clamp(f64::from(WORK_W.1), f64::from(WORK_W.2)); let mut s = ww; s.set(v as u32); }
                 }
             },
             onpointerup: move |_| if drag.peek().is_some() { drag.set(None) },
@@ -706,9 +847,9 @@ pub fn AppFrame(
             if let Some(se) = side_el {
                 nav { class: "oxscn-side oxsst-side", "aria-label": "Settings", "data-rail": "false", "data-peek": "{peek}", {se} }
             } else {
-                {sidebar(side_k, st, threads, active, query, rail, peek, ws_open, acct_open, notice, setup_open, steps, open_proj, on_nav, nav_on)}
+                {sidebar(side_k, st, threads, active, query, rail, peek, ws_open, acct_open, foot, setup_open, steps, open_proj, on_nav, nav_on)}
             }
-            if !is_rail { {separator("Resize sidebar", "side", sw(), 200, 340, sw, drag, 1)} }
+            if !is_rail { {separator("Resize sidebar", "side", sw(), SIDE_W.1, SIDE_W.2, sw, drag, 1, SIDE_W.0)} }
             div { class: "oxscn-page",
                 main { class: "oxscn-main",
                     header { class: "oxscn-top",
@@ -724,7 +865,7 @@ pub fn AppFrame(
                     }
                     div { class: "oxscn-body", {children} }
                 }
-                if wo { {separator("Resize the work area", "work", ww(), 260, 480, ww, drag, -1)} }
+                if wo { {separator("Resize the work area", "work", ww(), WORK_W.1, WORK_W.2, ww, drag, -1, WORK_W.0)} }
                 if has_work {
                     aside { class: "oxscn-work", "aria-label": "{work_label}", "data-open": "{wo}", "data-peek": "{wp}",
                         button { r#type: "button", class: "oxscn-ib oxscn-work-x", "aria-label": "Close {work_label}", onclick: move |_| { wpeek.set(false); wopen.set(false); }, {ico("close")} }
@@ -2414,7 +2555,7 @@ fn FolderFiles(
                                         tr { key: "{id}", "data-on": "{on}",
                                             td { class: "oxsfd-ck", input { r#type: "checkbox", "aria-label": "Select {f.name}", checked: on,
                                                 onchange: move |_| { let mut p = picked.write(); if let Some(i) = p.iter().position(|x| *x == id) { p.remove(i); } else { p.push(id); } } } }
-                                            td { class: "oxsfd-name", {glyph(if f.kind == "Notes" { "note" } else { "file" }, kind_icon(f.kind))} span { class: "oxscn-row-t", "{f.name}" } }
+                                            td { class: "oxsfd-name", {glyph(if f.kind == "Notes" { "note" } else { "file" }, oxyn_core::icon_tone::IconTone::for_file(&f.name).key())} span { class: "oxscn-row-t", "{f.name}" } }
                                             td { class: "oxscn-row-a", "{f.kind}" }
                                             td { class: "oxsfd-own", span { class: "oxscn-av oxsfo-face", title: "{member_name(f.owner)}", "{f.owner}" } }
                                             td { class: "oxscn-row-a", "{ed}" }
@@ -2430,15 +2571,6 @@ fn FolderFiles(
             }
             p { class: "oxscn-sr", role: "status", "{said}" }
         }
-    }
-}
-
-fn kind_icon(kind: &str) -> &'static str {
-    match kind {
-        "Sheet" => "sheet",
-        "Image" => "image",
-        "Notes" => "note",
-        _ => "file",
     }
 }
 

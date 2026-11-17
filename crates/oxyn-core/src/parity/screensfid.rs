@@ -102,6 +102,161 @@ pub const PERSON: &str = "Rowan Vale";
 /// Their initials.
 pub const PERSON_INI: &str = "RV";
 
+/// Their (fictional) sign-in address, shown under the name in the account menu.
+pub const PERSON_EMAIL: &str = "rowan@kestrel.example";
+/// Their plan, shown under the name in the account row.
+pub const PERSON_PLAN: &str = "Pro plan";
+
+/// Sidebar width at 1440 px: default, min and max (drag the edge; double-click resets).
+pub const SIDE_W: (u32, u32, u32) = (272, 220, 380);
+/// Work area width at 1440 px: default, min and max.
+pub const WORK_W: (u32, u32, u32) = (360, 280, 560);
+/// Page header height.
+pub const TOP_H: u32 = 48;
+/// The gap around the inset page.
+pub const INSET: u32 = 8;
+
+/// Where an agent works: on this machine or in a cloud sandbox (the sidebar's Local / Cloud control).
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum EnvMode {
+    /// On this machine.
+    Local,
+    /// In a cloud sandbox.
+    Cloud,
+}
+
+impl EnvMode {
+    /// Both, in control order.
+    pub const ALL: [EnvMode; 2] = [EnvMode::Local, EnvMode::Cloud];
+    /// Stable key.
+    pub fn key(self) -> &'static str {
+        match self {
+            Self::Local => "local",
+            Self::Cloud => "cloud",
+        }
+    }
+    /// Label.
+    pub fn label(self) -> &'static str {
+        match self {
+            Self::Local => "Local",
+            Self::Cloud => "Cloud",
+        }
+    }
+    /// What the mode means, for the control's tooltip.
+    pub fn hint(self) -> &'static str {
+        match self {
+            Self::Local => "Agents work in folders on this machine",
+            Self::Cloud => "Agents work in a cloud sandbox; close the lid and they keep going",
+        }
+    }
+    /// From a key; anything else is Local.
+    pub fn from_key(k: &str) -> Self {
+        if k == "cloud" {
+            Self::Cloud
+        } else {
+            Self::Local
+        }
+    }
+}
+
+/// One entry of the account menu: key, label, glyph, trailing hint (a shortcut, a current value, or
+/// "›" for a submenu). An empty key is a divider.
+pub type AcctItem = (&'static str, &'static str, &'static str, &'static str);
+
+/// The account menu, top to bottom (opens upward from the account row).
+pub const ACCOUNT_MENU: [AcctItem; 15] = [
+    ("settings", "Settings", "gear", "⌘,"),
+    ("usage", "Usage", "coin", "›"),
+    ("upgrade", "Upgrade plan", "bolt", ""),
+    ("", "", "", ""),
+    ("language", "Language", "globe", "English"),
+    ("appearance", "Appearance", "sun", "System"),
+    ("shortcuts", "Keyboard shortcuts", "kbd", "?"),
+    ("", "", "", ""),
+    ("integrations", "Integrations", "apps", ""),
+    ("download", "Download apps", "download", ""),
+    ("changelog", "Changelog", "spark", ""),
+    ("feedback", "Feedback & help", "help", "›"),
+    ("", "", "", ""),
+    ("logout", "Log out", "logout", ""),
+    ("", "", "", ""),
+];
+
+/// The account menu entries without the trailing divider.
+pub fn account_menu() -> &'static [AcctItem] {
+    &ACCOUNT_MENU[..ACCOUNT_MENU.len() - 1]
+}
+
+/// The Usage flyout: plan, renewal, credits used of the month's total, and per-feature quotas.
+#[derive(Clone, Debug, PartialEq)]
+pub struct Usage {
+    /// Plan name.
+    pub plan: &'static str,
+    /// When it renews.
+    pub renews: &'static str,
+    /// Credits used this period.
+    pub used: u32,
+    /// Credits in the period.
+    pub total: u32,
+    /// Per-feature quotas: label, used, limit.
+    pub quotas: Vec<(&'static str, u32, u32)>,
+}
+
+impl Usage {
+    /// Share of credits used, 0–100 (rounded down).
+    pub fn pct(&self) -> u32 {
+        (self.used.min(self.total) * 100)
+            .checked_div(self.total)
+            .unwrap_or(0)
+    }
+    /// Credits left.
+    pub fn left(&self) -> u32 {
+        self.total.saturating_sub(self.used)
+    }
+    /// Near the limit (80 % or more): the meter turns amber and the context card shows it.
+    pub fn near(&self) -> bool {
+        self.pct() >= 80
+    }
+}
+
+/// The sample usage.
+pub fn usage() -> Usage {
+    Usage {
+        plan: "Pro",
+        renews: "Renews 1 Dec",
+        used: 7_800,
+        total: 10_000,
+        quotas: vec![
+            ("Agent runs", 142, 300),
+            ("Images", 4, 10),
+            ("Cloud hours", 11, 40),
+        ],
+    }
+}
+
+/// The cards the sidebar's context slot can show, by priority (one at a time; dismissing one shows
+/// the next): key, title, line.
+pub const CONTEXT_CARDS: [(&str, &str, &str); 3] = [
+    (
+        "running",
+        "3 running · 1 needs you",
+        "Agents keep going while you are away.",
+    ),
+    (
+        "whatsnew",
+        "New: shared folders",
+        "Give a folder to the team; agents read it too.",
+    ),
+    ("setup", "Set up Kestrel", ""),
+];
+
+/// The first card not dismissed, if any.
+pub fn context_card(dismissed: &[&str]) -> Option<(&'static str, &'static str, &'static str)> {
+    CONTEXT_CARDS
+        .into_iter()
+        .find(|(k, _, _)| !dismissed.contains(k))
+}
+
 /// A project in the sidebar with its chats.
 #[derive(Clone, Debug, PartialEq)]
 pub struct Project {
@@ -2703,6 +2858,46 @@ pub fn set_needs_name(key: &str) -> bool {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn sidebar_geometry_and_account() {
+        assert_eq!(SIDE_W, (272, 220, 380));
+        assert!(SIDE_W.1 < SIDE_W.0 && SIDE_W.0 < SIDE_W.2);
+        assert!(WORK_W.1 < WORK_W.0 && WORK_W.0 < WORK_W.2);
+        assert_eq!((TOP_H, INSET), (48, 8));
+        assert_eq!(
+            EnvMode::ALL.map(|m| EnvMode::from_key(m.key())),
+            EnvMode::ALL
+        );
+        let keys: Vec<_> = account_menu()
+            .iter()
+            .map(|i| i.0)
+            .filter(|k| !k.is_empty())
+            .collect();
+        assert_eq!(keys.first(), Some(&"settings"));
+        assert_eq!(keys.last(), Some(&"logout"));
+        for k in [
+            "usage",
+            "upgrade",
+            "language",
+            "appearance",
+            "shortcuts",
+            "integrations",
+            "download",
+            "changelog",
+            "feedback",
+        ] {
+            assert!(keys.contains(&k), "{k}");
+        }
+        let u = usage();
+        assert_eq!((u.pct(), u.left(), u.near()), (78, 2_200, false));
+        assert_eq!(thousands(7_800), "7,800");
+        assert_eq!(thousands(1_234_567), "1,234,567");
+        assert_eq!(thousands(12), "12");
+        assert_eq!(context_card(&[]).map(|c| c.0), Some("running"));
+        assert_eq!(context_card(&["running"]).map(|c| c.0), Some("whatsnew"));
+        assert_eq!(context_card(&["running", "whatsnew", "setup"]), None);
+    }
+
     #[test]
     fn stage_is_16_by_10_and_fits() {
         assert_eq!(STAGE_W * 10, STAGE_H * 16);

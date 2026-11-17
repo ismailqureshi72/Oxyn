@@ -27,7 +27,7 @@
 .oxsag-li{display:flex;align-items:center;gap:8px;width:100%;min-height:32px;padding:0 6px;border:0;border-radius:8px;background:transparent;cursor:pointer;text-align:left;color:var(--oxth-fg)}
 .oxsag-li:hover{background:var(--oxth-hov)}
 .oxsag-ctx{display:flex;align-items:center;gap:8px;min-height:28px;padding:0 6px;color:var(--oxth-fg2)}
-.oxsag-ctx .oxscn-ico{color:var(--oxth-mute)}
+.oxsag-ctx .oxscn-ico{flex:none}
 
 /* Orchestration */
 .oxsor{display:flex;flex-direction:column;height:100%;min-height:0;min-width:0}
