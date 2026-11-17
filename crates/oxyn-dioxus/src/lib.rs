@@ -95,6 +95,7 @@ pub use parity::RootCauseTree;
 pub use parity::RunningNow;
 pub use parity::ScheduledRuns;
 pub use parity::ScreenComposer;
+pub use parity::SettingsScreen;
 pub use parity::StorageCleanup;
 pub use parity::StorageForecast;
 pub use parity::StorageMeter;

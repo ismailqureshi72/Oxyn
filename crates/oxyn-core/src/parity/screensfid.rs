@@ -1,6 +1,6 @@
 //! Screens 1 (whole app frames): the shared app frame (Inset or Flat, plus a three-pane frame with
 //! an icon rail), the AI Chat screens built on it – Start, Overview, Agents, Double sidebar,
-//! Progress and Run – then Folders (Overview, Detail), Integrations, Kanban and CRM. Each screen shows
+//! Progress and Run – then Folders (Overview, Detail), Integrations, Kanban, CRM, the Workflow builder and the Settings shell. Each screen shows
 //! Sample, Loading or Empty data. Behaviour only: every person, workspace, project and line of copy here
 //! is fictional and our own.
 
@@ -2086,6 +2086,596 @@ pub fn wf_fit(nodes: &[WfNode], vw: i32, vh: i32) -> u32 {
         .unwrap_or(&WF_ZOOMS[0])
 }
 
+// ─────────────────────────────────────────────────────────────── Settings shell ──
+
+/// The control a settings row carries.
+#[derive(Clone, Debug, PartialEq)]
+pub enum SetCtl {
+    /// On / off.
+    Switch(bool),
+    /// One of a fixed list (index of the chosen one).
+    Choice(&'static [&'static str], usize),
+    /// Free text (with a character cap; 0 for none).
+    Text(String, usize),
+    /// A button that does something now ("Export").
+    Action(&'static str),
+    /// A destructive button that asks first ("Delete workspace").
+    Danger(&'static str),
+}
+
+/// One row of a settings page.
+#[derive(Clone, Debug, PartialEq)]
+pub struct SetRow {
+    /// Stable key, unique across pages.
+    pub key: &'static str,
+    /// Label.
+    pub label: &'static str,
+    /// One line under the label.
+    pub hint: &'static str,
+    /// Its control.
+    pub ctl: SetCtl,
+    /// Key of a switch on the same page this row depends on ("" for none).
+    pub needs: &'static str,
+}
+
+/// A settings page in the shell.
+#[derive(Clone, Debug, PartialEq)]
+pub struct SetPage {
+    /// Stable key.
+    pub key: &'static str,
+    /// Nav label and heading.
+    pub label: &'static str,
+    /// `personal` or `workspace`.
+    pub group: &'static str,
+    /// Icon name.
+    pub icon: &'static str,
+    /// One line under the heading.
+    pub lead: &'static str,
+    /// Sections: heading and rows.
+    pub sections: Vec<(&'static str, Vec<SetRow>)>,
+}
+
+/// The two nav groups: key, label.
+pub const SET_GROUPS: [(&str, &str); 2] = [("personal", "Personal"), ("workspace", "Workspace")];
+
+fn sr(key: &'static str, label: &'static str, hint: &'static str, ctl: SetCtl) -> SetRow {
+    SetRow {
+        key,
+        label,
+        hint,
+        ctl,
+        needs: "",
+    }
+}
+
+fn sw(on: bool) -> SetCtl {
+    SetCtl::Switch(on)
+}
+
+fn tx(v: &str, cap: usize) -> SetCtl {
+    SetCtl::Text(v.to_string(), cap)
+}
+
+const DELIVERY: &[&str] = &["Email and phone", "Phone", "Email", "Inbox only"];
+
+/// Every settings page. Sample has the fictional workspace filled in; a new one (`sample` false)
+/// starts with blank text and the defaults.
+pub fn settings(sample: bool) -> Vec<SetPage> {
+    let v = |s: &str| if sample { s.to_string() } else { String::new() };
+    let on = |b: bool| sample && b;
+    let mut digest_at = sr(
+        "digest-at",
+        "Send at",
+        "Your local time",
+        SetCtl::Choice(&["07:00", "08:00", "09:00", "18:00"], 1),
+    );
+    digest_at.needs = "digest";
+    let mut domain = sr(
+        "join-domain",
+        "Domain",
+        "People with this address join as members",
+        tx(&v("kestrel.example"), 0),
+    );
+    domain.needs = "join";
+    vec![
+        SetPage {
+            key: "profile",
+            label: "Account",
+            group: "personal",
+            icon: "home",
+            lead: "How you appear to the people and agents you work with.",
+            sections: vec![
+                (
+                    "About you",
+                    vec![
+                        sr(
+                            "name",
+                            "Name",
+                            "Shown on your messages and runs",
+                            tx(&v(PERSON), 60),
+                        ),
+                        sr(
+                            "role",
+                            "Role",
+                            "Helps the assistant pitch its answers",
+                            SetCtl::Choice(
+                                &[
+                                    "Design",
+                                    "Engineering",
+                                    "Operations",
+                                    "Sales",
+                                    "Something else",
+                                ],
+                                if sample { 0 } else { 4 },
+                            ),
+                        ),
+                        sr(
+                            "context",
+                            "Context for the assistant",
+                            "A few lines it reads before every chat",
+                            tx(
+                                &v("I run the studio's member programme; keep replies short."),
+                                500,
+                            ),
+                        ),
+                    ],
+                ),
+                (
+                    "Time",
+                    vec![
+                        sr(
+                            "week",
+                            "Week starts on",
+                            "Used by schedules and reports",
+                            SetCtl::Choice(&["Monday", "Sunday"], 0),
+                        ),
+                        sr("clock", "24-hour clock", "", sw(true)),
+                    ],
+                ),
+            ],
+        },
+        SetPage {
+            key: "notifications",
+            label: "Alerts",
+            group: "personal",
+            icon: "bell",
+            lead: "What reaches you, where, and when it waits until morning.",
+            sections: vec![
+                (
+                    "Digest",
+                    vec![
+                        sr(
+                            "digest",
+                            "Daily digest",
+                            "One summary of what agents did",
+                            sw(on(true)),
+                        ),
+                        digest_at,
+                    ],
+                ),
+                (
+                    "Tell me about",
+                    vec![
+                        sr(
+                            "n-approvals",
+                            "Approvals waiting",
+                            "An agent needs a yes before it acts",
+                            SetCtl::Choice(DELIVERY, 0),
+                        ),
+                        sr("n-done", "Finished runs", "", SetCtl::Choice(DELIVERY, 3)),
+                        sr("n-failed", "Failed runs", "", SetCtl::Choice(DELIVERY, 2)),
+                        sr(
+                            "n-mentions",
+                            "Mentions",
+                            "Someone names you in a chat",
+                            SetCtl::Choice(DELIVERY, 1),
+                        ),
+                    ],
+                ),
+                (
+                    "Quiet hours",
+                    vec![sr(
+                        "quiet",
+                        "Hold pushes at night",
+                        "22:00 to 07:00; email still arrives",
+                        sw(on(true)),
+                    )],
+                ),
+            ],
+        },
+        SetPage {
+            key: "preferences",
+            label: "Chat defaults",
+            group: "personal",
+            icon: "gear",
+            lead: "Defaults for new chats and how the app looks.",
+            sections: vec![
+                (
+                    "Chats",
+                    vec![
+                        sr(
+                            "model",
+                            "Default model",
+                            "Auto picks per message",
+                            SetCtl::Choice(&["Auto", "Fast", "Deep"], 0),
+                        ),
+                        sr("web", "Web search", "Let answers look things up", sw(true)),
+                        sr(
+                            "memory",
+                            "Memory",
+                            "Keep what you tell it between chats",
+                            sw(on(true)),
+                        ),
+                    ],
+                ),
+                (
+                    "Look",
+                    vec![
+                        sr(
+                            "theme",
+                            "Appearance",
+                            "",
+                            SetCtl::Choice(&["System", "Light", "Dark"], 0),
+                        ),
+                        sr(
+                            "dense",
+                            "Compact lists",
+                            "Fit more rows on screen",
+                            sw(false),
+                        ),
+                    ],
+                ),
+            ],
+        },
+        SetPage {
+            key: "privacy",
+            label: "Privacy",
+            group: "personal",
+            icon: "shield",
+            lead: "What is measured, what is kept, and getting your data out.",
+            sections: vec![
+                (
+                    "Data",
+                    vec![
+                        sr(
+                            "analytics",
+                            "Product analytics",
+                            "Anonymous usage that shapes what we build",
+                            sw(on(true)),
+                        ),
+                        sr(
+                            "train",
+                            "Improve models with my chats",
+                            "Off means your chats are never used to train",
+                            sw(false),
+                        ),
+                    ],
+                ),
+                (
+                    "Your data",
+                    vec![
+                        sr(
+                            "export",
+                            "Export my data",
+                            "A download link arrives by email",
+                            SetCtl::Action("Export"),
+                        ),
+                        sr(
+                            "wipe-chats",
+                            "Delete all chats",
+                            "Removes every chat you started; cannot be undone",
+                            SetCtl::Danger("Delete all chats"),
+                        ),
+                    ],
+                ),
+            ],
+        },
+        SetPage {
+            key: "general",
+            label: "Workspace",
+            group: "workspace",
+            icon: "home",
+            lead: "The workspace's name, address and what every chat should know.",
+            sections: vec![
+                (
+                    "Workspace",
+                    vec![
+                        sr("ws-name", "Name", "", tx(&v(WORKSPACE), 40)),
+                        sr(
+                            "ws-url",
+                            "Address",
+                            "Letters, numbers and dashes; old links stop working if you change it",
+                            tx(&v("kestrel-studio"), 32),
+                        ),
+                        sr(
+                            "ws-context",
+                            "Company context",
+                            "Added to every chat in the workspace",
+                            tx(&v(""), 2000),
+                        ),
+                    ],
+                ),
+                (
+                    "Danger zone",
+                    vec![sr(
+                        "delete-ws",
+                        "Delete workspace",
+                        "Removes the workspace, its chats, files and agents",
+                        SetCtl::Danger("Delete workspace"),
+                    )],
+                ),
+            ],
+        },
+        SetPage {
+            key: "members",
+            label: "People",
+            group: "workspace",
+            icon: "apps",
+            lead: "Who can join and what they get by default.",
+            sections: vec![
+                (
+                    "Joining",
+                    vec![
+                        sr("join", "Join by email domain", "", sw(on(true))),
+                        domain,
+                        sr(
+                            "default-role",
+                            "New members are",
+                            "",
+                            SetCtl::Choice(&["Members", "Admins", "Guests"], 0),
+                        ),
+                    ],
+                ),
+                (
+                    "Invite",
+                    vec![sr(
+                        "invite-link",
+                        "Invite link",
+                        "Anyone with it can ask to join",
+                        SetCtl::Action("Copy link"),
+                    )],
+                ),
+            ],
+        },
+        SetPage {
+            key: "models",
+            label: "Models",
+            group: "workspace",
+            icon: "spark",
+            lead: "Which models people and agents may use here.",
+            sections: vec![
+                (
+                    "Defaults",
+                    vec![
+                        sr(
+                            "ws-model",
+                            "Chat model",
+                            "",
+                            SetCtl::Choice(&["Auto", "Fast", "Deep"], 0),
+                        ),
+                        sr(
+                            "img-model",
+                            "Image model",
+                            "",
+                            SetCtl::Choice(&["Standard", "Detailed"], 0),
+                        ),
+                    ],
+                ),
+                (
+                    "Access",
+                    vec![
+                        sr(
+                            "eu",
+                            "Hosted in the EU only",
+                            "Hides models served from elsewhere",
+                            sw(false),
+                        ),
+                        sr(
+                            "own-keys",
+                            "Members bring their own keys",
+                            "Usage is billed to their key",
+                            sw(on(true)),
+                        ),
+                    ],
+                ),
+            ],
+        },
+        SetPage {
+            key: "security",
+            label: "Sign-in",
+            group: "workspace",
+            icon: "shield",
+            lead: "How people sign in and how long they stay signed in.",
+            sections: vec![
+                (
+                    "Sign-in",
+                    vec![
+                        sr(
+                            "sso",
+                            "Require single sign-on",
+                            "Everyone signs in through your identity provider",
+                            sw(on(true)),
+                        ),
+                        sr(
+                            "2fa",
+                            "Two-step verification",
+                            "Ask for a code on new devices",
+                            sw(false),
+                        ),
+                        sr(
+                            "session",
+                            "Sessions last",
+                            "",
+                            SetCtl::Choice(&["1 day", "7 days", "30 days"], 1),
+                        ),
+                    ],
+                ),
+                (
+                    "Danger zone",
+                    vec![sr(
+                        "sign-out-all",
+                        "Sign out everyone",
+                        "Ends every session, including yours",
+                        SetCtl::Danger("Sign out everyone"),
+                    )],
+                ),
+            ],
+        },
+        SetPage {
+            key: "billing",
+            label: "Plan",
+            group: "workspace",
+            icon: "chart",
+            lead: "The plan, who gets the invoices and a cap on agent spend.",
+            sections: vec![
+                (
+                    "Plan",
+                    vec![
+                        sr(
+                            "period",
+                            "Billing period",
+                            "Yearly saves two months",
+                            SetCtl::Choice(&["Monthly", "Yearly"], 0),
+                        ),
+                        sr(
+                            "bill-email",
+                            "Invoices go to",
+                            "",
+                            tx(&v("accounts@kestrel.example"), 0),
+                        ),
+                        sr(
+                            "cap",
+                            "Monthly agent cap (USD)",
+                            "Runs pause when it is reached",
+                            tx(&v("500"), 0),
+                        ),
+                    ],
+                ),
+                (
+                    "Invoices",
+                    vec![sr(
+                        "invoices",
+                        "Past invoices",
+                        "",
+                        SetCtl::Action("Download all"),
+                    )],
+                ),
+            ],
+        },
+    ]
+}
+
+/// The page a row lives on and the row itself.
+pub fn set_row<'a>(pages: &'a [SetPage], key: &str) -> Option<(&'a SetPage, &'a SetRow)> {
+    pages.iter().find_map(|p| {
+        p.sections
+            .iter()
+            .flat_map(|(_, rs)| rs.iter())
+            .find(|r| r.key == key)
+            .map(|r| (p, r))
+    })
+}
+
+/// Mutable access to a row by key.
+pub fn set_row_mut<'a>(pages: &'a mut [SetPage], key: &str) -> Option<&'a mut SetRow> {
+    pages
+        .iter_mut()
+        .flat_map(|p| p.sections.iter_mut())
+        .flat_map(|(_, rs)| rs.iter_mut())
+        .find(|r| r.key == key)
+}
+
+/// False when the row depends on a switch that is off.
+pub fn set_enabled(pages: &[SetPage], row: &SetRow) -> bool {
+    if row.needs.is_empty() {
+        return true;
+    }
+    !matches!(
+        set_row(pages, row.needs).map(|(_, r)| &r.ctl),
+        Some(SetCtl::Switch(false))
+    )
+}
+
+/// Row keys whose page, section, label or hint contains `q` (case-insensitive), with their page.
+pub fn set_find(pages: &[SetPage], q: &str) -> Vec<(&'static str, &'static str)> {
+    let q = q.trim().to_lowercase();
+    if q.is_empty() {
+        return vec![];
+    }
+    let has = |s: &str| s.to_lowercase().contains(&q);
+    let mut out = vec![];
+    for p in pages {
+        for (sec, rows) in &p.sections {
+            for r in rows {
+                if has(p.label) || has(sec) || has(r.label) || has(r.hint) {
+                    out.push((p.key, r.key));
+                }
+            }
+        }
+    }
+    out
+}
+
+/// How many rows differ between the saved pages and the edited ones.
+pub fn set_changes(saved: &[SetPage], cur: &[SetPage]) -> usize {
+    let rows = |ps: &[SetPage]| -> Vec<SetRow> {
+        ps.iter()
+            .flat_map(|p| p.sections.iter())
+            .flat_map(|(_, rs)| rs.iter().cloned())
+            .collect()
+    };
+    let (a, b) = (rows(saved), rows(cur));
+    a.iter()
+        .zip(b.iter())
+        .filter(|(x, y)| x.ctl != y.ctl)
+        .count()
+}
+
+/// What is wrong with a text value for this row, if anything.
+pub fn set_text_error(key: &str, value: &str) -> Option<&'static str> {
+    let v = value.trim();
+    match key {
+        "name" | "ws-name" if v.is_empty() => Some("Needs a name"),
+        "ws-url" if v.is_empty() => Some("Needs an address"),
+        "ws-url"
+            if !v
+                .chars()
+                .all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == '-') =>
+        {
+            Some("Use lowercase letters, numbers and dashes")
+        }
+        "bill-email" if !v.is_empty() && invite_initials(v).is_none() => {
+            Some("Not an email address")
+        }
+        "join-domain"
+            if !v.is_empty() && (!v.contains('.') || v.contains('@') || v.contains(' ')) =>
+        {
+            Some("A domain looks like example.com")
+        }
+        "cap" if !v.is_empty() && v.parse::<u32>().is_err() => Some("A whole number of dollars"),
+        _ => None,
+    }
+}
+
+/// True when every text row on every page is valid (Save is allowed).
+pub fn set_valid(pages: &[SetPage]) -> bool {
+    pages
+        .iter()
+        .flat_map(|p| p.sections.iter())
+        .flat_map(|(_, rs)| rs.iter())
+        .all(|r| match &r.ctl {
+            SetCtl::Text(v, cap) => {
+                set_text_error(r.key, v).is_none() && (*cap == 0 || v.chars().count() <= *cap)
+            }
+            _ => true,
+        })
+}
+
+/// A destructive row that needs the workspace name typed before it runs.
+pub fn set_needs_name(key: &str) -> bool {
+    key == "delete-ws"
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -2411,5 +3001,84 @@ mod tests {
             1
         );
         assert_eq!((n0[0].x, n0[0].y), (40, 40));
+    }
+
+    #[test]
+    fn settings_find_change_and_check() {
+        let saved = settings(true);
+        let mut cur = saved.clone();
+        assert_eq!(saved.len(), 9);
+        assert_eq!(saved.iter().filter(|p| p.group == "personal").count(), 4);
+        let mut keys: Vec<&str> = saved
+            .iter()
+            .flat_map(|p| p.sections.iter())
+            .flat_map(|(_, r)| r.iter().map(|r| r.key))
+            .collect();
+        let n = keys.len();
+        keys.sort_unstable();
+        keys.dedup();
+        assert_eq!(keys.len(), n, "row keys are unique");
+        assert_eq!(set_changes(&saved, &cur), 0);
+        // a switch the "Send at" row depends on
+        let (_, at) = set_row(&cur, "digest-at").unwrap();
+        assert!(set_enabled(&cur, &at.clone()));
+        if let Some(r) = set_row_mut(&mut cur, "digest") {
+            r.ctl = SetCtl::Switch(false);
+        }
+        let at = set_row(&cur, "digest-at").unwrap().1.clone();
+        assert!(!set_enabled(&cur, &at));
+        assert_eq!(set_changes(&saved, &cur), 1);
+        if let Some(r) = set_row_mut(&mut cur, "theme") {
+            r.ctl = SetCtl::Choice(&["System", "Light", "Dark"], 2);
+        }
+        assert_eq!(set_changes(&saved, &cur), 2);
+        // search: label, hint and page names
+        let f = set_find(&saved, "digest");
+        assert_eq!(f[0], ("notifications", "digest"));
+        assert!(
+            set_find(&saved, "SINGLE sign")
+                .iter()
+                .any(|(p, r)| *p == "security" && *r == "sso")
+        );
+        assert!(set_find(&saved, "plan").len() >= 4);
+        assert!(set_find(&saved, "  ").is_empty());
+        assert!(set_find(&saved, "zzz").is_empty());
+        // text checks
+        assert_eq!(
+            set_text_error("ws-url", "Kestrel Studio"),
+            Some("Use lowercase letters, numbers and dashes")
+        );
+        assert_eq!(set_text_error("ws-url", "kestrel-2"), None);
+        assert_eq!(set_text_error("name", " "), Some("Needs a name"));
+        assert_eq!(
+            set_text_error("bill-email", "accounts"),
+            Some("Not an email address")
+        );
+        assert_eq!(set_text_error("bill-email", "a@b.example"), None);
+        assert_eq!(
+            set_text_error("join-domain", "kestrel"),
+            Some("A domain looks like example.com")
+        );
+        assert_eq!(
+            set_text_error("cap", "12.5"),
+            Some("A whole number of dollars")
+        );
+        assert_eq!(set_text_error("cap", ""), None);
+        assert!(set_valid(&saved));
+        if let Some(r) = set_row_mut(&mut cur, "ws-url") {
+            r.ctl = SetCtl::Text("No Spaces".into(), 32);
+        }
+        assert!(!set_valid(&cur));
+        assert!(set_needs_name("delete-ws"));
+        assert!(!set_needs_name("wipe-chats"));
+        // a new workspace starts blank
+        let blank = settings(false);
+        assert!(
+            matches!(&set_row(&blank, "ws-name").unwrap().1.ctl, SetCtl::Text(v, _) if v.is_empty())
+        );
+        assert!(matches!(
+            set_row(&blank, "memory").unwrap().1.ctl,
+            SetCtl::Switch(false)
+        ));
     }
 }
