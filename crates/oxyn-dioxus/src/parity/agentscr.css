@@ -40,6 +40,12 @@
 .oxscn-top>.oxv-tabs::-webkit-scrollbar{display:none}
 .oxscn-top>.oxa-n{margin-right:0}
 
+/* a narrow stage: the top bar keeps the count and tabs; search steps aside */
+@container (max-width: 640px){
+  .oxscn-top:has(>.oxv-tabs)>.oxscn-title{display:none}
+  .oxscn-top .oxay-q,.oxscn-top .oxam-q{display:none}
+}
+
 /* work area */
 .oxa-work{display:flex;flex-direction:column;min-width:0;height:100%;overflow:hidden}
 .oxa-wtabs{display:flex;align-items:center;gap:4px;flex:none;min-width:0;height:48px;padding:0 44px 0 6px;border-bottom:1px solid var(--oxth-line);overflow:hidden}
@@ -158,7 +164,7 @@
 .oxat-rec{display:flex;align-items:center;gap:10px;min-width:0;height:44px;padding:0 4px}
 .oxat-rec-d{flex:none;width:9px;height:9px;border-radius:50%;background:var(--ox-ic-failed);animation:oxv-pulse 1.2s ease-in-out infinite}
 .oxat-wave{display:flex;align-items:center;gap:2px;flex:1 1 auto;min-width:0;height:24px;overflow:hidden}
-.oxat-wave span{flex:none;width:3px;border-radius:2px;background:var(--oxth-fg2);height:calc(6px + (var(--i) * 7 % 17) * 1px);animation:oxat-w 1s ease-in-out infinite;animation-delay:calc(var(--i) * -70ms)}
+.oxat-wave span{flex:none;width:3px;border-radius:2px;background:var(--oxth-fg2);animation:oxat-w 1s ease-in-out infinite}
 @keyframes oxat-w{50%{transform:scaleY(.45)}}
 .oxat-pre{margin:0;padding:16px 18px;font:12.5px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--oxth-fg2);white-space:pre-wrap;overflow:auto}
 
@@ -338,7 +344,6 @@
 }
 @container oxa (max-width: 640px){
   .oxab{grid-template-columns:minmax(0,1fr)}
-  .oxay-q,.oxam-q{display:none}
   .oxam-src,.oxak-age{display:none}
 }
 @container oxa (max-width: 520px){

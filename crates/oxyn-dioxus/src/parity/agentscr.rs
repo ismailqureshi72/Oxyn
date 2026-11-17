@@ -272,7 +272,7 @@ pub fn AgentThreadScreen(
                     }
                 }
                 div { class: "oxat-log", role: "log", "aria-label": "Thread with the orchestrator", tabindex: "0",
-                    onmounted: move |e: MountedEvent| { let d = e.data(); log_el.set(Some(d.clone())); if sk != "scrolled" { spawn(async move { let _ = d.scroll(PixelsVector2D::new(0.0, 1.0e6), ScrollBehavior::Instant).await; }); } },
+                    onmounted: move |e: MountedEvent| { let d = e.data(); log_el.set(Some(d.clone())); if sk != "scrolled" && sk != "away" { spawn(async move { let _ = d.scroll(PixelsVector2D::new(0.0, 1.0e6), ScrollBehavior::Instant).await; }); } },
                     if loading { div { class: "oxat-col", {skel(8)} } }
                     else if list.is_empty() && shown.is_none() {
                         div { class: "oxat-col oxat-start",
@@ -389,7 +389,7 @@ pub fn AgentThreadScreen(
                     if rec() {
                         div { class: "oxat-rec", role: "status", "aria-label": "Dictating",
                             span { class: "oxat-rec-d" }
-                            span { class: "oxat-wave", "aria-hidden": "true", for i in 0..28 { span { key: "{i}", style: "--i:{i}" } } }
+                            span { class: "oxat-wave", "aria-hidden": "true", for i in 0..28u32 { span { key: "{i}", style: "height:{6 + (i * 7) % 17}px;animation-delay:-{i * 70}ms" } } }
                             span { class: "oxv-q", "{dict_clock(el / 1000)}" }
                             button { r#type: "button", class: "oxscn-btn", onclick: move |_| { rec.set(false); text.set("Check the staging numbers before lunch".into()); said.set("Dictation added to the message".into()); }, "Done" }
                         }
