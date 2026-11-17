@@ -427,3 +427,5 @@ span.oxvc-th{cursor:default}
 
 /* chrome glyphs in the top bar and the page tool rows stay neutral */
 .oxscn-top .oxscn-mb [data-ic],.oxv-bar .oxscn-mb [data-ic],.oxvk-bar [data-ic],.oxvc-tabs .oxscn-mb [data-ic]{color:inherit}
+/* ink marks (Notion, GitHub, Vercel) on the white logo tiles draw black in both themes */
+.oxvi-logo,.oxvi-mini,.oxvc-mk{--ox-brand-ink:#000}
