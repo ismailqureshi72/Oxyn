@@ -5,11 +5,13 @@
 //
 // Outputs (all git-ignored): src/generated/*.json, src/generated/*.css, public/wasm/*.
 // Needs the Rust toolchain from rust-toolchain.toml (+ wasm32-unknown-unknown and wasm-bindgen-cli
-// 0.2.130 for --wasm; wasm-opt is used when it is on PATH).
+// 0.2.130 for --wasm; wasm-opt (binaryen) is used when it is on PATH, and is required when CI is set
+// or OXYN_REQUIRE_WASM_OPT=1, since the unoptimised bundle overflows Cloudflare's 25 MiB asset cap).
 
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import fs from 'node:fs';
+import { gzipSync } from 'node:zlib';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -161,6 +163,9 @@ if (args.has('--wasm')) {
   fs.rmSync(tmp, { recursive: true, force: true });
   run('wasm-bindgen', ['--target', 'web', '--no-typescript', '--out-dir', tmp, '--out-name', 'gallery', raw]);
   const bg = path.join(tmp, 'gallery_bg.wasm');
+  const mib = (n) => `${(n / 1048576).toFixed(2)} MiB`;
+  console.log(`wasm before wasm-opt: ${mib(fs.statSync(bg).size)} raw`);
+  const requireOpt = !!process.env.CI || process.env.OXYN_REQUIRE_WASM_OPT === '1';
   if (has('wasm-opt')) {
     // Explicit features: --all-features emits imports Chromium rejects (docs/spike/rust-web.md).
     run('wasm-opt', [
@@ -172,12 +177,17 @@ if (args.has('--wasm')) {
       '--enable-reference-types',
       '--enable-multivalue',
       '--strip-debug',
+      '--strip-producers',
       bg,
       '-o',
       bg,
     ]);
   } else {
-    console.warn('wasm-opt not found: shipping the unoptimised bundle');
+    if (requireOpt) {
+      console.error('wasm-opt not found, and it is required here (CI or OXYN_REQUIRE_WASM_OPT=1): install binaryen');
+      process.exit(1);
+    }
+    console.warn('wasm-opt not found: shipping the unoptimised bundle (may exceed the 25 MiB deploy cap)');
   }
   fs.rmSync(wasmOut, { recursive: true, force: true });
   fs.mkdirSync(wasmOut, { recursive: true });
@@ -193,7 +203,8 @@ if (args.has('--wasm')) {
   const snippets = path.join(tmp, 'snippets');
   if (fs.existsSync(snippets)) fs.cpSync(snippets, path.join(wasmOut, 'snippets'), { recursive: true });
   fs.writeFileSync(wasmJson, JSON.stringify({ js: `/wasm/${jsName}`, wasm: `/wasm/${wasmName}`, bytes: wasm.length }));
-  console.log(`wasm: ${wasmName} (${(wasm.length / 1024).toFixed(0)} KB raw)`);
+  const gz = gzipSync(wasm, { level: 9 }).length;
+  console.log(`wasm: ${wasmName} (${(wasm.length / 1024).toFixed(0)} KB raw, ${mib(wasm.length)} raw, ${mib(gz)} gzip)`);
 } else if (!fs.existsSync(wasmJson)) {
   // No bundle: pages render their server-rendered previews and say the live demo is unavailable.
   fs.writeFileSync(wasmJson, JSON.stringify({ js: null, wasm: null, bytes: 0 }));
