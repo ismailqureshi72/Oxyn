@@ -861,7 +861,7 @@ pub fn InboxBoardScreen(
                     button { r#type: "button", class: "oxv-seg-b", "aria-label": "List", "aria-pressed": "{list_view}", onclick: move |_| list_view.set(true), {nico("list")} }
                 }
                 div { class: "oxv-pop-w",
-                    button { r#type: "button", class: "oxv-pri", "aria-haspopup": "dialog", "aria-expanded": "{adding}", onclick: move |_| adding.toggle(), {nico("plus")} span { "New task" } }
+                    button { r#type: "button", class: "oxv-pri", "aria-label": "New task", "aria-haspopup": "dialog", "aria-expanded": "{adding}", onclick: move |_| adding.toggle(), {nico("plus")} span { class: "oxa-bl", "New task" } }
                     if adding() {
                         div { class: "oxscn-catch", onclick: move |_| adding.set(false) }
                         div { class: "oxv-pop", role: "dialog", "aria-label": "New task",
@@ -1032,7 +1032,7 @@ pub fn TasksScreen(
             badge: rsx! { span { class: "oxa-n", "{na}" } {tabs("Show", vec![("active", "Active".to_string(), None), ("done", "Done".to_string(), if nd > 0 { Some(nd) } else { None })], tab)} },
             actions: rsx! {
                 div { class: "oxv-pop-w",
-                    button { r#type: "button", class: "oxscn-btn", "aria-haspopup": "dialog", "aria-expanded": "{adding}", onclick: move |_| adding.toggle(), {nico("plus")} span { "New task" } }
+                    button { r#type: "button", class: "oxscn-btn", "aria-label": "New task", "aria-haspopup": "dialog", "aria-expanded": "{adding}", onclick: move |_| adding.toggle(), {nico("plus")} span { class: "oxa-bl", "New task" } }
                     if adding() {
                         div { class: "oxscn-catch", onclick: move |_| adding.set(false) }
                         div { class: "oxv-pop", role: "dialog", "aria-label": "New task",
@@ -1384,7 +1384,7 @@ pub fn MemoryScreen(
                 }
                 {find("Search memory", "Search memory", q, "oxam-q")}
                 div { class: "oxv-pop-w",
-                    button { r#type: "button", class: "oxscn-btn", "aria-haspopup": "dialog", "aria-expanded": "{adding}", onclick: move |_| adding.toggle(), {nico("plus")} span { "Remember" } }
+                    button { r#type: "button", class: "oxscn-btn", "aria-label": "Remember", "aria-haspopup": "dialog", "aria-expanded": "{adding}", onclick: move |_| adding.toggle(), {nico("plus")} span { class: "oxa-bl", "Remember" } }
                     if adding() {
                         div { class: "oxscn-catch", onclick: move |_| adding.set(false) }
                         div { class: "oxv-pop", role: "dialog", "aria-label": "Remember",
