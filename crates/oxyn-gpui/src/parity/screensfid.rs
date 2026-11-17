@@ -23,7 +23,7 @@ use oxyn_tokens::Theme;
 use super::Act;
 use super::rulerfid::{ThPal, fire, th_pal};
 
-fn skel(p: &ThPal, n: usize) -> Div {
+pub(super) fn skel(p: &ThPal, n: usize) -> Div {
     let mut d = div().flex().flex_col().gap(px(10.)).p(px(10.));
     for i in 0..n {
         d = d.child(
@@ -37,7 +37,7 @@ fn skel(p: &ThPal, n: usize) -> Div {
     d
 }
 
-fn empty(p: &ThPal, t: &'static str, l: &'static str) -> Div {
+pub(super) fn empty(p: &ThPal, t: &'static str, l: &'static str) -> Div {
     div()
         .flex()
         .flex_col()
@@ -49,7 +49,7 @@ fn empty(p: &ThPal, t: &'static str, l: &'static str) -> Div {
         .child(div().text_color(p.mute).child(l))
 }
 
-fn gh(p: &ThPal, t: &'static str) -> Div {
+pub(super) fn gh(p: &ThPal, t: &'static str) -> Div {
     div()
         .mt(px(10.))
         .mb(px(4.))
@@ -60,7 +60,7 @@ fn gh(p: &ThPal, t: &'static str) -> Div {
         .child(t)
 }
 
-fn row(p: &ThPal, t: String, a: String, on: bool) -> Div {
+pub(super) fn row(p: &ThPal, t: String, a: String, on: bool) -> Div {
     div()
         .flex()
         .items_center()
@@ -193,7 +193,7 @@ fn sidebar(p: &ThPal, st: ScreenState, act: &Option<Act>, runs: bool) -> Div {
     )
 }
 
-fn page(p: &ThPal, title: &'static str, body: Div) -> Div {
+pub(super) fn page(p: &ThPal, title: &'static str, body: Div) -> Div {
     div()
         .flex_1()
         .flex()
@@ -226,7 +226,13 @@ fn work_pane(p: &ThPal, w: Div) -> Div {
         .child(w)
 }
 
-fn frame(theme: &Theme, lay: ShellLayout, left: Div, main: Div, work: Option<Div>) -> Div {
+pub(super) fn frame(
+    theme: &Theme,
+    lay: ShellLayout,
+    left: Div,
+    main: Div,
+    work: Option<Div>,
+) -> Div {
     let p = th_pal(theme);
     let mut pg = div().flex_1().flex().bg(p.card).child(main);
     if let Some(w) = work {
@@ -349,6 +355,7 @@ macro_rules! screen_el {
         }
     };
 }
+pub(super) use screen_el;
 
 screen_el!(
     /// App shell (Inset or Flat): sidebar, a placeholder page and the workspace.
