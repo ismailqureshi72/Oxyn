@@ -121,6 +121,7 @@ pub use parity::{
     ActivityHeatmapEl, ActivityHomeEl, AttachmentStripEl, DocGridEl, ExperimentGridEl,
     PollingCostEl, RunModeMenuEl, ThreadListEl, TokenUsageChartEl,
 };
+pub use parity::{AgentApp, AgentAppView, Live, Own};
 pub use parity::{
     AgentCommentThreadEl, AgentRunPanelEl, CommentsPanelEl, ModelPickerMenuEl, ThreadMsg,
     file_badge,

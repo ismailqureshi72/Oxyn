@@ -5,11 +5,15 @@
 //! `.extra()` the own state (`compare`, `plan`) or `rail` / `hidden`. Presses fire `new`, `send`,
 //! `apply`, `accept-all` and `revert-all` through `on_act`. Rules from
 //! `oxyn_core::parity::fleetwin`.
+//!
+//! [`super::AgentAppView`] draws these screens as a live, interactive GPUI view; the elements
+//! below stay single-state snapshots.
 
 use gpui::{
-    App, Div, FontWeight, IntoElement, ParentElement, RenderOnce, SharedString, Styled, Window,
-    div, prelude::*, px,
+    App, Div, FontWeight, IntoElement, ParentElement, RenderOnce, SharedString, Stateful, Styled,
+    Window, div, prelude::*, px,
 };
+use oxyn_core::parity::appui::row_id;
 use oxyn_core::parity::fleetwin::{
     COMPARE_PROMPT, FW_APP, FW_MODELS, FW_PROMPT, FW_STEPS, PERSON, ScreenState, agent_diff,
     best_attempt, fw_agents, mmss, sample_attempts, sample_plan,
@@ -18,6 +22,7 @@ use oxyn_core::parity::screensfid::ShellLayout;
 use oxyn_tokens::Theme;
 
 use super::Act;
+use super::apps::{Live, hit};
 use super::chatscr::clip;
 use super::cmdstudio::{brand, chip, composer, diff_pane, dot, pill, press, stat, tone_of};
 use super::rulerfid::{ThPal, fire, th_pal};
@@ -70,7 +75,7 @@ macro_rules! s11_el {
         impl RenderOnce for $name {
             fn render(self, _: &mut Window, _: &mut App) -> impl IntoElement {
                 let p = th_pal(self.theme);
-                $f(&p, self.layout, self.state, self.extra, &self.act)
+                $f(&p, self.layout, self.state, self.extra, &self.act, &Live::default())
             }
         }
     };
@@ -84,15 +89,18 @@ s11_el!(
     fw_screen
 );
 
-/// One sidebar row: a status dot, a label, an optional brand mark and a trailing part.
+/// One sidebar row: a status dot, a label, an optional brand mark and a trailing part. Pressing
+/// it fires `row-<i>`.
 pub(super) fn s11_row(
     p: &ThPal,
     tone: &str,
     l: impl Into<SharedString>,
     on: bool,
     tail: Div,
-) -> Div {
-    div()
+    i: usize,
+    act: &Option<Act>,
+) -> Stateful<Div> {
+    let d = div()
         .h(px(32.))
         .px(px(8.))
         .flex()
@@ -104,7 +112,8 @@ pub(super) fn s11_row(
         .when(on, |d| d.bg(p.sel).text_color(p.fg))
         .child(dot(tone_of(p, tone)))
         .child(clip(l).flex_1())
-        .child(tail)
+        .child(tail);
+    hit(d, act, row_id(i))
 }
 
 /// The S11 sidebar: the app name, New, a list and the account row.
@@ -114,11 +123,13 @@ pub(super) fn s11_side(
     app: &'static str,
     new: &'static str,
     head: &'static str,
-    rows: Vec<Div>,
+    rows: Vec<Stateful<Div>>,
     st: ScreenState,
     rail: bool,
     act: &Option<Act>,
+    lv: &Live,
 ) -> Div {
+    let rail = rail || lv.rail;
     let f = fire(act, "new");
     let s = div()
         .w(px(if rail { 56. } else { 272. }))
@@ -136,7 +147,7 @@ pub(super) fn s11_side(
                 .items_center()
                 .gap(px(8.))
                 .font_weight(FontWeight::SEMIBOLD)
-                .child(
+                .child(hit(
                     div()
                         .w(px(16.))
                         .h(px(16.))
@@ -144,7 +155,9 @@ pub(super) fn s11_side(
                         .border_2()
                         .border_color(p.fg)
                         .flex_none(),
-                )
+                    act,
+                    "rail",
+                ))
                 .when(!rail, |d| d.child(app)),
         )
         .child(
@@ -160,12 +173,14 @@ pub(super) fn s11_side(
                 .child(if rail { "+" } else { new }),
         );
     if rail {
-        return s.child(div().flex_1()).child(
+        return s.child(div().flex_1()).child(hit(
             div()
                 .flex()
                 .justify_center()
                 .child(super::setscr::av(p, "RV", 28.)),
-        );
+            act,
+            "acct",
+        ));
     }
     let mut body = div()
         .flex_1()
@@ -189,7 +204,7 @@ pub(super) fn s11_side(
     for r in rows {
         body = body.child(r);
     }
-    s.child(body).child(
+    s.child(body).child(hit(
         div()
             .mt(px(6.))
             .pt(px(6.))
@@ -201,7 +216,9 @@ pub(super) fn s11_side(
             .child(super::setscr::av(p, "RV", 28.))
             .child(clip(PERSON).flex_1())
             .child(div().text_color(p.mute).child("⌄")),
-    )
+        act,
+        "acct",
+    ))
 }
 
 /// The S11 frame: sidebar, top bar, body and pane, laid out Inset or Flat.
@@ -308,17 +325,19 @@ pub(super) fn faint(p: &ThPal, t: &'static str) -> Div {
         .child(t)
 }
 
-fn fw_screen(
+pub(super) fn fw_screen(
     p: &ThPal,
     lay: ShellLayout,
     st: ScreenState,
     extra: &'static str,
     act: &Option<Act>,
+    lv: &Live,
 ) -> Div {
     let agents = fw_agents(st);
-    let rows: Vec<Div> = agents
+    let rows: Vec<Stateful<Div>> = agents
         .iter()
-        .map(|a| {
+        .enumerate()
+        .map(|(i, a)| {
             let tail = div()
                 .flex()
                 .items_center()
@@ -334,7 +353,8 @@ fn fw_screen(
             } else {
                 a.title.clone()
             };
-            s11_row(p, a.state.tone(), l, a.id == 1 && extra != "compare", tail)
+            let on = lv.on(i, a.id == 1 && extra != "compare");
+            s11_row(p, a.state.tone(), l, on, tail, i, act)
         })
         .collect();
     let side = s11_side(
@@ -346,6 +366,7 @@ fn fw_screen(
         st,
         extra == "rail",
         act,
+        lv,
     );
     let chips = vec![
         chip(
@@ -356,7 +377,14 @@ fn fw_screen(
         ),
         chip(p, Some(brand(p, "claude")), "Sonnet 5.5", false),
     ];
-    let comp = composer(p, chips, "Plan, build, fix anything", extra == "plan", act);
+    let comp = composer(
+        p,
+        chips,
+        "Plan, build, fix anything",
+        extra == "plan",
+        act,
+        lv,
+    );
     let samp = st == ScreenState::Sample;
     let inner = if st == ScreenState::Loading {
         skel(p, 6)

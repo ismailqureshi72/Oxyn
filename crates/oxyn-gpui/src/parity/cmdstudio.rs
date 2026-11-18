@@ -6,12 +6,16 @@
 //! `permission`) or the Oxyn options `rail` and `hidden`. Presses fire `new`, `send`, `accept-all`,
 //! `revert-all`, `allow-once`, `allow-always`, `deny` and `handoff` through `on_act`. Rules come
 //! from `oxyn_core::parity::cmdstudio`.
+//!
+//! [`super::AgentAppView`] draws these screens as a live, interactive GPUI view; the elements
+//! below stay single-state snapshots.
 
 use gpui::{
     App, Div, FontWeight, Hsla, IntoElement, ParentElement, RenderOnce, SharedString, Styled,
     Window, div, prelude::*, px,
 };
 use oxyn_core::icon_tone::IconTone;
+use oxyn_core::parity::appui::row_id;
 use oxyn_core::parity::cmdstudio::{
     BState, Block, CC_APP, CC_MODELS, CC_PROJECTS, CC_PROMPT, CC_WORK, DiffFile, Mode, Place,
     REASONING, SS_APP, SS_MODELS, ScreenState, TState, branch_for, cc_diff, file_stat, hunk_stat,
@@ -24,6 +28,7 @@ use oxyn_core::parity::screensfid::ShellLayout;
 use oxyn_tokens::Theme;
 
 use super::Act;
+use super::apps::{Live, hit};
 use super::chatscr::{clip, mark};
 use super::rulerfid::{ThPal, fire, th_pal};
 use super::screensfid::{gh, skel, tone_ic};
@@ -74,7 +79,7 @@ macro_rules! s10_el {
         }
         impl RenderOnce for $name {
             fn render(self, _: &mut Window, _: &mut App) -> impl IntoElement {
-                screen(self.theme, self.layout, self.state, self.extra, &self.act, $app)
+                screen(self.theme, self.layout, self.state, self.extra, &self.act, $app, &Live::default())
             }
         }
     };
@@ -198,7 +203,8 @@ pub(super) fn stat(p: &ThPal, a: u32, d: u32) -> Div {
         )
 }
 
-fn sidebar(p: &ThPal, st: ScreenState, app: &str, rail: bool, act: &Option<Act>) -> Div {
+fn sidebar(p: &ThPal, st: ScreenState, app: &str, rail: bool, act: &Option<Act>, lv: &Live) -> Div {
+    let mut k = 0usize;
     let w = if rail { 56. } else { 272. };
     let f = fire(act, "new");
     let mut s = div()
@@ -217,7 +223,7 @@ fn sidebar(p: &ThPal, st: ScreenState, app: &str, rail: bool, act: &Option<Act>)
                 .items_center()
                 .gap(px(8.))
                 .font_weight(FontWeight::SEMIBOLD)
-                .child(
+                .child(hit(
                     div()
                         .w(px(16.))
                         .h(px(16.))
@@ -225,7 +231,9 @@ fn sidebar(p: &ThPal, st: ScreenState, app: &str, rail: bool, act: &Option<Act>)
                         .border_2()
                         .border_color(p.fg)
                         .flex_none(),
-                )
+                    act,
+                    "rail",
+                ))
                 .when(!rail, |d| {
                     d.child(if app == "cc" { CC_APP } else { SS_APP })
                 }),
@@ -249,12 +257,14 @@ fn sidebar(p: &ThPal, st: ScreenState, app: &str, rail: bool, act: &Option<Act>)
                 }),
         );
     if rail {
-        return s.child(div().flex_1()).child(
+        return s.child(div().flex_1()).child(hit(
             div()
                 .flex()
                 .justify_center()
                 .child(super::setscr::av(p, "RV", 28.)),
-        );
+            act,
+            "acct",
+        ));
     }
     let mut body = div().flex_1().min_h_0().overflow_hidden().flex().flex_col();
     if st == ScreenState::Loading {
@@ -290,8 +300,10 @@ fn sidebar(p: &ThPal, st: ScreenState, app: &str, rail: bool, act: &Option<Act>)
                     .child(quiet(p, inner.len().to_string())),
             );
             for t in inner {
-                let on = t.id == 1;
-                body = body.child(
+                let on = lv.on(k, t.id == 1);
+                let id = row_id(k);
+                k += 1;
+                body = body.child(hit(
                     div()
                         .h(px(32.))
                         .pl(px(24.))
@@ -306,7 +318,9 @@ fn sidebar(p: &ThPal, st: ScreenState, app: &str, rail: bool, act: &Option<Act>)
                         .child(dot(tone_of(p, t.state.tone())))
                         .child(clip(t.title.clone()))
                         .child(stat(p, t.stat.0, t.stat.1)),
-                );
+                    act,
+                    id,
+                ));
             }
         }
     } else {
@@ -322,8 +336,8 @@ fn sidebar(p: &ThPal, st: ScreenState, app: &str, rail: bool, act: &Option<Act>)
                     .child("No sessions yet"),
             );
         }
-        for (id, title, folder, ago, t) in list {
-            body = body.child(
+        for (i, (id, title, folder, ago, t)) in list.into_iter().enumerate() {
+            body = body.child(hit(
                 div()
                     .min_h(px(46.))
                     .px(px(8.))
@@ -331,7 +345,7 @@ fn sidebar(p: &ThPal, st: ScreenState, app: &str, rail: bool, act: &Option<Act>)
                     .items_center()
                     .gap(px(10.))
                     .rounded(px(9.))
-                    .when(id == 1, |d| d.bg(p.sel))
+                    .when(lv.on(i, id == 1), |d| d.bg(p.sel))
                     .child(dot(tone_of(p, t)))
                     .child(
                         div()
@@ -346,11 +360,13 @@ fn sidebar(p: &ThPal, st: ScreenState, app: &str, rail: bool, act: &Option<Act>)
                                     .text_color(p.mute),
                             ),
                     ),
-            );
+                act,
+                row_id(i),
+            ));
         }
     }
     s = s.child(body);
-    s.child(
+    s.child(hit(
         div()
             .mt(px(6.))
             .pt(px(6.))
@@ -361,7 +377,9 @@ fn sidebar(p: &ThPal, st: ScreenState, app: &str, rail: bool, act: &Option<Act>)
             .gap(px(9.))
             .child(super::setscr::av(p, "RV", 28.))
             .child(clip(oxyn_core::parity::cmdstudio::PERSON)),
-    )
+        act,
+        "acct",
+    ))
 }
 
 pub(super) fn diff_pane(
@@ -518,8 +536,21 @@ pub(super) fn composer(
     hint: &'static str,
     plan: bool,
     act: &Option<Act>,
+    lv: &Live,
 ) -> Div {
     let f = fire(act, "send");
+    let mut sent = div().flex().flex_col().gap(px(2.));
+    for t in lv.sent.iter().rev().take(3).rev() {
+        sent = sent.child(
+            div()
+                .flex()
+                .gap(px(6.))
+                .text_size(px(12.))
+                .text_color(p.fg2)
+                .child(div().text_color(p.mute).child("Sent"))
+                .child(clip(t.clone())),
+        );
+    }
     let mut bar = div().flex().items_center().gap(px(6.));
     for c in chips {
         bar = bar.child(c);
@@ -535,7 +566,11 @@ pub(super) fn composer(
         .flex()
         .flex_col()
         .gap(px(6.))
-        .child(div().min_h(px(40.)).text_color(p.mute).child(hint))
+        .when(!lv.sent.is_empty(), |d| d.child(sent))
+        .child(match &lv.input {
+            Some(v) => div().min_h(px(40.)).child(v.clone()),
+            None => div().min_h(px(40.)).text_color(p.mute).child(hint),
+        })
         .child(
             bar.child(div().flex_1()).child(
                 div()
@@ -554,7 +589,7 @@ pub(super) fn composer(
         )
 }
 
-fn cc_body(p: &ThPal, st: ScreenState, wt: bool, act: &Option<Act>) -> Div {
+fn cc_body(p: &ThPal, st: ScreenState, wt: bool, act: &Option<Act>, lv: &Live) -> Div {
     let col = div().flex_1().min_w_0().h_full().flex().flex_col();
     let chips = vec![
         chip(p, Some(brand(p, CC_MODELS[0].1)), CC_MODELS[0].0, false),
@@ -592,6 +627,7 @@ fn cc_body(p: &ThPal, st: ScreenState, wt: bool, act: &Option<Act>) -> Div {
                 "Ask for a change · @ to add files",
                 false,
                 act,
+                lv,
             )));
     }
     let mut feed = div()
@@ -710,6 +746,7 @@ fn cc_body(p: &ThPal, st: ScreenState, wt: bool, act: &Option<Act>) -> Div {
         },
         false,
         act,
+        lv,
     )))
 }
 
@@ -817,7 +854,7 @@ fn block(p: &ThPal, b: &Block, act: &Option<Act>) -> Div {
     }
 }
 
-fn ss_body(p: &ThPal, st: ScreenState, ask: bool, act: &Option<Act>) -> Div {
+fn ss_body(p: &ThPal, st: ScreenState, ask: bool, act: &Option<Act>, lv: &Live) -> Div {
     let col = div().flex_1().min_w_0().h_full().flex().flex_col();
     let chips = vec![
         chip(p, None, Mode::Ask.label(), false),
@@ -849,6 +886,7 @@ fn ss_body(p: &ThPal, st: ScreenState, ask: bool, act: &Option<Act>) -> Div {
                 "Ask for a change · Shift + Tab switches mode",
                 false,
                 act,
+                lv,
             )));
     }
     let mut feed = div()
@@ -915,6 +953,7 @@ fn ss_body(p: &ThPal, st: ScreenState, ask: bool, act: &Option<Act>) -> Div {
                 "Ask for a change · Shift + Tab switches mode",
                 false,
                 act,
+                lv,
             )),
     )
 }
@@ -1183,13 +1222,14 @@ fn ss_panes(
         .child(pane(div().child(head("Side chat")).child(chat)))
 }
 
-fn screen(
+pub(super) fn screen(
     theme: &'static Theme,
     lay: ShellLayout,
     st: ScreenState,
     extra: &'static str,
     act: &Option<Act>,
     app: &'static str,
+    lv: &Live,
 ) -> Div {
     let p = th_pal(theme);
     let samp = st == ScreenState::Sample;
@@ -1202,7 +1242,7 @@ fn screen(
             if extra == "automations" {
                 auto_body(&p, st)
             } else {
-                cc_body(&p, st, wt, act)
+                cc_body(&p, st, wt, act, lv)
             },
             if samp { cc_diff() } else { Vec::new() },
             "Review",
@@ -1211,7 +1251,7 @@ fn screen(
         (
             "Cache invoice PDFs",
             None,
-            ss_body(&p, st, extra == "permission", act),
+            ss_body(&p, st, extra == "permission", act, lv),
             if samp { ss_diff() } else { Vec::new() },
             "Diff",
         )
@@ -1242,7 +1282,7 @@ fn screen(
         } else {
             Place::Local
         };
-        bar = bar.child(chip(&p, None, place.label(), true));
+        bar = bar.child(hit(chip(&p, None, place.label(), true), act, "place"));
     }
     let main = div()
         .flex_1()
@@ -1283,7 +1323,7 @@ fn screen(
         .text_color(p.fg)
         .text_size(px(13.));
     if extra != "hidden" {
-        root = root.child(sidebar(&p, st, app, extra == "rail", act));
+        root = root.child(sidebar(&p, st, app, extra == "rail" || lv.rail, act, lv));
     } else {
         main = main.ml(px(8.));
     }

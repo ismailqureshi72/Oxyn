@@ -4,10 +4,13 @@
 //! `.state()` sets Data / Loading / Empty and `.extra()` the own state (`preview`, `files`) or
 //! `rail` / `hidden`. Presses fire `new`, `send` and `publish` through `on_act`. Rules from
 //! `oxyn_core::parity::wscoder`.
+//!
+//! [`super::AgentAppView`] draws these screens as a live, interactive GPUI view; the elements
+//! below stay single-state snapshots.
 
 use gpui::{
-    App, Div, FontWeight, IntoElement, ParentElement, RenderOnce, Styled, Window, div, prelude::*,
-    px,
+    App, Div, FontWeight, IntoElement, ParentElement, RenderOnce, Stateful, Styled, Window, div,
+    prelude::*, px,
 };
 use oxyn_core::parity::screensfid::ShellLayout;
 use oxyn_core::parity::wscoder::{
@@ -17,6 +20,7 @@ use oxyn_core::parity::wscoder::{
 use oxyn_tokens::Theme;
 
 use super::Act;
+use super::apps::{Live, hit};
 use super::chatscr::clip;
 use super::cmdstudio::{brand, chip, composer, dot, mono, press, tone_of};
 use super::fleetwin::{faint, s11_col, s11_el, s11_frame, s11_row, s11_side, you};
@@ -39,7 +43,12 @@ fn ws_pane(p: &ThPal, st: ScreenState, extra: &str, act: &Option<Act>) -> Div {
         .border_b_1()
         .border_color(p.line);
     for (i, (_, l)) in WS_TABS.iter().copied().enumerate() {
-        tabs = tabs.child(
+        let id = match i {
+            0 => "view:files",
+            3 => "view:preview",
+            _ => "tab-other",
+        };
+        tabs = tabs.child(hit(
             div()
                 .h(px(28.))
                 .px(px(10.))
@@ -49,7 +58,9 @@ fn ws_pane(p: &ThPal, st: ScreenState, extra: &str, act: &Option<Act>) -> Div {
                 .text_color(if i == on { p.fg } else { p.fg2 })
                 .when(i == on, |d| d.bg(p.sel))
                 .child(l),
-        );
+            act,
+            id,
+        ));
     }
     let mut d = div()
         .w(px(440.))
@@ -172,24 +183,28 @@ fn ws_pane(p: &ThPal, st: ScreenState, extra: &str, act: &Option<Act>) -> Div {
     d
 }
 
-fn wc_screen(
+pub(super) fn wc_screen(
     p: &ThPal,
     lay: ShellLayout,
     st: ScreenState,
     extra: &'static str,
     act: &Option<Act>,
+    lv: &Live,
 ) -> Div {
     let done = !extra.is_empty() && extra != "rail" && extra != "hidden";
-    let rows: Vec<Div> = wc_chats(st)
+    let rows: Vec<Stateful<Div>> = wc_chats(st)
         .iter()
-        .map(|c| {
+        .enumerate()
+        .map(|(i, c)| {
             let run = c.running && !done;
             s11_row(
                 p,
                 if run { "run" } else { "" },
                 c.title.clone(),
-                c.id == 1,
+                lv.on(i, c.id == 1),
                 div().text_color(p.mute).child(WC_MODES[c.mode].0),
+                i,
+                act,
             )
         })
         .collect();
@@ -202,6 +217,7 @@ fn wc_screen(
         st,
         extra == "rail",
         act,
+        lv,
     );
     let chips = vec![
         chip(p, None, "Workspace", false),
@@ -214,6 +230,7 @@ fn wc_screen(
         "Ask anything, or describe what to build",
         false,
         act,
+        lv,
     );
     let inner = if st == ScreenState::Loading {
         skel(p, 6)

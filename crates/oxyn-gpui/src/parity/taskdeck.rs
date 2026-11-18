@@ -6,12 +6,16 @@
 //! Loading / Empty and `.extra()` the view's own state (`cloud`, `approval`, `menu`, `skills`, `editing`, `preview`) or the Oxyn
 //! options `rail` and `hidden`. Presses fire `new-task`, `tasks`, `send`, `allow`, `deny`,
 //! `open-<id>` through `on_act`. Rules come from `oxyn_core::parity::taskdeck`.
+//!
+//! [`super::AgentAppView`] draws these screens as a live, interactive GPUI view; the elements
+//! below stay single-state snapshots.
 
 use gpui::{
     App, Div, FontWeight, Hsla, IntoElement, ParentElement, RenderOnce, SharedString, Styled,
     Window, div, prelude::*, px,
 };
 use oxyn_core::icon_tone::IconTone;
+use oxyn_core::parity::appui::row_id;
 use oxyn_core::parity::screensfid::ShellLayout;
 use oxyn_core::parity::taskdeck::{
     APP, COLUMNS, EnvMode, MODELS, MODES, PANEL_TABS, PROJECTS, PROMPT, SUGGEST, ScreenState,
@@ -24,6 +28,7 @@ use oxyn_core::parity::taskdeck::{
 use oxyn_tokens::Theme;
 
 use super::Act;
+use super::apps::{Live, hit};
 use super::chatscr::{clip, file_tile, mark};
 use super::rulerfid::{ThPal, fire, th_pal};
 use super::screensfid::{gh, side_foot, skel, tone_ic};
@@ -74,7 +79,7 @@ macro_rules! s9_el {
         }
         impl RenderOnce for $name {
             fn render(self, _: &mut Window, _: &mut App) -> impl IntoElement {
-                screen(self.theme, self.layout, self.state, self.extra, &self.act, $view)
+                screen(self.theme, self.layout, self.state, self.extra, &self.act, $view, &Live::default())
             }
         }
     };
@@ -191,7 +196,9 @@ fn sidebar(
     view: &str,
     rail: bool,
     act: &Option<Act>,
+    lv: &Live,
 ) -> Div {
+    let mut k = 0usize;
     let w = if rail { 56. } else { 264. };
     let list: Vec<Task> = tasks(st).into_iter().filter(|t| t.env == env).collect();
     let nav = |l: &'static str, on: bool, id: &'static str| {
@@ -228,14 +235,16 @@ fn sidebar(
                 .items_center()
                 .gap(px(8.))
                 .font_weight(FontWeight::SEMIBOLD)
-                .child(
+                .child(hit(
                     div()
                         .w(px(18.))
                         .h(px(14.))
                         .rounded(px(3.))
                         .bg(p.fg)
                         .flex_none(),
-                )
+                    act,
+                    "rail",
+                ))
                 .when(!rail, |d| d.child(APP)),
         )
         .child(nav("New task", view == "start", "new-task"))
@@ -245,7 +254,12 @@ fn sidebar(
         .child(nav("Sites", view == "sites", "sites"));
     if !rail {
         let seg = |m: EnvMode| {
-            div()
+            let id = if m == EnvMode::Cloud {
+                "env-cloud"
+            } else {
+                "env-local"
+            };
+            hit(div(), act, id)
                 .flex_1()
                 .h(px(28.))
                 .flex()
@@ -296,16 +310,20 @@ fn sidebar(
                         .child(quiet(p, inner.len().to_string())),
                 );
                 for t in inner {
-                    body = body.child(div().pl(px(22.)).child(task_row(
-                        p,
-                        t,
-                        t.id == 1 && view == "task",
-                    )));
+                    let on = view == "task" && lv.on(k, t.id == 1);
+                    body = body.child(hit(
+                        div().pl(px(22.)).child(task_row(p, t, on)),
+                        act,
+                        row_id(k),
+                    ));
+                    k += 1;
                 }
             }
             body = body.child(gh(p, "Recents"));
             for t in list.iter().filter(|t| t.project.is_none()) {
-                body = body.child(task_row(p, t, false));
+                let on = view == "task" && lv.on(k, false);
+                body = body.child(hit(div().child(task_row(p, t, on)), act, row_id(k)));
+                k += 1;
             }
         }
         s = s.child(body);
@@ -313,19 +331,21 @@ fn sidebar(
         s = s.child(div().flex_1());
     }
     if rail {
-        s.child(
+        s.child(hit(
             div()
                 .flex()
                 .justify_center()
                 .pb(px(4.))
                 .child(super::setscr::av(p, "RV", 28.)),
-        )
+            act,
+            "acct",
+        ))
     } else {
         s.child(side_foot(p, act))
     }
 }
 
-fn start_view(p: &ThPal, env: EnvMode, loading: bool, act: &Option<Act>) -> Div {
+fn start_view(p: &ThPal, env: EnvMode, loading: bool, act: &Option<Act>, lv: &Live) -> Div {
     let mut col = div()
         .size_full()
         .flex()
@@ -347,14 +367,15 @@ fn start_view(p: &ThPal, env: EnvMode, loading: bool, act: &Option<Act>) -> Div 
         .border_1()
         .border_color(p.line)
         .bg(p.card)
-        .child(
-            div()
+        .child(match &lv.input {
+            Some(v) => div().h(px(68.)).px(px(6.)).child(v.clone()),
+            None => div()
                 .h(px(68.))
                 .px(px(6.))
                 .text_color(p.mute)
                 .text_size(px(14.5))
                 .child("Describe a task · @ for files, plugins and skills"),
-        )
+        })
         .child(
             div()
                 .flex()
@@ -1244,13 +1265,14 @@ fn sites_view(p: &ThPal, st: ScreenState, preview: bool, act: &Option<Act>) -> D
     div().size_full().flex().flex_col().child(hd).child(body)
 }
 
-fn screen(
+pub(super) fn screen(
     theme: &'static Theme,
     lay: ShellLayout,
     st: ScreenState,
     extra: &'static str,
     act: &Option<Act>,
     view: &'static str,
+    lv: &Live,
 ) -> Div {
     let p = th_pal(theme);
     let env = if extra == "cloud" {
@@ -1265,7 +1287,7 @@ fn screen(
         "plugins" => plugins_view(&p, st, extra == "skills", act),
         "scheduled" => scheduled_view(&p, st, extra == "editing", act),
         "sites" => sites_view(&p, st, extra == "preview", act),
-        _ => start_view(&p, env, loading, act),
+        _ => start_view(&p, env, loading, act, lv),
     };
     let mut main = div()
         .flex_1()
@@ -1290,7 +1312,15 @@ fn screen(
         .text_color(p.fg)
         .text_size(px(13.));
     if extra != "hidden" {
-        root = root.child(sidebar(&p, st, env, view, extra == "rail", act));
+        root = root.child(sidebar(
+            &p,
+            st,
+            env,
+            view,
+            extra == "rail" || lv.rail,
+            act,
+            lv,
+        ));
     } else {
         main = main.ml(px(8.));
     }

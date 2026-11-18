@@ -4,10 +4,13 @@
 //! Data / Loading / Empty and `.extra()` the own state (`pr`, `planner`) or `rail` / `hidden`.
 //! Presses fire `new`, `send`, `answer`, `sleep` and `open-pr` through `on_act`. Rules from
 //! `oxyn_core::parity::cmdboard`.
+//!
+//! [`super::AgentAppView`] draws these screens as a live, interactive GPUI view; the elements
+//! below stay single-state snapshots.
 
 use gpui::{
-    App, Div, FontWeight, IntoElement, ParentElement, RenderOnce, Styled, Window, div, prelude::*,
-    px,
+    App, Div, FontWeight, IntoElement, ParentElement, RenderOnce, Stateful, Styled, Window, div,
+    prelude::*, px,
 };
 use oxyn_core::parity::cmdboard::{
     CB_APP, CB_ASK, CB_PLAN, CB_REPOS, SStatus, ScreenState, TOOLS, cb_events, cb_msgs,
@@ -17,6 +20,7 @@ use oxyn_core::parity::screensfid::ShellLayout;
 use oxyn_tokens::Theme;
 
 use super::Act;
+use super::apps::{Live, hit};
 use super::chatscr::clip;
 use super::cmdstudio::{brand, chip, composer, dot, mono, pill, press, stat, tone_of};
 use super::fleetwin::{faint, s11_col, s11_el, s11_frame, s11_row, s11_side, you};
@@ -30,7 +34,7 @@ s11_el!(
     cb_screen
 );
 
-fn board_pane(p: &ThPal, st: ScreenState, extra: &str) -> Div {
+fn board_pane(p: &ThPal, st: ScreenState, extra: &str, act: &Option<Act>) -> Div {
     let on = if extra == "planner" { 3 } else { 0 };
     let mut tabs = div()
         .flex()
@@ -39,7 +43,12 @@ fn board_pane(p: &ThPal, st: ScreenState, extra: &str) -> Div {
         .border_b_1()
         .border_color(p.line);
     for (i, t) in TOOLS.iter().enumerate() {
-        tabs = tabs.child(
+        let id = match i {
+            0 => "view:",
+            3 => "view:planner",
+            _ => "tab-other",
+        };
+        tabs = tabs.child(hit(
             div()
                 .h(px(28.))
                 .px(px(10.))
@@ -49,7 +58,9 @@ fn board_pane(p: &ThPal, st: ScreenState, extra: &str) -> Div {
                 .text_color(if i == on { p.fg } else { p.fg2 })
                 .when(i == on, |d| d.bg(p.sel))
                 .child(t.label()),
-        );
+            act,
+            id,
+        ));
     }
     let d = div()
         .w(px(440.))
@@ -122,17 +133,19 @@ fn board_pane(p: &ThPal, st: ScreenState, extra: &str) -> Div {
     )
 }
 
-fn cb_screen(
+pub(super) fn cb_screen(
     p: &ThPal,
     lay: ShellLayout,
     st: ScreenState,
     extra: &'static str,
     act: &Option<Act>,
+    lv: &Live,
 ) -> Div {
     let is_pr = extra == "pr";
-    let rows: Vec<Div> = cb_sessions(st)
+    let rows: Vec<Stateful<Div>> = cb_sessions(st)
         .iter()
-        .map(|s| {
+        .enumerate()
+        .map(|(i, s)| {
             let status = if s.id == 1 && is_pr {
                 SStatus::PrOpen
             } else {
@@ -146,8 +159,10 @@ fn cb_screen(
                 p,
                 status.tone(),
                 s.title.clone(),
-                s.id == 1,
+                lv.on(i, s.id == 1),
                 tail.child(div().text_color(p.mute).child(s.ago.clone())),
+                i,
+                act,
             )
         })
         .collect();
@@ -160,6 +175,7 @@ fn cb_screen(
         st,
         extra == "rail",
         act,
+        lv,
     );
     let chips = vec![chip(p, Some(brand(p, "github")), CB_REPOS[0], false)];
     let comp = composer(
@@ -168,6 +184,7 @@ fn cb_screen(
         "Reply, or add something for the agent to do",
         false,
         act,
+        lv,
     );
     let inner = if st == ScreenState::Loading {
         skel(p, 6)
@@ -251,7 +268,7 @@ fn cb_screen(
         }
         c
     };
-    let pane = board_pane(p, st, extra);
+    let pane = board_pane(p, st, extra, act);
     let samp = st == ScreenState::Sample;
     let title = if samp {
         "CSV export on the reports page"
