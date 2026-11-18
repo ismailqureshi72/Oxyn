@@ -141,8 +141,11 @@
 .oxs8-wbody{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;margin:8px 0 0;border:1px solid var(--oxth-line);border-right:0;border-bottom:0;border-radius:12px 0 0 0;background:var(--oxth-card);overflow:hidden}
 .oxs8-win[data-layout="flat"] .oxs8-wbody{margin:0;border-width:0 0 0 1px;border-radius:0}
 .oxs8-wtop{flex:none;display:flex;align-items:center;gap:8px;height:46px;padding:0 16px;border-bottom:1px solid var(--oxth-line);color:var(--oxth-fg2);font-weight:500}
-.oxs8-pvw{flex:1 1 auto;min-height:0;overflow:hidden}
-.oxs8-pvc{display:flex;flex-direction:column;gap:22px;width:100%;padding:18px 40px 40px 16px;transition:transform .5s cubic-bezier(.3,.7,.2,1)}
+/* The preview scrolls on its own (wheel / touch; it is decorative, so not focusable), past its last
+   section and clear of the bottom fade, wherever the focused section moved it to. */
+.oxs8-pvw{flex:1 1 auto;min-height:0;overflow:hidden auto;overscroll-behavior:contain;scrollbar-width:none;pointer-events:auto}
+.oxs8-pvw::-webkit-scrollbar{display:none}
+.oxs8-pvc{display:flex;flex-direction:column;gap:22px;width:100%;padding:18px 40px 220px 16px;transition:transform .5s cubic-bezier(.3,.7,.2,1)}
 .oxs8-ps{display:flex;flex-direction:column;gap:10px;min-width:0;transition:opacity .4s}
 .oxs8-ps[data-on="false"]{opacity:.5}
 .oxs8-h3{margin:0;font-size:14px;font-weight:600;color:var(--oxth-fg)}
