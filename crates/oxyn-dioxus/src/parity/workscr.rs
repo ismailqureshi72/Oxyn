@@ -35,7 +35,7 @@ pub fn s2_states(screen: &str) -> Vec<(&'static str, &'static str)> {
 }
 
 /// A row of tabs (`role=tablist`, ←/→ move) with optional counts.
-fn tabs(
+pub(crate) fn tabs(
     aria: &'static str,
     items: Vec<(&'static str, String, Option<usize>)>,
     mut cur: Signal<&'static str>,
@@ -68,7 +68,7 @@ fn tabs(
 }
 
 /// A search field with Escape to clear.
-fn find(
+pub(crate) fn find(
     aria: &'static str,
     ph: &'static str,
     mut q: Signal<String>,

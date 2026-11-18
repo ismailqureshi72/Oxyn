@@ -44,6 +44,7 @@ pub use glyph_loader::{GLYPH_LOADER_CSS, GlyphLoader, GlyphLoaderProps};
 /// Stylesheet for approvals and checkpoints.
 pub const HITL_CSS: &str = include_str!("hitl.css");
 pub use parity::AccentDensity;
+pub use parity::ActivityScreen;
 pub use parity::AgentThreadScreen;
 pub use parity::AnalyticsScreen;
 pub use parity::AppFrame;
@@ -114,6 +115,7 @@ pub use parity::TypeScale;
 pub use parity::UploadDropzone;
 pub use parity::WorkflowScreen;
 pub use parity::s2_states;
+pub use parity::s3_states;
 pub use parity::{
     ActionSwapButton, InViewTitle, LoadingState, SlotReels, Source, StreamingText, SweepText,
     TextMorph, ThinkingLoader, WordReveal,
@@ -155,6 +157,7 @@ pub use parity::{
 };
 pub use parity::{ConflictRadar, MergeConflict};
 pub use parity::{GhostText, LabeledInput, LabeledTextarea, TextArea};
+pub use parity::{InboxBoardScreen, InboxScreen, MemoryScreen, TasksScreen};
 pub use primitives::{
     Accordion, AccordionItem, Breadcrumb, ChipGroup, CodeBlock, CopyButton, Dock, Drawer,
     EmptyPreset, ExpandableText, HoverCard, NotificationCenter, PageHeader, PaneView, PresenceDot,

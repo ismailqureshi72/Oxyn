@@ -115,6 +115,7 @@ pub use parity::{
     ConfirmPopoverEl, CountdownEl, CounterEl, FleetEl, FlowStepperEl, HoldConfirmEl,
     OrchestratorEl, PermissionRequestEl, ReadinessEl, TaskRowsEl, TreeTableEl,
 };
+pub use parity::{ActivityEl, InboxBoardEl, InboxScreenEl, MemoryEl, TasksEl};
 pub use parity::{
     ActivityHeatmapEl, ActivityHomeEl, AttachmentStripEl, DocGridEl, ExperimentGridEl,
     PollingCostEl, RunModeMenuEl, ThreadListEl, TokenUsageChartEl,

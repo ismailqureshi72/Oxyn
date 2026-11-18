@@ -1,5 +1,5 @@
 //! Screens 2 for GPUI over `oxyn_core::parity::screens2fid`: static snapshots of the agent screens
-//! ([`OrchestrationEl`], [`AgentThreadEl`]) in the Screens 1 frame with the agent sidebar. Each
+//! ([`OrchestrationEl`]; the Thread moved to `agentscr`) in the Screens 1 frame with the agent sidebar. Each
 //! takes the data state (Sample, Loading, Empty), the frame (Inset or Flat) and the theme; the host
 //! owns any live state. Rows a host can route carry `Act` ids: `nav-<key>` in the sidebar,
 //! `agent-<id>` on the orchestration tree, `task-<id>` on thread task cards.
@@ -9,9 +9,8 @@ use gpui::{
     div, prelude::*, px,
 };
 use oxyn_core::parity::screens2fid::{
-    AgStatus, OrchNode, ScreenState, ShellLayout, ThreadItem, clock, dur, eur, orch_children,
-    orch_done, orch_rollup, orch_trace, orch_tree, thread_counts, thread_items, toks, tools_line,
-    trace_span,
+    AgStatus, OrchNode, ScreenState, ShellLayout, clock, dur, eur, orch_children, orch_done,
+    orch_rollup, orch_trace, orch_tree, toks, trace_span,
 };
 use oxyn_tokens::Theme;
 
@@ -251,124 +250,6 @@ impl RenderOnce for OrchestrationEl {
             agent_side(&p, &self.act, "runs"),
             page(&p, "Runs", body),
             work,
-        )
-    }
-}
-
-screen_el!(
-    /// Thread: the conversation with the orchestrator – messages, the folded tool line, task cards
-    /// (`task-<id>`), files and the time-away marker – under the Today header with its counts.
-    AgentThreadEl
-);
-
-impl RenderOnce for AgentThreadEl {
-    fn render(self, _: &mut Window, _: &mut App) -> impl IntoElement {
-        let p = th_pal(self.theme);
-        let (run, need) = thread_counts(self.state == ScreenState::Sample);
-        let mut head = div().flex().items_center().gap(px(8.)).child(
-            div()
-                .text_size(px(22.))
-                .font_weight(FontWeight::SEMIBOLD)
-                .child("Today"),
-        );
-        if self.state == ScreenState::Sample {
-            head = head
-                .child(
-                    div()
-                        .px(px(10.))
-                        .py(px(3.))
-                        .rounded(px(999.))
-                        .border_1()
-                        .border_color(p.line)
-                        .child(format!("{run} running")),
-                )
-                .child(
-                    div()
-                        .px(px(10.))
-                        .py(px(3.))
-                        .rounded(px(999.))
-                        .border_1()
-                        .border_color(p.line)
-                        .child(format!("{need} need you")),
-                );
-        }
-        let mut body = div()
-            .flex()
-            .flex_col()
-            .gap(px(12.))
-            .p(px(22.))
-            .max_w(px(700.))
-            .child(head);
-        match self.state {
-            ScreenState::Loading => body = body.child(skel(&p, 7)),
-            ScreenState::Empty => {
-                body = body.child(empty(
-                    &p,
-                    "Start with the orchestrator",
-                    "Ask for an outcome; it plans, runs and checks in here.",
-                ))
-            }
-            ScreenState::Sample => {
-                for it in thread_items(true) {
-                    body = body.child(match it {
-                        ThreadItem::Me { text, .. } => div().flex().justify_end().child(
-                            div()
-                                .px(px(13.))
-                                .py(px(9.))
-                                .rounded(px(16.))
-                                .bg(p.sel)
-                                .max_w(px(480.))
-                                .child(text),
-                        ),
-                        ThreadItem::Agent { text, .. } => div().text_color(p.fg).child(text),
-                        ThreadItem::Tools(c) => div().text_color(p.mute).child(tools_line(&c)),
-                        ThreadItem::Task {
-                            id,
-                            name,
-                            step,
-                            done,
-                            of,
-                        } => {
-                            let aid: &'static str = if id == 21 { "task-21" } else { "task-22" };
-                            let f = fire(&self.act, aid);
-                            div().child(
-                                div()
-                                    .id(SharedString::from(format!("task-{id}")))
-                                    .p(px(10.))
-                                    .rounded(px(12.))
-                                    .border_1()
-                                    .border_color(p.line)
-                                    .bg(p.card)
-                                    .flex()
-                                    .flex_col()
-                                    .gap(px(3.))
-                                    .child(div().font_weight(FontWeight::SEMIBOLD).child(name))
-                                    .child(
-                                        div()
-                                            .text_color(p.mute)
-                                            .child(format!("{step} · {done} of {of} steps")),
-                                    )
-                                    .on_click(move |_, w, cx| f(w, cx)),
-                            )
-                        }
-                        ThreadItem::Files(fs) => div().text_color(p.fg2).child(fs.join("  ·  ")),
-                        ThreadItem::Away { hours, what } => div()
-                            .border_t_1()
-                            .border_b_1()
-                            .border_color(p.line)
-                            .py(px(6.))
-                            .text_color(p.mute)
-                            .child(format!("While you were away · {hours}h — {what}")),
-                    });
-                }
-            }
-        }
-        frame(
-            self.theme,
-            self.layout,
-            agent_side(&p, &self.act, "thread"),
-            page(&p, "Thread", body),
-            None,
         )
     }
 }

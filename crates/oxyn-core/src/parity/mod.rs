@@ -65,6 +65,7 @@
 //! - [`screensfid`]: Screens 1: app frames (Inset, Flat, three-pane) and the AI Chat screens
 //! - [`screens2fid`]: Screens 2: the agent screens (Orchestration, Thread and the rest) on the Screens 1 frame
 //! - [`workscr`]: Screens S2: the workspace screens (Folders, Integrations, Kanban, CRM, Analytics)
+//! - [`agentscr`]: Screens S3: agent ops I (Thread, Inbox, Inbox Board, Tasks, Activity, Memory)
 //! - [`answers`]: fidelity batch, family A: AI Answer markup and streaming, Cited Answer
 //!   sentences and quotes, Message Actions, Thinking Loader phases, Thinking State steps and the
 //!   Writing Assistant's sample writer and dictation.
@@ -72,6 +73,7 @@
 //!
 //! Like the rest of the core, time is passed in as [`crate::ClockMs`]; nothing reads a clock.
 
+pub mod agentscr;
 pub mod agentsfid;
 pub mod answers;
 pub mod attachfid;

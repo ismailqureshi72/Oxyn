@@ -72,11 +72,11 @@ macro_rules! work_el {
     };
 }
 
-fn tone(p: &ThPal, t: IconTone) -> Hsla {
+pub(super) fn tone(p: &ThPal, t: IconTone) -> Hsla {
     tone_color(t, p.fg.l > 0.5)
 }
 
-fn quiet(p: &ThPal, t: impl Into<SharedString>) -> Div {
+pub(super) fn quiet(p: &ThPal, t: impl Into<SharedString>) -> Div {
     div()
         .flex_none()
         .whitespace_nowrap()
@@ -104,12 +104,17 @@ fn nav_id(k: &'static str) -> &'static str {
         "invoices" => "nav-invoices",
         "payouts" => "nav-payouts",
         "customers" => "nav-customers",
+        "thread" => "nav-thread",
+        "agents" => "nav-agents",
+        "tasks" => "nav-tasks",
+        "memory" => "nav-memory",
+        "skills" => "nav-skills",
         _ => "nav-group",
     }
 }
 
 /// The persona sidebar: workspace row, search, nav with counts, the group, then the foot.
-fn side(p: &ThPal, pe: &Persona, on: &str, st: ScreenState, act: &Option<Act>) -> Div {
+pub(super) fn side(p: &ThPal, pe: &Persona, on: &str, st: ScreenState, act: &Option<Act>) -> Div {
     let mut s = div()
         .w(px(SIDE_W.0 as f32))
         .flex_none()
@@ -182,7 +187,12 @@ fn side(p: &ThPal, pe: &Persona, on: &str, st: ScreenState, act: &Option<Act>) -
 }
 
 /// The page with an optional 48 px top bar (crumb / title, actions).
-fn page(p: &ThPal, crumb: Option<(&'static str, String)>, actions: Vec<Div>, body: Div) -> Div {
+pub(super) fn page(
+    p: &ThPal,
+    crumb: Option<(&'static str, String)>,
+    actions: Vec<Div>,
+    body: Div,
+) -> Div {
     let mut col = div().flex_1().min_w_0().flex().flex_col();
     if let Some((root, title)) = crumb {
         let mut bar = div()
@@ -214,7 +224,7 @@ fn page(p: &ThPal, crumb: Option<(&'static str, String)>, actions: Vec<Div>, bod
     col.child(body)
 }
 
-fn btn(p: &ThPal, l: &'static str, primary: bool) -> Div {
+pub(super) fn btn(p: &ThPal, l: &'static str, primary: bool) -> Div {
     let d = div()
         .flex_none()
         .h(px(28.))
@@ -235,7 +245,7 @@ fn btn(p: &ThPal, l: &'static str, primary: bool) -> Div {
     }
 }
 
-fn tabs(p: &ThPal, items: &[(&'static str, String)], on: &str) -> Div {
+pub(super) fn tabs(p: &ThPal, items: &[(&'static str, String)], on: &str) -> Div {
     let mut r = div().flex().items_center().gap(px(6.)).min_w_0();
     for (k, l) in items {
         let sel = *k == on;
@@ -258,7 +268,7 @@ fn tabs(p: &ThPal, items: &[(&'static str, String)], on: &str) -> Div {
     r
 }
 
-fn find(p: &ThPal, ph: &'static str, w: f32) -> Div {
+pub(super) fn find(p: &ThPal, ph: &'static str, w: f32) -> Div {
     div()
         .w(px(w))
         .flex_none()
@@ -283,7 +293,7 @@ fn cap(p: &ThPal, t: &'static str, n: usize) -> Div {
         .child(format!("{} {n}", t.to_uppercase()))
 }
 
-fn none(p: &ThPal, t: &'static str, l: &'static str) -> Div {
+pub(super) fn none(p: &ThPal, t: &'static str, l: &'static str) -> Div {
     div()
         .flex()
         .flex_col()
