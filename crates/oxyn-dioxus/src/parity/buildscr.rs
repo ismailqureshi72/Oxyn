@@ -206,13 +206,16 @@ pub fn EvalsScreen(
                         div { class: "oxev-prog", role: "progressbar", "aria-label": "Eval progress", "aria-valuemin": "0", "aria-valuemax": "{n}", "aria-valuenow": "{i}",
                             span { class: "oxev-prog-t", "Scoring {case_id(i as u32 + 1)} · {i} of {n} done" }
                             span { class: "oxev-prog-bar", span { style: "width:{i * 100 / n}%" } }
-                            span { key: "{i}", class: "oxev-tick",
-                                onanimationend: move |_| {
-                                    match run_next(i, n) {
-                                        Some(j) => run.set(Some(j)),
-                                        None => { run.set(None); scored.set(Some(model())); last.set("just now".to_string()); said.set(format!("Eval done: {}% pass", pass_rate(&cases.peek(), ver(), model()))); }
-                                    }
-                                } }
+                            // Keyed in a list so each step mounts a fresh tick and its animation runs again.
+                            for k in [i] {
+                                span { key: "{k}", class: "oxev-tick",
+                                    onanimationend: move |_| {
+                                        match run_next(k, n) {
+                                            Some(j) => run.set(Some(j)),
+                                            None => { run.set(None); scored.set(Some(model())); last.set("just now".to_string()); said.set(format!("Eval done: {}% pass", pass_rate(&cases.peek(), ver(), model()))); }
+                                        }
+                                    } }
+                            }
                         }
                     }
                     if !fresh && running.is_none() {
@@ -335,7 +338,7 @@ pub fn EvalsScreen(
                                         if cost_col { span { role: "cell", class: "oxev-c-cost oxev-num", "€0.{case_cost_tenths(&c):03}" } }
                                         span { role: "cell", class: "oxev-rr",
                                             if one() == Some(id) {
-                                                span { key: "t{id}", class: "oxev-tick", onanimationend: move |_| { one.set(None); rerun.write().push(id); said.set(format!("{} re-run: {}", case_id(id), Verdict::of(score_on(&cases.peek()[idx], ver(), model())).label())); } }
+                                                span { class: "oxev-tick", onanimationend: move |_| { one.set(None); rerun.write().push(id); said.set(format!("{} re-run: {}", case_id(id), Verdict::of(score_on(&cases.peek()[idx], ver(), model())).label())); } }
                                             }
                                             button { r#type: "button", class: "oxscn-ib", "aria-label": "Re-run {case_id(id)}", disabled: busy || running.is_some(),
                                                 onclick: move |_| { one.set(Some(id)); said.set(format!("Re-running {}", case_id(id))); }, {ico("redo")} }

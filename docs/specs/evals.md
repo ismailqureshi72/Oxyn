@@ -3,7 +3,7 @@
 # Spec: Evals (`evals`)
 
 Family: Screens. Reference: affectUI Evals (`/screens/evals`), layout and behaviour only; no source or assets copied.
-Components: `EvalsScreen` (Dioxus), models in `oxyn_core::parity::buildscr`. GPUI: not built yet (see gaps).
+Components: `EvalsScreen` (Dioxus) · `EvalsEl` (GPUI), models in `oxyn_core::parity::buildscr`.
 
 ## 1. Purpose
 Know whether a prompt change made replies better before it ships: how often it passes, what changed in the prompt, and which cases broke.
@@ -39,4 +39,4 @@ The chart is a listbox of versions with aria-activedescendant (←/→, Home/End
 Authored on the 1440 × 900 stage (rule R1) and scaled to its column; the full view (`/screens/evals/full`) renders at the real viewport (R2). Under 1000 px of page the chart and the diff stack and Expected hides; under 700 px the tiles go two by two and only input, score and re-run stay; under 640 px the sidebar slides in from a menu button. Labels ellipsise in flex children with min-width 0 (R5); scripts/ovl.py finds no text overlap at 1440, 768 and 390 in light and dark.
 
 ## 7. Known gaps
-No GPUI element yet. Prompts, cases, people and the workspace are fictional; model versions are fictional, model and channel marks are the providers' official ones.
+GPUI is a static snapshot: `.extra("running" | "fails" | "cost")` draws the own state or an option; menus, re-runs and the chart's keyboard belong to the Dioxus screen. Prompts, cases, people and the workspace are fictional; model versions are fictional, model and channel marks are the providers' official ones.

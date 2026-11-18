@@ -3410,7 +3410,7 @@ pub fn WorkflowScreen(
                                 if !df {
                                     div { class: "oxswf-db", role: "tabpanel",
                                         {match dock_tab() {
-                                            "payload" => rsx! { pre { class: "oxswf-pre", "{{\n  \"member\": {{ \"name\": \"Rowan Pike\", \"plan\": \"Pro\", \"email\": \"rowan@example.com\" }},\n  \"source\": \"sign-up form\"\n}}" } },
+                                            "payload" => rsx! { pre { class: "oxswf-pre", "{{\n  \"member\": {{ \"name\": \"Ines Marlow\", \"plan\": \"Pro\", \"email\": \"ines@example.com\" }},\n  \"source\": \"sign-up form\"\n}}" } },
                                             "triggers" => rsx! {
                                                 ul { class: "oxswf-dl",
                                                     if trig.is_empty() { li { class: "oxscn-hint", "No trigger yet: add one from the palette." } }

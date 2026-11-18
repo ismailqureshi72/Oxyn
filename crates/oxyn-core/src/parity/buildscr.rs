@@ -124,12 +124,22 @@ impl Verdict {
     }
 }
 
+/// A case as written: input, expected, output, scores per version, latency ms, channel.
+type RawCase = (
+    &'static str,
+    &'static str,
+    &'static str,
+    [u8; 3],
+    u32,
+    &'static str,
+);
+
 /// The test cases of the support reply prompt (empty for the Empty state).
 pub fn eval_cases(sample: bool) -> Vec<EvalCase> {
     if !sample {
         return Vec::new();
     }
-    let raw: [(&str, &str, &str, [u8; 3], u32, &str); 25] = [
+    let raw: [RawCase; 25] = [
         (
             "Where is parcel #48213? It has been nine days.",
             "Look up the status, share the tracking link, say sorry once.",
@@ -356,7 +366,7 @@ pub fn case_id(n: u32) -> String {
 /// re-run on them shows a real difference.
 pub fn score_on(c: &EvalCase, version: usize, model: usize) -> u8 {
     let s = c.scores[version.min(2)];
-    if model > 0 && (c.n * 7 + model as u32) % 6 == 0 {
+    if model > 0 && (c.n * 7 + model as u32).is_multiple_of(6) {
         s.saturating_sub(1)
     } else {
         s

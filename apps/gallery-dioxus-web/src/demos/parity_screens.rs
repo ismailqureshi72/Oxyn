@@ -2928,7 +2928,7 @@ fn evals_screen_demo() -> Demo {
             CAT,
             "A prompt's eval: pass rate, average score, latency and cost against the version before; pass rate across every version as a chart you can step through; the system prompt's changes as a diff to review (step through, Accept all or Reject all); and the test cases with Pass / Partial / Fail filters, a row that opens to the full reply and Re-run on each. Pick another model and Run eval scores every case on it in turn.",
             "EvalsScreen",
-            "",
+            "EvalsEl",
             "evals",
             "parity/buildscr.rs",
         )
