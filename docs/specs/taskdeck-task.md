@@ -1,0 +1,34 @@
+**Status:** built v0.1 (2026-11-18, S9: Agent apps I, Taskdeck).
+
+# Spec: Taskdeck · Task (`taskdeck-task`)
+
+Family: Agent apps (a new category after Screens; pages at `/screens/taskdeck-task/`). Reference: the task-runner pattern shared by desktop agent apps (MiniMax Code and others, see the agent-apps research), behaviour and layout only, under our own name and design; no source, artwork or copy taken.
+Components: `TaskdeckTaskScreen` (Dioxus) · `TaskdeckTaskEl` (GPUI), rules in `oxyn_core::parity::taskdeck`.
+
+## 1. Purpose
+Watch a task run, step by step, see every tool call and file it makes, and answer it when it needs you.
+
+## 2. Parts
+| Part | Look |
+|---|---|
+| Sidebar (264) | App mark and name, Search (filters tasks) and Hide sidebar; New task ⌘N, Tasks (running + needs-you count), Plugins & skills (a popover of plugin switches); a Local / Cloud radio group; Projects (folders in the semantic folder blue, expandable, with their tasks) and Recents. Rows show a spinner (running), an amber dot (needs you), a red dot (failed) or a ring, then the title and age |
+| Sidebar bottom | A "2 running · 1 need you" card (opens the board), then the account row (avatar, name, plan, ⌄) with the Inbox bell. The account menu (S0 rules) holds the header with plan badge, Settings, Usage ▸ (plan, credits meter, quotas), Upgrade plan, **Daily check-in** (+50, then "Checked in today"), Language, Appearance, Keyboard shortcuts, Integrations, Download apps, Changelog, Feedback & help ▸ and Log out. The bell lists tasks that need you |
+| Header (64) | Task title, status pill (Running, Needs you, Done, Failed), Local or Cloud, the project folder, "Step n of N · time"; Pause / Resume and the side panel toggle; a 3 px progress line under it |
+| Timeline | The prompt as your bubble, then the steps: a mark (spinner, check, hand, skipped), the title and its time; open steps show the tool call (`browser.search`, `sheet.write`, `terminal.run`…) with its argument in mono and the output. A step that needs approval shows a card: the command, Allow once, Always in this folder, Deny |
+| Follow-up | A pill field "Steer or add a follow-up…" with send; sent ones appear as Queued bubbles |
+| Side panel (340) | Tabs Artifacts (count) · Files · Terminal · Browser. Artifacts open in place: the comparison sheet as a table, the chart as bars, notes as text. Files is the workspace tree; Terminal replays the calls with ✓ outputs; Browser shows the page it is on and the pages it visited |
+
+## 3. Behaviour
+A running task moves on one step every 2.4 s (CSS-timed, so reduced motion makes it near instant) until a step needs approval; Allow runs it, Deny skips it and moves on. Pause stops the clock; Resume continues. The sidebar row, the board and the Inbox bell follow the task's status. Step headers fold and unfold. When the last step finishes a Done line counts the files in Artifacts. Opening another task from the sidebar or the board shows its run; with no task, an empty state offers New task.
+
+## 4. Variants
+States: Data · Loading · Empty · **Needs you (an approval waiting)**. Frame: Inset (the main area a rounded card on the sidebar grey) · Flat (edge to edge with a hairline). Oxyn extras: `rail` (the sidebar as a 56 px icon rail; the top bar expands it) and `sidebar_hidden` (the top bar brings it back).
+
+## 5. Keyboard and accessibility
+The sidebar is a nav landmark; the current view and open task carry aria-current=page. Local / Cloud and Board / List are radiogroups; run mode and model are menus of menuitemradio; every menu and popover closes on Escape and the account menu's submenus open with → and close with ←. Steps are an ordered list; the approval is a labelled group. The side panel is a tablist (← → move). Every action reports in a polite live region; skeletons are aria-busy.
+
+## 6. Responsive
+Authored on the 1440 × 900 stage (rule R1) and scaled to its column; the full view (`/screens/taskdeck-task/full`) renders at the real viewport with the state bar under it (R2). Under 960 px the sidebar becomes a drawer from a top-bar button (with a scrim) and the task's side panel opens over the task. Under 620 px the composer chips shorten, the board scrolls sideways and the list keeps title and status. Labels ellipsise in flex children with min-width 0 (R5); scripts/ovl.py finds no text overlap at 1440, 768 and 390 in light and dark.
+
+## 7. Known gaps
+GPUI is a static snapshot: `.extra(...)` draws the own state, `rail` or `hidden`; menus, ticks and typing belong to the host. There is no backend: runs advance on a timer through a fixed plan, tool calls and outputs are simulated, and the open task's files are fictional. Model marks are the official coloured marks (Lobe Icons, MIT), used only to name the model. Everything else (people, companies, stores, desks) is fictional.

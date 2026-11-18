@@ -1,5 +1,5 @@
 //! Screens demos (#42 Screens 1, Screens 2): app frames (Inset, Flat, three-pane) and the AI Chat screens (Start, Overview,
-//! Agents, Double sidebar, Progress, Run) Folders (Overview, Detail), Integrations, Kanban, CRM, the Workflow builder and the Settings shell, then the agent screens (Orchestration; S3: Thread, Inbox, Inbox Board, Tasks, Activity, Memory; S4: Agents, Skills, Schedules, Usage, Permissions, Run Detail; S5: Evals and the upgraded Orchestration and Workflow Builder; S6: Settings Profile, Preferences, Notifications, Privacy and General; S7: Settings Members, Models, Security, Billing and Get started; S8: the Onboarding wizard, Website, Brand, Tone and Ready). Every screen has Sample / Loading / Empty data and an
+//! Agents, Double sidebar, Progress, Run) Folders (Overview, Detail), Integrations, Kanban, CRM, the Workflow builder and the Settings shell, then the agent screens (Orchestration; S3: Thread, Inbox, Inbox Board, Tasks, Activity, Memory; S4: Agents, Skills, Schedules, Usage, Permissions, Run Detail; S5: Evals and the upgraded Orchestration and Workflow Builder; S6: Settings Profile, Preferences, Notifications, Privacy and General; S7: Settings Members, Models, Security, Billing and Get started; S8: the Onboarding wizard, Website, Brand, Tone and Ready; S9, Agent apps: Taskdeck Start, Task and Board). Every screen has Sample / Loading / Empty data and an
 //! Inset / Flat frame; light and dark follow the page theme.
 
 use dioxus::prelude::*;
@@ -21,6 +21,7 @@ use oxyn_dioxus::{
     OnboardingBrandScreen, OnboardingReadyScreen, OnboardingToneScreen, OnboardingWebsiteScreen,
     s8_states,
 };
+use oxyn_dioxus::{TaskdeckBoardScreen, TaskdeckStartScreen, TaskdeckTaskScreen, s9_states};
 
 use super::{Code, mk, sel, var};
 use crate::{Align, Demo, Vals};
@@ -4146,6 +4147,209 @@ fn onb_ready_demo() -> Demo {
     )
 }
 
+// ---------- Agent apps I: Taskdeck (S9) ----------
+
+fn s9_key(slug: &str, label: &str) -> String {
+    s9_states(slug)
+        .iter()
+        .find(|(_, l)| l.eq_ignore_ascii_case(label))
+        .map(|(k, _)| k.to_string())
+        .unwrap_or_else(|| low(label))
+}
+
+fn td_el(slug: &'static str, lay: String, s: String, a: bool, b: bool) -> Element {
+    match slug {
+        "taskdeck-task" => {
+            rsx! { TaskdeckTaskScreen { layout: lay, state: s, rail: a, sidebar_hidden: b } }
+        }
+        "taskdeck-board" => {
+            rsx! { TaskdeckBoardScreen { layout: lay, state: s, rail: a, sidebar_hidden: b } }
+        }
+        _ => {
+            rsx! { TaskdeckStartScreen { layout: lay, state: s, rail: a, sidebar_hidden: b } }
+        }
+    }
+}
+
+fn td_screen(slug: &'static str, v: &Vals) -> Element {
+    let (_, lay, key) = frame(v);
+    let st = s9_key(slug, v.s("data"));
+    let key = format!("{key}-{}-{}", v.b("x1"), v.b("x2"));
+    let (a, b) = (v.b("x1"), v.b("x2"));
+    rsx! {
+        div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
+            ScreenStage { state: st, states: s9_states(slug), screen: move |s: String| td_el(slug, lay.clone(), s, a, b) }
+        }
+    }
+}
+
+fn td_code(name: &str, slug: &str, v: &Vals) -> String {
+    let c = Code::new(name).s("layout", &low(v.s("frame")), "inset").s(
+        "state",
+        &s9_key(slug, v.s("data")),
+        "sample",
+    );
+    let c = c.b("rail", v.b("x1")).b("sidebar_hidden", v.b("x2"));
+    c.done()
+}
+
+fn td_start_screen(v: &Vals, _now: ClockMs) -> Element {
+    td_screen("taskdeck-start", v)
+}
+fn td_task_screen(v: &Vals, _now: ClockMs) -> Element {
+    td_screen("taskdeck-task", v)
+}
+fn td_board_screen(v: &Vals, _now: ClockMs) -> Element {
+    td_screen("taskdeck-board", v)
+}
+fn td_start_code(v: &Vals) -> String {
+    td_code("TaskdeckStartScreen", "taskdeck-start", v)
+}
+fn td_task_code(v: &Vals) -> String {
+    td_code("TaskdeckTaskScreen", "taskdeck-task", v)
+}
+fn td_board_code(v: &Vals) -> String {
+    td_code("TaskdeckBoardScreen", "taskdeck-board", v)
+}
+
+#[allow(clippy::too_many_arguments)]
+fn td_demo(
+    slug: &'static str,
+    name: &'static str,
+    summary: &'static str,
+    dx: &'static str,
+    gp: &'static str,
+    own: (&'static str, &'static str, &'static str),
+    render: fn(&Vals, ClockMs) -> Element,
+    code: fn(&Vals) -> String,
+    keyboard: Vec<(&'static str, &'static str)>,
+) -> Demo {
+    let (own_key, own_label, own_note) = own;
+    let mut c = controls_x("inset", &[own_label]);
+    c.push(super::tog("x1", "Icon rail", false));
+    c.push(super::tog("x2", "Sidebar hidden", false));
+    Demo {
+        controls: c,
+        variants: vec![
+            var(
+                "sample",
+                "Sample data, the main area as an inset card.",
+                &[],
+            ),
+            var(
+                "flat",
+                "The same view with the main area edge to edge.",
+                &[("frame", "Flat")],
+            ),
+            var(
+                "loading",
+                "Skeletons in the sidebar and the main area.",
+                &[("data", "Loading")],
+            ),
+            var(
+                "empty",
+                "A first run: no tasks or projects yet.",
+                &[("data", "Empty")],
+            ),
+            var(own_key, own_note, &[("data", own_label)]),
+            var(
+                "x1",
+                "Oxyn: the sidebar as a 56 px icon rail; the top bar expands it.",
+                &[("x1", "true")],
+            ),
+            var(
+                "x2",
+                "Oxyn: the sidebar hidden for focus; the top bar brings it back.",
+                &[("x2", "true")],
+            ),
+        ],
+        render,
+        code,
+        keyboard,
+        a11y: vec![
+            "The sidebar is a nav landmark; the open view and the open task carry aria-current=page.",
+            "Local / Cloud, run mode, model and Board / List are radio groups or menus with menuitemradio; menus close on Escape.",
+            "Steps are an ordered list; a step waiting for approval is a labelled group with Allow once, Always in this folder and Deny.",
+            "The side panel is a tablist (arrow keys move between Artifacts, Files, Terminal and Browser). Every action reports in a polite live region.",
+        ],
+        responsive: vec![
+            "Authored on the 1440 × 900 canvas: a 264 px sidebar, the main area and a 340 px side panel on the task.",
+            "Under 960 px the sidebar becomes a drawer from the top bar and the side panel opens over the task.",
+            "Under 620 px the composer chips shorten, the board scrolls sideways and the list keeps title and status.",
+        ],
+        height: 240,
+        live: false,
+        align: Align::Start,
+        ..mk(slug, name, CAT, summary, dx, gp, slug, "parity/taskdeck.rs")
+    }
+}
+
+fn td_start_demo() -> Demo {
+    td_demo(
+        "taskdeck-start",
+        "Taskdeck · Start",
+        "Agent apps / Taskdeck: a desktop agent app's start screen. A sidebar with New task, Tasks, Plugins & skills, a Local / Cloud switch, projects and recent tasks, and the account row with the inbox bell; in the middle the task composer with + (files, folder, plugins, skills), run mode, model, dictation and send, the folder it works in and four starter ideas. Sending checks the prompt, starts the task and opens it.",
+        "TaskdeckStartScreen",
+        "TaskdeckStartEl",
+        (
+            "cloud",
+            "Cloud",
+            "Cloud mode: cloud tasks in the sidebar and a hand-off headline.",
+        ),
+        td_start_screen,
+        td_start_code,
+        vec![
+            ("Enter", "Start the task (Shift + Enter for a new line)"),
+            ("Escape", "Close a menu or the search field"),
+            ("Tab", "Composer, its chips, then the ideas"),
+        ],
+    )
+}
+
+fn td_task_demo() -> Demo {
+    td_demo(
+        "taskdeck-task",
+        "Taskdeck · Task",
+        "Agent apps / Taskdeck: a running task. The prompt, then a step timeline that advances on its own: each step shows its tool call and output, a script waits for approval (Allow once, Always in this folder, Deny), Pause and Resume, follow-ups queue for the next step; the side panel has Artifacts (open the sheet, chart or note), Files, Terminal and Browser.",
+        "TaskdeckTaskScreen",
+        "TaskdeckTaskEl",
+        (
+            "approval",
+            "Needs you",
+            "The task stopped on an approval for a terminal command.",
+        ),
+        td_task_screen,
+        td_task_code,
+        vec![
+            ("Arrow keys", "Move between the side panel's tabs"),
+            ("Enter", "Send the follow-up"),
+            ("Tab", "Steps, the approval buttons, Pause, the panel"),
+        ],
+    )
+}
+
+fn td_board_demo() -> Demo {
+    td_demo(
+        "taskdeck-board",
+        "Taskdeck · Board",
+        "Agent apps / Taskdeck: every task by status, Queued, Running, Needs you and Done, as a board or a list for the current Local or Cloud side. Cards show the project, progress and age; their menu opens, runs, re-queues, finishes or deletes them, and a click opens the task.",
+        "TaskdeckBoardScreen",
+        "TaskdeckBoardEl",
+        (
+            "menu",
+            "Account menu",
+            "The account menu open: Usage, Daily check-in, Feedback & help.",
+        ),
+        td_board_screen,
+        td_board_code,
+        vec![
+            ("Tab", "Cards and their menus, column by column"),
+            ("Escape", "Close a card menu or the account menu"),
+            ("→ in the account menu", "Open Usage or Feedback & help"),
+        ],
+    )
+}
+
 pub(crate) fn demos() -> Vec<Demo> {
     vec![
         shell_inset_demo(),
@@ -4193,5 +4397,8 @@ pub(crate) fn demos() -> Vec<Demo> {
         onb_brand_demo(),
         onb_tone_demo(),
         onb_ready_demo(),
+        td_start_demo(),
+        td_task_demo(),
+        td_board_demo(),
     ]
 }
