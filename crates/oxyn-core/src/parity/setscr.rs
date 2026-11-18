@@ -451,6 +451,14 @@ pub fn links() -> Vec<Link> {
 }
 
 /// Everything with the sample filled in, or a new account (`sample` false): blank text, the
+/// The sample data (what the demo screens show). Hosts pass their own `Prefs` to a settings
+/// screen's `data` prop; start from `Prefs::default()` and replace what you have.
+impl Default for Prefs {
+    fn default() -> Self {
+        prefs(true)
+    }
+}
+
 /// defaults, no memories, one session (this one) and no links.
 pub fn prefs(sample: bool) -> Prefs {
     let s = |v: &str| if sample { v.to_string() } else { String::new() };

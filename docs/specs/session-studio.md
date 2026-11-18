@@ -33,5 +33,8 @@ Sidebar is a nav landmark; the open session has aria-current=page. Permission pr
 ## 6. Responsive
 As Command Center: drawer sidebar and the diff pane over the chat under 960 px; shorter chips under 620 px; no text overlap at 1440, 768 and 390 in light and dark (scripts/ovl.py).
 
-## 7. Known gaps
-GPUI is a static snapshot (`.extra("permission" | "rail" | "hidden")`). No backend: the blocks, test output, plan and diff are fictional, and other sessions open empty.
+## 7. Data
+`SessionStudioScreen` takes `data: Option<SessionStudioData>` (`oxyn_core::parity::cmdstudio`). `None` shows the sample for the state; to show your own, start from `SessionStudioData::default()` and replace fields: `sessions: Vec<Session>`, `blocks: Vec<Block>` and `todos` for the first session, and `diffs: Vec<(u32, Vec<DiffFile>)>` (each session's changes; `diff(id)` looks one up). `Session` and `DiffFile` text is `&'static str` for now (leak or intern runtime strings).
+
+## 8. Known gaps
+GPUI is a static snapshot (`.extra("permission" | "chat" | "arrange" | "rail" | "hidden")`); dragging belongs to the host. No backend: the blocks, test output, plan, side-chat answers and diffs are fictional; other sessions open with their own diff and an empty chat.

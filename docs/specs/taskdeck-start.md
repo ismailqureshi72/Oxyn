@@ -32,5 +32,8 @@ The sidebar is a nav landmark; the current view and open task carry aria-current
 ## 6. Responsive
 Authored on the 1440 × 900 stage (rule R1) and scaled to its column; the full view (`/screens/taskdeck-start/full`) renders at the real viewport with the state bar under it (R2). Under 960 px the sidebar becomes a drawer from a top-bar button (with a scrim) and the task's side panel opens over the task. Under 620 px the composer chips shorten, the board scrolls sideways and the list keeps title and status. Labels ellipsise in flex children with min-width 0 (R5); scripts/ovl.py finds no text overlap at 1440, 768 and 390 in light and dark.
 
-## 7. Known gaps
+## 7. Data
+Every Taskdeck screen takes `data: Option<TaskdeckData>` (`oxyn_core::parity::taskdeck`). `None` shows the sample for the state; to show your own, start from `TaskdeckData::default()` (the sample) and replace fields: `tasks: Vec<Task>` (newest first), `plugins: Vec<(bool, bool)>` (installed, on, per `CATALOG` entry), `skills: Vec<Skill>`, `schedules: Vec<Schedule>` and `sites: Vec<Site>`. `TaskdeckData::for_state(ScreenState::Empty)` is the empty set. The screen keeps edits in its own state; read them back through your host if you need them.
+
+## 8. Known gaps
 GPUI is a static snapshot: `.extra(...)` draws the own state, `rail` or `hidden`; menus, ticks and typing belong to the host. There is no backend: runs advance on a timer through a fixed plan, tool calls and outputs are simulated, and the open task's files are fictional. Model marks are the official coloured marks (Lobe Icons, MIT), used only to name the model. Everything else (people, companies, stores, desks) is fictional.

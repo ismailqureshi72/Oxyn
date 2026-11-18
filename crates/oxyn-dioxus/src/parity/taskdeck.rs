@@ -1215,17 +1215,20 @@ fn TaskdeckApp(
     height: u32,
     rail: bool,
     hidden: bool,
+    data: Option<TaskdeckData>,
 ) -> Element {
     let (st, own) = split(&state);
     let loading = st == ScreenState::Loading;
     let start_view = view_of(&slug);
+    let d0 = use_hook(move || data.unwrap_or_else(|| TaskdeckData::for_state(st)));
     let env0 = if own == "cloud" {
         EnvMode::Cloud
     } else {
         EnvMode::Local
     };
+    let d1 = d0.clone();
     let tasks_s = use_signal(move || {
-        let mut l = tasks(st);
+        let mut l = d1.tasks;
         if own == "approval"
             && let Some(t) = l.iter_mut().find(|t| t.id == 1)
         {
@@ -1248,6 +1251,11 @@ fn TaskdeckApp(
     let said = use_signal(String::new);
     let drawer = use_signal(move || own == "menu");
     let asked = use_signal(|| (0u32, String::new()));
+    let (d2, d3, d4, d5) = (d0.clone(), d0.clone(), d0.clone(), d0);
+    let plugs = use_signal(move || d2.plugins);
+    let skills_s = use_signal(move || d3.skills);
+    let scheds = use_signal(move || d4.schedules);
+    let sites_s = use_signal(move || d5.sites);
     let ctx = Ctx {
         tasks: tasks_s,
         view,
@@ -1337,8 +1345,12 @@ macro_rules! s9_screen {
             /// Oxyn: open with the sidebar hidden (the top bar brings it back).
             #[props(default)]
             sidebar_hidden: bool,
+            /// Your data (tasks, plugins, skills, schedules, sites). `None` shows the sample for
+            /// `state`; start from `TaskdeckData::default()` and replace what you have.
+            #[props(default)]
+            data: Option<TaskdeckData>,
         ) -> Element {
-            rsx! { TaskdeckApp { slug: $slug.to_string(), state, layout, height, rail, hidden: sidebar_hidden } }
+            rsx! { TaskdeckApp { slug: $slug.to_string(), state, layout, height, rail, hidden: sidebar_hidden, data } }
         }
     };
 }

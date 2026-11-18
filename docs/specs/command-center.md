@@ -34,5 +34,8 @@ Sidebar is a nav landmark; the open thread has aria-current=page. Pickers are me
 ## 6. Responsive
 Authored on the 1440 × 900 stage and scaled to its column; `/full` renders at the real viewport. Under 960 px the sidebar is a drawer from the top bar (with a scrim) and the review pane opens over the thread from its top-bar button or the changes card. Under 620 px chips shorten; under 440 px the status pill hides. Labels ellipsise in flex children with min-width 0; scripts/ovl.py finds no text overlap at 1440, 768 and 390 in light and dark.
 
-## 7. Known gaps
-GPUI is a static snapshot (`.extra("worktree" | "rail" | "hidden")`); menus and typing belong to the host. No backend: the work log, diff and tests are fixed fictional data, and a new thread has no diff. Model marks are the official coloured marks, used only to name the model.
+## 7. Data
+`CommandCenterScreen` takes `data: Option<CommandCenterData>` (`oxyn_core::parity::cmdstudio`). `None` shows the sample for the state; to show your own, start from `CommandCenterData::default()` (the sample) and replace fields: `threads: Vec<Thread>` (id, title, project, state, place, +/− stat, age), `diffs: Vec<(u32, Vec<DiffFile>)>` (each thread's files and hunks; `diff(id)` looks one up), `queue: Vec<(u32, String)>`, `automations: Vec<Automation>` and `terminals: Vec<Term>`. The screen opens the first thread. `DiffFile` paths and hunk lines are `&'static str` for now (leak or intern runtime strings); owned strings are a later change.
+
+## 8. Known gaps
+GPUI is a static snapshot (`.extra("worktree" | "automations" | "terminal" | "browser" | "rail" | "hidden")`); menus and typing belong to the host. No backend: the work log, diffs, terminal output, pages and tests are fixed fictional data, and a new thread has no diff. Model marks are the official coloured marks, used only to name the model.

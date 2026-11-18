@@ -536,8 +536,11 @@ fn CommandCenterApp(
     height: u32,
     rail: bool,
     hidden: bool,
+    data: Option<CommandCenterData>,
 ) -> Element {
     let (st, own) = split(&state);
+    let d0 = use_hook(move || data.unwrap_or_else(|| CommandCenterData::for_state(st)));
+    let dd = use_hook(|| Signal::new(d0.clone()));
     let loading = st == ScreenState::Loading;
     let wt = own == "worktree";
     let mut view = use_signal(move || {
@@ -549,28 +552,22 @@ fn CommandCenterApp(
     });
     let d1 = d0.clone();
     let mut list = use_signal(move || {
-        let mut l = threads(st);
+        let mut l = d1.threads;
         if wt && let Some(t) = l.first_mut() {
             t.state = TState::Review;
             t.place = Place::Worktree;
         }
         l
     });
-    let mut open = use_signal(move || if st == ScreenState::Sample { 1u32 } else { 0 });
+    let first = d0.threads.first().map(|t| t.id).unwrap_or(0);
+    let mut open = use_signal(move || first);
+    let d2 = d0.clone();
     let mut files = use_signal(move || {
-        if st == ScreenState::Sample {
-            cc_diff()
-        } else {
-            Vec::new()
-        }
+        let first = d2.threads.first().map(|t| t.id).unwrap_or(0);
+        d2.diff(first)
     });
-    let mut queue = use_signal(move || {
-        if st == ScreenState::Sample {
-            sample_queue()
-        } else {
-            Vec::new()
-        }
-    });
+    let d3 = d0.clone();
+    let mut queue = use_signal(move || d3.queue);
     let mut said = use_signal(String::new);
     let side = use_signal(move || {
         if hidden {
@@ -1099,33 +1096,22 @@ fn SessionStudioApp(
     height: u32,
     rail: bool,
     hidden: bool,
+    data: Option<SessionStudioData>,
 ) -> Element {
     let (st, own) = split(&state);
     let loading = st == ScreenState::Loading;
     let ask = own == "permission";
-    let list: Vec<Session> = sessions(st);
-    let mut open = use_signal(move || if st == ScreenState::Sample { 1u32 } else { 0 });
-    let mut blocks = use_signal(move || {
-        if st == ScreenState::Sample {
-            session_blocks(ask)
-        } else {
-            Vec::new()
-        }
-    });
-    let mut todos = use_signal(move || {
-        if st == ScreenState::Sample {
-            sample_todos(ask)
-        } else {
-            Vec::new()
-        }
-    });
-    let mut files = use_signal(move || {
-        if st == ScreenState::Sample {
-            ss_diff()
-        } else {
-            Vec::new()
-        }
-    });
+    let d0 = use_hook(move || data.unwrap_or_else(|| SessionStudioData::for_state(st, ask)));
+    let list: Vec<Session> = d0.sessions.clone();
+    let first = list.first().map(|s| s.0).unwrap_or(0);
+    let mut open = use_signal(move || first);
+    let d1 = d0.clone();
+    let mut blocks = use_signal(move || d1.blocks);
+    let d2 = d0.clone();
+    let mut todos = use_signal(move || d2.todos);
+    let d3 = d0.clone();
+    let mut files = use_signal(move || d3.diff(first));
+    let dd = use_hook(|| Signal::new(d0.clone()));
     let mut said = use_signal(String::new);
     let side = use_signal(move || {
         if hidden {
@@ -1199,7 +1185,7 @@ fn SessionStudioApp(
                             for (id, title, folder, ago, tone) in list.iter().copied() {
                                 li { key: "{id}",
                                     button { r#type: "button", class: "oxs10-srow", "data-on": "{id == oid}", "aria-current": if id == oid { "page" } else { "false" },
-                                        onclick: move |_| { open.set(id); let one = id == 1; blocks.set(if one { session_blocks(ask) } else { Vec::new() }); todos.set(if one { sample_todos(ask) } else { Vec::new() }); files.set(if one { ss_diff() } else { Vec::new() }); drawer.set(false); said.set(format!("Opened {title}")); },
+                                        onclick: move |_| { open.set(id); let one = id == first; blocks.set(if one { dd.peek().blocks.clone() } else { Vec::new() }); todos.set(if one { dd.peek().todos.clone() } else { Vec::new() }); files.set(dd.peek().diff(id)); drawer.set(false); said.set(format!("Opened {title}")); },
                                         {tmark(if tone.is_empty() { "idle" } else { tone })}
                                         span { class: "oxs10-s2", span { class: "oxs10-ell oxs10-stt", "{title}" } span { class: "oxs10-ell oxs10-ssub", "{folder} · {ago}" } }
                                     }
@@ -1330,8 +1316,12 @@ pub fn CommandCenterScreen(
     /// Oxyn: open with the sidebar hidden (the top bar brings it back).
     #[props(default)]
     sidebar_hidden: bool,
+    /// Your data. `None` shows the sample for `state`; start from `CommandCenterData::default()` and
+    /// replace what you have.
+    #[props(default)]
+    data: Option<CommandCenterData>,
 ) -> Element {
-    rsx! { CommandCenterApp { state, layout, height, rail, hidden: sidebar_hidden } }
+    rsx! { CommandCenterApp { state, layout, height, rail, hidden: sidebar_hidden, data } }
 }
 
 /// Session Studio: the sessions-and-tools desktop agent app. A session list, a chat whose turns
@@ -1355,6 +1345,10 @@ pub fn SessionStudioScreen(
     /// Oxyn: open with the sidebar hidden (the top bar brings it back).
     #[props(default)]
     sidebar_hidden: bool,
+    /// Your data. `None` shows the sample for `state`; start from `SessionStudioData::default()` and
+    /// replace what you have.
+    #[props(default)]
+    data: Option<SessionStudioData>,
 ) -> Element {
-    rsx! { SessionStudioApp { state, layout, height, rail, hidden: sidebar_hidden } }
+    rsx! { SessionStudioApp { state, layout, height, rail, hidden: sidebar_hidden, data } }
 }

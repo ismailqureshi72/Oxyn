@@ -1341,6 +1341,43 @@ pub fn finish_deploys(list: &mut [Site]) -> usize {
     n
 }
 
+// ──────────────────────────────────────────────────────────── Data ──
+
+/// Everything a Taskdeck screen shows. Pass it to a screen's `data` prop to show your own tasks,
+/// plugins, skills, schedules and sites; `Default` is the sample data the demos use.
+#[derive(Clone, Debug, PartialEq)]
+pub struct TaskdeckData {
+    /// Tasks, newest first.
+    pub tasks: Vec<Task>,
+    /// Per [`CATALOG`] entry: (installed, on).
+    pub plugins: Vec<(bool, bool)>,
+    /// Skills.
+    pub skills: Vec<Skill>,
+    /// Scheduled tasks.
+    pub schedules: Vec<Schedule>,
+    /// Deployed sites.
+    pub sites: Vec<Site>,
+}
+
+impl TaskdeckData {
+    /// The data for a demo state (sample, or nothing for empty and loading).
+    pub fn for_state(st: ScreenState) -> Self {
+        Self {
+            tasks: tasks(st),
+            plugins: plugin_state(st),
+            skills: skills(st),
+            schedules: schedules(st),
+            sites: sites(st),
+        }
+    }
+}
+
+impl Default for TaskdeckData {
+    fn default() -> Self {
+        Self::for_state(ScreenState::Sample)
+    }
+}
+
 /// The start screen's headline.
 pub fn headline(env: EnvMode) -> &'static str {
     match env {
