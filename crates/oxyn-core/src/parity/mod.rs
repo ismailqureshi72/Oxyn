@@ -76,6 +76,7 @@
 //! - [`fleetwin`]: Screens S11 (Agent apps III): Fleet Window
 //! - [`wscoder`]: Screens S11 (Agent apps III): Workspace Coder
 //! - [`cmdboard`]: Screens S11 (Agent apps III): Command Board
+//! - [`appui`]: interaction state shared by the six agent apps (rows, views, rail, menu, composer)
 //! - [`answers`]: fidelity batch, family A: AI Answer markup and streaming, Cited Answer
 //!   sentences and quotes, Message Actions, Thinking Loader phases, Thinking State steps and the
 //!   Writing Assistant's sample writer and dictation.
@@ -86,6 +87,7 @@
 pub mod agentscr;
 pub mod agentsfid;
 pub mod answers;
+pub mod appui;
 pub mod attachfid;
 pub mod autonomyfid;
 pub mod awayfid;
