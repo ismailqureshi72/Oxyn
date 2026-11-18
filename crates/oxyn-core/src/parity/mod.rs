@@ -73,6 +73,7 @@
 //! - [`onbscr`]: Screens S8: Onboarding wizard (Website, Brand, Tone, Ready)
 //! - [`taskdeck`]: Screens S9 (Agent apps I): Taskdeck (Start, Task, Board)
 //! - [`cmdstudio`]: Screens S10 (Agent apps II): Command Center and Session Studio
+//! - [`fleetwin`]: Screens S11 (Agent apps III): Fleet Window
 //! - [`answers`]: fidelity batch, family A: AI Answer markup and streaming, Cited Answer
 //!   sentences and quotes, Message Actions, Thinking Loader phases, Thinking State steps and the
 //!   Writing Assistant's sample writer and dictation.
@@ -108,6 +109,7 @@ pub mod fanfid;
 pub mod fidelity;
 pub mod fields;
 pub mod fleet;
+pub mod fleetwin;
 pub mod gates;
 pub mod gooeyfid;
 pub mod graphfid;

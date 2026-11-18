@@ -1,0 +1,59 @@
+/* Screens S11 (Agent apps III): Fleet Window, prefix oxs11-, on the S10 app frame (oxs10-*).
+   Also the S11 account row and menu. Chrome stays neutral; colour only for status, diff
+   numbers, test results and model marks. */
+.oxs11-acct{position:relative;width:100%;margin-top:6px;padding-top:6px;border-top:1px solid var(--oxth-line)}
+.oxs11-acb{display:flex;align-items:center;gap:9px;width:100%;min-height:44px;padding:6px 8px;border:0;border-radius:9px;background:transparent;color:var(--oxth-fg);font:inherit;cursor:pointer;text-align:left}
+.oxs11-acb:hover{background:var(--oxth-hov)}
+.oxs10-side[data-rail="true"] .oxs11-acb{justify-content:center;padding:6px 0}
+.oxs11-ud{display:inline-flex;flex:none;color:var(--oxth-mute)}
+.oxs11-amenu{top:auto!important;bottom:calc(100% + 4px);left:0;width:256px;max-width:256px;z-index:30}
+.oxs10-side[data-rail="true"] .oxs11-amenu{left:4px}
+.oxs11-ahd{display:flex;align-items:center;gap:9px;padding:8px 8px 10px;margin-bottom:4px;border-bottom:1px solid var(--oxth-line);min-width:0}
+/* Sidebar rows */
+.oxs11-grp{margin-top:4px}
+.oxs11-row{padding-left:10px}
+.oxs11-row[data-sub="true"]{padding-left:28px}
+.oxs11-row .oxs10-mk{width:14px;height:14px}
+.oxs11-wt{max-width:220px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px}
+/* Multi-model picker */
+.oxs11-mks{display:inline-flex;flex:none}
+.oxs11-mks>span+span{margin-left:-4px}
+.oxs11-mks .oxs10-mk{width:18px;height:18px;border-radius:999px;background:var(--oxth-card);box-shadow:0 0 0 1.5px var(--oxth-card)}
+.oxs11-x{flex:none;padding:0 5px;border-radius:999px;background:var(--oxth-sel);font-size:11px;font-weight:600}
+.oxs11-mm{min-width:250px}
+.oxs11-mh{margin:4px 8px 6px!important;color:var(--oxth-mute);font-size:11.5px;white-space:normal}
+.oxs11-cb{display:inline-grid;place-items:center;width:16px;height:16px;border:1.5px solid var(--oxth-line2);border-radius:4px}
+.oxs11-cb[data-on="true"]{border-color:var(--oxth-fg);background:var(--oxth-fg);color:var(--oxth-card)}
+.oxs11-cb .oxscn-ico{width:12px;height:12px}
+/* Compare */
+.oxs11-cin{max-width:1040px}
+.oxs11-ch{color:var(--oxth-fg2);font-size:12.5px}
+.oxs11-cmp{display:grid;grid-template-columns:repeat(auto-fit,minmax(176px,1fr));gap:10px}
+.oxs11-att{display:flex;flex-direction:column;gap:9px;min-width:0;padding:12px;border:1px solid var(--oxth-line);border-radius:12px;background:var(--oxth-card)}
+.oxs11-att[data-st="applied"]{border-color:var(--ox-ic-done,#30A46C)}
+.oxs11-att[data-st="discarded"]{opacity:.55}
+.oxs11-ah{display:flex;align-items:center;gap:8px;min-width:0}
+.oxs11-ah b{font-weight:600}
+.oxs11-tag{flex:none;height:20px;padding:0 7px;border-radius:999px;background:var(--oxth-sel);color:var(--oxth-fg2);font-size:11px;font-weight:550;line-height:20px;white-space:nowrap}
+.oxs11-tag[data-tone="ok"]{background:color-mix(in srgb,var(--ox-ic-done,#30A46C) 16%,transparent);color:var(--ox-ic-done,#30A46C)}
+.oxs11-am{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;min-width:0}
+.oxs11-am .oxs10-ago{display:inline-flex;align-items:center;gap:3px}
+.oxs11-am .oxscn-ico{width:13px;height:13px}
+.oxs11-tst{display:inline-flex;align-items:center;gap:4px;flex:none;font-size:12px;font-weight:550;color:var(--ox-ic-failed,#E5484D);white-space:nowrap}
+.oxs11-tst[data-ok="true"]{color:var(--ox-ic-done,#30A46C)}
+.oxs11-tst .oxscn-ico{width:13px;height:13px}
+.oxs11-as{color:var(--oxth-fg2);font-size:12.5px;line-height:1.5}
+.oxs11-aa{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto}
+.oxs11-pri{background:var(--oxth-fg)!important;color:var(--oxth-card)!important;border-color:var(--oxth-fg)!important}
+/* Plan */
+.oxs11-plan{display:flex;flex-direction:column;gap:10px;padding:12px 14px;border:1px dashed var(--oxth-line2);border-radius:12px;background:var(--oxth-card)}
+.oxs11-ph{display:flex;align-items:center;gap:8px}
+.oxs11-pl{display:flex;flex-direction:column;gap:2px;margin:0;padding:0;list-style:none}
+.oxs11-pi{display:flex;align-items:flex-start;gap:9px;padding:6px 4px;border-radius:8px;cursor:pointer;line-height:1.45}
+.oxs11-pi:hover{background:var(--oxth-hov)}
+.oxs11-pi input{flex:none;margin:3px 0 0;accent-color:var(--oxth-fg)}
+.oxs11-pi input:checked+span{color:var(--oxth-mute);text-decoration:line-through}
+@container oxs10 (max-width:620px){
+  .oxs11-wt{display:none}
+  .oxs11-cmp{grid-template-columns:1fr}
+}

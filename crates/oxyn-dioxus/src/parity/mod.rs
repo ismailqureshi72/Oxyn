@@ -29,6 +29,7 @@ mod fallbackfid;
 mod fanfid;
 mod fidelity;
 mod fields;
+mod fleetwin;
 mod gooeyfid;
 mod graphfid;
 mod handofffid;
@@ -114,6 +115,7 @@ pub use fidelity::{
     ThreadNote,
 };
 pub use fields::{ElasticSlider, MorphSelect, NumberField, ScrubInput};
+pub use fleetwin::{FleetWindowScreen, s11_fleet_states};
 pub use gooeyfid::{GooeyAttachMenu, GooeyComposer, GooeyModelMenu, LiquidDrops, LiquidTabs};
 pub use graphfid::AgentGraph;
 pub use handofffid::AgentHandoff;
