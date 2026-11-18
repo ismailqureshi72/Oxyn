@@ -897,7 +897,7 @@ fn PluginsView(ctx: Ctx, loading: bool, skills_tab: bool) -> Element {
                     span { class: "oxs9-faint-s", "{installed} plugins installed · {sk.iter().filter(|s| s.on).count()} skills on" } }
                 div { class: "oxs9-seg", role: "radiogroup", "aria-label": "Show",
                     button { r#type: "button", role: "radio", "aria-checked": "{on_pl}", onclick: move |_| tab.set("plugins"), {nico("plug")} "Plugins" }
-                    button { r#type: "button", role: "radio", "aria-checked": "{!on_pl}", onclick: move |_| tab.set("skills"), {nico("skill")} "Skills" }
+                    button { r#type: "button", role: "radio", "aria-checked": "{!on_pl}", onclick: move |_| tab.set("skills"), {nico("spark")} "Skills" }
                 }
             }
             if loading {
@@ -978,12 +978,12 @@ fn PluginsView(ctx: Ctx, loading: bool, skills_tab: bool) -> Element {
                     }
                 }
                 if sk.is_empty() && !adding() {
-                    div { class: "oxs9-blank", span { class: "oxs9-hero", {nico("skill")} } p { class: "oxs9-bt1", "No skills yet" } p { class: "oxs9-faint", "Save how you like things done once; every matching task uses it." } }
+                    div { class: "oxs9-blank", span { class: "oxs9-hero", {nico("spark")} } p { class: "oxs9-bt1", "No skills yet" } p { class: "oxs9-faint", "Save how you like things done once; every matching task uses it." } }
                 } else {
                     ul { class: "oxs9-lst oxs9-sk-l", "aria-label": "Skills",
                         for (i, k) in sk.iter().cloned().enumerate() {
                             li { key: "{k.name}", class: "oxs9-skr",
-                                span { class: "oxs9-plogo", {nico("skill")} }
+                                span { class: "oxs9-plogo", {nico("spark")} }
                                 span { class: "oxs9-plt", b { "{k.name}" } span { "{k.when}" } }
                                 span { class: "oxs9-pill", if k.mine { "Yours" } else { "Bundled" } }
                                 if k.mine {
