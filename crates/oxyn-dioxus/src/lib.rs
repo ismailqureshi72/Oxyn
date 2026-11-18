@@ -168,6 +168,7 @@ pub use parity::{
     ChipStep, DiffChip, ExpandableCard, JsonViewer, LinkUnfurl, RowOutput, ToolCall, ToolCallCard,
     ToolCallGroup, ToolCallList, ToolChips, ToolKindLegend,
 };
+pub use parity::{CommandBoardScreen, s11_board_states};
 pub use parity::{CommandCenterScreen, SessionStudioScreen};
 pub use parity::{ConflictRadar, MergeConflict};
 pub use parity::{EvalsScreen, s5_states};
