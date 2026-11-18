@@ -17,6 +17,7 @@ mod agentscr;
 mod agentsfid;
 mod answers;
 mod approvals;
+mod apps;
 mod attachfid;
 mod autonomyfid;
 mod awayfid;
@@ -95,6 +96,7 @@ pub use approvals::{
     AgentApprovalsEl, ApprovalGatesEl, ApprovalPagerEl, ConfirmMorphEl, ConfirmPopoverEl,
     HoldConfirmEl, PermissionRequestEl,
 };
+pub use apps::{AgentApp, AgentAppView, Live, Own};
 pub use attachfid::{AttachmentChipsEl, DropLanesEl, PolaroidStackEl, UploadDropzoneEl};
 pub use autonomyfid::AutonomyDialEl;
 pub use awayfid::AwaySummaryEl;
