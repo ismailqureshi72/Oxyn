@@ -735,10 +735,13 @@ pub(super) fn BillingPage(ctx: Ctx, cancelling: bool) -> Element {
     let bill = next_bill(p.plan, p.yearly, seats);
     let per = if p.yearly { "year" } else { "month" };
     let ms = meters(p.card.is_some(), seats);
-    let num_ok = luhn(&num());
+    let net = card_network(&num());
+    let num_ok = card_number_ok(&num());
     let exp_ok = expiry_ok(&exp());
-    let cvc_ok = cvc().len() >= 3 && cvc().len() <= 4 && cvc().chars().all(|c| c.is_ascii_digit());
-    let card_ok = num_ok && exp_ok && cvc_ok;
+    let cvc_good = cvc_ok(&num(), &cvc());
+    let card_ok = num_ok && exp_ok && cvc_good;
+    let saved_net = p.card_net.map(|i| NETWORKS[i]);
+    let saved_name = saved_net.map_or("Card", |n| n.1);
     let has_inv = p.card.is_some();
     let cs = cstep();
     rsx! {
@@ -814,9 +817,10 @@ pub(super) fn BillingPage(ctx: Ctx, cancelling: bool) -> Element {
         })}
         {sec("Payment method", rsx! {}, rsx! {
             div { class: "oxsst-row oxs6-row", "data-hit": "{ctx.hit(\"Payment method\")}",
-                span { class: "oxs7-cardi", {nico("card")} }
+                span { class: "oxs7-cardi", "data-net": "{saved_net.is_some() && p.card.is_some()}",
+                    if let (Some(n), true) = (saved_net, p.card.is_some()) { BrandIcon { name: n.0.to_string(), size: 22.0, coloured: true } } else { {nico("card")} } }
                 div { class: "oxsst-rl",
-                    span { class: "oxsst-lb", if let Some(l) = p.card.as_ref() { "Card ending {l}" } else { "No card yet" } }
+                    span { class: "oxsst-lb", if let Some(l) = p.card.as_ref() { "{saved_name} ending {l}" } else { "No card yet" } }
                     p { class: "oxsst-hint", if p.card.is_some() { "Expires 08/28 · charged on the 1st" } else { "Add one before you leave the Free plan." } }
                 }
                 div { class: "oxsst-rc", button { r#type: "button", class: "oxscn-btn", "aria-expanded": "{card_open}", onclick: move |_| { num.set(String::new()); exp.set(String::new()); cvc.set(String::new()); card_open.toggle(); }, if p.card.is_some() { "Update" } else { "Add card" } } }
@@ -824,20 +828,31 @@ pub(super) fn BillingPage(ctx: Ctx, cancelling: bool) -> Element {
                     div { class: "oxsst-ask oxs7-cardf", role: "group", "aria-label": "Card details",
                         onkeydown: move |e: KeyboardEvent| if e.key() == Key::Escape { card_open.set(false); },
                         label { class: "oxsst-fl oxs7-cn", "Card number"
-                            input { class: "oxsst-in", inputmode: "numeric", autocomplete: "cc-number", value: "{num}", placeholder: "4242 4242 4242 4242", onmounted: focus_on, "aria-invalid": "{!num().is_empty() && !num_ok}", oninput: move |e| num.set(e.value()) } }
+                            span { class: "oxs7-cnw",
+                                input { class: "oxsst-in", inputmode: "numeric", autocomplete: "cc-number", value: "{num}", placeholder: "4242 4242 4242 4242", onmounted: focus_on, "aria-invalid": "{!num().is_empty() && !num_ok}", "aria-describedby": "oxs7-nets", oninput: move |e| num.set(e.value()) }
+                                span { class: "oxs7-nets", id: "oxs7-nets", "aria-live": "polite",
+                                    span { class: "oxscn-sr", if let Some(i) = net { "{NETWORKS[i].1} card" } else { "Visa, Mastercard and American Express accepted" } }
+                                    for (i, (id, name, _, _)) in NETWORKS.iter().enumerate() {
+                                        span { key: "{id}", class: "oxs7-net", title: "{name}", "aria-hidden": "true", "data-on": "{net == Some(i)}", "data-off": "{net.is_some() && net != Some(i)}",
+                                            BrandIcon { name: id.to_string(), size: 18.0, coloured: true } }
+                                    }
+                                }
+                            }
+                        }
                         label { class: "oxsst-fl", "Expiry"
                             input { class: "oxsst-in", autocomplete: "cc-exp", value: "{exp}", placeholder: "MM/YY", "aria-invalid": "{!exp().is_empty() && !exp_ok}", oninput: move |e| exp.set(e.value()) } }
                         label { class: "oxsst-fl", "Security code"
-                            input { class: "oxsst-in", inputmode: "numeric", autocomplete: "cc-csc", r#type: "password", value: "{cvc}", placeholder: "123", "aria-invalid": "{!cvc().is_empty() && !cvc_ok}", oninput: move |e| cvc.set(e.value()) } }
+                            input { class: "oxsst-in", inputmode: "numeric", autocomplete: "cc-csc", r#type: "password", value: "{cvc}", placeholder: if net == Some(2) { "1234" } else { "123" }, "aria-invalid": "{!cvc().is_empty() && !cvc_good}", oninput: move |e| cvc.set(e.value()) } }
                         div { class: "oxsst-tfm oxs7-span",
                             if !num().is_empty() && !num_ok { span { class: "oxsst-err", "Check the card number" } }
+                            else if cvc().len() >= 4 && !cvc_good { span { class: "oxsst-err", if net == Some(2) { "American Express codes have 4 digits" } else { "Use the 3 digits on the back" } } }
                             else if !exp().is_empty() && !exp_ok { span { class: "oxsst-err", "Use MM/YY, not in the past" } }
                             else { span { class: "oxs6-q", {nico("lock")} " Sample form: nothing is sent." } }
                         }
                         div { class: "oxsin-acts oxs7-span",
                             button { r#type: "button", class: "oxscn-btn", onclick: move |_| card_open.set(false), "Cancel" }
                             button { r#type: "button", class: "oxscn-primary", disabled: !card_ok,
-                                onclick: move |_| { let d: String = num.peek().chars().filter(|c| c.is_ascii_digit()).collect(); let l = d[d.len() - 4..].to_string(); now(ctx, |w| w.card = Some(l.clone())); card_open.set(false); say(ctx, format!("Card ending {l} saved")); }, "Save card" }
+                                onclick: move |_| { let d: String = num.peek().chars().filter(|c| c.is_ascii_digit()).collect(); let l = d[d.len() - 4..].to_string(); let n = card_network(&d); now(ctx, |w| { w.card = Some(l.clone()); w.card_net = n; }); card_open.set(false); say(ctx, format!("Card ending {l} saved")); }, "Save card" }
                         }
                     }
                 }

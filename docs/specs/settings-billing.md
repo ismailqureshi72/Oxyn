@@ -17,7 +17,7 @@ Your plan, what you have used, how you pay and past invoices.
 | Usage | Usage meters for seats, credits, storage and agent runs, each with used / limit as text and a bar toned run → warn (75 %) → bad (90 %) |
 | Plans | Monthly / Yearly (−20 %) and three plan cards (Free, Pro, Team) with features; Upgrade or Switch asks first and shows the new bill |
 | Extra usage | Monthly cap and Email invoices |
-| Payment method | The card on file (generic card glyph, last four, expiry) and Update / Add card with a number (Luhn), expiry (MM/YY, not past) and security-code check |
+| Payment method | The card on file (its network's official coloured mark on a white chip, "Visa ending 4242", expiry) and Update / Add card. The number field shows the Visa, Mastercard and American Express marks; as you type, the network is read from the first digits (Visa 4, Mastercard 51–55 and 2221–2720, Amex 34 and 37) and its mark lights while the others fade. Checks: Luhn and the network's length (Amex 15, others 16), expiry (MM/YY, not past), security code (Amex 4 digits, others 3) |
 | Invoices | Number, date, amount, status (Paid, Due, Refunded) and Download |
 | Danger zone | Cancel plan: why (radio list), what changes (with a yearly offer when price is the reason), then cancelled at period end with Resume plan |
 

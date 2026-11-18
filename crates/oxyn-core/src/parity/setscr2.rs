@@ -1092,6 +1092,45 @@ pub fn luhn(num: &str) -> bool {
     s.is_multiple_of(10)
 }
 
+/// A card network the billing form recognises: brand id of its official mark, name, digits in a
+/// full number, digits in the security code.
+pub const NETWORKS: [(&str, &str, usize, usize); 3] = [
+    ("visa", "Visa", 16, 3),
+    ("mastercard", "Mastercard", 16, 3),
+    ("americanexpress", "American Express", 15, 4),
+];
+
+/// The network a card number belongs to, from its first digits (IIN prefix): Visa 4,
+/// Mastercard 51–55 and 2221–2720, American Express 34 and 37. An index into [`NETWORKS`].
+pub fn card_network(num: &str) -> Option<usize> {
+    let d: String = num.chars().filter(char::is_ascii_digit).collect();
+    let pre = |n: usize| d.get(..n).and_then(|x| x.parse::<u32>().ok());
+    if d.starts_with('4') {
+        Some(0)
+    } else if matches!(pre(2), Some(51..=55)) || matches!(pre(4), Some(2221..=2720)) {
+        Some(1)
+    } else if matches!(pre(2), Some(34 | 37)) {
+        Some(2)
+    } else {
+        None
+    }
+}
+
+/// A full card number: passes Luhn, and when its network is known, has that network's length.
+pub fn card_number_ok(num: &str) -> bool {
+    let n = num.chars().filter(char::is_ascii_digit).count();
+    luhn(num) && card_network(num).is_none_or(|i| NETWORKS[i].2 == n)
+}
+
+/// A security code for the number's network (Amex 4 digits, others 3; unknown 3 or 4).
+pub fn cvc_ok(num: &str, cvc: &str) -> bool {
+    let ok_len = match card_network(num) {
+        Some(i) => cvc.len() == NETWORKS[i].3,
+        None => (3..=4).contains(&cvc.len()),
+    };
+    ok_len && cvc.chars().all(|c| c.is_ascii_digit())
+}
+
 /// An expiry "MM/YY" is well formed and not before 11/26.
 pub fn expiry_ok(v: &str) -> bool {
     let Some((mm, yy)) = v.trim().split_once('/') else {
@@ -1216,6 +1255,8 @@ pub struct Ws {
     pub invoice_mail: bool,
     /// A card is on file (last four).
     pub card: Option<String>,
+    /// The card's network (an index into [`NETWORKS`]).
+    pub card_net: Option<usize>,
     /// Cancels at period end.
     pub cancelled: bool,
     /// Checklist steps done (act at once).
@@ -1258,6 +1299,7 @@ pub fn ws(sample: bool) -> Ws {
         } else {
             None
         },
+        card_net: if sample { Some(0) } else { None },
         cancelled: false,
         steps: if sample {
             [true, true, true, true, false, true]
@@ -1417,5 +1459,17 @@ mod tests {
         assert_eq!(ws_errors(&b), 0);
         b.domains.retain(|d| !d.verified);
         assert_eq!(ws_errors(&b), 1);
+    }
+
+    #[test]
+    fn s7_card_networks() {
+        assert_eq!(card_network("4242 4242 4242 4242"), Some(0));
+        assert_eq!(card_network("5555 5555 5555 4444"), Some(1));
+        assert_eq!(card_network("2223 0031 2200 3222"), Some(1));
+        assert_eq!(card_network("3782 822463 10005"), Some(2));
+        assert_eq!(card_network("6011"), None);
+        assert!(card_number_ok("3782 822463 10005") && card_number_ok("5555555555554444"));
+        assert!(cvc_ok("378282246310005", "1234") && !cvc_ok("378282246310005", "123"));
+        assert!(cvc_ok("4242424242424242", "123") && !cvc_ok("4242424242424242", "1234"));
     }
 }

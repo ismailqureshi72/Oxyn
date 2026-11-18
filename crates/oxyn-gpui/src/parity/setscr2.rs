@@ -861,8 +861,9 @@ pub(super) fn billing(
             );
         }
     }
+    let net = w.card_net.map(|i| NETWORKS[i]);
     let card = match &w.card {
-        Some(l) => format!("Card ending {l}"),
+        Some(l) => format!("{} ending {l}", net.map_or("Card", |n| n.1)),
         None => "No card yet".to_string(),
     };
     let mut danger = vec![r.row(
@@ -939,11 +940,30 @@ pub(super) fn billing(
             p,
             "Payment method",
             None,
-            vec![r.row(
-                card,
-                "Expires 08/28 · charged on the 1st",
-                press(p, "Update", false, act, "update-card"),
-            )],
+            vec![
+                r.row(
+                    card,
+                    "Expires 08/28 · charged on the 1st",
+                    div()
+                        .flex()
+                        .items_center()
+                        .gap(px(10.))
+                        .children(net.filter(|_| w.card.is_some()).map(|n| {
+                            div()
+                                .w(px(38.))
+                                .h(px(26.))
+                                .flex()
+                                .items_center()
+                                .justify_center()
+                                .rounded(px(6.))
+                                .border_1()
+                                .border_color(p.line)
+                                .bg(gpui::rgb(0xFFFFFF))
+                                .children(brand_mark(n.0, 20., p.fg))
+                        }))
+                        .child(press(p, "Update", false, act, "update-card")),
+                ),
+            ],
         ),
         sec(p, "Invoices", None, inv),
     ];
