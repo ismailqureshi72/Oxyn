@@ -1,36 +1,36 @@
-**Status:** built v0.1 (2026-11-17, screens 1: Screens).
+**Status:** built v0.2 (2026-11-18, S2: Workspace parity; v0.1 screens 1).
 
 # Spec: Kanban (`kanban`)
 
-Family: Screens. Reference: affectUI Kanban board, behaviour only.
-Components: `KanbanScreen` (Dioxus) · `KanbanEl` (GPUI), models in `oxyn_core::parity::screensfid`.
+Family: Screens. Reference: affectUI Kanban (`/screens/kanban`), layout and behaviour only; no source or assets copied.
+Components: `KanbanScreen` (Dioxus) · `KanbanEl` (GPUI), models in `oxyn_core::parity::workscr`.
 
 ## 1. Purpose
-A team board: cards move left to right through To do, In progress, In review and Done.
+An issue board by priority: see what is open where, and move work between lanes.
 
 ## 2. Parts
 | Part | Look |
 |---|---|
-| Sidebar | Workspace switcher (menu), fold-to-rail button, live search (Escape clears), nav, Pinned / Projects (expand) / Chats with pin and unread dot, dismissible notice, setup checklist with progress, account menu |
-| Page | Top bar (menu button when narrow, title, actions, work-area toggle) over a scrolling body |
-| Header | Title, card and done counts |
-| Bar | Find (title, notes or key; Escape clears), Only mine toggle |
-| Columns | Name, count (n/limit where a column has a work limit, marked when over, with a line saying so), + to add a card in place |
-| Cards | Key, priority bars, title, label, sub-tasks done, due (late marked), assignee initials; the open card outlined |
-| Card area | Key and status, editable title, Status / Priority / Assignee menus, due, sub-task meter, notes, Delete card |
+| Sidebar | Board persona: Inbox 3 · Activity 2 · My issues · Board · Projects, then the Problems group |
+| Top bar | 48 px: Inbox / Overview and a star; on the right Filter (labels), Sort by ⌄ and the Board | List segmented switch |
+| Tab row | Three tabs with counts (every task 11, open 9, completed 2) on the left, the black New task on the right |
+| Lanes | Four 276 px lanes on the grey inset, 14 px radius: LOW / MEDIUM / HIGH PRIORITY and COMPLETED (11.5 px uppercase, centred) with a priority glyph (bars in blue, amber, red; a green check) and a count chip |
+| Card | White, 12 px radius: priority bars and the title, two lines of detail (clamped), then the status (Ready for review blue, In progress purple, Needs attention amber, Fixed green), a label chip and comment / link counts |
+
+Chrome is monochrome neutral; colour only means something: official brand marks, semantic object glyphs (folder #00A1FF, file types), status (running blue, needs-you amber, done green, failed red).
 
 ## 3. Behaviour
-Drag a card onto a column to put it at the bottom, or onto a card to put it before that card; the column under the pointer is marked. Alt+←/→ moves the focused card to the next column (focus follows), Alt+↑/↓ moves it within its column; each move is announced. Enter or Space opens the card beside the board; the Status menu moves it too. + opens a focused field: Enter adds (and stays open for the next), Escape or Cancel closes. Empty shows four empty columns and how to start.
+Cards drag between lanes with a 3° tilt and a lifted shadow; the lane under the pointer lights; dropping moves the card (to Completed it turns Fixed; out of it, In progress) and announces the move. From the keyboard Space or Enter picks a card up, ← / → carry it lane by lane, Space puts it down. Tabs, the label filter and Sort by (Manual, Most comments, Title) narrow and order the lanes. New task opens a field (Enter adds to Low priority).
 prefers-reduced-motion: no transitions or animation.
 
 ## 4. Variants
-Data: Sample · Loading (skeletons) · Empty (each region says what lands there). Frame: Inset (page is a rounded card on the grey canvas) · Flat (edge to edge, hairlines). Light and dark follow the page theme.
+States: Data · Loading (lane and card skeletons) · Empty (no tasks, with New task) · **Dragging** (a card held over High priority). Frame: Inset · Flat. Oxyn extras: label chips (Bug, Feature, Design, can be hidden), keyboard carrying, the List view grouped by lane, the label filter.
 
 ## 5. Keyboard and accessibility
-Sidebar is a labelled nav with aria-current on the open chat; menus open from a trigger reporting aria-expanded (items are menuitemradio; Escape shuts them); hairlines are focusable separators with a value (←/→ resize); skeletons are aria-hidden; live notes use role=status.
+Cards are buttons with aria-roledescription "Draggable task" and say how to pick them up; moves are read out in a polite region; lanes are labelled sections with their counts; the list view is a role=table. Escape closes any open menu or popover and clears a search; skeletons are aria-hidden.
 
 ## 6. Responsive
-Root fills its container (definite width, overflow clip, container queries). Under 860 px the work area becomes a sheet opened from the top bar; under 640 px the sidebar slides in from a menu button and composer menus drop their labels.
+Authored on the 1440 × 900 stage (rule R1) and scaled to its column; the full view (`/screens/kanban/full`) renders at the real viewport with the state bar under it (R2). Under 640 px the sidebar slides in from a menu button and top-bar actions keep their icons with hidden labels. Lanes keep 276 px and the board scrolls sideways; under 620 px the tab row wraps and lanes narrow to 260 px. prefers-reduced-motion drops the tilt. Every label in a row, chip or card ellipsises in a flex child with min-width 0 (R5); scripts/ovl.py finds no text overlap at 1440, 768 and 390 in light and dark.
 
 ## 7. Known gaps
-GPUI is a static snapshot (no drag, menus or editing); the host owns state. Dragging is pointer only in browsers without HTML drag and drop; the Alt+arrow keys cover keyboards.
+GPUI is a static snapshot: `.extra(...)` draws the screen's own state or an option; drag, menus, typing and charts' crosshair belong to the host.

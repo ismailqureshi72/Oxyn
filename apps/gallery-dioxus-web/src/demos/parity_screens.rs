@@ -5,10 +5,10 @@
 use dioxus::prelude::*;
 use oxyn_core::ClockMs;
 use oxyn_dioxus::{
-    AgentThreadScreen, AppShellScreen, ChatAgentsScreen, ChatOverviewScreen, ChatProgressScreen,
-    ChatRailScreen, ChatRunScreen, ChatStartScreen, CrmScreen, FoldersScreen, IntegrationsScreen,
-    KanbanScreen, OrchestrationScreen, RailShellScreen, ScreenStage, SettingsScreen,
-    WorkflowScreen,
+    AgentThreadScreen, AnalyticsScreen, AppShellScreen, ChatAgentsScreen, ChatOverviewScreen,
+    ChatProgressScreen, ChatRailScreen, ChatRunScreen, ChatStartScreen, CrmScreen, FoldersScreen,
+    IntegrationsScreen, KanbanScreen, OrchestrationScreen, RailShellScreen, ScreenStage,
+    SettingsScreen, WorkflowScreen, s2_states,
 };
 
 use super::{Code, mk, sel, var};
@@ -726,20 +726,35 @@ fn chat_run_demo() -> Demo {
 
 fn folders_overview(v: &Vals, _now: ClockMs) -> Element {
     let (st, lay, key) = frame(v);
+    let key = format!("{key}-{}-{}-{}", v.s("view"), v.s("range"), v.s("x1"));
+    let view = low(v.s("view"));
+    let starred = v.b("x1");
     rsx! {
         div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
-            ScreenStage { state: st, screen: move |s: String| rsx! { FoldersScreen { layout: lay.clone(), state: s } } }
+            ScreenStage { state: st, states: s2_states("folders-overview"), screen: move |s: String| rsx! { FoldersScreen { layout: lay.clone(), state: s, view: view.clone(), starred } } }
         }
     }
 }
 
 fn folders_overview_code(v: &Vals) -> String {
-    code("FoldersScreen", v, false, false)
+    let c = Code::new("FoldersScreen")
+        .s("layout", &low(v.s("frame")), "inset")
+        .s("state", &low(v.s("data")), "sample");
+    let c = if v.s("view") == "List" {
+        c.s("view", "list", "grid")
+    } else {
+        c
+    };
+    let c = c.b("starred", v.b("x1"));
+    c.done()
 }
 
 fn folders_overview_demo() -> Demo {
+    let mut c = controls_x("inset", &["Creating"]);
+    c.push(sel("view", "View", &["Grid", "List"], "Grid"));
+    c.push(super::tog("x1", "Star a folder", false));
     Demo {
-        controls: controls("inset"),
+        controls: c,
         variants: vec![
             var("sample", "Sample data in the Inset frame.", &[]),
             var(
@@ -754,27 +769,44 @@ fn folders_overview_demo() -> Demo {
             ),
             var(
                 "empty",
-                "Nothing yet: each region says what will appear.",
+                "Nothing yet: each region says what will appear and how to start.",
                 &[("data", "Empty")],
+            ),
+            var(
+                "creating",
+                "The Create folder field open in the grid, focused.",
+                &[("data", "Creating")],
+            ),
+            var(
+                "list",
+                "Folders as a list with when each changed.",
+                &[("view", "List")],
+            ),
+            var(
+                "starred",
+                "Oxyn: a starred folder stays first.",
+                &[("x1", "true")],
             ),
         ],
         render: folders_overview,
         code: folders_overview_code,
         keyboard: vec![
-            ("Tab", "Sidebar, page, then the work area"),
-            ("← / → on a hairline", "Resize the sidebar or work area"),
-            ("Escape", "Close an open menu; clear search"),
-            ("Enter in New folder", "Create it (Escape cancels)"),
-            ("Escape in Find", "Clear the search"),
+            ("Tab", "Sidebar, page, then each control in reading order"),
+            ("← / → in a tab row", "Move between tabs"),
+            ("Escape", "Close an open menu or popover; clear a search"),
+            ("Enter in Create folder", "Create it (Escape cancels)"),
+            ("Escape in a search", "Clear it"),
         ],
         a11y: vec![
-            "The sidebar is a labelled nav; the open chat has aria-current and unread chats say so.",
-            "Menus open from a trigger that reports aria-expanded; their items are menuitemradio and Escape shuts them.",
-            "Hairlines are separators with a value and arrow keys; skeletons are hidden from screen readers.",
+            "The persona sidebar is a labelled nav with aria-current on this page.",
+            "Tabs are a tablist with arrow keys; menus report aria-expanded and close on Escape.",
+            "Skeletons are hidden from screen readers; every action reports what it did in a polite live region.",
+            "Folder tiles are buttons that name the folder and who can see it; the star is a toggle button.",
         ],
         responsive: vec![
-            "Under 860 px of width the work area becomes a sheet opened from the top bar.",
-            "Under 640 px the sidebar slides in from the menu button and the composer drops its labels.",
+            "Authored on the 1440 × 900 canvas; the full view lays it out at the real width.",
+            "Under 640 px the sidebar slides in from the menu button and top-bar actions keep their icons with hidden labels.",
+            "Folder tiles go 4 → 2 → 1 columns; templates keep two columns on a phone.",
         ],
         height: 240,
         live: false,
@@ -783,11 +815,11 @@ fn folders_overview_demo() -> Demo {
             "folders-overview",
             "Folders · Overview",
             CAT,
-            "The folders you share with people and agents: find one, sort, switch grid or list, star it to the top, make a new one in place, and open it.",
+            "Files and the folders you keep them in: tabs, search, sort, grid or list and Create folder over the folder tiles, then file templates filtered by type.",
             "FoldersScreen",
             "FoldersEl",
             "folders-overview",
-            "parity/screensfid.rs",
+            "parity/workscr.rs",
         )
     }
 }
@@ -796,20 +828,33 @@ fn folders_overview_demo() -> Demo {
 
 fn folders_detail(v: &Vals, _now: ClockMs) -> Element {
     let (st, lay, key) = frame(v);
+    let key = format!("{key}-{}-{}-{}", v.s("view"), v.s("range"), v.s("x1"));
+    let view = low(v.s("view"));
     rsx! {
         div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
-            ScreenStage { state: st, screen: move |s: String| rsx! { FoldersScreen { layout: lay.clone(), state: s, detail: true } } }
+            ScreenStage { state: st, states: s2_states("folders-detail"), screen: move |s: String| rsx! { FoldersScreen { layout: lay.clone(), state: s, detail: true, view: view.clone() } } }
         }
     }
 }
 
 fn folders_detail_code(v: &Vals) -> String {
-    code("FoldersScreen", v, false, true)
+    let c = Code::new("FoldersScreen")
+        .s("layout", &low(v.s("frame")), "inset")
+        .s("state", &low(v.s("data")), "sample");
+    let c = c.raw("detail", "true");
+    let c = if v.s("view") == "List" {
+        c.s("view", "list", "grid")
+    } else {
+        c
+    };
+    c.done()
 }
 
 fn folders_detail_demo() -> Demo {
+    let mut c = controls_x("inset", &["Uploading"]);
+    c.push(sel("view", "View", &["Grid", "List"], "Grid"));
     Demo {
-        controls: controls("inset"),
+        controls: c,
         variants: vec![
             var("sample", "Sample data in the Inset frame.", &[]),
             var(
@@ -824,31 +869,35 @@ fn folders_detail_demo() -> Demo {
             ),
             var(
                 "empty",
-                "Nothing yet: each region says what will appear.",
+                "Nothing yet: each region says what will appear and how to start.",
                 &[("data", "Empty")],
             ),
+            var(
+                "uploading",
+                "Two files on their way in with progress bars.",
+                &[("data", "Uploading")],
+            ),
+            var("list", "Files as a list.", &[("view", "List")]),
         ],
         render: folders_detail,
         code: folders_detail_code,
         keyboard: vec![
-            ("Tab", "Sidebar, page, then the work area"),
-            ("← / → on a hairline", "Resize the sidebar or work area"),
-            ("Escape", "Close an open menu; clear search"),
-            ("Space on a checkbox", "Select the file"),
-            (
-                "Delete",
-                "Delete the selected files (Undo brings them back)",
-            ),
-            ("Enter in Invite", "Invite the address"),
+            ("Tab", "Sidebar, page, then each control in reading order"),
+            ("← / → in a tab row", "Move between tabs"),
+            ("Escape", "Close an open menu or popover; clear a search"),
+            ("Enter in Share", "Invite the name typed"),
+            ("Escape in Share", "Close the popover"),
         ],
         a11y: vec![
-            "The sidebar is a labelled nav; the open chat has aria-current and unread chats say so.",
-            "Menus open from a trigger that reports aria-expanded; their items are menuitemradio and Escape shuts them.",
-            "Hairlines are separators with a value and arrow keys; skeletons are hidden from screen readers.",
+            "The persona sidebar is a labelled nav with aria-current on this page.",
+            "Tabs are a tablist with arrow keys; menus report aria-expanded and close on Escape.",
+            "Skeletons are hidden from screen readers; every action reports what it did in a polite live region.",
+            "Upload progress is a progressbar with a value; Share is a labelled dialog.",
         ],
         responsive: vec![
-            "Under 860 px of width the work area becomes a sheet opened from the top bar.",
-            "Under 640 px the sidebar slides in from the menu button and the composer drops its labels.",
+            "Authored on the 1440 × 900 canvas; the full view lays it out at the real width.",
+            "Under 640 px the sidebar slides in from the menu button and top-bar actions keep their icons with hidden labels.",
+            "The title row wraps under the name on a phone and sort steps aside.",
         ],
         height: 240,
         live: false,
@@ -857,11 +906,11 @@ fn folders_detail_demo() -> Demo {
             "folders-detail",
             "Folders · Detail",
             CAT,
-            "One folder open: its files in a table you sort by any column, select, delete with undo and add to, with who it is shared with, their access, an invite field and agent access beside it.",
+            "One folder open: breadcrumbs and a back link, the title row with More, sort, grid or list, Share and Upload files, then file cards with page previews, or an empty drop area.",
             "FoldersScreen",
             "FolderDetailEl",
             "folders-detail",
-            "parity/screensfid.rs",
+            "parity/workscr.rs",
         )
     }
 }
@@ -870,20 +919,28 @@ fn folders_detail_demo() -> Demo {
 
 fn integrations(v: &Vals, _now: ClockMs) -> Element {
     let (st, lay, key) = frame(v);
+    let key = format!("{key}-{}-{}-{}", v.s("view"), v.s("range"), v.s("x1"));
+    let cm = v.b("x1");
     rsx! {
         div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
-            ScreenStage { state: st, screen: move |s: String| rsx! { IntegrationsScreen { layout: lay.clone(), state: s } } }
+            ScreenStage { state: st, states: s2_states("integrations"), screen: move |s: String| rsx! { IntegrationsScreen { layout: lay.clone(), state: s, cat_menu: cm } } }
         }
     }
 }
 
 fn integrations_code(v: &Vals) -> String {
-    code("IntegrationsScreen", v, false, false)
+    let c = Code::new("IntegrationsScreen")
+        .s("layout", &low(v.s("frame")), "inset")
+        .s("state", &low(v.s("data")), "sample");
+    let c = c.b("cat_menu", v.b("x1"));
+    c.done()
 }
 
 fn integrations_demo() -> Demo {
+    let mut c = controls_x("inset", &["Failed"]);
+    c.push(super::tog("x1", "Category menu", false));
     Demo {
-        controls: controls("inset"),
+        controls: c,
         variants: vec![
             var("sample", "Sample data in the Inset frame.", &[]),
             var(
@@ -898,27 +955,39 @@ fn integrations_demo() -> Demo {
             ),
             var(
                 "empty",
-                "Nothing yet: each region says what will appear.",
+                "Nothing yet: each region says what will appear and how to start.",
                 &[("data", "Empty")],
+            ),
+            var(
+                "failed",
+                "A link that did not go through, with Try again.",
+                &[("data", "Failed")],
+            ),
+            var(
+                "categories",
+                "Oxyn: a category menu narrows the page to one group.",
+                &[("x1", "true")],
             ),
         ],
         render: integrations,
         code: integrations_code,
         keyboard: vec![
-            ("Tab", "Sidebar, page, then the work area"),
-            ("← / → on a hairline", "Resize the sidebar or work area"),
-            ("Escape", "Close an open menu; clear search"),
-            ("← / → in the tabs", "Move between categories"),
-            ("Escape in the dialog", "Cancel connecting"),
+            ("Tab", "Sidebar, page, then each control in reading order"),
+            ("← / → in a tab row", "Move between tabs"),
+            ("Escape", "Close an open menu or popover; clear a search"),
+            ("Enter on +", "Ask before linking; Link is focused"),
+            ("Enter on ✓", "Settings or Unlink"),
         ],
         a11y: vec![
-            "The sidebar is a labelled nav; the open chat has aria-current and unread chats say so.",
-            "Menus open from a trigger that reports aria-expanded; their items are menuitemradio and Escape shuts them.",
-            "Hairlines are separators with a value and arrow keys; skeletons are hidden from screen readers.",
+            "The persona sidebar is a labelled nav with aria-current on this page.",
+            "Tabs are a tablist with arrow keys; menus report aria-expanded and close on Escape.",
+            "Skeletons are hidden from screen readers; every action reports what it did in a polite live region.",
+            "Each app names its state in its button label (Link Slack, Slack is linked); errors are alerts.",
         ],
         responsive: vec![
-            "Under 860 px of width the work area becomes a sheet opened from the top bar.",
-            "Under 640 px the sidebar slides in from the menu button and the composer drops its labels.",
+            "Authored on the 1440 × 900 canvas; the full view lays it out at the real width.",
+            "Under 640 px the sidebar slides in from the menu button and top-bar actions keep their icons with hidden labels.",
+            "The two-column directory turns to one column under 900 px; the sticky header wraps its tabs on a phone.",
         ],
         height: 240,
         live: false,
@@ -927,11 +996,11 @@ fn integrations_demo() -> Demo {
             "integrations",
             "Integrations",
             CAT,
-            "An app directory with category tabs and search: Connect asks which permissions to grant first, and a connected app opens beside the list with switches for each permission, Sync now and a confirmed Disconnect.",
+            "A directory of apps to link: a sticky header with tabs, search and Request, apps grouped by category with official marks, a confirm before each link, and a linked app’s Settings or Unlink.",
             "IntegrationsScreen",
             "IntegrationsEl",
             "integrations",
-            "parity/screensfid.rs",
+            "parity/workscr.rs",
         )
     }
 }
@@ -940,20 +1009,39 @@ fn integrations_demo() -> Demo {
 
 fn kanban(v: &Vals, _now: ClockMs) -> Element {
     let (st, lay, key) = frame(v);
+    let key = format!("{key}-{}-{}-{}", v.s("view"), v.s("range"), v.s("x1"));
+    let view = low(v.s("view"));
+    let labels = !v.b("x1");
     rsx! {
         div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
-            ScreenStage { state: st, screen: move |s: String| rsx! { KanbanScreen { layout: lay.clone(), state: s } } }
+            ScreenStage { state: st, states: s2_states("kanban"), screen: move |s: String| rsx! { KanbanScreen { layout: lay.clone(), state: s, view: view.clone(), labels } } }
         }
     }
 }
 
 fn kanban_code(v: &Vals) -> String {
-    code("KanbanScreen", v, false, false)
+    let c = Code::new("KanbanScreen")
+        .s("layout", &low(v.s("frame")), "inset")
+        .s("state", &low(v.s("data")), "sample");
+    let c = if v.s("view") == "List" {
+        c.s("view", "list", "board")
+    } else {
+        c
+    };
+    let c = if v.b("x1") {
+        c.raw("labels", "false")
+    } else {
+        c
+    };
+    c.done()
 }
 
 fn kanban_demo() -> Demo {
+    let mut c = controls_x("inset", &["Dragging"]);
+    c.push(sel("view", "View", &["Board", "List"], "Board"));
+    c.push(super::tog("x1", "Hide labels", false));
     Demo {
-        controls: controls("inset"),
+        controls: c,
         variants: vec![
             var("sample", "Sample data in the Inset frame.", &[]),
             var(
@@ -968,29 +1056,45 @@ fn kanban_demo() -> Demo {
             ),
             var(
                 "empty",
-                "Nothing yet: each region says what will appear.",
+                "Nothing yet: each region says what will appear and how to start.",
                 &[("data", "Empty")],
+            ),
+            var(
+                "dragging",
+                "A card held over High priority, tilted, the lane lit.",
+                &[("data", "Dragging")],
+            ),
+            var(
+                "list",
+                "The same tasks as a list grouped by lane.",
+                &[("view", "List")],
+            ),
+            var(
+                "plain",
+                "Oxyn: cards without their label chips.",
+                &[("x1", "true")],
             ),
         ],
         render: kanban,
         code: kanban_code,
         keyboard: vec![
-            ("Tab", "Sidebar, page, then the work area"),
-            ("← / → on a hairline", "Resize the sidebar or work area"),
-            ("Escape", "Close an open menu; clear search"),
-            ("Enter / Space on a card", "Open it beside the board"),
-            ("Alt + ← / →", "Move the card to the next column"),
-            ("Alt + ↑ / ↓", "Move the card up or down"),
-            ("Enter in a new card", "Add it (Escape cancels)"),
+            ("Tab", "Sidebar, page, then each control in reading order"),
+            ("← / → in a tab row", "Move between tabs"),
+            ("Escape", "Close an open menu or popover; clear a search"),
+            ("Space / Enter on a card", "Pick it up or put it down"),
+            ("← / → with a card up", "Carry it to the next lane"),
+            ("Enter in New task", "Add it (Escape cancels)"),
         ],
         a11y: vec![
-            "The sidebar is a labelled nav; the open chat has aria-current and unread chats say so.",
-            "Menus open from a trigger that reports aria-expanded; their items are menuitemradio and Escape shuts them.",
-            "Hairlines are separators with a value and arrow keys; skeletons are hidden from screen readers.",
+            "The persona sidebar is a labelled nav with aria-current on this page.",
+            "Tabs are a tablist with arrow keys; menus report aria-expanded and close on Escape.",
+            "Skeletons are hidden from screen readers; every action reports what it did in a polite live region.",
+            "Cards announce Space to pick up; each move is read out (Moved to High priority).",
         ],
         responsive: vec![
-            "Under 860 px of width the work area becomes a sheet opened from the top bar.",
-            "Under 640 px the sidebar slides in from the menu button and the composer drops its labels.",
+            "Authored on the 1440 × 900 canvas; the full view lays it out at the real width.",
+            "Under 640 px the sidebar slides in from the menu button and top-bar actions keep their icons with hidden labels.",
+            "Lanes keep 276 px and scroll sideways on narrow screens.",
         ],
         height: 240,
         live: false,
@@ -999,11 +1103,11 @@ fn kanban_demo() -> Demo {
             "kanban",
             "Kanban",
             CAT,
-            "A board in four columns with counts and work limits: drag cards between and within columns or move them with Alt and the arrows, find, show only yours, add a card in place, and open one beside the board to change its status, priority and assignee.",
+            "Inbox / Overview as a board: Filter, Sort by and Board | List, task tabs with counts, New task, and four 276 px lanes by priority with labelled cards you drag (with a tilt) or carry by keyboard.",
             "KanbanScreen",
             "KanbanEl",
             "kanban",
-            "parity/screensfid.rs",
+            "parity/workscr.rs",
         )
     }
 }
@@ -1165,20 +1269,28 @@ fn settings_demo() -> Demo {
 
 fn crm(v: &Vals, _now: ClockMs) -> Element {
     let (st, lay, key) = frame(v);
+    let key = format!("{key}-{}-{}-{}", v.s("view"), v.s("range"), v.s("x1"));
+    let totals = v.b("x1");
     rsx! {
         div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
-            ScreenStage { state: st, screen: move |s: String| rsx! { CrmScreen { layout: lay.clone(), state: s } } }
+            ScreenStage { state: st, states: s2_states("crm"), screen: move |s: String| rsx! { CrmScreen { layout: lay.clone(), state: s, totals } } }
         }
     }
 }
 
 fn crm_code(v: &Vals) -> String {
-    code("CrmScreen", v, false, false)
+    let c = Code::new("CrmScreen")
+        .s("layout", &low(v.s("frame")), "inset")
+        .s("state", &low(v.s("data")), "sample");
+    let c = c.b("totals", v.b("x1"));
+    c.done()
 }
 
 fn crm_demo() -> Demo {
+    let mut c = controls_x("inset", &["Editing"]);
+    c.push(super::tog("x1", "Pipeline strip", false));
     Demo {
-        controls: controls("inset"),
+        controls: c,
         variants: vec![
             var("sample", "Sample data in the Inset frame.", &[]),
             var(
@@ -1193,29 +1305,40 @@ fn crm_demo() -> Demo {
             ),
             var(
                 "empty",
-                "Nothing yet: each region says what will appear.",
+                "Nothing yet: each region says what will appear and how to start.",
                 &[("data", "Empty")],
+            ),
+            var(
+                "editing",
+                "A Value cell open for editing.",
+                &[("data", "Editing")],
+            ),
+            var(
+                "totals",
+                "Oxyn: a pipeline strip with rows and value per stage that filters the table.",
+                &[("x1", "true")],
             ),
         ],
         render: crm,
         code: crm_code,
         keyboard: vec![
-            ("Tab", "Sidebar, page, then the work area"),
-            ("← / → on a hairline", "Resize the sidebar or work area"),
-            ("Escape", "Close an open menu; clear search"),
-            ("← / → in the tabs", "Move between views"),
-            ("Enter on a value", "Edit it (Enter keeps, Escape cancels)"),
-            ("F2 on a company", "Rename it in place"),
-            ("Escape in Find", "Clear the search"),
+            ("Tab", "Sidebar, page, then each control in reading order"),
+            ("← / → in a tab row", "Move between tabs"),
+            ("Escape", "Close an open menu or popover; clear a search"),
+            ("Enter or double-click on a cell", "Edit it"),
+            ("Enter / Tab in a cell", "Save (Tab moves to the next cell)"),
+            ("Escape in a cell", "Cancel the edit"),
         ],
         a11y: vec![
-            "The sidebar is a labelled nav; the open chat has aria-current and unread chats say so.",
-            "Menus open from a trigger that reports aria-expanded; their items are menuitemradio and Escape shuts them.",
-            "Hairlines are separators with a value and arrow keys; skeletons are hidden from screen readers.",
+            "The persona sidebar is a labelled nav with aria-current on this page.",
+            "Tabs are a tablist with arrow keys; menus report aria-expanded and close on Escape.",
+            "Skeletons are hidden from screen readers; every action reports what it did in a polite live region.",
+            "The table sorts from header buttons with aria-sort; a value that does not parse marks the cell aria-invalid.",
         ],
         responsive: vec![
-            "Under 860 px of width the work area becomes a sheet opened from the top bar.",
-            "Under 640 px the sidebar slides in from the menu button and the composer drops its labels.",
+            "Authored on the 1440 × 900 canvas; the full view lays it out at the real width.",
+            "Under 640 px the sidebar slides in from the menu button and top-bar actions keep their icons with hidden labels.",
+            "Under 760 px the owner and last-contact columns hide and the table scrolls sideways.",
         ],
         height: 240,
         live: false,
@@ -1224,11 +1347,11 @@ fn crm_demo() -> Demo {
             "crm",
             "CRM",
             CAT,
-            "Deals in a table with saved views as tabs: find, sort any column, edit a company or value in place, move a deal through its stages from the row, add a deal, and open one beside the table with its owner, notes and the pipeline by stage.",
+            "Sales / Head of Sales: open views as tabs with their marks, stage and owner filters with search, and the Company CRM table with sortable headers, row select and Delete, Add row and cells you edit in place.",
             "CrmScreen",
             "CrmEl",
             "crm",
-            "parity/screensfid.rs",
+            "parity/workscr.rs",
         )
     }
 }
@@ -1379,6 +1502,113 @@ fn agent_thread_demo() -> Demo {
     }
 }
 
+// ---------- Analytics ----------
+
+fn analytics(v: &Vals, _now: ClockMs) -> Element {
+    let (st, lay, key) = frame(v);
+    let key = format!("{key}-{}-{}-{}", v.s("view"), v.s("range"), v.s("x1"));
+    let range = match v.s("range") {
+        "30 days" => "30d",
+        "90 days" => "90d",
+        _ => "7d",
+    }
+    .to_string();
+    rsx! {
+        div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
+            ScreenStage { state: st, states: s2_states("analytics"), screen: move |s: String| rsx! { AnalyticsScreen { layout: lay.clone(), state: s, range: range.clone() } } }
+        }
+    }
+}
+
+fn analytics_code(v: &Vals) -> String {
+    let c = Code::new("AnalyticsScreen")
+        .s("layout", &low(v.s("frame")), "inset")
+        .s("state", &low(v.s("data")), "sample");
+    let c = match v.s("range") {
+        "30 days" => c.s("range", "30d", "7d"),
+        "90 days" => c.s("range", "90d", "7d"),
+        _ => c,
+    };
+    c.done()
+}
+
+fn analytics_demo() -> Demo {
+    let mut c = controls_x("inset", &["Compare"]);
+    c.push(sel(
+        "range",
+        "Range",
+        &["7 days", "30 days", "90 days"],
+        "7 days",
+    ));
+    Demo {
+        controls: c,
+        variants: vec![
+            var("sample", "Sample data in the Inset frame.", &[]),
+            var(
+                "flat",
+                "The same screen in the Flat frame.",
+                &[("frame", "Flat")],
+            ),
+            var(
+                "loading",
+                "Skeletons where the data will land.",
+                &[("data", "Loading")],
+            ),
+            var(
+                "empty",
+                "Nothing yet: each region says what will appear and how to start.",
+                &[("data", "Empty")],
+            ),
+            var(
+                "compare",
+                "The previous period dashed under each channel.",
+                &[("data", "Compare")],
+            ),
+            var(
+                "month",
+                "Opened on the last 30 days.",
+                &[("range", "30 days")],
+            ),
+        ],
+        render: analytics,
+        code: analytics_code,
+        keyboard: vec![
+            ("Tab", "Sidebar, page, then each control in reading order"),
+            ("← / → in a tab row", "Move between tabs"),
+            ("Escape", "Close an open menu or popover; clear a search"),
+            (
+                "← / → on a chart",
+                "Move the crosshair a day; the readout is announced",
+            ),
+            ("Escape on a chart", "Hide the crosshair"),
+        ],
+        a11y: vec![
+            "The persona sidebar is a labelled nav with aria-current on this page.",
+            "Tabs are a tablist with arrow keys; menus report aria-expanded and close on Escape.",
+            "Skeletons are hidden from screen readers; every action reports what it did in a polite live region.",
+            "Charts are labelled images with a live readout; the legend toggles are buttons with aria-pressed.",
+        ],
+        responsive: vec![
+            "Authored on the 1440 × 900 canvas; the full view lays it out at the real width.",
+            "Under 640 px the sidebar slides in from the menu button and top-bar actions keep their icons with hidden labels.",
+            "KPI tiles go 4 → 2 columns and the chart rows stack under 980 px.",
+        ],
+        height: 240,
+        live: false,
+        align: Align::Start,
+        ..mk(
+            "analytics",
+            "Analytics",
+            CAT,
+            "Analytics / Revenue: a date range, Compare, Export and Save as report over KPI tiles, revenue by channel with a legend you toggle, the revenue breakdown, top products and two weekly trends.",
+            "AnalyticsScreen",
+            "AnalyticsEl",
+            "analytics",
+            "parity/workscr.rs",
+        )
+    }
+}
+
 pub(crate) fn demos() -> Vec<Demo> {
     vec![
         shell_inset_demo(),
@@ -1397,6 +1627,7 @@ pub(crate) fn demos() -> Vec<Demo> {
         workflow_demo(),
         settings_demo(),
         crm_demo(),
+        analytics_demo(),
         agent_orchestration_demo(),
         agent_thread_demo(),
     ]

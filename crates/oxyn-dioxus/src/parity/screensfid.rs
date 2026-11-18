@@ -16,18 +16,12 @@
 use dioxus::prelude::*;
 use oxyn_core::ClockMs;
 use oxyn_core::parity::screensfid::{
-    APP_TABS, AppInfo, CRM_STAGES, CRM_VIEWS, Deal, DealSort, FileRow, FileSort, Folder, KB_COLS,
-    KB_PRI, PERSON, PERSON_INI, Review, ScreenState, ShellLayout, Task, Thread, WORKSPACE,
-    add_deal, add_task, ago, app_view, apps, board, can_send, chat_title, close_words, col_label,
-    column, connected_count, deal_view, deals, due_words, folder_activity, folder_files,
-    folder_view, folders, invite_initials, member_name, move_task, next_col, open_thread,
-    over_limit, parse_money, pct_done, pipeline, projects, setup_steps, size_label, sort_files,
-    split_pinned, stage_key, stage_label, stage_totals, synced_words, task_key, threads,
-    toggle_pin, total_size, untitled, usd, view_count,
-};
-use oxyn_core::parity::screensfid::{
     EnvMode, PERSON_EMAIL, PERSON_PLAN, SIDE_W, STAGE_H, STAGE_STATES, STAGE_W, WORK_W,
     account_menu, context_card, thousands, usage,
+};
+use oxyn_core::parity::screensfid::{
+    PERSON, PERSON_INI, Review, ScreenState, ShellLayout, Thread, WORKSPACE, ago, can_send,
+    chat_title, open_thread, pct_done, projects, setup_steps, split_pinned, threads, toggle_pin,
 };
 
 use super::efflistfid::{check_glyph, chevron};
@@ -271,6 +265,83 @@ fn glyph(name: &str, tone: &str) -> Element {
             "M3 12h18",
             "M12 3c3 3 3 15 0 18",
             "M12 3c-3 3-3 15 0 18",
+        ],
+        "folderopen" => &["M3 7h7l2 2h8v3", "M3 7v12h15l3-7H6l-3 7"],
+        "user" => &[
+            "M12 4a4 4 0 1 0 0 8 4 4 0 1 0 0-8",
+            "M5 20c1-4 4-6 7-6s6 2 7 6",
+        ],
+        "layers" => &["m12 4 8 4-8 4-8-4z", "m4 12 8 4 8-4", "m4 16 8 4 8-4"],
+        "box" => &["m12 3 8 4v10l-8 4-8-4V7z", "m4 7 8 4 8-4", "M12 11v10"],
+        "mail" => &["M4 6h16v12H4z", "m4 7 8 6 8-6"],
+        "card" => &["M3 6h18v12H3z", "M3 10h18", "M7 15h4"],
+        "bug" => &[
+            "M9 8a3 3 0 0 1 6 0",
+            "M8 9h8v6a4 4 0 0 1-8 0z",
+            "M4 12h4",
+            "M16 12h4",
+            "M5 18l3-2",
+            "M19 18l-3-2",
+            "M12 11v8",
+        ],
+        "building" => &[
+            "M5 21V4h9v17",
+            "M14 9h5v12",
+            "M3 21h18",
+            "M8 8h3",
+            "M8 12h3",
+            "M8 16h3",
+        ],
+        "dollar" => &[
+            "M12 3v18",
+            "M16 7c-1-1.5-2.5-2-4-2-2.2 0-4 1.2-4 3s1.8 2.7 4 3 4 1.2 4 3-1.8 3-4 3c-1.6 0-3.2-.6-4.2-2",
+        ],
+        "cycle" => &[
+            "M20 11a8 8 0 0 0-14.5-4.5L4 8",
+            "M4 4v4h4",
+            "M4 13a8 8 0 0 0 14.5 4.5L20 16",
+            "M20 20v-4h-4",
+        ],
+        "wallet" => &["M4 7h15v12H4z", "M4 7l11-3v3", "M15 13h2"],
+        "store" => &[
+            "M4 9 5 4h14l1 5",
+            "M4 9h16a3 3 0 0 1-5 2 3 3 0 0 1-6 0 3 3 0 0 1-5-2",
+            "M5 11v9h14v-9",
+            "M10 20v-5h4v5",
+        ],
+        "bag" => &["M5 8h14l-1 12H6z", "M9 8a3 3 0 0 1 6 0"],
+        "star" => &["m12 4 2.4 5 5.4.6-4 3.7 1.1 5.4L12 16l-4.9 2.7 1.1-5.4-4-3.7 5.4-.6z"],
+        "share" => &[
+            "M9 11a3 3 0 1 0 0-6 3 3 0 1 0 0 6",
+            "M3 19c.8-3 3.2-5 6-5s5.2 2 6 5",
+            "M17 8h4",
+            "M19 6v4",
+        ],
+        "filter" => &["M4 5h16l-6 7v6l-4 2v-8z"],
+        "lock" => &["M6 11h12v9H6z", "M8 11V8a4 4 0 0 1 8 0v3"],
+        "tag" => &["M4 4h7l9 9-7 7-9-9z", "M8 8h.01"],
+        "text" => &["M4 6h16", "M4 10h10", "M4 14h16", "M4 18h10"],
+        "kanban" => &["M4 4h16v16H4z", "M9 4v16", "M15 4v10"],
+        "verified" => &[
+            "M12 3a9 9 0 1 0 0 18 9 9 0 1 0 0-18",
+            "m8.5 12 2.5 2.5 4.5-5",
+        ],
+        "grip" => &[
+            "M9 6h.01",
+            "M15 6h.01",
+            "M9 12h.01",
+            "M15 12h.01",
+            "M9 18h.01",
+            "M15 18h.01",
+        ],
+        "trendup" => &["m4 16 5-5 4 4 7-7", "M15 8h5v5"],
+        "list" => &[
+            "M8 6h12",
+            "M8 12h12",
+            "M8 18h12",
+            "M4 6h.01",
+            "M4 12h.01",
+            "M4 18h.01",
         ],
         _ => &["M12 12h.01"],
     };
@@ -696,6 +767,8 @@ pub(crate) enum Side {
     Chat,
     Runs,
     Agent,
+    /// A workspace persona's nav and group (`oxyn_core::parity::workscr::persona`).
+    Domain(&'static str),
 }
 
 /// The agent screens' sidebar: primary pages, then the workspace pages (key, label, icon, badge).
@@ -767,6 +840,7 @@ fn sidebar(
             ("made", "Made for you", "file", 0),
         ],
         Side::Agent => AGENT_NAV.to_vec(),
+        Side::Domain(k) => oxyn_core::parity::workscr::persona(k).nav.to_vec(),
     };
     let loading = state == ScreenState::Loading;
     let blank = state == ScreenState::Empty;
@@ -839,12 +913,12 @@ fn sidebar(
                     button { key: "{k}", r#type: "button", class: "oxscn-nav-b", title: "{l}", "data-on": if (side == Side::Runs && k == "runs") || k == nav_on { "true" } else { "false" },
                         "aria-current": if k == nav_on { "page" } else { "false" },
                         onclick: move |_| { on_nav.call(k.to_string()); peek.set(false); },
-                        {ico(i)} span { class: "oxscn-lbl", "{l}" }
+                        if matches!(side, Side::Domain(_)) { {nico(i)} } else { {ico(i)} } span { class: "oxscn-lbl", "{l}" }
                         if n > 0 { span { class: "oxscn-badge", "{n}" } }
                     }
                 }
             }
-            if side != Side::Runs {
+            if matches!(side, Side::Chat | Side::Agent) {
                 div { class: "oxscn-env", role: "radiogroup", "aria-label": "Where agents work",
                     for m in EnvMode::ALL {
                         button { key: "{m.key()}", r#type: "button", role: "radio", class: "oxscn-env-o", title: "{m.hint()}",
@@ -854,7 +928,25 @@ fn sidebar(
                 }
             }
             div { class: "oxscn-lists",
-                if side == Side::Agent {
+                if let Side::Domain(pk) = side {
+                    {
+                        let pe = oxyn_core::parity::workscr::persona(pk);
+                        rsx! {
+                            p { class: "oxscn-gh", "{pe.group}" }
+                            if loading { {skel(4)} } else {
+                                div { class: "oxscn-nav",
+                                    for (k, l, i) in pe.items.iter().copied() {
+                                        button { key: "{k}", r#type: "button", class: "oxscn-nav-b", title: "{l}", "data-on": if k == nav_on { "true" } else { "false" },
+                                            "aria-current": if k == nav_on { "page" } else { "false" },
+                                            onclick: move |_| { on_nav.call(k.to_string()); peek.set(false); },
+                                            {nico(i)} span { class: "oxscn-lbl", "{l}" }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } else if side == Side::Agent {
                     p { class: "oxscn-gh", "Workspace" }
                     div { class: "oxscn-nav",
                         for (k, l, i) in AGENT_WS {
@@ -1162,6 +1254,10 @@ pub fn AppFrame(
     let side_k = match side.as_str() {
         "runs" => Side::Runs,
         "agent" => Side::Agent,
+        "files" => Side::Domain("files"),
+        "board" => Side::Domain("board"),
+        "sales" => Side::Domain("sales"),
+        "revenue" => Side::Domain("revenue"),
         _ => Side::Chat,
     };
     let style = format!(
@@ -2844,1277 +2940,6 @@ pub fn ChatRunScreen(
                         }
                     }
                 }
-            }
-        }
-    }
-}
-
-// ───────────────────────────────────────────────────────────── Folders ──
-
-/// Folders seeded for a state: the sample set, one empty folder when the screen opens inside a
-/// folder with no data, or none.
-fn seed_folders(st: ScreenState, detail: bool) -> Vec<Folder> {
-    match st {
-        ScreenState::Sample => folders(),
-        _ if detail => {
-            let mut f = folders().remove(0);
-            f.members = vec![PERSON_INI.to_string()];
-            f.starred = false;
-            vec![f]
-        }
-        _ => vec![],
-    }
-}
-
-/// Up to four member initials, then `+n`.
-fn faces(members: &[String]) -> Element {
-    let more = members.len().saturating_sub(4);
-    rsx! {
-        span { class: "oxsfo-faces",
-            for (i, m) in members.iter().take(4).enumerate() {
-                span { key: "{i}", class: "oxscn-av oxsfo-face", title: "{member_name(m)}", "{m}" }
-            }
-            if more > 0 { span { class: "oxsfo-more", "+{more}" } }
-        }
-    }
-}
-
-/// Screen – Folders: the folders you share with people and agents (Overview), and one folder open
-/// with its files and details (Detail). `detail` starts inside the first folder.
-#[component]
-pub fn FoldersScreen(
-    /// `inset` or `flat`.
-    #[props(default = "inset".to_string())]
-    layout: String,
-    /// `sample`, `loading` or `empty`.
-    #[props(default = "sample".to_string())]
-    state: String,
-    /// Height px.
-    #[props(default = 640)]
-    height: u32,
-    /// Start inside the first folder.
-    #[props(default)]
-    detail: bool,
-) -> Element {
-    let st = ScreenState::from_key(&state);
-    let thr = use_threads(st);
-    let active = use_signal(|| 0u32);
-    let list = use_signal(move || seed_folders(st, detail));
-    let mut open = use_signal(move || if detail { Some(1u32) } else { None });
-    let cur = open().and_then(|id| list().into_iter().find(|f| f.id == id));
-    let title = match &cur {
-        Some(f) => format!("Folders / {}", f.name),
-        None => "Folders".to_string(),
-    };
-    let work = cur.as_ref().map(|f| {
-        let id = f.id;
-        rsx! { FolderInfo { key: "{id}", state: state.clone(), list, id } }
-    });
-    rsx! {
-        AppFrame { layout, state: state.clone(), height, threads: thr, active, title, work, work_label: "Details",
-            on_nav: move |k: String| if k == "files" { open.set(None) },
-            if let Some(f) = cur {
-                FolderFiles { key: "{f.id}", state: state.clone(), name: f.name.clone(), note: f.note.clone(), members: f.members.clone(), on_back: move |_| open.set(None) }
-            } else {
-                FolderGrid { state: state.clone(), list, on_open: move |id: u32| open.set(Some(id)) }
-            }
-        }
-    }
-}
-
-/// The Overview page: search, sort, grid or list, star, and a new folder typed in place.
-#[component]
-fn FolderGrid(state: String, list: Signal<Vec<Folder>>, on_open: EventHandler<u32>) -> Element {
-    let st = ScreenState::from_key(&state);
-    let mut q = use_signal(String::new);
-    let mut by_name = use_signal(|| false);
-    let mut as_list = use_signal(|| false);
-    let mut adding = use_signal(|| false);
-    let mut draft = use_signal(String::new);
-    let mut said = use_signal(String::new);
-    let all = list();
-    let view = folder_view(&all, &q(), by_name());
-    let shown = view.len();
-    let mut create = move || {
-        let name = draft.peek().trim().to_string();
-        if name.is_empty() {
-            return;
-        }
-        let id = list.peek().iter().map(|f| f.id).max().unwrap_or(0) + 1;
-        list.write().push(Folder {
-            id,
-            name: name.clone(),
-            note: "Empty so far".to_string(),
-            members: vec![PERSON_INI.to_string()],
-            mins: 0,
-            starred: false,
-            agents: false,
-        });
-        draft.set(String::new());
-        adding.set(false);
-        said.set(format!("Made {name}"));
-    };
-    let lay = if as_list() { "list" } else { "grid" };
-    rsx! {
-        div { class: "oxsfo",
-            div { class: "oxsfo-head",
-                div { class: "oxsfo-ht",
-                    h1 { class: "oxscn-h1", "Folders" }
-                    p { class: "oxscn-row-a", if st == ScreenState::Sample { "{all.len()} folders · shared with people and agents" } else { "Shared with people and agents" } }
-                }
-                button { r#type: "button", class: "oxscn-primary oxsfo-new", onclick: move |_| adding.set(true), {ico("plus")} span { "New folder" } }
-            }
-            div { class: "oxsfo-bar",
-                label { class: "oxscn-search oxsfo-q",
-                    {ico("search")}
-                    input { r#type: "search", placeholder: "Find a folder", "aria-label": "Find a folder", value: "{q}",
-                        oninput: move |e| q.set(e.value()),
-                        onkeydown: move |e: KeyboardEvent| if e.key() == Key::Escape { q.set(String::new()) } }
-                }
-                MenuButton { label: if by_name() { "Name".to_string() } else { "Recent".to_string() }, aria: "Sort folders", icon: "sort", right: true,
-                    items: vec![("recent", "Recently changed", ""), ("name", "Name", "")], checked: if by_name() { "name".to_string() } else { "recent".to_string() },
-                    on_pick: move |k: String| by_name.set(k == "name") }
-                div { class: "oxscn-seg oxsfo-view", role: "group", "aria-label": "View",
-                    button { r#type: "button", class: "oxscn-ib", "aria-label": "Grid", "aria-pressed": "{!as_list()}", onclick: move |_| as_list.set(false), {ico("apps")} }
-                    button { r#type: "button", class: "oxscn-ib", "aria-label": "List", "aria-pressed": "{as_list()}", onclick: move |_| as_list.set(true), {ico("row")} }
-                }
-            }
-            if st == ScreenState::Loading {
-                div { class: "oxsfo-grid", "data-view": "grid", "aria-hidden": "true",
-                    for i in 0..6 { div { key: "{i}", class: "oxsfo-card oxsfo-sk", {skel(3)} } }
-                }
-            } else {
-                if all.is_empty() && !adding() {
-                    {empty("No folders yet", "Make one for a project: files, chats and agents can all share it.")}
-                }
-                ul { class: "oxsfo-grid", "data-view": "{lay}", "aria-label": "Folders",
-                    if adding() {
-                        li { class: "oxsfo-card oxsfo-add",
-                            span { class: "oxsfo-fi", {ico("folder")} }
-                            input { class: "oxsfo-in", r#type: "text", placeholder: "Folder name", "aria-label": "New folder name", value: "{draft}",
-                                onmounted: move |e: MountedEvent| { let d = e.data(); spawn(async move { let _ = d.set_focus(true).await; }); },
-                                oninput: move |e| draft.set(e.value()),
-                                onkeydown: move |e: KeyboardEvent| match e.key() { Key::Enter => create(), Key::Escape => { adding.set(false); draft.set(String::new()); } _ => {} } }
-                            div { class: "oxsfo-add-a",
-                                button { r#type: "button", class: "oxscn-btn", onclick: move |_| { adding.set(false); draft.set(String::new()); }, "Cancel" }
-                                button { r#type: "button", class: "oxscn-primary", disabled: draft().trim().is_empty(), onclick: move |_| create(), "Create" }
-                            }
-                        }
-                    }
-                    for f in view {
-                        {
-                            let id = f.id;
-                            let star = f.starred;
-                            let nm = f.name.clone();
-                            let ago_s = if f.mins == 0 { "Just now".to_string() } else { ago(f.mins) };
-                            rsx! {
-                                li { key: "{id}", class: "oxsfo-card", "data-star": "{star}",
-                                    button { r#type: "button", class: "oxsfo-open", onclick: move |_| on_open.call(id),
-                                        span { class: "oxsfo-fi", {ico("folder")} }
-                                        span { class: "oxsfo-t",
-                                            span { class: "oxsfo-n", "{f.name}" }
-                                            span { class: "oxsfo-note", "{f.note}" }
-                                        }
-                                    }
-                                    div { class: "oxsfo-foot",
-                                        {faces(&f.members)}
-                                        if f.agents { span { class: "oxsfo-ag", title: "Agents can read this folder", {ico("spark")} span { "Agents" } } }
-                                        span { class: "oxscn-row-a", "{ago_s}" }
-                                    }
-                                    button { r#type: "button", class: "oxscn-ib oxsfo-star", "aria-label": "Star {nm}", "aria-pressed": "{star}",
-                                        onclick: move |_| { if let Some(x) = list.write().iter_mut().find(|x| x.id == id) { x.starred = !x.starred; } },
-                                        {star_glyph(star)} }
-                                }
-                            }
-                        }
-                    }
-                }
-                if !all.is_empty() && shown == 0 {
-                    p { class: "oxscn-hint", role: "status", "No folder matches “{q}”." }
-                }
-            }
-            p { class: "oxscn-sr", role: "status", "{said}" }
-        }
-    }
-}
-
-fn star_glyph(on: bool) -> Element {
-    let fill = if on { "currentColor" } else { "none" };
-    rsx! {
-        svg { class: "oxscn-ico", width: "16", height: "16", view_box: "0 0 24 24", fill: "{fill}", stroke: "currentColor", stroke_width: "1.8", stroke_linejoin: "round", "aria-hidden": "true",
-            path { d: "m12 4 2.4 5 5.4.6-4 3.7 1.1 5.4L12 16l-4.9 2.7 1.1-5.4-4-3.7 5.4-.6z" }
-        }
-    }
-}
-
-/// The Detail page: a folder's files with sort, select, delete with undo, and add.
-#[component]
-fn FolderFiles(
-    state: String,
-    name: String,
-    note: String,
-    members: Vec<String>,
-    on_back: EventHandler<()>,
-) -> Element {
-    let st = ScreenState::from_key(&state);
-    let mut files = use_signal(move || {
-        if st == ScreenState::Sample {
-            folder_files()
-        } else {
-            vec![]
-        }
-    });
-    let mut sort = use_signal(|| (FileSort::Edited, false));
-    let mut picked = use_signal(Vec::<u32>::new);
-    let mut undo = use_signal(|| None::<Vec<FileRow>>);
-    let mut said = use_signal(String::new);
-    let (by, rev) = sort();
-    let mut rows = files();
-    sort_files(&mut rows, by, rev);
-    let sel = picked();
-    let n_sel = sel.len();
-    let all_on = !rows.is_empty() && n_sel == rows.len();
-    let total = total_size(&rows);
-    let count = rows.len();
-    let mut del = move || {
-        let p = picked.peek().clone();
-        if p.is_empty() {
-            return;
-        }
-        let before = files.peek().clone();
-        files.write().retain(|f| !p.contains(&f.id));
-        picked.set(vec![]);
-        undo.set(Some(before));
-        said.set(if p.len() == 1 {
-            "Deleted 1 file".to_string()
-        } else {
-            format!("Deleted {} files", p.len())
-        });
-    };
-    let add = move |_| {
-        let names: Vec<String> = files.peek().iter().map(|f| f.name.clone()).collect();
-        let nm = untitled(&names, "untitled", ".md");
-        let id = files.peek().iter().map(|f| f.id).max().unwrap_or(0) + 1;
-        files.write().push(FileRow {
-            id,
-            name: nm.clone(),
-            kind: "Doc",
-            owner: PERSON_INI,
-            mins: 0,
-            kb: 1,
-        });
-        sort.set((FileSort::Edited, false));
-        said.set(format!("Added {nm}"));
-    };
-    let th = move |k: FileSort, l: &'static str| {
-        let on = by == k;
-        // Edited (newest first) and Size (largest first) start descending.
-        let desc = matches!(k, FileSort::Edited | FileSort::Size) != rev;
-        let aria = if !on {
-            "none"
-        } else if desc {
-            "descending"
-        } else {
-            "ascending"
-        };
-        rsx! {
-            th { scope: "col", "aria-sort": "{aria}",
-                button { r#type: "button", class: "oxsfd-sort", "data-on": "{on}", onclick: move |_| { let (b, r) = sort(); sort.set((k, if b == k { !r } else { false })); },
-                    "{l}" if on { span { class: "oxsfd-arr", "aria-hidden": "true", if desc { "↓" } else { "↑" } } } }
-            }
-        }
-    };
-    rsx! {
-        div { class: "oxsfd",
-            button { r#type: "button", class: "oxscn-link oxsfd-back", onclick: move |_| on_back.call(()), {ico("back")} "All folders" }
-            div { class: "oxsfo-head",
-                div { class: "oxsfo-ht",
-                    h1 { class: "oxscn-h1", "{name}" }
-                    p { class: "oxscn-row-a", "{note}" }
-                }
-                {faces(&members)}
-                button { r#type: "button", class: "oxscn-primary", disabled: st == ScreenState::Loading, onclick: add, {ico("plus")} span { "Add file" } }
-            }
-            if n_sel > 0 {
-                div { class: "oxsfd-selbar", role: "toolbar", "aria-label": "Selected files",
-                    span { "{n_sel} selected" }
-                    span { class: "oxscn-grow" }
-                    button { r#type: "button", class: "oxscn-btn", onclick: move |_| picked.set(vec![]), "Clear" }
-                    button { r#type: "button", class: "oxscn-btn oxsfd-del", onclick: move |_| del(), "Delete" }
-                }
-            } else if undo().is_some() {
-                div { class: "oxsfd-selbar", role: "status",
-                    span { "{said}" }
-                    span { class: "oxscn-grow" }
-                    button { r#type: "button", class: "oxscn-link", onclick: move |_| { if let Some(b) = undo.take() { files.set(b); said.set("Restored".to_string()); } }, "Undo" }
-                }
-            }
-            if st == ScreenState::Loading { {skel(8)} }
-            else if rows.is_empty() {
-                {empty("Nothing in this folder", "Add a file and everyone it is shared with sees it; agents too, if you let them.")}
-            } else {
-                div { class: "oxsfd-wrap",
-                    onkeydown: move |e: KeyboardEvent| if e.key() == Key::Delete { del() },
-                    table { class: "oxsfd-tb",
-                        thead {
-                            tr {
-                                th { scope: "col", class: "oxsfd-ck",
-                                    input { r#type: "checkbox", "aria-label": "Select all files", checked: all_on,
-                                        onchange: move |_| { if all_on { picked.set(vec![]); } else { picked.set(files.peek().iter().map(|f| f.id).collect()); } } } }
-                                {th(FileSort::Name, "Name")}
-                                {th(FileSort::Kind, "Kind")}
-                                th { scope: "col", class: "oxsfd-own", "Owner" }
-                                {th(FileSort::Edited, "Edited")}
-                                {th(FileSort::Size, "Size")}
-                            }
-                        }
-                        tbody {
-                            for f in rows {
-                                {
-                                    let id = f.id;
-                                    let on = sel.contains(&id);
-                                    let ed = if f.mins == 0 { "Just now".to_string() } else { ago(f.mins) };
-                                    rsx! {
-                                        tr { key: "{id}", "data-on": "{on}",
-                                            td { class: "oxsfd-ck", input { r#type: "checkbox", "aria-label": "Select {f.name}", checked: on,
-                                                onchange: move |_| { let mut p = picked.write(); if let Some(i) = p.iter().position(|x| *x == id) { p.remove(i); } else { p.push(id); } } } }
-                                            td { class: "oxsfd-name", {glyph(if f.kind == "Notes" { "note" } else { "file" }, oxyn_core::icon_tone::IconTone::for_file(&f.name).key())} span { class: "oxscn-row-t", "{f.name}" } }
-                                            td { class: "oxscn-row-a", "{f.kind}" }
-                                            td { class: "oxsfd-own", span { class: "oxscn-av oxsfo-face", title: "{member_name(f.owner)}", "{f.owner}" } }
-                                            td { class: "oxscn-row-a", "{ed}" }
-                                            td { class: "oxscn-row-a oxsfd-num", "{size_label(f.kb)}" }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                p { class: "oxsfd-total oxscn-row-a", "{count} files · {total}" }
-            }
-            p { class: "oxscn-sr", role: "status", "{said}" }
-        }
-    }
-}
-
-/// The Details area of an open folder: about, who it is shared with (role menu, remove, invite),
-/// whether agents may read it, and recent activity.
-#[component]
-fn FolderInfo(state: String, list: Signal<Vec<Folder>>, id: u32) -> Element {
-    let st = ScreenState::from_key(&state);
-    let f = list().into_iter().find(|f| f.id == id);
-    let mut roles = use_signal(Vec::<(String, &'static str)>::new);
-    let mut invite = use_signal(String::new);
-    let mut bad = use_signal(|| false);
-    let Some(f) = f else { return rsx! {} };
-    let agents = f.agents;
-    let members = f.members.clone();
-    let role_of = move |m: &str| {
-        roles()
-            .iter()
-            .find(|(k, _)| k == m)
-            .map(|(_, r)| *r)
-            .unwrap_or(if m == PERSON_INI { "owner" } else { "edit" })
-    };
-    let mut send_invite = move || {
-        let v = invite.peek().trim().to_string();
-        match invite_initials(&v) {
-            Some(ini) => {
-                if let Some(x) = list.write().iter_mut().find(|x| x.id == id)
-                    && !x.members.contains(&ini)
-                {
-                    x.members.push(ini);
-                }
-                invite.set(String::new());
-                bad.set(false);
-            }
-            None => bad.set(true),
-        }
-    };
-    rsx! {
-        div { class: "oxsfi",
-            if st == ScreenState::Loading { {skel(9)} } else {
-                p { class: "oxscn-gh", "About" }
-                p { class: "oxsfi-about", "{f.note}" }
-                p { class: "oxscn-gh", "Shared with" }
-                ul { class: "oxsfi-people",
-                    for m in members {
-                        {
-                            let r = role_of(&m);
-                            let nm = member_name(&m);
-                            let m2 = m.clone();
-                            rsx! {
-                                li { key: "{m}", class: "oxsfi-p",
-                                    span { class: "oxscn-av", "{m}" }
-                                    span { class: "oxscn-row-t", "{nm}" }
-                                    if r == "owner" { span { class: "oxscn-row-a", "Owner" } } else {
-                                        MenuButton { label: if r == "view" { "Can view".to_string() } else { "Can edit".to_string() }, aria: "Access for {nm}", right: true, class: "oxsfi-role".to_string(),
-                                            items: vec![("edit", "Can edit", ""), ("view", "Can view", ""), ("remove", "Remove", "")], checked: r.to_string(),
-                                            on_pick: move |k: String| {
-                                                if k == "remove" { if let Some(x) = list.write().iter_mut().find(|x| x.id == id) { x.members.retain(|y| *y != m2); } }
-                                                else { let k: &'static str = if k == "view" { "view" } else { "edit" }; let mut v = roles.write(); v.retain(|(a, _)| *a != m2); v.push((m2.clone(), k)); }
-                                            } }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                label { class: "oxscn-search oxsfi-inv", "data-bad": "{bad}",
-                    {ico("plus")}
-                    input { r#type: "email", placeholder: "Invite by email", "aria-label": "Invite by email", "aria-invalid": "{bad}", value: "{invite}",
-                        oninput: move |e| { invite.set(e.value()); bad.set(false); },
-                        onkeydown: move |e: KeyboardEvent| if e.key() == Key::Enter { send_invite() } }
-                }
-                if bad() { p { class: "oxscn-hint", role: "status", "That does not look like an email address." } }
-                div { class: "oxcag-sw oxsfi-sw",
-                    span { "Agents can read this folder" }
-                    button { r#type: "button", role: "switch", class: "oxscn-switch", "aria-checked": "{agents}", "aria-label": "Agents can read this folder",
-                        onclick: move |_| { if let Some(x) = list.write().iter_mut().find(|x| x.id == id) { x.agents = !x.agents; } }, span {} }
-                }
-                p { class: "oxscn-gh", "Activity" }
-                if st == ScreenState::Empty { p { class: "oxscn-hint", "Edits, uploads and agent reads show up here." } } else {
-                    for (i, (w, t, a)) in folder_activity().into_iter().enumerate() {
-                        div { key: "{i}", class: "oxsfi-act", span { class: "oxscn-av oxsfo-face", "{w}" } span { class: "oxscn-row-t", "{t}" } span { class: "oxscn-row-a", "{a}" } }
-                    }
-                }
-            }
-        }
-    }
-}
-
-// ───────────────────────────────────────────────────────────── Integrations ──
-
-/// Screen – Integrations: an app directory with category tabs and search; Connect asks for the
-/// permissions first, a connected app opens its details beside the list (permissions, sync,
-/// disconnect).
-#[component]
-pub fn IntegrationsScreen(
-    /// `inset` or `flat`.
-    #[props(default = "inset".to_string())]
-    layout: String,
-    /// `sample`, `loading` or `empty`.
-    #[props(default = "sample".to_string())]
-    state: String,
-    /// Height px.
-    #[props(default = 640)]
-    height: u32,
-) -> Element {
-    let st = ScreenState::from_key(&state);
-    let thr = use_threads(st);
-    let active = use_signal(|| 0u32);
-    let mut list = use_signal(move || apps(st == ScreenState::Sample));
-    let mut tab = use_signal(|| "all".to_string());
-    let mut q = use_signal(String::new);
-    let mut pick = use_signal(move || {
-        if st == ScreenState::Sample {
-            Some("slack")
-        } else {
-            None
-        }
-    });
-    let mut ask = use_signal(|| None::<&'static str>);
-    let mut grant = use_signal(Vec::<bool>::new);
-    let mut said = use_signal(String::new);
-    let all = list();
-    let view = app_view(&all, &tab(), &q());
-    let n_on = connected_count(&all);
-    let loading = st == ScreenState::Loading;
-    let cur_tab = tab();
-    let asking = ask().and_then(|id| all.iter().find(|a| a.id == id).cloned());
-    let picked = pick().and_then(|id| all.iter().find(|a| a.id == id && a.connected).cloned());
-    let mut open_ask = move |id: &'static str| {
-        let n = list
-            .peek()
-            .iter()
-            .find(|a| a.id == id)
-            .map(|a| a.scopes.len())
-            .unwrap_or(0);
-        grant.set(vec![true; n]);
-        ask.set(Some(id));
-    };
-    let mut allow = move || {
-        let Some(id) = *ask.peek() else { return };
-        let g = grant.peek().clone();
-        let mut name = "";
-        if let Some(a) = list.write().iter_mut().find(|a| a.id == id) {
-            a.connected = true;
-            a.synced = 0;
-            for (s, on) in a.scopes.iter_mut().zip(g) {
-                s.1 = on;
-            }
-            name = a.name;
-        }
-        ask.set(None);
-        pick.set(Some(id));
-        said.set(format!("{name} connected"));
-    };
-    let tabs_k: Vec<&'static str> = APP_TABS.iter().map(|(k, _)| *k).collect();
-    let work = picked.clone().map(|a| rsx! { AppDetail { key: "{a.id}", app: a, list, on_gone: move |n: String| { pick.set(None); said.set(format!("{n} disconnected")); } } });
-    let lead = if loading {
-        "Loading your apps…".to_string()
-    } else if n_on == 0 {
-        "Nothing connected yet".to_string()
-    } else if n_on == 1 {
-        "1 app connected".to_string()
-    } else {
-        format!("{n_on} apps connected")
-    };
-    rsx! {
-        AppFrame { layout, state: state.clone(), height, threads: thr, active, title: "Integrations", work, work_label: "App",
-            div { class: "oxsin",
-                div { class: "oxsfo-head",
-                    div { class: "oxsfo-ht",
-                        h1 { class: "oxscn-h1", "Integrations" }
-                        p { class: "oxscn-row-a", "{lead} · the assistant only touches what you allow" }
-                    }
-                }
-                label { class: "oxscn-search oxsin-q",
-                    {ico("search")}
-                    input { r#type: "search", placeholder: "Find an app", "aria-label": "Find an app", value: "{q}",
-                        oninput: move |e| q.set(e.value()),
-                        onkeydown: move |e: KeyboardEvent| if e.key() == Key::Escape { q.set(String::new()) } }
-                }
-                div { class: "oxsin-tabs", role: "tablist", "aria-label": "Categories",
-                    onkeydown: move |e: KeyboardEvent| {
-                        let d: i32 = match e.key() { Key::ArrowRight => 1, Key::ArrowLeft => -1, _ => 0 };
-                        if d != 0 {
-                            e.prevent_default();
-                            let i = tabs_k.iter().position(|k| *k == tab()).unwrap_or(0) as i32;
-                            let n = (i + d).rem_euclid(tabs_k.len() as i32) as usize;
-                            tab.set(tabs_k[n].to_string());
-                        }
-                    },
-                    for (k, l) in APP_TABS {
-                        {
-                            let on = cur_tab == k;
-                            let n = if k == "on" { Some(n_on) } else { None };
-                            rsx! {
-                                button { key: "{k}", r#type: "button", role: "tab", class: "oxsin-tab", "aria-selected": "{on}", tabindex: if on { "0" } else { "-1" },
-                                    onclick: move |_| tab.set(k.to_string()),
-                                    "{l}"
-                                    if let Some(n) = n { span { class: "oxsin-n", "{n}" } }
-                                }
-                            }
-                        }
-                    }
-                }
-                if loading {
-                    div { class: "oxsin-grid", "aria-hidden": "true", for i in 0..6 { div { key: "{i}", class: "oxsin-card", {skel(3)} } } }
-                } else if view.is_empty() {
-                    if cur_tab == "on" && q().trim().is_empty() {
-                        {empty("No apps connected", "Connect one from All: you choose what it may read and do, and can switch any of it off later.")}
-                    } else {
-                        p { class: "oxscn-hint", role: "status", "No app matches “{q}”." }
-                    }
-                } else {
-                    ul { class: "oxsin-grid", "aria-label": "Apps",
-                        for a in view {
-                            {
-                                let id = a.id;
-                                let on = a.connected;
-                                let sel = pick() == Some(id) && on;
-                                let nm = a.name;
-                                rsx! {
-                                    li { key: "{id}", class: "oxsin-card", "data-on": "{on}", "data-sel": "{sel}",
-                                        div { class: "oxsin-top",
-                                            span { class: "oxsin-mark", BrandIcon { name: id.to_string(), size: 20.0, coloured: true, fallback: true } }
-                                            span { class: "oxsin-t", span { class: "oxsfo-n", "{nm}" } span { class: "oxscn-row-a", "{kind_label(a.kind)}" } }
-                                        }
-                                        p { class: "oxsin-b", "{a.blurb}" }
-                                        div { class: "oxsin-foot",
-                                            if on {
-                                                span { class: "oxscn-tag", "data-tone": "ok", "Connected" }
-                                                button { r#type: "button", class: "oxscn-btn", "aria-pressed": "{sel}", "aria-label": "Manage {nm}", onclick: move |_| pick.set(Some(id)), "Manage" }
-                                            } else {
-                                                span { class: "oxscn-row-a", "Not connected" }
-                                                button { r#type: "button", class: "oxscn-btn oxsin-conn", "aria-label": "Connect {nm}", onclick: move |_| open_ask(id), {ico("plus")} span { "Connect" } }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                p { class: "oxscn-sr", role: "status", "{said}" }
-            }
-            if let Some(a) = asking {
-                div { class: "oxsin-scrim", onclick: move |_| ask.set(None) }
-                div { class: "oxsin-dlg", role: "dialog", "aria-modal": "true", "aria-labelledby": "oxsin-dlg-t",
-                    onkeydown: move |e: KeyboardEvent| if e.key() == Key::Escape { e.stop_propagation(); ask.set(None); },
-                    div { class: "oxsin-top",
-                        span { class: "oxsin-mark", BrandIcon { name: a.id.to_string(), size: 20.0, coloured: true, fallback: true } }
-                        h2 { id: "oxsin-dlg-t", class: "oxsin-dt", "Connect {a.name}" }
-                    }
-                    p { class: "oxsin-b", "Pick what it may do. You can change this any time from Manage." }
-                    ul { class: "oxsin-scopes",
-                        for (i, (s, _)) in a.scopes.iter().enumerate() {
-                            {
-                                let g = grant().get(i).copied().unwrap_or(true);
-                                rsx! {
-                                    li { key: "{i}",
-                                        label { class: "oxsin-scope",
-                                            input { r#type: "checkbox", checked: g, onchange: move |_| { if let Some(x) = grant.write().get_mut(i) { *x = !*x; } } }
-                                            span { "{s}" }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    div { class: "oxsfo-add-a",
-                        button { r#type: "button", class: "oxscn-btn", onclick: move |_| ask.set(None), "Cancel" }
-                        button { r#type: "button", class: "oxscn-primary", disabled: !grant().iter().any(|x| *x),
-                            onmounted: move |e: MountedEvent| { let d = e.data(); spawn(async move { let _ = d.set_focus(true).await; }); },
-                            onclick: move |_| allow(), "Allow" }
-                    }
-                }
-            }
-        }
-    }
-}
-
-fn kind_label(k: &str) -> &'static str {
-    APP_TABS
-        .iter()
-        .find(|(x, _)| *x == k)
-        .map(|(_, l)| *l)
-        .unwrap_or("Other")
-}
-
-/// A connected app beside the directory: what it may do (switches), sync and disconnect.
-#[component]
-fn AppDetail(app: AppInfo, list: Signal<Vec<AppInfo>>, on_gone: EventHandler<String>) -> Element {
-    let mut sure = use_signal(|| false);
-    let id = app.id;
-    let nm = app.name;
-    let synced = synced_words(app.synced);
-    rsx! {
-        div { class: "oxsfi oxsin-det",
-            div { class: "oxsin-top",
-                span { class: "oxsin-mark", BrandIcon { name: id.to_string(), size: 22.0, coloured: true, fallback: true } }
-                span { class: "oxsin-t", span { class: "oxsfo-n", "{nm}" } span { class: "oxscn-row-a", "{synced}" } }
-            }
-            p { class: "oxsfi-about", "{app.blurb}" }
-            p { class: "oxscn-gh", "It may" }
-            for (i, (s, on)) in app.scopes.iter().enumerate() {
-                div { key: "{i}", class: "oxcag-sw oxsfi-sw",
-                    span { "{s}" }
-                    button { r#type: "button", role: "switch", class: "oxscn-switch", "aria-checked": "{on}", "aria-label": "{s}",
-                        onclick: move |_| { if let Some(a) = list.write().iter_mut().find(|a| a.id == id) && let Some(x) = a.scopes.get_mut(i) { x.1 = !x.1; } }, span {} }
-                }
-            }
-            div { class: "oxsin-acts",
-                button { r#type: "button", class: "oxscn-btn", onclick: move |_| { if let Some(a) = list.write().iter_mut().find(|a| a.id == id) { a.synced = 0; } }, {ico("undo")} span { "Sync now" } }
-                if sure() {
-                    span { class: "oxsin-sure", role: "group", "aria-label": "Confirm disconnect",
-                        span { "Disconnect?" }
-                        button { r#type: "button", class: "oxscn-btn oxsfd-del", onclick: move |_| { if let Some(a) = list.write().iter_mut().find(|a| a.id == id) { a.connected = false; } on_gone.call(nm.to_string()); }, "Yes" }
-                        button { r#type: "button", class: "oxscn-link", onclick: move |_| sure.set(false), "Keep" }
-                    }
-                } else {
-                    button { r#type: "button", class: "oxscn-btn", onclick: move |_| sure.set(true), "Disconnect" }
-                }
-            }
-        }
-    }
-}
-
-// ─────────────────────────────────────────────────────────────────── Kanban ──
-
-/// Kanban board: columns with counts and limits, cards you drag between columns (or move with
-/// Alt + arrows), find, an Only mine filter, add a card in place, and the open card beside the
-/// board with its status, priority and assignee.
-#[component]
-pub fn KanbanScreen(
-    /// `inset` or `flat`.
-    #[props(default = "inset".to_string())]
-    layout: String,
-    /// `sample`, `loading` or `empty`.
-    #[props(default = "sample".to_string())]
-    state: String,
-    /// Height px.
-    #[props(default = 640)]
-    height: u32,
-) -> Element {
-    let st = ScreenState::from_key(&state);
-    let thr = use_threads(st);
-    let active = use_signal(|| 0u32);
-    let mut list = use_signal(move || board(st == ScreenState::Sample));
-    let mut q = use_signal(String::new);
-    let mut mine = use_signal(|| false);
-    let mut pick = use_signal(move || {
-        if st == ScreenState::Sample {
-            Some(11u32)
-        } else {
-            None
-        }
-    });
-    let mut drag = use_signal(|| None::<u32>);
-    let mut over = use_signal(|| None::<&'static str>);
-    let mut adding = use_signal(|| None::<&'static str>);
-    let mut draft = use_signal(String::new);
-    let mut said = use_signal(String::new);
-    let mut refocus = use_signal(|| None::<u32>);
-    let all = list();
-    let loading = st == ScreenState::Loading;
-    let who = if mine() { Some(PERSON_INI) } else { None };
-    let qs = q();
-    let shown: usize = KB_COLS
-        .iter()
-        .map(|(k, _, _)| column(&all, k, &qs, who).len())
-        .sum();
-    let filtering = !qs.trim().is_empty() || who.is_some();
-    let done = all.iter().filter(|t| t.col == "done").count();
-    let lead = if loading {
-        "Loading the board…".to_string()
-    } else if all.is_empty() {
-        "No cards yet".to_string()
-    } else {
-        format!("{} cards · {done} done", all.len())
-    };
-    let mut shift = move |id: u32, col: &'static str, at: usize| {
-        if move_task(&mut list.write(), id, col, at) {
-            said.set(format!("{} moved to {}", task_key(id), col_label(col)));
-        }
-    };
-    let picked = pick().and_then(|id| all.iter().find(|t| t.id == id).cloned());
-    let work = picked.map(|t| {
-        rsx! { KanbanCardDetail { key: "{t.id}", task: t, list, on_gone: move |k: String| { pick.set(None); said.set(format!("{k} deleted")); } } }
-    });
-    let is_mine = mine();
-    rsx! {
-        AppFrame { layout, state: state.clone(), height, threads: thr, active, title: "Autumn launch / Board", work, work_label: "Card",
-            div { class: "oxskb",
-                div { class: "oxsfo-head",
-                    div { class: "oxsfo-ht",
-                        h1 { class: "oxscn-h1", "Board" }
-                        p { class: "oxscn-row-a", "{lead}" }
-                    }
-                }
-                div { class: "oxskb-bar",
-                    label { class: "oxscn-search oxskb-q",
-                        {ico("search")}
-                        input { r#type: "search", placeholder: "Find a card", "aria-label": "Find a card", value: "{q}",
-                            oninput: move |e| q.set(e.value()),
-                            onkeydown: move |e: KeyboardEvent| if e.key() == Key::Escape { q.set(String::new()) } }
-                    }
-                    button { r#type: "button", class: "oxscn-btn oxskb-mine", "aria-pressed": "{is_mine}", onclick: move |_| mine.toggle(),
-                        span { class: "oxscn-av oxsfo-face", "{PERSON_INI}" } span { "Only mine" } }
-                }
-                if !loading && filtering && shown == 0 && !all.is_empty() {
-                    p { class: "oxscn-hint", role: "status", "No card matches." }
-                }
-                if loading {
-                    div { class: "oxskb-cols", "aria-hidden": "true",
-                        for i in 0..4 { div { key: "{i}", class: "oxskb-col", {skel(4)} } }
-                    }
-                } else {
-                    div { class: "oxskb-cols",
-                        for (k, l, lim) in KB_COLS {
-                            {
-                                let cards = column(&all, k, &qs, who);
-                                let n = all.iter().filter(|t| t.col == k).count();
-                                let hot = over_limit(&all, k);
-                                let is_drop = over() == Some(k);
-                                let is_adding = adding() == Some(k);
-                                let count = if lim > 0 { format!("{n}/{lim}") } else { n.to_string() };
-                                let none = cards.is_empty();
-                                rsx! {
-                                    section { key: "{k}", class: "oxskb-col", "data-col": "{k}", "data-drop": "{is_drop}", "aria-label": "{l}, {n} cards",
-                                        ondragover: move |e: DragEvent| { e.prevent_default(); if *over.peek() != Some(k) { over.set(Some(k)); } },
-                                        ondrop: move |e: DragEvent| {
-                                            e.prevent_default();
-                                            over.set(None);
-                                            if let Some(id) = *drag.peek() { let at = column(&list.peek(), k, "", None).len(); shift(id, k, at); }
-                                            drag.set(None);
-                                        },
-                                        header { class: "oxskb-ch",
-                                            h2 { class: "oxskb-cn", "{l}" }
-                                            span { class: "oxskb-n", "data-over": "{hot}", title: if lim > 0 { "Limit {lim}" } else { "" }, "{count}" }
-                                            button { r#type: "button", class: "oxscn-ib oxskb-add", "aria-label": "Add a card to {l}",
-                                                onclick: move |_| { draft.set(String::new()); adding.set(Some(k)); }, {ico("plus")} }
-                                        }
-                                        if hot { p { class: "oxskb-warn", "Over the limit of {lim}" } }
-                                        ul { class: "oxskb-list", "aria-label": "{l}",
-                                            for t in cards {
-                                                {
-                                                    let id = t.id;
-                                                    let key_s = task_key(id);
-                                                    let sel = pick() == Some(id);
-                                                    let dragging = drag() == Some(id);
-                                                    let pri = usize::from(t.pri.min(3));
-                                                    let pri_l = KB_PRI[pri];
-                                                    let who_n = member_name(t.who);
-                                                    rsx! {
-                                                        li { key: "{id}", class: "oxskb-card", draggable: "true", tabindex: "0", "data-sel": "{sel}", "data-drag": "{dragging}",
-                                                            "aria-label": "{key_s} {t.title}", "aria-keyshortcuts": "Alt+ArrowLeft Alt+ArrowRight Alt+ArrowUp Alt+ArrowDown",
-                                                            onmounted: move |e: MountedEvent| { if *refocus.peek() == Some(id) { refocus.set(None); let d = e.data(); spawn(async move { let _ = d.set_focus(true).await; }); } },
-                                                            ondragstart: move |_| drag.set(Some(id)),
-                                                            ondragend: move |_| { drag.set(None); over.set(None); },
-                                                            ondrop: move |e: DragEvent| {
-                                                                e.prevent_default();
-                                                                e.stop_propagation();
-                                                                over.set(None);
-                                                                if let Some(d) = *drag.peek() && d != id {
-                                                                    let at = column(&list.peek(), k, "", None).iter().position(|x| x.id == id).unwrap_or(0);
-                                                                    shift(d, k, at);
-                                                                }
-                                                                drag.set(None);
-                                                            },
-                                                            onclick: move |_| pick.set(Some(id)),
-                                                            onkeydown: move |e: KeyboardEvent| {
-                                                                let alt = e.modifiers().alt();
-                                                                let key = e.key();
-                                                                if key == Key::Enter || key == Key::Character(" ".into()) {
-                                                                    e.prevent_default();
-                                                                    pick.set(Some(id));
-                                                                } else if alt && (key == Key::ArrowLeft || key == Key::ArrowRight) {
-                                                                    e.prevent_default();
-                                                                    if let Some(c) = next_col(k, if key == Key::ArrowLeft { -1 } else { 1 }) {
-                                                                        let at = column(&list.peek(), c, "", None).len();
-                                                                        refocus.set(Some(id));
-                                                                        shift(id, c, at);
-                                                                    }
-                                                                } else if alt && (key == Key::ArrowUp || key == Key::ArrowDown) {
-                                                                    e.prevent_default();
-                                                                    let pos = column(&list.peek(), k, "", None).iter().position(|x| x.id == id).unwrap_or(0);
-                                                                    let to = if key == Key::ArrowUp { pos.saturating_sub(1) } else { pos + 1 };
-                                                                    shift(id, k, to);
-                                                                }
-                                                            },
-                                                            div { class: "oxskb-top",
-                                                                span { class: "oxskb-key", "{key_s}" }
-                                                                span { class: "oxskb-pri", "data-p": "{pri}", role: "img", "aria-label": "{pri_l}", title: "{pri_l}", span {} span {} span {} }
-                                                            }
-                                                            p { class: "oxskb-t", "{t.title}" }
-                                                            div { class: "oxskb-meta",
-                                                                span { class: "oxskb-tag", "{t.tag}" }
-                                                                if t.sub.1 > 0 { span { class: "oxskb-sub", "data-all": "{t.sub.0 == t.sub.1}", {ico("check")} "{t.sub.0}/{t.sub.1}" } }
-                                                                if let Some(d) = t.due { span { class: "oxskb-due", "data-late": "{d < 0}", "{due_words(d)}" } }
-                                                                if !t.who.is_empty() { span { class: "oxscn-av oxsfo-face oxskb-who", title: "{who_n}", "{t.who}" } }
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                        if is_adding {
-                                            div { class: "oxskb-new",
-                                                input { class: "oxskb-in", placeholder: "Card title", "aria-label": "New card in {l}", value: "{draft}",
-                                                    onmounted: move |e: MountedEvent| { let d = e.data(); spawn(async move { let _ = d.set_focus(true).await; }); },
-                                                    oninput: move |e| draft.set(e.value()),
-                                                    onkeydown: move |e: KeyboardEvent| {
-                                                        if e.key() == Key::Escape { adding.set(None); }
-                                                        if e.key() == Key::Enter {
-                                                            let v = draft.peek().clone();
-                                                            if let Some(id) = add_task(&mut list.write(), k, &v) { said.set(format!("{} added to {l}", task_key(id))); draft.set(String::new()); }
-                                                        }
-                                                    } }
-                                                div { class: "oxsfo-add-a",
-                                                    button { r#type: "button", class: "oxscn-btn", onclick: move |_| adding.set(None), "Cancel" }
-                                                    button { r#type: "button", class: "oxscn-primary", disabled: draft().trim().is_empty(),
-                                                        onclick: move |_| { let v = draft.peek().clone(); if let Some(id) = add_task(&mut list.write(), k, &v) { said.set(format!("{} added to {l}", task_key(id))); adding.set(None); } }, "Add" }
-                                                }
-                                            }
-                                        } else if none {
-                                            p { class: "oxskb-none", if all.is_empty() && k == "todo" { "Add the first card with +." } else if filtering { "None match" } else { "Drop cards here" } }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                p { class: "oxscn-sr", role: "status", "{said}" }
-            }
-        }
-    }
-}
-
-/// The open card beside the board: title (editable), status, priority and assignee menus,
-/// sub-tasks, notes and Delete.
-#[component]
-fn KanbanCardDetail(task: Task, list: Signal<Vec<Task>>, on_gone: EventHandler<String>) -> Element {
-    let id = task.id;
-    let key_s = task_key(id);
-    let pri = usize::from(task.pri.min(3));
-    let cols: Vec<MenuItem> = KB_COLS.iter().map(|(k, l, _)| (*k, *l, "")).collect();
-    let pris: Vec<MenuItem> = vec![
-        ("0", KB_PRI[0], ""),
-        ("1", KB_PRI[1], ""),
-        ("2", KB_PRI[2], ""),
-        ("3", KB_PRI[3], ""),
-    ];
-    let people: Vec<MenuItem> = vec![
-        ("none", "Nobody", ""),
-        ("RV", member_name("RV"), ""),
-        ("JO", member_name("JO"), ""),
-        ("TA", member_name("TA"), ""),
-        ("SE", member_name("SE"), ""),
-    ];
-    let who_k = if task.who.is_empty() {
-        "none".to_string()
-    } else {
-        task.who.to_string()
-    };
-    let who_l = if task.who.is_empty() {
-        "Nobody".to_string()
-    } else {
-        member_name(task.who).to_string()
-    };
-    let (a, b) = task.sub;
-    let pct = if b == 0 {
-        0
-    } else {
-        u32::from(a) * 100 / u32::from(b)
-    };
-    rsx! {
-        div { class: "oxsfi oxskb-det",
-            p { class: "oxskb-key", "{key_s} · {col_label(task.col)}" }
-            input { class: "oxskb-title", "aria-label": "Card title", value: "{task.title}",
-                oninput: move |e| { if let Some(t) = list.write().iter_mut().find(|t| t.id == id) { t.title = e.value(); } } }
-            dl { class: "oxskb-dl",
-                div { dt { "Status" } dd { MenuButton { label: col_label(task.col).to_string(), aria: "Status", class: "oxskb-st".to_string(), items: cols, checked: task.col.to_string(), right: true,
-                    on_pick: move |k: String| { if let Some(c) = KB_COLS.iter().map(|(x, _, _)| *x).find(|x| *x == k) { let at = column(&list.peek(), c, "", None).len(); let _ = move_task(&mut list.write(), id, c, at); } } } } }
-                div { dt { "Priority" } dd { MenuButton { label: KB_PRI[pri].to_string(), aria: "Priority", class: "oxskb-pr".to_string(), items: pris, checked: pri.to_string(), right: true,
-                    on_pick: move |k: String| { if let Ok(p) = k.parse::<u8>() && let Some(t) = list.write().iter_mut().find(|t| t.id == id) { t.pri = p; } } } } }
-                div { dt { "Assignee" } dd { MenuButton { label: who_l, aria: "Assignee", class: "oxskb-as".to_string(), items: people, checked: who_k, right: true,
-                    on_pick: move |k: String| {
-                        let w: &'static str = match k.as_str() { "RV" => "RV", "JO" => "JO", "TA" => "TA", "SE" => "SE", _ => "" };
-                        if let Some(t) = list.write().iter_mut().find(|t| t.id == id) { t.who = w; }
-                    } } } }
-                div { dt { "Due" } dd { if let Some(d) = task.due { "{due_words(d)}" } else { "No date" } } }
-            }
-            if b > 0 {
-                p { class: "oxscn-gh", "Sub-tasks" }
-                div { class: "oxskb-prog", role: "progressbar", "aria-label": "Sub-tasks done", "aria-valuenow": "{a}", "aria-valuemin": "0", "aria-valuemax": "{b}",
-                    span { style: "width:{pct}%" } }
-                p { class: "oxscn-row-a oxskb-pl", "{a} of {b} done" }
-            }
-            if !task.note.is_empty() {
-                p { class: "oxscn-gh", "Notes" }
-                p { class: "oxsfi-about", "{task.note}" }
-            }
-            div { class: "oxsin-acts",
-                button { r#type: "button", class: "oxscn-btn oxsfd-del",
-                    onclick: move |_| { list.write().retain(|t| t.id != id); on_gone.call(task_key(id)); }, "Delete card" }
-            }
-        }
-    }
-}
-
-// ────────────────────────────────────────────────────────────────────── CRM ──
-
-/// CRM: saved views as tabs with counts, find, a deals table you sort by column and edit in
-/// place (company and value fields, a stage menu), New deal, and the open deal beside the table.
-#[component]
-pub fn CrmScreen(
-    /// `inset` or `flat`.
-    #[props(default = "inset".to_string())]
-    layout: String,
-    /// `sample`, `loading` or `empty`.
-    #[props(default = "sample".to_string())]
-    state: String,
-    /// Height px.
-    #[props(default = 640)]
-    height: u32,
-) -> Element {
-    let st = ScreenState::from_key(&state);
-    let thr = use_threads(st);
-    let active = use_signal(|| 0u32);
-    let mut list = use_signal(move || deals(st == ScreenState::Sample));
-    let mut view = use_signal(|| "all");
-    let mut q = use_signal(String::new);
-    let mut sort = use_signal(|| (DealSort::Value, false));
-    let mut pick = use_signal(move || {
-        if st == ScreenState::Sample {
-            Some(1u32)
-        } else {
-            None
-        }
-    });
-    // The cell being edited: deal id and field (`company` or `value`), with its draft.
-    let mut edit = use_signal(|| None::<(u32, &'static str)>);
-    let mut draft = use_signal(String::new);
-    let mut bad = use_signal(|| false);
-    let mut said = use_signal(String::new);
-    let all = list();
-    let loading = st == ScreenState::Loading;
-    let (by, rev) = sort();
-    let cur = view();
-    let qs = q();
-    let rows = deal_view(&all, cur, &qs, by, rev);
-    let shown_total: u32 = rows.iter().map(|d| d.value).sum();
-    let lead = if loading {
-        "Loading deals…".to_string()
-    } else if all.is_empty() {
-        "No deals yet".to_string()
-    } else {
-        format!(
-            "{} deals · {} open pipeline",
-            all.len(),
-            usd(pipeline(&all))
-        )
-    };
-    let mut commit = move || {
-        let Some((id, field)) = *edit.peek() else {
-            return;
-        };
-        let v = draft.peek().trim().to_string();
-        if field == "value" {
-            match parse_money(&v) {
-                Some(n) => {
-                    if let Some(d) = list.write().iter_mut().find(|d| d.id == id) {
-                        d.value = n;
-                    }
-                    said.set(format!("Value set to {}", usd(n)));
-                }
-                None => {
-                    bad.set(true);
-                    said.set("Type an amount like 12,400 or 12k".to_string());
-                    return;
-                }
-            }
-        } else if !v.is_empty()
-            && let Some(d) = list.write().iter_mut().find(|d| d.id == id)
-        {
-            d.company = v;
-        }
-        bad.set(false);
-        edit.set(None);
-    };
-    let mut start = move |id: u32, field: &'static str, now: String| {
-        draft.set(now);
-        bad.set(false);
-        edit.set(Some((id, field)));
-    };
-    let th = move |k: DealSort, l: &'static str, num: bool| {
-        let on = by == k;
-        // Value starts largest first.
-        let desc = (k == DealSort::Value) != rev;
-        let aria = if !on {
-            "none"
-        } else if desc {
-            "descending"
-        } else {
-            "ascending"
-        };
-        rsx! {
-            th { scope: "col", class: if num { "oxscr-num" } else { "" }, "aria-sort": "{aria}",
-                button { r#type: "button", class: "oxsfd-sort", "data-on": "{on}", onclick: move |_| { let (b, r) = sort(); sort.set((k, if b == k { !r } else { false })); },
-                    "{l}" if on { span { class: "oxsfd-arr", "aria-hidden": "true", if desc { "↓" } else { "↑" } } } }
-            }
-        }
-    };
-    let picked = pick().and_then(|id| all.iter().find(|d| d.id == id).cloned());
-    let work = picked.map(|d| {
-        rsx! { CrmDealDetail { key: "{d.id}", deal: d, list, on_gone: move |n: String| { pick.set(None); said.set(format!("{n} deleted")); } } }
-    });
-    let views_k: Vec<&'static str> = CRM_VIEWS.iter().map(|(k, _)| *k).collect();
-    let stages: Vec<MenuItem> = CRM_STAGES.iter().map(|(k, l)| (*k, *l, "")).collect();
-    rsx! {
-        AppFrame { layout, state: state.clone(), height, threads: thr, active, title: "Sales / Deals", work, work_label: "Deal",
-            div { class: "oxscr",
-                div { class: "oxsfo-head",
-                    div { class: "oxsfo-ht",
-                        h1 { class: "oxscn-h1", "Deals" }
-                        p { class: "oxscn-row-a", "{lead}" }
-                    }
-                    if !loading {
-                        button { r#type: "button", class: "oxscn-primary oxscr-new",
-                            onclick: move |_| {
-                                let n = list.peek().len() + 1;
-                                if let Some(id) = add_deal(&mut list.write(), &format!("New company {n}"), PERSON_INI) {
-                                    view.set("all");
-                                    q.set(String::new());
-                                    pick.set(Some(id));
-                                    start(id, "company", String::new());
-                                    said.set("New deal added as a lead".to_string());
-                                }
-                            },
-                            {ico("plus")} "New deal" }
-                    }
-                }
-                div { class: "oxsin-tabs oxscr-tabs", role: "tablist", "aria-label": "Views",
-                    onkeydown: move |e: KeyboardEvent| {
-                        let d: i32 = match e.key() { Key::ArrowRight => 1, Key::ArrowLeft => -1, _ => 0 };
-                        if d != 0 {
-                            e.prevent_default();
-                            let i = views_k.iter().position(|k| *k == view()).unwrap_or(0) as i32;
-                            let n = (i + d).rem_euclid(views_k.len() as i32) as usize;
-                            view.set(views_k[n]);
-                        }
-                    },
-                    for (k, l) in CRM_VIEWS {
-                        {
-                            let on = cur == k;
-                            let n = view_count(&all, k);
-                            rsx! {
-                                button { key: "{k}", r#type: "button", role: "tab", class: "oxsin-tab", "aria-selected": "{on}", tabindex: if on { "0" } else { "-1" },
-                                    onclick: move |_| view.set(k),
-                                    "{l}"
-                                    if !loading { span { class: "oxsin-n", "{n}" } }
-                                }
-                            }
-                        }
-                    }
-                }
-                label { class: "oxscn-search oxscr-q",
-                    {ico("search")}
-                    input { r#type: "search", placeholder: "Find a company, contact or note", "aria-label": "Find a deal", value: "{q}",
-                        oninput: move |e| q.set(e.value()),
-                        onkeydown: move |e: KeyboardEvent| if e.key() == Key::Escape { q.set(String::new()) } }
-                }
-                if loading {
-                    div { class: "oxsfd-wrap", "aria-hidden": "true", div { class: "oxscr-sk", {skel(6)} } }
-                } else if all.is_empty() {
-                    {empty("No deals yet", "Add the first with New deal: it starts as a lead you own, and every cell edits in place.")}
-                } else if rows.is_empty() {
-                    p { class: "oxscn-hint", role: "status", if qs.trim().is_empty() { "Nothing in this view yet." } else { "No deal matches “{qs}”." } }
-                } else {
-                    div { class: "oxsfd-wrap oxscr-wrap",
-                        table { class: "oxsfd-tb oxscr-tb", "aria-label": "Deals",
-                            thead { tr {
-                                {th(DealSort::Company, "Company", false)}
-                                {th(DealSort::Stage, "Stage", false)}
-                                {th(DealSort::Value, "Value", true)}
-                                th { scope: "col", class: "oxscr-own", "Owner" }
-                                {th(DealSort::Close, "Close", false)}
-                            } }
-                            tbody {
-                                for d in rows {
-                                    {
-                                        let id = d.id;
-                                        let sel = pick() == Some(id);
-                                        let ed = edit();
-                                        let ed_co = ed == Some((id, "company"));
-                                        let ed_v = ed == Some((id, "value"));
-                                        let co = d.company.clone();
-                                        let co2 = d.company.clone();
-                                        let val = d.value;
-                                        let late = d.close < 0 && d.stage != "won" && d.stage != "lost";
-                                        let st_items = stages.clone();
-                                        rsx! {
-                                            tr { key: "{id}", "data-on": "{sel}", "data-stage": "{d.stage}",
-                                                td { class: "oxscr-co",
-                                                    if ed_co {
-                                                        input { class: "oxscr-in", "aria-label": "Company", value: "{draft}", placeholder: "Company name",
-                                                            onmounted: move |e: MountedEvent| { let m = e.data(); spawn(async move { let _ = m.set_focus(true).await; }); },
-                                                            oninput: move |e| draft.set(e.value()),
-                                                            onblur: move |_| commit(),
-                                                            onkeydown: move |e: KeyboardEvent| { if e.key() == Key::Enter { commit(); } else if e.key() == Key::Escape { edit.set(None); } } }
-                                                    } else {
-                                                        button { r#type: "button", class: "oxscr-cell", "aria-label": "{co}, open", onclick: move |_| pick.set(Some(id)),
-                                                            ondoubleclick: move |_| start(id, "company", co.clone()),
-                                                            onkeydown: move |e: KeyboardEvent| if e.key() == Key::F2 { e.prevent_default(); start(id, "company", co2.clone()); },
-                                                            span { class: "oxscn-row-t", "{d.company}" }
-                                                            if !d.contact.is_empty() { span { class: "oxscr-sub", "{d.contact}" } }
-                                                        }
-                                                    }
-                                                }
-                                                td { class: "oxscr-st",
-                                                    MenuButton { label: stage_label(d.stage).to_string(), aria: "Stage of {d.company}", class: "oxscr-stb".to_string(), items: st_items, checked: d.stage.to_string(),
-                                                        on_pick: move |k: String| {
-                                                            if let Some(s) = stage_key(&k) && let Some(x) = list.write().iter_mut().find(|x| x.id == id) { x.stage = s; }
-                                                            said.set(format!("Moved to {}", stage_label(&k)));
-                                                        } }
-                                                }
-                                                td { class: "oxscr-num",
-                                                    if ed_v {
-                                                        input { class: "oxscr-in oxscr-vin", "aria-label": "Value", "aria-invalid": "{bad}", "data-bad": "{bad}", inputmode: "decimal", value: "{draft}",
-                                                            onmounted: move |e: MountedEvent| { let m = e.data(); spawn(async move { let _ = m.set_focus(true).await; }); },
-                                                            oninput: move |e| { draft.set(e.value()); bad.set(false); },
-                                                            onblur: move |_| { if *bad.peek() { edit.set(None); bad.set(false); } else { commit(); } },
-                                                            onkeydown: move |e: KeyboardEvent| { if e.key() == Key::Enter { commit(); } else if e.key() == Key::Escape { bad.set(false); edit.set(None); } } }
-                                                    } else {
-                                                        button { r#type: "button", class: "oxscr-cell oxscr-val", "aria-label": "Value {usd(val)}, edit",
-                                                            onclick: move |_| start(id, "value", val.to_string()), "{usd(val)}" }
-                                                    }
-                                                }
-                                                td { class: "oxscr-own",
-                                                    if d.owner.is_empty() { span { class: "oxscr-sub", "–" } } else { span { class: "oxscn-av oxsfo-face", title: "{member_name(d.owner)}", "{d.owner}" } }
-                                                }
-                                                td { class: "oxscn-row-a oxscr-close", "data-late": "{late}", "{close_words(d.close, d.stage)}" }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    p { class: "oxsfd-total oxscn-row-a", "{deal_view(&all, cur, &qs, by, rev).len()} shown · {usd(shown_total)} · double-click a company or press F2 to rename" }
-                }
-                p { class: "oxscn-sr", role: "status", "{said}" }
-            }
-        }
-    }
-}
-
-/// The open deal beside the table: company, contact, stage and owner menus, value, close,
-/// a stage-by-stage pipeline, notes, Mark won and Delete.
-#[component]
-fn CrmDealDetail(deal: Deal, list: Signal<Vec<Deal>>, on_gone: EventHandler<String>) -> Element {
-    let id = deal.id;
-    let stages: Vec<MenuItem> = CRM_STAGES.iter().map(|(k, l)| (*k, *l, "")).collect();
-    let people: Vec<MenuItem> = vec![
-        ("none", "Nobody", ""),
-        ("RV", member_name("RV"), ""),
-        ("JO", member_name("JO"), ""),
-        ("TA", member_name("TA"), ""),
-        ("SE", member_name("SE"), ""),
-    ];
-    let own_k = if deal.owner.is_empty() {
-        "none".to_string()
-    } else {
-        deal.owner.to_string()
-    };
-    let own_l = if deal.owner.is_empty() {
-        "Nobody".to_string()
-    } else {
-        member_name(deal.owner).to_string()
-    };
-    let all = list();
-    let totals = stage_totals(&all);
-    let top = totals.iter().map(|t| t.1).max().unwrap_or(0).max(1);
-    let name = deal.company.clone();
-    let won = deal.stage == "won";
-    rsx! {
-        div { class: "oxsfi oxscr-det",
-            p { class: "oxscr-kick", "{stage_label(deal.stage)} · {usd(deal.value)}" }
-            h2 { class: "oxscr-h2", "{deal.company}" }
-            dl { class: "oxskb-dl",
-                div { dt { "Contact" } dd { if deal.contact.is_empty() { "Not set" } else { "{deal.contact}" } } }
-                div { dt { "Stage" } dd { MenuButton { label: stage_label(deal.stage).to_string(), aria: "Stage", class: "oxscr-dst".to_string(), items: stages, checked: deal.stage.to_string(), right: true,
-                    on_pick: move |k: String| { if let Some(s) = stage_key(&k) && let Some(x) = list.write().iter_mut().find(|x| x.id == id) { x.stage = s; } } } } }
-                div { dt { "Owner" } dd { MenuButton { label: own_l, aria: "Owner", class: "oxscr-down".to_string(), items: people, checked: own_k, right: true,
-                    on_pick: move |k: String| {
-                        let w: &'static str = match k.as_str() { "RV" => "RV", "JO" => "JO", "TA" => "TA", "SE" => "SE", _ => "" };
-                        if let Some(x) = list.write().iter_mut().find(|x| x.id == id) { x.owner = w; }
-                    } } } }
-                div { dt { "Close" } dd { "{close_words(deal.close, deal.stage)}" } }
-            }
-            if !deal.note.is_empty() {
-                p { class: "oxscn-gh", "Notes" }
-                p { class: "oxsfi-about", "{deal.note}" }
-            }
-            p { class: "oxscn-gh", "Pipeline" }
-            ul { class: "oxscr-pipe", "aria-label": "Value by stage",
-                for (k, v, n) in totals {
-                    li { key: "{k}", "data-on": "{k == deal.stage}",
-                        span { class: "oxscr-pl", "{stage_label(k)}" }
-                        span { class: "oxscr-bar", span { style: "width:{v * 100 / top}%" } }
-                        span { class: "oxscn-row-a oxscr-pv", "{usd(v)} · {n}" }
-                    }
-                }
-            }
-            div { class: "oxsin-acts",
-                button { r#type: "button", class: "oxscn-btn", disabled: won,
-                    onclick: move |_| { if let Some(x) = list.write().iter_mut().find(|x| x.id == id) { x.stage = "won"; } },
-                    if won { "Won" } else { "Mark won" } }
-                button { r#type: "button", class: "oxscn-btn oxsfd-del",
-                    onclick: move |_| { list.write().retain(|x| x.id != id); on_gone.call(name.clone()); }, "Delete deal" }
             }
         }
     }

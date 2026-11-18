@@ -1,34 +1,36 @@
-**Status:** built v0.1 (2026-11-17, screens 1: Screens).
+**Status:** built v0.2 (2026-11-18, S2: Workspace parity; v0.1 screens 1).
 
 # Spec: Folders · Overview (`folders-overview`)
 
-Family: Screens. Reference: affectUI Folders / Overview, behaviour only.
-Components: `FoldersScreen` (Dioxus) · `FoldersEl` (GPUI), models in `oxyn_core::parity::screensfid`.
+Family: Screens. Reference: affectUI Folders / Overview (`/screens/files`), layout and behaviour only; no source or assets copied.
+Components: `FoldersScreen` (Dioxus) · `FoldersEl` (GPUI), models in `oxyn_core::parity::workscr`.
 
 ## 1. Purpose
-The folders a workspace shares with its people and agents, and the way into each.
+The files your chats made or used and the folders you keep them in: find, sort and open a folder, make a new one, and copy a template into a file.
 
 ## 2. Parts
 | Part | Look |
 |---|---|
-| Sidebar | Workspace switcher (menu), fold-to-rail button, live search (Escape clears), nav, Pinned / Projects (expand) / Chats with pin and unread dot, dismissible notice, setup checklist with progress, account menu |
-| Page | Top bar (menu button when narrow, title, actions, work-area toggle) over a scrolling body |
-| Header | Title, count line, New folder |
-| Bar | Find field (Escape clears), sort menu (Recently changed / Name), Grid / List toggle |
-| Folders | Cards (or rows): icon, name, one-line note, member initials (+n), an Agents badge when agents may read it, when it last changed, a star toggle |
+| Sidebar | Folders persona: the workspace switcher and the ⌘K search, three nav rows (chat, folders, integrations), then the Projects group; the card slot and the account row at the bottom |
+| Header | No top bar: the page opens with Files (24 px / 600) and one quiet lead line with a How folders work link, 44 px from the top, 32 px side padding |
+| Folders | Caption FOLDERS n (11.5 px uppercase), then All · Shared · Private tabs; on the right Sort (icon menu: Last changed, Name, Most files), the Grid | List switch, Search folders… and the black Create folder button |
+| Folder tiles | Four columns, 56 px tall, 10 px radius hairline cards: the folder glyph in the folder tone (#00A1FF light), the name, and Shared/Private · n files with a people or lock glyph |
+| File templates | Caption FILE TEMPLATES n, All · Mine · Shared with me tabs; Type ⌄ (filter by kind), A–Z / Z–A, Search templates…, Add template; 236 px cards with a 148 px page preview whose type badge carries the file tone (DOC blue, XLS green, PDF red) |
+
+Chrome is monochrome neutral; colour only means something: official brand marks, semantic object glyphs (folder #00A1FF, file types), status (running blue, needs-you amber, done green, failed red).
 
 ## 3. Behaviour
-Starred folders sort first, then by the chosen order. Find filters by name or note and says when nothing matches. New folder opens a card with a focused name field: Enter or Create makes it (Escape or Cancel drops it). Opening a folder shows the Detail page in the same frame; Files in the sidebar comes back.
+Tabs, the type filter, both searches and the sort narrow the lists live; Create folder opens a named field in the grid (Enter creates, Escape cancels) and announces it; a tile opens Folders · Detail, as do the sidebar projects, and the crumb or ← comes back; the star keeps a folder first; a template press copies it into a new file.
 prefers-reduced-motion: no transitions or animation.
 
 ## 4. Variants
-Data: Sample · Loading (skeletons) · Empty (each region says what lands there). Frame: Inset (page is a rounded card on the grey canvas) · Flat (edge to edge, hairlines). Light and dark follow the page theme.
+States: Data · Loading (tile and card skeletons) · Empty (no folders: a glyph, a line and Create folder; no templates: one quiet line) · **Creating** (the new-folder field open and focused). Frame: Inset · Flat. Oxyn extras beyond affectUI: List view with when each folder changed, star to keep a folder first, Most files sort, the template type filter and sort direction.
 
 ## 5. Keyboard and accessibility
-Sidebar is a labelled nav with aria-current on the open chat; menus open from a trigger reporting aria-expanded (items are menuitemradio; Escape shuts them); hairlines are focusable separators with a value (←/→ resize); skeletons are aria-hidden; live notes use role=status.
+Folder tiles are buttons named with the folder and who sees it; the star is a toggle (aria-pressed); tab rows are tablists (←/→); Sort, Type and the view switch report their state; the new-folder field takes focus; results and actions are announced in a polite status. Escape closes any open menu or popover and clears a search; skeletons are aria-hidden.
 
 ## 6. Responsive
-Root fills its container (definite width, overflow clip, container queries). Under 860 px the work area becomes a sheet opened from the top bar; under 640 px the sidebar slides in from a menu button and composer menus drop their labels.
+Authored on the 1440 × 900 stage (rule R1) and scaled to its column; the full view (`/screens/folders-overview/full`) renders at the real viewport with the state bar under it (R2). Under 640 px the sidebar slides in from a menu button and top-bar actions keep their icons with hidden labels. Tiles go 4 → 2 columns under 900 px of page width and 1 under 620 px; the tool rows wrap with the tabs on their own line; templates keep two columns on a phone. Every label in a row, chip or card ellipsises in a flex child with min-width 0 (R5); scripts/ovl.py finds no text overlap at 1440, 768 and 390 in light and dark.
 
 ## 7. Known gaps
-GPUI is a static snapshot (no menus, resize or live clock); the host owns state.
+GPUI is a static snapshot: `.extra(...)` draws the screen's own state or an option; drag, menus, typing and charts' crosshair belong to the host.
