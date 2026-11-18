@@ -604,8 +604,9 @@ oxyn-demo:focus-within,oxyn-demo:has(.oxyn-layer:not(.contained)){z-index:45}
    hinge with the same perspective as the lid, so it reads as a keyboard deck in perspective and the
    closing lid lands exactly on it. The scene width is capped by the viewport height, so the tab bar
    and the whole laptop fit in one screen (1440 × 900, 1366 × 768, 1280 × 720).
-   --x-lap-p runs 0 (closed) → 1 (open). site.js maps it to the scroll position across most of the
-   section (rAF, one custom property, transforms and opacity only). Reduced motion pins it open. */
+   --x-lap-p runs 0 (closed) → 1 (open): the var() forms below are the no-script / reduced-motion
+   state (open). site.js eases the progress toward the scroll position in one rAF loop and writes the
+   dev / lid transforms and the shade opacity straight onto those three elements. */
 @property --x-lap-p{syntax:'<number>';inherits:true;initial-value:1}
 .x-lap-sec{padding-top:104px}
 .x-lap-sec .lp-sub{margin-top:10px;font-size:15px}
@@ -643,6 +644,8 @@ html[data-oxyn-reduced] .x-lap-pin .x-lap-scene{position:relative!important;top:
 .x-lap-dev{position:relative;padding-bottom:25cqw;transform-origin:50% 60%;will-change:transform;
   transform:translateY(calc((1 - var(--x-lap-p)) * 5cqw)) scale(calc(.94 + var(--x-lap-p) * .06))}
 .x-lap-unit{position:relative;width:78%;margin:0 auto}
+/* site.js writes the dev / lid transforms and the shade opacity inline each frame (the var() forms
+   here are the no-script and reduced-motion state: open). */
 .x-lap-lid{position:relative;z-index:2;transform-origin:50% 100%;transform-style:preserve-3d;will-change:transform;
   transform:perspective(340cqw) rotateX(calc((1 - var(--x-lap-p)) * -116deg))}
 .x-lap-face,.x-lap-back{border-radius:2.6cqw 2.6cqw .5cqw .5cqw;backface-visibility:hidden;-webkit-backface-visibility:hidden}

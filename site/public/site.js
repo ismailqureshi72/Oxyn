@@ -494,48 +494,82 @@ document.addEventListener('oxyn-demo-live', (e) => {
     // The lid follows the scroll position across most of the section. On wide screens the scene is
     // pinned under the tab bar (CSS sticky) while the pin's extra height scrolls by: the lid starts
     // opening once the closed laptop is in view, keeps opening while it rises and while it is
-    // pinned, and is fully open with a little of the pinned stretch left. One custom property per
-    // animation frame (smoothstep-eased); the CSS turns it into transforms and opacity, so nothing
-    // is laid out per frame. Listens only while the section is near the viewport.
+    // pinned, and is fully open with a little of the pinned stretch left.
+    // Smoothness: the scroll position only sets a target; one requestAnimationFrame loop eases the
+    // shown progress toward it (frame-rate independent lerp) and stops when it arrives. Each frame
+    // reads scrollY only (the section's page offsets are measured on load / resize, never in the
+    // loop) and writes transform + opacity straight onto the three moving parts (dev, lid, shade),
+    // so no inherited custom property restyles the live screen inside the lid every frame.
+    // Phones (<= 640px) show the screen alone (no laptop body) and reduced motion shows it open.
     const scene = box.querySelector('.x-lap-scene');
     const pin = box.querySelector('.x-lap-pin') || scene;
-    if (!scene) return;
-    let raf = 0;
-    let live = false;
-    let lastP = -1;
-    let a = 0;
-    let z = 0;
-    // Pin-top positions (viewport px) where opening starts (a) and ends (z), measured on load and resize.
+    const dev = box.querySelector('.x-lap-dev');
+    const lid = box.querySelector('.x-lap-lid');
+    const shade = box.querySelector('.x-lap-shade');
+    if (!scene || !dev || !lid) return;
+    const phone = matchMedia('(max-width:640px)');
+    let raf = 0, live = false, cur = -1, target = 1, last = 0;
+    let a = 0, z = 0, pinTop = 0;
+    const still = () => reduced() || phone.matches;
+    const paint = (p) => {
+      const q = 1 - p;
+      dev.style.transform = `translate3d(0,${(q * 5).toFixed(3)}cqw,0) scale(${(0.94 + p * 0.06).toFixed(4)})`;
+      lid.style.transform = `perspective(340cqw) rotateX(${(q * -116).toFixed(3)}deg)`;
+      if (shade) shade.style.opacity = (q * 0.8).toFixed(3);
+      scene.toggleAttribute('data-closed', p < 0.02);
+    };
+    const clear = () => {
+      dev.style.transform = lid.style.transform = '';
+      if (shade) shade.style.opacity = '';
+      scene.removeAttribute('data-closed');
+      cur = -1;
+    };
+    // Page offsets of the pin and where opening starts (a) / ends (z), as pin-top viewport px.
     const measure = () => {
+      if (still()) return;
       const vh = innerHeight;
       const sh = scene.offsetHeight;
       const stick = Math.max(0, pin.offsetHeight - sh);
-      const top = getComputedStyle(scene).position === 'sticky' ? parseFloat(getComputedStyle(scene).top) || 0 : 16;
+      const cs = getComputedStyle(scene);
+      const top = cs.position === 'sticky' ? parseFloat(cs.top) || 0 : 16;
+      pinTop = pin.getBoundingClientRect().top + scrollY;
       z = top - stick * 0.82;
       a = Math.max(z + 240, vh - sh * 0.86);
     };
-    const step = () => {
-      raf = 0;
-      if (reduced()) { scene.style.removeProperty('--x-lap-p'); lastP = -1; return; }
-      const pt = pin.getBoundingClientRect().top;
-      const t = Math.min(1, Math.max(0, (a - pt) / (a - z)));
-      const p = t * t * (3 - 2 * t);
-      if (Math.abs(p - lastP) < 0.0005) return;
-      lastP = p;
-      scene.style.setProperty('--x-lap-p', p.toFixed(4));
+    const aim = () => {
+      const t = Math.min(1, Math.max(0, (a - (pinTop - scrollY)) / (a - z)));
+      target = t * t * (3 - 2 * t);
     };
-    const queue = () => { if (!raf) raf = requestAnimationFrame(step); };
+    const frame = (now) => {
+      raf = 0;
+      if (still()) { clear(); return; }
+      aim();
+      const dt = Math.min(64, last ? now - last : 16.7);
+      last = now;
+      if (cur < 0) cur = target;
+      else cur += (target - cur) * (1 - Math.pow(1 - 0.16, dt / 16.7));
+      if (Math.abs(target - cur) < 0.0008) cur = target;
+      paint(cur);
+      if (cur !== target) raf = requestAnimationFrame(frame);
+      else last = 0;
+    };
+    const kick = () => { if (!raf) raf = requestAnimationFrame(frame); };
     const listen = (on) => {
       if (on === live) return;
       live = on;
-      (on ? addEventListener : removeEventListener)('scroll', queue, { passive: true });
-      queue();
+      (on ? addEventListener : removeEventListener)('scroll', kick, { passive: true });
+      kick();
     };
-    addEventListener('resize', () => { measure(); queue(); });
+    const remeasure = () => { measure(); kick(); };
+    addEventListener('resize', remeasure, { passive: true });
+    phone.addEventListener?.('change', remeasure);
+    // Content above the section can change height (fonts, live demos): keep the offsets current.
+    if ('ResizeObserver' in window) new ResizeObserver(remeasure).observe(document.body);
     if ('IntersectionObserver' in window) new IntersectionObserver((es) => es.forEach((e) => listen(e.isIntersecting)), { rootMargin: '160px 0px' }).observe(pin);
     else listen(true);
     measure();
-    step();
+    aim();
+    if (!still()) { cur = target; paint(cur); }
   });
   // Top bar on the white pages (headroom): slides away on scroll down, back on scroll up, and stays
   // away while the laptop section fills the view (its tab bar takes over). One passive listener,
