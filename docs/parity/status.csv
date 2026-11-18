@@ -133,10 +133,10 @@ affectUI,Folders / Overview,https://www.affectui.com/screens/files,Screens · Ap
 affectUI,Integrations,https://www.affectui.com/screens/integrations,Screens · App screens,Pro,integrations,S8,S2,built
 affectUI,Kanban Board,https://www.affectui.com/screens/kanban,Screens · App screens,Pro,kanban,S7,S2,built
 affectUI,Onboarding,https://www.affectui.com/screens/onboarding,Screens · App screens,Pro,genui-forms,S6,#40,planned
-affectUI,Onboarding / Brand,https://www.affectui.com/screens/onboarding-brand,Screens · App screens,Pro,genui-forms,S6,#40,planned
-affectUI,Onboarding / Ready,https://www.affectui.com/screens/onboarding-ready,Screens · App screens,Pro,NEW,S6,#40,planned
-affectUI,Onboarding / Tone,https://www.affectui.com/screens/onboarding-tone,Screens · App screens,Pro,genui-forms,S6,#40,planned
-affectUI,Onboarding / Website,https://www.affectui.com/screens/onboarding-website,Screens · App screens,Pro,genui-forms,S6,#40,planned
+affectUI,Onboarding / Brand,https://www.affectui.com/screens/onboarding-brand,Screens · App screens,Pro,onboarding-brand,S6,S8,built
+affectUI,Onboarding / Ready,https://www.affectui.com/screens/onboarding-ready,Screens · App screens,Pro,onboarding-ready,S6,S8,built
+affectUI,Onboarding / Tone,https://www.affectui.com/screens/onboarding-tone,Screens · App screens,Pro,onboarding-tone,S6,S8,built
+affectUI,Onboarding / Website,https://www.affectui.com/screens/onboarding-website,Screens · App screens,Pro,onboarding-website,S6,S8,built
 affectUI,Settings / Billing,https://www.affectui.com/screens/settings-subscription,Screens · App screens,Pro,settings-billing,S5,S7,built
 affectUI,Settings / General,https://www.affectui.com/screens/settings-general,Screens · App screens,Pro,settings-general,S4,S6,built
 affectUI,Settings / Models,https://www.affectui.com/screens/settings-models,Screens · App screens,Pro,settings-models,S5,S7,built
