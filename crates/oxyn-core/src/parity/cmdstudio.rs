@@ -25,6 +25,9 @@ const CC_STATES: StateList = &[
     ("loading", "Loading"),
     ("empty", "Empty"),
     ("worktree", "Worktree"),
+    ("automations", "Automations"),
+    ("terminal", "Terminals"),
+    ("browser", "Browser"),
 ];
 const SS_STATES: StateList = &[
     ("sample", "Data"),
@@ -34,7 +37,15 @@ const SS_STATES: StateList = &[
 ];
 
 /// The screens' own states.
-pub const OWN: [&str; 2] = ["worktree", "permission"];
+pub const OWN: [&str; 7] = [
+    "worktree",
+    "permission",
+    "automations",
+    "terminal",
+    "browser",
+    "chat",
+    "arrange",
+];
 
 /// The states of an S10 screen by its slug.
 pub fn states_for(slug: &str) -> StateList {
@@ -886,9 +897,275 @@ pub fn ss_diff() -> Vec<DiffFile> {
     ]
 }
 
+// ───────────────────────────────────────────── Command Center extras ──
+
+/// What starts an automation: key, label.
+pub const TRIGGERS: [(&str, &str); 4] = [
+    ("nightly", "Every night at 02:00"),
+    ("issue", "When an issue is labelled bug"),
+    ("ci", "When CI fails on main"),
+    ("weekly", "Every Monday at 09:00"),
+];
+
+/// An automation: a prompt the app runs on a trigger.
+#[derive(Clone, Debug, PartialEq)]
+pub struct Automation {
+    /// Stable id.
+    pub id: u32,
+    /// Name.
+    pub name: String,
+    /// Index into [`TRIGGERS`].
+    pub trigger: usize,
+    /// What it asks for.
+    pub prompt: String,
+    /// Index into [`CC_PROJECTS`].
+    pub project: usize,
+    /// Switched on.
+    pub on: bool,
+    /// Last run: tone (`ok`, `bad`, `run`, `` for never) and when.
+    pub last: (&'static str, String),
+}
+
+/// The sample automations (none when empty).
+pub fn automations(st: ScreenState) -> Vec<Automation> {
+    if st != ScreenState::Sample {
+        return Vec::new();
+    }
+    let a = |id, n: &str, t, p: &str, pj, on, tone, ago: &str| Automation {
+        id,
+        name: n.into(),
+        trigger: t,
+        prompt: p.into(),
+        project: pj,
+        on,
+        last: (tone, ago.into()),
+    };
+    vec![
+        a(
+            1,
+            "Bump dependencies",
+            0,
+            "Update patch versions, run the tests, open a review thread if they pass.",
+            0,
+            true,
+            "ok",
+            "6h ago",
+        ),
+        a(
+            2,
+            "Triage new bugs",
+            1,
+            "Reproduce the bug, find the likely file and write a first fix in a worktree.",
+            1,
+            true,
+            "ok",
+            "2d ago",
+        ),
+        a(
+            3,
+            "Fix red CI",
+            2,
+            "Read the failing job, fix the cause in a worktree and wait for review.",
+            0,
+            false,
+            "bad",
+            "3d ago",
+        ),
+        a(
+            4,
+            "Weekly changelog",
+            3,
+            "Summarise merged changes since last Monday into CHANGELOG.md.",
+            2,
+            true,
+            "",
+            "",
+        ),
+    ]
+}
+
+/// Why an automation cannot be saved, if it cannot.
+pub fn automation_error(name: &str, prompt: &str) -> Option<&'static str> {
+    if name.trim().is_empty() {
+        Some("Give it a name")
+    } else if prompt.trim().chars().count() < 8 {
+        Some("Say what it should do")
+    } else {
+        None
+    }
+}
+
+/// A terminal tab: id, title and its lines (`$ ` starts a command).
+#[derive(Clone, Debug, PartialEq)]
+pub struct Term {
+    /// Stable id.
+    pub id: u32,
+    /// Tab title.
+    pub title: String,
+    /// Scrollback.
+    pub lines: Vec<String>,
+}
+
+/// The sample terminals: the thread's test run and a shell.
+pub fn sample_terms() -> Vec<Term> {
+    vec![
+        Term {
+            id: 1,
+            title: "cargo test".into(),
+            lines: vec![
+                "$ cargo test retry".into(),
+                "   Compiling upload v0.4.2".into(),
+                "running 3 tests".into(),
+                "test retries_a_503_then_succeeds ... ok".into(),
+                "test gives_up_after_four_tries ... ok".into(),
+                "test does_not_retry_a_400 ... ok".into(),
+                "test result: ok. 3 passed; 0 failed".into(),
+            ],
+        },
+        Term {
+            id: 2,
+            title: "zsh".into(),
+            lines: vec![
+                "$ git status --short".into(),
+                " M src/upload/client.rs".into(),
+                "?? tests/retry.rs".into(),
+            ],
+        },
+    ]
+}
+
+/// Open a new shell tab. Returns its id.
+pub fn new_term(t: &mut Vec<Term>) -> u32 {
+    let id = t.iter().map(|x| x.id).max().unwrap_or(0) + 1;
+    t.push(Term {
+        id,
+        title: format!("zsh {id}"),
+        lines: Vec::new(),
+    });
+    id
+}
+
+/// Close a tab; the last one cannot close. Returns false when it did not.
+pub fn close_term(t: &mut Vec<Term>, id: u32) -> bool {
+    if t.len() <= 1 {
+        return false;
+    }
+    let n = t.len();
+    t.retain(|x| x.id != id);
+    t.len() < n
+}
+
+/// Run a command in a tab: echo it and print a (simulated) answer. `clear` empties the tab.
+pub fn run_cmd(t: &mut [Term], id: u32, cmd: &str) -> bool {
+    let c = cmd.trim();
+    let Some(x) = t.iter_mut().find(|x| x.id == id) else {
+        return false;
+    };
+    if c.is_empty() {
+        return false;
+    }
+    if c == "clear" {
+        x.lines.clear();
+        return true;
+    }
+    x.lines.push(format!("$ {c}"));
+    let out: &[&str] = match c.split_whitespace().next().unwrap_or("") {
+        "ls" => &["Cargo.toml  README.md  src  tests"],
+        "pwd" => &["~/code/upload-svc"],
+        "git" => &[
+            "On branch main",
+            "Changes not staged: src/upload/client.rs, tests/retry.rs",
+        ],
+        "cargo" => &["running 3 tests", "test result: ok. 3 passed; 0 failed"],
+        "echo" => &[],
+        _ => &["(sample terminal: commands are simulated)"],
+    };
+    if let Some(rest) = c.strip_prefix("echo ") {
+        x.lines.push(rest.to_string());
+    }
+    x.lines.extend(out.iter().map(|s| s.to_string()));
+    true
+}
+
+/// Pages the browser pane can show: address, title, lines.
+pub const PAGES: [(&str, &str, &[&str]); 3] = [
+    (
+        "localhost:3000/uploads",
+        "Uploads",
+        &[
+            "Drop files to upload",
+            "report-q3.pdf · retried 2× · done",
+            "photos.zip · uploading 64%",
+        ],
+    ),
+    (
+        "localhost:3000/settings",
+        "Settings",
+        &["Storage region: eu-west", "Retries: 4 with backoff"],
+    ),
+    (
+        "docs.upload.example/retries",
+        "Retries · Upload docs",
+        &[
+            "Retry 5xx and timeouts with exponential backoff.",
+            "Never retry a 4xx.",
+        ],
+    ),
+];
+
+/// The page for an address the user typed (scheme and `www.` ignored); None when unknown.
+pub fn page_for(addr: &str) -> Option<usize> {
+    let a = addr
+        .trim()
+        .trim_start_matches("https://")
+        .trim_start_matches("http://")
+        .trim_start_matches("www.")
+        .trim_end_matches('/');
+    PAGES.iter().position(|p| p.0 == a)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn s10_extras() {
+        assert_eq!(split("browser").1, "browser");
+        assert_eq!(states_for("session-studio")[5].0, "arrange");
+        for id in 1..=6 {
+            assert!(!thread_diff(id).is_empty(), "thread {id}");
+            assert_eq!(
+                threads(ScreenState::Sample)[(id - 1) as usize].stat,
+                diff_stat(&thread_diff(id))
+            );
+        }
+        for id in 1..=5 {
+            assert!(!session_diff(id).is_empty(), "session {id}");
+        }
+        assert_ne!(thread_diff(2), thread_diff(3));
+        assert!(thread_diff(9).is_empty());
+        assert_eq!(automation_error("", "x"), Some("Give it a name"));
+        assert!(automation_error("Nightly", "Update the lockfile").is_none());
+        let mut t = sample_terms();
+        let id = new_term(&mut t);
+        assert_eq!(id, 3);
+        assert!(run_cmd(&mut t, id, "echo hi"));
+        assert_eq!(t[2].lines, vec!["$ echo hi", "hi"]);
+        assert!(run_cmd(&mut t, id, "clear") && t[2].lines.is_empty());
+        assert!(close_term(&mut t, 1) && close_term(&mut t, 2));
+        assert!(!close_term(&mut t, 3));
+        assert_eq!(page_for("https://localhost:3000/settings/"), Some(1));
+        assert_eq!(page_for("example.org"), None);
+        let mut o = vec![0, 1, 2];
+        assert!(move_pane(&mut o, 2, 0));
+        assert_eq!(o, vec![2, 0, 1]);
+        assert!(!move_pane(&mut o, 1, 1));
+        assert!(side_reply("does it run the tests?").contains("npm test"));
+        let d = CommandCenterData::default();
+        assert_eq!(d.diff(2), thread_diff(2));
+        assert!(d.diff(99).is_empty());
+        assert_eq!(SessionStudioData::default().diff(3), session_diff(3));
+    }
 
     #[test]
     fn s10_cmdstudio() {

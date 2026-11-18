@@ -4513,46 +4513,53 @@ fn ag_demo(
     code: fn(&Vals) -> String,
     keyboard: Vec<(&'static str, &'static str)>,
     a11y: Vec<&'static str>,
+    more: &[(&'static str, &'static str, &'static str)],
 ) -> Demo {
     let (own_key, own_label, own_note) = own;
-    let mut c = controls_x("inset", &[own_label]);
+    let mut labels = vec![own_label];
+    labels.extend(more.iter().map(|m| m.1));
+    let mut c = controls_x("inset", &labels);
     c.push(super::tog("x1", "Icon rail", false));
     c.push(super::tog("x2", "Sidebar hidden", false));
+    let mut variants = vec![
+        var(
+            "sample",
+            "Sample data, the main area as an inset card.",
+            &[],
+        ),
+        var(
+            "flat",
+            "The same view with the main area edge to edge.",
+            &[("frame", "Flat")],
+        ),
+        var(
+            "loading",
+            "Skeletons in the sidebar, the conversation and the pane.",
+            &[("data", "Loading")],
+        ),
+        var(
+            "empty",
+            "A first run: nothing yet, the composer front and centre.",
+            &[("data", "Empty")],
+        ),
+        var(own_key, own_note, &[("data", own_label)]),
+        var(
+            "x1",
+            "Oxyn: the sidebar as a 56 px icon rail; the top bar expands it.",
+            &[("x1", "true")],
+        ),
+        var(
+            "x2",
+            "Oxyn: the sidebar hidden for focus; the top bar brings it back.",
+            &[("x2", "true")],
+        ),
+    ];
+    for (k, l, n) in more.iter().copied() {
+        variants.push(var(k, n, &[("data", l)]));
+    }
     Demo {
         controls: c,
-        variants: vec![
-            var(
-                "sample",
-                "Sample data, the main area as an inset card.",
-                &[],
-            ),
-            var(
-                "flat",
-                "The same view with the main area edge to edge.",
-                &[("frame", "Flat")],
-            ),
-            var(
-                "loading",
-                "Skeletons in the sidebar, the conversation and the pane.",
-                &[("data", "Loading")],
-            ),
-            var(
-                "empty",
-                "A first run: nothing yet, the composer front and centre.",
-                &[("data", "Empty")],
-            ),
-            var(own_key, own_note, &[("data", own_label)]),
-            var(
-                "x1",
-                "Oxyn: the sidebar as a 56 px icon rail; the top bar expands it.",
-                &[("x1", "true")],
-            ),
-            var(
-                "x2",
-                "Oxyn: the sidebar hidden for focus; the top bar brings it back.",
-                &[("x2", "true")],
-            ),
-        ],
+        variants,
         render,
         code,
         keyboard,
@@ -4582,7 +4589,7 @@ fn cc_demo() -> Demo {
     ag_demo(
         "command-center",
         "Command Center",
-        "Agent apps / Command Center: a desktop coding-agent app in the threads-and-review pattern. Projects and their threads in the sidebar (status, lines changed), a running thread with its work log that finishes on its own, a review pane of the changes (files, hunks, Accept or Revert per hunk and file, Accept all), a Local / Worktree / Cloud switch with the branch, a task queue that fills while the thread runs, and a composer with model and reasoning pickers and Stop.",
+        "Agent apps / Command Center: a desktop coding-agent app in the threads-and-review pattern. Projects and their threads in the sidebar (status, lines changed), Automations, a running thread with its work log that finishes on its own, a pane with Review (each thread its own changes), Terminal tabs and a Browser; the review (files, hunks, Accept or Revert per hunk and file, Accept all), a Local / Worktree / Cloud switch with the branch, a task queue that fills while the thread runs, and a composer with model and reasoning pickers and Stop.",
         "CommandCenterScreen",
         "CommandCenterEl",
         (
@@ -4608,6 +4615,23 @@ fn cc_demo() -> Demo {
             "Work in, model and reasoning are menus of menuitemradio that close on Escape.",
             "The review pane is a labelled complementary region; each file is a section with Accept and Revert buttons naming the file and hunk.",
             "The queue is an ordered list with Move up and Remove; every action reports in a polite live region.",
+        ],
+        &[
+            (
+                "automations",
+                "Automations",
+                "Automations: threads that start on a schedule or an event, with Run now, on/off and New automation.",
+            ),
+            (
+                "terminal",
+                "Terminals",
+                "The pane on Terminal: tabs for the test run and a shell, a new tab, close, and a prompt that runs commands.",
+            ),
+            (
+                "browser",
+                "Browser",
+                "The pane on Browser: back, reload, an address bar and the app's page.",
+            ),
         ],
     )
 }

@@ -16,7 +16,9 @@ use oxyn_core::parity::cmdstudio::{
     BState, Block, CC_APP, CC_MODELS, CC_PROJECTS, CC_PROMPT, CC_WORK, DiffFile, Mode, Place,
     REASONING, SS_APP, SS_MODELS, ScreenState, TState, branch_for, cc_diff, file_stat, hunk_stat,
     review_line, sample_queue, sample_todos, session_blocks, sessions, ss_diff, threads,
-    todo_progress,
+};
+use oxyn_core::parity::cmdstudio::{
+    PAGES, PANES, SIDE_CHAT, TRIGGERS, automations, sample_terms, todo_progress,
 };
 use oxyn_core::parity::screensfid::ShellLayout;
 use oxyn_tokens::Theme;
@@ -905,6 +907,214 @@ fn ss_body(p: &ThPal, st: ScreenState, ask: bool, act: &Option<Act>) -> Div {
     )
 }
 
+fn side_col(p: &ThPal) -> Div {
+    div()
+        .w(px(440.))
+        .flex_none()
+        .h_full()
+        .flex()
+        .flex_col()
+        .border_l_1()
+        .border_color(p.line)
+        .bg(p.card)
+}
+
+fn tabs_row(p: &ThPal, on: &str) -> Div {
+    let mut r = div()
+        .flex()
+        .gap(px(4.))
+        .px(px(8.))
+        .pt(px(6.))
+        .border_b_1()
+        .border_color(p.line);
+    for (k, l) in [
+        ("review", "Review"),
+        ("terminal", "Terminal"),
+        ("browser", "Browser"),
+    ] {
+        r = r.child(
+            div()
+                .h(px(32.))
+                .px(px(10.))
+                .flex()
+                .items_center()
+                .text_size(px(12.5))
+                .when(k == on, |d| {
+                    d.border_b_2().border_color(p.fg).text_color(p.fg)
+                })
+                .when(k != on, |d| d.text_color(p.mute))
+                .child(l),
+        );
+    }
+    r
+}
+
+fn term_pane(p: &ThPal) -> Div {
+    let terms = sample_terms();
+    let mut tabs = div()
+        .flex()
+        .gap(px(4.))
+        .p(px(6.))
+        .border_b_1()
+        .border_color(p.line);
+    for (i, t) in terms.iter().enumerate() {
+        tabs = tabs.child(
+            div()
+                .h(px(26.))
+                .px(px(8.))
+                .flex()
+                .items_center()
+                .rounded(px(7.))
+                .when(i == 0, |d| d.bg(p.sel))
+                .text_size(px(12.))
+                .child(t.title.clone()),
+        );
+    }
+    tabs = tabs.child(quiet(p, "+"));
+    let mut out = div().flex_1().p(px(12.)).flex().flex_col().bg(p.inset);
+    for l in &terms[0].lines {
+        out = out.child(mono(l.clone()).text_color(if l.starts_with("$ ") { p.fg } else { p.fg2 }));
+    }
+    side_col(p)
+        .child(tabs_row(p, "terminal"))
+        .child(tabs)
+        .child(out)
+}
+
+fn browser_pane(p: &ThPal) -> Div {
+    let (addr, title, lines) = PAGES[0];
+    let mut page = div()
+        .flex_1()
+        .p(px(20.))
+        .flex()
+        .flex_col()
+        .gap(px(8.))
+        .bg(gpui::rgb(0xFFFFFF))
+        .text_color(gpui::rgb(0x111111))
+        .child(
+            div()
+                .text_size(px(20.))
+                .font_weight(FontWeight::BOLD)
+                .child(title),
+        );
+    for l in lines {
+        page = page.child(
+            div()
+                .p(px(10.))
+                .rounded(px(8.))
+                .border_1()
+                .border_color(gpui::rgb(0xE6E6E6))
+                .child(*l),
+        );
+    }
+    side_col(p)
+        .child(tabs_row(p, "browser"))
+        .child(
+            div()
+                .flex()
+                .items_center()
+                .gap(px(6.))
+                .p(px(6.))
+                .border_b_1()
+                .border_color(p.line)
+                .child(quiet(p, "←  ↻"))
+                .child(
+                    div()
+                        .flex_1()
+                        .h(px(28.))
+                        .px(px(10.))
+                        .flex()
+                        .items_center()
+                        .rounded(px(8.))
+                        .bg(p.inset)
+                        .text_size(px(12.5))
+                        .child(addr),
+                ),
+        )
+        .child(page)
+}
+
+fn auto_body(p: &ThPal, st: ScreenState) -> Div {
+    let list = automations(st);
+    let mut d = div()
+        .flex_1()
+        .min_w_0()
+        .p(px(24.))
+        .flex()
+        .flex_col()
+        .gap(px(12.))
+        .child(
+            div()
+                .text_size(px(18.))
+                .font_weight(FontWeight::SEMIBOLD)
+                .child("Automations"),
+        )
+        .child(quiet(
+            p,
+            "Threads that start themselves on a schedule or an event, each in its own worktree.",
+        ));
+    if st == ScreenState::Loading {
+        return d.child(skel(p, 6));
+    }
+    let mut l = div()
+        .flex()
+        .flex_col()
+        .rounded(px(12.))
+        .border_1()
+        .border_color(p.line);
+    for a in &list {
+        let (tone, ago) = &a.last;
+        l = l.child(
+            div()
+                .p(px(12.))
+                .flex()
+                .items_center()
+                .gap(px(10.))
+                .border_b_1()
+                .border_color(p.line)
+                .child(
+                    div()
+                        .flex_1()
+                        .min_w_0()
+                        .flex()
+                        .flex_col()
+                        .child(
+                            div()
+                                .font_weight(FontWeight::MEDIUM)
+                                .when(!a.on, |x| x.text_color(p.mute))
+                                .child(a.name.clone()),
+                        )
+                        .child(quiet(
+                            p,
+                            format!("{} · {}", TRIGGERS[a.trigger].1, CC_PROJECTS[a.project].1),
+                        )),
+                )
+                .child(pill(
+                    p,
+                    match *tone {
+                        "ok" => "Ran",
+                        "bad" => "Failed",
+                        "run" => "Running",
+                        _ => "Not run yet",
+                    },
+                    tone,
+                ))
+                .child(quiet(p, ago.clone()))
+                .child(pill(
+                    p,
+                    if a.on { "On" } else { "Off" },
+                    if a.on { "ok" } else { "" },
+                )),
+        );
+    }
+    if list.is_empty() {
+        d = d.child(quiet(p, "No automations yet."));
+    } else {
+        d = d.child(l);
+    }
+    d
+}
+
 fn screen(
     theme: &'static Theme,
     lay: ShellLayout,
@@ -921,7 +1131,11 @@ fn screen(
         (
             "Retry failed uploads with backoff",
             Some((state.label(), state.tone())),
-            cc_body(&p, st, wt, act),
+            if extra == "automations" {
+                auto_body(&p, st)
+            } else {
+                cc_body(&p, st, wt, act)
+            },
             if samp { cc_diff() } else { Vec::new() },
             "Review",
         )
@@ -977,7 +1191,13 @@ fn screen(
                 .min_h_0()
                 .flex()
                 .child(body)
-                .child(diff_pane(&p, st, &files, ptitle, act)),
+                .child(match (app, extra) {
+                    ("cc", "terminal") => term_pane(&p),
+                    ("cc", "browser") => browser_pane(&p),
+                    ("ss", "chat") => ss_panes(&p, st, &files, false, act),
+                    ("ss", "arrange") => ss_panes(&p, st, &files, true, act),
+                    _ => diff_pane(&p, st, &files, ptitle, act),
+                }),
         );
     let mut main = match lay {
         ShellLayout::Inset => main

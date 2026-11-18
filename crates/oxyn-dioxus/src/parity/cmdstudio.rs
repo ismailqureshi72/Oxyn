@@ -11,10 +11,13 @@ use dioxus::prelude::*;
 use oxyn_core::parity::cmdstudio::{
     ASK_CMD, Answer, BState, Block, CC_APP, CC_MODELS, CC_PROJECTS, CC_PROMPT, CC_WORK, DiffFile,
     Mode, PERSON, PERSON_INI, PERSON_PLAN, Place, REASONING, SS_APP, SS_MODELS, ScreenState,
-    Session, TState, Thread, Verdict, add_thread, answer, approve_plan, branch_for, cc_diff,
-    dequeue, diff_stat, enqueue, file_stat, file_verdict, finish_running, hunk_stat, prompt_error,
-    queue_up, review_line, reviewed, sample_queue, sample_todos, send, session_blocks, sessions,
-    set_file, set_hunk, split, ss_diff, states_for, threads, todo_progress, toggle_todo,
+    Session, TState, Thread, Verdict, add_thread, answer, approve_plan, branch_for, dequeue,
+    diff_stat, enqueue, file_stat, file_verdict, finish_running, hunk_stat, prompt_error, queue_up,
+    review_line, reviewed, send, set_file, set_hunk, split, states_for, todo_progress, toggle_todo,
+};
+use oxyn_core::parity::cmdstudio::{
+    Automation, CommandCenterData, PAGES, PANES, SIDE_CHAT, SessionStudioData, TRIGGERS, Term,
+    automation_error, close_term, move_pane, new_term, page_for, run_cmd, side_reply,
 };
 
 use super::screensfid::{ico, nico, skel};
@@ -314,6 +317,216 @@ fn opts2(v: &[(&str, &str)]) -> Vec<(String, String, String)> {
         .collect()
 }
 
+const DOLLAR: &str = "$ ";
+
+// ─────────────────────────────────────── Command Center: pane tabs ──
+
+/// The Command Center pane: Review, Terminal (tabs) and Browser.
+#[component]
+fn CcPane(
+    files: Signal<Vec<DiffFile>>,
+    loading: bool,
+    said: Signal<String>,
+    tab0: &'static str,
+    terms0: Vec<Term>,
+) -> Element {
+    let mut said = said;
+    let mut tab = use_signal(move || tab0);
+    let mut terms = use_signal(move || terms0);
+    let mut cur_t = use_signal(|| 1u32);
+    let mut cmd = use_signal(String::new);
+    let mut addr = use_signal(|| PAGES[0].0.to_string());
+    let mut page = use_signal(|| Some(0usize));
+    let mut hist = use_signal(|| vec![0usize]);
+    let mut loading_pg = use_signal(|| false);
+    let t = tab();
+    let tv = terms();
+    let ct = cur_t();
+    let open_t = tv
+        .iter()
+        .find(|x| x.id == ct)
+        .cloned()
+        .or_else(|| tv.first().cloned());
+    let tabs = [
+        ("review", "Review", "doc"),
+        ("terminal", "Terminal", "term"),
+        ("browser", "Browser", "globe"),
+    ];
+    let mut go = move |a: String| {
+        let p = page_for(&a);
+        page.set(p);
+        if let Some(i) = p {
+            hist.write().push(i);
+            addr.set(PAGES[i].0.to_string());
+        }
+        loading_pg.set(true);
+        said.set(match p {
+            Some(i) => format!("Opened {}", PAGES[i].1),
+            None => "Page not found".to_string(),
+        });
+    };
+    rsx! {
+        div { class: "oxs10-ptabs", role: "tablist", "aria-label": "Pane",
+            onkeydown: move |e: KeyboardEvent| {
+                let k = e.key();
+                let i = tabs.iter().position(|x| x.0 == *tab.peek()).unwrap_or(0);
+                if k == Key::ArrowRight { tab.set(tabs[(i + 1) % 3].0); } else if k == Key::ArrowLeft { tab.set(tabs[(i + 2) % 3].0); }
+            },
+            for (k, l, g) in tabs {
+                button { key: "{k}", r#type: "button", role: "tab", class: "oxs10-ptab", "aria-selected": "{t == k}", tabindex: if t == k { "0" } else { "-1" }, onclick: move |_| tab.set(k), {nico(g)} span { "{l}" } }
+            }
+        }
+        match t {
+            "terminal" => rsx! {
+                div { class: "oxs10-tt", role: "tablist", "aria-label": "Terminals",
+                    for x in tv.iter().cloned() {
+                        {
+                            let id = x.id;
+                            let on = open_t.as_ref().is_some_and(|o| o.id == id);
+                            rsx! {
+                                span { key: "{id}", class: "oxs10-tti", "data-on": "{on}",
+                                    button { r#type: "button", role: "tab", class: "oxs10-ttb", "aria-selected": "{on}", onclick: move |_| cur_t.set(id), {nico("term")} span { class: "oxs10-ell", "{x.title}" } }
+                                    if tv.len() > 1 {
+                                        button { r#type: "button", class: "oxs10-ttx", "aria-label": "Close {x.title}", onclick: move |_| { close_term(&mut terms.write(), id); if *cur_t.peek() == id { let f = terms.peek().first().map(|y| y.id).unwrap_or(0); cur_t.set(f); } said.set("Terminal closed".to_string()); }, {nico("close")} }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    button { r#type: "button", class: "oxscn-ib oxs10-hb", "aria-label": "New terminal", onclick: move |_| { let id = new_term(&mut terms.write()); cur_t.set(id); said.set("New terminal".to_string()); }, {nico("plus")} }
+                }
+                if let Some(o) = open_t.clone() {
+                    div { class: "oxs10-tpane", role: "log", "aria-label": "{o.title} output",
+                        pre { class: "oxs10-tout",
+                            for (i, l) in o.lines.iter().enumerate() { span { key: "{i}", class: "oxs10-tl", "data-cmd": "{l.starts_with(DOLLAR)}", "{l}" } }
+                        }
+                        label { class: "oxs10-tin", span { "aria-hidden": "true", "$" }
+                            input { class: "oxs10-tinp", value: "{cmd}", placeholder: "Type a command (clear wipes the output)", "aria-label": "Command for {o.title}", spellcheck: "false",
+                                oninput: move |e| cmd.set(e.value()),
+                                onkeydown: move |e: KeyboardEvent| if e.key() == Key::Enter { let c = cmd.peek().clone(); if run_cmd(&mut terms.write(), o.id, &c) { cmd.set(String::new()); } } }
+                        }
+                    }
+                }
+            },
+            "browser" => rsx! {
+                div { class: "oxs10-bbar",
+                    button { r#type: "button", class: "oxscn-ib oxs10-hb", "aria-label": "Back", disabled: hist().len() < 2,
+                        onclick: move |_| { let mut h = hist.write(); h.pop(); if let Some(i) = h.last().copied() { page.set(Some(i)); addr.set(PAGES[i].0.to_string()); } }, {nico("back")} }
+                    button { r#type: "button", class: "oxscn-ib oxs10-hb", "aria-label": "Reload", onclick: move |_| { loading_pg.set(true); said.set("Reloaded".to_string()); }, {nico("refresh")} }
+                    input { class: "oxs10-addr", value: "{addr}", "aria-label": "Address", spellcheck: "false",
+                        oninput: move |e| addr.set(e.value()),
+                        onkeydown: move |e: KeyboardEvent| if e.key() == Key::Enter { let a = addr.peek().clone(); go(a); } }
+                }
+                div { class: "oxs10-bview", "data-loading": "{loading_pg()}",
+                    if loading_pg() { span { class: "oxs10-bload", onanimationend: move |_| loading_pg.set(false) } }
+                    match page() {
+                        Some(i) => rsx! {
+                            div { class: "oxs10-bpage",
+                                h2 { "{PAGES[i].1}" }
+                                for (j, l) in PAGES[i].2.iter().enumerate() { p { key: "{j}", "{l}" } }
+                                div { class: "oxs10-blinks",
+                                    for (j, pg) in PAGES.iter().enumerate() {
+                                        if j != i { button { key: "{j}", r#type: "button", class: "oxs10-blink", onclick: move |_| go(pg.0.to_string()), "{pg.1}" } }
+                                    }
+                                }
+                            }
+                        },
+                        None => rsx! { div { class: "oxs10-pempty", {nico("globe")} p { "Can't reach that page. Try localhost:3000/uploads." } } },
+                    }
+                }
+            },
+            _ => rsx! { DiffPane { files, loading, said, title: "Review".to_string() } },
+        }
+    }
+}
+
+// ─────────────────────────────────────── Command Center: automations ──
+
+#[component]
+fn Automations(loading: bool, said: Signal<String>, list0: Vec<Automation>) -> Element {
+    let mut said = said;
+    let mut list = use_signal(move || list0);
+    let mut adding = use_signal(|| false);
+    let mut nm = use_signal(String::new);
+    let mut pr = use_signal(String::new);
+    let mut trig = use_signal(|| 0usize);
+    let mut tried = use_signal(|| false);
+    let l = list();
+    let err = automation_error(&nm(), &pr());
+    rsx! {
+        div { class: "oxs10-feed oxs10-auto",
+            div { class: "oxs10-in",
+                div { class: "oxs10-ahd",
+                    div { class: "oxs10-s2", h1 { class: "oxs10-h2", "Automations" } span { class: "oxs10-ssub", "Threads that start themselves on a schedule or an event, each in its own worktree." } }
+                    button { r#type: "button", class: "oxscn-primary oxs10-pbtn", "aria-expanded": "{adding()}", onclick: move |_| { adding.toggle(); tried.set(false); nm.set(String::new()); pr.set(String::new()); }, {nico("plus")} span { "New automation" } }
+                }
+                if adding() {
+                    div { class: "oxs10-aform", role: "group", "aria-label": "New automation",
+                        onkeydown: move |e: KeyboardEvent| if e.key() == Key::Escape { adding.set(false); },
+                        label { class: "oxs10-fl", "Name" input { class: "oxs10-fin", value: "{nm}", placeholder: "Nightly lint fixes", onmounted: super::setscr::focus_on, "aria-invalid": "{tried() && nm().trim().is_empty()}", oninput: move |e| nm.set(e.value()) } }
+                        div { class: "oxs10-fl", span { "When" }
+                            div { class: "oxs10-chips", role: "radiogroup", "aria-label": "When",
+                                for (i, (k, lb)) in TRIGGERS.iter().copied().enumerate() {
+                                    button { key: "{k}", r#type: "button", role: "radio", class: "oxs10-pchip", "aria-checked": "{trig() == i}", onclick: move |_| trig.set(i), "{lb}" }
+                                }
+                            }
+                        }
+                        label { class: "oxs10-fl", "What it does" textarea { class: "oxs10-fin oxs10-fta", rows: "2", value: "{pr}", placeholder: "Fix lint warnings and open a review thread.", oninput: move |e| pr.set(e.value()) } }
+                        div { class: "oxs10-facts",
+                            if let (true, Some(m)) = (tried(), err) { span { class: "oxs10-err", role: "alert", "{m}" } }
+                            span { class: "oxs10-grow" }
+                            button { r#type: "button", class: "oxscn-btn", onclick: move |_| adding.set(false), "Cancel" }
+                            button { r#type: "button", class: "oxscn-primary", onclick: move |_| {
+                                tried.set(true);
+                                if automation_error(&nm.peek(), &pr.peek()).is_some() { return; }
+                                let id = list.peek().iter().map(|a| a.id).max().unwrap_or(0) + 1;
+                                let n = nm.peek().trim().to_string();
+                                list.write().insert(0, Automation { id, name: n.clone(), trigger: *trig.peek(), prompt: pr.peek().trim().to_string(), project: 0, on: true, last: ("", String::new()) });
+                                adding.set(false);
+                                said.set(format!("Automation {n} on: {}", TRIGGERS[*trig.peek()].1));
+                            }, "Create" }
+                        }
+                    }
+                }
+                if loading {
+                    div { "aria-busy": "true", {skel(6)} }
+                } else if l.is_empty() && !adding() {
+                    div { class: "oxs10-pempty", {nico("bolt")} p { "No automations yet. Have a thread start itself every night, or when CI fails." } }
+                } else {
+                    ul { class: "oxs10-alist", "aria-label": "Automations",
+                        for a in l.iter().cloned() {
+                            {
+                                let id = a.id;
+                                let an = a.name.clone();
+                                rsx! {
+                                    li { key: "{id}", class: "oxs10-arow", "data-on": "{a.on}",
+                                        span { class: "oxs10-aic", {nico("bolt")} }
+                                        span { class: "oxs10-s2",
+                                            b { class: "oxs10-ell oxs10-stt", "{a.name}" }
+                                            span { class: "oxs10-ell oxs10-ssub", "{TRIGGERS[a.trigger].1} · {CC_PROJECTS[a.project].1}" }
+                                            span { class: "oxs10-ell oxs10-ssub", "{a.prompt}" }
+                                        }
+                                        if a.last.0 == "run" { {pill("Running", "run")} }
+                                        else if a.last.0 == "ok" { {pill(&format!("Ran {}", a.last.1), "ok")} }
+                                        else if a.last.0 == "bad" { {pill(&format!("Failed {}", a.last.1), "bad")} }
+                                        else { {pill("Not run yet", "")} }
+                                        button { r#type: "button", class: "oxscn-btn oxs10-sbtn", disabled: a.last.0 == "run", onclick: move |_| { if let Some(x) = list.write().iter_mut().find(|x| x.id == id) { x.last = ("run", "now".into()); } said.set(format!("Running {an}")); }, "Run now" }
+                                        input { r#type: "checkbox", role: "switch", class: "oxs10-sw", checked: a.on, "aria-label": "{a.name} on",
+                                            onchange: move |e| { if let Some(x) = list.write().iter_mut().find(|x| x.id == id) { x.on = e.checked(); } } }
+                                        if a.last.0 == "run" {
+                                            span { class: "oxs10-tick", onanimationend: move |_| { if let Some(x) = list.write().iter_mut().find(|x| x.id == id) { x.last = ("ok", "just now".into()); } said.set("Automation finished · a review thread is ready".to_string()); } }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 // ────────────────────────────────────────────── Command Center ──
 
 #[component]
@@ -327,6 +540,14 @@ fn CommandCenterApp(
     let (st, own) = split(&state);
     let loading = st == ScreenState::Loading;
     let wt = own == "worktree";
+    let mut view = use_signal(move || {
+        if own == "automations" {
+            "automations"
+        } else {
+            "thread"
+        }
+    });
+    let d1 = d0.clone();
     let mut list = use_signal(move || {
         let mut l = threads(st);
         if wt && let Some(t) = l.first_mut() {
@@ -440,13 +661,17 @@ fn CommandCenterApp(
     let mk = CC_MODELS[model()].1;
     let can = prompt_error(&text()).is_none();
     let ql = q();
+    let auto_v = view() == "automations";
 
     let sidebar = rsx! {
         nav { class: "oxs10-side", "data-rail": "{rl}", "aria-label": "{CC_APP}",
             {side_top("cc", rl, side, drawer)}
-            button { r#type: "button", class: "oxs10-nav", "data-on": "{oid == 0}", "aria-current": if oid == 0 { "page" } else { "false" },
-                onclick: move |_| { open.set(0); files.set(Vec::new()); drawer.set(false); said.set("New thread".to_string()); },
+            button { r#type: "button", class: "oxs10-nav", "data-on": "{oid == 0 && !auto_v}", "aria-current": if oid == 0 && !auto_v { "page" } else { "false" },
+                onclick: move |_| { open.set(0); view.set("thread"); files.set(Vec::new()); drawer.set(false); said.set("New thread".to_string()); },
                 {nico("pen")} if !rl { span { class: "oxs10-nl", "New thread" } span { class: "oxs10-kbd", "⌘N" } } }
+            button { r#type: "button", class: "oxs10-nav", "data-on": "{auto_v}", "aria-current": if auto_v { "page" } else { "false" }, title: "Automations",
+                onclick: move |_| { view.set("automations"); drawer.set(false); said.set("Automations".to_string()); },
+                {nico("bolt")} if !rl { span { class: "oxs10-nl", "Automations" } } }
             if !rl {
                 input { class: "oxs10-find", r#type: "search", placeholder: "Search threads", "aria-label": "Search threads", value: "{ql}", oninput: move |e| q.set(e.value()) }
                 div { class: "oxs10-list",
@@ -471,8 +696,8 @@ fn CommandCenterApp(
                                                         let title = t.title.clone();
                                                         rsx! {
                                                             li { key: "{id}",
-                                                                button { r#type: "button", class: "oxs10-row", "data-on": "{on}", "aria-current": if on { "page" } else { "false" },
-                                                                    onclick: move |_| { open.set(id); files.set(if id == 1 { cc_diff() } else { Vec::new() }); drawer.set(false); said.set(format!("Opened {title}")); },
+                                                                button { r#type: "button", class: "oxs10-row", "data-on": "{on && !auto_v}", "aria-current": if on && !auto_v { "page" } else { "false" },
+                                                                    onclick: move |_| { open.set(id); view.set("thread"); files.set(dd.peek().diff(id)); drawer.set(false); said.set(format!("Opened {title}")); },
                                                                     {tmark(t.state.tone())}
                                                                     span { class: "oxs10-nl", "{t.title}" }
                                                                     if t.stat.0 + t.stat.1 > 0 { span { class: "oxs10-st oxs10-st-s", span { class: "oxs10-add", "+{t.stat.0}" } span { class: "oxs10-del", "−{t.stat.1}" } } }
@@ -496,8 +721,8 @@ fn CommandCenterApp(
     };
 
     let bar = rsx! {
-        span { class: "oxs10-ttl oxs10-ell", if loading { "" } else if let Some(t) = &cur { "{t.title}" } else { "New thread" } }
-        if let Some(t) = &cur { {pill(t.state.label(), t.state.tone())} }
+        span { class: "oxs10-ttl oxs10-ell", if loading { "" } else if auto_v { "Automations" } else if let Some(t) = &cur { "{t.title}" } else { "New thread" } }
+        if let (false, Some(t)) = (auto_v, &cur) { {pill(t.state.label(), t.state.tone())} }
         span { class: "oxs10-grow" }
         if !loading {
             Pick { label: "Work in".to_string(), lead: place_ico(place), items: places, cur: pidx, up: false, right: true,
@@ -556,7 +781,9 @@ fn CommandCenterApp(
         }
     };
 
-    let body = if loading {
+    let body = if auto_v {
+        rsx! { Automations { loading, said, list0: d0.automations.clone() } }
+    } else if loading {
         rsx! { div { class: "oxs10-feed", "aria-busy": "true", div { class: "oxs10-in", {skel(3)} {skel(5)} } } }
     } else if let Some(t) = cur.clone() {
         let st = t.state;
@@ -629,7 +856,12 @@ fn CommandCenterApp(
             div { class: "oxs10-foot", {composer} }
         }
     };
-    let panel = rsx! { DiffPane { files, loading, said, title: "Review".to_string() } };
+    let tab0 = match own {
+        "terminal" => "terminal",
+        "browser" => "browser",
+        _ => "review",
+    };
+    let panel = rsx! { CcPane { files, loading, said, tab0, terms0: d0.terminals.clone() } };
     rsx! { Frame { app: "cc", layout, height, side, drawer, pane, pnar, said, sidebar, bar, body, panel, pane_label } }
 }
 
