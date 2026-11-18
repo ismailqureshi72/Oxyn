@@ -2,7 +2,9 @@
 //! settings shell (settings sidebar: Back to app, Personal and Workspace pages, the account) on the
 //! shared frame, with a centred 696 px column. The elements draw one state at a time: `.state()`
 //! for Data / Loading / Empty and `.extra()` for the screen's own state (`unsaved`, `memoff`,
-//! `quiet`, `exporting`, `deleting`) or the Oxyn option `compact`. Presses fire `set-<page>`,
+//! `quiet`, `exporting`, `deleting`; S7: `inviting`, `newkey`, `twostep`, `cancelling`, `complete`)
+//! or the Oxyn option `compact`. The S7 pages (Members, Models, Security, Billing, Get started) are
+//! drawn by `setscr2.rs`. Presses fire `set-<page>`,
 //! `back`, `save`, `discard`, `add-password`, `clear-memory`, `test-send`, `sign-out-others`,
 //! `export`, `delete-chats` and `delete-workspace` through `on_act`.
 
@@ -104,7 +106,7 @@ s6_el!(
     "general"
 );
 
-const NAV_IDS: [&str; 9] = [
+const NAV_IDS: [&str; 10] = [
     "set-profile",
     "set-preferences",
     "set-notifications",
@@ -114,6 +116,7 @@ const NAV_IDS: [&str; 9] = [
     "set-models",
     "set-security",
     "set-billing",
+    "set-onboarding",
 ];
 
 fn side(p: &ThPal, on: &str, st: ScreenState, act: &Option<Act>) -> Div {
@@ -203,7 +206,7 @@ fn side(p: &ThPal, on: &str, st: ScreenState, act: &Option<Act>) -> Div {
     )
 }
 
-fn av(p: &ThPal, ini: impl Into<SharedString>, s: f32) -> Div {
+pub(super) fn av(p: &ThPal, ini: impl Into<SharedString>, s: f32) -> Div {
     div()
         .w(px(s))
         .h(px(s))
@@ -220,7 +223,7 @@ fn av(p: &ThPal, ini: impl Into<SharedString>, s: f32) -> Div {
 }
 
 /// A switch drawn on or off.
-fn sw(p: &ThPal, on: bool) -> Div {
+pub(super) fn sw(p: &ThPal, on: bool) -> Div {
     let knob = div()
         .w(px(16.))
         .h(px(16.))
@@ -239,7 +242,7 @@ fn sw(p: &ThPal, on: bool) -> Div {
 }
 
 /// A menu button showing its value with a caret.
-fn menu(p: &ThPal, v: impl Into<SharedString>) -> Div {
+pub(super) fn menu(p: &ThPal, v: impl Into<SharedString>) -> Div {
     div()
         .flex_none()
         .min_w(px(96.))
@@ -258,7 +261,7 @@ fn menu(p: &ThPal, v: impl Into<SharedString>) -> Div {
         .child(quiet(p, "⌄"))
 }
 
-fn input(p: &ThPal, v: impl Into<SharedString>, w: f32, bad: bool) -> Div {
+pub(super) fn input(p: &ThPal, v: impl Into<SharedString>, w: f32, bad: bool) -> Div {
     div()
         .w(px(w))
         .h(px(32.))
@@ -305,14 +308,14 @@ fn area(p: &ThPal, v: &str, cap: usize) -> Div {
         )
 }
 
-struct Rows<'a> {
-    p: &'a ThPal,
-    compact: bool,
+pub(super) struct Rows<'a> {
+    pub(super) p: &'a ThPal,
+    pub(super) compact: bool,
 }
 
 impl Rows<'_> {
     /// Label and hint on the left, a control on the right.
-    fn row(&self, label: impl Into<SharedString>, hint: &str, ctl: Div) -> Div {
+    pub(super) fn row(&self, label: impl Into<SharedString>, hint: &str, ctl: Div) -> Div {
         let p = self.p;
         let mut l = div()
             .flex_1()
@@ -340,7 +343,7 @@ impl Rows<'_> {
             .child(ctl.flex_none())
     }
     /// A full-width block row (a text area, a grid).
-    fn block(&self, label: &'static str, hint: &str, body: Div) -> Div {
+    pub(super) fn block(&self, label: &'static str, hint: &str, body: Div) -> Div {
         let p = self.p;
         let head = self.row(label, hint, div());
         div()
@@ -352,7 +355,7 @@ impl Rows<'_> {
     }
 }
 
-fn sec(p: &ThPal, title: &'static str, right: Option<String>, rows: Vec<Div>) -> Div {
+pub(super) fn sec(p: &ThPal, title: &'static str, right: Option<String>, rows: Vec<Div>) -> Div {
     let danger = title == "Danger zone";
     let mut card = div()
         .flex()
@@ -383,7 +386,7 @@ fn sec(p: &ThPal, title: &'static str, right: Option<String>, rows: Vec<Div>) ->
     div().flex().flex_col().child(h).child(card)
 }
 
-fn pill(p: &ThPal, l: &'static str, t: IconTone) -> Div {
+pub(super) fn pill(p: &ThPal, l: &'static str, t: IconTone) -> Div {
     let c = tone(p, t);
     div()
         .flex_none()
@@ -395,7 +398,7 @@ fn pill(p: &ThPal, l: &'static str, t: IconTone) -> Div {
         .child(l)
 }
 
-fn ic(p: &ThPal, g: &'static str, c: Hsla) -> Div {
+pub(super) fn ic(p: &ThPal, g: &'static str, c: Hsla) -> Div {
     div()
         .w(px(30.))
         .h(px(30.))
@@ -421,7 +424,7 @@ fn kind_tone(p: &ThPal, t: &str) -> Hsla {
     }
 }
 
-fn hue(p: &ThPal, i: usize) -> Hsla {
+pub(super) fn hue(p: &ThPal, i: usize) -> Hsla {
     match i {
         1 => tone(p, IconTone::Skills),
         2 => tone(p, IconTone::Audio),
@@ -450,6 +453,8 @@ fn shell(
             d.zone = 2;
         }
         "memoff" => d.memory = false,
+        "complete" => d.ws.steps = [true; 6],
+        "twostep" => d.ws.two_step_me = false,
         _ => {}
     }
     let r = Rows {
@@ -459,7 +464,11 @@ fn shell(
     let label = NAV.iter().find(|n| n.0 == pg).map(|n| n.1).unwrap_or("");
     let mut col = div()
         .w_full()
-        .max_w(px(696.))
+        .max_w(px(if matches!(pg, "members" | "billing") {
+            816.
+        } else {
+            696.
+        }))
         .mx_auto()
         .px(px(24.))
         .py(px(26.))
@@ -495,7 +504,12 @@ fn shell(
             "preferences" => preferences(&p, &r, &d),
             "notifications" => notifications(&p, &r, &d, extra == "quiet"),
             "privacy" => privacy(&p, &r, &d, extra == "exporting", act),
-            _ => general(&p, &r, &d, extra == "deleting", act),
+            "general" => general(&p, &r, &d, extra == "deleting", act),
+            "members" => super::setscr2::members(&p, &r, &d, extra == "inviting", act),
+            "models" => super::setscr2::models(&p, &r, &d, extra == "newkey", act),
+            "security" => super::setscr2::security(&p, &r, &d, extra == "twostep", act),
+            "billing" => super::setscr2::billing(&p, &r, &d, extra == "cancelling", act),
+            _ => super::setscr2::start(&p, &r, &d, act),
         } {
             col = col.child(s);
         }
@@ -1181,3 +1195,29 @@ fn general(p: &ThPal, r: &Rows, d: &Prefs, deleting: bool, act: &Option<Act>) ->
         sec(p, "Danger zone", None, danger),
     ]
 }
+
+s6_el!(
+    /// Settings / Members: seats, search and role filter, invite, the member table and teams.
+    MembersSettingsEl,
+    "members"
+);
+s6_el!(
+    /// Settings / Models: defaults, providers with official marks, switches, access and API keys.
+    ModelsSettingsEl,
+    "models"
+);
+s6_el!(
+    /// Settings / Security: two-step sign-in, passkeys, sign-in rules, domains, devices, audit log.
+    SecuritySettingsEl,
+    "security"
+);
+s6_el!(
+    /// Settings / Billing: plan, usage meters, plans, extra usage, payment method, invoices, cancel.
+    BillingSettingsEl,
+    "billing"
+);
+s6_el!(
+    /// Settings / Get started: the onboarding checklist with progress and steps.
+    OnboardingSettingsEl,
+    "onboarding"
+);

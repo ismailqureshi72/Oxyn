@@ -69,6 +69,7 @@
 //! - [`buildscr`]: Screens S5: orchestration and builders (Evals; Orchestration and Workflow Builder states)
 //! - [`opsscr`]: Screens S4: agent ops II (Agents, Skills, Schedules, Usage, Permissions, Run Detail)
 //! - [`setscr`]: Screens S6: Settings I (Profile, Preferences, Notifications, Privacy, General)
+//! - [`setscr2`]: Screens S7: Settings II (Members, Models, Security, Billing, Get started)
 //! - [`answers`]: fidelity batch, family A: AI Answer markup and streaming, Cited Answer
 //!   sentences and quotes, Message Actions, Thinking Loader phases, Thinking State steps and the
 //!   Writing Assistant's sample writer and dictation.
@@ -132,6 +133,7 @@ pub mod screens2fid;
 pub mod screensfid;
 pub mod seqfid;
 pub mod setscr;
+pub mod setscr2;
 pub mod stairsfid;
 pub mod storagefid;
 pub mod text;
