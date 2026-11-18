@@ -1,11 +1,14 @@
 ---
-// "Complete screens" on the landing: a modern laptop drawn in CSS (rounded lid with thin even
-// bezels and a notch, a thick aluminium base with a front lip) that rises and opens as it scrolls
-// in. The screen is the selected tab's live screen demo (the same Rust component as its
+// "Complete screens" on the landing: a modern 14-inch laptop seen from the front and a little above,
+// drawn in CSS: a silver lid with thin black bezels and a notch, standing on a base whose deck is a
+// real plane in perspective (black keyboard with its rows of keys, speaker grilles, trackpad, the
+// front edge). The screen is the selected tab's live screen demo (the same Rust component as its
 // /screens/<slug>/ page) on its 1440 × 900 stage: clickable, scrollable, real. Only the active tab
 // is mounted; the others mount the first time they are picked (site.js).
-// The opening runs on a scroll timeline that animates transform and opacity only (compositor);
-// site.js drives the same --x-lap-p (0 closed → 1 open) where view timelines are missing.
+// The lid opens with the scroll position across most of the section: on wide screens the scene
+// stays pinned under the tab bar for part of a viewport while the lid opens, so the whole opening
+// is seen. site.js sets --x-lap-p (0 closed → 1 open) once per animation frame, and the CSS turns
+// it into transforms and opacity.
 // Reduced motion: a static open laptop. The whole laptop and the tab bar fit in one viewport.
 import OxynDemo from '../OxynDemo.astro';
 import { icon } from './icons';
@@ -23,6 +26,34 @@ const tabs = (
 )
   .map(([slug, label, ic]) => ({ d: demos.find((x) => x.slug === slug), label, ic }))
   .filter((t) => t.d) as { d: (typeof demos)[number]; label: string; ic: keyof typeof icon }[];
+// The keyboard, in key units (15 across): function row, numbers, three letter rows, then the bottom
+// row with the inverted-T arrows (up and down share one key's place). [x, y, w, h] per key.
+const GAP = 0.14;
+const rows: [number, number[]][] = [
+  [0.6, [1.5, ...Array(12).fill(1), 1.5]],
+  [1, [...Array(13).fill(1), 2]],
+  [1, [1.5, ...Array(12).fill(1), 1.5]],
+  [1, [1.8, ...Array(11).fill(1), 2.2]],
+  [1, [2.3, ...Array(10).fill(1), 2.7]],
+];
+const keys: number[][] = [];
+let ky = 0;
+for (const [h, ws] of rows) {
+  let kx = 0;
+  for (const w of ws) { keys.push([kx, ky, w - GAP, h - GAP]); kx += w; }
+  ky += h;
+}
+{
+  let kx = 0;
+  for (const w of [1, 1, 1, 1.25, 5.5, 1.25, 1]) { keys.push([kx, ky, w - GAP, 1 - GAP]); kx += w; }
+  keys.push([kx, ky + 0.5, 1 - GAP, 0.5 - GAP]);
+  keys.push([kx + 1, ky, 1 - GAP, 0.5 - GAP], [kx + 1, ky + 0.5, 1 - GAP, 0.5 - GAP]);
+  keys.push([kx + 2, ky + 0.5, 1 - GAP, 0.5 - GAP]);
+  ky += 1;
+}
+const kbW = 15 - GAP;
+const kbH = ky - GAP;
+const r2 = (n: number) => Math.round(n * 100) / 100;
 ---
 <div class="x-lap" data-lap>
   <div class="x-lap-bar">
@@ -34,8 +65,25 @@ const tabs = (
       ))}
     </div>
   </div>
+  <div class="x-lap-pin">
   <div class="x-lap-scene">
     <div class="x-lap-dev">
+      <div class="x-lap-unit">
+      <div class="x-lap-deck" aria-hidden="true">
+        <div class="x-lap-top">
+          <span class="x-lap-hinge"></span>
+          <span class="x-lap-grill l"></span>
+          <div class="x-lap-kb">
+            <svg viewBox={`0 0 ${r2(kbW)} ${r2(kbH)}`} preserveAspectRatio="none" focusable="false">
+              <defs><linearGradient id="x-lap-keyg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--x-lap-key1)" /><stop offset="1" stop-color="var(--x-lap-key2)" /></linearGradient></defs>
+              {keys.map(([x, y, w, h]) => <rect x={r2(x)} y={r2(y)} width={r2(w)} height={r2(h)} rx="0.14" />)}
+            </svg>
+          </div>
+          <span class="x-lap-grill r"></span>
+          <span class="x-lap-pad"></span>
+        </div>
+        <div class="x-lap-front"><i></i></div>
+      </div>
       <div class="x-lap-lid">
         <div class="x-lap-face">
           <div class="x-lap-glass">
@@ -51,9 +99,10 @@ const tabs = (
         </div>
         <div class="x-lap-back" aria-hidden="true"><span class="x-lap-logo"><Fragment set:html={markSvg} /></span></div>
       </div>
-      <div class="x-lap-base" aria-hidden="true"><span class="x-lap-hinge"></span><span class="x-lap-lip"></span></div>
+      </div>
       <div class="x-lap-shadow" aria-hidden="true"></div>
     </div>
+  </div>
   </div>
   {tabs.map(({ d, label }, i) => (
     <div class="x-lap-cap" role="tabpanel" id={`lp-${d.slug}`} aria-labelledby={`lt-${d.slug}`} hidden={i !== 0}>

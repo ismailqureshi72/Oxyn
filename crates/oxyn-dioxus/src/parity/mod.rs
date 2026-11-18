@@ -58,6 +58,7 @@ mod schedfid;
 mod screens2fid;
 mod screensfid;
 mod seqfid;
+mod setscr;
 mod stairsfid;
 mod storagefid;
 mod text;
@@ -152,6 +153,10 @@ pub use screensfid::{
     ScreenComposer, ScreenStage, SettingsScreen, StageScale, WorkflowScreen,
 };
 pub use seqfid::AgentSequence;
+pub use setscr::{
+    GeneralSettingsScreen, NotificationsSettingsScreen, PreferencesSettingsScreen,
+    PrivacySettingsScreen, ProfileSettingsScreen, s6_states,
+};
 pub use stairsfid::EffortStairs;
 pub use storagefid::{StorageCleanup, StorageForecast, StorageMeter, StorageWaffle};
 pub use text::{

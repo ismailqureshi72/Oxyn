@@ -150,6 +150,10 @@ pub use parity::{ConflictRadarEl, MergeAct, MergeConflictEl, RadarAct};
 pub use parity::{
     ExpandableCardEl, JsonViewerEl, LinkUnfurlEl, ToolCallCardEl, ToolCallEl, ToolChipsEl,
 };
+pub use parity::{
+    GeneralSettingsEl, NotificationsSettingsEl, PreferencesSettingsEl, PrivacySettingsEl,
+    ProfileSettingsEl,
+};
 pub use parity::{ImeEvent, ImeInput, bind_ime_keys};
 pub use parity::{LoadingStateEl, ShimmerEl, SlotTextEl, ThinkingLoaderEl};
 pub use primitives::{
