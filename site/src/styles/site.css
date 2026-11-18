@@ -228,6 +228,7 @@ html[data-sidebar="hidden"] .lbar-open{display:inline-grid}
 /* Library index pages */
 .lidx{max-width:1180px;margin:0 auto;padding:34px 0 0}
 .lidx-title{margin:0;font-size:30px;line-height:1.18;letter-spacing:-.028em;font-weight:620;max-width:720px}
+.x-sec-h{margin:44px 0 16px;font-size:20px;line-height:1.3;letter-spacing:-.012em;font-weight:600;scroll-margin-top:80px}
 .lidx>.lede{margin:10px 0 0;color:var(--fg2);font-size:15.5px;max-width:720px}
 .ltabs{position:sticky;top:46px;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:16px;margin:22px 0 22px;background:var(--pn);border-bottom:1px solid var(--ln)}
 .ltabs-in{display:flex;gap:22px;overflow-x:auto;scrollbar-width:none}
