@@ -23,6 +23,10 @@ const compareTabs = [
   ['chat', 'Agent chat', find('reasoning-block')],
 ] as const;
 const free = counts.components + counts.screens;
+// The compare divider: a vertical sine (wavelength 120 px, amplitude ~5 px) in px units, one
+// wavelength above the top so the flow animation (translateY 0 → 120 px) loops seamlessly.
+const wave = `M12 -120 ${Array.from({ length: 12 }, (_, i) => (i === 0 ? 'q10 30 0 60' : 't0 60')).join(' ')}`;
+const sparks: [number, number, number][] = [[16, 30, 0], [8, 150, 1], [17, 270, 2], [7, 390, 3], [15, 500, 4]];
 const agents = ['claude-code', 'cursor', 'codex', 'windsurf', 'github-copilot', 'gemini-cli', 'zed', 'cline', 'opencode', 'amp'];
 // Brand names in running text get their mark in front (the name stays as text).
 const named = (s: string) =>
@@ -137,7 +141,7 @@ const faq: [string, string, keyof typeof icon][] = [
         <div class="lp-panel" role="tabpanel" id={`pc-${k}`} aria-labelledby={`tc-${k}`} hidden={i !== 0}>
           <div class="browser">
             <div class="browser-bar" aria-hidden="true"><i></i><i></i><i></i><span>app.example.com/{k}</span></div>
-            <div class="x-cmp" style="--pos:50%">
+            <div class="x-cmp" style="--pos:50%" data-cmp>
               <div class="cmp-before" aria-hidden="true">
                 {k === 'approval' && (
                   <div class="vibe"><p>The agent wants to run: <b>send_email</b></p><p>to: list-all@example.com</p><p>Approve?</p><div><button tabindex="-1">Yes</button> <button tabindex="-1">No</button></div></div>
@@ -149,10 +153,13 @@ const faq: [string, string, keyof typeof icon][] = [
                   <div class="vibe"><p><b>You:</b> why did the build fail?</p><p><b>AI:</b> Thinking...</p><p>Thinking...</p><p>The build failed because of a missing dependency in the lockfile. Run install again.</p></div>
                 )}
               </div>
-              <div class="cmp-after" aria-hidden="true" inert><OxynDemo slug={d.slug} html={d.variants[0].html} variant={0} /></div>
+              <div class="cmp-clip" aria-hidden="true"><div class="cmp-after" inert><OxynDemo slug={d.slug} html={d.variants[0].html} variant={0} /></div></div>
               <span class="cmp-tag l">Vibecoded</span>
               <span class="cmp-tag r"><span aria-hidden="true">✦</span> With Oxyn</span>
-              <span class="cmp-handle" aria-hidden="true">↔</span>
+              <div class="cmp-line" aria-hidden="true">
+                <svg class="cmp-wave" focusable="false"><g class="cmp-flow"><path class="cmp-halo" d={wave} /><path class="cmp-stroke" d={wave} /><path class="cmp-glint" d={wave} />{sparks.map(([x, y, i]) => <circle class="cmp-spark" cx={x} cy={y} r="1.3" style={`--i:${i}`} />)}</g></svg>
+                <span class="cmp-handle">↔</span>
+              </div>
               <input class="cmp-range" type="range" min="0" max="100" value="50" aria-label={`Drag to compare: plain ${l.toLowerCase()} against Oxyn's ${d.name}`} />
             </div>
           </div>

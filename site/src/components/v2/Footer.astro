@@ -4,6 +4,7 @@
 // credits, and the Oxyn wordmark set large at the very bottom. Monochrome apart from the marks.
 import ThemeRadios from './ThemeRadios.astro';
 import { icon } from './icons';
+import { lockup, wordmark } from './logo';
 import { mark, brands } from './brands';
 import { starCount } from './meta';
 import { REPO, counts } from '../../lib/data';
@@ -29,7 +30,7 @@ const agents = ['claude-code', 'codex', 'cursor', 'gemini-cli', 'github-copilot'
     </div>
     <div class="x-foot-grid">
       <div class="x-foot-about">
-        <a class="wm x-foot-wm" href="/"><span class="x-nav-mark" aria-hidden="true"></span>oxyn</a>
+        <a class="wm x-foot-wm" href="/" aria-label="Oxyn home"><Fragment set:html={lockup} /></a>
         <p>Agent-UI components for Rust: Dioxus on the web, GPUI on the desktop. {counts.components} components and {counts.screens} screens, free.</p>
         <span class="x-foot-lbl">Works with</span>
         <ul class="x-foot-agents" aria-label="Agents that can use Oxyn">
@@ -55,5 +56,5 @@ const agents = ['claude-code', 'codex', 'cursor', 'gemini-cli', 'github-copilot'
       <span>Built with Rust, Dioxus, GPUI and Astro. Brand marks belong to their owners.</span>
     </div>
   </div>
-  <div class="x-foot-big" aria-hidden="true">oxyn</div>
+  <div class="x-foot-big" aria-hidden="true"><Fragment set:html={wordmark} /></div>
 </footer>

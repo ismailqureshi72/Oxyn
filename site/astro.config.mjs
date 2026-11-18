@@ -32,6 +32,11 @@ export default defineConfig({
     movedUrls,
     starlight({
       title: 'Oxyn',
+      favicon: '/favicon.svg',
+      head: [
+        { tag: 'link', attrs: { rel: 'icon', href: '/favicon-32.png', type: 'image/png', sizes: '32x32' } },
+        { tag: 'link', attrs: { rel: 'apple-touch-icon', href: '/apple-touch-icon.png', sizes: '180x180' } },
+      ],
       description: 'Agent-UI components for Rust: GPUI and Dioxus.',
       pagefind: false,
       tableOfContents: false,
