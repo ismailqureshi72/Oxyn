@@ -171,6 +171,7 @@ pub use parity::{
 pub use parity::{CommandCenterScreen, SessionStudioScreen};
 pub use parity::{ConflictRadar, MergeConflict};
 pub use parity::{EvalsScreen, s5_states};
+pub use parity::{FleetWindowScreen, s11_fleet_states};
 pub use parity::{GhostText, LabeledInput, LabeledTextarea, TextArea};
 pub use parity::{InboxBoardScreen, InboxScreen, MemoryScreen, TasksScreen};
 pub use parity::{

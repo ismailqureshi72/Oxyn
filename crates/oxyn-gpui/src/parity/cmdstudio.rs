@@ -93,7 +93,7 @@ s10_el!(
     "ss"
 );
 
-fn tone_of(p: &ThPal, t: &str) -> Hsla {
+pub(super) fn tone_of(p: &ThPal, t: &str) -> Hsla {
     match t {
         "run" => tone(p, IconTone::Running),
         "wait" => tone(p, IconTone::Approval),
@@ -103,11 +103,11 @@ fn tone_of(p: &ThPal, t: &str) -> Hsla {
     }
 }
 
-fn dot(c: Hsla) -> Div {
+pub(super) fn dot(c: Hsla) -> Div {
     div().flex_none().w(px(8.)).h(px(8.)).rounded(px(4.)).bg(c)
 }
 
-fn pill(p: &ThPal, l: &'static str, t: &str) -> Div {
+pub(super) fn pill(p: &ThPal, l: &'static str, t: &str) -> Div {
     div()
         .flex_none()
         .h(px(22.))
@@ -123,7 +123,7 @@ fn pill(p: &ThPal, l: &'static str, t: &str) -> Div {
         .child(l)
 }
 
-fn chip(p: &ThPal, lead: Option<Div>, l: impl Into<SharedString>, border: bool) -> Div {
+pub(super) fn chip(p: &ThPal, lead: Option<Div>, l: impl Into<SharedString>, border: bool) -> Div {
     let mut d = div()
         .flex_none()
         .h(px(30.))
@@ -143,7 +143,7 @@ fn chip(p: &ThPal, lead: Option<Div>, l: impl Into<SharedString>, border: bool) 
     d.child(l.into()).child("▾")
 }
 
-fn brand(p: &ThPal, id: &str) -> Div {
+pub(super) fn brand(p: &ThPal, id: &str) -> Div {
     let mut d = div()
         .flex_none()
         .w(px(16.))
@@ -157,7 +157,13 @@ fn brand(p: &ThPal, id: &str) -> Div {
     d
 }
 
-fn press(p: &ThPal, l: &'static str, primary: bool, act: &Option<Act>, id: &'static str) -> Div {
+pub(super) fn press(
+    p: &ThPal,
+    l: &'static str,
+    primary: bool,
+    act: &Option<Act>,
+    id: &'static str,
+) -> Div {
     let f = fire(act, id);
     div().child(
         btn(p, l, primary)
@@ -166,14 +172,14 @@ fn press(p: &ThPal, l: &'static str, primary: bool, act: &Option<Act>, id: &'sta
     )
 }
 
-fn mono(t: impl Into<SharedString>) -> Div {
+pub(super) fn mono(t: impl Into<SharedString>) -> Div {
     div()
         .font_family("monospace")
         .text_size(px(11.5))
         .child(t.into())
 }
 
-fn stat(p: &ThPal, a: u32, d: u32) -> Div {
+pub(super) fn stat(p: &ThPal, a: u32, d: u32) -> Div {
     div()
         .flex_none()
         .flex()
@@ -358,7 +364,7 @@ fn sidebar(p: &ThPal, st: ScreenState, app: &str, rail: bool, act: &Option<Act>)
     )
 }
 
-fn diff_pane(
+pub(super) fn diff_pane(
     p: &ThPal,
     st: ScreenState,
     files: &[DiffFile],
@@ -506,7 +512,13 @@ fn diff_pane(
     d.child(body)
 }
 
-fn composer(p: &ThPal, chips: Vec<Div>, hint: &'static str, plan: bool, act: &Option<Act>) -> Div {
+pub(super) fn composer(
+    p: &ThPal,
+    chips: Vec<Div>,
+    hint: &'static str,
+    plan: bool,
+    act: &Option<Act>,
+) -> Div {
     let f = fire(act, "send");
     let mut bar = div().flex().items_center().gap(px(6.));
     for c in chips {

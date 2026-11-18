@@ -18,6 +18,7 @@ use oxyn_dioxus::{
     PrivacySettingsScreen, ProfileSettingsScreen, SecuritySettingsScreen, s6_states,
 };
 use oxyn_dioxus::{CommandCenterScreen, SessionStudioScreen, s10_states};
+use oxyn_dioxus::{FleetWindowScreen, s11_fleet_states};
 use oxyn_dioxus::{
     OnboardingBrandScreen, OnboardingReadyScreen, OnboardingToneScreen, OnboardingWebsiteScreen,
     s8_states,
@@ -4450,8 +4451,16 @@ fn td_sites_demo() -> Demo {
 
 // ---------- Agent apps II: Command Center and Session Studio (S10) ----------
 
+/// The state bar of an Agent apps screen (S10 and S11).
+fn ag_states(slug: &str) -> Vec<(&'static str, &'static str)> {
+    match slug {
+        "fleet-window" => s11_fleet_states(),
+        _ => s10_states(slug),
+    }
+}
+
 fn s10_key(slug: &str, label: &str) -> String {
-    s10_states(slug)
+    ag_states(slug)
         .iter()
         .find(|(_, l)| l.eq_ignore_ascii_case(label))
         .map(|(k, _)| k.to_string())
@@ -4459,10 +4468,14 @@ fn s10_key(slug: &str, label: &str) -> String {
 }
 
 fn ag_el(slug: &'static str, lay: String, s: String, a: bool, b: bool) -> Element {
-    if slug == "session-studio" {
-        rsx! { SessionStudioScreen { layout: lay, state: s, rail: a, sidebar_hidden: b } }
-    } else {
-        rsx! { CommandCenterScreen { layout: lay, state: s, rail: a, sidebar_hidden: b } }
+    match slug {
+        "session-studio" => {
+            rsx! { SessionStudioScreen { layout: lay, state: s, rail: a, sidebar_hidden: b } }
+        }
+        "fleet-window" => {
+            rsx! { FleetWindowScreen { layout: lay, state: s, rail: a, sidebar_hidden: b } }
+        }
+        _ => rsx! { CommandCenterScreen { layout: lay, state: s, rail: a, sidebar_hidden: b } },
     }
 }
 
@@ -4473,7 +4486,7 @@ fn ag_screen(slug: &'static str, v: &Vals) -> Element {
     let (a, b) = (v.b("x1"), v.b("x2"));
     rsx! {
         div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
-            ScreenStage { state: st, states: s10_states(slug), screen: move |s: String| ag_el(slug, lay.clone(), s, a, b) }
+            ScreenStage { state: st, states: ag_states(slug), screen: move |s: String| ag_el(slug, lay.clone(), s, a, b) }
         }
     }
 }
@@ -4580,7 +4593,12 @@ fn ag_demo(
             dx,
             gp,
             slug,
-            "parity/cmdstudio.rs",
+            match slug {
+                "fleet-window" => "parity/fleetwin.rs",
+                "workspace-coder" => "parity/wscoder.rs",
+                "command-board" => "parity/cmdboard.rs",
+                _ => "parity/cmdstudio.rs",
+            },
         )
     }
 }
@@ -4682,6 +4700,51 @@ fn ss_demo() -> Demo {
     )
 }
 
+// ---------- Agent apps III: Fleet Window, Workspace Coder, Command Board (S11) ----------
+
+fn fw_screen(v: &Vals, _now: ClockMs) -> Element {
+    ag_screen("fleet-window", v)
+}
+fn fw_code(v: &Vals) -> String {
+    ag_code("FleetWindowScreen", "fleet-window", v)
+}
+
+fn fw_demo() -> Demo {
+    ag_demo(
+        "fleet-window",
+        "Fleet Window",
+        "Agent apps / Fleet Window: a desktop coding-agent app in the agents-window pattern. Agents in the sidebar, each on its own worktree with its model mark, status and lines changed; the open agent's steps finishing on their own into a Changes pane (accept or revert per hunk and file); a composer with Agent / Plan / Ask and a multi-model picker that runs one prompt on several models at once; Compare ranks the attempts by tests, size and time and applies one (the rest are discarded, with Undo); Plan mode returns a checklist to Build.",
+        "FleetWindowScreen",
+        "FleetWindowEl",
+        (
+            "compare",
+            "Compare",
+            "Three models ran the same prompt in parallel: tests, lines changed and time side by side, a suggested pick, View changes and Apply.",
+        ),
+        fw_screen,
+        fw_code,
+        vec![
+            ("Enter", "Send (Shift + Enter for a new line)"),
+            ("Escape", "Close the mode, model or account menu"),
+            (
+                "Tab",
+                "Agents, the conversation, the composer, then the Changes pane",
+            ),
+        ],
+        vec![
+            "The sidebar is a nav landmark; the open agent carries aria-current=page; a parallel run is a button that opens Compare.",
+            "Mode is a menu of menuitemradio; models are menuitemcheckbox, so several can be on at once.",
+            "Compare is a list of attempts; Apply and View changes name the model; Changes is a labelled complementary region.",
+            "Plan steps are real checkboxes; every action reports in a polite live region.",
+        ],
+        &[(
+            "plan",
+            "Plan",
+            "Plan mode: the agent answered with a checklist to tick, Build or Dismiss.",
+        )],
+    )
+}
+
 pub(crate) fn demos() -> Vec<Demo> {
     vec![
         shell_inset_demo(),
@@ -4737,5 +4800,6 @@ pub(crate) fn demos() -> Vec<Demo> {
         td_sites_demo(),
         cc_demo(),
         ss_demo(),
+        fw_demo(),
     ]
 }

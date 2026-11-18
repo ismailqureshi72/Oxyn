@@ -151,6 +151,7 @@ pub use parity::{
     NotificationsSettingsEl, OnboardingSettingsEl, PreferencesSettingsEl, PrivacySettingsEl,
     ProfileSettingsEl, SecuritySettingsEl,
 };
+pub use parity::FleetWindowEl;
 pub use parity::{CommandCenterEl, SessionStudioEl};
 pub use parity::{ConflictRadarEl, MergeAct, MergeConflictEl, RadarAct};
 pub use parity::{

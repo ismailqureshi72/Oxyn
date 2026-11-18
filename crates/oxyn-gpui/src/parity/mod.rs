@@ -40,6 +40,7 @@ mod fallbackfid;
 mod fanfid;
 mod fidelity;
 mod fields;
+mod fleetwin;
 mod gooeyfid;
 mod graphfid;
 mod handofffid;
@@ -121,6 +122,7 @@ pub use fields::{
     GaugeEl, ModelMenuEl, ModelPillEl, MorphSelectEl, NumberFieldEl, Pick, RichTextEl,
     RunControlsEl, ScrubInputEl, SplitBarEl, UsageMeterEl,
 };
+pub use fleetwin::FleetWindowEl;
 pub use gooeyfid::{
     GooeyAttachMenuEl, GooeyComposerEl, GooeyModelMenuEl, LiquidDropsEl, LiquidTabsEl,
 };

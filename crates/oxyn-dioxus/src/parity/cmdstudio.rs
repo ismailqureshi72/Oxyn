@@ -28,7 +28,7 @@ pub fn s10_states(slug: &str) -> Vec<(&'static str, &'static str)> {
     states_for(slug).to_vec()
 }
 
-fn branch_ico() -> Element {
+pub(super) fn branch_ico() -> Element {
     rsx! {
         svg { class: "oxscn-ico", view_box: "0 0 24 24", fill: "none", stroke: "currentColor", stroke_width: "1.8", stroke_linecap: "round", "aria-hidden": "true",
             circle { cx: "6", cy: "5", r: "2" } circle { cx: "6", cy: "19", r: "2" } circle { cx: "18", cy: "7", r: "2" }
@@ -64,7 +64,7 @@ fn ss_mark(size: u32) -> Element {
     }
 }
 
-fn tmark(tone: &str) -> Element {
+pub(super) fn tmark(tone: &str) -> Element {
     match tone {
         "run" => rsx! { span { class: "oxs10-spin", "aria-hidden": "true" } },
         "ok" => rsx! { span { class: "oxs10-ok", {nico("check")} } },
@@ -73,13 +73,13 @@ fn tmark(tone: &str) -> Element {
     }
 }
 
-fn pill(label: &str, tone: &str) -> Element {
+pub(super) fn pill(label: &str, tone: &str) -> Element {
     rsx! { span { class: "oxs10-pill", "data-tone": "{tone}", span { class: "oxs10-pd" } "{label}" } }
 }
 
 /// A chip with a small menu (radio items).
 #[component]
-fn Pick(
+pub(super) fn Pick(
     label: String,
     lead: Element,
     items: Vec<(String, String, String)>,
@@ -115,7 +115,7 @@ fn Pick(
 
 /// The review pane: files, hunks, accept / revert per hunk and per file.
 #[component]
-fn DiffPane(
+pub(super) fn DiffPane(
     files: Signal<Vec<DiffFile>>,
     loading: bool,
     said: Signal<String>,
@@ -234,7 +234,7 @@ fn diff_key(k: char) -> &'static str {
 /// narrow).
 #[allow(clippy::too_many_arguments)]
 #[component]
-fn Frame(
+pub(super) fn Frame(
     app: &'static str,
     layout: String,
     height: u32,
@@ -311,7 +311,7 @@ fn side_foot(rail: bool) -> Element {
     }
 }
 
-fn opts2(v: &[(&str, &str)]) -> Vec<(String, String, String)> {
+pub(super) fn opts2(v: &[(&str, &str)]) -> Vec<(String, String, String)> {
     v.iter()
         .map(|x| (x.0.to_string(), String::new(), x.1.to_string()))
         .collect()
