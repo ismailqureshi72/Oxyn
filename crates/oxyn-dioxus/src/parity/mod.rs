@@ -169,7 +169,10 @@ pub use setscr::{
 };
 pub use stairsfid::EffortStairs;
 pub use storagefid::{StorageCleanup, StorageForecast, StorageMeter, StorageWaffle};
-pub use taskdeck::{TaskdeckBoardScreen, TaskdeckStartScreen, TaskdeckTaskScreen, s9_states};
+pub use taskdeck::{
+    TaskdeckBoardScreen, TaskdeckPluginsScreen, TaskdeckScheduledScreen, TaskdeckSitesScreen,
+    TaskdeckStartScreen, TaskdeckTaskScreen, s9_states,
+};
 pub use text::{
     ActionSwapButton, InViewTitle, LoadingState, SlotReels, Source, StreamingText, SweepText,
     TextMorph, ThinkingLoader, WordReveal,

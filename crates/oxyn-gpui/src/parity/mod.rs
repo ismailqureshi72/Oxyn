@@ -173,7 +173,10 @@ pub use setscr::{
 };
 pub use stairsfid::EffortStairsEl;
 pub use storagefid::{StorageCleanupEl, StorageForecastEl, StorageMeterEl, StorageWaffleEl};
-pub use taskdeck::{TaskdeckBoardEl, TaskdeckStartEl, TaskdeckTaskEl};
+pub use taskdeck::{
+    TaskdeckBoardEl, TaskdeckPluginsEl, TaskdeckScheduledEl, TaskdeckSitesEl, TaskdeckStartEl,
+    TaskdeckTaskEl,
+};
 pub use text::{LoadingStateEl, ShimmerEl, SlotTextEl, ThinkingLoaderEl};
 pub use themefid::{
     AccentDensityEl, AppIconPickerEl, BackgroundPickerEl, DisplayComfortEl, LightPlaygroundEl,

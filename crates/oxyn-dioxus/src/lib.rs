@@ -176,7 +176,10 @@ pub use parity::{InboxBoardScreen, InboxScreen, MemoryScreen, TasksScreen};
 pub use parity::{
     OnboardingBrandScreen, OnboardingReadyScreen, OnboardingToneScreen, OnboardingWebsiteScreen,
 };
-pub use parity::{TaskdeckBoardScreen, TaskdeckStartScreen, TaskdeckTaskScreen};
+pub use parity::{
+    TaskdeckBoardScreen, TaskdeckPluginsScreen, TaskdeckScheduledScreen, TaskdeckSitesScreen,
+    TaskdeckStartScreen, TaskdeckTaskScreen,
+};
 pub use primitives::{
     Accordion, AccordionItem, Breadcrumb, ChipGroup, CodeBlock, CopyButton, Dock, Drawer,
     EmptyPreset, ExpandableText, HoverCard, NotificationCenter, PageHeader, PaneView, PresenceDot,
