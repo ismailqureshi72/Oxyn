@@ -13,7 +13,7 @@ How you and everyone here sign in, and what happened lately.
 |---|---|
 | Sidebar (272) | Settings shell: Back to app, a search over every setting that counts matches per page (Enter opens the first), then the Personal group and the Workspace group of pages with this one current, and the account row with its menu |
 | Column | Centred, 696 px: heading, one-line lead, then sections of rows in cards |
-| Your sign-in | Two-step sign-in with a three-step setup: a QR code (placeholder pattern) and its typed key, a six-digit code check, then ten recovery codes to copy or download; Recovery codes (show, new codes); passkeys with Remove and Add passkey |
+| Your sign-in | Two-step sign-in with a three-step setup: a real, scannable QR code (the `otpauth://totp/…` link for the demo key, encoded with the `qrcodegen` crate, MIT, and drawn as one SVG path in Dioxus and a painted path in GPUI) and its typed key, a six-digit code check, then ten recovery codes to copy or download; Recovery codes (show, new codes); passkeys with Remove and Add passkey |
 | Workspace sign-in | Require two-step for everyone; Require single sign-on (needs a verified domain, else "Verify a domain first" blocks Save) with the Google Workspace mark and Entity ID / Reply URL to copy; Session length; Join by domain |
 | Email domains | Each domain Verified or Pending with its TXT record and Verify; Add domain with checks |
 | Signed-in devices | Person, device, place and when; Sign out, and Sign out everyone else (asks first) |

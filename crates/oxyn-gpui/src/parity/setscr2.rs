@@ -4,13 +4,16 @@
 //! `sign-out-everyone`, `change-plan`, `update-card`, `cancel-plan` and `open-<page>` through
 //! `on_act`. Rules come from `oxyn_core::parity::setscr2`.
 
-use gpui::{Div, FontWeight, Hsla, ParentElement, SharedString, Styled, div, prelude::*, px};
+use gpui::{
+    Div, FontWeight, Hsla, ParentElement, PathBuilder, SharedString, Styled, canvas, div, point,
+    prelude::*, px,
+};
 use oxyn_core::icon_tone::IconTone;
 use oxyn_core::parity::setscr::Prefs;
 use oxyn_core::parity::setscr2::{
-    ACCESS, AUDIT_KINDS, CAPS, INTERVALS, INVOICES, MODELS, PLANS, PROVIDERS, ROLES, SEATS,
-    SESSION_LEN, STEPS, TEAMS, TOTP_SECRET, audit, dollars, mask, meter_tone, meter_words, meters,
-    models_in, next_bill, progress, progress_words, provider_on, recovery_codes, rotated,
+    ACCESS, AUDIT_KINDS, CAPS, INTERVALS, INVOICES, MODELS, NETWORKS, PLANS, PROVIDERS, ROLES,
+    SEATS, SESSION_LEN, STEPS, TEAMS, TOTP_SECRET, audit, dollars, mask, meter_tone, meter_words,
+    meters, models_in, next_bill, progress, progress_words, provider_on, recovery_codes, rotated,
     seat_price, seats_used, seats_words, team_size,
 };
 
@@ -496,28 +499,39 @@ pub(super) fn security(p: &ThPal, r: &Rows, d: &Prefs, setup: bool, act: &Option
             }),
     ];
     if setup {
-        let mut qr = div()
+        let code = oxyn_core::parity::setscr2::demo_qr();
+        let qr = div()
             .flex_none()
-            .w(px(132.))
-            .h(px(132.))
-            .p(px(6.))
+            .w(px(148.))
+            .h(px(148.))
             .rounded(px(10.))
             .bg(gpui::rgb(0xFFFFFF))
-            .flex()
-            .flex_col();
-        let cells = oxyn_core::parity::setscr2::qr_cells(3);
-        for y in 0..21 {
-            let mut rw = div().flex().h(px(120. / 21.));
-            for x in 0..21 {
-                rw = rw.child(
-                    div()
-                        .w(px(120. / 21.))
-                        .h_full()
-                        .when(cells[y * 21 + x], |d| d.bg(gpui::rgb(0x111111))),
-                );
-            }
-            qr = qr.child(rw);
-        }
+            .child(
+                canvas(
+                    |_, _, _| {},
+                    move |bounds, _, window, _| {
+                        let n = code.size as f32 + 4.0;
+                        let m = f32::from(bounds.size.width) / n;
+                        let (ox, oy) = (bounds.origin.x, bounds.origin.y);
+                        let mut b = PathBuilder::fill();
+                        for (x, y, l) in code.runs() {
+                            let x0 = ox + px((x as f32 + 2.0) * m);
+                            let y0 = oy + px((y as f32 + 2.0) * m);
+                            let x1 = x0 + px(l as f32 * m);
+                            let y1 = y0 + px(m);
+                            b.move_to(point(x0, y0));
+                            b.line_to(point(x1, y0));
+                            b.line_to(point(x1, y1));
+                            b.line_to(point(x0, y1));
+                            b.close();
+                        }
+                        if let Ok(path) = b.build() {
+                            window.paint_path(path, gpui::hsla(0., 0., 0.067, 1.));
+                        }
+                    },
+                )
+                .size_full(),
+            );
         mine.push(
             div()
                 .mx(px(14.))

@@ -8,12 +8,13 @@
 
 use dioxus::prelude::*;
 use oxyn_core::parity::setscr2::{
-    ACCESS, AUDIT_KINDS, CANCEL_REASONS, CAPS, INTERVALS, INVOICES, MODELS, PLANS, PROVIDERS,
-    ROLES, SEATS, SESSION_LEN, STEPS, TEAMS, TOTP_SECRET, Ws, audit, cancel_next, chat_on, code_ok,
-    dollars, domain_error, expiry_ok, filter, invite, invite_error, key_error, luhn, mask,
-    meter_tone, meter_words, meters, models_in, next_bill, next_step, owners, progress,
-    progress_words, provider_on, qr_cells, recovery_codes, remove_error, role_error, rotated,
-    seat_price, seats_used, seats_words, set_model, team_size, txt_record,
+    ACCESS, AUDIT_KINDS, CANCEL_REASONS, CAPS, INTERVALS, INVOICES, MODELS, NETWORKS, PLANS,
+    PROVIDERS, ROLES, SEATS, SESSION_LEN, STEPS, TEAMS, TOTP_SECRET, Ws, audit, cancel_next,
+    card_network, card_number_ok, chat_on, code_ok, cvc_ok, demo_qr, dollars, domain_error,
+    expiry_ok, filter, invite, invite_error, key_error, mask, meter_tone, meter_words, meters,
+    models_in, next_bill, next_step, owners, progress, progress_words, provider_on, recovery_codes,
+    remove_error, role_error, rotated, seat_price, seats_used, seats_words, set_model, team_size,
+    txt_record,
 };
 
 use super::screensfid::{MenuButton, MenuItem, ico, nico};
@@ -487,7 +488,9 @@ pub(super) fn SecurityPage(ctx: Ctx, setup: bool) -> Element {
     let has_verified = p.domains.iter().any(|d| d.verified);
     let de = domain_error(&dom(), &p.domains);
     let codes = recovery_codes(seed());
-    let cells = qr_cells(3);
+    let qr = demo_qr();
+    let qn = qr.size + 4;
+    let qd = qr.svg_path(2);
     let ev = audit(af(), sample);
     let others = p.devices.len().saturating_sub(1);
     let st = step();
@@ -514,11 +517,9 @@ pub(super) fn SecurityPage(ctx: Ctx, setup: bool) -> Element {
                         }
                         if st == 1 {
                             div { class: "oxs7-qr-w",
-                                svg { class: "oxs7-qr", view_box: "0 0 23 23", role: "img", "aria-label": "QR code for your authenticator app (sample)",
-                                    rect { x: "0", y: "0", width: "23", height: "23", fill: "#fff" }
-                                    for (i, on) in cells.iter().enumerate() {
-                                        if *on { rect { key: "{i}", x: "{i % 21 + 1}", y: "{i / 21 + 1}", width: "1.02", height: "1.02", fill: "#111" } }
-                                    }
+                                svg { class: "oxs7-qr", view_box: "0 0 {qn} {qn}", role: "img", "aria-label": "QR code for your authenticator app (sample key)",
+                                    rect { x: "0", y: "0", width: "{qn}", height: "{qn}", fill: "#fff" }
+                                    path { d: "{qd}", fill: "#111" }
                                 }
                                 div { class: "oxs7-qr-t",
                                     b { "Scan with your authenticator app" }

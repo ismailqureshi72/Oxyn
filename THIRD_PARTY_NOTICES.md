@@ -67,3 +67,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 Slack is not in either set (Simple Icons removed it at Slack's request), so Oxyn draws its mark from basic
 shapes in the official colours (`scripts/brand/gen_brand.py`, MIT).
+
+## QR Code generator library (`qrcodegen` crate)
+
+- Used in: `crates/oxyn-core/src/parity/setscr2.rs` (`Qr::encode`: the scannable two-step setup code
+  on the Security settings). A regular Cargo dependency, not copied code.
+- Source: https://github.com/nayuki/QR-Code-generator (`qrcodegen` 1.8)
+- License: MIT. Copyright © Project Nayuki.
