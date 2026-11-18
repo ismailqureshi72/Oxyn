@@ -1,0 +1,11 @@
+# Cloudflare Workers static-assets headers (copied to dist/_headers; not served itself).
+# Fingerprinted files never change under the same name, so browsers keep them for a year without
+# revalidating: Astro's bundles (/_astro/<name>.<hash>.*) and the gallery wasm + glue
+# (/wasm/gallery-dioxus.<hash>.*, named by content hash in scripts/gen.mjs).
+# Everything else (HTML, /site.js, /oxyn-demo.js, /wasm/snippets/*) keeps Cloudflare's default
+# `public, max-age=0, must-revalidate` + ETag, so a deploy shows up on the next load.
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/wasm/gallery-dioxus.*
+  Cache-Control: public, max-age=31536000, immutable
