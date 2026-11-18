@@ -25,7 +25,7 @@ pub struct Persona {
 }
 
 /// The personas of the workspace and agent screens.
-pub const PERSONAS: [Persona; 5] = [
+pub const PERSONAS: [Persona; 6] = [
     Persona {
         key: "files",
         nav: &[
@@ -107,6 +107,23 @@ pub const PERSONAS: [Persona; 5] = [
             ("usage", "Usage", "chart"),
             ("permissions", "Permissions", "shield"),
             ("settings", "Settings", "gear"),
+        ],
+    },
+    Persona {
+        key: "evalkit",
+        nav: &[
+            ("home", "Home", "home", 0),
+            ("chat", "Chat", "chat", 0),
+            ("evals", "Evals", "flask", 3),
+            ("datasets", "Datasets", "db", 0),
+            ("analytics", "Analytics", "chart", 0),
+        ],
+        group: "Prompts",
+        items: &[
+            ("support", "Support reply", "mail"),
+            ("triage", "Ticket triage", "layers"),
+            ("refund", "Refund check", "card"),
+            ("onboard", "Onboarding", "user"),
         ],
     },
 ];

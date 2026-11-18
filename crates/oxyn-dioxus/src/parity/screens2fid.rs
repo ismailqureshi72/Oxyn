@@ -18,6 +18,7 @@ use super::efflistfid::chevron;
 use super::screensfid::{
     AppFrame, MenuButton, MenuItem, empty, file_ico, ico, since, skel, stage_scale, use_threads,
 };
+use crate::brand::BrandIcon;
 
 /// A status tag in the status colours.
 pub(crate) fn tag(s: AgStatus) -> Element {
@@ -59,6 +60,17 @@ pub(crate) fn tabs(
 
 // ─────────────────────────────────────────────────────────── Orchestration ──
 
+/// The official mark for a model name.
+fn model_brand(m: &str) -> &'static str {
+    if m.starts_with("GPT") {
+        "openai"
+    } else if m.starts_with("Gemini") {
+        "gemini"
+    } else {
+        "claude"
+    }
+}
+
 fn context_for(role: &str) -> &'static [&'static str] {
     match role {
         "Research" => &[
@@ -92,8 +104,15 @@ pub fn OrchestrationScreen(
     height: u32,
     /// The clock.
     now: ClockMs,
+    /// Oxyn: each card shows its share of the run's cost as a bar.
+    #[props(default)]
+    cost_bars: bool,
+    /// Oxyn: finished agents fade so the busy ones stand out.
+    #[props(default)]
+    dim_done: bool,
 ) -> Element {
     let st = ScreenState::from_key(&state);
+    let paused0 = state == "paused";
     let thr = use_threads(st);
     let active = use_signal(|| 0u32);
     let sample = st == ScreenState::Sample;
@@ -102,7 +121,7 @@ pub fn OrchestrationScreen(
     let events = use_signal(move || orch_events(sample));
     let start = use_signal(|| now.0);
     // Some(elapsed) while paused or stopped.
-    let mut frozen = use_signal(|| None::<u64>);
+    let mut frozen = use_signal(move || if paused0 { Some(31_500u64) } else { None });
     let mut stopped = use_signal(|| false);
     let mut folded = use_signal(Vec::<u32>::new);
     let mut pick = use_signal(move || if sample { Some(2u32) } else { None });
@@ -187,8 +206,8 @@ pub fn OrchestrationScreen(
     );
     let dragging = drag().is_some();
     rsx! {
-        AppFrame { layout, state: state.clone(), height, side: "agent", nav_on: "runs", threads: thr, active, title: "Runs", actions, work, work_label: "Agent",
-            div { class: "oxsor", style: "{style}", "data-drag": "{dragging}",
+        AppFrame { layout, state: st.key().to_string(), height, side: "agent", nav_on: "runs", threads: thr, active, title: "Runs", actions, work, work_label: "Agent",
+            div { class: "oxsor", style: "{style}", "data-drag": "{dragging}", "data-dim": "{dim_done}",
                 onpointermove: move |e: PointerEvent| if let Some((y0, h0)) = drag() { let v = (f64::from(h0) - (e.client_coordinates().y - y0) / stage_scale()).clamp(120.0, 380.0); ph.set(v as u32); },
                 onpointerup: move |_| if drag.peek().is_some() { drag.set(None) },
                 onpointerleave: move |_| if drag.peek().is_some() { drag.set(None) },
@@ -221,7 +240,7 @@ pub fn OrchestrationScreen(
                         div { class: "oxsor-scroll",
                             div { class: "oxsor-zoom",
                                 ul { class: "oxsor-tree", role: "tree", "aria-label": "Agents in this run",
-                                    {branch(&all, 1, folded, pick, cards, want, 1)}
+                                    {branch(&all, 1, folded, pick, cards, want, 1, if cost_bars { cents.max(1) } else { 0 })}
                                 }
                             }
                         }
@@ -309,6 +328,7 @@ pub fn OrchestrationScreen(
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 fn branch(
     all: &[OrchNode],
     id: u32,
@@ -317,6 +337,8 @@ fn branch(
     mut cards: Signal<Vec<(u32, Rc<MountedData>)>>,
     mut want: Signal<Option<u32>>,
     lvl: u32,
+    // The run's cost when cost bars show (0: off).
+    run_cents: u32,
 ) -> Element {
     let Some(n) = all.iter().find(|n| n.id == id).cloned() else {
         return rsx! {};
@@ -339,13 +361,15 @@ fn branch(
                         if *want.peek() == Some(id) { want.set(None); spawn(async move { let _ = d.set_focus(true).await; }); }
                     },
                     onclick: move |_| { want.set(None); pick.set(Some(id)); },
+                    span { class: "oxsor-role", "data-role": "{n.role.to_ascii_lowercase()}", "{n.role}" }
                     span { class: "oxsor-ct",
                         span { class: "oxsor-dot", "data-s": "{n.status.key()}" }
                         span { class: "oxsor-nm", "{name}" }
                         {tag(n.status)}
                     }
                     span { class: "oxsor-task", "{n.task}" }
-                    span { class: "oxsor-meta", span { "{n.role} · {n.model}" } span { "{eur(c)} · {dur(t)}" } }
+                    span { class: "oxsor-meta", span { class: "oxsor-mdl", BrandIcon { name: model_brand(n.model).to_string(), size: 12.0, coloured: true } span { "{n.model}" } } span { "{eur(c)} · {dur(t)}" } }
+                    if run_cents > 0 { span { class: "oxsor-cbar", role: "img", "aria-label": "{c * 100 / run_cents}% of the run's cost", span { style: "width:{(c * 100 / run_cents).min(100)}%" } } }
                 }
                 if has {
                     button { r#type: "button", class: "oxsor-fold", "aria-label": if open { format!("Fold {name}'s branch") } else { format!("Unfold {name}'s branch ({})", kids.len()) },
@@ -356,7 +380,7 @@ fn branch(
             }
             if has && open {
                 ul { class: "oxsor-kids", role: "group",
-                    for k in kids { {branch(all, k.id, folded, pick, cards, want, lvl + 1)} }
+                    for k in kids { {branch(all, k.id, folded, pick, cards, want, lvl + 1, run_cents)} }
                 }
             }
         }

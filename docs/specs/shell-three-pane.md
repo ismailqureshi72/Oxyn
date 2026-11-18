@@ -1,8 +1,8 @@
 **Status:** built v0.1 (2026-11-17, screens 1: Screens).
 
-# Spec: Three-pane shell (`shell-three-pane`)
+# Spec: Three-pane shell (`shell-three-pane`) – Oxyn extra
 
-Family: Screens. Reference: affectUI double-sidebar frame, behaviour only.
+Family: Screens. **Oxyn-only extra:** affectUI has no three-pane screen (its closest are AI Chat / Double Sidebar and Agent / Inbox). Kept as our own frame and labelled as such on the site (S5).
 Components: `RailShellScreen / RailFrame` (Dioxus) · `ScreenRailEl` (GPUI), models in `oxyn_core::parity::screensfid`.
 
 ## 1. Purpose

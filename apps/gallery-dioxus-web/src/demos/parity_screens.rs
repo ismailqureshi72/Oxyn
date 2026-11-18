@@ -1,5 +1,5 @@
 //! Screens demos (#42 Screens 1, Screens 2): app frames (Inset, Flat, three-pane) and the AI Chat screens (Start, Overview,
-//! Agents, Double sidebar, Progress, Run) Folders (Overview, Detail), Integrations, Kanban, CRM, the Workflow builder and the Settings shell, then the agent screens (Orchestration; S3: Thread, Inbox, Inbox Board, Tasks, Activity, Memory; S4: Agents, Skills, Schedules, Usage, Permissions, Run Detail). Every screen has Sample / Loading / Empty data and an
+//! Agents, Double sidebar, Progress, Run) Folders (Overview, Detail), Integrations, Kanban, CRM, the Workflow builder and the Settings shell, then the agent screens (Orchestration; S3: Thread, Inbox, Inbox Board, Tasks, Activity, Memory; S4: Agents, Skills, Schedules, Usage, Permissions, Run Detail; S5: Evals and the upgraded Orchestration and Workflow Builder). Every screen has Sample / Loading / Empty data and an
 //! Inset / Flat frame; light and dark follow the page theme.
 
 use dioxus::prelude::*;
@@ -7,10 +7,10 @@ use oxyn_core::ClockMs;
 use oxyn_dioxus::{
     ActivityScreen, AgentThreadScreen, AgentsScreen, AnalyticsScreen, AppShellScreen,
     ChatAgentsScreen, ChatOverviewScreen, ChatProgressScreen, ChatRailScreen, ChatRunScreen,
-    ChatStartScreen, CrmScreen, FoldersScreen, InboxBoardScreen, InboxScreen, IntegrationsScreen,
-    KanbanScreen, MemoryScreen, OrchestrationScreen, PermissionsScreen, RailShellScreen,
-    RunDetailScreen, SchedulesScreen, ScreenStage, SettingsScreen, SkillsScreen, TasksScreen,
-    UsageScreen, WorkflowScreen, s2_states, s3_states, s4_states,
+    ChatStartScreen, CrmScreen, EvalsScreen, FoldersScreen, InboxBoardScreen, InboxScreen,
+    IntegrationsScreen, KanbanScreen, MemoryScreen, OrchestrationScreen, PermissionsScreen,
+    RailShellScreen, RunDetailScreen, SchedulesScreen, ScreenStage, SettingsScreen, SkillsScreen,
+    TasksScreen, UsageScreen, WorkflowScreen, s2_states, s3_states, s4_states, s5_states,
 };
 
 use super::{Code, mk, sel, var};
@@ -264,9 +264,9 @@ fn shell_three_pane_demo() -> Demo {
         align: Align::Start,
         ..mk(
             "shell-three-pane",
-            "Three-pane shell",
+            "Three-pane shell (Oxyn extra)",
             CAT,
-            "An icon rail, a chats column with a project switcher, the page and a work area: the double-sidebar frame.",
+            "Oxyn-only extra, with no affectUI counterpart: an icon rail, a chats column with a project switcher, the page and a work area. Kept as our own frame beside the affectUI-matched shells.",
             "RailShellScreen",
             "ScreenRailEl",
             "shell-three-pane",
@@ -1126,21 +1126,31 @@ fn kanban_demo() -> Demo {
 // ---------- Workflow builder ----------
 
 fn workflow(v: &Vals, now: ClockMs) -> Element {
-    let (st, lay, key) = frame(v);
+    let (_, lay, key) = frame(v);
+    let st = s5_key("workflow", v.s("data"));
+    let key = format!("{key}-{}-{}", v.b("x1"), v.b("x2"));
+    let (a, b) = (v.b("x1"), v.b("x2"));
     rsx! {
         div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
-            ScreenStage { state: st, screen: move |s: String| rsx! { WorkflowScreen { layout: lay.clone(), state: s, now } } }
+            ScreenStage { state: st, states: s5_states("workflow"), screen: move |s: String| rsx! { WorkflowScreen { layout: lay.clone(), state: s, now, step_numbers: a, compact: b } } }
         }
     }
 }
 
 fn workflow_code(v: &Vals) -> String {
-    code("WorkflowScreen", v, true, false)
+    let c = Code::new("WorkflowScreen")
+        .s("layout", &low(v.s("frame")), "inset")
+        .s("state", &s5_key("workflow", v.s("data")), "sample");
+    let c = c.b("step_numbers", v.b("x1")).b("compact", v.b("x2"));
+    c.raw("now", "clock()").done()
 }
 
 fn workflow_demo() -> Demo {
+    let mut c = controls_x("inset", &["Test run"]);
+    c.push(super::tog("x1", "Step numbers", false));
+    c.push(super::tog("x2", "Compact cards", false));
     Demo {
-        controls: controls("inset"),
+        controls: c,
         variants: vec![
             var("sample", "Sample data in the Inset frame.", &[]),
             var(
@@ -1157,6 +1167,21 @@ fn workflow_demo() -> Demo {
                 "empty",
                 "Nothing yet: each region says what will appear.",
                 &[("data", "Empty")],
+            ),
+            var(
+                "own",
+                "A test run under way: steps light up in turn and the run dock shows the timeline.",
+                &[("data", "Test run")],
+            ),
+            var(
+                "x1",
+                "Oxyn: each step numbered in run order.",
+                &[("x1", "true")],
+            ),
+            var(
+                "x2",
+                "Oxyn: compact cards without the setting line.",
+                &[("x2", "true")],
             ),
         ],
         render: workflow,
@@ -1175,6 +1200,11 @@ fn workflow_demo() -> Demo {
             ),
             ("Delete on a node or connection", "Remove it"),
             ("Escape on a node", "Clear the selection"),
+            (
+                "← / → in the run dock tabs",
+                "Payload, Triggers, Errors, Timeline, Runs",
+            ),
+            ("Enter on Start test run", "Run with the sample payload"),
         ],
         a11y: vec![
             "The sidebar is a labelled nav; the open chat has aria-current and unread chats say so.",
@@ -1192,7 +1222,7 @@ fn workflow_demo() -> Demo {
             "workflow",
             "Workflow builder",
             CAT,
-            "Nodes on a canvas joined by curves: add them from a palette (click or drag), move them with the pointer or the arrow keys, connect and set each one up in the inspector, zoom and fit, then run a test and watch every step light up in turn.",
+            "Steps laid out on a canvas and linked by curves: add them from a grouped palette (click or drag; official app marks), move them with the pointer or the arrow keys, connect and set each one up in the inspector, zoom and fit, then start a test run with the sample payload and follow it in the run dock (Payload · Triggers · Errors · Timeline · Runs) as every step lights up in turn.",
             "WorkflowScreen",
             "WorkflowEl",
             "workflow",
@@ -1370,21 +1400,35 @@ fn crm_demo() -> Demo {
 // ---------- Agent · Orchestration ----------
 
 fn agent_orchestration(v: &Vals, now: ClockMs) -> Element {
-    let (st, lay, key) = frame(v);
+    let (_, lay, key) = frame(v);
+    let st = s5_key("agent-orchestration", v.s("data"));
+    let key = format!("{key}-{}-{}", v.b("x1"), v.b("x2"));
+    let (a, b) = (v.b("x1"), v.b("x2"));
     rsx! {
         div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
-            ScreenStage { state: st, screen: move |s: String| rsx! { OrchestrationScreen { layout: lay.clone(), state: s, now } } }
+            ScreenStage { state: st, states: s5_states("agent-orchestration"), screen: move |s: String| rsx! { OrchestrationScreen { layout: lay.clone(), state: s, now, cost_bars: a, dim_done: b } } }
         }
     }
 }
 
 fn agent_orchestration_code(v: &Vals) -> String {
-    code("OrchestrationScreen", v, true, false)
+    let c = Code::new("OrchestrationScreen")
+        .s("layout", &low(v.s("frame")), "inset")
+        .s(
+            "state",
+            &s5_key("agent-orchestration", v.s("data")),
+            "sample",
+        );
+    let c = c.b("cost_bars", v.b("x1")).b("dim_done", v.b("x2"));
+    c.raw("now", "clock()").done()
 }
 
 fn agent_orchestration_demo() -> Demo {
+    let mut c = controls_x("inset", &["Paused"]);
+    c.push(super::tog("x1", "Cost bars", false));
+    c.push(super::tog("x2", "Dim finished", false));
     Demo {
-        controls: controls("inset"),
+        controls: c,
         variants: vec![
             var("sample", "Sample data in the Inset frame.", &[]),
             var(
@@ -1401,6 +1445,21 @@ fn agent_orchestration_demo() -> Demo {
                 "empty",
                 "Nothing yet: each region says what will appear.",
                 &[("data", "Empty")],
+            ),
+            var(
+                "own",
+                "The run paused: the clock and cost hold, Resume picks it up again.",
+                &[("data", "Paused")],
+            ),
+            var(
+                "x1",
+                "Oxyn: each card shows its share of the run's cost as a bar.",
+                &[("x1", "true")],
+            ),
+            var(
+                "x2",
+                "Oxyn: finished agents fade so the busy ones stand out.",
+                &[("x2", "true")],
             ),
         ],
         render: agent_orchestration,
@@ -1434,7 +1493,7 @@ fn agent_orchestration_demo() -> Demo {
             "agent-orchestration",
             "Agent · Orchestration",
             CAT,
-            "One run shared out between agents, drawn as a branching outline on a dotted canvas: see which agent holds which piece, hop to whichever is busy, zoom and fit, pause or stop the run, and read every call in the trace, the tokens and cost per agent and the events below.",
+            "One run shared out between agents, drawn as a branching tree of cards on a dotted canvas, each with its role tag (Orchestrator, Research, Analysis, Writing, Review), status and model (official marks): see which agent holds which piece, hop to whichever is busy, zoom and fit, pause or stop the run, and read every call in the trace, the tokens and cost per agent and the events in the dock below.",
             "OrchestrationScreen",
             "OrchestrationEl",
             "agent-orchestration",
@@ -2760,6 +2819,122 @@ fn run_detail_screen_demo() -> Demo {
     }
 }
 
+/// The state key for a data control label on an S5 screen.
+fn s5_key(slug: &str, label: &str) -> String {
+    s5_states(slug)
+        .iter()
+        .find(|(_, l)| l.eq_ignore_ascii_case(label))
+        .map(|(k, _)| k.to_string())
+        .unwrap_or_else(|| low(label))
+}
+
+// ---------- Evals ----------
+
+fn evals_screen(v: &Vals, _now: ClockMs) -> Element {
+    let (_, lay, key) = frame(v);
+    let st = s5_key("evals", v.s("data"));
+    let key = format!("{key}-{}-{}", v.b("x1"), v.b("x2"));
+    let (a, b) = (v.b("x1"), v.b("x2"));
+    rsx! {
+        div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
+            ScreenStage { state: st, states: s5_states("evals"), screen: move |s: String| rsx! { EvalsScreen { layout: lay.clone(), state: s, fails_first: a, cost_col: b } } }
+        }
+    }
+}
+
+fn evals_screen_code(v: &Vals) -> String {
+    let c = Code::new("EvalsScreen")
+        .s("layout", &low(v.s("frame")), "inset")
+        .s("state", &s5_key("evals", v.s("data")), "sample");
+    let c = c.b("fails_first", v.b("x1")).b("cost_col", v.b("x2"));
+    c.done()
+}
+
+fn evals_screen_demo() -> Demo {
+    let mut c = controls_x("inset", &["Running"]);
+    c.push(super::tog("x1", "Failures first", false));
+    c.push(super::tog("x2", "Cost per case", false));
+    Demo {
+        controls: c,
+        variants: vec![
+            var("sample", "Sample data in the Inset frame.", &[]),
+            var(
+                "flat",
+                "The same screen in the Flat frame.",
+                &[("frame", "Flat")],
+            ),
+            var(
+                "loading",
+                "Skeletons where the data will land.",
+                &[("data", "Loading")],
+            ),
+            var(
+                "empty",
+                "Nothing yet: the page says what will appear and how to start.",
+                &[("data", "Empty")],
+            ),
+            var(
+                "own",
+                "Run eval pressed: every case is scored in turn, with a progress bar and Stop.",
+                &[("data", "Running")],
+            ),
+            var(
+                "x1",
+                "Oxyn: failures and partials first, so the cases to fix lead.",
+                &[("x1", "true")],
+            ),
+            var(
+                "x2",
+                "Oxyn: a cost column per case and the run's total.",
+                &[("x2", "true")],
+            ),
+        ],
+        render: evals_screen,
+        code: evals_screen_code,
+        keyboard: vec![
+            ("Tab", "Sidebar, page, then each control in reading order"),
+            (
+                "← / → in the chart",
+                "Step through the versions (Home / End: first or last)",
+            ),
+            (
+                "Enter on a case",
+                "Open the full input, expected reply and output",
+            ),
+            ("Enter on ↻", "Re-run that case"),
+            (
+                "Enter on Run eval",
+                "Score every case in turn (Stop ends it)",
+            ),
+            ("Escape", "Close an open menu or popover"),
+        ],
+        a11y: vec![
+            "The Evalkit sidebar is a labelled nav with aria-current on Evals.",
+            "The chart is a listbox of versions with aria-activedescendant; the diff uses del and ins, and the current change is outlined.",
+            "The cases are a table with column headers; each input opens its own row (aria-expanded); the run reports its progress as a progressbar.",
+            "Skeletons are hidden from screen readers; every action reports what it did in a polite live region.",
+        ],
+        responsive: vec![
+            "Authored on the 1440 × 900 canvas; the full view lays it out at the real width.",
+            "Under 1000 px the chart and the diff stack and the Expected column hides.",
+            "Under 700 px the tiles go two by two and only input, score and re-run stay; under 640 px the sidebar slides in from the menu button.",
+        ],
+        height: 240,
+        live: false,
+        align: Align::Start,
+        ..mk(
+            "evals",
+            "Evals",
+            CAT,
+            "A prompt's eval: pass rate, average score, latency and cost against the version before; pass rate across every version as a chart you can step through; the system prompt's changes as a diff to review (step through, Accept all or Reject all); and the test cases with Pass / Partial / Fail filters, a row that opens to the full reply and Re-run on each. Pick another model and Run eval scores every case on it in turn.",
+            "EvalsScreen",
+            "EvalsEl",
+            "evals",
+            "parity/buildscr.rs",
+        )
+    }
+}
+
 pub(crate) fn demos() -> Vec<Demo> {
     vec![
         shell_inset_demo(),
@@ -2792,5 +2967,6 @@ pub(crate) fn demos() -> Vec<Demo> {
         usage_screen_demo(),
         permissions_screen_demo(),
         run_detail_screen_demo(),
+        evals_screen_demo(),
     ]
 }

@@ -69,6 +69,7 @@ pub use parity::EffortListEl;
 pub use parity::EffortPillEl;
 pub use parity::EffortRulerEl;
 pub use parity::EffortStairsEl;
+pub use parity::EvalsEl;
 pub use parity::FanoutGridEl;
 pub use parity::FolderDetailEl;
 pub use parity::FoldersEl;

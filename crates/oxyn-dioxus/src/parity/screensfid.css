@@ -1118,3 +1118,31 @@ li[data-s="active"] .oxcpr-tick{border-color:var(--oxth-line2);border-top-color:
 [data-screen-full] .oxstage-canvas .oxscn,[data-screen-full] .oxstage-canvas .oxsrl{border-radius:0;border:0}
 [data-screen-full] .oxstage-bar-r{display:none}
 @media (max-width:620px){[data-screen-full] .oxstage-bar{padding-right:68px}}
+
+/* S5 Workflow Builder: official marks, step numbers, compact cards, the run dock */
+.oxswf .oxswf-title{display:flex;align-items:center;gap:6px;min-width:0}
+.oxswf-title svg{flex:none}
+.oxswf-tt{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.oxswf-pi svg{flex:none;margin-left:auto}
+.oxswf-num{display:inline-grid;place-items:center;flex:none;min-width:16px;height:16px;padding:0 3px;border-radius:5px;background:var(--oxth-sel);font-size:10.5px;font-weight:600;color:var(--oxth-fg2);font-variant-numeric:tabular-nums}
+.oxswf[data-compact="true"] .oxswf-sum{display:none}
+.oxswf-dock{flex:none;display:flex;flex-direction:column;min-width:0;max-height:190px;border-top:1px solid var(--oxth-line);background:var(--oxth-card)}
+.oxswf-dock[data-fold="true"]{max-height:none}
+.oxswf-dh{display:flex;align-items:center;gap:8px;min-width:0;height:40px;padding:0 10px 0 12px;flex:none}
+.oxswf-dh .oxsag-tabs{min-width:0;overflow-x:auto;scrollbar-width:none}
+.oxswf-start{height:28px}
+.oxswf-db{flex:1 1 auto;min-height:0;overflow:auto;padding:4px 14px 12px;font-size:12.5px;color:var(--oxth-fg2)}
+.oxswf-pre{margin:0;padding:10px 12px;border-radius:9px;background:var(--oxth-card2);font:12px/1.55 var(--oxyn-font-mono,ui-monospace,monospace);white-space:pre-wrap;overflow-wrap:anywhere;color:var(--oxth-fg2)}
+.oxswf-dl,.oxswf-tl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.oxswf-dl li,.oxswf-tl li{display:flex;align-items:center;gap:8px;min-width:0;min-height:30px;border-bottom:1px solid var(--oxth-line)}
+.oxswf-dl li:last-child,.oxswf-tl li:last-child{border-bottom:0}
+.oxswf-dl .oxscn-ico{flex:none;width:13px;height:13px;color:var(--oxth-mute)}
+.oxswf-err{display:inline-grid;place-items:center;flex:none;width:16px;height:16px;border-radius:50%;background:color-mix(in srgb,var(--oxth-red) 18%,transparent);color:var(--oxth-red);font-size:11px;font-weight:700}
+.oxswf-tl-n{display:inline-grid;place-items:center;flex:none;width:18px;height:18px;border-radius:50%;background:var(--oxth-card2);font-size:10.5px;font-weight:600;color:var(--oxth-mute)}
+.oxswf-tl li[data-run="done"] .oxswf-tl-n{background:color-mix(in srgb,var(--oxyn-color-status-success-fg,#1F9D55) 18%,transparent);color:var(--oxth-fg)}
+.oxswf-tl li[data-run="running"] .oxswf-tl-n{background:color-mix(in srgb,var(--oxyn-color-status-info-fg,#2B6CB0) 18%,transparent);color:var(--oxth-fg)}
+@container (max-width: 560px){
+  .oxswf-start-l{display:none}
+  .oxswf-start{width:30px;padding:0;justify-content:center}
+  .oxswf-dock{max-height:160px}
+}
