@@ -13,8 +13,17 @@ const path = Astro.url.pathname;
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
 <meta name="color-scheme" content="light dark" />
-<!-- No favicon yet (brand assets pending): an empty icon stops the browser's /favicon.ico 404. -->
-<link rel="icon" href="data:," />
+<meta property="og:type" content="website" />
+<meta property="og:image" content={new URL('/og.png', Astro.site)} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content={new URL('/og.png', Astro.site)} />
+<!-- Logo v2 (E1 cube mark): SVG for modern browsers, PNG and ICO fallbacks, the app icon for iOS. -->
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+<link rel="icon" href="/favicon-16.png" type="image/png" sizes="16x16" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
 <script is:inline>
   (function () {
     var d = document.documentElement;
@@ -25,6 +34,13 @@ const path = Astro.url.pathname;
     if (localStorage.getItem('oxyn-announce') === 'closed') d.dataset.announce = 'hidden';
     if (localStorage.getItem('oxyn-reduce-motion') === '1') d.setAttribute('data-oxyn-reduced', '');
     if (localStorage.getItem('oxyn-sidebar') === 'hidden') d.dataset.sidebar = 'hidden';
+    // Brand intro: only on the first page of a fresh visit (one per tab session). A reload or any
+    // later page skips it and shows the route at once. It never blocks: no pointer events, ~1 s.
+    try {
+      var calm = localStorage.getItem('oxyn-reduce-motion') === '1' || matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!sessionStorage.getItem('oxyn-intro') && !calm && !/\/full\/?$/.test(location.pathname)) d.setAttribute('data-intro', '');
+      sessionStorage.setItem('oxyn-intro', '1');
+    } catch (e) {}
   })();
 </script>
 {wasm.js && <link rel="modulepreload" href={wasm.js} />}

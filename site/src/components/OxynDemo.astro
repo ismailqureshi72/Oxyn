@@ -1,9 +1,10 @@
 ---
 // A live Dioxus demo. Server-rendered markup first (the same Rust component, rendered at build
 // time), replaced by the WASM mount when it scrolls into view (public/oxyn-demo.js).
-interface Props { slug: string; html: string; variant?: number; controls?: boolean; height?: number }
-const { slug, html, variant = -1, controls = false } = Astro.props;
+// `defer`: stay on the server-rendered markup until a script calls mountLive() (laptop tabs).
+interface Props { slug: string; html: string; variant?: number; controls?: boolean; height?: number; defer?: boolean }
+const { slug, html, variant = -1, controls = false, defer = false } = Astro.props;
 ---
-<oxyn-demo data-pagefind-ignore data-slug={slug} data-variant={variant} data-controls={controls ? 'true' : 'false'}>
+<oxyn-demo data-pagefind-ignore data-slug={slug} data-variant={variant} data-controls={controls ? 'true' : 'false'} data-defer={defer ? 'true' : undefined}>
   <div class="oxd-root" set:html={html} />
 </oxyn-demo>

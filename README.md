@@ -1,5 +1,8 @@
 <p align="center">
-  <img src="assets/brand/oxyn-banner.gif" alt="Oxyn — Agent UI components for Rust" width="100%" />
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/brand/svg/oxyn-lockup-light.svg" />
+    <img src="assets/brand/svg/oxyn-lockup.svg" alt="Oxyn — Agent UI components for Rust" width="420" />
+  </picture>
 </p>
 
 <h1 align="center">Oxyn</h1>
