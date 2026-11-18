@@ -91,7 +91,7 @@
 .oxs7-steps li[data-on="true"] span{background:var(--oxth-fg);border-color:var(--oxth-fg);color:var(--oxth-card)}
 .oxs7-steps li[data-done="true"] span{border-color:var(--ox-ic-done);color:var(--ox-ic-done)}
 .oxs7-qr-w{display:flex;align-items:flex-start;flex-wrap:wrap;gap:16px;min-width:0}
-.oxs7-qr{flex:none;width:132px;height:132px;padding:0;border-radius:10px;border:1px solid var(--oxth-line);background:#fff;shape-rendering:crispEdges}
+.oxs7-qr{flex:none;width:148px;height:148px;padding:0;border-radius:10px;border:1px solid var(--oxth-line);background:#fff;shape-rendering:crispEdges}
 .oxs7-qr-t{flex:1 1 220px;display:flex;flex-direction:column;gap:6px;min-width:0;font-size:13px}
 .oxs7-qr-t b{font-weight:600}
 .oxs7-qr-t .oxsst-hint{margin:0}

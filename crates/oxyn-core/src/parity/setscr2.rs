@@ -834,40 +834,97 @@ pub fn recovery_codes(seed: u32) -> Vec<String> {
         .collect()
 }
 
-/// A fake QR module grid (21 × 21, finder squares in three corners), stable per seed.
-pub fn qr_cells(seed: u32) -> Vec<bool> {
-    let n = 21usize;
-    let mut h: u64 = 0xD1B5_4A32_D192_ED03 ^ u64::from(seed);
-    let mut v = Vec::with_capacity(n * n);
-    for y in 0..n {
-        for x in 0..n {
-            let finder = |ox: usize, oy: usize| {
-                let (dx, dy) = (x.wrapping_sub(ox), y.wrapping_sub(oy));
-                if dx < 7 && dy < 7 {
-                    let edge = dx == 0 || dy == 0 || dx == 6 || dy == 6;
-                    let core = (2..=4).contains(&dx) && (2..=4).contains(&dy);
-                    Some(edge || core)
-                } else if dx < 8 && dy < 8 {
-                    Some(false)
-                } else {
-                    None
+/// The account label inside the setup link (fictional).
+pub const TOTP_ACCOUNT: &str = "alex@example.com";
+/// The issuer name inside the setup link.
+pub const TOTP_ISSUER: &str = "Kestrel";
+
+/// The `otpauth://` link an authenticator app reads from the QR code (SHA-1, six digits, 30 s:
+/// the defaults every app assumes, left out to keep the code small).
+pub fn otpauth_uri(issuer: &str, account: &str, secret: &str) -> String {
+    let enc = |t: &str| -> String {
+        t.bytes()
+            .map(|b| match b {
+                b'A'..=b'Z' | b'a'..=b'z' | b'0'..=b'9' | b'-' | b'.' | b'_' | b'~' => {
+                    (b as char).to_string()
                 }
-            };
-            let f = finder(0, 0)
-                .or_else(|| finder(n - 7, 0))
-                .or_else(|| finder(0, n - 7));
-            v.push(match f {
-                Some(b) => b,
-                None => {
-                    h = h
-                        .wrapping_mul(6364136223846793005)
-                        .wrapping_add(1442695040888963407);
-                    (h >> 40) & 1 == 1
+                _ => format!("%{b:02X}"),
+            })
+            .collect()
+    };
+    let key: String = secret.chars().filter(|c| !c.is_whitespace()).collect();
+    format!(
+        "otpauth://totp/{}:{}?secret={}&issuer={}",
+        enc(issuer),
+        enc(account),
+        key,
+        enc(issuer)
+    )
+}
+
+/// A real, scannable QR code: its side in modules and the dark modules, row by row.
+pub struct Qr {
+    /// Modules per side (without the quiet zone).
+    pub size: usize,
+    /// `true` = dark module, `size * size` entries, row-major.
+    pub cells: Vec<bool>,
+}
+
+impl Qr {
+    /// Encodes `text` (error correction M). An empty grid if the text is too long.
+    pub fn encode(text: &str) -> Self {
+        use qrcodegen::{QrCode, QrCodeEcc};
+        match QrCode::encode_text(text, QrCodeEcc::Medium) {
+            Ok(q) => {
+                let n = q.size() as usize;
+                let mut cells = Vec::with_capacity(n * n);
+                for y in 0..n as i32 {
+                    for x in 0..n as i32 {
+                        cells.push(q.get_module(x, y));
+                    }
                 }
-            });
+                Self { size: n, cells }
+            }
+            Err(_) => Self {
+                size: 0,
+                cells: Vec::new(),
+            },
         }
     }
-    v
+
+    /// The dark modules as horizontal runs: (x, y, length).
+    pub fn runs(&self) -> Vec<(usize, usize, usize)> {
+        let mut v = Vec::new();
+        for y in 0..self.size {
+            let mut x = 0;
+            while x < self.size {
+                if self.cells[y * self.size + x] {
+                    let s = x;
+                    while x < self.size && self.cells[y * self.size + x] {
+                        x += 1;
+                    }
+                    v.push((s, y, x - s));
+                } else {
+                    x += 1;
+                }
+            }
+        }
+        v
+    }
+
+    /// One SVG path for every dark module, offset by `quiet` modules of margin.
+    pub fn svg_path(&self, quiet: usize) -> String {
+        let mut d = String::new();
+        for (x, y, l) in self.runs() {
+            d.push_str(&format!("M{} {}h{}v1h-{}z", x + quiet, y + quiet, l, l));
+        }
+        d
+    }
+}
+
+/// The demo setup QR: the `otpauth://` link for [`TOTP_SECRET`].
+pub fn demo_qr() -> Qr {
+    Qr::encode(&otpauth_uri(TOTP_ISSUER, TOTP_ACCOUNT, TOTP_SECRET))
 }
 
 // ──────────────────────────────────────────────────────────── Billing ──
@@ -1305,8 +1362,14 @@ mod tests {
         let codes = recovery_codes(7);
         assert_eq!(codes.len(), 10);
         assert_eq!(codes[0].len(), 11);
-        assert_eq!(qr_cells(1).len(), 441);
-        assert!(qr_cells(1)[0] && !qr_cells(1)[7]);
+        let q = demo_qr();
+        assert!(q.size >= 21 && q.cells.len() == q.size * q.size);
+        assert!(q.cells[0] && !q.cells[7]);
+        assert!(demo_qr().svg_path(2).starts_with("M2 2h7v1h-7z"));
+        assert!(
+            otpauth_uri("A b", "c@d", "AB CD").ends_with("A%20b:c%40d?secret=ABCD&issuer=A%20b")
+        );
+        assert_eq!(q.size, 37);
         let d = domains(true);
         assert_eq!(
             domain_error("kestrel.example", &d),
