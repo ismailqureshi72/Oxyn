@@ -120,6 +120,7 @@ pub use parity::s4_states;
 pub use parity::s6_states;
 pub use parity::s8_states;
 pub use parity::s9_states;
+pub use parity::s10_states;
 pub use parity::{
     ActionSwapButton, InViewTitle, LoadingState, SlotReels, Source, StreamingText, SweepText,
     TextMorph, ThinkingLoader, WordReveal,
@@ -167,6 +168,7 @@ pub use parity::{
     ChipStep, DiffChip, ExpandableCard, JsonViewer, LinkUnfurl, RowOutput, ToolCall, ToolCallCard,
     ToolCallGroup, ToolCallList, ToolChips, ToolKindLegend,
 };
+pub use parity::{CommandCenterScreen, SessionStudioScreen};
 pub use parity::{ConflictRadar, MergeConflict};
 pub use parity::{EvalsScreen, s5_states};
 pub use parity::{GhostText, LabeledInput, LabeledTextarea, TextArea};
