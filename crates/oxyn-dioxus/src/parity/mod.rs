@@ -73,6 +73,7 @@ mod tools;
 mod tracefid;
 mod upload;
 mod workscr;
+mod wscoder;
 
 pub use agentscr::{
     ActivityScreen, AgentThreadScreen, InboxBoardScreen, InboxScreen, MemoryScreen, TasksScreen,
@@ -193,3 +194,4 @@ pub use upload::{AvatarUpload, FileDropzone};
 pub use workscr::{
     AnalyticsScreen, CrmScreen, FoldersScreen, IntegrationsScreen, KanbanScreen, s2_states,
 };
+pub use wscoder::{WorkspaceCoderScreen, s11_coder_states};
