@@ -1394,6 +1394,99 @@ pub fn move_pane(order: &mut Vec<usize>, from: usize, to: usize) -> bool {
     true
 }
 
+// ──────────────────────────────────────────────────────────── Data ──
+
+/// Everything the Command Center shows. Pass it to the screen's `data` prop to show your own
+/// threads, their changes, the queue and automations; `Default` is the sample data.
+#[derive(Clone, Debug, PartialEq)]
+pub struct CommandCenterData {
+    /// Threads in the sidebar.
+    pub threads: Vec<Thread>,
+    /// Each thread's changes: (thread id, files).
+    pub diffs: Vec<(u32, Vec<DiffFile>)>,
+    /// The task queue: (id, text).
+    pub queue: Vec<(u32, String)>,
+    /// Automations.
+    pub automations: Vec<Automation>,
+    /// Terminal tabs.
+    pub terminals: Vec<Term>,
+}
+
+impl CommandCenterData {
+    /// The data for a demo state (sample, or nothing for empty and loading).
+    pub fn for_state(st: ScreenState) -> Self {
+        let threads = threads(st);
+        let diffs = threads.iter().map(|t| (t.id, thread_diff(t.id))).collect();
+        let samp = st == ScreenState::Sample;
+        Self {
+            threads,
+            diffs,
+            queue: if samp { sample_queue() } else { Vec::new() },
+            automations: automations(st),
+            terminals: sample_terms(),
+        }
+    }
+    /// A thread's changes (empty when it has none).
+    pub fn diff(&self, id: u32) -> Vec<DiffFile> {
+        self.diffs
+            .iter()
+            .find(|d| d.0 == id)
+            .map(|d| d.1.clone())
+            .unwrap_or_default()
+    }
+}
+
+impl Default for CommandCenterData {
+    fn default() -> Self {
+        Self::for_state(ScreenState::Sample)
+    }
+}
+
+/// Everything Session Studio shows. Pass it to the screen's `data` prop; `Default` is the sample.
+#[derive(Clone, Debug, PartialEq)]
+pub struct SessionStudioData {
+    /// Sessions in the sidebar.
+    pub sessions: Vec<Session>,
+    /// The open session's chat blocks.
+    pub blocks: Vec<Block>,
+    /// The open session's todos.
+    pub todos: Vec<(String, BState)>,
+    /// Each session's changes: (session id, files).
+    pub diffs: Vec<(u32, Vec<DiffFile>)>,
+}
+
+impl SessionStudioData {
+    /// The data for a demo state; `ask` ends the chat on a permission prompt.
+    pub fn for_state(st: ScreenState, ask: bool) -> Self {
+        let sessions = sessions(st);
+        let samp = st == ScreenState::Sample;
+        Self {
+            diffs: sessions.iter().map(|s| (s.0, session_diff(s.0))).collect(),
+            sessions,
+            blocks: if samp {
+                session_blocks(ask)
+            } else {
+                Vec::new()
+            },
+            todos: if samp { sample_todos(ask) } else { Vec::new() },
+        }
+    }
+    /// A session's changes (empty when it has none).
+    pub fn diff(&self, id: u32) -> Vec<DiffFile> {
+        self.diffs
+            .iter()
+            .find(|d| d.0 == id)
+            .map(|d| d.1.clone())
+            .unwrap_or_default()
+    }
+}
+
+impl Default for SessionStudioData {
+    fn default() -> Self {
+        Self::for_state(ScreenState::Sample, false)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
