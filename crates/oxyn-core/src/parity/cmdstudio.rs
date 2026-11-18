@@ -34,6 +34,8 @@ const SS_STATES: StateList = &[
     ("loading", "Loading"),
     ("empty", "Empty"),
     ("permission", "Permission"),
+    ("chat", "Side chat"),
+    ("arrange", "Rearrange"),
 ];
 
 /// The screens' own states.
@@ -1122,6 +1124,51 @@ pub fn page_for(addr: &str) -> Option<usize> {
         .trim_start_matches("www.")
         .trim_end_matches('/');
     PAGES.iter().position(|p| p.0 == a)
+}
+
+// ───────────────────────────────────────────── Session Studio extras ──
+
+/// The side chat's opening messages: (from you, text). A side chat asks about the session without
+/// interrupting it.
+pub const SIDE_CHAT: [(bool, &str); 2] = [
+    (true, "Why key the cache by version and not by updated_at?"),
+    (
+        false,
+        "Versions only change when the invoice does; updated_at also moves on unrelated edits, so the cache would miss more often.",
+    ),
+];
+
+/// The side chat's answer to a question (canned, about the open session).
+pub fn side_reply(q: &str) -> &'static str {
+    let q = q.to_lowercase();
+    if q.contains("test") {
+        "The session runs npm test -- invoices after the edit; it asks first in Ask mode."
+    } else if q.contains("memory") || q.contains("size") {
+        "The cache is an LRU of 200 PDFs, about 40 MB at the sample sizes."
+    } else {
+        "Noted. I answered from the session so far without interrupting it."
+    }
+}
+
+/// Session Studio's side panes, in default order: key, title.
+pub const PANES: [(&str, &str); 3] = [
+    ("diff", "Diff"),
+    ("chat", "Side chat"),
+    ("context", "Context"),
+];
+
+/// Move the pane at `from` to `to` (both clamped). Returns false when nothing moved.
+pub fn move_pane(order: &mut Vec<usize>, from: usize, to: usize) -> bool {
+    if order.is_empty() {
+        return false;
+    }
+    let (f, t) = (from.min(order.len() - 1), to.min(order.len() - 1));
+    if f == t {
+        return false;
+    }
+    let x = order.remove(f);
+    order.insert(t, x);
+    true
 }
 
 #[cfg(test)]
