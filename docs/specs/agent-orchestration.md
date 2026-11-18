@@ -1,4 +1,4 @@
-**Status:** built v0.1 (2026-11-17, screens 2: Screens).
+**Status:** built v0.2 (2026-11-18, S5: brought to affectUI parity; v0.1 2026-11-17, screens 2).
 
 # Spec: Agent · Orchestration (`agent-orchestration`)
 
@@ -31,5 +31,12 @@ The agent sidebar is a labelled nav whose current page has aria-current; tab row
 ## 6. Responsive
 Root fills its container (definite width, overflow clip, container queries). Under 860 px the work area becomes a sheet opened from the top bar; under 640 px the sidebar slides in from a menu button.
 
+## S5 additions (v0.2)
+- Each card carries a role tag (Orchestrator blue, Research green, Analysis grey, Writing amber, Review red tints) and its model with the official mark (Opus / Sonnet: Claude, GPT: OpenAI, Gemini: Google Gemini).
+- States: Data · Loading · Empty · **Paused** (the clock and cost hold; Resume continues).
+- Oxyn extras: `cost_bars` (each card shows its share of the run's cost) and `dim_done` (finished agents fade).
+- 390: the project and run menus and the status tag leave the top bar and Pause / Stop go icon-only, so the Runs title no longer truncates.
+
 ## 7. Known gaps
+The tree is laid out as an indented outline of cards, not affectUI's free canvas with curved connectors and travelling light; the GPUI element does not show the S5 role tags or extras yet.
 GPUI is a static snapshot (no zoom, folding, panel or clock); the host owns state. Fit uses a fixed 80 % rather than measuring the tree. The tree is a role=tree of buttons; arrow-key movement between cards is not wired (Tab reaches every card).

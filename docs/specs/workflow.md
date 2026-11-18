@@ -1,4 +1,4 @@
-**Status:** built v0.1 (2026-11-17, screens 1: Screens).
+**Status:** built v0.2 (2026-11-18, S5: run dock and parity pass; v0.1 2026-11-17, screens 1).
 
 # Spec: Workflow builder (`workflow`)
 
@@ -32,5 +32,12 @@ Sidebar is a labelled nav with aria-current on the open chat; menus open from a 
 ## 6. Responsive
 Root fills its container (definite width, overflow clip, container queries). Under 860 px the work area becomes a sheet opened from the top bar; under 640 px the sidebar slides in from a menu button and composer menus drop their labels.
 
+## S5 additions (v0.2)
+- A run dock under the canvas: Payload (the sample payload) · Triggers (ready or not configured) · Errors N (unset settings and failed steps) · Timeline (each step in run order with its state) · Runs (this session's test runs; empty: "No runs yet – press Start test run…"), **Start test run** and fold. ←/→ move between the tabs.
+- Official app marks on steps and in the palette (Send email: Gmail, Post a message: Slack, Save a row: Airtable, AI agent: Claude).
+- States: Data · Loading · Empty · **Test run** (a run under way).
+- Oxyn extras: `step_numbers` (each step numbered in run order) and `compact` (cards without the setting line).
+
 ## 7. Known gaps
+The GPUI element does not show the run dock or the S5 extras yet.
 GPUI is a static snapshot (nodes placed from the model, no curves, drag, zoom or run); the host owns state. Connections are made from the inspector, not by dragging between ports. Dropping from the palette needs HTML drag and drop; click-to-add covers keyboards and touch.

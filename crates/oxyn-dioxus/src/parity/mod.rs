@@ -8,6 +8,7 @@ mod approvals;
 mod attachfid;
 mod autonomyfid;
 mod awayfid;
+mod buildscr;
 mod chatfid;
 mod collabfid;
 mod compose;
@@ -82,6 +83,7 @@ pub use approvals::{
 pub use attachfid::{AttachmentChips, DropLanes, FileIcon, PolaroidStack, UploadDropzone};
 pub use autonomyfid::AutonomyDial;
 pub use awayfid::AwaySummary;
+pub use buildscr::{EvalsScreen, s5_states};
 pub use chatfid::{AgentRunPanel, ModelPickerMenu};
 pub use collabfid::CollabStream;
 pub use compose::{

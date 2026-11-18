@@ -41,6 +41,16 @@ fn glyph(name: &str, tone: &str) -> Element {
     let d: &[&str] = match name {
         "plus" => &["M12 5v14", "M5 12h14"],
         "chat" => &["M5 5h14v10H9l-4 4z"],
+        "flask" => &[
+            "M9 3h6",
+            "M10 3v6l-5 9a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-9V3",
+            "M7 15h10",
+        ],
+        "db" => &[
+            "M5 6c0-1.7 3-3 7-3s7 1.3 7 3-3 3-7 3-7-1.3-7-3z",
+            "M5 6v12c0 1.7 3 3 7 3s7-1.3 7-3V6",
+            "M5 12c0 1.7 3 3 7 3s7-1.3 7-3",
+        ],
         "folder" => &["M3 7h7l2 2h9v10H3z"],
         "apps" => &[
             "M4 4h6v6H4z",
@@ -1259,6 +1269,7 @@ pub fn AppFrame(
         "sales" => Side::Domain("sales"),
         "revenue" => Side::Domain("revenue"),
         "fieldwork" => Side::Domain("fieldwork"),
+        "evalkit" => Side::Domain("evalkit"),
         _ => Side::Chat,
     };
     let style = format!(
@@ -2948,6 +2959,17 @@ pub fn ChatRunScreen(
 
 // ───────────────────────────────────────────────────────────── Workflow builder ──
 
+/// The official mark of the app (or model) a workflow step works in, if it has one.
+fn wf_brand(title: &str, kind: &str) -> Option<&'static str> {
+    match title {
+        "Send email" => Some("gmail"),
+        "Post a message" => Some("slack"),
+        "Save a row" => Some("airtable"),
+        _ if kind == "agent" => Some("claude"),
+        _ => None,
+    }
+}
+
 /// Workflow builder: a palette of nodes, a canvas you drag them around on (or move with the arrow
 /// keys), connections drawn as curves, an inspector for the selected node, and a test run that
 /// lights each step up in turn.
@@ -2964,6 +2986,12 @@ pub fn WorkflowScreen(
     height: u32,
     /// The clock (drives the test run).
     now: ClockMs,
+    /// Oxyn: each step shows its number in run order.
+    #[props(default)]
+    step_numbers: bool,
+    /// Oxyn: compact cards without the setting line.
+    #[props(default)]
+    compact: bool,
 ) -> Element {
     use oxyn_core::parity::screensfid::{
         WF_GRID, WF_NODE_H, WF_NODE_W, WF_PALETTE, WfRun, wf_add, wf_canvas, wf_clamp, wf_finished,
@@ -2988,8 +3016,19 @@ pub fn WorkflowScreen(
     let mut zoom = use_signal(|| 100u32);
     let mut pal = use_signal(|| true);
     let mut pal_n = use_signal(|| false);
-    let mut run_at = use_signal(|| None::<u64>);
+    let testing0 = state == "testing";
+    let mut run_at = use_signal(move || {
+        if testing0 {
+            Some(now.0.saturating_sub(1_900))
+        } else {
+            None
+        }
+    });
     let mut published = use_signal(|| false);
+    let dock_tab = use_signal(|| "payload");
+    let mut dock_fold = use_signal(|| false);
+    // Earlier test runs (outcome lines), newest first.
+    let mut past = use_signal(Vec::<String>::new);
     let mut said = use_signal(String::new);
     // (node id, pointer x0, y0, node x0, y0, moved)
     let mut grab = use_signal(|| None::<(u32, f64, f64, i32, i32, bool)>);
@@ -3123,14 +3162,16 @@ pub fn WorkflowScreen(
     };
     let pal_open = pal();
     let pal_nar = pal_n();
+    let out1 = outcome.clone();
+    let out2 = outcome.clone();
     let actions = rsx! {
         if published() { span { class: "oxscn-tag", "data-tone": "ok", "Published" } }
         button { r#type: "button", class: "oxscn-btn oxswf-pub", disabled: !all_ready || loading, title: if all_ready { "Publish this version" } else { "Every step needs its setting first" },
             onclick: move |_| { published.set(true); said.set("Published".to_string()); }, "Publish" }
     };
     rsx! {
-        AppFrame { layout, state: state.clone(), height, threads: thr, active, title: "Flows / Member welcome", actions, work, work_label: "Inspector",
-            div { class: "oxswf", "data-pal": "{pal_open}",
+        AppFrame { layout, state: st.key().to_string(), height, threads: thr, active, title: "Flows / Member welcome", actions, work, work_label: "Inspector",
+            div { class: "oxswf", "data-pal": "{pal_open}", "data-num": "{step_numbers}", "data-compact": "{compact}",
                 div { class: "oxswf-bar", role: "toolbar", "aria-label": "Canvas",
                     button { r#type: "button", class: "oxscn-ib oxswf-pt-w", "aria-label": if pal_open { "Hide the node palette" } else { "Show the node palette" }, "aria-pressed": "{pal_open}",
                         onclick: move |_| pal.toggle(), {ico("side")} }
@@ -3147,7 +3188,7 @@ pub fn WorkflowScreen(
                         button { r#type: "button", class: "oxscn-primary oxswf-run", onclick: move |_| { run_at.set(None); said.set("Test run stopped".to_string()); }, {ico("stop")} span { "Stop" } }
                     } else {
                         button { r#type: "button", class: "oxscn-primary oxswf-run", disabled: order.is_empty() || loading,
-                            onclick: move |_| { run_at.set(Some(now.0)); sel_edge.set(None); said.set("Test run started".to_string()); }, {ico("runs")} span { class: "oxswf-rl-w", if tick.is_some() { "Run again" } else { "Run workflow" } } span { class: "oxswf-rl-n", "Run" } }
+                            onclick: move |_| { if let Some(o) = out1.clone() { past.write().insert(0, o); } run_at.set(Some(now.0)); sel_edge.set(None); said.set("Test run started".to_string()); }, {ico("runs")} span { class: "oxswf-rl-w", if tick.is_some() { "Run again" } else { "Run workflow" } } span { class: "oxswf-rl-n", "Run" } }
                     }
                 }
                 if let Some(o) = outcome.clone() {
@@ -3168,7 +3209,7 @@ pub fn WorkflowScreen(
                                                 ondragstart: move |_| pal_drag.set(Some((kind, t, a))),
                                                 ondragend: move |_| pal_drag.set(None),
                                                 onclick: move |_| { pal_n.set(false); add(kind, t, a); },
-                                                span { class: "oxswf-chip", "data-kind": "{kind}" } span { class: "oxscn-row-t", "{t}" } }
+                                                span { class: "oxswf-chip", "data-kind": "{kind}" } span { class: "oxscn-row-t", "{t}" } if let Some(b) = wf_brand(t, kind) { BrandIcon { name: b.to_string(), size: 12.0, coloured: true } } }
                                         }
                                     }
                                 }
@@ -3314,6 +3355,7 @@ pub fn WorkflowScreen(
                                                         }
                                                     },
                                                     div { class: "oxswf-nt",
+                                                        if step_numbers { if let Some(i) = order.iter().position(|x| *x == id) { span { class: "oxswf-num", "aria-hidden": "true", "{i + 1}" } } }
                                                         span { class: "oxswf-chip", "data-kind": "{n.kind}" }
                                                         span { class: "oxswf-kl", "{kl}" }
                                                         span { class: "oxscn-grow" }
@@ -3323,7 +3365,7 @@ pub fn WorkflowScreen(
                                                             span { class: "oxswf-rs", "data-run": "unset", "Not configured" }
                                                         }
                                                     }
-                                                    p { class: "oxswf-title", "{n.title}" }
+                                                    p { class: "oxswf-title", if let Some(b) = wf_brand(&n.title, n.kind) { BrandIcon { name: b.to_string(), size: 13.0, coloured: true } } span { class: "oxswf-tt", "{n.title}" } }
                                                     p { class: "oxswf-sum", "data-unset": "{!ready}", "{summary}" }
                                                 }
                                             }
@@ -3336,6 +3378,64 @@ pub fn WorkflowScreen(
                                     {empty("Start with a trigger", "Pick New member, a schedule or a webhook from the palette; each step you add after it joins on.")}
                                     div { class: "oxswf-blank-a",
                                         button { r#type: "button", class: "oxscn-primary", onclick: move |_| add("trigger", "New member", "Which list"), {ico("plus")} span { "Add New member" } }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                if !loading {
+                    {
+                        let unset: Vec<String> = ns.iter().filter(|n| !n.ready()).map(|n| format!("{}: {} not set", n.title, n.ask.to_lowercase())).collect();
+                        let failed: Vec<String> = states.iter().filter(|(_, s)| *s == WfRun::Failed).filter_map(|(i, _)| ns.iter().find(|n| n.id == *i)).map(|n| format!("{}: failed in the test run", n.title)).collect();
+                        let errs: Vec<String> = failed.into_iter().chain(unset).collect();
+                        let ne = errs.len();
+                        let trig: Vec<(String, bool)> = ns.iter().filter(|n| n.kind == "trigger").map(|n| (n.title.clone(), n.ready())).collect();
+                        let tl: Vec<(String, WfRun)> = order.iter().filter_map(|i| ns.iter().find(|n| n.id == *i)).map(|n| (n.title.clone(), state_of(n.id))).collect();
+                        let mut runs: Vec<String> = past();
+                        if let Some(o) = outcome.clone() { runs.insert(0, if running { "Running now".to_string() } else { o }); }
+                        let df = dock_fold();
+                        rsx! {
+                            section { class: "oxswf-dock", "aria-label": "Run dock", "data-fold": "{df}",
+                                div { class: "oxswf-dh",
+                                    {super::screens2fid::tabs("Run dock", vec![("payload", "Payload".to_string()), ("triggers", "Triggers".to_string()), ("errors", if ne > 0 { format!("Errors {ne}") } else { "Errors".to_string() }), ("timeline", "Timeline".to_string()), ("runs", "Runs".to_string())], dock_tab)}
+                                    span { class: "oxscn-grow" }
+                                    if !running {
+                                        button { r#type: "button", class: "oxscn-btn oxswf-start", disabled: order.is_empty(),
+                                            onclick: move |_| { if let Some(o) = out2.clone() { past.write().insert(0, o); } run_at.set(Some(now.0)); said.set("Test run started with the sample payload".to_string()); },
+                                            {ico("runs")} span { class: "oxswf-start-l", "Start test run" } }
+                                    }
+                                    button { r#type: "button", class: "oxscn-ib", "aria-label": if df { "Unfold the run dock" } else { "Fold the run dock" }, "aria-expanded": "{!df}", onclick: move |_| dock_fold.toggle(), {super::efflistfid::chevron(df)} }
+                                }
+                                if !df {
+                                    div { class: "oxswf-db", role: "tabpanel",
+                                        {match dock_tab() {
+                                            "payload" => rsx! { pre { class: "oxswf-pre", "{{\n  \"member\": {{ \"name\": \"Rowan Pike\", \"plan\": \"Pro\", \"email\": \"rowan@example.com\" }},\n  \"source\": \"sign-up form\"\n}}" } },
+                                            "triggers" => rsx! {
+                                                ul { class: "oxswf-dl",
+                                                    if trig.is_empty() { li { class: "oxscn-hint", "No trigger yet: add one from the palette." } }
+                                                    for (t, ok) in trig { li { key: "{t}", span { class: "oxswf-chip", "data-kind": "trigger" } span { class: "oxscn-row-t", "{t}" } span { class: "oxscn-grow" } span { class: "oxswf-rs", "data-run": if ok { "done" } else { "unset" }, if ok { "Ready" } else { "Not configured" } } } }
+                                                }
+                                            },
+                                            "errors" => rsx! {
+                                                ul { class: "oxswf-dl",
+                                                    if errs.is_empty() { li { class: "oxscn-hint", "No errors: every step is set up." } }
+                                                    for e in errs { li { key: "{e}", span { class: "oxswf-err", "!" } span { class: "oxscn-row-t", "{e}" } } }
+                                                }
+                                            },
+                                            "timeline" => rsx! {
+                                                if tick.is_none() { p { class: "oxscn-hint", "Each step lights up here in order once a test run starts." } }
+                                                else {
+                                                    ol { class: "oxswf-tl",
+                                                        for (i, (t, r)) in tl.into_iter().enumerate() { li { key: "{i}", "data-run": "{r.key()}", span { class: "oxswf-tl-n", "{i + 1}" } span { class: "oxscn-row-t", "{t}" } span { class: "oxscn-grow" } span { class: "oxswf-rs", "data-run": "{r.key()}", if r.label().is_empty() { "–" } else { "{r.label()}" } } } }
+                                                    }
+                                                }
+                                            },
+                                            _ => rsx! {
+                                                if runs.is_empty() { p { class: "oxscn-hint", "No runs yet – press Start test run to try the workflow with the sample payload." } }
+                                                else { ul { class: "oxswf-dl", for (i, r) in runs.into_iter().enumerate() { li { key: "{i}", {ico("runs")} span { class: "oxscn-row-t", "{r}" } span { class: "oxscn-grow" } span { class: "oxv-q", if i == 0 { "just now" } else { "earlier" } } } } } }
+                                            },
+                                        }}
                                     }
                                 }
                             }
