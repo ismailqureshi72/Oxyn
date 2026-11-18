@@ -74,12 +74,16 @@ export const MOVED = [
 ];
 
 /** Whole app frames: these get screen pages (/screens/<slug>/) and a full-viewport view. */
-export const SCREENS = ['shell-inset', 'shell-flat', 'shell-three-pane', 'chat-start', 'chat-overview', 'chat-agents', 'chat-double-sidebar', 'chat-progress', 'chat-run', 'folders-overview', 'folders-detail', 'integrations', 'kanban', 'crm', 'analytics', 'workflow', 'settings', 'settings-profile', 'settings-preferences', 'settings-notifications', 'settings-privacy', 'settings-general', 'settings-members', 'settings-models', 'settings-security', 'settings-billing', 'settings-onboarding', 'onboarding-website', 'onboarding-brand', 'onboarding-tone', 'onboarding-ready', 'agent-orchestration', 'agent-thread', 'inbox', 'agent-inbox-board', 'agent-tasks', 'agent-activity', 'agent-memory', 'agent-agents', 'agent-skills', 'agent-schedules', 'agent-usage', 'agent-permissions', 'agent-run-detail', 'evals', 'app-shell', 'ai-chat-screens', 'activity-home', 'harness', 'thread-list', 'inbox-sidebar', 'ai-side-panel', 'doc-grid'];
+export const SCREENS = ['shell-inset', 'shell-flat', 'shell-three-pane', 'chat-start', 'chat-overview', 'chat-agents', 'chat-double-sidebar', 'chat-progress', 'chat-run', 'folders-overview', 'folders-detail', 'integrations', 'kanban', 'crm', 'analytics', 'workflow', 'settings', 'settings-profile', 'settings-preferences', 'settings-notifications', 'settings-privacy', 'settings-general', 'settings-members', 'settings-models', 'settings-security', 'settings-billing', 'settings-onboarding', 'onboarding-website', 'onboarding-brand', 'onboarding-tone', 'onboarding-ready', 'taskdeck-start', 'taskdeck-task', 'taskdeck-board', 'agent-orchestration', 'agent-thread', 'inbox', 'agent-inbox-board', 'agent-tasks', 'agent-activity', 'agent-memory', 'agent-agents', 'agent-skills', 'agent-schedules', 'agent-usage', 'agent-permissions', 'agent-run-detail', 'evals', 'app-shell', 'ai-chat-screens', 'activity-home', 'harness', 'thread-list', 'inbox-sidebar', 'ai-side-panel', 'doc-grid'];
 
 export const groupSlugOf = (d) => ITEM_GROUP[d.slug] ?? OLD_TO_GROUP[d.category] ?? 'navigation';
 /** True for a demo that belongs to a multi-variant family. */
 export const familyOf = (d) => FAMILIES.find((f) => f.slug === d.category) ?? null;
 export const isScreen = (d) => SCREENS.includes(d.slug);
+/** Agent apps: whole desktop agent apps (our own designs in the patterns those apps share). They are
+ * screens too (pages at /screens/<slug>/), listed in their own category after Screens. */
+export const AGENT_APPS = [{ slug: 'taskdeck', name: 'Taskdeck', blurb: 'A task-runner agent app: composer, running task with steps and artifacts, and a task board.', screens: ['taskdeck-start', 'taskdeck-task', 'taskdeck-board'] }];
+export const isAgentApp = (d) => AGENT_APPS.some((a) => a.screens.includes(d.slug));
 export const pageUrl = (d) => (isScreen(d) ? `/screens/${d.slug}/` : `/components/${groupSlugOf(d)}/${d.slug}/`);
 export const legacyUrl = (d) => `/components/${d.category}/${d.slug}/`;
 
