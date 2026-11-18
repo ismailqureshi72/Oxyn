@@ -1,10 +1,11 @@
 ---
-// The sticky top bar of the landing page, pricing and the docs. Three zones: the Oxyn mark on the
-// left, the site links centred in a floating pill group, actions on the right. On the white pages it
-// condenses into a floating glass bar once the page scrolls (site.js sets data-condensed).
+// The top bar of the landing page, pricing and the docs. Three zones: the Oxyn lockup on the left,
+// the site links centred, actions on the right. On the white pages it is not sticky in place: it
+// slides away on scroll down and back on scroll up (site.js sets data-hide / data-solid).
 import ThemeRadios from './ThemeRadios.astro';
 import GitHubStars from './GitHubStars.astro';
 import { icon } from './icons';
+import { lockup } from './logo';
 import { counts, groups, inGroup } from '../../lib/data';
 interface Props { current?: string; inStarlight?: boolean }
 const { current = '', inStarlight = false } = Astro.props;
@@ -18,7 +19,7 @@ const lib = [
 const on = (p: string) => (current.startsWith(p) ? 'page' : undefined);
 ---
 <div class:list={['tb-in', 'x-nav', { sl: inStarlight }]} data-ovl>
-  <a class="wm x-nav-brand" href="/" aria-label="Oxyn home"><span class="x-nav-mark" aria-hidden="true"></span><span>oxyn</span></a>
+  <a class="wm x-nav-brand" href="/" aria-label="Oxyn home"><Fragment set:html={lockup} /></a>
   <nav class="tb-links x-nav-pill" aria-label="Site">
     <div class="tb-dd">
       <button type="button" class="tb-ddbtn x-nav-a" aria-expanded="false" aria-haspopup="true" aria-controls="tb-lib" data-dd>Library <Fragment set:html={icon.down} /></button>

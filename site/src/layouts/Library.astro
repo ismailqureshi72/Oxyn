@@ -13,6 +13,7 @@ import GitHubStars from '../components/v2/GitHubStars.astro';
 import Footer from '../components/v2/Footer.astro';
 import SearchModal from '../components/SearchModal.astro';
 import { icon } from '../components/v2/icons';
+import { lockup } from '../components/v2/logo';
 import { endLine } from '../lib/data';
 
 interface Props {
@@ -39,7 +40,7 @@ const path = Astro.url.pathname;
           <div class="lbar" data-pagefind-ignore>
             <button class="iconbtn lbar-open" type="button" data-sidebar-toggle aria-label="Show sidebar" title="Show sidebar"><Fragment set:html={icon.panel} /></button>
             <button class="iconbtn lbar-drawer" type="button" data-drawer-open aria-controls="lsb" aria-expanded="false" aria-label="Open menu"><Fragment set:html={icon.menu} /></button>
-            <a class="wm lbar-wm" href="/">oxyn</a>
+            <a class="wm lbar-wm x-logo-link" href="/" aria-label="Oxyn home"><Fragment set:html={lockup} /></a>
             <span class="lbar-sp"></span>
             <button class="iconbtn lbar-search" type="button" data-open-search aria-label="Search"><Fragment set:html={icon.search} /></button>
             <ThemeRadios />

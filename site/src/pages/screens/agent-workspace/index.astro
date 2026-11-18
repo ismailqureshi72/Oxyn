@@ -14,7 +14,7 @@ const parts = ['thread-list', 'ai-chat', 'agent-trail', 'checkpoint-list'].map((
     <div class="pvwrap" id="preview">
       <div class="pvbar" data-pagefind-ignore>
         <div class="x-seg" role="tablist" aria-label="Preview"><button type="button" role="tab" aria-selected="true" data-pv="preview"><Fragment set:html={icon.eye} />Preview</button></div>
-        <div class="pvr"><a class="x-pill pill-black pill-sm" href="/screens/agent-workspace/full/"><Fragment set:html={icon.arrowUpRight} />Open full screen</a></div>
+        <div class="pvr"><a class="x-pill pill-black pill-sm" href="/screens/agent-workspace/full/" target="_self"><Fragment set:html={icon.expand} />Open full screen</a></div>
       </div>
       <div class="pv pv-screen aw-prev" data-view="preview"><AgentWorkspace /></div>
     </div>

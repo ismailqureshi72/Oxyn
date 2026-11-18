@@ -70,7 +70,7 @@ const kind = screen ? 'screen' : 'component';
           {demo.controls.length > 0 && (
             <button class="iconbtn" type="button" data-pv-controls aria-expanded="false" aria-label="Show controls" title="Controls"><Fragment set:html={icon.sliders} /></button>
           )}
-          {screen && <a class="iconbtn" href={`${url}full/`} aria-label="Open full screen" title="Open full screen"><Fragment set:html={icon.arrowUpRight} /></a>}
+          {screen && <a class="iconbtn" href={`${url}full/`} target="_self" aria-label="Open full screen" title="Open full screen (this tab)"><Fragment set:html={icon.expand} /></a>}
           <span class="pv-div" aria-hidden="true"></span>
           {ai.map(([l, id, h]) => <a class="aibtn x-aibtn-logo" href={h} target="_blank" rel="noopener" title={`Open in ${l}`} aria-label={`Open in ${l}`}><Fragment set:html={mark(id)} /></a>)}
           <a class="aibtn x-aibtn-mcp" href="/docs/installation/" title="MCP server (planned with the oxyn CLI)"><Fragment set:html={mark('mcp')} />MCP</a>
