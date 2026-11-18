@@ -414,11 +414,45 @@ document.addEventListener('oxyn-demo-live', (e) => {
     });
   });
 
-  // Before/after compare.
+  // Before/after compare: drag (the range input) or let it drift. When idle it eases back and forth
+  // on its own (a sine around the middle, picked up from wherever the user left it), only while it
+  // is on screen. Moving it only sets --pos, which the CSS turns into transforms.
+  const calm = () => d.hasAttribute('data-oxyn-reduced') || matchMedia('(prefers-reduced-motion: reduce)').matches;
   document.querySelectorAll('.x-cmp').forEach((c) => {
     const r = c.querySelector('.cmp-range');
-    const set = () => c.style.setProperty('--pos', `${r.value}%`);
-    r?.addEventListener('input', set);
+    if (!r) return;
+    const MID = 50, AMP = 30, PERIOD = 6400, IDLE = 2200;
+    let pos = MID, phase = 0, last = 0, raf = 0, seen = false, held = false, touched = -1e9;
+    const put = (v) => {
+      pos = v;
+      c.style.setProperty('--pos', `${v.toFixed(2)}%`);
+      const iv = String(Math.round(v));
+      if (r.value !== iv) r.value = iv;
+    };
+    const tick = (t) => {
+      raf = 0;
+      if (!seen || calm() || document.hidden) return;
+      if (!held && t - touched > IDLE) {
+        if (last) phase += (t - last) / PERIOD;
+        put(MID + AMP * Math.sin(phase * 2 * Math.PI));
+      }
+      last = t;
+      raf = requestAnimationFrame(tick);
+    };
+    const run = () => { if (!raf && seen && !calm()) { last = 0; raf = requestAnimationFrame(tick); } };
+    // Resume from the current spot: choose the phase whose sine gives the current position.
+    const resumeFrom = () => { phase = Math.asin(Math.max(-1, Math.min(1, (pos - MID) / AMP))) / (2 * Math.PI); };
+    const user = () => { touched = performance.now(); resumeFrom(); };
+    r.addEventListener('input', () => { put(Number(r.value)); user(); });
+    r.addEventListener('pointerdown', () => { held = true; user(); });
+    addEventListener('pointerup', () => { if (held) { held = false; user(); } });
+    r.addEventListener('focus', () => { held = true; });
+    r.addEventListener('blur', () => { held = false; user(); });
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver((es) => es.forEach((e) => { seen = e.isIntersecting; if (seen) run(); })).observe(c);
+    }
+    document.addEventListener('visibilitychange', run);
+    put(Number(r.value) || MID);
   });
 })();
 
@@ -438,7 +472,14 @@ document.addEventListener('oxyn-demo-live', (e) => {
         const p = document.getElementById(x.getAttribute('aria-controls'));
         if (p) p.hidden = !on;
       });
-      shots.forEach((s) => s.toggleAttribute('data-on', s.dataset.shot === t.dataset.shot));
+      shots.forEach((s) => {
+        const on = s.dataset.shot === t.dataset.shot;
+        s.toggleAttribute('data-on', on);
+        s.inert = !on;
+        // Lazy mount: a screen goes live the first time its tab is picked.
+        const demo = on && s.querySelector('oxyn-demo[data-defer]');
+        if (demo && demo.mountLive) demo.mountLive();
+      });
       if (focus) t.focus();
     };
     tabs.forEach((t, i) => {
@@ -477,14 +518,39 @@ document.addEventListener('oxyn-demo-live', (e) => {
     else listen(true);
     step();
   });
-  // Top bar on the white pages: condenses into a floating bar once the page scrolls.
+  // Top bar on the white pages (headroom): slides away on scroll down, back on scroll up, and stays
+  // away while the laptop section fills the view (its tab bar takes over). One passive listener,
+  // one rAF per frame at most; reads scrollY only and writes two attributes when they change.
   const tb = document.querySelector('.page-white .x-tb');
   if (tb) {
-    let q = 0;
-    const set = () => { q = 0; tb.toggleAttribute('data-condensed', scrollY > 24); };
+    let q = 0, lastY = scrollY, hidden = false, inLap = false;
+    const menuOpen = () => document.getElementById('mobilemenu')?.classList.contains('open') || tb.querySelector('.tb-dd.open') || tb.contains(document.activeElement);
+    const apply = (h) => { if (h !== hidden) { hidden = h; tb.toggleAttribute('data-hide', h); } };
+    const set = () => {
+      q = 0;
+      const y = Math.max(0, scrollY);
+      const dy = y - lastY;
+      let h = hidden;
+      if (y < 80) h = false;
+      else if (dy > 6) h = true;
+      else if (dy < -6) h = false;
+      if (Math.abs(dy) > 6 || y < 80) lastY = y;
+      if (inLap && y >= 80) h = true;
+      if (menuOpen()) h = false;
+      apply(h);
+      tb.toggleAttribute('data-solid', y > 8);
+    };
     addEventListener('scroll', () => { if (!q) q = requestAnimationFrame(set); }, { passive: true });
+    tb.addEventListener('focusin', () => apply(false));
+    const lap = document.querySelector('.x-lap');
+    if (lap && 'IntersectionObserver' in window) {
+      // "In the laptop section": the laptop block covers the middle band of the viewport.
+      new IntersectionObserver((es) => es.forEach((e) => { inLap = e.isIntersecting; if (!q) q = requestAnimationFrame(set); }), { rootMargin: '-45% 0px -45% 0px' }).observe(lap);
+    }
     set();
   }
+  // Brand intro (set in <head> on the first page of a visit): drop it once it has played.
+  if (d.hasAttribute('data-intro')) setTimeout(() => d.removeAttribute('data-intro'), 1300);
   // Close the phone menu when one of its links is followed or Escape is pressed.
   const mm = document.getElementById('mobilemenu');
   const closeMm = () => {
@@ -497,3 +563,13 @@ document.addEventListener('oxyn-demo-live', (e) => {
   mm?.addEventListener('click', (e) => { if (e.target.closest('a,[data-open-search]')) closeMm(); });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMm(); });
 })();
+
+// Full-screen view: "Back" returns to the page that opened it (same tab), else to the screen page.
+document.querySelector('.fs-back')?.addEventListener('click', (e) => {
+  try {
+    if (document.referrer && new URL(document.referrer).origin === location.origin && history.length > 1) {
+      e.preventDefault();
+      history.back();
+    }
+  } catch {}
+});

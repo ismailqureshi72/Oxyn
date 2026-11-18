@@ -32,9 +32,12 @@ class OxynDemo extends HTMLElement {
     if (this.dataset.state) return;
     this.dataset.state = 'static';
     if (!cfg.js) { this.dataset.state = 'static-only'; return; }
+    // data-defer: mounted on demand (mountLive), e.g. a laptop tab the first time it is picked.
+    if (this.dataset.defer === 'true') return;
     if (io) io.observe(this); else this.mountLive();
   }
   async mountLive() {
+    delete this.dataset.defer;
     if (this.dataset.state === 'live' || this.dataset.state === 'loading') return;
     this.dataset.state = 'loading';
     const root = this.querySelector('.oxd-root');

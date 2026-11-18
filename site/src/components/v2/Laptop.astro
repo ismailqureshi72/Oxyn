@@ -1,10 +1,15 @@
 ---
-// "Complete screens" on the landing: a laptop drawn in CSS that rises and opens as it scrolls in.
-// The lid shows the selected tab's real screen demo on its 1440 × 900 (16:10) stage, scaled to fit;
-// switching tabs crossfades the screen. Scroll-driven with CSS view timelines; site.js drives the
-// same --x-lap-p (0 closed → 1 open) where those are missing. Reduced motion: a static open laptop.
+// "Complete screens" on the landing: a modern laptop drawn in CSS (rounded lid with thin even
+// bezels and a notch, a thick aluminium base with a front lip) that rises and opens as it scrolls
+// in. The screen is the selected tab's live screen demo (the same Rust component as its
+// /screens/<slug>/ page) on its 1440 × 900 stage: clickable, scrollable, real. Only the active tab
+// is mounted; the others mount the first time they are picked (site.js).
+// The opening runs on a scroll timeline that animates transform and opacity only (compositor);
+// site.js drives the same --x-lap-p (0 closed → 1 open) where view timelines are missing.
+// Reduced motion: a static open laptop. The whole laptop and the tab bar fit in one viewport.
 import OxynDemo from '../OxynDemo.astro';
 import { icon } from './icons';
+import { markSvg } from './logo';
 import { demos, demoUrl, counts } from '../../lib/data';
 const tabs = (
   [
@@ -20,35 +25,40 @@ const tabs = (
   .filter((t) => t.d) as { d: (typeof demos)[number]; label: string; ic: keyof typeof icon }[];
 ---
 <div class="x-lap" data-lap>
-  <div class="x-lap-tabs" role="tablist" aria-label="Screens">
-    {tabs.map(({ d, label, ic }, i) => (
-      <button type="button" role="tab" class="x-lap-tab" id={`lt-${d.slug}`} aria-controls={`lp-${d.slug}`} aria-selected={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? 0 : -1} data-shot={d.slug}>
-        <span class="x-lap-ti"><Fragment set:html={icon[ic]} /></span><span class="x-lap-tl">{label}</span>
-      </button>
-    ))}
+  <div class="x-lap-bar">
+    <div class="x-lap-tabs" role="tablist" aria-label="Screens">
+      {tabs.map(({ d, label, ic }, i) => (
+        <button type="button" role="tab" class="x-lap-tab" id={`lt-${d.slug}`} aria-controls={`lp-${d.slug}`} aria-selected={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? 0 : -1} data-shot={d.slug}>
+          <span class="x-lap-ti"><Fragment set:html={icon[ic]} /></span><span class="x-lap-tl">{label}</span>
+        </button>
+      ))}
+    </div>
   </div>
   <div class="x-lap-scene">
     <div class="x-lap-dev">
       <div class="x-lap-lid">
         <div class="x-lap-face">
-          <span class="x-lap-cam" aria-hidden="true"></span>
-          <div class="x-lap-scr" aria-hidden="true" inert>
-            {tabs.map(({ d }, i) => (
-              <div class="x-lap-shot" data-shot={d.slug} data-on={i === 0 ? '' : undefined}><OxynDemo slug={d.slug} html={d.html} /></div>
-            ))}
-            <span class="x-lap-glare"></span>
+          <div class="x-lap-glass">
+            <span class="x-lap-notch" aria-hidden="true"><i></i></span>
+            <div class="x-lap-scr">
+              {tabs.map(({ d, label }, i) => (
+                <div class="x-lap-shot" data-shot={d.slug} data-on={i === 0 ? '' : undefined} inert={i !== 0} role="group" aria-label={`${label} screen, live`}><OxynDemo slug={d.slug} html={d.html} defer={i !== 0} /></div>
+              ))}
+            </div>
+            <span class="x-lap-glare" aria-hidden="true"></span>
           </div>
+          <span class="x-lap-shade" aria-hidden="true"></span>
         </div>
-        <div class="x-lap-back" aria-hidden="true"><span class="x-lap-logo">oxyn</span></div>
+        <div class="x-lap-back" aria-hidden="true"><span class="x-lap-logo"><Fragment set:html={markSvg} /></span></div>
       </div>
-      <div class="x-lap-base" aria-hidden="true"><span class="x-lap-lip"></span></div>
+      <div class="x-lap-base" aria-hidden="true"><span class="x-lap-hinge"></span><span class="x-lap-lip"></span></div>
       <div class="x-lap-shadow" aria-hidden="true"></div>
     </div>
   </div>
   {tabs.map(({ d, label }, i) => (
     <div class="x-lap-cap" role="tabpanel" id={`lp-${d.slug}`} aria-labelledby={`lt-${d.slug}`} hidden={i !== 0}>
       <p><a href={demoUrl(d)}>{d.name}</a><span class="x-lap-sum">{d.summary}</span></p>
-      <a class="x-pill pill-grey pill-sm" href={`${demoUrl(d)}full/`} aria-label={`Open ${label} full screen`}><Fragment set:html={icon.expand} />Full screen</a>
+      <a class="x-pill pill-grey pill-sm" href={`${demoUrl(d)}full/`} target="_self" aria-label={`Open ${label} full screen`}><Fragment set:html={icon.expand} />Full screen</a>
     </div>
   ))}
   <div class="lp-more"><a class="x-pill pill-pro" href="/screens/"><span aria-hidden="true">✦</span> All {counts.screens} screens, free</a></div>
