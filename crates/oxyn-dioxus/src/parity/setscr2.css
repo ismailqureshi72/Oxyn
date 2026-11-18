@@ -146,6 +146,14 @@
 .oxs7-pc .oxsst-ask{margin-top:auto}
 .oxs7-cardi{flex:none;display:grid;place-items:center;width:38px;height:28px;border-radius:6px;border:1px solid var(--oxth-line);background:var(--oxth-inset);color:var(--oxth-fg2)}
 .oxs7-cardi .oxscn-ico{width:16px;height:16px}
+.oxs7-cardi[data-net="true"]{background:#fff;border-color:var(--oxth-line2)}
+.oxs7-cnw{position:relative;display:block;min-width:0}
+.oxs7-cnw .oxsst-in{width:100%;padding-right:96px}
+.oxs7-nets{position:absolute;right:6px;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:3px;pointer-events:none}
+.oxs7-net{display:grid;place-items:center;width:28px;height:20px;border-radius:4px;background:#fff;border:1px solid var(--oxth-line);transition:opacity .16s ease,transform .16s ease}
+.oxs7-net[data-off="true"]{opacity:.28}
+.oxs7-net[data-on="true"]{border-color:var(--oxth-fg2);transform:scale(1.06)}
+@media (prefers-reduced-motion:reduce){.oxs7-net{transition:none}}
 .oxs7-cardf{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr) minmax(0,1fr);gap:8px 10px}
 .oxs7-span{grid-column:1 / -1}
 .oxs7-cardf .oxs6-q{display:inline-flex;align-items:center;gap:5px}

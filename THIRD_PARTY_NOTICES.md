@@ -57,7 +57,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 - Used for: Google, GitHub, GitLab, Linear, Figma, Vercel, Notion, Stripe, PostgreSQL, Supabase,
   Jira, Gmail, Google Drive, Google Calendar, Discord, Sentry, Cloudflare, Docker, Zoom, Shopify,
   Intercom, HubSpot, Resend, Redis, Airtable, Netlify, npm, Rust, Python, TypeScript, React,
-  Next.js, Zed (`zedindustries`), Warp, Git. On the website, in their brand colours: Windsurf, Zed,
+  Next.js, Zed (`zedindustries`), Warp, Git, and the card networks Visa, Mastercard and American
+  Express (`americanexpress`) on the billing settings, in their official colours (Mastercard's
+  three-colour circles redrawn from basic shapes in its official colours). On the website, in their brand colours: Windsurf, Zed,
   Cline. Brand colours come from its metadata.
 - Git: the Git logo by Jason Long is licensed under CC BY 3.0
   (https://creativecommons.org/licenses/by/3.0/); Simple Icons records this licence for `git`.
