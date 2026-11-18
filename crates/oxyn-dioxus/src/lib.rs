@@ -157,15 +157,16 @@ pub use parity::{
     AnswerCard, CitedAnswerCard, MessageActionBar, ThinkingPanel, ThinkingPill, WritingAssistant,
 };
 pub use parity::{
+    BillingSettingsScreen, GeneralSettingsScreen, MembersSettingsScreen, ModelsSettingsScreen,
+    NotificationsSettingsScreen, OnboardingSettingsScreen, PreferencesSettingsScreen,
+    PrivacySettingsScreen, ProfileSettingsScreen, SecuritySettingsScreen,
+};
+pub use parity::{
     ChipStep, DiffChip, ExpandableCard, JsonViewer, LinkUnfurl, RowOutput, ToolCall, ToolCallCard,
     ToolCallGroup, ToolCallList, ToolChips, ToolKindLegend,
 };
 pub use parity::{ConflictRadar, MergeConflict};
 pub use parity::{EvalsScreen, s5_states};
-pub use parity::{
-    GeneralSettingsScreen, NotificationsSettingsScreen, PreferencesSettingsScreen,
-    PrivacySettingsScreen, ProfileSettingsScreen,
-};
 pub use parity::{GhostText, LabeledInput, LabeledTextarea, TextArea};
 pub use parity::{InboxBoardScreen, InboxScreen, MemoryScreen, TasksScreen};
 pub use primitives::{

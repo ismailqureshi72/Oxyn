@@ -69,6 +69,7 @@ mod screens2fid;
 mod screensfid;
 mod seqfid;
 mod setscr;
+mod setscr2;
 mod stairsfid;
 mod storagefid;
 mod text;
@@ -161,8 +162,9 @@ pub use screensfid::{
 };
 pub use seqfid::AgentSequenceEl;
 pub use setscr::{
-    GeneralSettingsEl, NotificationsSettingsEl, PreferencesSettingsEl, PrivacySettingsEl,
-    ProfileSettingsEl,
+    BillingSettingsEl, GeneralSettingsEl, MembersSettingsEl, ModelsSettingsEl,
+    NotificationsSettingsEl, OnboardingSettingsEl, PreferencesSettingsEl, PrivacySettingsEl,
+    ProfileSettingsEl, SecuritySettingsEl,
 };
 pub use stairsfid::EffortStairsEl;
 pub use storagefid::{StorageCleanupEl, StorageForecastEl, StorageMeterEl, StorageWaffleEl};
