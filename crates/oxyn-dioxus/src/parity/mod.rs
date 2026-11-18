@@ -1,6 +1,7 @@
 //! Parity components (plan #28): the pieces that close the gaps against affectUI, Arc UI and
 //! Beautiful UI, plus the X-post references. Styles ship in [`crate::PRIMITIVES_CSS`].
 
+mod agentscr;
 mod agentsfid;
 mod answers;
 mod approvals;
@@ -65,6 +66,10 @@ mod tracefid;
 mod upload;
 mod workscr;
 
+pub use agentscr::{
+    ActivityScreen, AgentThreadScreen, InboxBoardScreen, InboxScreen, MemoryScreen, TasksScreen,
+    s3_states,
+};
 pub use agentsfid::{AgentFindings, AgentInbox};
 pub use answers::{
     AnswerCard, CitedAnswerCard, MessageActionBar, ThinkingPanel, ThinkingPill, WritingAssistant,
@@ -133,7 +138,7 @@ pub use run::{
 };
 pub use runningfid::RunningNow;
 pub use schedfid::ScheduledRuns;
-pub use screens2fid::{AgentThreadScreen, OrchestrationScreen};
+pub use screens2fid::OrchestrationScreen;
 pub use screensfid::{
     AppFrame, AppShellScreen, ChatAgentsScreen, ChatOverviewScreen, ChatProgressScreen,
     ChatRailScreen, ChatRunScreen, ChatStartScreen, MenuButton, RailFrame, RailShellScreen,
