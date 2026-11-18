@@ -571,14 +571,29 @@ document.addEventListener('oxyn-demo-live', (e) => {
     aim();
     if (!still()) { cur = target; paint(cur); }
   });
-  // Top bar on the white pages (headroom): slides away on scroll down, back on scroll up, and stays
-  // away while the laptop section fills the view (its tab bar takes over). One passive listener,
-  // one rAF per frame at most; reads scrollY only and writes two attributes when they change.
+  // Top bar on the white pages (headroom): slides away on scroll down, back on scroll up. It never
+  // shows over the laptop section's sticky screen-tab bar: while that bar is stuck at the top (or
+  // about to reach the top bar), the top bar stays away and the tab bar takes over. The band of
+  // scroll positions where that holds is measured on load / resize (page offsets), so each frame
+  // reads scrollY only and writes two attributes when they change.
   const tb = document.querySelector('.page-white .x-tb');
   if (tb) {
-    let q = 0, lastY = scrollY, hidden = false, inLap = false;
+    let q = 0, lastY = scrollY, hidden = false, band = null;
     const menuOpen = () => document.getElementById('mobilemenu')?.classList.contains('open') || tb.querySelector('.tb-dd.open') || tb.contains(document.activeElement);
     const apply = (h) => { if (h !== hidden) { hidden = h; tb.toggleAttribute('data-hide', h); } };
+    const lap = document.querySelector('.x-lap');
+    const bar = lap?.querySelector('.x-lap-bar');
+    const measureBand = () => {
+      band = null;
+      if (!bar || getComputedStyle(bar).position !== 'sticky') return;
+      const y = scrollY;
+      const lr = lap.getBoundingClientRect();
+      const navH = tb.offsetHeight;
+      // The bar is the section's first child, so its unstuck page offset is the section's.
+      // From when the bar's top comes within the top bar's height (+ room for the slide-out) until
+      // the section's end has scrolled the stuck bar out of the top of the viewport.
+      band = [lr.top + y - navH - 96, lr.bottom + y + 8];
+    };
     const set = () => {
       q = 0;
       const y = Math.max(0, scrollY);
@@ -588,18 +603,18 @@ document.addEventListener('oxyn-demo-live', (e) => {
       else if (dy > 6) h = true;
       else if (dy < -6) h = false;
       if (Math.abs(dy) > 6 || y < 80) lastY = y;
-      if (inLap && y >= 80) h = true;
+      if (band && y >= band[0] && y <= band[1] && y >= 80) h = true;
       if (menuOpen()) h = false;
       apply(h);
       tb.toggleAttribute('data-solid', y > 8);
     };
-    addEventListener('scroll', () => { if (!q) q = requestAnimationFrame(set); }, { passive: true });
+    const kick = () => { if (!q) q = requestAnimationFrame(set); };
+    addEventListener('scroll', kick, { passive: true });
+    const re = () => { measureBand(); kick(); };
+    addEventListener('resize', re, { passive: true });
+    if (lap && 'ResizeObserver' in window) new ResizeObserver(re).observe(document.body);
     tb.addEventListener('focusin', () => apply(false));
-    const lap = document.querySelector('.x-lap');
-    if (lap && 'IntersectionObserver' in window) {
-      // "In the laptop section": the laptop block covers the middle band of the viewport.
-      new IntersectionObserver((es) => es.forEach((e) => { inLap = e.isIntersecting; if (!q) q = requestAnimationFrame(set); }), { rootMargin: '-45% 0px -45% 0px' }).observe(lap);
-    }
+    measureBand();
     set();
   }
   // Brand intro (set in <head> on the first page of a visit): drop it once it has played.
