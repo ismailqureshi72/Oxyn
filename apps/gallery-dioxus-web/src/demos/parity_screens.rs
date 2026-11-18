@@ -27,6 +27,7 @@ use oxyn_dioxus::{
     TaskdeckBoardScreen, TaskdeckPluginsScreen, TaskdeckScheduledScreen, TaskdeckSitesScreen,
     TaskdeckStartScreen, TaskdeckTaskScreen, s9_states,
 };
+use oxyn_dioxus::{WorkspaceCoderScreen, s11_coder_states};
 
 use super::{Code, mk, sel, var};
 use crate::{Align, Demo, Vals};
@@ -4455,6 +4456,7 @@ fn td_sites_demo() -> Demo {
 fn ag_states(slug: &str) -> Vec<(&'static str, &'static str)> {
     match slug {
         "fleet-window" => s11_fleet_states(),
+        "workspace-coder" => s11_coder_states(),
         _ => s10_states(slug),
     }
 }
@@ -4474,6 +4476,9 @@ fn ag_el(slug: &'static str, lay: String, s: String, a: bool, b: bool) -> Elemen
         }
         "fleet-window" => {
             rsx! { FleetWindowScreen { layout: lay, state: s, rail: a, sidebar_hidden: b } }
+        }
+        "workspace-coder" => {
+            rsx! { WorkspaceCoderScreen { layout: lay, state: s, rail: a, sidebar_hidden: b } }
         }
         _ => rsx! { CommandCenterScreen { layout: lay, state: s, rail: a, sidebar_hidden: b } },
     }
@@ -4745,6 +4750,46 @@ fn fw_demo() -> Demo {
     )
 }
 
+fn wc_screen(v: &Vals, _now: ClockMs) -> Element {
+    ag_screen("workspace-coder", v)
+}
+fn wc_code(v: &Vals) -> String {
+    ag_code("WorkspaceCoderScreen", "workspace-coder", v)
+}
+
+fn wc_demo() -> Demo {
+    ag_demo(
+        "workspace-coder",
+        "Workspace Coder",
+        "Agent apps / Workspace Coder: a desktop agent app in the chat-plus-computer pattern. Chats by day in the sidebar; the agent's progress list and tool log while it works; a Workspace pane that is its own computer (Files with a file viewer, Terminal, Browser, Preview); a finished website to preview at desktop or phone width and publish to a link. Mode (Chat, Researcher, Workspace), Thinking and model in the composer.",
+        "WorkspaceCoderScreen",
+        "WorkspaceCoderEl",
+        (
+            "preview",
+            "Preview",
+            "The task finished: the Workspace pane shows the built page with Desktop / Phone and Publish.",
+        ),
+        wc_screen,
+        wc_code,
+        vec![
+            ("Enter", "Send (Shift + Enter for a new line)"),
+            ("← →", "Move between the Workspace tabs"),
+            ("Escape", "Close the mode, model or account menu"),
+        ],
+        vec![
+            "The sidebar is a nav landmark; the open chat carries aria-current=page.",
+            "Progress is a labelled group with a disclosure; the tool log is an ordered list.",
+            "The Workspace is a labelled complementary region with a tablist (roving tabindex, arrow keys).",
+            "Desktop / Phone are toggle buttons (aria-pressed); every action reports in a polite live region.",
+        ],
+        &[(
+            "files",
+            "Files",
+            "The Workspace pane on Files: the file list and a viewer with line numbers.",
+        )],
+    )
+}
+
 pub(crate) fn demos() -> Vec<Demo> {
     vec![
         shell_inset_demo(),
@@ -4801,5 +4846,6 @@ pub(crate) fn demos() -> Vec<Demo> {
         cc_demo(),
         ss_demo(),
         fw_demo(),
+        wc_demo(),
     ]
 }

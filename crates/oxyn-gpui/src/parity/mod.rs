@@ -82,6 +82,7 @@ mod toolmapfid;
 mod tools;
 mod tracefid;
 mod workscr;
+mod wscoder;
 
 pub use agentscr::{ActivityEl, AgentThreadEl, InboxBoardEl, InboxScreenEl, MemoryEl, TasksEl};
 pub use agentsfid::{AgentFindingsEl, AgentInboxEl};
@@ -190,6 +191,7 @@ pub use tools::{
 };
 pub use tracefid::TraceWaterfallEl;
 pub use workscr::{AnalyticsEl, CrmEl, FolderDetailEl, FoldersEl, IntegrationsEl, KanbanEl};
+pub use wscoder::WorkspaceCoderEl;
 
 /// Button callback: the action id and the window.
 pub type Act = Rc<dyn Fn(&'static str, &mut Window, &mut App)>;
