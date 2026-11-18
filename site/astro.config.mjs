@@ -48,7 +48,6 @@ export default defineConfig({
         PageTitle: './src/components/StarlightPageTitle.astro',
       },
       social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/ismailqureshi72/Oxyn' }],
-      editLink: { baseUrl: 'https://github.com/ismailqureshi72/Oxyn/edit/main/site/' },
       sidebar: [
         {
           label: 'Docs',
