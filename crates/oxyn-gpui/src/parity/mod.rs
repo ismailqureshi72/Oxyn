@@ -20,6 +20,7 @@ mod approvals;
 mod attachfid;
 mod autonomyfid;
 mod awayfid;
+mod buildscr;
 mod chatfid;
 mod chatscr;
 mod collabfid;
@@ -89,6 +90,7 @@ pub use approvals::{
 pub use attachfid::{AttachmentChipsEl, DropLanesEl, PolaroidStackEl, UploadDropzoneEl};
 pub use autonomyfid::AutonomyDialEl;
 pub use awayfid::AwaySummaryEl;
+pub use buildscr::EvalsEl;
 pub use chatfid::{AgentRunPanelEl, ModelPickerMenuEl};
 pub use chatscr::{
     ChatAgentsEl, ChatOverviewEl, ChatProgressEl, ChatRailEl, ChatRunEl, ChatStartEl,
