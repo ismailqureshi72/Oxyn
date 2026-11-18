@@ -74,7 +74,7 @@ export const MOVED = [
 ];
 
 /** Whole app frames: these get screen pages (/screens/<slug>/) and a full-viewport view. */
-export const SCREENS = ['shell-inset', 'shell-flat', 'shell-three-pane', 'chat-start', 'chat-overview', 'chat-agents', 'chat-double-sidebar', 'chat-progress', 'chat-run', 'folders-overview', 'folders-detail', 'integrations', 'kanban', 'crm', 'analytics', 'workflow', 'settings', 'agent-orchestration', 'agent-thread', 'inbox', 'agent-inbox-board', 'agent-tasks', 'agent-activity', 'agent-memory', 'app-shell', 'ai-chat-screens', 'activity-home', 'harness', 'thread-list', 'inbox-sidebar', 'ai-side-panel', 'doc-grid'];
+export const SCREENS = ['shell-inset', 'shell-flat', 'shell-three-pane', 'chat-start', 'chat-overview', 'chat-agents', 'chat-double-sidebar', 'chat-progress', 'chat-run', 'folders-overview', 'folders-detail', 'integrations', 'kanban', 'crm', 'analytics', 'workflow', 'settings', 'agent-orchestration', 'agent-thread', 'inbox', 'agent-inbox-board', 'agent-tasks', 'agent-activity', 'agent-memory', 'agent-agents', 'agent-skills', 'agent-schedules', 'agent-usage', 'agent-permissions', 'agent-run-detail', 'app-shell', 'ai-chat-screens', 'activity-home', 'harness', 'thread-list', 'inbox-sidebar', 'ai-side-panel', 'doc-grid'];
 
 export const groupSlugOf = (d) => ITEM_GROUP[d.slug] ?? OLD_TO_GROUP[d.category] ?? 'navigation';
 /** True for a demo that belongs to a multi-variant family. */
