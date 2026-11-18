@@ -68,6 +68,7 @@ mod schedfid;
 mod screens2fid;
 mod screensfid;
 mod seqfid;
+mod setscr;
 mod stairsfid;
 mod storagefid;
 mod text;
@@ -159,6 +160,10 @@ pub use screensfid::{
     AccountMenuEl, ScreenRailEl, ScreenShellEl, ScreenStageEl, SettingsEl, WorkflowEl,
 };
 pub use seqfid::AgentSequenceEl;
+pub use setscr::{
+    GeneralSettingsEl, NotificationsSettingsEl, PreferencesSettingsEl, PrivacySettingsEl,
+    ProfileSettingsEl,
+};
 pub use stairsfid::EffortStairsEl;
 pub use storagefid::{StorageCleanupEl, StorageForecastEl, StorageMeterEl, StorageWaffleEl};
 pub use text::{LoadingStateEl, ShimmerEl, SlotTextEl, ThinkingLoaderEl};

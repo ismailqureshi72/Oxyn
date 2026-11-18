@@ -421,7 +421,7 @@ document.addEventListener('oxyn-demo-live', (e) => {
   document.querySelectorAll('.x-cmp').forEach((c) => {
     const r = c.querySelector('.cmp-range');
     if (!r) return;
-    const MID = 50, AMP = 30, PERIOD = 6400, IDLE = 2200;
+    const MID = 50, AMP = 20, PERIOD = 7000, IDLE = 2200;
     let pos = MID, phase = 0, last = 0, raf = 0, seen = false, held = false, touched = -1e9;
     const put = (v) => {
       pos = v;
@@ -491,31 +491,50 @@ document.addEventListener('oxyn-demo-live', (e) => {
         if (e.key === 'End') { e.preventDefault(); pick(tabs[tabs.length - 1], true); }
       });
     });
-    // Scroll fallback where CSS view timelines are missing: the same --x-lap-p the CSS animates
-    // (entry 0% → cover 45% of the scene), only while the scene is near the viewport.
+    // The lid follows the scroll position across most of the section. On wide screens the scene is
+    // pinned under the tab bar (CSS sticky) while the pin's extra height scrolls by: the lid starts
+    // opening once the closed laptop is in view, keeps opening while it rises and while it is
+    // pinned, and is fully open with a little of the pinned stretch left. One custom property per
+    // animation frame (smoothstep-eased); the CSS turns it into transforms and opacity, so nothing
+    // is laid out per frame. Listens only while the section is near the viewport.
     const scene = box.querySelector('.x-lap-scene');
-    const native = window.CSS && CSS.supports && CSS.supports('animation-timeline: view()');
-    if (!scene || native) return;
+    const pin = box.querySelector('.x-lap-pin') || scene;
+    if (!scene) return;
     let raf = 0;
     let live = false;
+    let lastP = -1;
+    let a = 0;
+    let z = 0;
+    // Pin-top positions (viewport px) where opening starts (a) and ends (z), measured on load and resize.
+    const measure = () => {
+      const vh = innerHeight;
+      const sh = scene.offsetHeight;
+      const stick = Math.max(0, pin.offsetHeight - sh);
+      const top = getComputedStyle(scene).position === 'sticky' ? parseFloat(getComputedStyle(scene).top) || 0 : 16;
+      z = top - stick * 0.82;
+      a = Math.max(z + 240, vh - sh * 0.86);
+    };
     const step = () => {
       raf = 0;
-      if (reduced()) { scene.style.removeProperty('--x-lap-p'); return; }
-      const r = scene.getBoundingClientRect();
-      const vh = innerHeight;
-      const p = Math.min(1, Math.max(0, (vh - r.top) / (0.45 * (vh + r.height))));
-      scene.style.setProperty('--x-lap-p', p.toFixed(3));
+      if (reduced()) { scene.style.removeProperty('--x-lap-p'); lastP = -1; return; }
+      const pt = pin.getBoundingClientRect().top;
+      const t = Math.min(1, Math.max(0, (a - pt) / (a - z)));
+      const p = t * t * (3 - 2 * t);
+      if (Math.abs(p - lastP) < 0.0005) return;
+      lastP = p;
+      scene.style.setProperty('--x-lap-p', p.toFixed(4));
     };
     const queue = () => { if (!raf) raf = requestAnimationFrame(step); };
     const listen = (on) => {
       if (on === live) return;
       live = on;
       (on ? addEventListener : removeEventListener)('scroll', queue, { passive: true });
-      (on ? addEventListener : removeEventListener)('resize', queue);
       queue();
     };
-    if ('IntersectionObserver' in window) new IntersectionObserver((es) => es.forEach((e) => listen(e.isIntersecting)), { rootMargin: '120px 0px' }).observe(scene);
+    addEventListener('resize', () => { measure(); queue(); });
+    if ('IntersectionObserver' in window) new IntersectionObserver((es) => es.forEach((e) => listen(e.isIntersecting)), { rootMargin: '160px 0px' }).observe(pin);
     else listen(true);
+    measure();
     step();
   });
   // Top bar on the white pages (headroom): slides away on scroll down, back on scroll up, and stays
