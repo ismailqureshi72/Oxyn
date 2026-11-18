@@ -46,6 +46,7 @@ pub use navigation::{
 pub use parity::AccentDensityEl;
 pub use parity::AccountMenuEl;
 pub use parity::AgentThreadEl;
+pub use parity::AnalyticsEl;
 pub use parity::AppIconPickerEl;
 pub use parity::AttachmentChipsEl;
 pub use parity::BackgroundPickerEl;

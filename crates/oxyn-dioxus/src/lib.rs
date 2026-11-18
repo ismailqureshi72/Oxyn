@@ -45,6 +45,7 @@ pub use glyph_loader::{GLYPH_LOADER_CSS, GlyphLoader, GlyphLoaderProps};
 pub const HITL_CSS: &str = include_str!("hitl.css");
 pub use parity::AccentDensity;
 pub use parity::AgentThreadScreen;
+pub use parity::AnalyticsScreen;
 pub use parity::AppFrame;
 pub use parity::AppIconPicker;
 pub use parity::AppShellScreen;
@@ -112,6 +113,7 @@ pub use parity::TraceWaterfall;
 pub use parity::TypeScale;
 pub use parity::UploadDropzone;
 pub use parity::WorkflowScreen;
+pub use parity::s2_states;
 pub use parity::{
     ActionSwapButton, InViewTitle, LoadingState, SlotReels, Source, StreamingText, SweepText,
     TextMorph, ThinkingLoader, WordReveal,
