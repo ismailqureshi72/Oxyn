@@ -20,7 +20,7 @@ The workspace everyone here shares: its name, address and context.
 Chrome is monochrome neutral; colour only means something: official marks (Google, model providers), identity hues and status (needs-you amber, done green, failed red, running blue).
 
 ## 3. Behaviour
-Fields edit a working copy; a blocked field stops Save and says why. Delete is confirmed inline and never removes anything in the sample. The other S6 pages open in place from the sidebar; Members, Models, Security and Billing show a short summary until Settings II.
+Fields edit a working copy; a blocked field stops Save and says why. Delete is confirmed inline and never removes anything in the sample. Every other settings page (S6 and the Settings II pages) opens in place from the sidebar.
 prefers-reduced-motion: no slides, fills or transitions.
 
 ## 4. Variants
@@ -33,4 +33,4 @@ The sidebar is a labelled nav with aria-current on this page. Every field has a 
 Authored on the 1440 × 900 stage (rule R1) and scaled to its column; the full view (`/screens/settings-general/full`) renders at the real viewport with the state bar under it (R2). Under 640 px the settings sidebar slides in from a menu button. Under 560 px rows put their control under the label and tiles go one per row. Every label ellipsises in a flex child with min-width 0 (R5); scripts/ovl.py finds no text overlap at 1440, 768 and 390 in light and dark.
 
 ## 7. Known gaps
-GPUI is a static snapshot: `.extra(...)` draws the screen's own state or `compact`; typing, menus and timers belong to the host. Sample people, places and the workspace are fictional; model versions are fictional, marks are the providers' official ones. Members, Models, Security and Billing are summaries here; their full pages come with Settings II.
+GPUI is a static snapshot: `.extra(...)` draws the screen's own state or `compact`; typing, menus and timers belong to the host. Sample people, places and the workspace are fictional; model versions are fictional, marks are the providers' official ones.

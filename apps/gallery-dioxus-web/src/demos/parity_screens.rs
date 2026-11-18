@@ -1,5 +1,5 @@
 //! Screens demos (#42 Screens 1, Screens 2): app frames (Inset, Flat, three-pane) and the AI Chat screens (Start, Overview,
-//! Agents, Double sidebar, Progress, Run) Folders (Overview, Detail), Integrations, Kanban, CRM, the Workflow builder and the Settings shell, then the agent screens (Orchestration; S3: Thread, Inbox, Inbox Board, Tasks, Activity, Memory; S4: Agents, Skills, Schedules, Usage, Permissions, Run Detail; S5: Evals and the upgraded Orchestration and Workflow Builder; S6: Settings Profile, Preferences, Notifications, Privacy and General). Every screen has Sample / Loading / Empty data and an
+//! Agents, Double sidebar, Progress, Run) Folders (Overview, Detail), Integrations, Kanban, CRM, the Workflow builder and the Settings shell, then the agent screens (Orchestration; S3: Thread, Inbox, Inbox Board, Tasks, Activity, Memory; S4: Agents, Skills, Schedules, Usage, Permissions, Run Detail; S5: Evals and the upgraded Orchestration and Workflow Builder; S6: Settings Profile, Preferences, Notifications, Privacy and General; S7: Settings Members, Models, Security, Billing and Get started). Every screen has Sample / Loading / Empty data and an
 //! Inset / Flat frame; light and dark follow the page theme.
 
 use dioxus::prelude::*;
@@ -13,8 +13,9 @@ use oxyn_dioxus::{
     TasksScreen, UsageScreen, WorkflowScreen, s2_states, s3_states, s4_states, s5_states,
 };
 use oxyn_dioxus::{
-    GeneralSettingsScreen, NotificationsSettingsScreen, PreferencesSettingsScreen,
-    PrivacySettingsScreen, ProfileSettingsScreen, s6_states,
+    BillingSettingsScreen, GeneralSettingsScreen, MembersSettingsScreen, ModelsSettingsScreen,
+    NotificationsSettingsScreen, OnboardingSettingsScreen, PreferencesSettingsScreen,
+    PrivacySettingsScreen, ProfileSettingsScreen, SecuritySettingsScreen, s6_states,
 };
 
 use super::{Code, mk, sel, var};
@@ -3431,6 +3432,481 @@ fn set_general_demo() -> Demo {
     }
 }
 
+// ---------- Settings · Members ----------
+
+fn set_members_screen(v: &Vals, _now: ClockMs) -> Element {
+    let (_, lay, key) = frame(v);
+    let st = s6_key("settings-members", v.s("data"));
+    let key = format!("{key}-{}-{}", v.b("x1"), v.b("x2"));
+    let (a, b) = (v.b("x1"), v.b("x2"));
+    rsx! {
+        div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
+            ScreenStage { state: st, states: s6_states("settings-members"), screen: move |s: String| rsx! { MembersSettingsScreen { layout: lay.clone(), state: s, compact: a, autosave: b } } }
+        }
+    }
+}
+
+fn set_members_code(v: &Vals) -> String {
+    let c = Code::new("MembersSettingsScreen")
+        .s("layout", &low(v.s("frame")), "inset")
+        .s("state", &s6_key("settings-members", v.s("data")), "sample");
+    let c = c.b("compact", v.b("x1")).b("autosave", v.b("x2"));
+    c.done()
+}
+
+fn set_members_demo() -> Demo {
+    let mut c = controls_x("inset", &["Inviting"]);
+    c.push(super::tog("x1", "Compact rows", false));
+    c.push(super::tog("x2", "Save at once", false));
+    Demo {
+        controls: c,
+        variants: vec![
+            var("sample", "Sample data in the Inset frame.", &[]),
+            var(
+                "flat",
+                "The same screen in the Flat frame.",
+                &[("frame", "Flat")],
+            ),
+            var(
+                "loading",
+                "Skeletons where the settings will land.",
+                &[("data", "Loading")],
+            ),
+            var(
+                "empty",
+                "A new workspace: just you, nothing set up yet.",
+                &[("data", "Empty")],
+            ),
+            var(
+                "inviting",
+                "Invite members opened with two addresses typed: the seat count checks them as you type.",
+                &[("data", "Inviting")],
+            ),
+            var("x1", "Oxyn: compact rows without hints.", &[("x1", "true")]),
+            var(
+                "x2",
+                "Oxyn: every valid change is saved at once, no save bar.",
+                &[("x2", "true")],
+            ),
+        ],
+        render: set_members_screen,
+        code: set_members_code,
+        keyboard: vec![
+            (
+                "Tab",
+                "Tabs, search, role filter, Invite, then each row's role and menu",
+            ),
+            (
+                "Enter in the invite field",
+                "New line; Send invites sends them all",
+            ),
+            ("Escape", "Close a menu, the invite form or a confirmation"),
+        ],
+        a11y: vec![
+            "The member list is a table with column headers; each role menu is named by the person.",
+            "Invite says why it cannot be sent (bad address, already here, no seats) next to the field.",
+            "Every action reports what it did in a polite live region; skeletons are aria-hidden.",
+        ],
+        responsive: vec![
+            "Authored on the 1440 × 900 canvas; the full view lays it out at the real width.",
+            "Under 640 px the settings sidebar slides in from the menu button.",
+            "Under 560 px tables drop their extra columns, cards stack and rows put their control under the label.",
+        ],
+        height: 240,
+        live: false,
+        align: Align::Start,
+        ..mk(
+            "settings-members",
+            "Settings · Members",
+            CAT,
+            "Settings / Members: seats at a glance (members, a seat meter, admins), search and a role filter, Invite members (several addresses at once, a role, a seat check), a member table with a role menu (the last owner cannot be demoted), team, usage meter and a menu to resend or revoke an invite or remove someone (asks first), plus a Teams tab where people are added to a team.",
+            "MembersSettingsScreen",
+            "MembersSettingsEl",
+            "settings-members",
+            "parity/setscr2.rs",
+        )
+    }
+}
+
+// ---------- Settings · Models ----------
+
+fn set_models_screen(v: &Vals, _now: ClockMs) -> Element {
+    let (_, lay, key) = frame(v);
+    let st = s6_key("settings-models", v.s("data"));
+    let key = format!("{key}-{}-{}", v.b("x1"), v.b("x2"));
+    let (a, b) = (v.b("x1"), v.b("x2"));
+    rsx! {
+        div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
+            ScreenStage { state: st, states: s6_states("settings-models"), screen: move |s: String| rsx! { ModelsSettingsScreen { layout: lay.clone(), state: s, compact: a, autosave: b } } }
+        }
+    }
+}
+
+fn set_models_code(v: &Vals) -> String {
+    let c = Code::new("ModelsSettingsScreen")
+        .s("layout", &low(v.s("frame")), "inset")
+        .s("state", &s6_key("settings-models", v.s("data")), "sample");
+    let c = c.b("compact", v.b("x1")).b("autosave", v.b("x2"));
+    c.done()
+}
+
+fn set_models_demo() -> Demo {
+    let mut c = controls_x("inset", &["New key"]);
+    c.push(super::tog("x1", "Compact rows", false));
+    c.push(super::tog("x2", "Save at once", false));
+    Demo {
+        controls: c,
+        variants: vec![
+            var("sample", "Sample data in the Inset frame.", &[]),
+            var(
+                "flat",
+                "The same screen in the Flat frame.",
+                &[("frame", "Flat")],
+            ),
+            var(
+                "loading",
+                "Skeletons where the settings will land.",
+                &[("data", "Loading")],
+            ),
+            var(
+                "empty",
+                "A new workspace: just you, nothing set up yet.",
+                &[("data", "Empty")],
+            ),
+            var(
+                "new-key",
+                "A key was just rotated: the new secret shows once, with Copy and hide.",
+                &[("data", "New key")],
+            ),
+            var("x1", "Oxyn: compact rows without hints.", &[("x1", "true")]),
+            var(
+                "x2",
+                "Oxyn: every valid change is saved at once, no save bar.",
+                &[("x2", "true")],
+            ),
+        ],
+        render: set_models_screen,
+        code: set_models_code,
+        keyboard: vec![
+            (
+                "Tab",
+                "Defaults, tabs, search, then each provider's models and keys",
+            ),
+            ("Space on a switch", "Turn a model on or off"),
+            (
+                "Escape",
+                "Close a menu, the add-key form or the rotate confirmation",
+            ),
+        ],
+        a11y: vec![
+            "Each switch and access menu is named by its model; the provider header says how many are on.",
+            "A hidden key is announced as hidden; Reveal reports whether the key shows through aria-pressed.",
+            "Every action reports what it did in a polite live region; skeletons are aria-hidden.",
+        ],
+        responsive: vec![
+            "Authored on the 1440 × 900 canvas; the full view lays it out at the real width.",
+            "Under 640 px the settings sidebar slides in from the menu button.",
+            "Under 560 px tables drop their extra columns, cards stack and rows put their control under the label.",
+        ],
+        height: 240,
+        live: false,
+        align: Align::Start,
+        ..mk(
+            "settings-models",
+            "Settings · Models",
+            CAT,
+            "Settings / Models: the chat and image defaults (official marks; Auto when nothing is picked), All / Chat / Image tabs and a search, providers with their official coloured marks and how many models are on, each model with an access menu and a switch (turning off a default falls back), and API keys: add (provider, name, key checks), reveal or hide the masked key, copy, rotate (asks first, shows the new key once) and delete.",
+            "ModelsSettingsScreen",
+            "ModelsSettingsEl",
+            "settings-models",
+            "parity/setscr2.rs",
+        )
+    }
+}
+
+// ---------- Settings · Security ----------
+
+fn set_security_screen(v: &Vals, _now: ClockMs) -> Element {
+    let (_, lay, key) = frame(v);
+    let st = s6_key("settings-security", v.s("data"));
+    let key = format!("{key}-{}-{}", v.b("x1"), v.b("x2"));
+    let (a, b) = (v.b("x1"), v.b("x2"));
+    rsx! {
+        div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
+            ScreenStage { state: st, states: s6_states("settings-security"), screen: move |s: String| rsx! { SecuritySettingsScreen { layout: lay.clone(), state: s, compact: a, autosave: b } } }
+        }
+    }
+}
+
+fn set_security_code(v: &Vals) -> String {
+    let c = Code::new("SecuritySettingsScreen")
+        .s("layout", &low(v.s("frame")), "inset")
+        .s("state", &s6_key("settings-security", v.s("data")), "sample");
+    let c = c.b("compact", v.b("x1")).b("autosave", v.b("x2"));
+    c.done()
+}
+
+fn set_security_demo() -> Demo {
+    let mut c = controls_x("inset", &["Setting up"]);
+    c.push(super::tog("x1", "Compact rows", false));
+    c.push(super::tog("x2", "Save at once", false));
+    Demo {
+        controls: c,
+        variants: vec![
+            var("sample", "Sample data in the Inset frame.", &[]),
+            var(
+                "flat",
+                "The same screen in the Flat frame.",
+                &[("frame", "Flat")],
+            ),
+            var(
+                "loading",
+                "Skeletons where the settings will land.",
+                &[("data", "Loading")],
+            ),
+            var(
+                "empty",
+                "A new workspace: just you, nothing set up yet.",
+                &[("data", "Empty")],
+            ),
+            var(
+                "two-step-setup",
+                "Two-step setup opened: scan the QR code, enter the code, save the recovery codes.",
+                &[("data", "Setting up")],
+            ),
+            var("x1", "Oxyn: compact rows without hints.", &[("x1", "true")]),
+            var(
+                "x2",
+                "Oxyn: every valid change is saved at once, no save bar.",
+                &[("x2", "true")],
+            ),
+        ],
+        render: set_security_screen,
+        code: set_security_code,
+        keyboard: vec![
+            ("Tab", "Each section in reading order"),
+            (
+                "Enter in the code field",
+                "Verify once six digits are typed",
+            ),
+            ("Escape", "Close the setup, a form or a confirmation"),
+        ],
+        a11y: vec![
+            "The setup steps are a list that marks the current one; the QR code has a text alternative and the key is shown as text.",
+            "Audit filters are a radiogroup; each event names who, what and where.",
+            "Every action reports what it did in a polite live region; skeletons are aria-hidden.",
+        ],
+        responsive: vec![
+            "Authored on the 1440 × 900 canvas; the full view lays it out at the real width.",
+            "Under 640 px the settings sidebar slides in from the menu button.",
+            "Under 560 px tables drop their extra columns, cards stack and rows put their control under the label.",
+        ],
+        height: 240,
+        live: false,
+        align: Align::Start,
+        ..mk(
+            "settings-security",
+            "Settings · Security",
+            CAT,
+            "Settings / Security: your two-step sign-in set up in three steps (a QR code and its key, a six-digit code check, ten recovery codes to copy or download), recovery codes and passkeys; the workspace rules (two-step for everyone, single sign-on that needs a verified domain, session length, join by domain) with the identity-provider values to copy; email domains with their TXT record and Verify; signed-in devices with Sign out and Sign out everyone else; and an audit log with filters.",
+            "SecuritySettingsScreen",
+            "SecuritySettingsEl",
+            "settings-security",
+            "parity/setscr2.rs",
+        )
+    }
+}
+
+// ---------- Settings · Billing ----------
+
+fn set_billing_screen(v: &Vals, _now: ClockMs) -> Element {
+    let (_, lay, key) = frame(v);
+    let st = s6_key("settings-billing", v.s("data"));
+    let key = format!("{key}-{}-{}", v.b("x1"), v.b("x2"));
+    let (a, b) = (v.b("x1"), v.b("x2"));
+    rsx! {
+        div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
+            ScreenStage { state: st, states: s6_states("settings-billing"), screen: move |s: String| rsx! { BillingSettingsScreen { layout: lay.clone(), state: s, compact: a, autosave: b } } }
+        }
+    }
+}
+
+fn set_billing_code(v: &Vals) -> String {
+    let c = Code::new("BillingSettingsScreen")
+        .s("layout", &low(v.s("frame")), "inset")
+        .s("state", &s6_key("settings-billing", v.s("data")), "sample");
+    let c = c.b("compact", v.b("x1")).b("autosave", v.b("x2"));
+    c.done()
+}
+
+fn set_billing_demo() -> Demo {
+    let mut c = controls_x("inset", &["Cancelling"]);
+    c.push(super::tog("x1", "Compact rows", false));
+    c.push(super::tog("x2", "Save at once", false));
+    Demo {
+        controls: c,
+        variants: vec![
+            var("sample", "Sample data in the Inset frame.", &[]),
+            var(
+                "flat",
+                "The same screen in the Flat frame.",
+                &[("frame", "Flat")],
+            ),
+            var(
+                "loading",
+                "Skeletons where the settings will land.",
+                &[("data", "Loading")],
+            ),
+            var(
+                "empty",
+                "A new workspace: just you, nothing set up yet.",
+                &[("data", "Empty")],
+            ),
+            var(
+                "cancelling",
+                "The cancel flow opened at its first step: pick a reason, see what changes, then cancel at period end.",
+                &[("data", "Cancelling")],
+            ),
+            var("x1", "Oxyn: compact rows without hints.", &[("x1", "true")]),
+            var(
+                "x2",
+                "Oxyn: every valid change is saved at once, no save bar.",
+                &[("x2", "true")],
+            ),
+        ],
+        render: set_billing_screen,
+        code: set_billing_code,
+        keyboard: vec![
+            (
+                "Tab",
+                "Plan, meters, plans, then each setting, card and invoice",
+            ),
+            ("← / → in the interval", "Move between Monthly and Yearly"),
+            (
+                "Escape",
+                "Close the card form, a plan confirmation or the cancel flow",
+            ),
+        ],
+        a11y: vec![
+            "Meters are labelled with used and limit as text, not only colour; the invoices table has column headers.",
+            "The cancel flow is a group with numbered steps; its reasons are a radiogroup.",
+            "Every action reports what it did in a polite live region; skeletons are aria-hidden.",
+        ],
+        responsive: vec![
+            "Authored on the 1440 × 900 canvas; the full view lays it out at the real width.",
+            "Under 640 px the settings sidebar slides in from the menu button.",
+            "Under 560 px tables drop their extra columns, cards stack and rows put their control under the label.",
+        ],
+        height: 240,
+        live: false,
+        align: Align::Start,
+        ..mk(
+            "settings-billing",
+            "Settings · Billing",
+            CAT,
+            "Settings / Billing: the plan and the upcoming bill, four usage meters toned by how full they are, plan cards with Monthly / Yearly (−20 %) and Upgrade or Switch (asks first, shows the new bill), the extra-usage cap and invoice emails, the payment method with a card form that checks the number and expiry, an invoices table with Download, and Cancel plan: reason, what changes (with an offer), then cancelled at period end with Resume.",
+            "BillingSettingsScreen",
+            "BillingSettingsEl",
+            "settings-billing",
+            "parity/setscr2.rs",
+        )
+    }
+}
+
+// ---------- Settings · Get started ----------
+
+fn set_onboarding_screen(v: &Vals, _now: ClockMs) -> Element {
+    let (_, lay, key) = frame(v);
+    let st = s6_key("settings-onboarding", v.s("data"));
+    let key = format!("{key}-{}-{}", v.b("x1"), v.b("x2"));
+    let (a, b) = (v.b("x1"), v.b("x2"));
+    rsx! {
+        div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
+            ScreenStage { state: st, states: s6_states("settings-onboarding"), screen: move |s: String| rsx! { OnboardingSettingsScreen { layout: lay.clone(), state: s, compact: a, autosave: b } } }
+        }
+    }
+}
+
+fn set_onboarding_code(v: &Vals) -> String {
+    let c = Code::new("OnboardingSettingsScreen")
+        .s("layout", &low(v.s("frame")), "inset")
+        .s(
+            "state",
+            &s6_key("settings-onboarding", v.s("data")),
+            "sample",
+        );
+    let c = c.b("compact", v.b("x1")).b("autosave", v.b("x2"));
+    c.done()
+}
+
+fn set_onboarding_demo() -> Demo {
+    let mut c = controls_x("inset", &["Complete"]);
+    c.push(super::tog("x1", "Compact rows", false));
+    c.push(super::tog("x2", "Save at once", false));
+    Demo {
+        controls: c,
+        variants: vec![
+            var("sample", "Sample data in the Inset frame.", &[]),
+            var(
+                "flat",
+                "The same screen in the Flat frame.",
+                &[("frame", "Flat")],
+            ),
+            var(
+                "loading",
+                "Skeletons where the settings will land.",
+                &[("data", "Loading")],
+            ),
+            var(
+                "empty",
+                "A new workspace: just you, nothing set up yet.",
+                &[("data", "Empty")],
+            ),
+            var(
+                "complete",
+                "Every step done: the ring turns green and the checklist can be hidden.",
+                &[("data", "Complete")],
+            ),
+            var("x1", "Oxyn: compact rows without hints.", &[("x1", "true")]),
+            var(
+                "x2",
+                "Oxyn: every valid change is saved at once, no save bar.",
+                &[("x2", "true")],
+            ),
+        ],
+        render: set_onboarding_screen,
+        code: set_onboarding_code,
+        keyboard: vec![
+            ("Tab", "Continue, then each step's Open and Mark done"),
+            ("Enter on Open", "Go to the page for that step"),
+            ("Escape", "Close a menu"),
+        ],
+        a11y: vec![
+            "Progress is a progressbar with its value; the ring has a text alternative.",
+            "Each step's Mark done is a toggle button named by the step.",
+            "Every action reports what it did in a polite live region; skeletons are aria-hidden.",
+        ],
+        responsive: vec![
+            "Authored on the 1440 × 900 canvas; the full view lays it out at the real width.",
+            "Under 640 px the settings sidebar slides in from the menu button.",
+            "Under 560 px tables drop their extra columns, cards stack and rows put their control under the label.",
+        ],
+        height: 240,
+        live: false,
+        align: Align::Start,
+        ..mk(
+            "settings-onboarding",
+            "Settings · Get started",
+            CAT,
+            "Settings / Get started, the onboarding checklist: a progress ring and bar with the next step and Continue, six steps (your profile, the workspace, invite your team, models, two-step sign-in, a plan) that each open the page that does them, Mark done and Undo, and whether the checklist shows in the sidebar.",
+            "OnboardingSettingsScreen",
+            "OnboardingSettingsEl",
+            "settings-onboarding",
+            "parity/setscr2.rs",
+        )
+    }
+}
+
 pub(crate) fn demos() -> Vec<Demo> {
     vec![
         shell_inset_demo(),
@@ -3469,5 +3945,10 @@ pub(crate) fn demos() -> Vec<Demo> {
         set_notifications_demo(),
         set_privacy_demo(),
         set_general_demo(),
+        set_members_demo(),
+        set_models_demo(),
+        set_security_demo(),
+        set_billing_demo(),
+        set_onboarding_demo(),
     ]
 }

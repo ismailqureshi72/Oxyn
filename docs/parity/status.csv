@@ -137,15 +137,15 @@ affectUI,Onboarding / Brand,https://www.affectui.com/screens/onboarding-brand,Sc
 affectUI,Onboarding / Ready,https://www.affectui.com/screens/onboarding-ready,Screens · App screens,Pro,NEW,S6,#40,planned
 affectUI,Onboarding / Tone,https://www.affectui.com/screens/onboarding-tone,Screens · App screens,Pro,genui-forms,S6,#40,planned
 affectUI,Onboarding / Website,https://www.affectui.com/screens/onboarding-website,Screens · App screens,Pro,genui-forms,S6,#40,planned
-affectUI,Settings / Billing,https://www.affectui.com/screens/settings-subscription,Screens · App screens,Pro,run-meter,S5,#40,planned
+affectUI,Settings / Billing,https://www.affectui.com/screens/settings-subscription,Screens · App screens,Pro,settings-billing,S5,S7,built
 affectUI,Settings / General,https://www.affectui.com/screens/settings-general,Screens · App screens,Pro,settings-general,S4,S6,built
-affectUI,Settings / Models,https://www.affectui.com/screens/settings-models,Screens · App screens,Pro,composer-model-picker,S5,#40,planned
+affectUI,Settings / Models,https://www.affectui.com/screens/settings-models,Screens · App screens,Pro,settings-models,S5,S7,built
 affectUI,Settings / Notifications,https://www.affectui.com/screens/settings-notifications,Screens · App screens,Pro,settings-notifications,S4,S6,built
 affectUI,Settings / Preferences,https://www.affectui.com/screens/settings-preferences,Screens · App screens,Pro,settings-preferences,S4,S6,built
 affectUI,Settings / Privacy,https://www.affectui.com/screens/settings-privacy,Screens · App screens,Pro,settings-privacy,S4,S6,built
 affectUI,Settings / Profile,https://www.affectui.com/screens/settings-profile,Screens · App screens,Pro,settings-profile,S4,S6,built
-affectUI,Settings / Security,https://www.affectui.com/screens/settings-security,Screens · App screens,Pro,NEW,S5,#40,planned
-affectUI,Settings / Teams,https://www.affectui.com/screens/settings-members,Screens · App screens,Pro,NEW,S5,#40,planned
+affectUI,Settings / Security,https://www.affectui.com/screens/settings-security,Screens · App screens,Pro,settings-security,S5,S7,built
+affectUI,Settings / Teams,https://www.affectui.com/screens/settings-members,Screens · App screens,Pro,settings-members,S5,S7,built
 affectUI,Workflow Builder,https://www.affectui.com/screens/workflow-builder,Screens · App screens,Pro,workflow,S8,S5,built
 affectUI,Agent Gallery,https://www.affectui.com/blocks/agent-gallery,Blocks · Feature sections,Pro,NEW,K3,#43,planned
 affectUI,App Directory,https://www.affectui.com/blocks/app-directory,Blocks · Integrations,Pro,mcp-plugin-list,K2,#41,planned
@@ -707,5 +707,6 @@ Oxyn,Screens · Kanban,,Screens,Free,kanban,screens-1,#42,built
 Oxyn,Screens · CRM,,Screens,Free,crm,screens-1,#42,built
 Oxyn,Screens · Workflow builder,,Screens,Free,workflow,screens-1,#42,built
 Oxyn,Screens · Settings shell,,Screens,Free,settings,screens-1,#42,built
+Oxyn,Screens · Settings / Get started (onboarding checklist),,Screens,Free,settings-onboarding,S7,S7,built
 Oxyn,Screens · Agent · Orchestration,,Screens,Free,agent-orchestration,screens-2,#43,built
 Oxyn,Screens · Agent · Thread,,Screens,Free,agent-thread,screens-2,#43,built

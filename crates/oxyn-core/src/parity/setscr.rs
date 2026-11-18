@@ -49,6 +49,9 @@ pub const GENERAL_STATES: StateList = &[
 
 /// The states of a screen by its slug.
 pub fn states_for(slug: &str) -> StateList {
+    if let Some(s) = super::setscr2::states_for(slug) {
+        return s;
+    }
     match slug {
         "settings-profile" => PROFILE_STATES,
         "settings-preferences" => PREFS_STATES,
@@ -61,27 +64,32 @@ pub fn states_for(slug: &str) -> StateList {
 /// Split a state key into the data state and the screen's own state ("" for none).
 pub fn split(k: &str) -> (ScreenState, &'static str) {
     const OWN: [&str; 5] = ["unsaved", "memoff", "quiet", "exporting", "deleting"];
-    match OWN.iter().find(|o| **o == k) {
+    match OWN
+        .iter()
+        .chain(super::setscr2::OWN.iter())
+        .find(|o| **o == k)
+    {
         Some(o) => (ScreenState::Sample, o),
         None => (ScreenState::from_key(k), ""),
     }
 }
 
 /// A page of the settings nav: key, label, group (`personal` / `workspace`), glyph, and whether it
-/// is one of the S6 pages (the others draw their rows from the shell's model).
+/// is one of the full pages (all of them since S7).
 pub type NavPage = (&'static str, &'static str, &'static str, &'static str, bool);
 
 /// The nav, in order.
-pub const NAV: [NavPage; 9] = [
+pub const NAV: [NavPage; 10] = [
     ("profile", "Profile", "personal", "user", true),
     ("preferences", "Preferences", "personal", "gear", true),
     ("notifications", "Notifications", "personal", "bell", true),
     ("privacy", "Privacy", "personal", "shield", true),
     ("general", "General", "workspace", "building", true),
-    ("members", "Members", "workspace", "people", false),
-    ("models", "Models", "workspace", "spark", false),
-    ("security", "Security", "workspace", "lock", false),
-    ("billing", "Billing", "workspace", "card", false),
+    ("members", "Members", "workspace", "people", true),
+    ("models", "Models", "workspace", "spark", true),
+    ("security", "Security", "workspace", "lock", true),
+    ("billing", "Billing", "workspace", "card", true),
+    ("onboarding", "Get started", "workspace", "flash", true),
 ];
 
 /// The two nav groups: key, label.
@@ -105,14 +113,15 @@ pub fn lead(page: &str) -> &'static str {
         "notifications" => "What reaches you, where, and when it stays quiet.",
         "privacy" => "What is kept, what is shared, and where you are signed in.",
         "general" => "The workspace everyone here shares: its name, address and context.",
-        "members" => "Who is in the workspace and what they can do.",
-        "models" => "Which models the workspace can use.",
-        "security" => "How people sign in.",
-        _ => "Your plan and invoices.",
+        "members" => "Invite people, set what they can do and group them into teams.",
+        "models" => "Which models people here can use, the defaults, and your own keys.",
+        "security" => "How you and everyone here sign in, and what happened lately.",
+        "billing" => "Your plan, what you have used, how you pay and past invoices.",
+        _ => "A few steps to set the workspace up. Each opens the page that does it.",
     }
 }
 
-/// A search over the S6 pages: (page, label) of every setting whose label or words match `q`.
+/// A search over every settings page: (page, label) of every setting whose label or words match `q`.
 pub fn find(q: &str) -> Vec<(&'static str, &'static str)> {
     let q = q.trim().to_lowercase();
     if q.is_empty() {
@@ -120,6 +129,7 @@ pub fn find(q: &str) -> Vec<(&'static str, &'static str)> {
     }
     SEARCH
         .iter()
+        .chain(super::setscr2::SEARCH.iter())
         .filter(|(_, l, w)| l.to_lowercase().contains(&q) || w.contains(q.as_str()))
         .map(|(p, l, _)| (*p, *l))
         .collect()
@@ -358,6 +368,8 @@ pub struct Prefs {
     pub company: String,
     /// Default sharing index.
     pub sharing: usize,
+    /// The Settings II pages (members, models, security, billing, checklist).
+    pub ws: super::setscr2::Ws,
 }
 
 /// The sample memories.
@@ -520,6 +532,7 @@ pub fn prefs(sample: bool) -> Prefs {
             "Kestrel Studio designs and sells outdoor clothing online. Customers are commuters who cycle; launches run each season.",
         ),
         sharing: 1,
+        ws: super::setscr2::ws(sample),
     }
 }
 
@@ -571,7 +584,7 @@ pub fn changes(a: &Prefs, b: &Prefs) -> usize {
     c(a.ws_hue != b.ws_hue);
     c(a.company != b.company);
     c(a.sharing != b.sharing);
-    n
+    n + super::setscr2::changes(&a.ws, &b.ws)
 }
 
 /// "1 unsaved change" / "3 unsaved changes".
@@ -680,6 +693,7 @@ pub fn page_errors(p: &Prefs, page: &str) -> usize {
                 + n(slug_error(&p.ws_slug))
                 + usize::from(p.company.chars().count() > COMPANY_CAP)
         }
+        "security" => super::setscr2::ws_errors(&p.ws),
         _ => 0,
     }
 }
@@ -863,7 +877,10 @@ mod tests {
         assert_eq!(states_for("settings-privacy")[3].0, "exporting");
         assert_eq!(page_of("settings-general"), "general");
         assert_eq!(page_of("nope"), "profile");
-        assert_eq!(NAV.iter().filter(|p| p.4).count(), 5);
+        assert_eq!(NAV.iter().filter(|p| p.4).count(), 10);
+        assert_eq!(split("twostep"), (ScreenState::Sample, "twostep"));
+        assert_eq!(states_for("settings-members")[3].0, "inviting");
+        assert!(find("passkey").iter().any(|h| h.0 == "security"));
         assert!(find("dark").iter().any(|h| h.0 == "preferences"));
         assert!(find("  ").is_empty());
         // Changes.

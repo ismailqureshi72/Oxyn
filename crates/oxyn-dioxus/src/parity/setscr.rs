@@ -21,6 +21,7 @@ use oxyn_core::parity::setscr::{
 use oxyn_core::parity::setscr::ScreenState;
 
 use super::screensfid::{AppFrame, MenuButton, MenuItem, SidePeek, ico, nico, skel, use_threads};
+use super::setscr2::{BillingPage, MembersPage, ModelsPage, SecurityPage, StartPage};
 use crate::brand::BrandIcon;
 
 /// The state bar entries of each S6 screen (for a host's `ScreenStage { states }`).
@@ -28,7 +29,7 @@ pub fn s6_states(slug: &str) -> Vec<(&'static str, &'static str)> {
     states_for(slug).to_vec()
 }
 
-fn focus_on(e: MountedEvent) {
+pub(super) fn focus_on(e: MountedEvent) {
     let d = e.data();
     spawn(async move {
         let _ = d.set_focus(true).await;
@@ -36,7 +37,14 @@ fn focus_on(e: MountedEvent) {
 }
 
 /// A settings row: label (with its hint) on the left, the control on the right.
-fn row(id: &str, label: &str, hint: &str, ctl: Element, dirty: bool, hit: bool) -> Element {
+pub(super) fn row(
+    id: &str,
+    label: &str,
+    hint: &str,
+    ctl: Element,
+    dirty: bool,
+    hit: bool,
+) -> Element {
     rsx! {
         div { class: "oxsst-row oxs6-row", "data-dirty": "{dirty}", "data-hit": "{hit}",
             div { class: "oxsst-rl",
@@ -49,7 +57,7 @@ fn row(id: &str, label: &str, hint: &str, ctl: Element, dirty: bool, hit: bool) 
 }
 
 /// A section: heading, an optional right part, then a card of rows.
-fn sec(title: &str, right: Element, body: Element) -> Element {
+pub(super) fn sec(title: &str, right: Element, body: Element) -> Element {
     let danger = title == "Danger zone";
     rsx! {
         section { class: "oxsst-sec", "data-danger": "{danger}",
@@ -59,14 +67,19 @@ fn sec(title: &str, right: Element, body: Element) -> Element {
     }
 }
 
-fn switch(id: &str, label: &str, on: bool, mut set: impl FnMut(bool) + 'static) -> Element {
+pub(super) fn switch(
+    id: &str,
+    label: &str,
+    on: bool,
+    mut set: impl FnMut(bool) + 'static,
+) -> Element {
     rsx! {
         button { r#type: "button", class: "oxscn-switch", role: "switch", id: "{id}", "aria-checked": "{on}", "aria-label": "{label}",
             onclick: move |_| set(!on), span {} }
     }
 }
 
-fn choice(
+pub(super) fn choice(
     label: &str,
     opts: &'static [&'static str],
     i: usize,
@@ -82,7 +95,7 @@ fn choice(
 
 /// A text field with its check and counter.
 #[allow(clippy::too_many_arguments)]
-fn field(
+pub(super) fn field(
     id: &str,
     aria: &str,
     v: &str,
@@ -126,31 +139,30 @@ fn model_mark(i: usize) -> Element {
 
 /// Field errors the edits introduced (a new account's blank fields do not block other changes).
 fn new_errors(saved: &Prefs, cur: &Prefs) -> usize {
-    ["profile", "preferences", "general"]
+    ["profile", "preferences", "general", "security"]
         .iter()
         .map(|pg| page_errors(cur, pg).saturating_sub(page_errors(saved, pg)))
         .sum()
 }
 
 #[derive(Clone, Copy, PartialEq)]
-struct Ctx {
-    cur: Signal<Prefs>,
-    saved: Signal<Prefs>,
-    said: Signal<String>,
-    hits: Signal<Vec<&'static str>>,
+pub(super) struct Ctx {
+    pub(super) cur: Signal<Prefs>,
+    pub(super) saved: Signal<Prefs>,
+    pub(super) said: Signal<String>,
+    pub(super) hits: Signal<Vec<&'static str>>,
 }
 
 impl Ctx {
-    fn dirty<T: PartialEq>(&self, f: impl Fn(&Prefs) -> T) -> bool {
+    pub(super) fn dirty<T: PartialEq>(&self, f: impl Fn(&Prefs) -> T) -> bool {
         f(&self.cur.read()) != f(&self.saved.read())
     }
-    fn hit(&self, l: &str) -> bool {
+    pub(super) fn hit(&self, l: &str) -> bool {
         self.hits.read().contains(&l)
     }
 }
 
-/// The settings shell around one S6 page. Nav presses on the other S6 pages switch the page in place;
-/// the S7 pages (Members, Models, Security, Billing) are listed and open a short summary.
+/// The settings shell around one settings page (S6 and S7). Nav presses switch the page in place.
 #[component]
 fn SetShell(
     layout: String,
@@ -170,8 +182,17 @@ fn SetShell(
     let start = page_of(&slug);
     let mut saved = use_signal(move || {
         let mut p = prefs(sample);
-        if own == "memoff" {
-            p.memory = false;
+        match own {
+            "memoff" => p.memory = false,
+            "twostep" => p.ws.two_step_me = false,
+            "complete" => p.ws.steps = [true; 6],
+            "newkey" => {
+                if let Some(k) = p.ws.keys.first_mut() {
+                    k.secret = oxyn_core::parity::setscr2::rotated(&k.secret, 1);
+                    k.used = "Not used yet";
+                }
+            }
+            _ => {}
         }
         p
     });
@@ -205,6 +226,7 @@ fn SetShell(
         .map(|n| n.1)
         .unwrap_or("Profile");
     let s6 = NAV.iter().find(|n| n.0 == pg).is_some_and(|n| n.4);
+    let wide = matches!(pg, "members" | "billing");
     let n_changes = changes(&saved(), &cur());
     let errs = new_errors(&saved(), &cur());
     // Autosave: a valid change is kept as soon as it is made, and announced.
@@ -293,13 +315,17 @@ fn SetShell(
         "notifications" => rsx! { NotifPage { ctx, quiet_now: own == "quiet" } },
         "privacy" => rsx! { PrivacyPage { ctx, exporting: own == "exporting" } },
         "general" => rsx! { GeneralPage { ctx, deleting: own == "deleting" } },
+        "members" => rsx! { MembersPage { ctx, inviting: own == "inviting" } },
+        "models" => rsx! { ModelsPage { ctx, newkey: own == "newkey" } },
+        "security" => rsx! { SecurityPage { ctx, setup: own == "twostep" } },
+        "billing" => rsx! { BillingPage { ctx, cancelling: own == "cancelling" } },
         _ => {
-            rsx! { OtherPage { key: "{pg}", page: pg, on_open: move |p: &'static str| page.set(p) } }
+            rsx! { StartPage { ctx, on_open: move |p: &'static str| page.set(p) } }
         }
     };
     rsx! {
         AppFrame { layout, state: st.key().to_string(), height, threads: thr, active, title, side_el: side,
-            div { class: "oxsst oxs6", "data-compact": "{compact}",
+            div { class: "oxsst oxs6", "data-compact": "{compact}", "data-wide": "{wide}",
                 if loading {
                     div { class: "oxsst-col oxs6-col", {skel(3)} div { class: "oxsst-card", {skel(6)} } div { class: "oxsst-card", {skel(4)} } }
                 } else {
@@ -332,60 +358,6 @@ fn SetShell(
                 }
                 p { class: "oxscn-sr", role: "status", "aria-live": "polite", "{said}" }
             }
-        }
-    }
-}
-
-/// Members, Models, Security and Billing: listed in the nav; their full pages are the Settings II
-/// screens. Here a short card says what lives there.
-#[component]
-fn OtherPage(page: &'static str, on_open: EventHandler<&'static str>) -> Element {
-    let rows: &[(&str, &str, &str)] = match page {
-        "members" => &[
-            (
-                "people",
-                "12 members, 3 guests",
-                "Invite people and set their roles",
-            ),
-            ("mail", "2 invites waiting", "Resend or revoke"),
-        ],
-        "models" => &[
-            ("spark", "Auto plus 4 models on", "Turn models on per team"),
-            (
-                "lock",
-                "No API keys",
-                "Usage runs on the plan until you add one",
-            ),
-        ],
-        "security" => &[
-            (
-                "shield",
-                "Two-step sign-in for everyone",
-                "Required since September",
-            ),
-            (
-                "globe",
-                "1 email domain",
-                "kestrel.example joins as members",
-            ),
-        ],
-        _ => &[
-            ("card", "Pro plan, monthly", "Renews on 1 December"),
-            ("doc", "11 invoices", "Download any of them"),
-        ],
-    };
-    rsx! {
-        section { class: "oxsst-sec",
-            div { class: "oxsst-card",
-                for (i, (g, t, l)) in rows.iter().copied().enumerate() {
-                    div { key: "{i}", class: "oxsst-row oxs6-row",
-                        span { class: "oxs6-ic", {nico(g)} }
-                        div { class: "oxsst-rl", span { class: "oxsst-lb", "{t}" } p { class: "oxsst-hint", "{l}" } }
-                    }
-                }
-            }
-            p { class: "oxs6-note", "This page is part of Settings II. ",
-                button { r#type: "button", class: "oxscn-link", onclick: move |_| on_open.call("general"), "Open General" } }
         }
     }
 }
@@ -968,4 +940,41 @@ s6_screen!(
     /// name). State `deleting` opens the confirmation.
     GeneralSettingsScreen,
     "settings-general"
+);
+
+// ─────────────────────────────────────────────────── Settings II (S7) ──
+
+s6_screen!(
+    /// Settings / Members: seats at a glance, search and role filter, Invite members (several
+    /// addresses, a role, seat check), a member table with role change (keeps an owner), usage,
+    /// resend or revoke invites and remove (asks first), and a Teams tab. State `inviting`.
+    MembersSettingsScreen,
+    "settings-members"
+);
+s6_screen!(
+    /// Settings / Models: chat and image defaults, providers with official coloured marks, a switch
+    /// and an access menu per model, kind tabs and search, and API keys (add, reveal, copy, rotate,
+    /// delete). State `newkey` shows a just-rotated key once.
+    ModelsSettingsScreen,
+    "settings-models"
+);
+s6_screen!(
+    /// Settings / Security: your two-step sign-in (QR, code, recovery codes) and passkeys; the
+    /// workspace's sign-in rules and single sign-on, email domains with verification, signed-in
+    /// devices and the audit log. State `twostep` opens the setup.
+    SecuritySettingsScreen,
+    "settings-security"
+);
+s6_screen!(
+    /// Settings / Billing: plan and upcoming bill, usage meters, plans with Monthly / Yearly,
+    /// extra-usage cap, payment method (card checks), invoices, and the cancel flow (reason, what
+    /// changes, done; resume). State `cancelling` opens the flow.
+    BillingSettingsScreen,
+    "settings-billing"
+);
+s6_screen!(
+    /// Settings / Get started: the onboarding checklist with progress, each step opening the page
+    /// that does it, Mark done / Undo and Hide the checklist. State `complete`.
+    OnboardingSettingsScreen,
+    "settings-onboarding"
 );
