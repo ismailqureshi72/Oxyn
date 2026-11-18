@@ -116,6 +116,7 @@ pub use parity::UploadDropzone;
 pub use parity::WorkflowScreen;
 pub use parity::s2_states;
 pub use parity::s3_states;
+pub use parity::s4_states;
 pub use parity::{
     ActionSwapButton, InViewTitle, LoadingState, SlotReels, Source, StreamingText, SweepText,
     TextMorph, ThinkingLoader, WordReveal,
@@ -138,6 +139,9 @@ pub use parity::{
     AgentCrew, AgentCursors, AgentFindings, AgentGraph, AgentHandoff, AgentInbox, AgentLanes,
     AgentLedger, AgentMonitor, AgentQueue, AgentRecap, AgentSequence, AutonomyDial, AwaySummary,
     CollabStream, ContextMap, CostWaterfall, DecisionTree, DelegateBoard, FallbackChain,
+};
+pub use parity::{
+    AgentsScreen, PermissionsScreen, RunDetailScreen, SchedulesScreen, SkillsScreen, UsageScreen,
 };
 pub use parity::{
     AiComposer, AvatarUpload, ChatComposer, ContextField, ContextWindowGrid, CtxModel,

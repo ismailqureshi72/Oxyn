@@ -1,15 +1,16 @@
 //! Screens demos (#42 Screens 1, Screens 2): app frames (Inset, Flat, three-pane) and the AI Chat screens (Start, Overview,
-//! Agents, Double sidebar, Progress, Run) Folders (Overview, Detail), Integrations, Kanban, CRM, the Workflow builder and the Settings shell, then the agent screens (Orchestration; S3: Thread, Inbox, Inbox Board, Tasks, Activity, Memory). Every screen has Sample / Loading / Empty data and an
+//! Agents, Double sidebar, Progress, Run) Folders (Overview, Detail), Integrations, Kanban, CRM, the Workflow builder and the Settings shell, then the agent screens (Orchestration; S3: Thread, Inbox, Inbox Board, Tasks, Activity, Memory; S4: Agents, Skills, Schedules, Usage, Permissions, Run Detail). Every screen has Sample / Loading / Empty data and an
 //! Inset / Flat frame; light and dark follow the page theme.
 
 use dioxus::prelude::*;
 use oxyn_core::ClockMs;
 use oxyn_dioxus::{
-    ActivityScreen, AgentThreadScreen, AnalyticsScreen, AppShellScreen, ChatAgentsScreen,
-    ChatOverviewScreen, ChatProgressScreen, ChatRailScreen, ChatRunScreen, ChatStartScreen,
-    CrmScreen, FoldersScreen, InboxBoardScreen, InboxScreen, IntegrationsScreen, KanbanScreen,
-    MemoryScreen, OrchestrationScreen, RailShellScreen, ScreenStage, SettingsScreen, TasksScreen,
-    WorkflowScreen, s2_states, s3_states,
+    ActivityScreen, AgentThreadScreen, AgentsScreen, AnalyticsScreen, AppShellScreen,
+    ChatAgentsScreen, ChatOverviewScreen, ChatProgressScreen, ChatRailScreen, ChatRunScreen,
+    ChatStartScreen, CrmScreen, FoldersScreen, InboxBoardScreen, InboxScreen, IntegrationsScreen,
+    KanbanScreen, MemoryScreen, OrchestrationScreen, PermissionsScreen, RailShellScreen,
+    RunDetailScreen, SchedulesScreen, ScreenStage, SettingsScreen, SkillsScreen, TasksScreen,
+    UsageScreen, WorkflowScreen, s2_states, s3_states, s4_states,
 };
 
 use super::{Code, mk, sel, var};
@@ -2172,6 +2173,593 @@ fn memory_screen_demo() -> Demo {
     }
 }
 
+/// The state key for a data control label on an S4 screen.
+fn s4_key(slug: &str, label: &str) -> String {
+    s4_states(slug)
+        .iter()
+        .find(|(_, l)| l.eq_ignore_ascii_case(label))
+        .map(|(k, _)| k.to_string())
+        .unwrap_or_else(|| low(label))
+}
+
+// ---------- Agent · Agents ----------
+
+fn agents_screen(v: &Vals, _now: ClockMs) -> Element {
+    let (_, lay, key) = frame(v);
+    let st = s4_key("agent-agents", v.s("data"));
+    let key = format!("{key}-{}-{}", v.b("x1"), v.b("x2"));
+    let (a, b) = (v.b("x1"), v.b("x2"));
+    rsx! {
+        div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
+            ScreenStage { state: st, states: s4_states("agent-agents"), screen: move |s: String| rsx! { AgentsScreen { layout: lay.clone(), state: s, by_spend: a, budget_bars: b } } }
+        }
+    }
+}
+
+fn agents_screen_code(v: &Vals) -> String {
+    let c = Code::new("AgentsScreen")
+        .s("layout", &low(v.s("frame")), "inset")
+        .s("state", &s4_key("agent-agents", v.s("data")), "sample");
+    let c = c.b("by_spend", v.b("x1")).b("budget_bars", v.b("x2"));
+    c.done()
+}
+
+fn agents_screen_demo() -> Demo {
+    let mut c = controls_x("inset", &["New agent"]);
+    c.push(super::tog("x1", "Sort by spend", false));
+    c.push(super::tog("x2", "Spend bars", false));
+    Demo {
+        controls: c,
+        variants: vec![
+            var("sample", "Sample data in the Inset frame.", &[]),
+            var(
+                "flat",
+                "The same screen in the Flat frame.",
+                &[("frame", "Flat")],
+            ),
+            var(
+                "loading",
+                "Skeletons where the data will land.",
+                &[("data", "Loading")],
+            ),
+            var(
+                "empty",
+                "Nothing yet: the page says what will appear and how to start.",
+                &[("data", "Empty")],
+            ),
+            var(
+                "own",
+                "New agent open: the mark draws itself from the typed name.",
+                &[("data", "New agent")],
+            ),
+            var(
+                "x1",
+                "Oxyn: cards sorted by spend, most first.",
+                &[("x1", "true")],
+            ),
+            var(
+                "x2",
+                "Oxyn: a spend bar against a €50 cap on each card.",
+                &[("x2", "true")],
+            ),
+        ],
+        render: agents_screen,
+        code: agents_screen_code,
+        keyboard: vec![
+            ("Tab", "Sidebar, page, then each control in reading order"),
+            ("Enter on a card", "Open the agent in the work area"),
+            ("Enter in New agent", "Create it (Escape cancels)"),
+            ("Enter in Message", "Send it (Shift+Enter breaks a line)"),
+            ("Escape", "Close an open menu or popover; clear a search"),
+        ],
+        a11y: vec![
+            "The Fieldwork sidebar is a labelled nav with aria-current on this page.",
+            "Cards are buttons with aria-current; New agent is a dialog with the model as a radio group; Pause is a toggle button.",
+            "Skeletons are hidden from screen readers; every action reports what it did in a polite live region.",
+        ],
+        responsive: vec![
+            "Authored on the 1440 × 900 canvas; the full view lays it out at the real width.",
+            "Under 640 px the sidebar slides in from the menu button and the work area becomes a sheet.",
+            "Under 560 px the grid is one column; under 640 px the view toggle hides.",
+        ],
+        height: 240,
+        live: false,
+        align: Align::Start,
+        ..mk(
+            "agent-agents",
+            "Agent · Agents",
+            CAT,
+            "The agent team as a grid of cards: a pixel mark, role, status tag, official app marks, model, runs and spend, with All / Working / Idle / Paused tabs and a grid or list view. Typing a name in New agent builds its mark live; the work area (348) shows status, model, runs over two weeks, instructions, skills, apps, recent tasks and Message.",
+            "AgentsScreen",
+            "AgentsEl",
+            "agent-agents",
+            "parity/opsscr.rs",
+        )
+    }
+}
+
+// ---------- Agent · Skills ----------
+
+fn skills_screen(v: &Vals, _now: ClockMs) -> Element {
+    let (_, lay, key) = frame(v);
+    let st = s4_key("agent-skills", v.s("data"));
+    let key = format!("{key}-{}-{}", v.b("x1"), v.b("x2"));
+    let (a, b) = (v.b("x1"), v.b("x2"));
+    rsx! {
+        div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
+            ScreenStage { state: st, states: s4_states("agent-skills"), screen: move |s: String| rsx! { SkillsScreen { layout: lay.clone(), state: s, compact: a, by_use: b } } }
+        }
+    }
+}
+
+fn skills_screen_code(v: &Vals) -> String {
+    let c = Code::new("SkillsScreen")
+        .s("layout", &low(v.s("frame")), "inset")
+        .s("state", &s4_key("agent-skills", v.s("data")), "sample");
+    let c = c.b("compact", v.b("x1")).b("by_use", v.b("x2"));
+    c.done()
+}
+
+fn skills_screen_demo() -> Demo {
+    let mut c = controls_x("inset", &["Installing"]);
+    c.push(super::tog("x1", "Compact cards", false));
+    c.push(super::tog("x2", "Sort by use", false));
+    Demo {
+        controls: c,
+        variants: vec![
+            var("sample", "Sample data in the Inset frame.", &[]),
+            var(
+                "flat",
+                "The same screen in the Flat frame.",
+                &[("frame", "Flat")],
+            ),
+            var(
+                "loading",
+                "Skeletons where the data will land.",
+                &[("data", "Loading")],
+            ),
+            var(
+                "empty",
+                "Nothing yet: the page says what will appear and how to start.",
+                &[("data", "Empty")],
+            ),
+            var(
+                "own",
+                "Install pressed on a Discover card: the ring is filling.",
+                &[("data", "Installing")],
+            ),
+            var(
+                "x1",
+                "Oxyn: cards without the description line.",
+                &[("x1", "true")],
+            ),
+            var(
+                "x2",
+                "Oxyn: Discover sorted by how many use each skill.",
+                &[("x2", "true")],
+            ),
+        ],
+        render: skills_screen,
+        code: skills_screen_code,
+        keyboard: vec![
+            ("Tab", "Sidebar, page, then each control in reading order"),
+            ("Space on a switch", "Turn the skill on or off"),
+            (
+                "Enter on +",
+                "Install it; the ring fills, then it moves to Installed",
+            ),
+            ("Enter in New skill", "Create it (Escape cancels)"),
+            ("Escape", "Close an open menu or popover; clear a search"),
+        ],
+        a11y: vec![
+            "The Fieldwork sidebar is a labelled nav with aria-current on this page.",
+            "Switches are role=switch with the skill's name; Install reports aria-busy while the ring fills.",
+            "Skeletons are hidden from screen readers; every action reports what it did in a polite live region.",
+        ],
+        responsive: vec![
+            "Authored on the 1440 × 900 canvas; the full view lays it out at the real width.",
+            "Under 640 px the sidebar slides in from the menu button and the work area becomes a sheet.",
+            "Under 640 px search hides; under 560 px cards are one column.",
+        ],
+        height: 240,
+        live: false,
+        align: Align::Start,
+        ..mk(
+            "agent-skills",
+            "Agent · Skills",
+            CAT,
+            "Skills agents can use: installed skills as cards with a glyph in the skill's hue, a switch and who made it, category tabs and a search, then Discover cards whose Install fills a ring. The work area shows the skill's runs over two weeks, when it steps in, its steps, what it needs and what ran lately.",
+            "SkillsScreen",
+            "SkillsEl",
+            "agent-skills",
+            "parity/opsscr.rs",
+        )
+    }
+}
+
+// ---------- Agent · Schedules ----------
+
+fn schedules_screen(v: &Vals, _now: ClockMs) -> Element {
+    let (_, lay, key) = frame(v);
+    let st = s4_key("agent-schedules", v.s("data"));
+    let key = format!("{key}-{}-{}", v.b("x1"), v.b("x2"));
+    let (a, b) = (v.b("x1"), v.b("x2"));
+    rsx! {
+        div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
+            ScreenStage { state: st, states: s4_states("agent-schedules"), screen: move |s: String| rsx! { SchedulesScreen { layout: lay.clone(), state: s, hide_paused: a, month: b } } }
+        }
+    }
+}
+
+fn schedules_screen_code(v: &Vals) -> String {
+    let c = Code::new("SchedulesScreen")
+        .s("layout", &low(v.s("frame")), "inset")
+        .s("state", &s4_key("agent-schedules", v.s("data")), "sample");
+    let c = c.b("hide_paused", v.b("x1")).b("month", v.b("x2"));
+    c.done()
+}
+
+fn schedules_screen_demo() -> Demo {
+    let mut c = controls_x("inset", &["Running now"]);
+    c.push(super::tog("x1", "Hide paused", false));
+    c.push(super::tog("x2", "Month cost", false));
+    Demo {
+        controls: c,
+        variants: vec![
+            var("sample", "Sample data in the Inset frame.", &[]),
+            var(
+                "flat",
+                "The same screen in the Flat frame.",
+                &[("frame", "Flat")],
+            ),
+            var(
+                "loading",
+                "Skeletons where the data will land.",
+                &[("data", "Loading")],
+            ),
+            var(
+                "empty",
+                "Nothing yet: the page says what will appear and how to start.",
+                &[("data", "Empty")],
+            ),
+            var(
+                "own",
+                "Run now pressed: the first mark fills and the row says Running.",
+                &[("data", "Running now")],
+            ),
+            var("x1", "Oxyn: paused schedules hidden.", &[("x1", "true")]),
+            var(
+                "x2",
+                "Oxyn: a footer with what the schedules cost in a month.",
+                &[("x2", "true")],
+            ),
+        ],
+        render: schedules_screen,
+        code: schedules_screen_code,
+        keyboard: vec![
+            ("Tab", "Sidebar, page, then each control in reading order"),
+            ("Enter on a mark or row", "Open the schedule"),
+            ("Space on a switch", "Pause or resume it"),
+            ("Enter on Skip", "Skip that run (Undo brings it back)"),
+            ("Escape", "Close an open menu or popover; clear a search"),
+        ],
+        a11y: vec![
+            "The Fieldwork sidebar is a labelled nav with aria-current on this page.",
+            "Strip marks are buttons named by schedule and time; switches are role=switch; Run now announces itself.",
+            "Skeletons are hidden from screen readers; every action reports what it did in a polite live region.",
+        ],
+        responsive: vec![
+            "Authored on the 1440 × 900 canvas; the full view lays it out at the real width.",
+            "Under 640 px the sidebar slides in from the menu button and the work area becomes a sheet.",
+            "Under 760 px the rhythm column hides; under 560 px cost and the relative time hide.",
+        ],
+        height: 240,
+        live: false,
+        align: Align::Start,
+        ..mk(
+            "agent-schedules",
+            "Agent · Schedules",
+            CAT,
+            "What agents do on a rhythm: the hours around now as a strip (activity before now, a mark per run after it that fills while it runs), then schedule rows with the rhythm in words, next run, last result, cost and a switch. The work area has Run now, Pause, what it does, next runs with Skip and the last runs.",
+            "SchedulesScreen",
+            "SchedulesEl",
+            "agent-schedules",
+            "parity/opsscr.rs",
+        )
+    }
+}
+
+// ---------- Agent · Usage ----------
+
+fn usage_screen(v: &Vals, _now: ClockMs) -> Element {
+    let (_, lay, key) = frame(v);
+    let st = s4_key("agent-usage", v.s("data"));
+    let key = format!("{key}-{}-{}", v.b("x1"), v.b("x2"));
+    let (a, b) = (v.b("x1"), v.b("x2"));
+    rsx! {
+        div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
+            ScreenStage { state: st, states: s4_states("agent-usage"), screen: move |s: String| rsx! { UsageScreen { layout: lay.clone(), state: s, daily: a, alert: b } } }
+        }
+    }
+}
+
+fn usage_screen_code(v: &Vals) -> String {
+    let c = Code::new("UsageScreen")
+        .s("layout", &low(v.s("frame")), "inset")
+        .s("state", &s4_key("agent-usage", v.s("data")), "sample");
+    let c = c.b("daily", v.b("x1")).b("alert", v.b("x2"));
+    c.done()
+}
+
+fn usage_screen_demo() -> Demo {
+    let mut c = controls_x("inset", &["Over budget"]);
+    c.push(super::tog("x1", "Daily bars", false));
+    c.push(super::tog("x2", "Alert line", false));
+    Demo {
+        controls: c,
+        variants: vec![
+            var("sample", "Sample data in the Inset frame.", &[]),
+            var(
+                "flat",
+                "The same screen in the Flat frame.",
+                &[("frame", "Flat")],
+            ),
+            var(
+                "loading",
+                "Skeletons where the data will land.",
+                &[("data", "Loading")],
+            ),
+            var(
+                "empty",
+                "Nothing yet: the page says what will appear and how to start.",
+                &[("data", "Empty")],
+            ),
+            var(
+                "own",
+                "The pace runs past the budget: the forecast says when it runs out.",
+                &[("data", "Over budget")],
+            ),
+            var(
+                "x1",
+                "Oxyn: day-by-day bars in place of the running total.",
+                &[("x1", "true")],
+            ),
+            var(
+                "x2",
+                "Oxyn: an alert line at 80 % of the budget.",
+                &[("x2", "true")],
+            ),
+        ],
+        render: usage_screen,
+        code: usage_screen_code,
+        keyboard: vec![
+            ("Tab", "Sidebar, page, then each control in reading order"),
+            ("Enter on a project row", "Open it in the work area"),
+            ("Enter on Projects / Models", "Switch the breakdown"),
+            ("Enter on Open", "Open the item worth a look"),
+            ("Escape", "Close an open menu or popover; clear a search"),
+        ],
+        a11y: vec![
+            "The Fieldwork sidebar is a labelled nav with aria-current on this page.",
+            "The chart is role=img; its label carries spend, budget and forecast. Projects / Models are pressed buttons.",
+            "Skeletons are hidden from screen readers; every action reports what it did in a polite live region.",
+        ],
+        responsive: vec![
+            "Authored on the 1440 × 900 canvas; the full view lays it out at the real width.",
+            "Under 640 px the sidebar slides in from the menu button and the work area becomes a sheet.",
+            "Under 560 px the totals go two by two and the share bars hide.",
+        ],
+        height: 240,
+        live: false,
+        align: Align::Start,
+        ..mk(
+            "agent-usage",
+            "Agent · Usage",
+            CAT,
+            "What agents cost this month: the running total against a budget line with a plain-language forecast, tasks, runs, cost per task and tokens, where it went by project or model (official marks) and what is worth a look. The work area shows the project day by day and what cost the most.",
+            "UsageScreen",
+            "UsageEl",
+            "agent-usage",
+            "parity/opsscr.rs",
+        )
+    }
+}
+
+// ---------- Agent · Permissions ----------
+
+fn permissions_screen(v: &Vals, _now: ClockMs) -> Element {
+    let (_, lay, key) = frame(v);
+    let st = s4_key("agent-permissions", v.s("data"));
+    let key = format!("{key}-{}-{}", v.b("x1"), v.b("x2"));
+    let (a, b) = (v.b("x1"), v.b("x2"));
+    rsx! {
+        div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
+            ScreenStage { state: st, states: s4_states("agent-permissions"), screen: move |s: String| rsx! { PermissionsScreen { layout: lay.clone(), state: s, compact: a, lock_red: b } } }
+        }
+    }
+}
+
+fn permissions_screen_code(v: &Vals) -> String {
+    let c = Code::new("PermissionsScreen")
+        .s("layout", &low(v.s("frame")), "inset")
+        .s("state", &s4_key("agent-permissions", v.s("data")), "sample");
+    let c = c.b("compact", v.b("x1")).b("lock_red", v.b("x2"));
+    c.done()
+}
+
+fn permissions_screen_demo() -> Demo {
+    let mut c = controls_x("inset", &["Hands-off"]);
+    c.push(super::tog("x1", "Compact rows", false));
+    c.push(super::tog("x2", "Lock red lines", false));
+    Demo {
+        controls: c,
+        variants: vec![
+            var("sample", "Sample data in the Inset frame.", &[]),
+            var(
+                "flat",
+                "The same screen in the Flat frame.",
+                &[("frame", "Flat")],
+            ),
+            var(
+                "loading",
+                "Skeletons where the data will land.",
+                &[("data", "Loading")],
+            ),
+            var(
+                "empty",
+                "Nothing yet: the page says what will appear and how to start.",
+                &[("data", "Empty")],
+            ),
+            var(
+                "own",
+                "Hands-off picked: everything on its own except the red lines.",
+                &[("data", "Hands-off")],
+            ),
+            var(
+                "x1",
+                "Oxyn: app rows without the account line.",
+                &[("x1", "true")],
+            ),
+            var(
+                "x2",
+                "Oxyn: red lines locked, with a lock.",
+                &[("x2", "true")],
+            ),
+        ],
+        render: permissions_screen,
+        code: permissions_screen_code,
+        keyboard: vec![
+            ("Tab", "Sidebar, page, then each control in reading order"),
+            (
+                "← / → in the levels",
+                "Move between Careful, Balanced and Hands-off",
+            ),
+            ("Enter on an app", "Open its actions"),
+            ("↑ / ↓ in a rule", "Pick Never, Asks first or On its own"),
+            ("Escape", "Close an open menu or popover; clear a search"),
+        ],
+        a11y: vec![
+            "The Fieldwork sidebar is a labelled nav with aria-current on this page.",
+            "Careful, Balanced and Hands-off form a radiogroup (arrow keys move); each rule is a native select named by its action.",
+            "Skeletons are hidden from screen readers; every action reports what it did in a polite live region.",
+        ],
+        responsive: vec![
+            "Authored on the 1440 × 900 canvas; the full view lays it out at the real width.",
+            "Under 640 px the sidebar slides in from the menu button and the work area becomes a sheet.",
+            "Under 560 px the levels stack and the per-app counts hide.",
+        ],
+        height: 240,
+        live: false,
+        align: Align::Start,
+        ..mk(
+            "agent-permissions",
+            "Agent · Permissions",
+            CAT,
+            "What the agent may do without asking: Careful / Balanced / Hands-off with the counts each leads to, the apps it works in (official marks) with their counts, and fixed rules that win over any level. The work area (388) lists one app's actions by kind, each with a select of three settings, a refund limit and recent events.",
+            "PermissionsScreen",
+            "PermissionsEl",
+            "agent-permissions",
+            "parity/opsscr.rs",
+        )
+    }
+}
+
+// ---------- Agent · Run Detail ----------
+
+fn run_detail_screen(v: &Vals, _now: ClockMs) -> Element {
+    let (_, lay, key) = frame(v);
+    let st = s4_key("agent-run-detail", v.s("data"));
+    let key = format!("{key}-{}-{}", v.b("x1"), v.b("x2"));
+    let (a, b) = (v.b("x1"), v.b("x2"));
+    rsx! {
+        div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
+            ScreenStage { state: st, states: s4_states("agent-run-detail"), screen: move |s: String| rsx! { RunDetailScreen { layout: lay.clone(), state: s, errors_only: a, cost_labels: b } } }
+        }
+    }
+}
+
+fn run_detail_screen_code(v: &Vals) -> String {
+    let c = Code::new("RunDetailScreen")
+        .s("layout", &low(v.s("frame")), "inset")
+        .s("state", &s4_key("agent-run-detail", v.s("data")), "sample");
+    let c = c.b("errors_only", v.b("x1")).b("cost_labels", v.b("x2"));
+    c.done()
+}
+
+fn run_detail_screen_demo() -> Demo {
+    let mut c = controls_x("inset", &["Stopped"]);
+    c.push(super::tog("x1", "Errors only", false));
+    c.push(super::tog("x2", "Cost labels", false));
+    Demo {
+        controls: c,
+        variants: vec![
+            var("sample", "Sample data in the Inset frame.", &[]),
+            var(
+                "flat",
+                "The same screen in the Flat frame.",
+                &[("frame", "Flat")],
+            ),
+            var(
+                "loading",
+                "Skeletons where the data will land.",
+                &[("data", "Loading")],
+            ),
+            var(
+                "empty",
+                "Nothing yet: the page says what will appear and how to start.",
+                &[("data", "Empty")],
+            ),
+            var(
+                "own",
+                "Stopped at the failed dry run, with Retry.",
+                &[("data", "Stopped")],
+            ),
+            var(
+                "x1",
+                "Oxyn: only the failures and the steps around them.",
+                &[("x1", "true")],
+            ),
+            var(
+                "x2",
+                "Oxyn: each bar labelled with its cost.",
+                &[("x2", "true")],
+            ),
+        ],
+        render: run_detail_screen,
+        code: run_detail_screen_code,
+        keyboard: vec![
+            ("Tab", "Sidebar, page, then each control in reading order"),
+            ("↑ / ↓ in the trace", "Move through the steps"),
+            ("Home / End", "First or last step"),
+            ("Enter on Stop", "Stop the run (Resume or Retry restart it)"),
+            ("Escape", "Close an open menu or popover; clear a search"),
+        ],
+        a11y: vec![
+            "The Fieldwork sidebar is a labelled nav with aria-current on this page.",
+            "The trace is a listbox with aria-activedescendant; each step names its kind and length.",
+            "Skeletons are hidden from screen readers; every action reports what it did in a polite live region.",
+        ],
+        responsive: vec![
+            "Authored on the 1440 × 900 canvas; the full view lays it out at the real width.",
+            "Under 640 px the sidebar slides in from the menu button and the work area becomes a sheet.",
+            "Under 760 px the label column narrows; under 560 px tiles go two by two and every other tick hides.",
+        ],
+        height: 240,
+        live: false,
+        align: Align::Start,
+        ..mk(
+            "agent-run-detail",
+            "Agent · Run Detail",
+            CAT,
+            "One run on one time axis: task, agent, model and start with Running and Stop, tiles for time, cost, tokens and steps, then thinking, tool calls (official marks), sub-agents with their steps indented and failures as tinted bars with a now line. The work area (348) shows the step with its input and output.",
+            "RunDetailScreen",
+            "RunDetailEl",
+            "agent-run-detail",
+            "parity/opsscr.rs",
+        )
+    }
+}
+
 pub(crate) fn demos() -> Vec<Demo> {
     vec![
         shell_inset_demo(),
@@ -2198,5 +2786,11 @@ pub(crate) fn demos() -> Vec<Demo> {
         tasks_screen_demo(),
         activity_screen_demo(),
         memory_screen_demo(),
+        agents_screen_demo(),
+        skills_screen_demo(),
+        schedules_screen_demo(),
+        usage_screen_demo(),
+        permissions_screen_demo(),
+        run_detail_screen_demo(),
     ]
 }

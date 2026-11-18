@@ -105,16 +105,18 @@ affectUI,Trace Waterfall,https://www.affectui.com/components/trace-waterfall,Com
 affectUI,Usage Meter,https://www.affectui.com/components/usage-meter,Components · Data display,Pro,run-meter,,#35,planned
 affectUI,Writing Assistant,https://www.affectui.com/components/writing-assistant,Components · Chat,Pro,"writing-assistant (exact, overnight batch A), composer-voice-input, live-voice",C10,#32,built
 affectUI,Agent / Activity,https://www.affectui.com/screens/agent-activity,Screens · App screens,Pro,agent-activity,S1,S3,built
+affectUI,Agent / Agents,https://www.affectui.com/screens/agents,Screens · App screens,Pro,agent-agents,,S4,built
 affectUI,Agent / Inbox,https://www.affectui.com/screens/inbox,Screens · App screens,Pro,inbox,S1,S3,built
 affectUI,Agent / Inbox Board,https://www.affectui.com/screens/agent-inbox-board,Screens · App screens,Pro,agent-inbox-board,S1,S3,built
 affectUI,Agent / Memory,https://www.affectui.com/screens/agent-memory,Screens · App screens,Pro,agent-memory,S1,S3,built
 affectUI,Agent / Orchestration,https://www.affectui.com/screens/agent-orchestration,Screens · App screens,Pro,"subagent-tree, trace-view",S2,#39,planned
-affectUI,Agent / Permissions,https://www.affectui.com/screens/agent-permissions,Screens · App screens,Pro,"permission-rules, composer-permission-selector",,#33,planned
-affectUI,Agent / Schedules,https://www.affectui.com/screens/agent-schedules,Screens · App screens,Pro,background-jobs,S2,#39,planned
-affectUI,Agent / Skills,https://www.affectui.com/screens/agent-skills,Screens · App screens,Pro,mcp-plugin-list,S2,#39,planned
+affectUI,Agent / Permissions,https://www.affectui.com/screens/agent-permissions,Screens · App screens,Pro,agent-permissions,,S4,built
+affectUI,Agent / Run Detail,https://www.affectui.com/screens/agent-run-detail,Screens · App screens,Pro,agent-run-detail,,S4,built
+affectUI,Agent / Schedules,https://www.affectui.com/screens/agent-schedules,Screens · App screens,Pro,agent-schedules,S2,S4,built
+affectUI,Agent / Skills,https://www.affectui.com/screens/agent-skills,Screens · App screens,Pro,agent-skills,S2,S4,built
 affectUI,Agent / Tasks,https://www.affectui.com/screens/agent-tasks,Screens · App screens,Pro,agent-tasks,S1,S3,built
 affectUI,Agent / Thread,https://www.affectui.com/screens/agent-thread,Screens · App screens,Pro,agent-thread,,S3,built
-affectUI,Agent / Usage,https://www.affectui.com/screens/agent-usage,Screens · App screens,Pro,run-meter,S2,#39,planned
+affectUI,Agent / Usage,https://www.affectui.com/screens/agent-usage,Screens · App screens,Pro,agent-usage,S2,S4,built
 affectUI,AI Chat / Agents,https://www.affectui.com/screens/agent-chat,Screens · App screens,Pro,"chat-agents, chat-composer",S3,S1,built
 affectUI,AI Chat / Double Sidebar,https://www.affectui.com/screens/agent-chat-rail,Screens · App screens,Pro,"chat-double-sidebar, chat-composer",S3,S1,built
 affectUI,AI Chat / Overview,https://www.affectui.com/screens/assistant-overview,Screens · App screens,Pro,"chat-overview, chat-composer",S3,S1,built
