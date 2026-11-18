@@ -7,8 +7,8 @@
 // is mounted; the others mount the first time they are picked (site.js).
 // The lid opens with the scroll position across most of the section: on wide screens the scene
 // stays pinned under the tab bar for part of a viewport while the lid opens, so the whole opening
-// is seen. site.js sets --x-lap-p (0 closed → 1 open) once per animation frame, and the CSS turns
-// it into transforms and opacity.
+// is seen. site.js eases the progress (0 closed → 1 open) toward the scroll position in one rAF loop
+// and writes transforms and opacity straight onto the moving parts.
 // Reduced motion: a static open laptop. The whole laptop and the tab bar fit in one viewport.
 import OxynDemo from '../OxynDemo.astro';
 import { icon } from './icons';
