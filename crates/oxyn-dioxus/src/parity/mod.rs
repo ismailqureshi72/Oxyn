@@ -10,6 +10,7 @@ mod autonomyfid;
 mod awayfid;
 mod buildscr;
 mod chatfid;
+mod cmdstudio;
 mod collabfid;
 mod compose;
 mod costfid;
@@ -89,6 +90,7 @@ pub use autonomyfid::AutonomyDial;
 pub use awayfid::AwaySummary;
 pub use buildscr::{EvalsScreen, s5_states};
 pub use chatfid::{AgentRunPanel, ModelPickerMenu};
+pub use cmdstudio::{CommandCenterScreen, SessionStudioScreen, s10_states};
 pub use collabfid::CollabStream;
 pub use compose::{
     AiComposer, MenuModel, ModelMenu, ModelPill, PillModel, RichTextEditor, RunControls,

@@ -1,5 +1,5 @@
 //! Screens demos (#42 Screens 1, Screens 2): app frames (Inset, Flat, three-pane) and the AI Chat screens (Start, Overview,
-//! Agents, Double sidebar, Progress, Run) Folders (Overview, Detail), Integrations, Kanban, CRM, the Workflow builder and the Settings shell, then the agent screens (Orchestration; S3: Thread, Inbox, Inbox Board, Tasks, Activity, Memory; S4: Agents, Skills, Schedules, Usage, Permissions, Run Detail; S5: Evals and the upgraded Orchestration and Workflow Builder; S6: Settings Profile, Preferences, Notifications, Privacy and General; S7: Settings Members, Models, Security, Billing and Get started; S8: the Onboarding wizard, Website, Brand, Tone and Ready; S9, Agent apps: Taskdeck Start, Task and Board). Every screen has Sample / Loading / Empty data and an
+//! Agents, Double sidebar, Progress, Run) Folders (Overview, Detail), Integrations, Kanban, CRM, the Workflow builder and the Settings shell, then the agent screens (Orchestration; S3: Thread, Inbox, Inbox Board, Tasks, Activity, Memory; S4: Agents, Skills, Schedules, Usage, Permissions, Run Detail; S5: Evals and the upgraded Orchestration and Workflow Builder; S6: Settings Profile, Preferences, Notifications, Privacy and General; S7: Settings Members, Models, Security, Billing and Get started; S8: the Onboarding wizard, Website, Brand, Tone and Ready; S9, Agent apps: Taskdeck Start, Task and Board; S10: Command Center and Session Studio). Every screen has Sample / Loading / Empty data and an
 //! Inset / Flat frame; light and dark follow the page theme.
 
 use dioxus::prelude::*;
@@ -17,6 +17,7 @@ use oxyn_dioxus::{
     NotificationsSettingsScreen, OnboardingSettingsScreen, PreferencesSettingsScreen,
     PrivacySettingsScreen, ProfileSettingsScreen, SecuritySettingsScreen, s6_states,
 };
+use oxyn_dioxus::{CommandCenterScreen, SessionStudioScreen, s10_states};
 use oxyn_dioxus::{
     OnboardingBrandScreen, OnboardingReadyScreen, OnboardingToneScreen, OnboardingWebsiteScreen,
     s8_states,
@@ -4350,6 +4351,204 @@ fn td_board_demo() -> Demo {
     )
 }
 
+// ---------- Agent apps II: Command Center and Session Studio (S10) ----------
+
+fn s10_key(slug: &str, label: &str) -> String {
+    s10_states(slug)
+        .iter()
+        .find(|(_, l)| l.eq_ignore_ascii_case(label))
+        .map(|(k, _)| k.to_string())
+        .unwrap_or_else(|| low(label))
+}
+
+fn ag_el(slug: &'static str, lay: String, s: String, a: bool, b: bool) -> Element {
+    if slug == "session-studio" {
+        rsx! { SessionStudioScreen { layout: lay, state: s, rail: a, sidebar_hidden: b } }
+    } else {
+        rsx! { CommandCenterScreen { layout: lay, state: s, rail: a, sidebar_hidden: b } }
+    }
+}
+
+fn ag_screen(slug: &'static str, v: &Vals) -> Element {
+    let (_, lay, key) = frame(v);
+    let st = s10_key(slug, v.s("data"));
+    let key = format!("{key}-{}-{}", v.b("x1"), v.b("x2"));
+    let (a, b) = (v.b("x1"), v.b("x2"));
+    rsx! {
+        div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
+            ScreenStage { state: st, states: s10_states(slug), screen: move |s: String| ag_el(slug, lay.clone(), s, a, b) }
+        }
+    }
+}
+
+fn ag_code(name: &str, slug: &str, v: &Vals) -> String {
+    let c = Code::new(name).s("layout", &low(v.s("frame")), "inset").s(
+        "state",
+        &s10_key(slug, v.s("data")),
+        "sample",
+    );
+    let c = c.b("rail", v.b("x1")).b("sidebar_hidden", v.b("x2"));
+    c.done()
+}
+
+fn cc_screen(v: &Vals, _now: ClockMs) -> Element {
+    ag_screen("command-center", v)
+}
+fn ss_screen(v: &Vals, _now: ClockMs) -> Element {
+    ag_screen("session-studio", v)
+}
+fn cc_code(v: &Vals) -> String {
+    ag_code("CommandCenterScreen", "command-center", v)
+}
+fn ss_code(v: &Vals) -> String {
+    ag_code("SessionStudioScreen", "session-studio", v)
+}
+
+#[allow(clippy::too_many_arguments)]
+fn ag_demo(
+    slug: &'static str,
+    name: &'static str,
+    summary: &'static str,
+    dx: &'static str,
+    gp: &'static str,
+    own: (&'static str, &'static str, &'static str),
+    render: fn(&Vals, ClockMs) -> Element,
+    code: fn(&Vals) -> String,
+    keyboard: Vec<(&'static str, &'static str)>,
+    a11y: Vec<&'static str>,
+) -> Demo {
+    let (own_key, own_label, own_note) = own;
+    let mut c = controls_x("inset", &[own_label]);
+    c.push(super::tog("x1", "Icon rail", false));
+    c.push(super::tog("x2", "Sidebar hidden", false));
+    Demo {
+        controls: c,
+        variants: vec![
+            var(
+                "sample",
+                "Sample data, the main area as an inset card.",
+                &[],
+            ),
+            var(
+                "flat",
+                "The same view with the main area edge to edge.",
+                &[("frame", "Flat")],
+            ),
+            var(
+                "loading",
+                "Skeletons in the sidebar, the conversation and the pane.",
+                &[("data", "Loading")],
+            ),
+            var(
+                "empty",
+                "A first run: nothing yet, the composer front and centre.",
+                &[("data", "Empty")],
+            ),
+            var(own_key, own_note, &[("data", own_label)]),
+            var(
+                "x1",
+                "Oxyn: the sidebar as a 56 px icon rail; the top bar expands it.",
+                &[("x1", "true")],
+            ),
+            var(
+                "x2",
+                "Oxyn: the sidebar hidden for focus; the top bar brings it back.",
+                &[("x2", "true")],
+            ),
+        ],
+        render,
+        code,
+        keyboard,
+        a11y,
+        responsive: vec![
+            "Authored on the 1440 × 900 canvas: a 272 px sidebar, the conversation and a 440 px pane (380 px under 1180).",
+            "Under 960 px the sidebar becomes a drawer from the top bar and the pane opens over the conversation from its top-bar button.",
+            "Under 620 px the chips shorten and the composer and pane keep their actions; labels ellipsise.",
+        ],
+        height: 240,
+        live: false,
+        align: Align::Start,
+        ..mk(
+            slug,
+            name,
+            CAT,
+            summary,
+            dx,
+            gp,
+            slug,
+            "parity/cmdstudio.rs",
+        )
+    }
+}
+
+fn cc_demo() -> Demo {
+    ag_demo(
+        "command-center",
+        "Command Center",
+        "Agent apps / Command Center: a desktop coding-agent app in the threads-and-review pattern. Projects and their threads in the sidebar (status, lines changed), a running thread with its work log that finishes on its own, a review pane of the changes (files, hunks, Accept or Revert per hunk and file, Accept all), a Local / Worktree / Cloud switch with the branch, a task queue that fills while the thread runs, and a composer with model and reasoning pickers and Stop.",
+        "CommandCenterScreen",
+        "CommandCenterEl",
+        (
+            "worktree",
+            "Worktree",
+            "The thread finished in a worktree on its own branch, with Hand off to Local and the changes to review.",
+        ),
+        cc_screen,
+        cc_code,
+        vec![
+            (
+                "Enter",
+                "Send, or queue while the thread runs (Shift + Enter for a new line)",
+            ),
+            ("Escape", "Close a picker menu"),
+            (
+                "Tab",
+                "Threads, the conversation, the queue, the composer, then the review pane",
+            ),
+        ],
+        vec![
+            "The sidebar is a nav landmark; the open thread carries aria-current=page; project groups are disclosure buttons.",
+            "Work in, model and reasoning are menus of menuitemradio that close on Escape.",
+            "The review pane is a labelled complementary region; each file is a section with Accept and Revert buttons naming the file and hunk.",
+            "The queue is an ordered list with Move up and Remove; every action reports in a polite live region.",
+        ],
+    )
+}
+
+fn ss_demo() -> Demo {
+    ag_demo(
+        "session-studio",
+        "Session Studio",
+        "Agent apps / Session Studio: a desktop coding-agent app in the session-and-tools pattern. A session list; a chat whose turns show Read, Edit (inline diff) and Bash blocks; permission prompts (Allow once, Always allow, Deny, keys 1 2 3); a permission mode (Ask before edits, Accept edits, Plan mode; Shift + Tab cycles) where Plan mode answers with a plan to approve that becomes the todo list; a todo list with progress; and a diff pane with Accept and Revert.",
+        "SessionStudioScreen",
+        "SessionStudioEl",
+        (
+            "permission",
+            "Permission",
+            "The session stopped to ask before running the test command.",
+        ),
+        ss_screen,
+        ss_code,
+        vec![
+            (
+                "Shift + Tab",
+                "Cycle the permission mode (Ask, Accept edits, Plan)",
+            ),
+            ("Enter", "Send (Shift + Enter for a new line)"),
+            (
+                "Tab",
+                "Sessions, the blocks and their buttons, todos, the composer, the diff",
+            ),
+        ],
+        vec![
+            "The sidebar is a nav landmark; the open session carries aria-current=page.",
+            "A permission prompt and a plan are labelled groups; their buttons say what they do.",
+            "Todos are real checkboxes; the running one shows a spinner and the waiting one an amber dot.",
+            "Permission mode and model are menus of menuitemradio; every action reports in a polite live region.",
+        ],
+    )
+}
+
 pub(crate) fn demos() -> Vec<Demo> {
     vec![
         shell_inset_demo(),
@@ -4400,5 +4599,7 @@ pub(crate) fn demos() -> Vec<Demo> {
         td_start_demo(),
         td_task_demo(),
         td_board_demo(),
+        cc_demo(),
+        ss_demo(),
     ]
 }
