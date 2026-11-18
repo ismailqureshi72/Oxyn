@@ -713,3 +713,5 @@ Oxyn,Screens · Agent · Thread,,Screens,Free,agent-thread,screens-2,#43,built
 Oxyn,Agent apps · Taskdeck / Start (task-runner desktop pattern),https://agent.minimax.io/download,Agent apps,Free,taskdeck-start,S9,S9,built
 Oxyn,Agent apps · Taskdeck / Task (step timeline + side panel),https://agent.minimax.io/download,Agent apps,Free,taskdeck-task,S9,S9,built
 Oxyn,Agent apps · Taskdeck / Board,https://agent.minimax.io/download,Agent apps,Free,taskdeck-board,S9,S9,built
+Oxyn,Agent apps · Command Center (threads + review desktop pattern),https://developers.openai.com/codex/app/,Agent apps,Free,command-center,S10,S10,built
+Oxyn,Agent apps · Session Studio (sessions + tools desktop pattern),https://code.claude.com/docs/en/desktop,Agent apps,Free,session-studio,S10,S10,built
