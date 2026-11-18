@@ -710,3 +710,6 @@ Oxyn,Screens · Settings shell,,Screens,Free,settings,screens-1,#42,built
 Oxyn,Screens · Settings / Get started (onboarding checklist),,Screens,Free,settings-onboarding,S7,S7,built
 Oxyn,Screens · Agent · Orchestration,,Screens,Free,agent-orchestration,screens-2,#43,built
 Oxyn,Screens · Agent · Thread,,Screens,Free,agent-thread,screens-2,#43,built
+Oxyn,Agent apps · Taskdeck / Start (task-runner desktop pattern),https://agent.minimax.io/download,Agent apps,Free,taskdeck-start,S9,S9,built
+Oxyn,Agent apps · Taskdeck / Task (step timeline + side panel),https://agent.minimax.io/download,Agent apps,Free,taskdeck-task,S9,S9,built
+Oxyn,Agent apps · Taskdeck / Board,https://agent.minimax.io/download,Agent apps,Free,taskdeck-board,S9,S9,built

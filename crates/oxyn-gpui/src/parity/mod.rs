@@ -73,6 +73,7 @@ mod setscr;
 mod setscr2;
 mod stairsfid;
 mod storagefid;
+mod taskdeck;
 mod text;
 mod themefid;
 mod toolmapfid;
@@ -170,6 +171,7 @@ pub use setscr::{
 };
 pub use stairsfid::EffortStairsEl;
 pub use storagefid::{StorageCleanupEl, StorageForecastEl, StorageMeterEl, StorageWaffleEl};
+pub use taskdeck::{TaskdeckBoardEl, TaskdeckStartEl, TaskdeckTaskEl};
 pub use text::{LoadingStateEl, ShimmerEl, SlotTextEl, ThinkingLoaderEl};
 pub use themefid::{
     AccentDensityEl, AppIconPickerEl, BackgroundPickerEl, DisplayComfortEl, LightPlaygroundEl,

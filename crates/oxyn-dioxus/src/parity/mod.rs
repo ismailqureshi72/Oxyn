@@ -63,6 +63,7 @@ mod setscr;
 mod setscr2;
 mod stairsfid;
 mod storagefid;
+mod taskdeck;
 mod text;
 mod themefid;
 mod toolmapfid;
@@ -166,6 +167,7 @@ pub use setscr::{
 };
 pub use stairsfid::EffortStairs;
 pub use storagefid::{StorageCleanup, StorageForecast, StorageMeter, StorageWaffle};
+pub use taskdeck::{TaskdeckBoardScreen, TaskdeckStartScreen, TaskdeckTaskScreen, s9_states};
 pub use text::{
     ActionSwapButton, InViewTitle, LoadingState, SlotReels, Source, StreamingText, SweepText,
     TextMorph, ThinkingLoader, WordReveal,
