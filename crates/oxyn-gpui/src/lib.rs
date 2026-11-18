@@ -159,7 +159,10 @@ pub use parity::{
 pub use parity::{ImeEvent, ImeInput, bind_ime_keys};
 pub use parity::{LoadingStateEl, ShimmerEl, SlotTextEl, ThinkingLoaderEl};
 pub use parity::{OnboardingBrandEl, OnboardingReadyEl, OnboardingToneEl, OnboardingWebsiteEl};
-pub use parity::{TaskdeckBoardEl, TaskdeckStartEl, TaskdeckTaskEl};
+pub use parity::{
+    TaskdeckBoardEl, TaskdeckPluginsEl, TaskdeckScheduledEl, TaskdeckSitesEl, TaskdeckStartEl,
+    TaskdeckTaskEl,
+};
 pub use primitives::{
     ActionButtonEl, AvatarEl, BadgeEl, BadgeSize, ButtonEl, ButtonGroupEl, CheckboxEl, ChipEl,
     EmptyStateEl, EntityChipEl, ExpandingGroupEl, IconButtonEl, KbdEl, MenuEl, MonogramEl,

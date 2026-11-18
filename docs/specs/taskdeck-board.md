@@ -11,7 +11,7 @@ See every task on this side (Local or Cloud) by where it stands, and move them a
 ## 2. Parts
 | Part | Look |
 |---|---|
-| Sidebar (264) | App mark and name, Search (filters tasks) and Hide sidebar; New task ⌘N, Tasks (running + needs-you count), Plugins & skills (a popover of plugin switches); a Local / Cloud radio group; Projects (folders in the semantic folder blue, expandable, with their tasks) and Recents. Rows show a spinner (running), an amber dot (needs you), a red dot (failed) or a ring, then the title and age |
+| Sidebar (264) | App mark and name, Search (filters tasks) and Hide sidebar; New task ⌘N, Tasks (running + needs-you count), Plugins & skills, Scheduled (count of active schedules), Sites (each opens its page); a Local / Cloud radio group; Projects (folders in the semantic folder blue, expandable, with their tasks) and Recents. Rows show a spinner (running), an amber dot (needs you), a red dot (failed) or a ring, then the title and age |
 | Sidebar bottom | A "2 running · 1 need you" card (opens the board), then the account row (avatar, name, plan, ⌄) with the Inbox bell. The account menu (S0 rules) holds the header with plan badge, Settings, Usage ▸ (plan, credits meter, quotas), Upgrade plan, **Daily check-in** (+50, then "Checked in today"), Language, Appearance, Keyboard shortcuts, Integrations, Download apps, Changelog, Feedback & help ▸ and Log out. The bell lists tasks that need you |
 | Header (64) | Tasks, "Local · n tasks", Board / List and New task |
 | Board | Four columns on the inset grey: Queued, Running, Needs you, Done (failed tasks sit in Done with a red pill), each with its count. Cards: title (opens the task), ⋯ menu, project folder and age, a progress bar with n/N while running, waiting or failed |

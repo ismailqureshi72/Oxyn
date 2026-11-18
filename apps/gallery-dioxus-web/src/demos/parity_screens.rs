@@ -22,7 +22,10 @@ use oxyn_dioxus::{
     OnboardingBrandScreen, OnboardingReadyScreen, OnboardingToneScreen, OnboardingWebsiteScreen,
     s8_states,
 };
-use oxyn_dioxus::{TaskdeckBoardScreen, TaskdeckStartScreen, TaskdeckTaskScreen, s9_states};
+use oxyn_dioxus::{
+    TaskdeckBoardScreen, TaskdeckPluginsScreen, TaskdeckScheduledScreen, TaskdeckSitesScreen,
+    TaskdeckStartScreen, TaskdeckTaskScreen, s9_states,
+};
 
 use super::{Code, mk, sel, var};
 use crate::{Align, Demo, Vals};
@@ -4166,6 +4169,15 @@ fn td_el(slug: &'static str, lay: String, s: String, a: bool, b: bool) -> Elemen
         "taskdeck-board" => {
             rsx! { TaskdeckBoardScreen { layout: lay, state: s, rail: a, sidebar_hidden: b } }
         }
+        "taskdeck-plugins" => {
+            rsx! { TaskdeckPluginsScreen { layout: lay, state: s, rail: a, sidebar_hidden: b } }
+        }
+        "taskdeck-scheduled" => {
+            rsx! { TaskdeckScheduledScreen { layout: lay, state: s, rail: a, sidebar_hidden: b } }
+        }
+        "taskdeck-sites" => {
+            rsx! { TaskdeckSitesScreen { layout: lay, state: s, rail: a, sidebar_hidden: b } }
+        }
         _ => {
             rsx! { TaskdeckStartScreen { layout: lay, state: s, rail: a, sidebar_hidden: b } }
         }
@@ -4211,6 +4223,24 @@ fn td_task_code(v: &Vals) -> String {
 }
 fn td_board_code(v: &Vals) -> String {
     td_code("TaskdeckBoardScreen", "taskdeck-board", v)
+}
+fn td_plugins_screen(v: &Vals, _now: ClockMs) -> Element {
+    td_screen("taskdeck-plugins", v)
+}
+fn td_scheduled_screen(v: &Vals, _now: ClockMs) -> Element {
+    td_screen("taskdeck-scheduled", v)
+}
+fn td_sites_screen(v: &Vals, _now: ClockMs) -> Element {
+    td_screen("taskdeck-sites", v)
+}
+fn td_plugins_code(v: &Vals) -> String {
+    td_code("TaskdeckPluginsScreen", "taskdeck-plugins", v)
+}
+fn td_scheduled_code(v: &Vals) -> String {
+    td_code("TaskdeckScheduledScreen", "taskdeck-scheduled", v)
+}
+fn td_sites_code(v: &Vals) -> String {
+    td_code("TaskdeckSitesScreen", "taskdeck-sites", v)
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -4347,6 +4377,73 @@ fn td_board_demo() -> Demo {
             ("Tab", "Cards and their menus, column by column"),
             ("Escape", "Close a card menu or the account menu"),
             ("→ in the account menu", "Open Usage or Feedback & help"),
+        ],
+    )
+}
+
+fn td_plugins_demo() -> Demo {
+    td_demo(
+        "taskdeck-plugins",
+        "Taskdeck · Plugins & skills",
+        "Agent apps / Taskdeck: the Plugins & skills page. Plugins: a searchable catalogue by category (Browse, Work, Code, Create) with official marks, Install, an on/off switch, Details (what the plugin may do) and Remove. Skills: bundled and your own saved instructions with on/off, delete and New skill (name and when it applies, checked before saving).",
+        "TaskdeckPluginsScreen",
+        "TaskdeckPluginsEl",
+        (
+            "skills",
+            "Skills tab",
+            "The Skills tab: bundled and your own skills.",
+        ),
+        td_plugins_screen,
+        td_plugins_code,
+        vec![
+            (
+                "Tab",
+                "Search, categories, then each plugin's switch and buttons",
+            ),
+            ("Space", "Turn a plugin or skill on or off"),
+            ("Escape", "Close the New skill form"),
+        ],
+    )
+}
+
+fn td_scheduled_demo() -> Demo {
+    td_demo(
+        "taskdeck-scheduled",
+        "Taskdeck · Scheduled",
+        "Agent apps / Taskdeck: tasks that run on a schedule. Each row shows where it runs, how often, the next run and how the last one went; Run now runs it (Running, then Succeeded), Pause / Resume, Edit opens the form in place and Delete removes it. New schedule takes a name, what it does, how often and a 24-hour time, checked before saving.",
+        "TaskdeckScheduledScreen",
+        "TaskdeckScheduledEl",
+        (
+            "editing",
+            "Editing",
+            "A schedule open for editing in place.",
+        ),
+        td_scheduled_screen,
+        td_scheduled_code,
+        vec![
+            ("Tab", "Each row's Run now, Pause, Edit and Delete"),
+            ("Escape", "Close the schedule form"),
+        ],
+    )
+}
+
+fn td_sites_demo() -> Demo {
+    td_demo(
+        "taskdeck-sites",
+        "Taskdeck · Sites",
+        "Agent apps / Taskdeck: sites that tasks built and deployed. Cards show a thumbnail, the address, status (Live, Deploying, Deploy failed), the last deploy and the task that made it; Preview opens the page beside the list with its address bar, and Redeploy deploys again (Deploying, then Live).",
+        "TaskdeckSitesScreen",
+        "TaskdeckSitesEl",
+        (
+            "preview",
+            "Preview",
+            "A site's preview open beside the list.",
+        ),
+        td_sites_screen,
+        td_sites_code,
+        vec![
+            ("Tab", "Each site's thumbnail, Preview and Redeploy"),
+            ("Enter", "Open or close the preview"),
         ],
     )
 }
@@ -4599,6 +4696,9 @@ pub(crate) fn demos() -> Vec<Demo> {
         td_start_demo(),
         td_task_demo(),
         td_board_demo(),
+        td_plugins_demo(),
+        td_scheduled_demo(),
+        td_sites_demo(),
         cc_demo(),
         ss_demo(),
     ]

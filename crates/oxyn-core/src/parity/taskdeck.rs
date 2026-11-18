@@ -27,6 +27,24 @@ const TASK_STATES: StateList = &[
     ("empty", "Empty"),
     ("approval", "Needs you"),
 ];
+const PLUGINS_STATES: StateList = &[
+    ("sample", "Data"),
+    ("loading", "Loading"),
+    ("empty", "Empty"),
+    ("skills", "Skills tab"),
+];
+const SCHED_STATES: StateList = &[
+    ("sample", "Data"),
+    ("loading", "Loading"),
+    ("empty", "Empty"),
+    ("editing", "Editing"),
+];
+const SITES_STATES: StateList = &[
+    ("sample", "Data"),
+    ("loading", "Loading"),
+    ("empty", "Empty"),
+    ("preview", "Preview"),
+];
 const BOARD_STATES: StateList = &[
     ("sample", "Data"),
     ("loading", "Loading"),
@@ -35,16 +53,31 @@ const BOARD_STATES: StateList = &[
 ];
 
 /// The screens' own states.
-pub const OWN: [&str; 3] = ["cloud", "approval", "menu"];
+pub const OWN: [&str; 6] = ["cloud", "approval", "menu", "skills", "editing", "preview"];
 
 /// The views, in sidebar order: key and title.
-pub const VIEWS: [(&str, &str); 3] = [("start", "New task"), ("task", "Task"), ("board", "Tasks")];
+pub const VIEWS: [(&str, &str); 6] = [
+    ("start", "New task"),
+    ("task", "Task"),
+    ("board", "Tasks"),
+    ("plugins", "Plugins & skills"),
+    ("scheduled", "Scheduled"),
+    ("sites", "Sites"),
+];
+
+/// The title of a view.
+pub fn view_title(v: &str) -> &'static str {
+    VIEWS.iter().find(|x| x.0 == v).map_or("New task", |x| x.1)
+}
 
 /// The states of an S9 screen by its slug.
 pub fn states_for(slug: &str) -> StateList {
     match slug {
         "taskdeck-task" => TASK_STATES,
         "taskdeck-board" => BOARD_STATES,
+        "taskdeck-plugins" => PLUGINS_STATES,
+        "taskdeck-scheduled" => SCHED_STATES,
+        "taskdeck-sites" => SITES_STATES,
         _ => START_STATES,
     }
 }
@@ -57,7 +90,7 @@ pub fn split(k: &str) -> (ScreenState, &'static str) {
     }
 }
 
-/// The view a slug opens on (`start`, `task` or `board`).
+/// The view a slug opens on (`start`, `task`, `board`, `plugins`, `scheduled` or `sites`).
 pub fn view_of(slug: &str) -> &'static str {
     VIEWS
         .iter()
@@ -810,6 +843,504 @@ pub const PLUGINS: [(&str, &str, bool); 4] = [
     ("Image maker", "Draws images from a prompt", false),
 ];
 
+// ─────────────────────────────────────────────────── Plugins & skills ──
+
+/// A plugin in the catalogue: key, name, official mark id ("" for a glyph), glyph, category, line,
+/// what it may do (permissions).
+pub type Plugin = (
+    &'static str,
+    &'static str,
+    &'static str,
+    &'static str,
+    &'static str,
+    &'static str,
+    &'static [&'static str],
+);
+
+/// Plugin categories, in filter order (the first is "All").
+pub const PLUGIN_CATS: [&str; 5] = ["All", "Browse", "Work", "Code", "Create"];
+
+/// The plugin catalogue.
+pub const CATALOG: [Plugin; 8] = [
+    (
+        "browser",
+        "Browser",
+        "",
+        "globe",
+        "Browse",
+        "Opens pages, reads them and fills forms",
+        &["Visit any site", "Type into forms"],
+    ),
+    (
+        "sheets",
+        "Sheets",
+        "",
+        "table",
+        "Work",
+        "Reads and writes spreadsheets",
+        &["Read and edit sheets in the task folder"],
+    ),
+    (
+        "calendar",
+        "Calendar",
+        "googlecalendar",
+        "",
+        "Work",
+        "Reads your free time and drafts invites",
+        &["Read events", "Draft invites (you send)"],
+    ),
+    (
+        "gmail",
+        "Gmail",
+        "gmail",
+        "",
+        "Work",
+        "Searches mail and drafts replies",
+        &["Read mail", "Create drafts"],
+    ),
+    (
+        "github",
+        "GitHub",
+        "github",
+        "",
+        "Code",
+        "Reads repos and opens pull requests",
+        &["Read repositories", "Open pull requests"],
+    ),
+    (
+        "linear",
+        "Linear",
+        "linear",
+        "",
+        "Code",
+        "Files and updates issues",
+        &["Read issues", "Create and edit issues"],
+    ),
+    (
+        "notion",
+        "Notion",
+        "notion",
+        "",
+        "Work",
+        "Reads pages and writes notes",
+        &["Read shared pages", "Create pages"],
+    ),
+    (
+        "images",
+        "Image maker",
+        "",
+        "image",
+        "Create",
+        "Draws images from a prompt",
+        &["Write image files to the task folder"],
+    ),
+];
+
+/// Installed and switched-on state per catalogue entry for a data state: (installed, on).
+pub fn plugin_state(st: ScreenState) -> Vec<(bool, bool)> {
+    match st {
+        ScreenState::Sample => vec![
+            (true, true),
+            (true, true),
+            (true, false),
+            (true, true),
+            (false, false),
+            (false, false),
+            (true, false),
+            (false, false),
+        ],
+        _ => vec![(false, false); CATALOG.len()],
+    }
+}
+
+/// Catalogue indexes for a category filter and a search.
+pub fn plugins_in(cat: &str, q: &str) -> Vec<usize> {
+    let q = q.trim().to_lowercase();
+    CATALOG
+        .iter()
+        .enumerate()
+        .filter(|(_, p)| cat == "All" || p.4 == cat)
+        .filter(|(_, p)| {
+            q.is_empty() || p.1.to_lowercase().contains(&q) || p.5.to_lowercase().contains(&q)
+        })
+        .map(|(i, _)| i)
+        .collect()
+}
+
+/// A skill: a saved set of instructions the agent loads when a task matches.
+#[derive(Clone, Debug, PartialEq)]
+pub struct Skill {
+    /// Name.
+    pub name: String,
+    /// When it applies.
+    pub when: String,
+    /// Switched on.
+    pub on: bool,
+    /// Made by you (else bundled).
+    pub mine: bool,
+}
+
+/// The sample skills (none when empty).
+pub fn skills(st: ScreenState) -> Vec<Skill> {
+    if st != ScreenState::Sample {
+        return Vec::new();
+    }
+    let k = |n: &str, w: &str, on: bool, mine: bool| Skill {
+        name: n.into(),
+        when: w.into(),
+        on,
+        mine,
+    };
+    vec![
+        k(
+            "Research brief",
+            "Any task that compares products or sources",
+            true,
+            false,
+        ),
+        k(
+            "Spreadsheet tidy",
+            "Tasks that write or clean a sheet",
+            true,
+            false,
+        ),
+        k(
+            "House style",
+            "Anything written for the team blog",
+            true,
+            true,
+        ),
+        k("Invoice chase", "Monday invoice round-ups", false, true),
+    ]
+}
+
+/// Why a new skill cannot be saved, if it cannot.
+pub fn skill_error(name: &str, when: &str, list: &[Skill]) -> Option<&'static str> {
+    let n = name.trim();
+    if n.is_empty() {
+        Some("Give the skill a name")
+    } else if n.chars().count() > 40 {
+        Some("Keep the name under 40 characters")
+    } else if list.iter().any(|s| s.name.eq_ignore_ascii_case(n)) {
+        Some("A skill with this name exists")
+    } else if when.trim().is_empty() {
+        Some("Say when it should apply")
+    } else {
+        None
+    }
+}
+
+// ─────────────────────────────────────────────────────────── Scheduled ──
+
+/// How often a scheduled task runs: key, label.
+pub const CADENCES: [(&str, &str); 4] = [
+    ("hourly", "Every hour"),
+    ("daily", "Every day"),
+    ("weekdays", "Weekdays"),
+    ("weekly", "Every Monday"),
+];
+
+/// How a scheduled task's last run went.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum LastRun {
+    /// Not run yet.
+    Never,
+    /// Running now.
+    Running,
+    /// Finished fine.
+    Ok,
+    /// Failed.
+    Failed,
+}
+
+impl LastRun {
+    /// Label for the pill.
+    pub fn label(self) -> &'static str {
+        match self {
+            Self::Never => "Not run yet",
+            Self::Running => "Running",
+            Self::Ok => "Succeeded",
+            Self::Failed => "Failed",
+        }
+    }
+    /// Tone key (as [`Status::tone`]).
+    pub fn tone(self) -> &'static str {
+        match self {
+            Self::Never => "",
+            Self::Running => "run",
+            Self::Ok => "ok",
+            Self::Failed => "bad",
+        }
+    }
+}
+
+/// A scheduled task.
+#[derive(Clone, Debug, PartialEq)]
+pub struct Schedule {
+    /// Stable id.
+    pub id: u32,
+    /// Name.
+    pub name: String,
+    /// The prompt it runs.
+    pub prompt: String,
+    /// Index into [`CADENCES`].
+    pub cadence: usize,
+    /// Time of day "HH:MM" (ignored hourly).
+    pub at: String,
+    /// Paused.
+    pub paused: bool,
+    /// Last run and when ("2h ago").
+    pub last: (LastRun, String),
+    /// Where it runs.
+    pub env: EnvMode,
+}
+
+/// The sample schedules (none when empty).
+pub fn schedules(st: ScreenState) -> Vec<Schedule> {
+    if st != ScreenState::Sample {
+        return Vec::new();
+    }
+    let k = |id, n: &str, p: &str, c, at: &str, paused, last: LastRun, ago: &str, env| Schedule {
+        id,
+        name: n.into(),
+        prompt: p.into(),
+        cadence: c,
+        at: at.into(),
+        paused,
+        last: (last, ago.into()),
+        env,
+    };
+    vec![
+        k(
+            1,
+            "Invoice round-up",
+            "Collect open invoices into one sheet and email me the total.",
+            3,
+            "09:00",
+            false,
+            LastRun::Ok,
+            "3d ago",
+            EnvMode::Cloud,
+        ),
+        k(
+            2,
+            "Morning briefing",
+            "Summarise new mail, today's calendar and open tasks in five lines.",
+            2,
+            "08:30",
+            false,
+            LastRun::Ok,
+            "14h ago",
+            EnvMode::Cloud,
+        ),
+        k(
+            3,
+            "Price watch: desks",
+            "Check the three shortlisted desks and tell me if any drop below $500.",
+            1,
+            "18:00",
+            false,
+            LastRun::Failed,
+            "6h ago",
+            EnvMode::Cloud,
+        ),
+        k(
+            4,
+            "Backup notes",
+            "Copy the notes folder into the weekly archive.",
+            0,
+            "",
+            true,
+            LastRun::Ok,
+            "2d ago",
+            EnvMode::Local,
+        ),
+    ]
+}
+
+/// A schedule in words: "Weekdays at 08:30", "Every hour".
+pub fn cadence_words(c: usize, at: &str) -> String {
+    let l = CADENCES[c.min(CADENCES.len() - 1)].1;
+    if c == 0 {
+        l.to_string()
+    } else {
+        format!("{l} at {at}")
+    }
+}
+
+/// A time of day "HH:MM" (24 h) is well formed.
+pub fn time_ok(t: &str) -> bool {
+    let Some((h, m)) = t.trim().split_once(':') else {
+        return false;
+    };
+    h.len() == 2
+        && m.len() == 2
+        && h.parse::<u32>().is_ok_and(|h| h < 24)
+        && m.parse::<u32>().is_ok_and(|m| m < 60)
+}
+
+/// Why a schedule cannot be saved, if it cannot.
+pub fn schedule_error(name: &str, prompt: &str, cadence: usize, at: &str) -> Option<&'static str> {
+    if name.trim().is_empty() {
+        Some("Give it a name")
+    } else if prompt.trim().is_empty() {
+        Some("Say what it should do")
+    } else if cadence > 0 && !time_ok(at) {
+        Some("Use a 24-hour time like 08:30")
+    } else {
+        None
+    }
+}
+
+/// When a schedule runs next, in words.
+pub fn next_run(s: &Schedule) -> String {
+    if s.paused {
+        return "paused".to_string();
+    }
+    match s.cadence {
+        0 => "next in 42 min".to_string(),
+        1 => format!("next tomorrow {}", s.at),
+        _ => format!("next Mon {}", s.at),
+    }
+}
+
+// ────────────────────────────────────────────────────────────── Sites ──
+
+/// Where a deployed site stands.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum SiteStatus {
+    /// Serving the latest build.
+    Live,
+    /// A new build is deploying.
+    Building,
+    /// The last deploy failed (the previous build still serves).
+    Failed,
+}
+
+impl SiteStatus {
+    /// Label for the pill.
+    pub fn label(self) -> &'static str {
+        match self {
+            Self::Live => "Live",
+            Self::Building => "Deploying",
+            Self::Failed => "Deploy failed",
+        }
+    }
+    /// Tone key (as [`Status::tone`]).
+    pub fn tone(self) -> &'static str {
+        match self {
+            Self::Live => "ok",
+            Self::Building => "run",
+            Self::Failed => "bad",
+        }
+    }
+}
+
+/// A site a task built and deployed.
+#[derive(Clone, Debug, PartialEq)]
+pub struct Site {
+    /// Stable id.
+    pub id: u32,
+    /// Name.
+    pub name: String,
+    /// Address (fictional).
+    pub url: String,
+    /// Status.
+    pub status: SiteStatus,
+    /// Last deploy, in words.
+    pub deployed: String,
+    /// The task that made it.
+    pub task: String,
+    /// Deploys so far.
+    pub deploys: u32,
+    /// Preview page: headline, sub-line, accent block count.
+    pub page: (&'static str, &'static str, u8),
+}
+
+/// The sample sites (none when empty).
+pub fn sites(st: ScreenState) -> Vec<Site> {
+    if st != ScreenState::Sample {
+        return Vec::new();
+    }
+    let k = |id, n: &str, u: &str, status, d: &str, t: &str, deploys, page| Site {
+        id,
+        name: n.into(),
+        url: u.into(),
+        status,
+        deployed: d.into(),
+        task: t.into(),
+        deploys,
+        page,
+    };
+    vec![
+        k(
+            1,
+            "Desk buying guide",
+            "desk-guide.taskdeck.example",
+            SiteStatus::Live,
+            "12 min ago",
+            "Compare standing desks",
+            3,
+            (
+                "Standing desks under $600",
+                "Six desks, one memory preset each, ten-year warranties.",
+                3,
+            ),
+        ),
+        k(
+            2,
+            "Launch countdown",
+            "launch.taskdeck.example",
+            SiteStatus::Building,
+            "now",
+            "Make a launch page",
+            7,
+            (
+                "Kestrel launches Thursday",
+                "Join the list to get the first build.",
+                2,
+            ),
+        ),
+        k(
+            3,
+            "Recipe box",
+            "recipes.taskdeck.example",
+            SiteStatus::Failed,
+            "1h ago",
+            "Turn my notes into a recipe site",
+            2,
+            (
+                "Weeknight recipes",
+                "Twelve dinners in thirty minutes or less.",
+                4,
+            ),
+        ),
+    ]
+}
+
+/// Start a redeploy: the site goes to Deploying and counts one more deploy. False if absent.
+pub fn redeploy(list: &mut [Site], id: u32) -> bool {
+    match list.iter_mut().find(|s| s.id == id) {
+        Some(s) => {
+            s.status = SiteStatus::Building;
+            s.deployed = "now".into();
+            s.deploys += 1;
+            true
+        }
+        None => false,
+    }
+}
+
+/// A deploy finishes: Deploying sites go Live. Returns how many changed.
+pub fn finish_deploys(list: &mut [Site]) -> usize {
+    let mut n = 0;
+    for s in list.iter_mut().filter(|s| s.status == SiteStatus::Building) {
+        s.status = SiteStatus::Live;
+        n += 1;
+    }
+    n
+}
+
 /// The start screen's headline.
 pub fn headline(env: EnvMode) -> &'static str {
     match env {
@@ -873,5 +1404,38 @@ mod tests {
         assert_eq!(run_status(&run_for(&all[3])), Status::Done);
         assert_eq!(run_status(&run_for(&all[4])), Status::Queued);
         assert_eq!(run_for(&all[0])[3].state, StepState::Running);
+    }
+
+    #[test]
+    fn s9_taskdeck_more_views() {
+        assert_eq!(view_of("taskdeck-scheduled"), "scheduled");
+        assert_eq!(view_of("taskdeck-plugins"), "plugins");
+        assert_eq!(view_title("sites"), "Sites");
+        assert_eq!(split("preview").1, "preview");
+        assert_eq!(plugins_in("Code", "").len(), 2);
+        assert_eq!(plugins_in("All", "mail"), vec![3]);
+        let sk = skills(ScreenState::Sample);
+        assert_eq!(
+            skill_error("house STYLE", "x", &sk),
+            Some("A skill with this name exists")
+        );
+        assert!(skill_error("Weekly digest", "Fridays", &sk).is_none());
+        assert!(time_ok("08:30") && !time_ok("8:30") && !time_ok("24:00"));
+        assert_eq!(
+            schedule_error("a", "b", 2, "7pm"),
+            Some("Use a 24-hour time like 08:30")
+        );
+        assert!(schedule_error("a", "b", 0, "").is_none());
+        assert_eq!(cadence_words(2, "08:30"), "Weekdays at 08:30");
+        let sc = schedules(ScreenState::Sample);
+        assert_eq!(next_run(&sc[3]), "paused");
+        let mut si = sites(ScreenState::Sample);
+        assert!(redeploy(&mut si, 3));
+        assert_eq!(si[2].status, SiteStatus::Building);
+        assert_eq!(finish_deploys(&mut si), 2);
+        assert!(!redeploy(&mut si, 9));
+        let d = TaskdeckData::default();
+        assert_eq!(d.tasks.len(), sample_tasks().len());
+        assert!(TaskdeckData::for_state(ScreenState::Empty).sites.is_empty());
     }
 }
