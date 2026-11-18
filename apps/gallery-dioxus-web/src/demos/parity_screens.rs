@@ -1,5 +1,5 @@
 //! Screens demos (#42 Screens 1, Screens 2): app frames (Inset, Flat, three-pane) and the AI Chat screens (Start, Overview,
-//! Agents, Double sidebar, Progress, Run) Folders (Overview, Detail), Integrations, Kanban, CRM, the Workflow builder and the Settings shell, then the agent screens (Orchestration; S3: Thread, Inbox, Inbox Board, Tasks, Activity, Memory; S4: Agents, Skills, Schedules, Usage, Permissions, Run Detail; S5: Evals and the upgraded Orchestration and Workflow Builder; S6: Settings Profile, Preferences, Notifications, Privacy and General; S7: Settings Members, Models, Security, Billing and Get started). Every screen has Sample / Loading / Empty data and an
+//! Agents, Double sidebar, Progress, Run) Folders (Overview, Detail), Integrations, Kanban, CRM, the Workflow builder and the Settings shell, then the agent screens (Orchestration; S3: Thread, Inbox, Inbox Board, Tasks, Activity, Memory; S4: Agents, Skills, Schedules, Usage, Permissions, Run Detail; S5: Evals and the upgraded Orchestration and Workflow Builder; S6: Settings Profile, Preferences, Notifications, Privacy and General; S7: Settings Members, Models, Security, Billing and Get started; S8: the Onboarding wizard, Website, Brand, Tone and Ready). Every screen has Sample / Loading / Empty data and an
 //! Inset / Flat frame; light and dark follow the page theme.
 
 use dioxus::prelude::*;
@@ -16,6 +16,10 @@ use oxyn_dioxus::{
     BillingSettingsScreen, GeneralSettingsScreen, MembersSettingsScreen, ModelsSettingsScreen,
     NotificationsSettingsScreen, OnboardingSettingsScreen, PreferencesSettingsScreen,
     PrivacySettingsScreen, ProfileSettingsScreen, SecuritySettingsScreen, s6_states,
+};
+use oxyn_dioxus::{
+    OnboardingBrandScreen, OnboardingReadyScreen, OnboardingToneScreen, OnboardingWebsiteScreen,
+    s8_states,
 };
 
 use super::{Code, mk, sel, var};
@@ -3907,6 +3911,241 @@ fn set_onboarding_demo() -> Demo {
     }
 }
 
+// ---------- Onboarding wizard (S8) ----------
+
+fn s8_key(slug: &str, label: &str) -> String {
+    s8_states(slug)
+        .iter()
+        .find(|(_, l)| l.eq_ignore_ascii_case(label))
+        .map(|(k, _)| k.to_string())
+        .unwrap_or_else(|| low(label))
+}
+
+fn onb_el(slug: &'static str, lay: String, s: String, a: bool, b: bool) -> Element {
+    match slug {
+        "onboarding-brand" => {
+            rsx! { OnboardingBrandScreen { layout: lay, state: s, named_steps: a, form_only: b } }
+        }
+        "onboarding-tone" => {
+            rsx! { OnboardingToneScreen { layout: lay, state: s, named_steps: a, form_only: b } }
+        }
+        "onboarding-ready" => {
+            rsx! { OnboardingReadyScreen { layout: lay, state: s, named_steps: a, form_only: b } }
+        }
+        _ => {
+            rsx! { OnboardingWebsiteScreen { layout: lay, state: s, named_steps: a, form_only: b } }
+        }
+    }
+}
+
+fn onb_screen(slug: &'static str, v: &Vals) -> Element {
+    let (_, lay, key) = frame(v);
+    let st = s8_key(slug, v.s("data"));
+    let key = format!("{key}-{}-{}", v.b("x1"), v.b("x2"));
+    let (a, b) = (v.b("x1"), v.b("x2"));
+    rsx! {
+        div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
+            ScreenStage { state: st, states: s8_states(slug), screen: move |s: String| onb_el(slug, lay.clone(), s, a, b) }
+        }
+    }
+}
+
+fn onb_code(name: &str, slug: &str, v: &Vals) -> String {
+    let c = Code::new(name).s("layout", &low(v.s("frame")), "inset").s(
+        "state",
+        &s8_key(slug, v.s("data")),
+        "sample",
+    );
+    let c = c.b("named_steps", v.b("x1")).b("form_only", v.b("x2"));
+    c.done()
+}
+
+fn onb_website_screen(v: &Vals, _now: ClockMs) -> Element {
+    onb_screen("onboarding-website", v)
+}
+fn onb_brand_screen(v: &Vals, _now: ClockMs) -> Element {
+    onb_screen("onboarding-brand", v)
+}
+fn onb_tone_screen(v: &Vals, _now: ClockMs) -> Element {
+    onb_screen("onboarding-tone", v)
+}
+fn onb_ready_screen(v: &Vals, _now: ClockMs) -> Element {
+    onb_screen("onboarding-ready", v)
+}
+fn onb_website_code(v: &Vals) -> String {
+    onb_code("OnboardingWebsiteScreen", "onboarding-website", v)
+}
+fn onb_brand_code(v: &Vals) -> String {
+    onb_code("OnboardingBrandScreen", "onboarding-brand", v)
+}
+fn onb_tone_code(v: &Vals) -> String {
+    onb_code("OnboardingToneScreen", "onboarding-tone", v)
+}
+fn onb_ready_code(v: &Vals) -> String {
+    onb_code("OnboardingReadyScreen", "onboarding-ready", v)
+}
+
+#[allow(clippy::too_many_arguments)]
+fn onb_demo(
+    slug: &'static str,
+    name: &'static str,
+    summary: &'static str,
+    dx: &'static str,
+    gp: &'static str,
+    own: (&'static str, &'static str, &'static str),
+    render: fn(&Vals, ClockMs) -> Element,
+    code: fn(&Vals) -> String,
+    keyboard: Vec<(&'static str, &'static str)>,
+) -> Demo {
+    let (own_key, own_label, own_note) = own;
+    let mut c = controls_x("inset", &[own_label]);
+    c.push(super::tog("x1", "Named steps", false));
+    c.push(super::tog("x2", "Form only", false));
+    Demo {
+        controls: c,
+        variants: vec![
+            var(
+                "sample",
+                "Sample data, the dashboard preview as an inset panel.",
+                &[],
+            ),
+            var(
+                "flat",
+                "The same step with the preview edge to edge.",
+                &[("frame", "Flat")],
+            ),
+            var(
+                "loading",
+                "Skeletons in the form and the preview.",
+                &[("data", "Loading")],
+            ),
+            var(
+                "empty",
+                "A first visit: nothing filled in, Continue explains what is missing.",
+                &[("data", "Empty")],
+            ),
+            var(own_key, own_note, &[("data", own_label)]),
+            var(
+                "x1",
+                "Oxyn: each step named under its dash; done steps can be revisited.",
+                &[("x1", "true")],
+            ),
+            var(
+                "x2",
+                "Oxyn: the form alone, centred, without the preview.",
+                &[("x2", "true")],
+            ),
+        ],
+        render,
+        code,
+        keyboard,
+        a11y: vec![
+            "The steps are an ordered list; the current one has aria-current=step and each is named “Step n of 4: …”.",
+            "Fields have labels; a problem sets aria-invalid and shows its message as an alert beside the field.",
+            "Colour, mark, tone and length are radiogroups; the handover is a switch.",
+            "The preview is decorative (aria-hidden); everything it shows is also in the form. Every action reports in a polite live region.",
+        ],
+        responsive: vec![
+            "Authored on the 1440 × 900 canvas: a 720 px form column and a 720 px preview.",
+            "Under 960 px the preview leaves the page and opens over the form from Preview in the top bar.",
+            "Under 620 px the signed-in address hides, marks go two by two and the summary tightens.",
+        ],
+        height: 240,
+        live: false,
+        align: Align::Start,
+        ..mk(slug, name, CAT, summary, dx, gp, slug, "parity/onbscr.rs")
+    }
+}
+
+fn onb_website_demo() -> Demo {
+    onb_demo(
+        "onboarding-website",
+        "Onboarding · Website",
+        "Onboarding / Website, step 1 of 4: the sites the assistant learns from. A field with Add and Continue cleans what you type (no https://, www. or paths) and checks it; each site is read with progress in the preview's Knowledge table, a private address fails with Retry, and Continue needs one readable site.",
+        "OnboardingWebsiteScreen",
+        "OnboardingWebsiteEl",
+        (
+            "fetching",
+            "Reading site",
+            "Two more sites being read: progress, then pages learned.",
+        ),
+        onb_website_screen,
+        onb_website_code,
+        vec![
+            ("Enter", "Add the address; on an empty field, Continue"),
+            ("Escape", "Clear the field"),
+            ("Tab", "Add, Continue, then each site's Retry and Remove"),
+        ],
+    )
+}
+
+fn onb_brand_demo() -> Demo {
+    onb_demo(
+        "onboarding-brand",
+        "Onboarding · Brand",
+        "Onboarding / Brand, step 2 of 4: the company's name plus the shorter names people use for it, a brand colour (eight swatches or a checked hex, with a warning when it would vanish on white or in dark mode) and a mark (initials, square, round or an uploaded logo). The preview glides to the assistant card in the new colour.",
+        "OnboardingBrandScreen",
+        "OnboardingBrandEl",
+        (
+            "custom",
+            "Own colour",
+            "A typed hex colour and an uploaded logo.",
+        ),
+        onb_brand_screen,
+        onb_brand_code,
+        vec![
+            ("Enter", "Add the name"),
+            ("Arrow keys", "Move through swatches and marks"),
+            ("Tab", "Remove, colours, hex, marks, Continue"),
+        ],
+    )
+}
+
+fn onb_tone_demo() -> Demo {
+    onb_demo(
+        "onboarding-tone",
+        "Onboarding · Tone",
+        "Onboarding / Tone, step 3 of 4: the assistant's name (checked, with a counter), tone (Friendly, Neutral, Formal), reply length (Short, Balanced, Detailed) and Hand over to a person with an address. The preview's test chat re-types its reply in the new voice and shows who it hands over to.",
+        "OnboardingToneScreen",
+        "OnboardingToneEl",
+        (
+            "testing",
+            "Test reply",
+            "The test chat typing its reply in the chosen voice.",
+        ),
+        onb_tone_screen,
+        onb_tone_code,
+        vec![
+            (
+                "Tab",
+                "Name, tone, length, handover switch and address, Continue",
+            ),
+            ("Space", "Turn the handover on or off"),
+        ],
+    )
+}
+
+fn onb_ready_demo() -> Demo {
+    onb_demo(
+        "onboarding-ready",
+        "Onboarding · Ready",
+        "Onboarding / Ready, step 4 of 4: a summary of what the assistant learns from, its brand, name, voice and handover, each with Edit (a missing step shows Add and blocks), then Open dashboard turns the assistant from Draft to Live in the preview.",
+        "OnboardingReadyScreen",
+        "OnboardingReadyEl",
+        (
+            "live",
+            "Live",
+            "Published: the dashboard shows the assistant Live.",
+        ),
+        onb_ready_screen,
+        onb_ready_code,
+        vec![
+            ("Tab", "Each Edit, then Open dashboard"),
+            ("Enter on Edit", "Go back to that step"),
+        ],
+    )
+}
+
 pub(crate) fn demos() -> Vec<Demo> {
     vec![
         shell_inset_demo(),
@@ -3950,5 +4189,9 @@ pub(crate) fn demos() -> Vec<Demo> {
         set_security_demo(),
         set_billing_demo(),
         set_onboarding_demo(),
+        onb_website_demo(),
+        onb_brand_demo(),
+        onb_tone_demo(),
+        onb_ready_demo(),
     ]
 }
