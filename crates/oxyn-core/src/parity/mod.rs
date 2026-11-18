@@ -75,6 +75,7 @@
 //! - [`cmdstudio`]: Screens S10 (Agent apps II): Command Center and Session Studio
 //! - [`fleetwin`]: Screens S11 (Agent apps III): Fleet Window
 //! - [`wscoder`]: Screens S11 (Agent apps III): Workspace Coder
+//! - [`cmdboard`]: Screens S11 (Agent apps III): Command Board
 //! - [`answers`]: fidelity batch, family A: AI Answer markup and streaming, Cited Answer
 //!   sentences and quotes, Message Actions, Thinking Loader phases, Thinking State steps and the
 //!   Writing Assistant's sample writer and dictation.
@@ -90,6 +91,7 @@ pub mod autonomyfid;
 pub mod awayfid;
 pub mod buildscr;
 pub mod chatfid;
+pub mod cmdboard;
 pub mod cmdstudio;
 pub mod collabfid;
 pub mod compose;

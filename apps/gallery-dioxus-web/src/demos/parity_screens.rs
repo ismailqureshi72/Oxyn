@@ -17,6 +17,7 @@ use oxyn_dioxus::{
     NotificationsSettingsScreen, OnboardingSettingsScreen, PreferencesSettingsScreen,
     PrivacySettingsScreen, ProfileSettingsScreen, SecuritySettingsScreen, s6_states,
 };
+use oxyn_dioxus::{CommandBoardScreen, s11_board_states};
 use oxyn_dioxus::{CommandCenterScreen, SessionStudioScreen, s10_states};
 use oxyn_dioxus::{FleetWindowScreen, s11_fleet_states};
 use oxyn_dioxus::{
@@ -4457,6 +4458,7 @@ fn ag_states(slug: &str) -> Vec<(&'static str, &'static str)> {
     match slug {
         "fleet-window" => s11_fleet_states(),
         "workspace-coder" => s11_coder_states(),
+        "command-board" => s11_board_states(),
         _ => s10_states(slug),
     }
 }
@@ -4479,6 +4481,9 @@ fn ag_el(slug: &'static str, lay: String, s: String, a: bool, b: bool) -> Elemen
         }
         "workspace-coder" => {
             rsx! { WorkspaceCoderScreen { layout: lay, state: s, rail: a, sidebar_hidden: b } }
+        }
+        "command-board" => {
+            rsx! { CommandBoardScreen { layout: lay, state: s, rail: a, sidebar_hidden: b } }
         }
         _ => rsx! { CommandCenterScreen { layout: lay, state: s, rail: a, sidebar_hidden: b } },
     }
@@ -4790,6 +4795,49 @@ fn wc_demo() -> Demo {
     )
 }
 
+fn cb_screen(v: &Vals, _now: ClockMs) -> Element {
+    ag_screen("command-board", v)
+}
+fn cb_code(v: &Vals) -> String {
+    ag_code("CommandBoardScreen", "command-board", v)
+}
+
+fn cb_demo() -> Demo {
+    ag_demo(
+        "command-board",
+        "Command Board",
+        "Agent apps / Command Board: a desktop app for an autonomous coding agent in the session-and-workspace pattern. Sessions with their repo and where they started (a ticket, a chat channel); the agent's updates and a question with quick answers; Sleep / Wake; the pull request it opens with its checks; and a Workspace pane (Shell, Browser, Editor, Planner) with a timeline to scrub back to any moment and Live to return.",
+        "CommandBoardScreen",
+        "CommandBoardEl",
+        (
+            "pr",
+            "Pull request",
+            "The agent opened a pull request: branch, lines changed and four checks, with View diff and Open PR.",
+        ),
+        cb_screen,
+        cb_code,
+        vec![
+            ("Enter", "Send a reply (Shift + Enter for a new line)"),
+            (
+                "← →",
+                "Workspace tabs; on the timeline, step through events",
+            ),
+            ("Escape", "Close the repository or account menu"),
+        ],
+        vec![
+            "The sidebar is a nav landmark; the open session carries aria-current=page.",
+            "The agent's question is a labelled group; quick answers are buttons that send the reply.",
+            "The timeline is a range input whose value text names the moment; Live is a toggle button.",
+            "Checks list their state in words; every action reports in a polite live region.",
+        ],
+        &[(
+            "planner",
+            "Planner",
+            "The Workspace pane on Planner: the agent's plan with each step done, running or to do.",
+        )],
+    )
+}
+
 pub(crate) fn demos() -> Vec<Demo> {
     vec![
         shell_inset_demo(),
@@ -4847,5 +4895,6 @@ pub(crate) fn demos() -> Vec<Demo> {
         ss_demo(),
         fw_demo(),
         wc_demo(),
+        cb_demo(),
     ]
 }

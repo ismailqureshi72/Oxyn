@@ -23,6 +23,7 @@ mod awayfid;
 mod buildscr;
 mod chatfid;
 mod chatscr;
+mod cmdboard;
 mod cmdstudio;
 mod collabfid;
 mod costfid;
@@ -102,6 +103,7 @@ pub use chatfid::{AgentRunPanelEl, ModelPickerMenuEl};
 pub use chatscr::{
     ChatAgentsEl, ChatOverviewEl, ChatProgressEl, ChatRailEl, ChatRunEl, ChatStartEl,
 };
+pub use cmdboard::CommandBoardEl;
 pub use cmdstudio::{CommandCenterEl, SessionStudioEl};
 pub use collabfid::CollabStreamEl;
 pub use costfid::CostWaterfallEl;
