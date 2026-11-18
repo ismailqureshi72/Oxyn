@@ -737,6 +737,15 @@ html[data-oxyn-reduced] .x-lap-scene{--x-lap-p:1!important}
   .x-lap-scene{margin-top:22px}
   .x-lap-cap{margin-top:20px}
   .x-lap-cap p{flex-basis:100%}
+  /* Phones: the screen alone, no laptop body, at its real size (the frame's own narrow layout
+     takes over through its container queries) instead of a 1440 px stage shrunk to a stamp. */
+  .x-lap-deck,.x-lap-shadow,.x-lap-back,.x-lap-edge,.x-lap-notch,.x-lap-glare,.x-lap-shade{display:none}
+  .x-lap-dev,.x-lap-lid{padding-bottom:0;transform:none!important;will-change:auto}
+  .x-lap-unit{width:100%}
+  .x-lap-face,.x-lap-glass{padding:0;background:none;box-shadow:none;border-radius:16px}
+  .x-lap-scr{aspect-ratio:auto;height:min(76svh,620px);border-radius:16px;box-shadow:inset 0 0 0 1px var(--ln),0 18px 40px -28px rgb(0 0 0 / .45)}
+  .x-lap-scr .oxstage-box{aspect-ratio:auto;height:100%}
+  .x-lap-scr .oxstage-canvas{position:static;width:100%!important;height:100%!important;transform:none}
 }
 
 /* Questions as pills: each question is a chip (icon + text) that shows its answer below. */
