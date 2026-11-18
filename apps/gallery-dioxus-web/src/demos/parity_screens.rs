@@ -4640,7 +4640,7 @@ fn ss_demo() -> Demo {
     ag_demo(
         "session-studio",
         "Session Studio",
-        "Agent apps / Session Studio: a desktop coding-agent app in the session-and-tools pattern. A session list; a chat whose turns show Read, Edit (inline diff) and Bash blocks; permission prompts (Allow once, Always allow, Deny, keys 1 2 3); a permission mode (Ask before edits, Accept edits, Plan mode; Shift + Tab cycles) where Plan mode answers with a plan to approve that becomes the todo list; a todo list with progress; and a diff pane with Accept and Revert.",
+        "Agent apps / Session Studio: a desktop coding-agent app in the session-and-tools pattern. A session list; a chat whose turns show Read, Edit (inline diff) and Bash blocks; permission prompts (Allow once, Always allow, Deny, keys 1 2 3); a permission mode (Ask before edits, Accept edits, Plan mode; Shift + Tab cycles) where Plan mode answers with a plan to approve that becomes the todo list; a todo list with progress; and side panes (Diff with each session's own changes, a side chat, Context) that collapse and can be dragged into a new order.",
         "SessionStudioScreen",
         "SessionStudioEl",
         (
@@ -4666,6 +4666,18 @@ fn ss_demo() -> Demo {
             "A permission prompt and a plan are labelled groups; their buttons say what they do.",
             "Todos are real checkboxes; the running one shows a spinner and the waiting one an amber dot.",
             "Permission mode and model are menus of menuitemradio; every action reports in a polite live region.",
+        ],
+        &[
+            (
+                "chat",
+                "Side chat",
+                "The side chat pane under the diff: ask about the session without interrupting it.",
+            ),
+            (
+                "arrange",
+                "Rearrange",
+                "Rearrange: drag the Diff, Side chat and Context panes by their handles, or move them with the arrow buttons.",
+            ),
         ],
     )
 }

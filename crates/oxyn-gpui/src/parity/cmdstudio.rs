@@ -1115,6 +1115,62 @@ fn auto_body(p: &ThPal, st: ScreenState) -> Div {
     d
 }
 
+fn ss_panes(
+    p: &ThPal,
+    st: ScreenState,
+    files: &[DiffFile],
+    arrange: bool,
+    act: &Option<Act>,
+) -> Div {
+    let head = |l: &'static str| {
+        div()
+            .h(px(36.))
+            .px(px(12.))
+            .flex()
+            .items_center()
+            .gap(px(8.))
+            .when(arrange, |d| d.child(quiet(p, "⋮⋮")))
+            .child(div().font_weight(FontWeight::SEMIBOLD).child(l))
+            .child(div().flex_1())
+            .when(arrange, |d| d.child(quiet(p, "↑  ↓")))
+    };
+    let pane = |d: Div| {
+        if arrange {
+            d.m(px(8.))
+                .rounded(px(10.))
+                .border_1()
+                .border_color(p.line)
+                .bg(p.inset)
+        } else {
+            d.border_b_1().border_color(p.line)
+        }
+    };
+    let mut chat = div().flex().flex_col().gap(px(6.)).px(px(12.)).pb(px(12.));
+    for (me, t) in SIDE_CHAT {
+        chat = chat.child(
+            div().flex().when(me, |d| d.justify_end()).child(
+                div()
+                    .max_w(px(360.))
+                    .p(px(8.))
+                    .rounded(px(10.))
+                    .bg(if me { p.sel } else { p.inset })
+                    .text_size(px(12.5))
+                    .child(t),
+            ),
+        );
+    }
+    let mut col = side_col(p);
+    if arrange {
+        for (_, l) in PANES {
+            col = col.child(pane(div().child(head(l))));
+        }
+        return col;
+    }
+    let diff = diff_pane(p, st, files, "Diff", act);
+    col.child(div().flex_1().min_h_0().flex().flex_col().child(diff))
+        .child(pane(div().child(head("Side chat")).child(chat)))
+}
+
 fn screen(
     theme: &'static Theme,
     lay: ShellLayout,

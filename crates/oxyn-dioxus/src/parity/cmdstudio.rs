@@ -865,6 +865,137 @@ fn CommandCenterApp(
     rsx! { Frame { app: "cc", layout, height, side, drawer, pane, pnar, said, sidebar, bar, body, panel, pane_label } }
 }
 
+// ─────────────────────────────────────── Session Studio: side panes ──
+
+/// Session Studio's side column: Diff, Side chat and Context as panes you can collapse and, in
+/// Rearrange, drag into a new order (or move with the arrow buttons / Alt + ↑ ↓).
+#[component]
+fn SsPanes(
+    files: Signal<Vec<DiffFile>>,
+    loading: bool,
+    said: Signal<String>,
+    chat0: bool,
+    arrange0: bool,
+    mode_label: String,
+    folder: String,
+) -> Element {
+    let mut said = said;
+    let mut order = use_signal(|| vec![0usize, 1, 2]);
+    let mut shown = use_signal(move || vec![true, chat0 || arrange0, arrange0]);
+    let mut arrange = use_signal(move || arrange0);
+    let mut drag = use_signal(|| None::<usize>);
+    let mut over = use_signal(|| None::<usize>);
+    let mut msgs = use_signal(|| {
+        SIDE_CHAT
+            .iter()
+            .map(|(me, t)| (*me, t.to_string()))
+            .collect::<Vec<_>>()
+    });
+    let mut q = use_signal(String::new);
+    let ord = order();
+    let sh = shown();
+    let ar = arrange();
+    let (a, r) = diff_stat(&files());
+    let mut ask = move || {
+        let t = q.peek().trim().to_string();
+        if t.is_empty() {
+            return;
+        }
+        let rep = side_reply(&t);
+        msgs.write().push((true, t));
+        msgs.write().push((false, rep.to_string()));
+        q.set(String::new());
+        said.set("Side chat answered".to_string());
+    };
+    rsx! {
+        div { class: "oxs10-ssbar",
+            for (pi, (k, l)) in PANES.iter().copied().enumerate() {
+                button { key: "{k}", r#type: "button", class: "oxs10-pchip", "aria-pressed": "{sh[pi]}",
+                    onclick: move |_| { let v = !shown.peek()[pi]; shown.write()[pi] = v; said.set(format!("{l} {}", if v { "shown" } else { "hidden" })); }, "{l}" }
+            }
+            span { class: "oxs10-grow" }
+            button { r#type: "button", class: "oxscn-btn oxs10-sbtn", "aria-pressed": "{ar}", onclick: move |_| { arrange.toggle(); said.set(if *arrange.peek() { "Rearrange: drag a pane by its handle, or use the arrows".to_string() } else { "Layout saved".to_string() }); }, {nico("grip")} span { if ar { "Done" } else { "Rearrange" } } }
+        }
+        div { class: "oxs10-panes", "data-arrange": "{ar}", role: "list", "aria-label": "Panes",
+            for (pos, pi) in ord.iter().copied().enumerate() {
+                if sh[pi] {
+                    {
+                        let (k, l) = PANES[pi];
+                        let n = ord.len();
+                        rsx! {
+                            section { key: "{k}", class: "oxs10-pn", role: "listitem", "aria-label": "{l}", "data-k": "{k}",
+                                "data-drag": "{drag() == Some(pos)}", "data-over": "{over() == Some(pos) && drag() != Some(pos)}",
+                                draggable: "{ar}",
+                                ondragstart: move |_| { drag.set(Some(pos)); },
+                                ondragover: move |e: DragEvent| { e.prevent_default(); if over.peek().as_ref() != Some(&pos) { over.set(Some(pos)); } },
+                                ondragleave: move |_| { if over.peek().as_ref() == Some(&pos) { over.set(None); } },
+                                ondrop: move |e: DragEvent| { e.prevent_default(); let f = *drag.peek(); if let Some(f) = f && move_pane(&mut order.write(), f, pos) { said.set(format!("{l} moved to place {}", pos + 1)); } drag.set(None); over.set(None); },
+                                ondragend: move |_| { drag.set(None); over.set(None); },
+                                div { class: "oxs10-pnh",
+                                    if ar {
+                                        span { class: "oxs10-grip", "aria-hidden": "true", {nico("grip")} }
+                                    }
+                                    b { class: "oxs10-ell", "{l}" }
+                                    if k == "diff" && a + r > 0 { span { class: "oxs10-st", span { class: "oxs10-add", "+{a}" } span { class: "oxs10-del", "−{r}" } } }
+                                    span { class: "oxs10-grow" }
+                                    if ar {
+                                        button { r#type: "button", class: "oxscn-ib oxs10-hb", "aria-label": "Move {l} up", disabled: pos == 0,
+                                            onclick: move |_| { if move_pane(&mut order.write(), pos, pos.saturating_sub(1)) { said.set(format!("{l} moved up")); } }, "↑" }
+                                        button { r#type: "button", class: "oxscn-ib oxs10-hb", "aria-label": "Move {l} down", disabled: pos + 1 >= n,
+                                            onclick: move |_| { if move_pane(&mut order.write(), pos, pos + 1) { said.set(format!("{l} moved down")); } }, "↓" }
+                                    } else {
+                                        button { r#type: "button", class: "oxscn-ib oxs10-hb", "aria-label": "Hide {l}", onclick: move |_| { shown.write()[pi] = false; said.set(format!("{l} hidden")); }, {nico("close")} }
+                                    }
+                                }
+                                if !ar {
+                                    div { class: "oxs10-pnb", "data-k": "{k}",
+                                        onkeydown: move |e: KeyboardEvent| {
+                                            if e.modifiers().alt() && e.key() == Key::ArrowUp && move_pane(&mut order.write(), pos, pos.saturating_sub(1)) { said.set(format!("{l} moved up")); }
+                                            if e.modifiers().alt() && e.key() == Key::ArrowDown && move_pane(&mut order.write(), pos, pos + 1) { said.set(format!("{l} moved down")); }
+                                        },
+                                        match k {
+                                            "diff" => rsx! { DiffPane { files, loading, said, title: "Diff".to_string() } },
+                                            "chat" => rsx! {
+                                                div { class: "oxs10-chat",
+                                                    p { class: "oxs10-ssub", "Ask about this session without interrupting it." }
+                                                    ul { class: "oxs10-cmsg", "aria-live": "polite",
+                                                        for (i, (me, t)) in msgs().iter().cloned().enumerate() {
+                                                            li { key: "{i}", class: "oxs10-cm", "data-me": "{me}", "{t}" }
+                                                        }
+                                                    }
+                                                    div { class: "oxs10-cin",
+                                                        input { class: "oxs10-fin", value: "{q}", placeholder: "Ask a side question", "aria-label": "Side question",
+                                                            oninput: move |e| q.set(e.value()),
+                                                            onkeydown: move |e: KeyboardEvent| if e.key() == Key::Enter { e.prevent_default(); ask(); } }
+                                                        button { r#type: "button", class: "oxs10-send", "aria-label": "Ask", disabled: q().trim().is_empty(), onclick: move |_| ask(), {nico("send")} }
+                                                    }
+                                                }
+                                            },
+                                            _ => rsx! {
+                                                dl { class: "oxs10-ctx",
+                                                    dt { "Folder" } dd { "{folder}" }
+                                                    dt { "Mode" } dd { "{mode_label}" }
+                                                    dt { "Context used" } dd { span { class: "oxs10-meter", span { style: "width:38%" } } " 38% of 200k" }
+                                                    dt { "Changed" } dd { "+{a} −{r} in {files().len()} files" }
+                                                }
+                                            },
+                                        }
+                                    }
+                                } else {
+                                    p { class: "oxs10-pnp", "Drag by the handle, or use ↑ ↓." }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if sh.iter().all(|x| !x) {
+                div { class: "oxs10-pempty", {nico("panel")} p { "All panes are hidden. Turn one on above." } }
+            }
+        }
+    }
+}
+
 // ────────────────────────────────────────────── Session Studio ──
 
 fn block_el(
@@ -1164,7 +1295,8 @@ fn SessionStudioApp(
             div { class: "oxs10-foot", {todo_el} {composer} }
         }
     };
-    let panel = rsx! { DiffPane { files, loading, said, title: "Diff".to_string() } };
+    let folder = cur.map(|s| s.2).unwrap_or("billing-svc").to_string();
+    let panel = rsx! { SsPanes { files, loading, said, chat0: own == "chat", arrange0: own == "arrange", mode_label: md.label().to_string(), folder } };
     rsx! { Frame { app: "ss", layout, height, side, drawer, pane, pnar, said, sidebar, bar, body, panel, pane_label } }
 }
 
