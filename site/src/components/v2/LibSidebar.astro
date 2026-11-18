@@ -1,5 +1,7 @@
 ---
 // The library's left sidebar: wordmark, search, site links, style, and the collapsible groups.
+// The header (wordmark, hide-sidebar toggle, search) sticks to the top of the sidebar's own scroll,
+// so it stays in reach anywhere in the long list.
 import { icon } from './icons';
 import { lockup } from './logo';
 import { components, appScreens, agentApps, counts, demoUrl, isPro, motionDemos, composedScreens } from '../../lib/data';
@@ -29,12 +31,14 @@ const groupsList = [
 ];
 ---
 <aside class="lsb" id="lsb" aria-label="Library" data-pagefind-ignore>
+  <div class="lsb-sticky">
   <div class="lsb-top">
     <a class="wm x-logo-link" href="/" aria-label="Oxyn home"><Fragment set:html={lockup} /></a>
     <button class="iconbtn lsb-hide" type="button" data-sidebar-toggle aria-label="Hide sidebar" title="Hide sidebar"><Fragment set:html={icon.panel} /></button>
     <button class="iconbtn lsb-close" type="button" data-drawer-close aria-label="Close menu"><Fragment set:html={icon.close} /></button>
   </div>
   <button class="lsb-search" type="button" data-open-search aria-label="Search (Command K)"><Fragment set:html={icon.search} /><span>Search…</span><kbd data-mod-k>⌘K</kbd></button>
+  </div>
   <nav class="lsb-nav" aria-label="Site">
     {nav.map(([l, h, i]) => (
       <a href={h} aria-current={(l === 'Library' ? libActive : current.startsWith(h)) ? 'page' : undefined}><Fragment set:html={i} />{l}</a>
@@ -79,5 +83,10 @@ const groupsList = [
     var save = function () { sessionStorage.setItem('oxyn-lsb-y', String(sb.scrollTop)); };
     addEventListener('pagehide', save);
     sb.addEventListener('click', save, true);
+    // A hairline under the sticky header once the list scrolls beneath it.
+    var head = sb.querySelector('.lsb-sticky'), stuck = null;
+    var mark = function () { var on = sb.scrollTop > 4; if (on !== stuck) { stuck = on; if (head) head.toggleAttribute('data-stuck', on); } };
+    sb.addEventListener('scroll', mark, { passive: true });
+    mark();
   })();
 </script>
