@@ -151,3 +151,23 @@ p.oxstd-think{display:flex;align-items:center;gap:8px;color:var(--oxth-mute)}
   .oxsag-tag[data-tone="live"]::before,.oxsor-dot[data-s="run"]{animation:none}
   .oxsor-card,.oxstd-prog span{transition:none}
 }
+
+/* S5: role tags, model marks, cost bars, dim finished, narrow top bar */
+.oxsor-role{align-self:flex-start;height:16px;padding:0 5px;border-radius:4px;font-size:9.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;line-height:16px;
+  color:var(--oxth-fg2);background:color-mix(in srgb,var(--oxsor-rh,var(--oxth-mute)) 16%,transparent)}
+.oxsor-role[data-role="orchestrator"]{--oxsor-rh:var(--ox-ic-running)}
+.oxsor-role[data-role="research"]{--oxsor-rh:var(--ox-ic-done)}
+.oxsor-role[data-role="writing"]{--oxsor-rh:var(--ox-ic-approval)}
+.oxsor-role[data-role="review"]{--oxsor-rh:var(--ox-ic-failed)}
+.oxsor-meta .oxsor-mdl{display:inline-flex;align-items:center;gap:5px}
+.oxsor-mdl svg{flex:none}
+.oxsor-cbar{display:block;height:3px;border-radius:2px;background:var(--oxth-line)}
+.oxsor-cbar span{display:block;height:100%;border-radius:2px;background:var(--oxth-fg2)}
+.oxsor[data-dim="true"] .oxsor-card[data-s="ok"]{opacity:.5}
+.oxsor[data-dim="true"] .oxsor-card[data-s="ok"]:hover,.oxsor[data-dim="true"] .oxsor-card[data-s="ok"][data-sel="true"]{opacity:1}
+@container (max-width: 560px){
+  .oxsor-acts .oxscn-mb{display:none}
+  .oxsor-acts{gap:4px}
+  .oxsor-pause,.oxsor-stop{width:30px;padding:0;justify-content:center}
+  .oxsor-live{display:none}
+}

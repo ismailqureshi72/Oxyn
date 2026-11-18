@@ -160,6 +160,7 @@ pub use parity::{
     ToolCallGroup, ToolCallList, ToolChips, ToolKindLegend,
 };
 pub use parity::{ConflictRadar, MergeConflict};
+pub use parity::{EvalsScreen, s5_states};
 pub use parity::{GhostText, LabeledInput, LabeledTextarea, TextArea};
 pub use parity::{InboxBoardScreen, InboxScreen, MemoryScreen, TasksScreen};
 pub use primitives::{

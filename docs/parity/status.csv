@@ -109,7 +109,7 @@ affectUI,Agent / Agents,https://www.affectui.com/screens/agents,Screens · App s
 affectUI,Agent / Inbox,https://www.affectui.com/screens/inbox,Screens · App screens,Pro,inbox,S1,S3,built
 affectUI,Agent / Inbox Board,https://www.affectui.com/screens/agent-inbox-board,Screens · App screens,Pro,agent-inbox-board,S1,S3,built
 affectUI,Agent / Memory,https://www.affectui.com/screens/agent-memory,Screens · App screens,Pro,agent-memory,S1,S3,built
-affectUI,Agent / Orchestration,https://www.affectui.com/screens/agent-orchestration,Screens · App screens,Pro,"subagent-tree, trace-view",S2,#39,planned
+affectUI,Agent / Orchestration,https://www.affectui.com/screens/agent-orchestration,Screens · App screens,Pro,agent-orchestration,S2,S5,built
 affectUI,Agent / Permissions,https://www.affectui.com/screens/agent-permissions,Screens · App screens,Pro,agent-permissions,,S4,built
 affectUI,Agent / Run Detail,https://www.affectui.com/screens/agent-run-detail,Screens · App screens,Pro,agent-run-detail,,S4,built
 affectUI,Agent / Schedules,https://www.affectui.com/screens/agent-schedules,Screens · App screens,Pro,agent-schedules,S2,S4,built
@@ -127,7 +127,7 @@ affectUI,Analytics,https://www.affectui.com/screens/analytics,Screens · App scr
 affectUI,App Shell Flat,https://www.affectui.com/screens/app-shell-flat,Screens · App screens,Pro,workspace-chrome,,#27,built
 affectUI,App Shell Inset,https://www.affectui.com/screens/app-shell,Screens · App screens,Pro,workspace-chrome,,#27,built
 affectUI,CRM,https://www.affectui.com/screens/crm,Screens · App screens,Pro,crm,S7,S2,built
-affectUI,Evals,https://www.affectui.com/screens/evals,Screens · App screens,Pro,trace-view,S2,#39,planned
+affectUI,Evals,https://www.affectui.com/screens/evals,Screens · App screens,Pro,evals,S2,S5,built
 affectUI,Folders / Detail,https://www.affectui.com/screens/folder,Screens · App screens,Pro,folders-detail,S7,S2,built
 affectUI,Folders / Overview,https://www.affectui.com/screens/files,Screens · App screens,Pro,folders-overview,S7,S2,built
 affectUI,Integrations,https://www.affectui.com/screens/integrations,Screens · App screens,Pro,integrations,S8,S2,built
@@ -146,7 +146,7 @@ affectUI,Settings / Privacy,https://www.affectui.com/screens/settings-privacy,Sc
 affectUI,Settings / Profile,https://www.affectui.com/screens/settings-profile,Screens · App screens,Pro,NEW,S4,#40,planned
 affectUI,Settings / Security,https://www.affectui.com/screens/settings-security,Screens · App screens,Pro,NEW,S5,#40,planned
 affectUI,Settings / Teams,https://www.affectui.com/screens/settings-members,Screens · App screens,Pro,NEW,S5,#40,planned
-affectUI,Workflow Builder,https://www.affectui.com/screens/workflow-builder,Screens · App screens,Pro,genui-renderer,S8,#41,planned
+affectUI,Workflow Builder,https://www.affectui.com/screens/workflow-builder,Screens · App screens,Pro,workflow,S8,S5,built
 affectUI,Agent Gallery,https://www.affectui.com/blocks/agent-gallery,Blocks · Feature sections,Pro,NEW,K3,#43,planned
 affectUI,App Directory,https://www.affectui.com/blocks/app-directory,Blocks · Integrations,Pro,mcp-plugin-list,K2,#41,planned
 affectUI,Client Context,https://www.affectui.com/blocks/client-context,Blocks · Productivity,Pro,NEW,K2,#41,planned
@@ -693,7 +693,7 @@ Oxyn,Theme Selector · App icon,,Theme Selector,Free,app-icon-picker,variants-3,
 Oxyn,Theme Selector · Display comfort,,Theme Selector,Free,display-comfort,variants-3,#41,built
 Oxyn,Screens · App shell · Inset,,Screens,Free,shell-inset,screens-1,#42,built
 Oxyn,Screens · App shell · Flat,,Screens,Free,shell-flat,screens-1,#42,built
-Oxyn,Screens · Three-pane shell,,Screens,Free,shell-three-pane,screens-1,#42,built
+Oxyn,Screens · Three-pane shell (Oxyn extra; no affectUI counterpart),,Screens,Free,shell-three-pane,screens-1,S5,built
 Oxyn,Screens · AI Chat · Start,,Screens,Free,chat-start,screens-1,S1,built
 Oxyn,Screens · AI Chat · Overview,,Screens,Free,chat-overview,screens-1,S1,built
 Oxyn,Screens · AI Chat · Agents,,Screens,Free,chat-agents,screens-1,S1,built
