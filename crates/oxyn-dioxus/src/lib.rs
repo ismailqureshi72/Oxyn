@@ -118,6 +118,7 @@ pub use parity::s2_states;
 pub use parity::s3_states;
 pub use parity::s4_states;
 pub use parity::s6_states;
+pub use parity::s8_states;
 pub use parity::{
     ActionSwapButton, InViewTitle, LoadingState, SlotReels, Source, StreamingText, SweepText,
     TextMorph, ThinkingLoader, WordReveal,
@@ -169,6 +170,9 @@ pub use parity::{ConflictRadar, MergeConflict};
 pub use parity::{EvalsScreen, s5_states};
 pub use parity::{GhostText, LabeledInput, LabeledTextarea, TextArea};
 pub use parity::{InboxBoardScreen, InboxScreen, MemoryScreen, TasksScreen};
+pub use parity::{
+    OnboardingBrandScreen, OnboardingReadyScreen, OnboardingToneScreen, OnboardingWebsiteScreen,
+};
 pub use primitives::{
     Accordion, AccordionItem, Breadcrumb, ChipGroup, CodeBlock, CopyButton, Dock, Drawer,
     EmptyPreset, ExpandableText, HoverCard, NotificationCenter, PageHeader, PaneView, PresenceDot,

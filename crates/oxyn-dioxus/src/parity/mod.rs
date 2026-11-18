@@ -42,6 +42,7 @@ mod meters;
 mod modeleffid;
 mod monitorfid;
 mod nozzlefid;
+mod onbscr;
 mod opsscr;
 mod parallelfid;
 mod planfid;
@@ -127,6 +128,10 @@ pub use meters::{ContextField, ContextWindowGrid, CtxModel, Gauge, SplitBar, Usa
 pub use modeleffid::ModelEffortMenu;
 pub use monitorfid::AgentMonitor;
 pub use nozzlefid::NozzleSlider;
+pub use onbscr::{
+    OnboardingBrandScreen, OnboardingReadyScreen, OnboardingToneScreen, OnboardingWebsiteScreen,
+    s8_states,
+};
 pub use opsscr::{
     AgentsScreen, PermissionsScreen, RunDetailScreen, SchedulesScreen, SkillsScreen, UsageScreen,
     s4_states,
