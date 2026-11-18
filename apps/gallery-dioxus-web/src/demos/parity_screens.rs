@@ -1,5 +1,5 @@
 //! Screens demos (#42 Screens 1, Screens 2): app frames (Inset, Flat, three-pane) and the AI Chat screens (Start, Overview,
-//! Agents, Double sidebar, Progress, Run) Folders (Overview, Detail), Integrations, Kanban, CRM, the Workflow builder and the Settings shell, then the agent screens (Orchestration; S3: Thread, Inbox, Inbox Board, Tasks, Activity, Memory; S4: Agents, Skills, Schedules, Usage, Permissions, Run Detail; S5: Evals and the upgraded Orchestration and Workflow Builder). Every screen has Sample / Loading / Empty data and an
+//! Agents, Double sidebar, Progress, Run) Folders (Overview, Detail), Integrations, Kanban, CRM, the Workflow builder and the Settings shell, then the agent screens (Orchestration; S3: Thread, Inbox, Inbox Board, Tasks, Activity, Memory; S4: Agents, Skills, Schedules, Usage, Permissions, Run Detail; S5: Evals and the upgraded Orchestration and Workflow Builder; S6: Settings Profile, Preferences, Notifications, Privacy and General). Every screen has Sample / Loading / Empty data and an
 //! Inset / Flat frame; light and dark follow the page theme.
 
 use dioxus::prelude::*;
@@ -11,6 +11,10 @@ use oxyn_dioxus::{
     IntegrationsScreen, KanbanScreen, MemoryScreen, OrchestrationScreen, PermissionsScreen,
     RailShellScreen, RunDetailScreen, SchedulesScreen, ScreenStage, SettingsScreen, SkillsScreen,
     TasksScreen, UsageScreen, WorkflowScreen, s2_states, s3_states, s4_states, s5_states,
+};
+use oxyn_dioxus::{
+    GeneralSettingsScreen, NotificationsSettingsScreen, PreferencesSettingsScreen,
+    PrivacySettingsScreen, ProfileSettingsScreen, s6_states,
 };
 
 use super::{Code, mk, sel, var};
@@ -2935,6 +2939,498 @@ fn evals_screen_demo() -> Demo {
     }
 }
 
+fn s6_key(slug: &str, label: &str) -> String {
+    s6_states(slug)
+        .iter()
+        .find(|(_, l)| l.eq_ignore_ascii_case(label))
+        .map(|(k, _)| k.to_string())
+        .unwrap_or_else(|| low(label))
+}
+// ---------- Settings · Profile ----------
+
+fn set_profile_screen(v: &Vals, _now: ClockMs) -> Element {
+    let (_, lay, key) = frame(v);
+    let st = s6_key("settings-profile", v.s("data"));
+    let key = format!("{key}-{}-{}", v.b("x1"), v.b("x2"));
+    let (a, b) = (v.b("x1"), v.b("x2"));
+    rsx! {
+        div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
+            ScreenStage { state: st, states: s6_states("settings-profile"), screen: move |s: String| rsx! { ProfileSettingsScreen { layout: lay.clone(), state: s, compact: a, autosave: b } } }
+        }
+    }
+}
+
+fn set_profile_code(v: &Vals) -> String {
+    let c = Code::new("ProfileSettingsScreen")
+        .s("layout", &low(v.s("frame")), "inset")
+        .s("state", &s6_key("settings-profile", v.s("data")), "sample");
+    let c = c.b("compact", v.b("x1")).b("autosave", v.b("x2"));
+    c.done()
+}
+
+fn set_profile_demo() -> Demo {
+    let mut c = controls_x("inset", &["Unsaved"]);
+    c.push(super::tog("x1", "Compact rows", false));
+    c.push(super::tog("x2", "Save at once", false));
+    Demo {
+        controls: c,
+        variants: vec![
+            var("sample", "Sample data in the Inset frame.", &[]),
+            var(
+                "flat",
+                "The same screen in the Flat frame.",
+                &[("frame", "Flat")],
+            ),
+            var(
+                "loading",
+                "Skeletons where the settings will land.",
+                &[("data", "Loading")],
+            ),
+            var(
+                "empty",
+                "A new account: blank fields and the defaults.",
+                &[("data", "Empty")],
+            ),
+            var(
+                "unsaved",
+                "Opened with edits pending: the save bar counts them; Discard or Save.",
+                &[("data", "Unsaved")],
+            ),
+            var(
+                "x1",
+                "Oxyn: compact rows without hints, and a card that shows how others see you.",
+                &[("x1", "true")],
+            ),
+            var(
+                "x2",
+                "Oxyn: every valid change is saved at once, no save bar.",
+                &[("x2", "true")],
+            ),
+        ],
+        render: set_profile_screen,
+        code: set_profile_code,
+        keyboard: vec![
+            (
+                "Tab",
+                "Sidebar, search, page, then each field in reading order",
+            ),
+            ("Enter in search", "Open the first page with a match"),
+            ("← / → in Time format", "Move between 12-hour and 24-hour"),
+            (
+                "Escape",
+                "Close a menu or the password form; clear the search",
+            ),
+        ],
+        a11y: vec![
+            "The settings sidebar is a labelled nav with aria-current on this page; matches while searching show as counts.",
+            "Every field has a label; a field with a problem is aria-invalid with its message beside it; the password meter is a polite live region.",
+            "Every action reports what it did in a polite live region; skeletons are aria-hidden.",
+        ],
+        responsive: vec![
+            "Authored on the 1440 × 900 canvas; the full view lays it out at the real width.",
+            "Under 640 px the settings sidebar slides in from the menu button.",
+            "Under 560 px rows put their control under the label and tiles go one per row.",
+        ],
+        height: 240,
+        live: false,
+        align: Align::Start,
+        ..mk(
+            "settings-profile",
+            "Settings · Profile",
+            CAT,
+            "Settings / Profile in the settings shell: picture, full name, role and email rows (email changes confirm by link), time zone, 12- or 24-hour clock and first day of the week, personal context with a counter, and sign-in: Google connected (official mark) and Add password with a strength meter. Edits collect in a save bar.",
+            "ProfileSettingsScreen",
+            "ProfileSettingsEl",
+            "settings-profile",
+            "parity/setscr.rs",
+        )
+    }
+}
+
+// ---------- Settings · Preferences ----------
+
+fn set_preferences_screen(v: &Vals, _now: ClockMs) -> Element {
+    let (_, lay, key) = frame(v);
+    let st = s6_key("settings-preferences", v.s("data"));
+    let key = format!("{key}-{}-{}", v.b("x1"), v.b("x2"));
+    let (a, b) = (v.b("x1"), v.b("x2"));
+    rsx! {
+        div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
+            ScreenStage { state: st, states: s6_states("settings-preferences"), screen: move |s: String| rsx! { PreferencesSettingsScreen { layout: lay.clone(), state: s, compact: a, autosave: b } } }
+        }
+    }
+}
+
+fn set_preferences_code(v: &Vals) -> String {
+    let c = Code::new("PreferencesSettingsScreen")
+        .s("layout", &low(v.s("frame")), "inset")
+        .s(
+            "state",
+            &s6_key("settings-preferences", v.s("data")),
+            "sample",
+        );
+    let c = c.b("compact", v.b("x1")).b("autosave", v.b("x2"));
+    c.done()
+}
+
+fn set_preferences_demo() -> Demo {
+    let mut c = controls_x("inset", &["Memory off"]);
+    c.push(super::tog("x1", "Compact rows", false));
+    c.push(super::tog("x2", "Save at once", false));
+    Demo {
+        controls: c,
+        variants: vec![
+            var("sample", "Sample data in the Inset frame.", &[]),
+            var(
+                "flat",
+                "The same screen in the Flat frame.",
+                &[("frame", "Flat")],
+            ),
+            var(
+                "loading",
+                "Skeletons where the settings will land.",
+                &[("data", "Loading")],
+            ),
+            var(
+                "empty",
+                "A new account: blank fields and the defaults.",
+                &[("data", "Empty")],
+            ),
+            var(
+                "memoff",
+                "Memory switched off: kept facts are not shown or used.",
+                &[("data", "Memory off")],
+            ),
+            var("x1", "Oxyn: compact rows without hints.", &[("x1", "true")]),
+            var(
+                "x2",
+                "Oxyn: every valid change is saved at once, no save bar.",
+                &[("x2", "true")],
+            ),
+        ],
+        render: set_preferences_screen,
+        code: set_preferences_code,
+        keyboard: vec![
+            (
+                "Tab",
+                "Sidebar, search, page, then each control in reading order",
+            ),
+            ("Enter or Space on a tile", "Turn that tool on or off"),
+            ("← / → in Appearance", "Move between System, Light and Dark"),
+            ("Escape", "Close a menu or the Clear all confirmation"),
+        ],
+        a11y: vec![
+            "Appearance is a radiogroup; each tool switch is named by its tool.",
+            "Clear all asks first and moves focus to its confirm button.",
+            "Every action reports what it did in a polite live region; skeletons are aria-hidden.",
+        ],
+        responsive: vec![
+            "Authored on the 1440 × 900 canvas; the full view lays it out at the real width.",
+            "Under 640 px the settings sidebar slides in from the menu button.",
+            "Under 560 px rows put their control under the label and tiles go one per row.",
+        ],
+        height: 240,
+        live: false,
+        align: Align::Start,
+        ..mk(
+            "settings-preferences",
+            "Settings · Preferences",
+            CAT,
+            "Settings / Preferences: the default model (Auto shows how it picks, official model marks), language, System / Light / Dark tiles, chat tools as tiles with switches (Web search, Image generation, Code runner, Canvas), custom instructions with a counter and answer length, and memory with each kept fact, Forget and Clear all (asks first).",
+            "PreferencesSettingsScreen",
+            "PreferencesSettingsEl",
+            "settings-preferences",
+            "parity/setscr.rs",
+        )
+    }
+}
+
+// ---------- Settings · Notifications ----------
+
+fn set_notifications_screen(v: &Vals, _now: ClockMs) -> Element {
+    let (_, lay, key) = frame(v);
+    let st = s6_key("settings-notifications", v.s("data"));
+    let key = format!("{key}-{}-{}", v.b("x1"), v.b("x2"));
+    let (a, b) = (v.b("x1"), v.b("x2"));
+    rsx! {
+        div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
+            ScreenStage { state: st, states: s6_states("settings-notifications"), screen: move |s: String| rsx! { NotificationsSettingsScreen { layout: lay.clone(), state: s, compact: a, autosave: b } } }
+        }
+    }
+}
+
+fn set_notifications_code(v: &Vals) -> String {
+    let c = Code::new("NotificationsSettingsScreen")
+        .s("layout", &low(v.s("frame")), "inset")
+        .s(
+            "state",
+            &s6_key("settings-notifications", v.s("data")),
+            "sample",
+        );
+    let c = c.b("compact", v.b("x1")).b("autosave", v.b("x2"));
+    c.done()
+}
+
+fn set_notifications_demo() -> Demo {
+    let mut c = controls_x("inset", &["Quiet now"]);
+    c.push(super::tog("x1", "Compact rows", false));
+    c.push(super::tog("x2", "Save at once", false));
+    Demo {
+        controls: c,
+        variants: vec![
+            var("sample", "Sample data in the Inset frame.", &[]),
+            var(
+                "flat",
+                "The same screen in the Flat frame.",
+                &[("frame", "Flat")],
+            ),
+            var(
+                "loading",
+                "Skeletons where the settings will land.",
+                &[("data", "Loading")],
+            ),
+            var(
+                "empty",
+                "A new account: blank fields and the defaults.",
+                &[("data", "Empty")],
+            ),
+            var(
+                "quiet",
+                "Quiet hours in force, with End now.",
+                &[("data", "Quiet now")],
+            ),
+            var("x1", "Oxyn: compact rows without hints.", &[("x1", "true")]),
+            var(
+                "x2",
+                "Oxyn: every valid change is saved at once, no save bar.",
+                &[("x2", "true")],
+            ),
+        ],
+        render: set_notifications_screen,
+        code: set_notifications_code,
+        keyboard: vec![
+            ("Tab", "Sidebar, page, digest, then the table row by row"),
+            (
+                "Space on a cell",
+                "Turn that channel on or off for the kind",
+            ),
+            (
+                "Enter on a column header",
+                "Turn the whole column on, or off when it is all on",
+            ),
+            ("Escape", "Close an open menu"),
+        ],
+        a11y: vec![
+            "The grid is a table with column and row headers; every checkbox is named by kind and channel.",
+            "Day pills are toggle buttons (aria-pressed); the quiet-hours line says the window in words.",
+            "Every action reports what it did in a polite live region; skeletons are aria-hidden.",
+        ],
+        responsive: vec![
+            "Authored on the 1440 × 900 canvas; the full view lays it out at the real width.",
+            "Under 640 px the settings sidebar slides in from the menu button.",
+            "Under 560 px rows put their control under the label and tiles go one per row.",
+        ],
+        height: 240,
+        live: false,
+        align: Align::Start,
+        ..mk(
+            "settings-notifications",
+            "Settings · Notifications",
+            CAT,
+            "Settings / Notifications: a daily digest (switch, time, days as toggle pills, one line that says when), a table of six kinds (approvals amber, finished green, failed red, mentions blue) by Email / Mobile / Inbox where a column header toggles the whole column, quiet hours with from–to and whether approvals still come through, and a test send.",
+            "NotificationsSettingsScreen",
+            "NotificationsSettingsEl",
+            "settings-notifications",
+            "parity/setscr.rs",
+        )
+    }
+}
+
+// ---------- Settings · Privacy ----------
+
+fn set_privacy_screen(v: &Vals, _now: ClockMs) -> Element {
+    let (_, lay, key) = frame(v);
+    let st = s6_key("settings-privacy", v.s("data"));
+    let key = format!("{key}-{}-{}", v.b("x1"), v.b("x2"));
+    let (a, b) = (v.b("x1"), v.b("x2"));
+    rsx! {
+        div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
+            ScreenStage { state: st, states: s6_states("settings-privacy"), screen: move |s: String| rsx! { PrivacySettingsScreen { layout: lay.clone(), state: s, compact: a, autosave: b } } }
+        }
+    }
+}
+
+fn set_privacy_code(v: &Vals) -> String {
+    let c = Code::new("PrivacySettingsScreen")
+        .s("layout", &low(v.s("frame")), "inset")
+        .s("state", &s6_key("settings-privacy", v.s("data")), "sample");
+    let c = c.b("compact", v.b("x1")).b("autosave", v.b("x2"));
+    c.done()
+}
+
+fn set_privacy_demo() -> Demo {
+    let mut c = controls_x("inset", &["Exporting"]);
+    c.push(super::tog("x1", "Compact rows", false));
+    c.push(super::tog("x2", "Save at once", false));
+    Demo {
+        controls: c,
+        variants: vec![
+            var("sample", "Sample data in the Inset frame.", &[]),
+            var(
+                "flat",
+                "The same screen in the Flat frame.",
+                &[("frame", "Flat")],
+            ),
+            var(
+                "loading",
+                "Skeletons where the settings will land.",
+                &[("data", "Loading")],
+            ),
+            var(
+                "empty",
+                "A new account: blank fields and the defaults.",
+                &[("data", "Empty")],
+            ),
+            var(
+                "exporting",
+                "An export running step by step to its link.",
+                &[("data", "Exporting")],
+            ),
+            var("x1", "Oxyn: compact rows without hints.", &[("x1", "true")]),
+            var(
+                "x2",
+                "Oxyn: every valid change is saved at once, no save bar.",
+                &[("x2", "true")],
+            ),
+        ],
+        render: set_privacy_screen,
+        code: set_privacy_code,
+        keyboard: vec![
+            ("Tab", "Sidebar, page, then each control in reading order"),
+            (
+                "← / → in the link tabs",
+                "Move between workspace and public links",
+            ),
+            ("Enter on Export", "Start the export"),
+            ("Escape", "Close the delete confirmation"),
+        ],
+        a11y: vec![
+            "Link scopes are a tablist with counts; each session and link action names its target.",
+            "The export is a progressbar with its current step in words; Delete all chats needs the word typed.",
+            "Every action reports what it did in a polite live region; skeletons are aria-hidden.",
+        ],
+        responsive: vec![
+            "Authored on the 1440 × 900 canvas; the full view lays it out at the real width.",
+            "Under 640 px the settings sidebar slides in from the menu button.",
+            "Under 560 px rows put their control under the label and tiles go one per row.",
+        ],
+        height: 240,
+        live: false,
+        align: Align::Start,
+        ..mk(
+            "settings-privacy",
+            "Settings · Privacy",
+            CAT,
+            "Settings / Privacy: switches for model training, product analytics and ad measurement, cookies and product emails, active sessions with Sign out (one, or all others), shared links in two tabs (In the workspace, Public links) with Copy link and Stop sharing, Export your data as a stepped progress, and Delete all chats (type delete to confirm).",
+            "PrivacySettingsScreen",
+            "PrivacySettingsEl",
+            "settings-privacy",
+            "parity/setscr.rs",
+        )
+    }
+}
+
+// ---------- Settings · General ----------
+
+fn set_general_screen(v: &Vals, _now: ClockMs) -> Element {
+    let (_, lay, key) = frame(v);
+    let st = s6_key("settings-general", v.s("data"));
+    let key = format!("{key}-{}-{}", v.b("x1"), v.b("x2"));
+    let (a, b) = (v.b("x1"), v.b("x2"));
+    rsx! {
+        div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
+            ScreenStage { state: st, states: s6_states("settings-general"), screen: move |s: String| rsx! { GeneralSettingsScreen { layout: lay.clone(), state: s, compact: a, autosave: b } } }
+        }
+    }
+}
+
+fn set_general_code(v: &Vals) -> String {
+    let c = Code::new("GeneralSettingsScreen")
+        .s("layout", &low(v.s("frame")), "inset")
+        .s("state", &s6_key("settings-general", v.s("data")), "sample");
+    let c = c.b("compact", v.b("x1")).b("autosave", v.b("x2"));
+    c.done()
+}
+
+fn set_general_demo() -> Demo {
+    let mut c = controls_x("inset", &["Deleting"]);
+    c.push(super::tog("x1", "Compact rows", false));
+    c.push(super::tog("x2", "Save at once", false));
+    Demo {
+        controls: c,
+        variants: vec![
+            var("sample", "Sample data in the Inset frame.", &[]),
+            var(
+                "flat",
+                "The same screen in the Flat frame.",
+                &[("frame", "Flat")],
+            ),
+            var(
+                "loading",
+                "Skeletons where the settings will land.",
+                &[("data", "Loading")],
+            ),
+            var(
+                "empty",
+                "A new account: blank fields and the defaults.",
+                &[("data", "Empty")],
+            ),
+            var(
+                "deleting",
+                "Delete workspace opened: the name has to be typed in full.",
+                &[("data", "Deleting")],
+            ),
+            var("x1", "Oxyn: compact rows without hints.", &[("x1", "true")]),
+            var(
+                "x2",
+                "Oxyn: every valid change is saved at once, no save bar.",
+                &[("x2", "true")],
+            ),
+        ],
+        render: set_general_screen,
+        code: set_general_code,
+        keyboard: vec![
+            ("Tab", "Sidebar, page, then each field in reading order"),
+            ("← / → in Icon colour", "Move between the six hues"),
+            ("Enter on Use …", "Take the suggested address"),
+            ("Escape", "Close the delete confirmation"),
+        ],
+        a11y: vec![
+            "The address field says why it cannot be used, or that it is available, next to it.",
+            "Icon colour is a radiogroup named by hue; Delete workspace needs the exact name typed.",
+            "Every action reports what it did in a polite live region; skeletons are aria-hidden.",
+        ],
+        responsive: vec![
+            "Authored on the 1440 × 900 canvas; the full view lays it out at the real width.",
+            "Under 640 px the settings sidebar slides in from the menu button.",
+            "Under 560 px rows put their control under the label and tiles go one per row.",
+        ],
+        height: 240,
+        live: false,
+        align: Align::Start,
+        ..mk(
+            "settings-general",
+            "Settings · General",
+            CAT,
+            "Settings / General: the workspace icon (initials on an identity hue you pick), name, and address that follows the name until edited, with live checks (taken, too short, characters) and a suggestion; company context with a counter; who new chats are visible to; and a danger zone where Delete workspace asks for the name.",
+            "GeneralSettingsScreen",
+            "GeneralSettingsEl",
+            "settings-general",
+            "parity/setscr.rs",
+        )
+    }
+}
+
 pub(crate) fn demos() -> Vec<Demo> {
     vec![
         shell_inset_demo(),
@@ -2968,5 +3464,10 @@ pub(crate) fn demos() -> Vec<Demo> {
         permissions_screen_demo(),
         run_detail_screen_demo(),
         evals_screen_demo(),
+        set_profile_demo(),
+        set_preferences_demo(),
+        set_notifications_demo(),
+        set_privacy_demo(),
+        set_general_demo(),
     ]
 }
