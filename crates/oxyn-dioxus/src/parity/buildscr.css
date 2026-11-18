@@ -86,12 +86,12 @@
 .oxscn-body:has(>.oxev){container:oxev/inline-size}
 @container (max-width: 760px){
   .oxev-last{display:none}
-}
-@container (max-width: 560px){
   .oxev-model .oxscn-btn-l{display:none}
-  .oxev-crumbs{gap:4px;margin-left:2px;flex:none}
   .oxev-run .oxscn-btn-l{display:none}
   .oxev-run{width:30px;padding:0;justify-content:center}
+}
+@container (max-width: 560px){
+  .oxev-crumbs{gap:4px;margin-left:2px;flex:none}
 }
 @container oxev (max-width: 1000px){
   .oxev-mid{grid-template-columns:minmax(0,1fr)}
