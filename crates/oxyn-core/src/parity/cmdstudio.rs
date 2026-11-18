@@ -264,10 +264,14 @@ pub fn sample_threads() -> Vec<Thread> {
     ]
 }
 
-/// The threads for a data state.
+/// The threads for a data state (each sample thread's line counts come from its own diff).
 pub fn threads(st: ScreenState) -> Vec<Thread> {
     if st == ScreenState::Sample {
-        sample_threads()
+        let mut l = sample_threads();
+        for t in l.iter_mut() {
+            t.stat = diff_stat(&thread_diff(t.id));
+        }
+        l
     } else {
         Vec::new()
     }
@@ -373,8 +377,151 @@ fn hk(head: &'static str, lines: &[(char, &'static str)]) -> Hunk {
     }
 }
 
-/// The open Command Center thread's changes.
+/// The open Command Center thread's changes (thread 1).
 pub fn cc_diff() -> Vec<DiffFile> {
+    thread_diff(OPEN_THREAD)
+}
+
+fn one(
+    path: &'static str,
+    new: bool,
+    head: &'static str,
+    lines: &[(char, &'static str)],
+) -> DiffFile {
+    DiffFile {
+        path,
+        new,
+        hunks: vec![hk(head, lines)],
+    }
+}
+
+/// Each sample thread's own changes (empty for threads you start).
+pub fn thread_diff(id: u32) -> Vec<DiffFile> {
+    match id {
+        1 => thread1_diff(),
+        2 => vec![
+            one(
+                "src/api/audit.rs",
+                false,
+                "@@ -14,8 +14,15 @@ pub async fn list",
+                &[
+                    (
+                        ' ',
+                        "pub async fn list(q: Query<AuditQuery>) -> Json<Page<Entry>> {",
+                    ),
+                    ('-', "    let rows = db::audit::all().await?;"),
+                    ('-', "    Json(rows)"),
+                    ('+', "    let limit = q.limit.unwrap_or(50).min(200);"),
+                    (
+                        '+',
+                        "    let rows = db::audit::after(q.cursor, limit + 1).await?;",
+                    ),
+                    (
+                        '+',
+                        "    let next = (rows.len() > limit).then(|| rows[limit - 1].id);",
+                    ),
+                    (
+                        '+',
+                        "    Json(Page { items: rows.into_iter().take(limit).collect(), next })",
+                    ),
+                    (' ', "}"),
+                ],
+            ),
+            one(
+                "src/api/page.rs",
+                true,
+                "@@ -0,0 +1,5 @@",
+                &[
+                    ('+', "#[derive(Serialize)]"),
+                    ('+', "pub struct Page<T> {"),
+                    ('+', "    pub items: Vec<T>,"),
+                    ('+', "    pub next: Option<i64>,"),
+                    ('+', "}"),
+                ],
+            ),
+        ],
+        3 => vec![one(
+            "tests/webhook.rs",
+            false,
+            "@@ -30,6 +30,7 @@ async fn delivers_once",
+            &[
+                (' ', "    let hook = server.hook(\"/paid\").await;"),
+                ('-', "    sleep(Duration::from_millis(50)).await;"),
+                ('+', "    hook.wait_for(1, Duration::from_secs(2)).await;"),
+                (
+                    '+',
+                    "    // Wait for the delivery instead of a fixed sleep (was flaky on CI).",
+                ),
+                (' ', "    assert_eq!(hook.count(), 1);"),
+            ],
+        )],
+        4 => vec![
+            one(
+                "web/settings/theme.css",
+                false,
+                "@@ -1,4 +1,12 @@",
+                &[
+                    (' ', ":root {"),
+                    ('-', "  --bg: #fff;"),
+                    ('+', "  --bg: light-dark(#fff, #111);"),
+                    ('+', "  --fg: light-dark(#111, #eee);"),
+                    ('+', "  --line: light-dark(#e5e5e5, #2a2a2a);"),
+                    ('+', "  color-scheme: light dark;"),
+                    (' ', "}"),
+                ],
+            ),
+            one(
+                "web/settings/Toggle.tsx",
+                true,
+                "@@ -0,0 +1,4 @@",
+                &[
+                    ('+', "export function ThemeToggle() {"),
+                    ('+', "  const [t, setT] = useTheme();"),
+                    (
+                        '+',
+                        "  return <Switch label=\"Dark mode\" checked={t === \"dark\"} onChange={setT} />;",
+                    ),
+                    ('+', "}"),
+                ],
+            ),
+        ],
+        5 => vec![one(
+            "web/photos/Grid.tsx",
+            false,
+            "@@ -18,9 +18,6 @@ export function Grid",
+            &[
+                (' ', "  return photos.map((p) => ("),
+                ('-', "    <img src={p.url} width={p.w} height={p.h} />"),
+                ('-', "    // TODO: lazy load"),
+                ('-', "    // (all images load at once today)"),
+                (
+                    '+',
+                    "    <img src={p.url} width={p.w} height={p.h} loading=\"lazy\" decoding=\"async\" />",
+                ),
+                (' ', "  ));"),
+            ],
+        )],
+        6 => vec![one(
+            "src/export/markdown.rs",
+            true,
+            "@@ -0,0 +1,6 @@",
+            &[
+                ('+', "pub fn to_markdown(n: &Note) -> String {"),
+                ('+', "    let mut s = format!(\"# {}\\n\\n\", n.title);"),
+                ('+', "    s.push_str(&n.body);"),
+                (
+                    '+',
+                    "    for t in &n.tags { s.push_str(&format!(\"\\n#{t}\")); }",
+                ),
+                ('+', "    s"),
+                ('+', "}"),
+            ],
+        )],
+        _ => Vec::new(),
+    }
+}
+
+fn thread1_diff() -> Vec<DiffFile> {
     vec![
         DiffFile {
             path: "src/upload/client.rs",
@@ -866,6 +1013,82 @@ pub fn toggle_todo(t: &mut [(String, BState)], i: usize) -> bool {
 
 /// The open session's diff (for the diff pane).
 pub fn ss_diff() -> Vec<DiffFile> {
+    session_diff(1)
+}
+
+/// Each sample session's own changes (empty for sessions you start).
+pub fn session_diff(id: u32) -> Vec<DiffFile> {
+    match id {
+        1 => session1_diff(),
+        2 => vec![one(
+            "jobs/sync.py",
+            false,
+            "@@ -40,7 +40,8 @@ def sync_all():",
+            &[
+                (' ', "def sync_all():"),
+                ('-', "    for acct in Account.objects.all():"),
+                (
+                    '+',
+                    "    accts = Account.objects.select_related(\"plan\").only(\"id\", \"plan\")",
+                ),
+                ('+', "    for acct in accts.iterator(chunk_size=500):"),
+                (' ', "        sync(acct)"),
+            ],
+        )],
+        3 => vec![
+            one(
+                "src/forms/signup.ts",
+                false,
+                "@@ -3,6 +3,6 @@",
+                &[
+                    ('-', "import { validate } from \"../old-validator\";"),
+                    ('+', "import { v } from \"@atlas/validator\";"),
+                    (' ', "export const signup = form({"),
+                    ('-', "  email: validate.email(),"),
+                    ('+', "  email: v.string().email(),"),
+                ],
+            ),
+            one(
+                "src/forms/billing.ts",
+                false,
+                "@@ -5,4 +5,4 @@",
+                &[
+                    ('-', "  zip: validate.pattern(/^\\d{5}$/),"),
+                    ('+', "  zip: v.string().regex(/^\\d{5}$/),"),
+                ],
+            ),
+        ],
+        4 => vec![one(
+            "src/cli/help.rs",
+            false,
+            "@@ -1,3 +1,8 @@",
+            &[
+                (' ', "pub const HELP: &str = \"\\"),
+                ('+', "tidy: keep a folder neat\\n\\n\\"),
+                ('+', "USAGE: tidy [OPTIONS] <DIR>\\n\\n\\"),
+                ('+', "  -n, --dry-run   show what would move\\n\\"),
+                (
+                    '+',
+                    "  -r, --rules     a rules file (default .tidy.toml)\\n\\",
+                ),
+                ('+', "\";"),
+            ],
+        )],
+        5 => vec![one(
+            "src/http/health.rs",
+            true,
+            "@@ -0,0 +1,3 @@",
+            &[
+                ('+', "pub async fn health() -> &'static str {"),
+                ('+', "    \"ok\""),
+                ('+', "}"),
+            ],
+        )],
+        _ => Vec::new(),
+    }
+}
+
+fn session1_diff() -> Vec<DiffFile> {
     vec![
         DiffFile {
             path: "src/invoices/pdf.ts",
