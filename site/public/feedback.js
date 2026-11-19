@@ -4,6 +4,8 @@
   const dlg = document.getElementById('feedback');
   if (!dlg || dlg.dataset.ready) return;
   dlg.dataset.ready = '1';
+  // Starlight renders the panel inside its fixed header, which would be the panel's containing block.
+  if (dlg.parentElement !== document.body) document.body.appendChild(dlg);
   const form = dlg.querySelector('form');
   const $ = (s) => dlg.querySelector(s);
   const kinds = [...dlg.querySelectorAll('[data-kind]')];
