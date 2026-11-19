@@ -53,10 +53,12 @@ mod onbscr;
 mod opsscr;
 mod parallelfid;
 mod planfid;
+mod previewdesk;
 mod queuefid;
 mod ratefid;
 mod reasonfid;
 mod recapfid;
+mod repodesk;
 mod review;
 mod rootfid;
 mod rulerfid;
@@ -70,9 +72,11 @@ mod setscr;
 mod setscr2;
 mod stairsfid;
 mod storagefid;
+mod tabstack;
 mod taskdeck;
 mod text;
 mod themefid;
+mod threadbar;
 mod toolmapfid;
 mod tools;
 mod tracefid;
@@ -166,10 +170,12 @@ pub use opsscr::{
 };
 pub use parallelfid::ParallelAttempts;
 pub use planfid::PlanVsActual;
+pub use previewdesk::{PreviewDeskScreen, s16_previewdesk_states};
 pub use queuefid::AgentQueue;
 pub use ratefid::RateLimitPlanner;
 pub use reasonfid::ReasoningPanel;
 pub use recapfid::AgentRecap;
+pub use repodesk::{RepoDeskScreen, s16_repodesk_states};
 pub use review::{AiInlineEdit, CommentThread, ImageCompare, ReviewCard, ReviewCenter};
 pub use rootfid::RootCauseTree;
 pub use rulerfid::EffortRuler;
@@ -194,6 +200,7 @@ pub use setscr::{
 };
 pub use stairsfid::EffortStairs;
 pub use storagefid::{StorageCleanup, StorageForecast, StorageMeter, StorageWaffle};
+pub use tabstack::{TabstackScreen, s16_tabstack_states};
 pub use taskdeck::{
     TaskdeckBoardScreen, TaskdeckPluginsScreen, TaskdeckScheduledScreen, TaskdeckSitesScreen,
     TaskdeckStartScreen, TaskdeckTaskScreen, s9_states,
@@ -206,6 +213,7 @@ pub use themefid::{
     AccentDensity, AppIconPicker, BackgroundPicker, DisplayComfort, LightPlayground, ThemeGrid,
     ThemeSchedule, ThemeSplit, TypeScale,
 };
+pub use threadbar::{ThreadbarScreen, s16_threadbar_states};
 pub use toolmapfid::ToolAccessMap;
 pub use tools::{
     ChipStep, DiffChip, ExpandableCard, JsonViewer, LinkUnfurl, RowOutput, ToolCall, ToolCallCard,
