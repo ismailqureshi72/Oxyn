@@ -84,6 +84,7 @@
 .oxs10-wide{display:inline-flex}
 .oxs10-scrim{display:none}
 .oxs10-narrow-only{display:none!important}
+.oxs10-pback{display:none}
 .oxs10-ptog{display:inline-flex;align-items:center;gap:6px;flex:none;max-width:170px;height:30px;padding:0 10px;border:1px solid var(--oxth-line);border-radius:9px;background:transparent;color:var(--oxth-fg2);font:inherit;font-size:12.5px;cursor:pointer}
 .oxs10-ptog[aria-pressed="true"]{background:var(--oxth-sel);color:var(--oxth-fg)}
 .oxs10-split{display:flex;flex:1 1 auto;min-height:0;min-width:0}
@@ -300,7 +301,7 @@
   .oxs10-side,.oxs10-side[data-rail="true"]{position:absolute;top:0;bottom:0;left:0;width:min(280px,86%);align-items:stretch;padding:10px 8px 8px;transform:translateX(-104%);visibility:hidden;box-shadow:var(--oxth-sh,0 8px 30px rgba(0,0,0,.2));transition:transform .2s,visibility .2s}
   .oxs10-side[data-rail="true"] .oxs10-nav{width:100%;justify-content:flex-start;padding:0 8px}
   .oxs10[data-drawer="true"] .oxs10-side{transform:none;visibility:visible}
-  .oxs10[data-drawer="true"] .oxs10-scrim,.oxs10[data-pnar="true"] .oxs10-scrim{display:block;position:absolute;inset:0;z-index:4;border:0;background:rgba(0,0,0,.28)}
+  .oxs10[data-drawer="true"] .oxs10-scrim{display:block;position:absolute;inset:0;z-index:4;border:0;background:rgba(0,0,0,.28)}
   .oxs10 .oxs10-main,.oxs10[data-layout="inset"] .oxs10-main{margin:0;border:0;border-radius:0;position:static}
   .oxs10 .oxs10-menu{display:inline-flex}
   .oxs10-bar{padding-left:8px}
@@ -308,7 +309,11 @@
   .oxs10-wide-only{display:none!important}
   .oxs10-narrow-only{display:inline-flex!important}
   .oxs10 .oxs10-pane,.oxs10[data-pane="false"] .oxs10-pane{display:none}
-  .oxs10[data-pnar="true"] .oxs10-pane{display:flex;position:absolute;top:0;right:0;bottom:0;z-index:5;width:min(440px,92%);box-shadow:var(--oxth-sh,0 8px 30px rgba(0,0,0,.2))}
+  /* A pane opened at narrow widths replaces the thread as a full-width view. */
+  .oxs10[data-pnar="true"] .oxs10-col{display:none}
+  .oxs10[data-pnar="true"] .oxs10-pane{display:flex;flex:1 1 auto;width:auto;border-left:0}
+  .oxs10[data-pnar="true"] .oxs10-pback{display:flex;flex:none;align-items:center;min-height:44px;padding:6px 10px;border-bottom:1px solid var(--oxth-line)}
+  .oxs10-pback .oxs10-sbtn{gap:6px}
 }
 @container oxs10 (max-width:620px){
   .oxs10-feed{padding:16px 14px 10px}
