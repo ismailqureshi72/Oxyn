@@ -39,6 +39,9 @@ struct Gallery {
     apps: Vec<Entity<AgentAppView>>,
     /// The open strip item: a set below `SETS.len()`, then the apps.
     open: usize,
+    /// Redraws the strip when the screen view moves to another set (a sidebar press or the
+    /// command bar can open a screen of another set).
+    _watch: gpui::Subscription,
 }
 
 impl Gallery {
@@ -57,6 +60,12 @@ impl Gallery {
 
 impl Render for Gallery {
     fn render(&mut self, _: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        // The highlighted item follows the set the screen view shows, not only the last press.
+        let cur = if self.open < SETS.len() {
+            self.screens.read(cx).ui().set.min(SETS.len() - 1)
+        } else {
+            self.open
+        };
         let mut bar = div()
             .flex()
             .flex_wrap()
@@ -78,7 +87,7 @@ impl Render for Gallery {
                     .rounded(px(7.))
                     .cursor_pointer()
                     .when(i == SETS.len(), |d| d.ml(px(10.)))
-                    .when(i == self.open, |d| d.bg(rgb(0x2A2A2E)))
+                    .when(i == cur, |d| d.bg(rgb(0x2A2A2E)))
                     .child(name)
                     .on_click(cx.listener(move |this, _, w, cx| this.show(i, w, cx))),
             );
@@ -123,10 +132,14 @@ fn main() {
                     apps[first - SETS.len()].read(cx).focus_handle(cx)
                 };
                 window.focus(&f, cx);
-                cx.new(|_| Gallery {
-                    screens,
-                    apps,
-                    open: first,
+                cx.new(|cx| {
+                    let _watch = cx.observe(&screens, |_, _, cx| cx.notify());
+                    Gallery {
+                        screens,
+                        apps,
+                        open: first,
+                        _watch,
+                    }
                 })
             },
         )
