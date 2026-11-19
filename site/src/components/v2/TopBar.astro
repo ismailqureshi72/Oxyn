@@ -4,6 +4,7 @@
 // slides away on scroll down and back on scroll up (site.js sets data-hide / data-solid).
 import ThemeRadios from './ThemeRadios.astro';
 import GitHubStars from './GitHubStars.astro';
+import AccountMenu from './AccountMenu.astro';
 import FeedbackButton from '../FeedbackButton.astro';
 import { icon } from './icons';
 import { lockup } from './logo';
@@ -45,6 +46,7 @@ const on = (p: string) => (current.startsWith(p) ? 'page' : undefined);
     <FeedbackButton />
     <ThemeRadios />
     <GitHubStars />
+    <AccountMenu />
     <a class="x-pill pill-black x-nav-go" href="/components/">Browse library</a>
     <button class="iconbtn tb-menubtn x-nav-menu" type="button" data-menu-toggle aria-expanded="false" aria-controls="mobilemenu" aria-label="Menu"><span class="x-nav-burger" aria-hidden="true"><i></i><i></i></span></button>
   </div>

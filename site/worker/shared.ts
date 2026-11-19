@@ -29,6 +29,9 @@ export interface Env {
   CF_ACCOUNT_ID?: string;
   CF_ADMIN_TOKEN?: string; // secret: Access Groups edit, keeps the group in sync with the admin list
   ADMIN_SESSION_KEY?: string; // secret, optional: HMAC key for session cookies (else generated into D1)
+  // Site accounts (docs/auth.md): the GitHub OAuth app. Unset = GitHub sign-in shows "coming soon".
+  GITHUB_OAUTH_CLIENT_ID?: string; // secret
+  GITHUB_OAUTH_CLIENT_SECRET?: string; // secret
 }
 
 export const KINDS = ['Bug', 'Idea', 'Question'] as const;
@@ -53,6 +56,15 @@ export const json = (body: unknown, status = 200, extra: Record<string, string> 
 export const fail = (e: HttpError, extra: Record<string, string> = {}) =>
   json({ ok: false, error: { code: e.code, message: e.message, ...(e.field ? { field: e.field } : {}) } }, e.status,
     { ...(e.status === 429 ? { 'retry-after': '600' } : {}), ...extra });
+
+/** Only the site's own pages may post: the Origin (or Referer) must be this host. */
+export function sameOrigin(req: Request, url: URL) {
+  const origin = req.headers.get('origin');
+  if (origin) return origin === url.origin;
+  const ref = req.headers.get('referer');
+  if (ref) { try { return new URL(ref).origin === url.origin; } catch { return false; } }
+  return req.headers.get('sec-fetch-site') === 'same-origin';
+}
 
 export async function sha256Hex(s: string) {
   const d = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));

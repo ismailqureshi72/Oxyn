@@ -1,8 +1,8 @@
 # Backend
 
 The Oxyn site runs as one Cloudflare Worker, `ui` (https://ui.oxyn.workers.dev). It serves the
-static site from `site/dist`, a small API under `/api/*` and the maintainers' admin panel under
-`/admin` ([admin.md](admin.md)). Everything stays on Cloudflare:
+static site from `site/dist`, a small API under `/api/*` (feedback, flags, site sign-in from
+[auth.md](auth.md)) and the maintainers' admin panel under `/admin` ([admin.md](admin.md)). Everything stays on Cloudflare:
 Workers, D1 (SQLite) and R2 (object storage). No other services.
 
 ## Architecture
@@ -42,6 +42,10 @@ when D1 does not answer.
 
 `200 {"ok": true, "flags": {"<name>": "<value>"}}`: the content flags that are switched on in the admin
 panel (Settings), `cache-control: public, max-age=60`.
+
+### `/api/auth/*`
+
+Site accounts: sign in with GitHub or an email and a password, sessions in D1. See [auth.md](auth.md).
 
 ### `/api/admin/*`
 
@@ -86,6 +90,9 @@ Migrations live in `site/migrations/` (`migrations_dir` in `wrangler.jsonc`).
 | `settings` | key/value: `admin_password` (PBKDF2 record), `admin_session_key`, `flag:<name>`, `access_sync_error` |
 | `admin_sessions` | admin sessions: id, email, password version, expiry (0002) |
 | `audit_log` | admin actions: time, actor, action, target, detail (0002) |
+| `users` | site accounts: email, verified flag, GitHub name and avatar, PBKDF2 password record or NULL (0003, [auth.md](auth.md)) |
+| `oauth_accounts` | linked GitHub accounts: provider, provider id, user, login (0003) |
+| `sessions` | site sessions: SHA-256 of the cookie token, user, provider, expiry (0003) |
 
 Apply new migrations from `site/` (CI does not apply them):
 
@@ -101,6 +108,7 @@ Add a migration with `npx wrangler d1 migrations create oxyn <name>`; never edit
 | Name | Kind | Needed for |
 |---|---|---|
 | `GITHUB_TOKEN` | Worker secret, optional | Opening feedback issues. A fine-grained token limited to `ismailqureshi72/Oxyn` with **Issues: Read and write** only. Set with `npx wrangler secret put GITHUB_TOKEN` from `site/`. |
+| `GITHUB_OAUTH_CLIENT_ID`, `GITHUB_OAUTH_CLIENT_SECRET` | Worker secrets, optional | "Continue with GitHub" on `/login/`. Until set, the button reads "coming soon" and the GitHub routes answer 503. Setup in [auth.md](auth.md). |
 | `RATE_SALT` | Worker secret, optional | Salt for IP hashes (a fixed default is used when unset). |
 | `CF_ADMIN_TOKEN`, `ADMIN_SESSION_KEY` | Worker secrets, optional | Admin panel: Access group sync, session HMAC key ([admin.md](admin.md)). |
 | `ACCESS_TEAM_DOMAIN`, `ACCESS_AUD`, `ACCESS_GROUP_ID`, `CF_ACCOUNT_ID` | vars in `wrangler.jsonc` | Admin panel: Access JWT check and group sync. |

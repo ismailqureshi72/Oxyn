@@ -18,8 +18,10 @@ interface Props {
   /** Pagefind result type: Component, Category, Page. */
   type?: string;
   promo?: boolean;
+  /** false: kept out of search engines and the site search (sign-in and account pages). */
+  index?: boolean;
 }
-const { title, description, type = 'Page', promo = false } = Astro.props;
+const { title, description, type = 'Page', promo = false, index = true } = Astro.props;
 const path = Astro.url.pathname;
 const fullTitle = path === '/' ? title : `${title} · Oxyn`;
 // Promo strip: the newest components by name, then how many more (never "0 more").
@@ -30,7 +32,7 @@ const promoText = promoNames.length === 0 ? 'New components, all free →'
 ---
 <!doctype html>
 <html lang="en" data-theme="light" data-oxyn-theme="light">
-  <head><Head title={fullTitle} description={description} /></head>
+  <head><Head title={fullTitle} description={description} />{!index && <meta name="robots" content="noindex" />}</head>
   <body class="site page-white">
     <a class="x-skip" href="#main">Skip to content</a>
     {promo && (
@@ -40,9 +42,11 @@ const promoText = promoNames.length === 0 ? 'New components, all free →'
       </div>
     )}
     <header class="x-tb" data-pagefind-ignore><TopBar current={path} /></header>
-    <main id="main" data-pagefind-body data-pagefind-filter={`type:${type}`} data-pagefind-meta={`type:${type}`}>
-      <slot />
-    </main>
+    {index ? (
+      <main id="main" data-pagefind-body data-pagefind-filter={`type:${type}`} data-pagefind-meta={`type:${type}`}><slot /></main>
+    ) : (
+      <main id="main" data-pagefind-ignore="all"><slot /></main>
+    )}
     <Footer />
     <SearchModal />
     <Feedback />
