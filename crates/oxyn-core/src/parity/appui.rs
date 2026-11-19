@@ -217,6 +217,367 @@ impl AppUi {
     }
 }
 
+/// Press ids with an index, `<prefix><n>` for n in 0..12, as static strings for hosts whose press
+/// callback takes `&'static str`.
+macro_rules! id_table {
+    ($(#[$m:meta])* $name:ident, $p:literal) => {
+        $(#[$m])*
+        pub const $name: [&str; 12] = [
+            concat!($p, "0"), concat!($p, "1"), concat!($p, "2"), concat!($p, "3"),
+            concat!($p, "4"), concat!($p, "5"), concat!($p, "6"), concat!($p, "7"),
+            concat!($p, "8"), concat!($p, "9"), concat!($p, "10"), concat!($p, "11"),
+        ];
+    };
+}
+
+/// Press ids for the live parts of the apps.
+pub mod ids {
+    id_table!(/// Taskdeck: switch a plugin on or off, or install it.
+        PLUGIN, "plugin-");
+    id_table!(/// Taskdeck: switch a skill on or off.
+        SKILL, "skill-");
+    id_table!(/// Taskdeck: pause or resume a schedule (by list index).
+        PAUSE, "pause-");
+    id_table!(/// Taskdeck: run a schedule now.
+        RUN, "run-");
+    id_table!(/// Taskdeck: open or close a schedule's editor.
+        EDIT, "edit-");
+    id_table!(/// Taskdeck: cadence chip in the schedule editor.
+        CADENCE, "cadence-");
+    id_table!(/// Taskdeck: preview a site (by list index).
+        SITE, "site-");
+    id_table!(/// Command Center: open a terminal tab (by index).
+        TERM, "term-");
+    id_table!(/// Command Center: open a browser page (by index into the pages).
+        PAGE, "page-");
+    id_table!(/// Session Studio: pick a side pane (by position).
+        PANE, "pane-");
+    id_table!(/// Fleet Window: toggle a model in the parallel run.
+        MODEL, "model-");
+    id_table!(/// Workspace Coder: open a workspace tab.
+        WSTAB, "wstab-");
+    id_table!(/// Command Board: scrub the timeline to an event.
+        SCRUB, "scrub-");
+
+    /// The index in a `<prefix><n>` id.
+    pub fn index(id: &str, prefix: &str) -> Option<usize> {
+        id.strip_prefix(prefix)?.parse().ok()
+    }
+
+    /// The table id for `i` (the last id past the table).
+    pub fn at(table: &[&'static str; 12], i: usize) -> &'static str {
+        table[i.min(11)]
+    }
+}
+
+use super::{cmdboard, cmdstudio, fleetwin, taskdeck, wscoder};
+
+/// What the agent apps let you change in place beyond the shared [`AppUi`]: Taskdeck's plugin and
+/// skill switches, schedules and site preview; Command Center's terminal tabs and browser;
+/// Session Studio's pane order and side chat; Fleet Window's models; Workspace Coder's tabs;
+/// Command Board's timeline scrubber and Sleep / Wake; and a clock for running timers. Every rule
+/// reuses the app modules' own functions, so the Dioxus apps and these views agree.
+#[derive(Clone, Debug, PartialEq)]
+pub struct AppData {
+    /// Taskdeck catalogue: (installed, on) per plugin.
+    pub plugins: Vec<(bool, bool)>,
+    /// Taskdeck: the Skills tab is open (else the catalogue).
+    pub skills_tab: bool,
+    /// Taskdeck skills.
+    pub skills: Vec<taskdeck::Skill>,
+    /// Taskdeck schedules.
+    pub schedules: Vec<taskdeck::Schedule>,
+    /// Taskdeck: the schedule whose editor is open (list index).
+    pub editing: Option<usize>,
+    /// Taskdeck: the site shown in the preview (list index).
+    pub preview: Option<usize>,
+    /// Command Center terminal tabs.
+    pub terms: Vec<cmdstudio::Term>,
+    /// The open terminal tab (index).
+    pub term: usize,
+    /// The browser's page (index into [`cmdstudio::PAGES`]) and the pages before it.
+    pub page: usize,
+    /// Pages visited before the open one.
+    pub history: Vec<usize>,
+    /// Session Studio's side panes in order (indexes into [`cmdstudio::PANES`]).
+    pub panes: Vec<usize>,
+    /// The picked pane (position), moved with the keyboard.
+    pub pane: usize,
+    /// The side chat: (from you, text).
+    pub side: Vec<(bool, String)>,
+    /// Fleet Window: models in the parallel run (indexes into [`fleetwin::FW_MODELS`]).
+    pub models: Vec<usize>,
+    /// Workspace Coder: the open workspace tab (index into [`wscoder::WS_TABS`]).
+    pub ws_tab: usize,
+    /// Command Board sessions (Sleep / Wake changes the first one).
+    pub sessions: Vec<cmdboard::BSession>,
+    /// Command Board: the scrubbed event (`None` is live).
+    pub scrub: Option<usize>,
+    /// Command Board: events on the timeline.
+    pub events: usize,
+    /// Seconds the view has been open, for running timers.
+    pub secs: u32,
+}
+
+impl AppData {
+    /// The sample data for data state `st`.
+    pub fn for_state(st: ScreenState) -> Self {
+        Self {
+            plugins: taskdeck::plugin_state(st),
+            skills_tab: false,
+            skills: taskdeck::skills(st),
+            schedules: taskdeck::schedules(st),
+            editing: None,
+            preview: None,
+            terms: cmdstudio::sample_terms(),
+            term: 0,
+            page: 0,
+            history: Vec::new(),
+            panes: (0..cmdstudio::PANES.len()).collect(),
+            pane: 0,
+            side: cmdstudio::SIDE_CHAT
+                .iter()
+                .map(|(me, t)| (*me, t.to_string()))
+                .collect(),
+            models: vec![0],
+            ws_tab: 0,
+            sessions: cmdboard::cb_sessions(st),
+            scrub: None,
+            events: cmdboard::cb_events(st).len(),
+            secs: 0,
+        }
+    }
+
+    /// Switches plugin `i` on or off, installing (and switching on) one that is not installed.
+    pub fn toggle_plugin(&mut self, i: usize) -> bool {
+        let Some(p) = self.plugins.get_mut(i) else {
+            return false;
+        };
+        *p = if p.0 { (true, !p.1) } else { (true, true) };
+        true
+    }
+
+    /// Switches skill `i` on or off.
+    pub fn toggle_skill(&mut self, i: usize) -> bool {
+        self.skills.get_mut(i).map(|s| s.on = !s.on).is_some()
+    }
+
+    /// Pauses or resumes schedule `i`.
+    pub fn toggle_pause(&mut self, i: usize) -> bool {
+        self.schedules
+            .get_mut(i)
+            .map(|s| s.paused = !s.paused)
+            .is_some()
+    }
+
+    /// Runs schedule `i` now: its last run reads Running, now.
+    pub fn run_now(&mut self, i: usize) -> bool {
+        self.schedules
+            .get_mut(i)
+            .map(|s| s.last = (taskdeck::LastRun::Running, "now".into()))
+            .is_some()
+    }
+
+    /// Sets the open schedule's cadence (index into [`taskdeck::CADENCES`]).
+    pub fn set_cadence(&mut self, c: usize) -> bool {
+        match self.editing.and_then(|i| self.schedules.get_mut(i)) {
+            Some(s) if c < taskdeck::CADENCES.len() && s.cadence != c => {
+                s.cadence = c;
+                true
+            }
+            _ => false,
+        }
+    }
+
+    /// Opens or closes a toggle-able index (`editing`, `preview`): the same index closes it.
+    fn flip(slot: &mut Option<usize>, i: usize, n: usize) -> bool {
+        if i >= n {
+            return false;
+        }
+        *slot = if *slot == Some(i) { None } else { Some(i) };
+        true
+    }
+
+    /// Runs a command in the open terminal tab.
+    pub fn run_term(&mut self, cmd: &str) -> bool {
+        let Some(id) = self.terms.get(self.term).map(|t| t.id) else {
+            return false;
+        };
+        cmdstudio::run_cmd(&mut self.terms, id, cmd)
+    }
+
+    /// Opens browser page `i`, remembering the one before.
+    pub fn go(&mut self, i: usize) -> bool {
+        if i >= cmdstudio::PAGES.len() || i == self.page {
+            return false;
+        }
+        self.history.push(self.page);
+        self.page = i;
+        true
+    }
+
+    /// Opens a typed address; false when no page has it.
+    pub fn go_addr(&mut self, addr: &str) -> bool {
+        cmdstudio::page_for(addr).is_some_and(|i| self.go(i))
+    }
+
+    /// Moves the picked side pane up or down one place; the pick follows it.
+    pub fn move_pick(&mut self, up: bool) -> bool {
+        let to = if up {
+            self.pane.checked_sub(1)
+        } else {
+            Some(self.pane + 1).filter(|t| *t < self.panes.len())
+        };
+        match to {
+            Some(t) if cmdstudio::move_pane(&mut self.panes, self.pane, t) => {
+                self.pane = t;
+                true
+            }
+            _ => false,
+        }
+    }
+
+    /// Asks the side chat a question; the answer comes from the open session.
+    pub fn ask_side(&mut self, q: &str) -> bool {
+        let q = q.trim();
+        if q.is_empty() {
+            return false;
+        }
+        self.side.push((true, q.to_string()));
+        self.side
+            .push((false, cmdstudio::side_reply(q).to_string()));
+        true
+    }
+
+    /// The first Command Board session's status after Sleep / Wake.
+    pub fn toggle_sleep(&mut self) -> Option<cmdboard::SStatus> {
+        self.sessions.first_mut().map(cmdboard::toggle_sleep)
+    }
+
+    /// The timeline position on show (the last event when live).
+    pub fn at(&self) -> usize {
+        cmdboard::scrub_at(self.events, self.scrub)
+    }
+
+    /// Steps the scrubber one event back or forward; forward past the last goes live.
+    pub fn scrub_step(&mut self, back: bool) -> bool {
+        if self.events == 0 {
+            return false;
+        }
+        let at = self.at();
+        self.scrub = if back {
+            Some(at.saturating_sub(1))
+        } else if at + 1 >= self.events {
+            None
+        } else {
+            Some(at + 1)
+        };
+        true
+    }
+
+    /// One second of the running timers.
+    pub fn tick(&mut self) {
+        self.secs = self.secs.saturating_add(1);
+    }
+
+    /// A running timer that started `base` seconds before the view opened, as m:ss.
+    pub fn clock(&self, base: u32) -> String {
+        fleetwin::mmss(base.saturating_add(self.secs))
+    }
+
+    /// Handles the live press ids (see [`ids`]) plus `skills-tab`, `plugins-tab`, `term-new`,
+    /// `page-back`, `pane-up`, `pane-down`, `sleep` and `live`. True when anything changed.
+    pub fn press(&mut self, id: &str) -> bool {
+        use ids::index;
+        if let Some(i) = index(id, "plugin-") {
+            return self.toggle_plugin(i);
+        }
+        if let Some(i) = index(id, "skill-") {
+            return self.toggle_skill(i);
+        }
+        if let Some(i) = index(id, "pause-") {
+            return self.toggle_pause(i);
+        }
+        if let Some(i) = index(id, "run-") {
+            return self.run_now(i);
+        }
+        if let Some(i) = index(id, "edit-") {
+            return Self::flip(&mut self.editing, i, self.schedules.len());
+        }
+        if let Some(i) = index(id, "cadence-") {
+            return self.set_cadence(i);
+        }
+        if let Some(i) = index(id, "site-") {
+            return Self::flip(
+                &mut self.preview,
+                i,
+                taskdeck::sites(ScreenState::Sample).len(),
+            );
+        }
+        if let Some(i) = index(id, "term-") {
+            let ok = i < self.terms.len() && i != self.term;
+            if ok {
+                self.term = i;
+            }
+            return ok;
+        }
+        if let Some(i) = index(id, "page-") {
+            return self.go(i);
+        }
+        if let Some(i) = index(id, "pane-") {
+            let ok = i < self.panes.len() && i != self.pane;
+            if ok {
+                self.pane = i;
+            }
+            return ok;
+        }
+        if let Some(i) = index(id, "model-") {
+            return fleetwin::toggle_model(&mut self.models, i);
+        }
+        if let Some(i) = index(id, "wstab-") {
+            let ok = i < wscoder::WS_TABS.len() && i != self.ws_tab;
+            if ok {
+                self.ws_tab = i;
+            }
+            return ok;
+        }
+        if let Some(i) = index(id, "scrub-") {
+            let at = (i < self.events).then_some(i);
+            let ok = self.events > 0 && self.scrub != at;
+            self.scrub = if i + 1 >= self.events { None } else { at };
+            return ok;
+        }
+        match id {
+            "skills-tab" | "plugins-tab" => {
+                let on = id == "skills-tab";
+                std::mem::replace(&mut self.skills_tab, on) != on
+            }
+            "save-schedule" | "cancel-schedule" => self.editing.take().is_some(),
+            "close-preview" => self.preview.take().is_some(),
+            "term-new" => {
+                cmdstudio::new_term(&mut self.terms);
+                self.term = self.terms.len() - 1;
+                true
+            }
+            "page-back" => match self.history.pop() {
+                Some(p) => {
+                    self.page = p;
+                    true
+                }
+                None => false,
+            },
+            "page-reload" => true,
+            "pane-up" => self.move_pick(true),
+            "pane-down" => self.move_pick(false),
+            "sleep" => self.toggle_sleep().is_some(),
+            "live" => self.scrub.take().is_some(),
+            "scrub-back" => self.scrub_step(true),
+            "scrub-fwd" => self.scrub_step(false),
+            _ => false,
+        }
+    }
+}
+
 /// The views each app steps through, matching the Dioxus apps' own states.
 pub mod views {
     /// Taskdeck pages: Start, Board, Task, Plugins & skills, Scheduled, Sites.
@@ -305,5 +666,101 @@ mod tests {
         u.set_state(ScreenState::Empty, 0);
         assert_eq!(u.sel, 0);
         assert!(!u.key(AppKey::Down));
+    }
+    #[test]
+    fn data_taskdeck() {
+        let mut d = AppData::for_state(ScreenState::Sample);
+        assert_eq!(d.plugins[2], (true, false));
+        assert!(d.press(ids::PLUGIN[2]));
+        assert_eq!(d.plugins[2], (true, true));
+        assert_eq!(d.plugins[4], (false, false));
+        d.press("plugin-4");
+        assert_eq!(d.plugins[4], (true, true), "installs and switches on");
+        assert!(!d.press("plugin-40"));
+        let on = d.skills[0].on;
+        assert!(d.press("skill-0"));
+        assert_eq!(d.skills[0].on, !on);
+        assert!(d.press("skills-tab") && d.skills_tab);
+        assert!(!d.press("skills-tab"));
+        let paused = d.schedules[0].paused;
+        d.press("pause-0");
+        assert_eq!(d.schedules[0].paused, !paused);
+        d.press("run-1");
+        assert_eq!(d.schedules[1].last.0, taskdeck::LastRun::Running);
+        assert!(d.press("edit-1"));
+        assert_eq!(d.editing, Some(1));
+        let c = (d.schedules[1].cadence + 1) % taskdeck::CADENCES.len();
+        assert!(d.press(ids::CADENCE[c]));
+        assert_eq!(d.schedules[1].cadence, c);
+        assert!(d.press("save-schedule"));
+        assert_eq!(d.editing, None);
+        assert!(!d.press(ids::CADENCE[0]), "no editor open");
+        assert!(d.press("site-0") && d.preview == Some(0));
+        assert!(d.press("site-0") && d.preview.is_none());
+    }
+
+    #[test]
+    fn data_terminal_browser_panes() {
+        let mut d = AppData::for_state(ScreenState::Sample);
+        let n = d.terms[0].lines.len();
+        assert!(d.run_term("pwd"));
+        assert_eq!(d.terms[0].lines.len(), n + 2);
+        assert!(d.press("term-new"));
+        assert_eq!(d.term, d.terms.len() - 1);
+        assert!(d.press("term-0"));
+        assert!(!d.run_term("   "));
+        assert!(d.press("page-2"));
+        assert!(d.go_addr("https://localhost:3000/settings/"));
+        assert_eq!(d.page, 1);
+        assert!(d.press("page-back"));
+        assert_eq!(d.page, 2);
+        assert!(!d.go_addr("nowhere.example"));
+        assert_eq!(d.panes, vec![0, 1, 2]);
+        assert!(!d.press("pane-up"));
+        assert!(d.press("pane-down"));
+        assert_eq!((d.panes.clone(), d.pane), (vec![1, 0, 2], 1));
+        assert!(d.press("pane-2"));
+        assert!(d.press("pane-up"));
+        assert_eq!(d.panes, vec![1, 2, 0]);
+        let k = d.side.len();
+        assert!(d.ask_side("Does it have a test?"));
+        assert_eq!(d.side.len(), k + 2);
+        assert!(d.side.last().is_some_and(|m| !m.0 && m.1.contains("test")));
+    }
+
+    #[test]
+    fn data_models_tabs_timeline_clock() {
+        let mut d = AppData::for_state(ScreenState::Sample);
+        assert!(!d.press("model-0"), "one model stays");
+        assert!(d.press("model-2"));
+        assert_eq!(d.models, vec![0, 2]);
+        assert!(d.press("wstab-1") && d.ws_tab == 1);
+        assert!(!d.press("wstab-9"));
+        assert!(d.events > 2);
+        assert_eq!(d.at(), d.events - 1);
+        assert!(d.press("scrub-back"));
+        assert_eq!(d.at(), d.events - 2);
+        assert!(d.press("scrub-0"));
+        assert_eq!(d.at(), 0);
+        assert!(d.press("live"));
+        assert_eq!(d.scrub, None);
+        assert!(d.press("scrub-fwd"), "forward at live stays live");
+        assert_eq!(d.scrub, None);
+        let before = d.sessions[0].status;
+        assert!(d.press("sleep"));
+        assert_ne!(d.sessions[0].status, before);
+        assert_eq!(d.sessions[0].status, cmdboard::SStatus::Sleeping);
+        d.press("sleep");
+        assert_eq!(
+            d.sessions[0].status,
+            cmdboard::SStatus::Working,
+            "wakes to working"
+        );
+        d.tick();
+        d.tick();
+        assert_eq!(d.clock(58), "1:00");
+        let e = AppData::for_state(ScreenState::Empty);
+        assert!(!e.clone().press("scrub-back"));
+        assert!(e.skills.is_empty() && e.sessions.is_empty());
     }
 }
