@@ -1,4 +1,4 @@
-//! [`ScreenView`]: every screen set from S0 to S8, S12 and S13 (app shells, AI Chat, Workspace, Agent ops
+//! [`ScreenView`]: every screen set from S0 to S8 and S12 to S14 (app shells, AI Chat, Workspace, Agent ops
 //! I and II, Orchestration / Workflow / Evals, Settings I and II, Onboarding, Arc screens I and II) as one
 //! interactive GPUI view
 //! (`Entity` + `Render`). It keeps an [`ScreenUi`] from `oxyn_core::parity::screenui` and draws the
@@ -24,7 +24,10 @@
 //!   events picked and nudged (Alt + arrows, Alt + Shift + ↑ ↓ resize) or dragged onto a day;
 //!   inbox triage with J / K / E / H / X / U / A; the support composer (a third [`ImeInput`],
 //!   Enter sends) with saved replies, notes, Snooze and Close; the help center's search (the same
-//!   field), articles, feedback and Publish.
+//!   field), articles, feedback and Publish;
+//! - the Arc screens III (S14) draw the core's live `Arc3Ui`: symbols, ranges and the order
+//!   ticket; collections, colour and price filters, sizes and the cart; invoice lines, terms,
+//!   tax and Send; the sign-in's demo account, Show password, Sign in and SSO.
 //!
 //! Create one with `cx.new(|cx| ScreenView::new(6, window, cx))` (set index into
 //! [`oxyn_core::parity::screenui::SETS`]) after calling [`super::bind_ime_keys`] once.
@@ -38,6 +41,7 @@ use gpui::{
 use oxyn_core::parity::appui::AppKey;
 use oxyn_core::parity::arcscr::ArcUi;
 use oxyn_core::parity::arcscr2::Arc2Ui;
+use oxyn_core::parity::arcscr3::Arc3Ui;
 use oxyn_core::parity::screensfid::{ScreenState, ShellLayout};
 use oxyn_core::parity::screenui::{Moved, SETS, ScreenUi};
 use oxyn_tokens::Theme;
@@ -128,6 +132,8 @@ pub fn screen_element(
         | "inbox-triage"
         | "support-conversation"
         | "help-center" => arc2_element(slug, st, extra, lay, theme, act, None, None),
+        "market-terminal" | "product-list" | "product-detail" | "invoice-studio"
+        | "sign-in-split" => arc3_element(slug, st, extra, lay, theme, act, None),
         _ => el0!(ScreenShellEl),
     }
 }
@@ -170,6 +176,42 @@ pub fn arc2_element(
         "week-calendar" => el!(WeekCalendarEl),
         // Not an S13 slug: the first S13 screen.
         _ => el!(WeekCalendarEl),
+    }
+}
+
+/// An Arc screen III (S14) for slug `slug`, drawing the live state `arc` when given (else the
+/// sample for the state).
+pub fn arc3_element(
+    slug: &str,
+    st: ScreenState,
+    extra: &'static str,
+    lay: ShellLayout,
+    theme: &'static Theme,
+    act: Act,
+    arc: Option<Arc3Ui>,
+) -> AnyElement {
+    macro_rules! el {
+        ($t:ty) => {{
+            let mut e = <$t>::default()
+                .state(st)
+                .extra(extra)
+                .layout(lay)
+                .theme(theme)
+                .on_act(act);
+            if let Some(a) = arc {
+                e = e.arc3(a);
+            }
+            e.into_any_element()
+        }};
+    }
+    match slug {
+        "product-list" => el!(ProductListEl),
+        "product-detail" => el!(ProductDetailEl),
+        "invoice-studio" => el!(InvoiceStudioEl),
+        "sign-in-split" => el!(SignInSplitEl),
+        "market-terminal" => el!(MarketTerminalEl),
+        // Not an S14 slug: the first S14 screen.
+        _ => el!(MarketTerminalEl),
     }
 }
 
@@ -686,7 +728,17 @@ impl Render for ScreenView {
         let act = self.act(cx);
         let (st, extra) = self.ui.split();
         let slug = self.ui.screen_def().slug;
-        let screen = if self.ui.set_def().id == "s13" {
+        let screen = if self.ui.set_def().id == "s14" {
+            arc3_element(
+                slug,
+                st,
+                extra,
+                self.layout,
+                theme,
+                act.clone(),
+                Some(self.ui.arc3.clone()),
+            )
+        } else if self.ui.set_def().id == "s13" {
             arc2_element(
                 slug,
                 st,
