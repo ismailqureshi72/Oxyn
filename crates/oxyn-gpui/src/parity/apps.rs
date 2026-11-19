@@ -10,20 +10,30 @@
 //!   or a second press closes;
 //! - the composer is a real [`ImeInput`]: Enter or the send button sends, and the sent prompts
 //!   show above it;
+//! - a press anywhere in the composer's box puts the caret in its field;
 //! - with focus on the app (not the composer): Up / Down move the open row, Left / Right step
-//!   through the app's views, Escape closes the menu and then the rail.
+//!   through the app's views, Escape closes the menu and then the rail;
+//! - each app's live parts keep an [`AppData`] (`Own::data`): Taskdeck's plugin and skill
+//!   switches, Plugins / Skills tabs, schedule Edit / Pause / Run now and the site preview;
+//!   Command Center's Review / Terminal / Browser tabs, a terminal that runs typed commands and a
+//!   browser with an address field, links, Back and Reload; Session Studio's side panes, reordered
+//!   by drag and drop or the keyboard (Up / Down pick, Alt + Up / Down move) and its side chat,
+//!   which answers from the composer; Fleet Window's model toggles; Workspace Coder's four
+//!   workspace tabs; Command Board's timeline scrubber (stops, ◀ / ▶, Alt + Left / Right, Live)
+//!   and Sleep / Wake; and running clocks that tick once a second.
 //!
 //! The press handling per app lives in [`AgentApp::press`] so it reads next to the views it
 //! drives. Create a view with `cx.new(|cx| AgentAppView::new(AgentApp::FleetWindow, window, cx))`
 //! after calling [`super::bind_ime_keys`] once.
 
 use std::rc::Rc;
+use std::time::Duration;
 
 use gpui::{
     AnyView, App, Context, Div, Entity, FocusHandle, Focusable, FontWeight, KeyDownEvent,
-    MouseButton, Render, SharedString, Stateful, Window, div, prelude::*, px,
+    MouseButton, Render, SharedString, Stateful, Task, Window, div, prelude::*, px,
 };
-use oxyn_core::parity::appui::{AppKey, AppUi, views};
+use oxyn_core::parity::appui::{AppData, AppKey, AppUi, views};
 use oxyn_core::parity::screensfid::{ScreenState, ShellLayout};
 use oxyn_core::parity::{cmdboard, cmdstudio, fleetwin, taskdeck, wscoder};
 use oxyn_tokens::Theme;
@@ -44,6 +54,38 @@ pub struct Live {
     pub input: Option<AnyView>,
     /// Sent prompts, oldest first.
     pub sent: Vec<SharedString>,
+    /// The live data the screens draw instead of their samples (switches, terminal, panes,
+    /// models, timeline, timers); `None` keeps the snapshot.
+    pub data: Option<AppData>,
+    /// A second text field: the terminal's command line or the browser's address.
+    pub aux: Option<AnyView>,
+    /// Drops a dragged side pane: (from, to) positions.
+    pub mover: Option<Mover>,
+}
+
+/// Moves a dragged pane from one position to another.
+pub type Mover = Rc<dyn Fn(usize, usize, &mut Window, &mut App)>;
+
+/// A side pane being dragged (its position), drawn as a small chip under the pointer.
+#[derive(Clone, Copy)]
+pub struct PaneDrag {
+    /// The pane's position when the drag started.
+    pub from: usize,
+    /// Its title.
+    pub title: &'static str,
+}
+
+impl Render for PaneDrag {
+    fn render(&mut self, _: &mut Window, _: &mut Context<Self>) -> impl IntoElement {
+        div()
+            .px(px(10.))
+            .py(px(4.))
+            .rounded(px(8.))
+            .bg(gpui::rgb(0x2A2A2E))
+            .text_color(gpui::rgb(0xF4F4F5))
+            .text_size(px(12.))
+            .child(self.title)
+    }
 }
 
 impl Live {
@@ -130,6 +172,14 @@ impl AgentApp {
         }
     }
 
+    /// The second field's placeholder: the terminal's command line, or the browser's address.
+    pub fn aux_hint(self) -> &'static str {
+        match self {
+            Self::CommandCenter => "Type a command, or an address in the browser",
+            _ => "Type a command",
+        }
+    }
+
     /// The composer placeholder.
     pub fn hint(self) -> &'static str {
         match self {
@@ -145,7 +195,33 @@ impl AgentApp {
     /// Applies press `id` to `ui` and the app's own flags; true when anything changed. The app
     /// ids come first, then the shared ones in [`AppUi::press`].
     pub fn press(self, ui: &mut AppUi, own: &mut Own, id: &'static str) -> bool {
+        if own.data.press(id) {
+            match (self, id) {
+                (Self::WorkspaceCoder, _) if id.starts_with("wstab-") => {
+                    // Files and Preview are also the finished chat's views.
+                    match own.data.ws_tab {
+                        0 => ui.open_view("files"),
+                        3 => ui.open_view("preview"),
+                        _ => false,
+                    };
+                }
+                (Self::CommandBoard, "sleep") => {
+                    ui.last = Some(id);
+                }
+                _ => {}
+            }
+            return true;
+        }
         match (self, id) {
+            (Self::SessionStudio, "send") if ui.view_name() == "chat" => {
+                let q = std::mem::take(&mut ui.draft);
+                own.data.ask_side(&q)
+            }
+            (Self::CommandCenter, "tab-review") => ui.open_view(""),
+            (Self::WorkspaceCoder, "view:files" | "view:preview") => {
+                own.data.ws_tab = if id == "view:files" { 0 } else { 3 };
+                ui.press(id)
+            }
             (Self::Taskdeck, "new-task") => {
                 own.approval = false;
                 ui.view = 0;
@@ -219,6 +295,7 @@ impl AgentApp {
             Self::Taskdeck => match ui.view_name() {
                 "task" if own.approval => "approval",
                 "task" => "",
+                "plugins" if own.data.skills_tab => "skills",
                 _ if own.cloud => "cloud",
                 _ => "",
             },
@@ -227,13 +304,26 @@ impl AgentApp {
     }
 }
 
-/// App flags that are not views: Taskdeck's Local / Cloud and its pending approval.
-#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+/// App state that is not a view: Taskdeck's Local / Cloud and its pending approval, and the live
+/// data every app edits in place ([`AppData`]).
+#[derive(Clone, Debug, PartialEq)]
 pub struct Own {
     /// Taskdeck on Cloud.
     pub cloud: bool,
     /// Taskdeck's open task waits on an approval.
     pub approval: bool,
+    /// Switches, schedules, terminal, browser, panes, models, tabs, timeline and the clock.
+    pub data: AppData,
+}
+
+impl Default for Own {
+    fn default() -> Self {
+        Self {
+            cloud: false,
+            approval: false,
+            data: AppData::for_state(ScreenState::Sample),
+        }
+    }
 }
 
 /// An interactive agent app (see the module docs).
@@ -245,6 +335,8 @@ pub struct AgentAppView {
     layout: ShellLayout,
     focus: FocusHandle,
     input: Entity<ImeInput>,
+    aux: Entity<ImeInput>,
+    _clock: Task<()>,
 }
 
 impl Focusable for AgentAppView {
@@ -273,6 +365,45 @@ impl AgentAppView {
             cx.notify();
         })
         .detach();
+        let aux = cx.new(|cx| {
+            let mut i = ImeInput::new(cx, app.aux_hint());
+            i.set_bare(true);
+            i
+        });
+        cx.subscribe(&aux, |this, inp, ev: &ImeEvent, cx| {
+            if let ImeEvent::Enter { .. } = ev {
+                let t = inp.read(cx).text().to_string();
+                let done = match this.ui.view_name() {
+                    "browser" => this.own.data.go_addr(&t),
+                    _ => this.own.data.run_term(&t),
+                };
+                if this.ui.view_name() == "browser" {
+                    if done {
+                        let a = oxyn_core::parity::cmdstudio::PAGES[this.own.data.page].0;
+                        inp.update(cx, |i, cx| i.set_text(a, cx));
+                    }
+                } else {
+                    inp.update(cx, |i, cx| i.set_text("", cx));
+                }
+                cx.notify();
+            }
+        })
+        .detach();
+        // Running timers: one tick a second while the view lives.
+        let clock = cx.spawn(async move |this, cx| {
+            loop {
+                cx.background_executor().timer(Duration::from_secs(1)).await;
+                if this
+                    .update(cx, |v, cx| {
+                        v.own.data.tick();
+                        cx.notify();
+                    })
+                    .is_err()
+                {
+                    break;
+                }
+            }
+        });
         let focus = cx.focus_handle();
         window.focus(&focus, cx);
         let mut ui = AppUi::new(app.rows(ScreenState::Sample, false), app.views());
@@ -290,6 +421,8 @@ impl AgentAppView {
             layout: ShellLayout::Inset,
             focus,
             input,
+            aux,
+            _clock: clock,
         }
     }
 
@@ -307,7 +440,15 @@ impl AgentAppView {
     pub fn set_state(&mut self, st: ScreenState, cx: &mut Context<Self>) {
         let rows = self.app.rows(st, self.own.cloud);
         self.ui.set_state(st, rows);
+        let secs = self.own.data.secs;
+        self.own.data = AppData::for_state(st);
+        self.own.data.secs = secs;
         cx.notify();
+    }
+
+    /// The live data (switches, terminal, panes, models, timeline, clock).
+    pub fn data(&self) -> &AppData {
+        &self.own.data
     }
 
     /// Light or dark chrome.
@@ -315,6 +456,7 @@ impl AgentAppView {
         self.dark = dark;
         let t = self.theme();
         self.input.update(cx, |i, cx| i.set_theme(t, cx));
+        self.aux.update(cx, |i, cx| i.set_theme(t, cx));
         cx.notify();
     }
 
@@ -350,7 +492,16 @@ impl AgentAppView {
         }
         let had = self.ui.draft.clone();
         let st = self.ui.st;
+        let view = self.ui.view;
         self.app.press(&mut self.ui, &mut self.own, id);
+        if self.ui.view != view || id.starts_with("page-") {
+            let t = if self.ui.view_name() == "browser" {
+                oxyn_core::parity::cmdstudio::PAGES[self.own.data.page].0
+            } else {
+                ""
+            };
+            self.aux.update(cx, |i, cx| i.set_text(t, cx));
+        }
         if self.ui.st != st {
             let rows = self.app.rows(self.ui.st, self.own.cloud);
             self.ui.rows = rows;
@@ -370,7 +521,8 @@ impl AgentAppView {
         let Some(k) = AppKey::from_name(ev.keystroke.key.as_str()) else {
             return;
         };
-        let typing = self.input.read(cx).focus().is_focused(window);
+        let typing = self.input.read(cx).focus().is_focused(window)
+            || self.aux.read(cx).focus().is_focused(window);
         if typing {
             if k == AppKey::Escape && (self.ui.menu || self.ui.rail) {
                 self.ui.key(k);
@@ -384,6 +536,37 @@ impl AgentAppView {
         if k == AppKey::Enter {
             return;
         }
+        // Session Studio, Rearrange: Up / Down pick a pane, Alt + Up / Down move it.
+        if self.app == AgentApp::SessionStudio
+            && self.ui.view_name() == "arrange"
+            && matches!(k, AppKey::Up | AppKey::Down)
+        {
+            let up = k == AppKey::Up;
+            let d = &mut self.own.data;
+            let changed = if ev.keystroke.modifiers.alt {
+                d.move_pick(up)
+            } else if up && d.pane > 0 {
+                d.pane -= 1;
+                true
+            } else if !up && d.pane + 1 < d.panes.len() {
+                d.pane += 1;
+                true
+            } else {
+                false
+            };
+            if changed {
+                cx.notify();
+            }
+            return;
+        }
+        // Command Board: [ and ] scrub the timeline.
+        if self.app == AgentApp::CommandBoard && ev.keystroke.modifiers.alt {
+            let back = k == AppKey::Left;
+            if matches!(k, AppKey::Left | AppKey::Right) && self.own.data.scrub_step(back) {
+                cx.notify();
+            }
+            return;
+        }
         if self.ui.key(k) {
             if self.app == AgentApp::Taskdeck && self.ui.view != view {
                 self.own.approval = false;
@@ -391,14 +574,40 @@ impl AgentAppView {
             if self.app == AgentApp::Taskdeck && matches!(k, AppKey::Up | AppKey::Down) {
                 self.ui.open_view("task");
             }
+            if self.app == AgentApp::WorkspaceCoder && self.ui.view != view {
+                self.own.data.ws_tab = if self.ui.view_name() == "preview" {
+                    3
+                } else {
+                    0
+                };
+            }
             cx.notify();
         }
     }
 
+    fn mover(&self, cx: &mut Context<Self>) -> Mover {
+        let me = cx.entity().downgrade();
+        Rc::new(move |from, to, _, cx| {
+            let _ = me.update(cx, |v, cx| {
+                if oxyn_core::parity::cmdstudio::move_pane(&mut v.own.data.panes, from, to) {
+                    v.own.data.pane = to.min(v.own.data.panes.len() - 1);
+                    cx.notify();
+                }
+            });
+        })
+    }
+
     fn act(&self, cx: &mut Context<Self>) -> Act {
         let me = cx.entity().downgrade();
-        Rc::new(move |id, _, cx| {
-            let _ = me.update(cx, |v, cx| v.apply(id, cx));
+        Rc::new(move |id, w, cx| {
+            let _ = me.update(cx, |v, cx| {
+                if id == "focus-composer" {
+                    let f = v.input.read(cx).focus().clone();
+                    w.focus(&f, cx);
+                } else {
+                    v.apply(id, cx)
+                }
+            });
         })
     }
 
@@ -456,6 +665,9 @@ impl Render for AgentAppView {
             rail: self.ui.rail,
             input: Some(self.input.clone().into()),
             sent: self.ui.sent.iter().map(|s| s.clone().into()).collect(),
+            data: Some(self.own.data.clone()),
+            aux: Some(self.aux.clone().into()),
+            mover: Some(self.mover(cx)),
         };
         let st = self.ui.st;
         let extra = self.app.extra(&self.ui, &self.own);
@@ -483,7 +695,9 @@ impl Render for AgentAppView {
             .on_mouse_down(
                 MouseButton::Left,
                 cx.listener(|this, _, w, cx| {
-                    if !this.input.read(cx).focus().is_focused(w) {
+                    if !this.input.read(cx).focus().is_focused(w)
+                        && !this.aux.read(cx).focus().is_focused(w)
+                    {
                         w.focus(&this.focus, cx);
                     }
                 }),

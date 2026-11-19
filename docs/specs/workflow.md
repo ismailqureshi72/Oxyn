@@ -41,3 +41,4 @@ Root fills its container (definite width, overflow clip, container queries). Und
 ## 7. Known gaps
 The GPUI element does not show the run dock or the S5 extras yet.
 GPUI is a static snapshot (nodes placed from the model, no curves, drag, zoom or run); the host owns state. Connections are made from the inspector, not by dragging between ports. Dropping from the palette needs HTML drag and drop; click-to-add covers keyboards and touch.
+In a window, `ScreenView` (oxyn-gpui, `parity::screenview`) runs this screen live from `oxyn_core::parity::screenui`: the sidebar and page links open their screens (across sets), buttons open their state, the bar above it switches the set's screens and the state bar, a command bar (a real text field) jumps to any screen or state, the account row opens its menu, and Left / Right, Up / Down and Escape step states and screens. Editing the page's own fields in place is still the host's.

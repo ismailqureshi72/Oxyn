@@ -14,8 +14,8 @@ use gpui::{
 };
 use oxyn_core::parity::screensfid::ShellLayout;
 use oxyn_core::parity::wscoder::{
-    ScreenState, WC_APP, WC_AT, WC_DONE, WC_LOG, WC_MODES, WC_PROMPT, WC_TODOS, WS_TABS, cheapest,
-    preview_rows, wc_chats, ws_files,
+    ScreenState, WC_APP, WC_AT, WC_DONE, WC_LOG, WC_MODES, WC_PROMPT, WC_TODOS, WS_BROWSER,
+    WS_TABS, WS_TERM, cheapest, preview_rows, wc_chats, ws_files,
 };
 use oxyn_tokens::Theme;
 
@@ -34,8 +34,13 @@ s11_el!(
     wc_screen
 );
 
-fn ws_pane(p: &ThPal, st: ScreenState, extra: &str, act: &Option<Act>) -> Div {
-    let on = if extra == "preview" { 3 } else { 0 };
+fn ws_pane(p: &ThPal, st: ScreenState, extra: &str, act: &Option<Act>, lv: &Live) -> Div {
+    let live = lv.data.is_some();
+    let on = match &lv.data {
+        Some(d) => d.ws_tab,
+        None if extra == "preview" => 3,
+        None => 0,
+    };
     let mut tabs = div()
         .flex()
         .gap(px(4.))
@@ -44,6 +49,9 @@ fn ws_pane(p: &ThPal, st: ScreenState, extra: &str, act: &Option<Act>) -> Div {
         .border_color(p.line);
     for (i, (_, l)) in WS_TABS.iter().copied().enumerate() {
         let id = match i {
+            _ if live => {
+                oxyn_core::parity::appui::ids::at(&oxyn_core::parity::appui::ids::WSTAB, i)
+            }
             0 => "view:files",
             3 => "view:preview",
             _ => "tab-other",
@@ -88,6 +96,54 @@ fn ws_pane(p: &ThPal, st: ScreenState, extra: &str, act: &Option<Act>) -> Div {
     }
     if files.is_empty() {
         return d.child(faint(p, "The agent's computer shows up here"));
+    }
+    if on == 1 {
+        let mut out = div()
+            .flex_1()
+            .p(px(12.))
+            .flex()
+            .flex_col()
+            .gap(px(2.))
+            .bg(p.inset);
+        for (cmd, l) in WS_TERM {
+            out = out.child(
+                mono(if cmd { format!("$ {l}") } else { l.to_string() }).text_color(if cmd {
+                    p.fg
+                } else {
+                    p.fg2
+                }),
+            );
+        }
+        return d.child(out);
+    }
+    if on == 2 {
+        let (addr, hits) = WS_BROWSER;
+        let mut page = div().flex_1().p(px(12.)).flex().flex_col().gap(px(10.));
+        for (t, site, line) in hits {
+            page = page.child(
+                div()
+                    .flex()
+                    .flex_col()
+                    .gap(px(2.))
+                    .child(div().text_size(px(11.5)).text_color(p.mute).child(site))
+                    .child(div().font_weight(FontWeight::SEMIBOLD).child(t))
+                    .child(div().text_size(px(12.5)).text_color(p.fg2).child(line)),
+            );
+        }
+        return d
+            .child(
+                div()
+                    .m(px(8.))
+                    .h(px(28.))
+                    .px(px(10.))
+                    .flex()
+                    .items_center()
+                    .rounded(px(8.))
+                    .bg(p.inset)
+                    .text_size(px(12.))
+                    .child(clip(addr)),
+            )
+            .child(page);
     }
     if on == 3 {
         let rows = preview_rows(&files);
@@ -289,7 +345,7 @@ pub(super) fn wc_screen(
                 div().text_color(p.mute).child("Building the page")
             })
     };
-    let pane = ws_pane(p, st, extra, act);
+    let pane = ws_pane(p, st, extra, act, lv);
     let samp = st == ScreenState::Sample;
     let title = if samp {
         "Moving budget for three cities"

@@ -45,6 +45,24 @@ jobs:
       - name: wasm32 check (core and both renderers)
         run: cargo check --locked --target wasm32-unknown-unknown -p oxyn-core -p oxyn-tokens -p oxyn-registry-schema -p oxyn-codegen -p oxyn-gpui -p oxyn-dioxus
 
+  # The native GPUI example (every screen set and agent app as interactive views) is its own
+  # workspace so the windowing / wgpu backends stay out of the library's lockfile. Clippy only:
+  # nothing is linked or uploaded.
+  gpui-example:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: "1.99"
+          components: clippy
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: examples/gpui-agent-apps
+      - name: system libraries for the X11 / Wayland backends
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq libxkbcommon-dev libxkbcommon-x11-dev libfontconfig1-dev libfreetype-dev
+      - run: cargo clippy --locked --manifest-path examples/gpui-agent-apps/Cargo.toml -- -D warnings
+
   # Site: build only (Astro + Pagefind + the live-demo WASM bundle). Never uploads artifacts.
   # Deploy runs on main only, and only once the Cloudflare secrets exist; otherwise it is skipped.
   site:

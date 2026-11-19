@@ -817,6 +817,7 @@ fn state_id(k: &str) -> &'static str {
 macro_rules! screen_el {
     ($(#[$m:meta])* $name:ident) => {
         $(#[$m])*
+        #[derive(IntoElement)]
         pub struct $name {
             state: ScreenState,
             layout: ShellLayout,

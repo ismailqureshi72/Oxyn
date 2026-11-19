@@ -109,6 +109,14 @@ fn nav_id(k: &'static str) -> &'static str {
         "tasks" => "nav-tasks",
         "memory" => "nav-memory",
         "skills" => "nav-skills",
+        "schedules" => "nav-schedules",
+        "usage" => "nav-usage",
+        "permissions" => "nav-permissions",
+        "runs" => "nav-runs",
+        "evals" => "nav-evals",
+        "analytics" => "nav-analytics",
+        "chat" => "nav-chat",
+        "datasets" => "nav-datasets",
         _ => "nav-group",
     }
 }

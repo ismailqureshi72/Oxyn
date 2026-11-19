@@ -15,7 +15,7 @@ use gpui::{
     Window, div, prelude::*, px,
 };
 use oxyn_core::icon_tone::IconTone;
-use oxyn_core::parity::appui::row_id;
+use oxyn_core::parity::appui::{ids, row_id};
 use oxyn_core::parity::screensfid::ShellLayout;
 use oxyn_core::parity::taskdeck::{
     APP, COLUMNS, EnvMode, MODELS, MODES, PANEL_TABS, PROJECTS, PROMPT, SUGGEST, ScreenState,
@@ -23,7 +23,7 @@ use oxyn_core::parity::taskdeck::{
     tasks,
 };
 use oxyn_core::parity::taskdeck::{
-    CATALOG, SiteStatus, cadence_words, next_run, plugin_state, schedules, sites, skills,
+    CADENCES, CATALOG, SiteStatus, cadence_words, next_run, plugin_state, schedules, sites, skills,
 };
 use oxyn_tokens::Theme;
 
@@ -357,7 +357,10 @@ fn start_view(p: &ThPal, env: EnvMode, loading: bool, act: &Option<Act>, lv: &Li
     if loading {
         return col.child(skel(p, 4));
     }
+    let focus = fire(act, "focus-composer");
     let composer = div()
+        .id("composer")
+        .on_click(move |_, w, cx| focus(w, cx))
         .w(px(680.))
         .p(px(10.))
         .flex()
@@ -426,7 +429,7 @@ fn start_view(p: &ThPal, env: EnvMode, loading: bool, act: &Option<Act>, lv: &Li
     col.child(sug)
 }
 
-fn task_view(p: &ThPal, st: ScreenState, approval: bool, act: &Option<Act>) -> Div {
+fn task_view(p: &ThPal, st: ScreenState, approval: bool, act: &Option<Act>, lv: &Live) -> Div {
     let list = tasks(st);
     let Some(mut t) = list.into_iter().find(|t| t.id == 1) else {
         return div()
@@ -453,6 +456,11 @@ fn task_view(p: &ThPal, st: ScreenState, approval: bool, act: &Option<Act>) -> D
     let steps = run_for(&t);
     let (d, n) = progress(&steps);
     let status = run_status(&steps);
+    // A live view keeps a running task's clock going.
+    let ticking = match &lv.data {
+        Some(d) if status == Status::Running => d.secs,
+        _ => 0,
+    };
     let mut tl = div()
         .flex_1()
         .min_h_0()
@@ -600,7 +608,7 @@ fn task_view(p: &ThPal, st: ScreenState, approval: bool, act: &Option<Act>) -> D
                         .child(quiet(p, t.env.label()))
                         .child(quiet(
                             p,
-                            format!("Step {d} of {n} · {}", fmt_secs(elapsed(&steps))),
+                            format!("Step {d} of {n} · {}", fmt_secs(elapsed(&steps) + ticking)),
                         )),
                 ),
         )
@@ -879,9 +887,57 @@ fn logo(p: &ThPal, mk: &str, gl: &str) -> Div {
         })
 }
 
-fn plugins_view(p: &ThPal, st: ScreenState, skills_tab: bool, act: &Option<Act>) -> Div {
-    let ps = plugin_state(st);
-    let sk = skills(st);
+/// A pressable pill: in a live view the On / Off pills are switches.
+fn switch_pill(
+    p: &ThPal,
+    tone: &str,
+    l: &'static str,
+    live: bool,
+    act: &Option<Act>,
+    id: &'static str,
+) -> Div {
+    let d = tpill(p, tone, l);
+    if live {
+        div().child(hit(d, act, id))
+    } else {
+        d
+    }
+}
+
+/// The Plugins | Skills tab row.
+fn plug_tabs(p: &ThPal, skills_tab: bool, act: &Option<Act>) -> Div {
+    let tab = |l: &'static str, on: bool, id: &'static str| {
+        hit(
+            div()
+                .h(px(32.))
+                .px(px(10.))
+                .flex()
+                .items_center()
+                .text_size(px(12.5))
+                .when(on, |d| d.border_b_2().border_color(p.fg).text_color(p.fg))
+                .when(!on, |d| d.text_color(p.mute))
+                .child(l),
+            act,
+            id,
+        )
+    };
+    div()
+        .flex()
+        .gap(px(4.))
+        .px(px(16.))
+        .border_b_1()
+        .border_color(p.line)
+        .child(tab("Plugins", !skills_tab, "plugins-tab"))
+        .child(tab("Skills", skills_tab, "skills-tab"))
+}
+
+fn plugins_view(p: &ThPal, st: ScreenState, skills_tab: bool, act: &Option<Act>, lv: &Live) -> Div {
+    let live = lv.data.is_some();
+    let (ps, sk) = match &lv.data {
+        Some(d) => (d.plugins.clone(), d.skills.clone()),
+        None => (plugin_state(st), skills(st)),
+    };
+    let skills_tab = lv.data.as_ref().map_or(skills_tab, |d| d.skills_tab);
     let hd = head(
         p,
         "Plugins & skills",
@@ -894,6 +950,11 @@ fn plugins_view(p: &ThPal, st: ScreenState, skills_tab: bool, act: &Option<Act>)
         act,
         "new-skill",
     );
+    let hd = div()
+        .flex()
+        .flex_col()
+        .child(hd)
+        .child(plug_tabs(p, skills_tab, act));
     if st == ScreenState::Loading {
         return div()
             .size_full()
@@ -916,7 +977,7 @@ fn plugins_view(p: &ThPal, st: ScreenState, skills_tab: bool, act: &Option<Act>)
                 ));
         }
         let mut l = div().flex().flex_col().px(px(16.));
-        for k in &sk {
+        for (i, k) in sk.iter().enumerate() {
             l = l.child(
                 div()
                     .min_h(px(56.))
@@ -936,10 +997,13 @@ fn plugins_view(p: &ThPal, st: ScreenState, skills_tab: bool, act: &Option<Act>)
                             .child(quiet(p, k.when.clone())),
                     )
                     .child(tpill(p, "", if k.mine { "Yours" } else { "Bundled" }))
-                    .child(tpill(
+                    .child(switch_pill(
                         p,
                         if k.on { "ok" } else { "" },
                         if k.on { "On" } else { "Off" },
+                        live,
+                        act,
+                        ids::at(&ids::SKILL, i),
                     )),
             );
         }
@@ -967,17 +1031,23 @@ fn plugins_view(p: &ThPal, st: ScreenState, skills_tab: bool, act: &Option<Act>)
                                 .child(quiet(p, *cat)),
                         )
                         .when(inst, |d| {
-                            d.child(tpill(
+                            d.child(switch_pill(
                                 p,
                                 if on { "ok" } else { "" },
                                 if on { "On" } else { "Off" },
+                                live,
+                                act,
+                                ids::at(&ids::PLUGIN, i),
                             ))
                         }),
                 )
                 .child(div().text_size(px(12.5)).text_color(p.fg2).child(*line))
                 .child(
                     div()
-                        .when(!inst, |d| d.child(btn(p, "Install", true)))
+                        .when(!inst && live, |d| {
+                            d.child(press(p, "Install", true, act, ids::at(&ids::PLUGIN, i)))
+                        })
+                        .when(!inst && !live, |d| d.child(btn(p, "Install", true)))
                         .when(inst, |d| d.child(btn(p, "Details", false))),
                 ),
         );
@@ -985,8 +1055,18 @@ fn plugins_view(p: &ThPal, st: ScreenState, skills_tab: bool, act: &Option<Act>)
     div().size_full().flex().flex_col().child(hd).child(grid)
 }
 
-fn scheduled_view(p: &ThPal, st: ScreenState, editing: bool, act: &Option<Act>) -> Div {
-    let list = schedules(st);
+fn scheduled_view(p: &ThPal, st: ScreenState, editing: bool, act: &Option<Act>, lv: &Live) -> Div {
+    let live = lv.data.is_some();
+    let list = lv
+        .data
+        .as_ref()
+        .map_or_else(|| schedules(st), |d| d.schedules.clone());
+    let open = match &lv.data {
+        Some(d) => d.editing,
+        None => editing
+            .then(|| list.iter().position(|x| x.id == 2))
+            .flatten(),
+    };
     let hd = head(
         p,
         "Scheduled",
@@ -1019,7 +1099,7 @@ fn scheduled_view(p: &ThPal, st: ScreenState, editing: bool, act: &Option<Act>) 
             ));
     }
     let mut l = div().flex().flex_col().px(px(16.));
-    for x in &list {
+    for (i, x) in list.iter().enumerate() {
         let (lr, ago) = &x.last;
         let mut row = div()
             .flex()
@@ -1067,10 +1147,38 @@ fn scheduled_view(p: &ThPal, st: ScreenState, editing: bool, act: &Option<Act>) 
                             format!("{} · {ago}", lr.label())
                         },
                     ))
-                    .child(btn(p, "Run now", false))
-                    .child(btn(p, if x.paused { "Resume" } else { "Pause" }, false)),
+                    .when(live, |d| {
+                        d.child(press(p, "Edit", false, act, ids::at(&ids::EDIT, i)))
+                    })
+                    .child(press(p, "Run now", false, act, ids::at(&ids::RUN, i)))
+                    .child(press(
+                        p,
+                        if x.paused { "Resume" } else { "Pause" },
+                        false,
+                        act,
+                        ids::at(&ids::PAUSE, i),
+                    )),
             );
-        if editing && x.id == 2 {
+        if open == Some(i) {
+            let mut how = div().flex().gap(px(6.));
+            for (c, (_, l)) in CADENCES.iter().enumerate() {
+                let on = c == x.cadence;
+                how = how.child(hit(
+                    div()
+                        .h(px(26.))
+                        .px(px(9.))
+                        .flex()
+                        .items_center()
+                        .rounded(px(13.))
+                        .border_1()
+                        .border_color(if on { p.fg2 } else { p.line })
+                        .text_size(px(12.))
+                        .text_color(if on { p.fg } else { p.fg2 })
+                        .child(*l),
+                    act,
+                    ids::at(&ids::CADENCE, c),
+                ));
+            }
             row = row.child(
                 div()
                     .mb(px(10.))
@@ -1088,12 +1196,13 @@ fn scheduled_view(p: &ThPal, st: ScreenState, editing: bool, act: &Option<Act>) 
                         p,
                         format!("How often: {}", cadence_words(x.cadence, &x.at)),
                     ))
+                    .child(how)
                     .child(
                         div()
                             .flex()
                             .justify_end()
                             .gap(px(8.))
-                            .child(btn(p, "Cancel", false))
+                            .child(press(p, "Cancel", false, act, "cancel-schedule"))
                             .child(press(p, "Save", true, act, "save-schedule")),
                     ),
             );
@@ -1103,8 +1212,14 @@ fn scheduled_view(p: &ThPal, st: ScreenState, editing: bool, act: &Option<Act>) 
     div().size_full().flex().flex_col().child(hd).child(l)
 }
 
-fn sites_view(p: &ThPal, st: ScreenState, preview: bool, act: &Option<Act>) -> Div {
+fn sites_view(p: &ThPal, st: ScreenState, preview: bool, act: &Option<Act>, lv: &Live) -> Div {
     let list = sites(st);
+    let live = lv.data.is_some();
+    let open = match &lv.data {
+        Some(d) => d.preview,
+        None => preview.then_some(0),
+    };
+    let preview = open.is_some();
     let hd = head(
         p,
         "Sites",
@@ -1140,7 +1255,7 @@ fn sites_view(p: &ThPal, st: ScreenState, preview: bool, act: &Option<Act>) -> D
         .flex()
         .flex_wrap()
         .gap(px(12.));
-    for x in &list {
+    for (i, x) in list.iter().enumerate() {
         let mut mini = div()
             .h(px(100.))
             .p(px(12.))
@@ -1161,7 +1276,7 @@ fn sites_view(p: &ThPal, st: ScreenState, preview: bool, act: &Option<Act>) -> D
         grid = grid.child(
             tile(p)
                 .w(px(if preview { 300. } else { 280. }))
-                .when(preview && x.id == 1, |d| d.border_color(p.fg2))
+                .when(open == Some(i), |d| d.border_color(p.fg2))
                 .child(mini)
                 .child(
                     div()
@@ -1191,7 +1306,17 @@ fn sites_view(p: &ThPal, st: ScreenState, preview: bool, act: &Option<Act>) -> D
                     div()
                         .flex()
                         .gap(px(6.))
-                        .child(btn(p, "Preview", false))
+                        .child(if live {
+                            press(
+                                p,
+                                if open == Some(i) { "Close" } else { "Preview" },
+                                false,
+                                act,
+                                ids::at(&ids::SITE, i),
+                            )
+                        } else {
+                            btn(p, "Preview", false)
+                        })
                         .child(btn(
                             p,
                             if x.status == SiteStatus::Building {
@@ -1205,7 +1330,7 @@ fn sites_view(p: &ThPal, st: ScreenState, preview: bool, act: &Option<Act>) -> D
         );
     }
     let mut body = div().flex_1().min_h_0().flex().child(grid);
-    if preview && let Some(o) = list.first() {
+    if let Some(o) = open.and_then(|i| list.get(i)) {
         body = body.child(
             div()
                 .w(px(440.))
@@ -1282,11 +1407,11 @@ pub(super) fn screen(
     };
     let loading = st == ScreenState::Loading;
     let main = match view {
-        "task" => task_view(&p, st, extra == "approval", act),
+        "task" => task_view(&p, st, extra == "approval", act, lv),
         "board" => board_view(&p, st, env, act),
-        "plugins" => plugins_view(&p, st, extra == "skills", act),
-        "scheduled" => scheduled_view(&p, st, extra == "editing", act),
-        "sites" => sites_view(&p, st, extra == "preview", act),
+        "plugins" => plugins_view(&p, st, extra == "skills", act, lv),
+        "scheduled" => scheduled_view(&p, st, extra == "editing", act, lv),
+        "sites" => sites_view(&p, st, extra == "preview", act, lv),
         _ => start_view(&p, env, loading, act, lv),
     };
     let mut main = div()

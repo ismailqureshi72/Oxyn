@@ -32,3 +32,4 @@ Root fills its container (definite width, overflow clip, container queries). Und
 
 ## 7. Known gaps
 GPUI is a static snapshot of the Alerts page (no editing, search or save bar); the host owns state. Danger actions only report what they would do.
+In a window, `ScreenView` (oxyn-gpui, `parity::screenview`) runs this screen live from `oxyn_core::parity::screenui`: the sidebar and page links open their screens (across sets), buttons open their state, the bar above it switches the set's screens and the state bar, a command bar (a real text field) jumps to any screen or state, the account row opens its menu, and Left / Right, Up / Down and Escape step states and screens. Editing the page's own fields in place is still the host's.
