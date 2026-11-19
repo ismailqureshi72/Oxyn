@@ -37,4 +37,3 @@ site/public/wasm/
 site/dist/
 site/node_modules/
 site/.astro/
-examples/gpui-agent-apps/Cargo.lock

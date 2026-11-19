@@ -1,5 +1,6 @@
-# The six agent apps as interactive GPUI views in one native window. Its own workspace on
-# purpose: the platform backends (windowing, wgpu) stay out of the library's lockfile and CI.
+# Every screen set (S0–S8) and the six agent apps as interactive GPUI views in one native window.
+# Its own workspace on purpose: the platform backends (windowing, wgpu) stay out of the library's
+# lockfile. CI runs clippy on it in its own job (the gpui-example job in .github/workflows/ci.yml).
 # Run from the repo root: cargo run --manifest-path examples/gpui-agent-apps/Cargo.toml
 [package]
 name = "gpui-agent-apps"
