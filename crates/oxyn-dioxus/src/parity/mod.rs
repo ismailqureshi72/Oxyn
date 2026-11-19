@@ -6,6 +6,7 @@ mod agentsfid;
 mod answers;
 mod approvals;
 mod arcscr;
+mod arcscr2;
 mod attachfid;
 mod autonomyfid;
 mod awayfid;
@@ -92,6 +93,10 @@ pub use approvals::{
 pub use arcscr::{
     GanttTimelineScreen, KanbanBoardScreen, MetricsDashboardScreen, ProjectBoardScreen,
     TeamDirectoryScreen, s12_states,
+};
+pub use arcscr2::{
+    HelpCenterScreen, InboxTriageScreen, MonthCalendarScreen, SupportConversationScreen,
+    WeekCalendarScreen, s13_states,
 };
 pub use attachfid::{AttachmentChips, DropLanes, FileIcon, PolaroidStack, UploadDropzone};
 pub use autonomyfid::AutonomyDial;

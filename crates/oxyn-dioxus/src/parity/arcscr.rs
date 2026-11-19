@@ -28,14 +28,14 @@ pub fn s12_states(slug: &str) -> Vec<(&'static str, &'static str)> {
 
 // ───────────────────────────────────────────────────────────── shared parts ──
 
-fn av(who: usize, small: bool) -> Element {
+pub(super) fn av(who: usize, small: bool) -> Element {
     let (n, h) = PEOPLE[who % PEOPLE.len()];
     let hue = oxyn_core::parity::arcscr::HUES[h];
     let ini = initials(who);
     rsx! { span { class: "oxs12-av", "data-hue": "{hue}", "data-sm": "{small}", title: "{n}", "aria-hidden": "true", "{ini}" } }
 }
 
-fn hue_ico(hue: &str, icon: &str) -> Element {
+pub(super) fn hue_ico(hue: &str, icon: &str) -> Element {
     rsx! { span { class: "oxs12-hi", "data-hue": "{hue}", {nico(icon)} } }
 }
 
@@ -66,7 +66,7 @@ fn ring(pct: u32, hue: &str) -> Element {
     }
 }
 
-fn skl(n: usize, class: &'static str) -> Element {
+pub(super) fn skl(n: usize, class: &'static str) -> Element {
     rsx! {
         div { class: "oxs12-skl {class}", "aria-hidden": "true",
             for i in 0..n { { let w = [92, 64, 78, 48, 70][i % 5]; rsx! { span { key: "{i}", class: "oxs12-sb", style: "width:{w}%" } } } }
@@ -74,7 +74,7 @@ fn skl(n: usize, class: &'static str) -> Element {
     }
 }
 
-fn none(icon: &str, title: &str, line: &str, act: Element) -> Element {
+pub(super) fn none(icon: &str, title: &str, line: &str, act: Element) -> Element {
     rsx! {
         div { class: "oxs12-none",
             span { class: "oxs12-none-g", {nico(icon)} }
@@ -86,7 +86,7 @@ fn none(icon: &str, title: &str, line: &str, act: Element) -> Element {
 }
 
 /// A sidebar row: icon, label, count; `on` marks the open one.
-fn nrow(
+pub(super) fn nrow(
     icon: Element,
     label: String,
     count: String,
@@ -102,7 +102,7 @@ fn nrow(
     }
 }
 
-fn group(label: &str, plus: bool) -> Element {
+pub(super) fn group(label: &str, plus: bool) -> Element {
     rsx! {
         div { class: "oxs12-gl",
             span { class: "oxs12-ell", "{label}" }
@@ -111,15 +111,25 @@ fn group(label: &str, plus: bool) -> Element {
     }
 }
 
-fn ws_mark(slug: &str) -> Element {
+pub(super) fn ws_mark(slug: &str) -> Element {
     let d = match slug {
         "kanban-board" => "M4 15 L10 5 L16 15 Z",
         "project-board" => "M10 3 a7 7 0 1 0 0.01 0 Z",
         "gantt-timeline" => "M3 5 h14 v3 h-14 Z M3 11 h9 v3 h-9 Z",
         "team-directory" => "M4 16 L16 4 M4 10 L10 4 M10 16 L16 10",
+        "week-calendar" => "M4 4 h12 v12 h-12 Z M4 8 h12",
+        "month-calendar" => "M3 6 h14 v10 h-14 Z M7 3 v4 M13 3 v4",
+        "inbox-triage" => "M3 11 l3 -7 h8 l3 7 v5 h-14 Z M3 11 h4 l1 2 h4 l1 -2 h4",
+        "support-conversation" => "M4 4 h12 v9 h-7 l-4 3 v-3 h-1 Z",
+        "help-center" => {
+            "M10 3 a7 7 0 1 0 0.01 0 Z M10 13 v.5 M8 8 a2 2 0 1 1 3 1.7 c-.7 .5 -1 .9 -1 1.8"
+        }
         _ => "M10 3 a7 7 0 0 1 7 7 h-7 Z M10 10 v7 a7 7 0 0 1 -7 -7 Z",
     };
-    let stroke = slug == "team-directory";
+    let stroke = matches!(
+        slug,
+        "team-directory" | "week-calendar" | "month-calendar" | "inbox-triage" | "help-center"
+    );
     rsx! {
         span { class: "oxs12-wsm", "aria-hidden": "true",
             svg { view_box: "0 0 20 20", width: "14", height: "14",
@@ -134,7 +144,7 @@ fn ws_mark(slug: &str) -> Element {
 /// body) and an optional right card. Under 960 px (container) the sidebar is a drawer from the
 /// header's menu button.
 #[component]
-fn ArcFrame(
+pub(super) fn ArcFrame(
     slug: &'static str,
     layout: String,
     side: Element,
@@ -227,7 +237,12 @@ fn ArcFrame(
     }
 }
 
-fn btn(label: &str, icon: &str, primary: bool, onclick: EventHandler<MouseEvent>) -> Element {
+pub(super) fn btn(
+    label: &str,
+    icon: &str,
+    primary: bool,
+    onclick: EventHandler<MouseEvent>,
+) -> Element {
     rsx! {
         button { r#type: "button", class: "oxs12-btn", "data-pri": "{primary}", "aria-label": "{label}", onclick: move |e| onclick.call(e),
             {nico(icon)} span { class: "oxs12-btl", "{label}" }
@@ -235,7 +250,7 @@ fn btn(label: &str, icon: &str, primary: bool, onclick: EventHandler<MouseEvent>
     }
 }
 
-fn seg(
+pub(super) fn seg(
     aria: &str,
     items: Vec<(&'static str, String)>,
     cur: &str,
@@ -250,7 +265,7 @@ fn seg(
     }
 }
 
-fn find_field(
+pub(super) fn find_field(
     aria: &'static str,
     ph: &'static str,
     mut q: Signal<String>,
