@@ -19,6 +19,7 @@ mod answers;
 mod approvals;
 mod apps;
 mod arcscr;
+mod arcscr2;
 mod attachfid;
 mod autonomyfid;
 mod awayfid;
@@ -101,6 +102,9 @@ pub use approvals::{
 pub use apps::{AgentApp, AgentAppView, Live, Own};
 pub use arcscr::{
     ArcDrag, GanttTimelineEl, KanbanBoardEl, MetricsDashboardEl, ProjectBoardEl, TeamDirectoryEl,
+};
+pub use arcscr2::{
+    HelpCenterEl, InboxTriageEl, MonthCalendarEl, SupportConversationEl, WeekCalendarEl,
 };
 pub use attachfid::{AttachmentChipsEl, DropLanesEl, PolaroidStackEl, UploadDropzoneEl};
 pub use autonomyfid::AutonomyDialEl;

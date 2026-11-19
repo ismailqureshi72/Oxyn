@@ -25,6 +25,10 @@ use oxyn_dioxus::{
     TeamDirectoryScreen, s12_states,
 };
 use oxyn_dioxus::{
+    HelpCenterScreen, InboxTriageScreen, MonthCalendarScreen, SupportConversationScreen,
+    WeekCalendarScreen, s13_states,
+};
+use oxyn_dioxus::{
     OnboardingBrandScreen, OnboardingReadyScreen, OnboardingToneScreen, OnboardingWebsiteScreen,
     s8_states,
 };
@@ -5220,5 +5224,296 @@ pub(crate) fn demos() -> Vec<Demo> {
         pb_demo(),
         gt_demo(),
         dir_demo(),
+        wk_demo(),
+        mo_demo(),
+        ib2_demo(),
+        sp2_demo(),
+        hc_demo(),
     ]
+}
+
+// ---------- Arc screens II: Week / Month calendar, Inbox triage, Support, Help center (S13) ----------
+
+/// The state key for a Data label of an S13 screen (`Calendars off` → `hidden`).
+fn arc2_key(slug: &str, label: &str) -> String {
+    s13_states(slug)
+        .iter()
+        .find(|(_, l)| l.eq_ignore_ascii_case(label))
+        .map(|(k, _)| k.to_string())
+        .unwrap_or_else(|| low(label))
+}
+
+fn arc2_el(slug: &'static str, lay: String, s: String) -> Element {
+    match slug {
+        "month-calendar" => rsx! { MonthCalendarScreen { layout: lay, state: s } },
+        "inbox-triage" => rsx! { InboxTriageScreen { layout: lay, state: s } },
+        "support-conversation" => rsx! { SupportConversationScreen { layout: lay, state: s } },
+        "help-center" => rsx! { HelpCenterScreen { layout: lay, state: s } },
+        _ => rsx! { WeekCalendarScreen { layout: lay, state: s } },
+    }
+}
+
+fn arc2_screen(slug: &'static str, v: &Vals) -> Element {
+    let (_, lay, key) = frame(v);
+    let st = arc2_key(slug, v.s("data"));
+    let key = format!("{key}-{st}");
+    rsx! {
+        div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
+            ScreenStage { state: st, states: s13_states(slug), screen: move |s: String| arc2_el(slug, lay.clone(), s) }
+        }
+    }
+}
+
+fn arc2_code(name: &str, slug: &str, v: &Vals) -> String {
+    Code::new(name)
+        .s("layout", &low(v.s("frame")), "inset")
+        .s("state", &arc2_key(slug, v.s("data")), "sample")
+        .done()
+}
+
+#[allow(clippy::too_many_arguments)]
+fn arc2_demo(
+    slug: &'static str,
+    name: &'static str,
+    summary: &'static str,
+    dx: &'static str,
+    gp: &'static str,
+    render: fn(&Vals, ClockMs) -> Element,
+    code: fn(&Vals) -> String,
+    keyboard: Vec<(&'static str, &'static str)>,
+    a11y: Vec<&'static str>,
+    own: &[(&'static str, &'static str, &'static str)],
+) -> Demo {
+    let mut d = arc_demo(
+        slug, name, summary, dx, gp, render, code, keyboard, a11y, own,
+    );
+    d.source = "parity/arcscr2.rs";
+    d
+}
+
+fn wk_screen(v: &Vals, _now: ClockMs) -> Element {
+    arc2_screen("week-calendar", v)
+}
+fn wk_code(v: &Vals) -> String {
+    arc2_code("WeekCalendarScreen", "week-calendar", v)
+}
+fn mo_screen(v: &Vals, _now: ClockMs) -> Element {
+    arc2_screen("month-calendar", v)
+}
+fn mo_code(v: &Vals) -> String {
+    arc2_code("MonthCalendarScreen", "month-calendar", v)
+}
+fn ib2_screen(v: &Vals, _now: ClockMs) -> Element {
+    arc2_screen("inbox-triage", v)
+}
+fn ib2_code(v: &Vals) -> String {
+    arc2_code("InboxTriageScreen", "inbox-triage", v)
+}
+fn sp2_screen(v: &Vals, _now: ClockMs) -> Element {
+    arc2_screen("support-conversation", v)
+}
+fn sp2_code(v: &Vals) -> String {
+    arc2_code("SupportConversationScreen", "support-conversation", v)
+}
+fn hc_screen(v: &Vals, _now: ClockMs) -> Element {
+    arc2_screen("help-center", v)
+}
+fn hc_code(v: &Vals) -> String {
+    arc2_code("HelpCenterScreen", "help-center", v)
+}
+
+fn wk_demo() -> Demo {
+    arc2_demo(
+        "week-calendar",
+        "Week calendar",
+        "Arc screens / Week calendar: a team calendar on a time grid. Events tinted by calendar with places, Zoom calls and guests; overlapping events sit side by side; all-day events in their own row and a line for now. Drag an event to move it (its bottom edge to resize) or drag on an empty slot to create one; focus an event and use the arrows (Shift + ↑ ↓ resizes). Day / Week / Month, Today and the arrows to page, a mini month to jump to a date, calendars to show or hide (or Only), a filter field and a Next up card with Join.",
+        "WeekCalendarScreen",
+        "WeekCalendarEl",
+        wk_screen,
+        wk_code,
+        vec![
+            ("← → ↑ ↓", "Move the focused event a day or 15 minutes"),
+            ("Shift + ↑ ↓", "Make the focused event shorter or longer"),
+            ("T / D / W / M / N", "Today, Day, Week, Month, New event"),
+            ("Delete", "Delete the focused event"),
+            ("Escape", "Close the new event form or clear the selection"),
+        ],
+        vec![
+            "Each event is a button named with its date, time and place; moves report in a polite live region.",
+            "Day headers are buttons that open the Day view; the mini month's days are toggle buttons named with their ISO date.",
+            "Calendars are checkboxes; Only is a labelled icon button.",
+        ],
+        &[
+            (
+                "dragging",
+                "Dragging",
+                "An event lifted mid-drag one day later and 30 minutes later.",
+            ),
+            (
+                "creating",
+                "New event",
+                "A new event drawn on the grid with its title field and calendar menu.",
+            ),
+            ("dayview", "Day view", "One day's time grid."),
+        ],
+    )
+}
+
+fn mo_demo() -> Demo {
+    arc2_demo(
+        "month-calendar",
+        "Month calendar",
+        "Arc screens / Month calendar: the month at a glance. Chips per event (time and title, all-day ones filled) with +N more, today marked and the selected day outlined; a day panel with a busy strip for working hours, the schedule, free gaps, Block focus time and New event on that day. Calendars with counts and Only, team calendars; Week and Day a press away.",
+        "MonthCalendarScreen",
+        "MonthCalendarEl",
+        mo_screen,
+        mo_code,
+        vec![
+            (
+                "← → ↑ ↓",
+                "Move the selected day (the grid is one tab stop)",
+            ),
+            ("Enter", "Open the selected day in the Day view"),
+            ("T / D / W / M / N", "Today, Day, Week, Month, New event"),
+            ("Escape", "Close the more popover"),
+        ],
+        vec![
+            "The month is a grid with aria-activedescendant on the selected day; each day names its date and event count.",
+            "The busy strip is an image named with the busy time; free gaps are listed as text.",
+        ],
+        &[
+            (
+                "more",
+                "More events",
+                "The +N more popover open on a busy launch day.",
+            ),
+            (
+                "hidden",
+                "Calendars off",
+                "Personal and Travel hidden from the grid.",
+            ),
+            (
+                "focus",
+                "Focus blocked",
+                "Two hours of focus time blocked in today's first free gap.",
+            ),
+        ],
+    )
+}
+
+fn ib2_demo() -> Demo {
+    arc2_demo(
+        "inbox-triage",
+        "Inbox triage",
+        "Arc screens / Inbox triage: a support inbox built for keyboard triage. Folders (Inbox, Assigned to me, Unassigned, Snoozed, Resolved) with live counts, All / Unread / Due soon, newest or oldest first; rows with channel marks (Gmail, Slack, X, site chat), labels, Urgent and SLA timers that turn amber then rose. J / K walk the list, E resolves, H snoozes, X selects, A assigns to you and U undoes; bulk actions on a selection; the thread with a quick reply and the customer card.",
+        "InboxTriageScreen",
+        "InboxTriageEl",
+        ib2_screen,
+        ib2_code,
+        vec![
+            ("J / K or ↓ ↑", "Next or previous conversation"),
+            ("E", "Resolve the selection or the open conversation"),
+            ("H", "Snooze until later today"),
+            ("X", "Select the open conversation"),
+            ("U", "Undo the last resolve, snooze or assignment"),
+            ("A", "Assign to me"),
+            ("Ctrl + Enter", "Send the quick reply"),
+        ],
+        vec![
+            "The list is a multi-select listbox; each row has a checkbox named for the customer and subject.",
+            "SLA timers are text, not colour alone; Undo says what it undoes in a status region.",
+        ],
+        &[
+            (
+                "selected",
+                "Selected",
+                "Three conversations selected with the bulk bar.",
+            ),
+            (
+                "snoozing",
+                "Snooze menu",
+                "The snooze menu open with absolute times.",
+            ),
+            (
+                "archived",
+                "Resolved",
+                "The first conversation resolved, the next one open and Undo offered.",
+            ),
+        ],
+    )
+}
+
+fn sp2_demo() -> Demo {
+    arc2_demo(
+        "support-conversation",
+        "Support conversation",
+        "Arc screens / Support conversation: a help desk ticket. Views with counts, Waiting on you with SLAs, the ticket list, and the thread: customer messages with attachments, replies with a help article card, internal notes in amber with mentions and system lines. The composer switches Reply / Note, inserts saved replies, attaches files and an article, and sends with Ctrl + Enter (the ticket turns Waiting on customer). Snooze and Close in the header; the customer card with profile, activity, apps (Google Calendar, Stripe), the linked issue and earlier conversations.",
+        "SupportConversationScreen",
+        "SupportConversationEl",
+        sp2_screen,
+        sp2_code,
+        vec![
+            ("Ctrl + Enter", "Send the reply or add the note"),
+            (
+                "Tab",
+                "Views, tickets, the thread, then the composer and its tools",
+            ),
+            ("Escape", "Close the snooze or saved replies menu"),
+        ],
+        vec![
+            "Reply / Note is a radio group; notes are marked Internal note in text as well as colour.",
+            "The thread is an ordered list; sending reports in a polite live region.",
+        ],
+        &[
+            (
+                "note",
+                "Internal note",
+                "The composer in Note mode with a draft for the team.",
+            ),
+            (
+                "sent",
+                "Reply sent",
+                "A saved reply sent; the ticket is waiting on the customer.",
+            ),
+            ("closed", "Closed", "The ticket closed, with Reopen."),
+        ],
+    )
+}
+
+fn hc_demo() -> Demo {
+    arc2_demo(
+        "help-center",
+        "Help center",
+        "Arc screens / Help center: a help site's back office. Articles by status (All, Published, Drafts, In review) and collection, search over titles and bodies with highlighted snippets (/ focuses), the reader with related articles and Publish for drafts, Was this helpful? (a No asks for a reason and sends it to the article's owner), and insights: views, helpful share and top searches, the ones with no results flagged. A quarterly review card counts the articles to check.",
+        "HelpCenterScreen",
+        "HelpCenterEl",
+        hc_screen,
+        hc_code,
+        vec![
+            ("/", "Focus the search"),
+            ("Escape", "Clear the search"),
+            ("Tab", "Status tabs, search, articles, then the reader"),
+        ],
+        vec![
+            "The search result count is a status region; matches are marked with mark.",
+            "Feedback reasons are a radio group; the thank-you is a status message.",
+        ],
+        &[
+            (
+                "search",
+                "Search",
+                "A search with snippets and the matched word marked.",
+            ),
+            (
+                "noresults",
+                "No results",
+                "A search with no match: suggestions, Write it, Clear search.",
+            ),
+            (
+                "feedback",
+                "Feedback",
+                "A No vote asking what went wrong, a reason picked.",
+            ),
+        ],
+    )
 }

@@ -1,5 +1,5 @@
-//! [`ScreenView`]: every screen set from S0 to S8 and S12 (app shells, AI Chat, Workspace, Agent ops
-//! I and II, Orchestration / Workflow / Evals, Settings I and II, Onboarding, Arc screens I) as one
+//! [`ScreenView`]: every screen set from S0 to S8, S12 and S13 (app shells, AI Chat, Workspace, Agent ops
+//! I and II, Orchestration / Workflow / Evals, Settings I and II, Onboarding, Arc screens I and II) as one
 //! interactive GPUI view
 //! (`Entity` + `Render`). It keeps an [`ScreenUi`] from `oxyn_core::parity::screenui` and draws the
 //! open screen's snapshot element in the open state, so one set of rules drives every screen:
@@ -18,7 +18,13 @@
 //!   board cards picked by a press and dropped on a column (or dragged there), Alt + arrows move
 //!   the picked card; tasks completed or reopened; timeline bars picked and nudged (Alt + ← / →,
 //!   Alt + Shift for the end) or dragged onto a day; the directory's search is a second
-//!   [`ImeInput`] and its filters, views and favourites are presses.
+//!   [`ImeInput`] and its filters, views and favourites are presses (the same field filters the
+//!   timeline's tasks);
+//! - the Arc screens II (S13) draw the core's live `Arc2Ui`: calendar views, days and calendars,
+//!   events picked and nudged (Alt + arrows, Alt + Shift + ↑ ↓ resize) or dragged onto a day;
+//!   inbox triage with J / K / E / H / X / U / A; the support composer (a third [`ImeInput`],
+//!   Enter sends) with saved replies, notes, Snooze and Close; the help center's search (the same
+//!   field), articles, feedback and Publish.
 //!
 //! Create one with `cx.new(|cx| ScreenView::new(6, window, cx))` (set index into
 //! [`oxyn_core::parity::screenui::SETS`]) after calling [`super::bind_ime_keys`] once.
@@ -31,6 +37,7 @@ use gpui::{
 };
 use oxyn_core::parity::appui::AppKey;
 use oxyn_core::parity::arcscr::ArcUi;
+use oxyn_core::parity::arcscr2::Arc2Ui;
 use oxyn_core::parity::screensfid::{ScreenState, ShellLayout};
 use oxyn_core::parity::screenui::{Moved, SETS, ScreenUi};
 use oxyn_tokens::Theme;
@@ -116,7 +123,53 @@ pub fn screen_element(
         "onboarding-ready" => el!(OnboardingReadyEl),
         "metrics-dashboard" | "kanban-board" | "project-board" | "gantt-timeline"
         | "team-directory" => arc_element(slug, st, extra, lay, theme, act, None, None),
+        "week-calendar"
+        | "month-calendar"
+        | "inbox-triage"
+        | "support-conversation"
+        | "help-center" => arc2_element(slug, st, extra, lay, theme, act, None, None),
         _ => el0!(ScreenShellEl),
+    }
+}
+
+/// An Arc screen II (S13) for slug `slug`, drawing the live state `arc` when given (else the
+/// sample for the state) with `field` as the support composer or the help center search.
+#[allow(clippy::too_many_arguments)]
+pub fn arc2_element(
+    slug: &str,
+    st: ScreenState,
+    extra: &'static str,
+    lay: ShellLayout,
+    theme: &'static Theme,
+    act: Act,
+    arc: Option<Arc2Ui>,
+    field: Option<gpui::AnyView>,
+) -> AnyElement {
+    macro_rules! el {
+        ($t:ty) => {{
+            let mut e = <$t>::default()
+                .state(st)
+                .extra(extra)
+                .layout(lay)
+                .theme(theme)
+                .on_act(act);
+            if let Some(a) = arc {
+                e = e.arc2(a);
+            }
+            if let Some(v) = field {
+                e = e.field(v);
+            }
+            e.into_any_element()
+        }};
+    }
+    match slug {
+        "month-calendar" => el!(MonthCalendarEl),
+        "inbox-triage" => el!(InboxTriageEl),
+        "support-conversation" => el!(SupportConversationEl),
+        "help-center" => el!(HelpCenterEl),
+        "week-calendar" => el!(WeekCalendarEl),
+        // Not an S13 slug: the first S13 screen.
+        _ => el!(WeekCalendarEl),
     }
 }
 
@@ -169,6 +222,10 @@ pub struct ScreenView {
     focus: FocusHandle,
     input: Entity<ImeInput>,
     search: Entity<ImeInput>,
+    /// The S13 field: the support composer or the help center search.
+    field: Entity<ImeInput>,
+    /// The search field's current placeholder (it follows the open screen).
+    ph: &'static str,
 }
 
 impl Focusable for ScreenView {
@@ -213,6 +270,27 @@ impl ScreenView {
             cx.notify();
         })
         .detach();
+        let field = cx.new(|cx| {
+            let mut i = ImeInput::new(cx, "Search articles");
+            i.set_bare(true);
+            i
+        });
+        cx.subscribe(&field, |this, inp, ev: &ImeEvent, cx| {
+            let text = inp.read(cx).text().to_string();
+            match (this.ui.screen_def().slug, ev) {
+                ("support-conversation", ImeEvent::Enter { .. }) => {
+                    this.ui.arc2.desk.draft = text;
+                    this.press("sp-send", cx);
+                }
+                ("support-conversation", ImeEvent::Changed) => this.ui.arc2.desk.draft = text,
+                ("help-center", ImeEvent::Changed | ImeEvent::Enter { .. }) => {
+                    this.ui.arc2.help.query = text
+                }
+                _ => {}
+            }
+            cx.notify();
+        })
+        .detach();
         let focus = cx.focus_handle();
         window.focus(&focus, cx);
         Self {
@@ -222,6 +300,8 @@ impl ScreenView {
             focus,
             input,
             search,
+            field,
+            ph: "Search people, roles, skills",
         }
     }
 
@@ -244,6 +324,7 @@ impl ScreenView {
         let t = self.theme();
         self.input.update(cx, |i, cx| i.set_theme(t, cx));
         self.search.update(cx, |i, cx| i.set_theme(t, cx));
+        self.field.update(cx, |i, cx| i.set_theme(t, cx));
         cx.notify();
     }
 
@@ -279,10 +360,45 @@ impl ScreenView {
                 cx.notify();
             }
             _ => {
+                let screen = self.ui.screen_def().slug;
                 if self.ui.press(id) != Moved::None {
+                    self.sync_fields(screen != self.ui.screen_def().slug, cx);
                     cx.notify();
                 }
             }
+        }
+    }
+
+    /// Keeps the text fields in step with the open screen: the S12 search's placeholder (people
+    /// or tasks) and, on S13, the field's text (the support draft or the help search) after a
+    /// press changed it. A new screen starts with an empty search.
+    fn sync_fields(&mut self, moved: bool, cx: &mut Context<Self>) {
+        let slug = self.ui.screen_def().slug;
+        if moved {
+            self.ui.arc.query.clear();
+            self.search.update(cx, |i, cx| i.set_text("", cx));
+        }
+        let ph = if slug == "gantt-timeline" {
+            "Filter tasks"
+        } else {
+            "Search people, roles, skills"
+        };
+        if ph != self.ph {
+            self.ph = ph;
+            self.search.update(cx, |i, _| i.set_placeholder(ph));
+        }
+        let want = match slug {
+            "support-conversation" => Some((self.ui.arc2.desk.draft.clone(), "Write a reply…")),
+            "help-center" => Some((self.ui.arc2.help.query.clone(), "Search articles")),
+            _ => None,
+        };
+        if let Some((t, ph)) = want {
+            self.field.update(cx, |i, cx| {
+                i.set_placeholder(ph);
+                if i.text() != t {
+                    i.set_text(&t, cx);
+                }
+            });
         }
     }
 
@@ -298,6 +414,12 @@ impl ScreenView {
             ("gantt-timeline", "right", false) => "gt-later",
             ("gantt-timeline", "left", true) => "gt-shorter",
             ("gantt-timeline", "right", true) => "gt-longer",
+            ("week-calendar" | "month-calendar", "left", _) => "cal-earlier",
+            ("week-calendar" | "month-calendar", "right", _) => "cal-later",
+            ("week-calendar" | "month-calendar", "up", false) => "cal-up",
+            ("week-calendar" | "month-calendar", "down", false) => "cal-down",
+            ("week-calendar" | "month-calendar", "up", true) => "cal-shorter",
+            ("week-calendar" | "month-calendar", "down", true) => "cal-longer",
             _ => return false,
         };
         self.ui.press(id);
@@ -306,7 +428,8 @@ impl ScreenView {
 
     fn key(&mut self, ev: &KeyDownEvent, window: &mut Window, cx: &mut Context<Self>) {
         let typing = self.input.read(cx).focus().is_focused(window)
-            || self.search.read(cx).focus().is_focused(window);
+            || self.search.read(cx).focus().is_focused(window)
+            || self.field.read(cx).focus().is_focused(window);
         let name = ev.keystroke.key.as_str();
         if typing {
             if name == "escape" {
@@ -316,8 +439,16 @@ impl ScreenView {
             return;
         }
         if name == "/" {
-            let f = if self.ui.screen_def().slug == "team-directory" {
+            let f = if matches!(
+                self.ui.screen_def().slug,
+                "team-directory" | "gantt-timeline"
+            ) {
                 self.search.read(cx).focus().clone()
+            } else if matches!(
+                self.ui.screen_def().slug,
+                "help-center" | "support-conversation"
+            ) {
+                self.field.read(cx).focus().clone()
             } else {
                 self.input.read(cx).focus().clone()
             };
@@ -325,6 +456,13 @@ impl ScreenView {
             return;
         }
         if ev.keystroke.modifiers.alt && self.arc_key(name, ev.keystroke.modifiers.shift) {
+            cx.notify();
+            return;
+        }
+        let m = &ev.keystroke.modifiers;
+        if !(m.alt || m.control || m.platform) && self.ui.arc2.key(self.ui.screen_def().slug, name)
+        {
+            self.ui.said = self.ui.arc2.said.take();
             cx.notify();
             return;
         }
@@ -548,7 +686,18 @@ impl Render for ScreenView {
         let act = self.act(cx);
         let (st, extra) = self.ui.split();
         let slug = self.ui.screen_def().slug;
-        let screen = if self.ui.set_def().id == "s12" {
+        let screen = if self.ui.set_def().id == "s13" {
+            arc2_element(
+                slug,
+                st,
+                extra,
+                self.layout,
+                theme,
+                act.clone(),
+                Some(self.ui.arc2.clone()),
+                Some(self.field.clone().into()),
+            )
+        } else if self.ui.set_def().id == "s12" {
             arc_element(
                 slug,
                 st,

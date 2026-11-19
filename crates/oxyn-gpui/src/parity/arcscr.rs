@@ -15,11 +15,11 @@ use gpui::{
 use oxyn_core::parity::arcscr::{
     ACTIVITY, ArcUi, Avail, Col, GT_NAV, GT_VIEWS, HUES, Health, KB_NAV, KB_PROJECTS, KPIS, LABELS,
     LINKS, MILESTONES, MX_NAV, MX_VIEWS, OFFICES, ONLINE, PB_NAV, PB_PROJECTS, PEOPLE, PHASES,
-    PLAN, PRIOS, PROJECT, RANGES, STATUSES, ScreenState, TABLES, TD_NAV, TEAM, TEAMS, TODAY, ZOOMS,
-    bar_dates, col_counts, column, conflicts, end_of, find_people, ids, initials, iso, issue_key,
-    issues, kpi_value, load_of, local_time, members, month_day, ms_done, ms_progress, my_email,
-    nice_top, office_count, office_open, phase_span, plan, plan_done, point_day, points,
-    range_span, series, stats, table, tasks, thousands, ws,
+    PLAN, PRIOS, PROJECT, RANGES, STATUSES, ScreenState, TABLES, TD_NAV, TEAM, TEAMS, TODAY, TipAt,
+    ZOOMS, bar_dates, col_counts, column, conflicts, end_of, find_people, ids, initials, iso,
+    issue_key, issues, kpi_value, load_of, local_time, members, month_day, ms_done, ms_progress,
+    my_email, nice_top, office_count, office_open, phase_span, plan, plan_done, point_day, points,
+    range_span, series, stats, table, tasks, thousands, tip_at, tip_w, ws,
 };
 use oxyn_core::parity::screensfid::ShellLayout;
 use oxyn_tokens::Theme;
@@ -132,7 +132,7 @@ arc_el!(
     TeamDirectoryEl
 );
 
-fn hue(p: &ThPal, h: &str) -> Hsla {
+pub(super) fn hue(p: &ThPal, h: &str) -> Hsla {
     let dark = p.fg.l > 0.5;
     let x = match (h, dark) {
         ("teal", true) => 0x3CCBBF,
@@ -154,13 +154,13 @@ fn hue(p: &ThPal, h: &str) -> Hsla {
     rgb(x).into()
 }
 
-fn tint(p: &ThPal, h: &str, a: f32) -> Hsla {
+pub(super) fn tint(p: &ThPal, h: &str, a: f32) -> Hsla {
     let mut c = hue(p, h);
     c.a = a;
     c
 }
 
-fn q(p: &ThPal, t: impl Into<SharedString>) -> Div {
+pub(super) fn q(p: &ThPal, t: impl Into<SharedString>) -> Div {
     div()
         .flex_none()
         .whitespace_nowrap()
@@ -169,7 +169,7 @@ fn q(p: &ThPal, t: impl Into<SharedString>) -> Div {
         .child(t.into())
 }
 
-fn av(p: &ThPal, who: usize, size: f32) -> Div {
+pub(super) fn av(p: &ThPal, who: usize, size: f32) -> Div {
     let h = HUES[PEOPLE[who % PEOPLE.len()].1];
     div()
         .flex_none()
@@ -185,11 +185,11 @@ fn av(p: &ThPal, who: usize, size: f32) -> Div {
         .child(initials(who))
 }
 
-fn dot(c: Hsla, s: f32) -> Div {
+pub(super) fn dot(c: Hsla, s: f32) -> Div {
     div().flex_none().size(px(s)).rounded_full().bg(c)
 }
 
-fn btn(
+pub(super) fn btn(
     p: &ThPal,
     act: &Option<Act>,
     id: &'static str,
@@ -213,7 +213,7 @@ fn btn(
         .child(l.into())
 }
 
-fn chip(
+pub(super) fn chip(
     p: &ThPal,
     act: &Option<Act>,
     id: &'static str,
@@ -234,7 +234,7 @@ fn chip(
         .child(l.into())
 }
 
-fn seg(p: &ThPal, items: Vec<Stateful<Div>>) -> Div {
+pub(super) fn seg(p: &ThPal, items: Vec<Stateful<Div>>) -> Div {
     div()
         .flex_none()
         .flex()
@@ -245,7 +245,7 @@ fn seg(p: &ThPal, items: Vec<Stateful<Div>>) -> Div {
         .children(items)
 }
 
-fn nrow(
+pub(super) fn nrow(
     p: &ThPal,
     act: &Option<Act>,
     id: &'static str,
@@ -269,7 +269,7 @@ fn nrow(
         .child(q(p, n.into()))
 }
 
-fn glyph(p: &ThPal, t: &'static str) -> Div {
+pub(super) fn glyph(p: &ThPal, t: &'static str) -> Div {
     div()
         .flex_none()
         .w(px(16.))
@@ -280,7 +280,7 @@ fn glyph(p: &ThPal, t: &'static str) -> Div {
         .child(t)
 }
 
-fn icon_for(k: &str) -> &'static str {
+pub(super) fn icon_for(k: &str) -> &'static str {
     match k {
         "grid" => "▦",
         "file" => "▤",
@@ -301,11 +301,22 @@ fn icon_for(k: &str) -> &'static str {
         "flash" => "ϟ",
         "people" => "◉",
         "tree" => "⋔",
+        "mail" => "✉",
+        "link" => "↗",
+        "check" => "✓",
+        "bell" => "◔",
+        "doc" => "▤",
+        "web" => "◍",
+        "star" => "☆",
+        "card" => "▭",
+        "plug" => "⌁",
+        "bug" => "✱",
+        "term" => "›",
         _ => "•",
     }
 }
 
-fn group(p: &ThPal, l: &'static str) -> Div {
+pub(super) fn group(p: &ThPal, l: &'static str) -> Div {
     div()
         .flex_none()
         .mt(px(10.))
@@ -318,7 +329,7 @@ fn group(p: &ThPal, l: &'static str) -> Div {
         .child(l)
 }
 
-fn skel(p: &ThPal, n: usize) -> Div {
+pub(super) fn skel(p: &ThPal, n: usize) -> Div {
     let mut d = div().flex().flex_col().gap(px(10.)).p(px(12.));
     for i in 0..n {
         d = d.child(
@@ -332,7 +343,7 @@ fn skel(p: &ThPal, n: usize) -> Div {
     d
 }
 
-fn none(p: &ThPal, t: &'static str, l: &'static str) -> Div {
+pub(super) fn none(p: &ThPal, t: &'static str, l: &'static str) -> Div {
     div()
         .flex()
         .flex_col()
@@ -349,7 +360,7 @@ fn none(p: &ThPal, t: &'static str, l: &'static str) -> Div {
         .child(div().text_color(p.mute).child(l))
 }
 
-fn card(p: &ThPal) -> Div {
+pub(super) fn card(p: &ThPal) -> Div {
     div()
         .rounded(px(12.))
         .border_1()
@@ -357,20 +368,20 @@ fn card(p: &ThPal) -> Div {
         .bg(p.card)
 }
 
-struct Frame {
-    slug: &'static str,
-    side: Div,
-    ctx: Option<Div>,
-    crumbs: Vec<String>,
-    meta: String,
-    actions: Div,
-    bar: Option<Div>,
-    body: Div,
-    foot: Option<Div>,
-    right: Option<Div>,
+pub(super) struct Frame {
+    pub(super) slug: &'static str,
+    pub(super) side: Div,
+    pub(super) ctx: Option<Div>,
+    pub(super) crumbs: Vec<String>,
+    pub(super) meta: String,
+    pub(super) actions: Div,
+    pub(super) bar: Option<Div>,
+    pub(super) body: Div,
+    pub(super) foot: Option<Div>,
+    pub(super) right: Option<Div>,
 }
 
-fn frame(p: &ThPal, lay: ShellLayout, act: &Option<Act>, f: Frame) -> Div {
+pub(super) fn frame(p: &ThPal, lay: ShellLayout, act: &Option<Act>, f: Frame) -> Div {
     let w = ws(f.slug);
     let flat = lay == ShellLayout::Flat;
     let mut crumbs = div()
@@ -1780,7 +1791,18 @@ impl RenderOnce for GanttTimelineEl {
         } else {
             None
         };
-        let bars = &u.plan.bars;
+        let qq = u.query.to_lowercase();
+        let shown_bars: Vec<oxyn_core::parity::arcscr::Bar> = u
+            .plan
+            .bars
+            .iter()
+            .filter(|b| {
+                (qq.is_empty() || b.name.to_lowercase().contains(&qq))
+                    && u.gowner.is_none_or(|w| b.who == w)
+            })
+            .cloned()
+            .collect();
+        let bars = &shown_bars;
         let ppd = ZOOMS[u.gzoom].2;
         let bad = conflicts(bars);
         let mut side = div().flex().flex_col().gap(px(1.));
@@ -1832,28 +1854,61 @@ impl RenderOnce for GanttTimelineEl {
             zs.push(chip(&p, &act, ids::at(ids::GT_ZOOM, i), l, u.gzoom == i));
         }
         let picked = u.bar.and_then(|i| bars.iter().find(|b| b.id == i));
+        // The same toolbar as the Dioxus screen: filter field, owner, zoom, Today; nudges sit in
+        // the foot with Undo and Reset.
+        let field = div()
+            .w(px(250.))
+            .h(px(32.))
+            .px(px(9.))
+            .flex()
+            .items_center()
+            .gap(px(8.))
+            .rounded(px(8.))
+            .border_1()
+            .border_color(p.line)
+            .bg(p.card)
+            .text_color(p.mute)
+            .child("⌕")
+            .child(match self.search.clone() {
+                Some(v) => div().flex_1().min_w_0().child(v),
+                None => div().flex_1().child(if u.query.is_empty() {
+                    "Filter tasks".to_string()
+                } else {
+                    u.query.clone()
+                }),
+            });
         let bar = div()
-            .child(btn(&p, &act, "gt-earlier", "← Earlier", false))
-            .child(btn(&p, &act, "gt-later", "Later →", false))
-            .child(btn(&p, &act, "gt-shorter", "Shorter", false))
-            .child(btn(&p, &act, "gt-longer", "Longer", false))
+            .child(field)
+            .child(btn(
+                &p,
+                &act,
+                "gt-owner",
+                format!("{} ⌄", u.gowner.map(|w| PEOPLE[w].0).unwrap_or("Owner")),
+                false,
+            ))
+            .child(div().flex_1())
+            .child(seg(&p, zs))
+            .child(btn(&p, &act, "gt-today", "Today", false));
+        let foot = div()
             .child(
                 div()
                     .flex_1()
                     .min_w_0()
                     .overflow_hidden()
                     .whitespace_nowrap()
+                    .text_size(px(12.))
                     .text_color(p.mute)
                     .child(match picked {
                         Some(b) => format!("{} · {}", b.name, bar_dates(b)),
-                        None => "Press a bar to pick it".to_string(),
+                        None => "Drag a bar onto a day to move it, or press it and nudge it. Alt + ← → moves it, Alt + Shift + ← → its end.".to_string(),
                     }),
             )
-            .child(seg(&p, zs))
-            .child(btn(&p, &act, "gt-today", "Today", false));
-        let foot = div()
-            .child(q(&p, "Drag a bar onto a day to move it; or press it, then Earlier / Later. Alt + ← → nudges it."))
-            .child(div().flex_1())
+            .when(picked.is_some(), |d| {
+                d.child(btn(&p, &act, "gt-earlier", "← Earlier", false))
+                    .child(btn(&p, &act, "gt-later", "Later →", false))
+                    .child(btn(&p, &act, "gt-shorter", "Shorter", false))
+                    .child(btn(&p, &act, "gt-longer", "Longer", false))
+            })
             .child(btn(&p, &act, "gt-undo", "Undo", false).when(u.plan.undo.is_empty(), |d| d.opacity(0.45)))
             .child(btn(&p, &act, "gt-reset", "Reset", false));
         let body = if st == ScreenState::Loading {
@@ -1986,6 +2041,32 @@ impl RenderOnce for GanttTimelineEl {
                     .justify_center()
                     .child(format!("Today {}", iso(TODAY))),
             );
+            // What each row holds on the time axis, so a dragged bar's dates go into free space
+            // (the same rule as the Dioxus screen: above, below, after, before).
+            let mut spans: Vec<Vec<(f64, f64)>> = Vec::new();
+            for ph in 0..PHASES.len() {
+                let mut v = Vec::new();
+                if spans.is_empty() {
+                    v.push((tx as f64 - 58., tx as f64 + 58.));
+                }
+                if let Some((a, z, _)) = phase_span(bars, ph) {
+                    v.push((a as f64 * ppd as f64, (z + 1) as f64 * ppd as f64));
+                }
+                spans.push(v);
+                for b in bars.iter().filter(|b| b.phase == ph) {
+                    let shift = ghost.filter(|g| g.0 == b.id).map(|g| g.1).unwrap_or(0);
+                    let x = ((b.start + shift) as f32 * ppd) as f64;
+                    let nw = b.name.chars().count() as f64 * 7.;
+                    let w = if b.len == 0 {
+                        20. + nw + 80.
+                    } else {
+                        (b.len as f32 * ppd) as f64
+                    };
+                    let out = if b.len > 0 && w <= 120. { 8. + nw } else { 0. };
+                    spans.push(vec![(x - 7., x + w + out)]);
+                }
+            }
+            let width = (GDAYS as f32 * ppd) as f64;
             let mut ri = 0usize;
             for (ph, (_, pl)) in PHASES.iter().copied().enumerate() {
                 let bs: Vec<_> = bars.iter().filter(|b| b.phase == ph).collect();
@@ -2127,19 +2208,35 @@ impl RenderOnce for GanttTimelineEl {
                             .when(shift != 0, |d| {
                                 let mut c = b.clone();
                                 c.start = start;
+                                let t = bar_dates(&c);
+                                let x = (start as f32 * ppd) as f64;
+                                let nw = b.name.chars().count() as f64 * 7.;
+                                let end = x + w as f64 + if inside { 0. } else { 8. + nw };
+                                let above = if ri == 0 {
+                                    None
+                                } else {
+                                    spans.get(ri - 1).map(|v| v.as_slice())
+                                };
+                                let below = spans.get(ri + 1).map(|v| v.as_slice());
+                                let at = tip_at(x, tip_w(&t), end, width, above, below);
+                                let tip = div().absolute();
+                                let tip = match at {
+                                    TipAt::Above => tip.top(px(-26.)).left_0(),
+                                    TipAt::Below => tip.top(px(28.)).left_0(),
+                                    TipAt::Right => {
+                                        tip.top(px(0.)).left(px((end - x) as f32 + 16.))
+                                    }
+                                    TipAt::Left => tip.top(px(0.)).right(px(w + 12.)),
+                                };
                                 d.child(
-                                    div()
-                                        .absolute()
-                                        .top(px(-26.))
-                                        .left_0()
-                                        .px(px(8.))
+                                    tip.px(px(8.))
                                         .py(px(3.))
                                         .rounded(px(6.))
                                         .bg(p.fg)
                                         .text_color(p.card)
                                         .text_size(px(11.5))
                                         .whitespace_nowrap()
-                                        .child(bar_dates(&c)),
+                                        .child(t),
                                 )
                             })
                     };
