@@ -1,9 +1,9 @@
-//! Interaction state for the six agent apps (Taskdeck, Command Center, Session Studio, Fleet
-//! Window, Workspace Coder, Command Board) as one renderer-free model, so the GPUI views and any
-//! other host drive the same rules: the open sidebar row, the view tab, the rail, the account
-//! menu, the composer draft and its queue, and the last press. Keys follow the Dioxus apps:
-//! Escape closes the account menu first, then the rail; Up / Down move the open row; Left / Right
-//! step through the views; Enter sends the draft.
+//! Interaction state for the agent apps (Taskdeck, Command Center, Session Studio, Fleet
+//! Window, Workspace Coder, Command Board, Threadbar, Tabstack, Repo Desk, Preview Desk) as one
+//! renderer-free model, so the GPUI views and any other host drive the same rules: the open
+//! sidebar row, the view tab, the rail, the account menu, the composer draft and its queue, and
+//! the last press. Keys follow the Dioxus apps: Escape closes the account menu first, then the
+//! rail; Up / Down move the open row; Left / Right step through the views; Enter sends the draft.
 
 use super::screensfid::ScreenState;
 
@@ -592,6 +592,14 @@ pub mod views {
     pub const WORKSPACE_CODER: &[&str] = &["", "files", "preview"];
     /// Command Board: updates with the question, the pull request, the planner.
     pub const COMMAND_BOARD: &[&str] = &["", "pr", "planner"];
+    /// Threadbar: the agent thread, the terminal thread, the Git tab.
+    pub const THREADBAR: &[&str] = &["", "terminal", "git"];
+    /// Tabstack: the tab's blocks, the approval card, Review after the run.
+    pub const TABSTACK: &[&str] = &["", "approval", "review"];
+    /// Repo Desk: the session, the Inbox, the Project.
+    pub const REPO_DESK: &[&str] = &["", "inbox", "project"];
+    /// Preview Desk: the session with its site, Design mode, the diff.
+    pub const PREVIEW_DESK: &[&str] = &["", "design", "diff"];
 }
 
 #[cfg(test)]
