@@ -174,6 +174,7 @@ pub use parity::{
 };
 pub use parity::{LoadingStateEl, ShimmerEl, SlotTextEl, ThinkingLoaderEl};
 pub use parity::{OnboardingBrandEl, OnboardingReadyEl, OnboardingToneEl, OnboardingWebsiteEl};
+pub use parity::{PreviewDeskEl, RepoDeskEl, TabstackEl, ThreadbarEl};
 pub use parity::{
     TaskdeckBoardEl, TaskdeckPluginsEl, TaskdeckScheduledEl, TaskdeckSitesEl, TaskdeckStartEl,
     TaskdeckTaskEl,
