@@ -8,8 +8,9 @@ import { mark, brands } from '../components/v2/brands';
 import { demos, counts, screens, inGroup, demoUrl, REPO } from '../lib/data';
 
 const find = (s: string) => demos.find((d) => d.slug === s)!;
-const ghostL = demos.find((d) => d.slug === 'chat-composer') ?? find('approval-card');
-const ghostR = find('agent-plan');
+// Hero visual (swappable when the hero brief lands): three live components on one stage, the
+// approval in front, a plan and a tool call either side.
+const heroCards: [string, (typeof demos)[number]][] = [['l', find('agent-plan')], ['c', find('approval-card')], ['r', find('agent-trail')]];
 const tabSets: [string, string, string[] | null][] = [
   ['components', 'Components', ['approval-card', 'tool-call', 'agent-plan', 'model-picker', 'thinking-loader', 'context-meter']],
   ['screens', 'Screens', screens.slice(0, 6).map((d) => d.slug)],
@@ -46,16 +47,28 @@ const faq: [string, string, keyof typeof icon][] = [
 ];
 ---
 <Base title="Oxyn — UI for AI agents, in Rust" description="Agent-UI components for Rust: runs, tool calls, approvals and chat, for Dioxus and GPUI." type="Page" promo>
-  <section class="lp-hero">
-    <div class="x-ghost ghost-l" aria-hidden="true" inert><OxynDemo slug={ghostL.slug} html={ghostL.variants[0].html} variant={0} /></div>
-    <div class="x-ghost ghost-r" aria-hidden="true" inert><OxynDemo slug={ghostR.slug} html={ghostR.variants[0].html} variant={0} /></div>
+  <section class="lp-hero" data-hero>
+    <div class="lp-hero-bg" aria-hidden="true"></div>
     <div class="lp-hero-in">
-      <a class="badge-pill" href="/components/"><b>{free} free</b><span>{free}+ components, screens &amp; variants →</span></a>
-      <h1>Agent UI</h1>
-      <p class="lp-lede">Rust components for agent runs, tool calls, approvals and chat – for Dioxus and GPUI.</p>
+      <a class="badge-pill" href="/components/"><b>{free} free</b><span>Components, screens and variants</span><span class="bp-go" aria-hidden="true">→</span></a>
+      <h1 class="lp-h1"><span>UI for AI agents,</span> <span class="lp-h1-2">written in Rust</span></h1>
+      <p class="lp-lede">Components and complete screens for agent runs, tool calls, approvals and chat. One Rust core, rendered with Dioxus on the web and GPUI on the desktop.</p>
       <div class="lp-cta">
         <a class="x-pill pill-black pill-lg" href="/components/">Browse library</a>
         <a class="x-pill pill-grey pill-lg" href="/docs/installation/">Get started</a>
+      </div>
+      <ul class="lp-meta" aria-label="At a glance">
+        <li>MIT licensed</li>
+        <li>Dioxus and GPUI</li>
+        <li>Light and dark</li>
+        <li>Accessible by default</li>
+      </ul>
+    </div>
+    <div class="lp-hero-vis" aria-hidden="true" inert>
+      <div class="hv-stage">
+        {heroCards.map(([pos, d]) => (
+          <div class={`hv-card hv-${pos}`}><OxynDemo slug={d.slug} html={d.variants[0].html} variant={0} defer /></div>
+        ))}
       </div>
     </div>
   </section>
