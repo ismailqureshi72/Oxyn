@@ -426,6 +426,7 @@ impl ScreenView {
                     .px(px(10.))
                     .py(px(6.))
                     .font_weight(FontWeight::SEMIBOLD)
+                    .text_color(p.fg)
                     .child(oxyn_core::parity::screensfid::PERSON),
             )
             .child(item(
