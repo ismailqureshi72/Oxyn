@@ -242,3 +242,31 @@ html[data-intro] body::after{left:50%;top:50%;width:min(240px,52vw);aspect-ratio
 }
 @media (prefers-reduced-motion:no-preference){.fb-dlg.open .fb-box{animation:fb-in .14s ease-out}}
 @keyframes fb-in{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+/* ── Account control (L2): "Sign in" when signed out, avatar + menu when signed in ──────────── */
+.acct{position:relative;display:inline-flex;align-items:center;flex:none}
+.acct-in{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 10px;border-radius:999px;color:var(--fg);font-size:13.5px;font-weight:550;text-decoration:none;white-space:nowrap;box-shadow:inset 0 0 0 1px var(--ln)}
+.acct-in svg{width:15px;height:15px;flex:none;color:var(--fg2)}
+.acct-in:hover{background:var(--hov);box-shadow:inset 0 0 0 1px var(--fg3)}
+.acct-in:focus-visible,.acct-btn:focus-visible,.acct-menu [role="menuitem"]:focus-visible{outline:2px solid var(--oxyn-color-focus);outline-offset:1px}
+.acct-in[hidden],.acct-btn[hidden]{display:none}
+.acct-btn{all:unset;box-sizing:border-box;cursor:pointer;display:inline-grid;place-items:center;width:32px;height:32px;border-radius:999px}
+.acct-btn:hover .acct-av,.acct-btn[aria-expanded="true"] .acct-av{box-shadow:0 0 0 2px var(--pn),0 0 0 3.5px var(--fg3)}
+.acct-av{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:999px;overflow:hidden;background:var(--ink);color:var(--on-ink);font:600 11.5px/1 var(--oxyn-font-sans,inherit);letter-spacing:.02em;flex:none;user-select:none}
+.acct-av img{width:100%;height:100%;object-fit:cover;display:block}
+.acct-av.lg{width:36px;height:36px;font-size:13.5px}
+.acct-av.xl{width:56px;height:56px;font-size:19px}
+.acct-menu{position:absolute;right:0;top:calc(100% + 10px);z-index:80;width:260px;max-width:calc(100vw - 24px);box-sizing:border-box;padding:6px;border:1px solid var(--ln);border-radius:14px;background:var(--pn);color:var(--fg);box-shadow:0 18px 48px rgb(0 0 0 / .16),0 2px 6px rgb(0 0 0 / .06)}
+[data-theme="dark"] .acct-menu{box-shadow:0 18px 48px rgb(0 0 0 / .6)}
+.acct-menu[hidden]{display:none}
+.acct-who{display:flex;align-items:center;gap:10px;padding:8px 8px 10px;margin-bottom:4px;border-bottom:1px solid var(--ln2);min-width:0}
+.acct-id{display:flex;flex-direction:column;gap:2px;min-width:0}
+.acct-id b{font-size:13.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.acct-id small{font-size:12px;color:var(--fg2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.acct-menu [role="menuitem"]{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;gap:9px;width:100%;height:34px;padding:0 9px;border-radius:9px;font-size:13.5px;color:var(--fg);text-decoration:none}
+.acct-menu [role="menuitem"] svg{width:16px;height:16px;color:var(--fg2)}
+.acct-menu [role="menuitem"]:hover,.acct-menu [role="menuitem"]:focus{background:var(--hov)}
+@media (max-width:640px){
+  .acct-in{width:32px;padding:0;justify-content:center}
+  .acct-in span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .acct-in svg{color:var(--fg)}
+}

@@ -9,6 +9,7 @@ import '../styles/demo.css';
 import Head from '../components/v2/Head.astro';
 import LibSidebar from '../components/v2/LibSidebar.astro';
 import ThemeRadios from '../components/v2/ThemeRadios.astro';
+import AccountMenu from '../components/v2/AccountMenu.astro';
 import GitHubStars from '../components/v2/GitHubStars.astro';
 import Footer from '../components/v2/Footer.astro';
 import SearchModal from '../components/SearchModal.astro';
@@ -49,7 +50,7 @@ const path = Astro.url.pathname;
             <ThemeRadios />
             <GitHubStars />
             <a class="x-pill pill-pro" href="/pricing/"><span aria-hidden="true">✦</span> Get Pro</a>
-            <a class="login" href="/pricing/#account" title="Accounts are not needed yet">Log In</a>
+            <AccountMenu />
           </div>
           <main id="main" class="lcontent" data-pagefind-body data-pagefind-filter={`type:${type}`} data-pagefind-meta={meta ?? `type:${type}`}>
             <slot />
