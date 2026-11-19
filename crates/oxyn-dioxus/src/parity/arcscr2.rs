@@ -469,7 +469,7 @@ fn CalendarScreen(slug: &'static str, layout: String, state: String, start: usiz
             } else {
                 div { class: "oxs13-cal", tabindex: "0", "aria-label": "Calendar. T today, D W M views, N new event", onkeydown: root_key,
                     if all.is_empty() {
-                        div { class: "oxs13-calnone", "data-inline": "{vw == 2}", {none("cal", "No events yet", "Connect a calendar or add the first event; drag on the grid to block time.", rsx! { button { r#type: "button", class: "oxs12-btn", onclick: move |_| { draft.set(Some((TODAY, 10 * 60, 60))); title.set(String::new()); }, {nico("plus")} span { class: "oxs12-btl", "New event" } } })} }
+                        div { class: "oxs13-calnone", "data-inline": "{vw == 2}", {none("cal", "No events yet", if vw == 2 { "Connect a calendar or add the first event; pick a day to plan it." } else { "Connect a calendar or add the first event; drag on the grid to block time." }, rsx! { button { r#type: "button", class: "oxs12-btn", onclick: move |_| { draft.set(Some((TODAY, 10 * 60, 60))); title.set(String::new()); }, {nico("plus")} span { class: "oxs12-btl", "New event" } } })} }
                     }
                     if vw == 2 {
                         {month_view(&live, d, &h, day, sel, more, said, view)}

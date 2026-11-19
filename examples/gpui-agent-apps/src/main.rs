@@ -1,5 +1,5 @@
 //! Every Oxyn screen set as interactive GPUI views in one native window. The strip at the top
-//! picks a screen set (S0 app shells … S8 onboarding, S12 and S13 Arc screens) or one of the six agent
+//! picks a screen set (S0 app shells … S8 onboarding, S12 to S14 Arc screens) or one of the six agent
 //! apps (Taskdeck, Command Center, Session Studio, Fleet Window, Workspace Coder, Command Board).
 //!
 //! Screen sets: press the sidebar, buttons and the account row as in any app; the bar above the
@@ -13,7 +13,7 @@
 //!
 //! Run from the repo root: `cargo run --manifest-path examples/gpui-agent-apps/Cargo.toml`.
 //! `OXYN_OPEN=<n>` opens strip item `n` first (0 is S0, 9 is S12 Arc screens I, 10 is S13 Arc
-//! screens II).
+//! screens II, 11 is S14 Arc screens III).
 //!
 //! Arc screens I: press a board card, then a column (or drag the card there), Alt + arrows move
 //! the picked card; press a timeline bar, then Earlier / Later (Alt + ← / →) or drag it onto a
@@ -22,6 +22,10 @@
 //! Arc screens II: press a calendar event, then a day header or the nudge buttons (Alt + arrows),
 //! or drag it onto a day; J / K / E / H / X / U / A triage the inbox; type a support reply and
 //! press Enter; search the help center.
+//!
+//! Arc screens III: pick a symbol and range, step the ticket and place it; filter the products,
+//! open one, pick a size and add it; add, step and remove invoice lines, then Send; fill the
+//! demo account and sign in.
 
 use gpui::{
     App, Bounds, Context, Entity, Focusable, Render, Window, WindowBounds, WindowOptions, div,
@@ -31,7 +35,7 @@ use gpui_platform::application;
 use oxyn_gpui::{AgentApp, AgentAppView, ScreenView, bind_ime_keys};
 
 /// Strip labels for the screen sets, in `oxyn_core::parity::screenui::SETS` order.
-const SETS: [&str; 11] = [
+const SETS: [&str; 12] = [
     "S0 Shells",
     "S1 Chat",
     "S2 Workspace",
@@ -43,6 +47,7 @@ const SETS: [&str; 11] = [
     "S8 Onboarding",
     "S12 Arc I",
     "S13 Arc II",
+    "S14 Arc III",
 ];
 
 struct Gallery {

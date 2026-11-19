@@ -1,4 +1,4 @@
-//! Interaction state for the screen sets S0–S8, S12 and S13 (the app shells, AI Chat, Workspace,
+//! Interaction state for the screen sets S0–S8, S12, S13 and S14 (the app shells, AI Chat, Workspace,
 //! Agent ops I and II, Orchestration / Workflow / Evals, Settings I and II, Onboarding, Arc
 //! screens I and II)
 //! as one renderer-free
@@ -23,6 +23,7 @@
 use super::appui::AppKey;
 use super::arcscr::{self as a12, ArcUi};
 use super::arcscr2::{self as b13, Arc2Ui};
+use super::arcscr3::{self as c14, Arc3Ui};
 use super::screensfid::ScreenState;
 
 /// A state bar: (key, label).
@@ -502,6 +503,48 @@ pub const SETS: &[SetDef] = &[
             ),
         ],
     },
+    SetDef {
+        id: "s14",
+        name: "Arc screens III",
+        wizard: false,
+        screens: &[
+            sc(
+                "market-terminal",
+                "Market terminal",
+                c14::MARKET_STATES,
+                &["market", "trade"],
+                &[],
+            ),
+            sc(
+                "product-list",
+                "Product list",
+                c14::PLIST_STATES,
+                &["products", "catalog"],
+                &[],
+            ),
+            sc(
+                "product-detail",
+                "Product detail",
+                c14::PDETAIL_STATES,
+                &["product"],
+                &[],
+            ),
+            sc(
+                "invoice-studio",
+                "Invoice studio",
+                c14::INVOICE_STATES,
+                &["invoicestudio", "invoice"],
+                &[],
+            ),
+            sc(
+                "sign-in-split",
+                "Sign-in split",
+                c14::SIGNIN_STATES,
+                &["signin", "login"],
+                &[],
+            ),
+        ],
+    },
 ];
 
 const ONB_WEBSITE: StateList = &[
@@ -602,6 +645,8 @@ pub struct ScreenUi {
     pub arc: ArcUi,
     /// The Arc screens II live state (S13).
     pub arc2: Arc2Ui,
+    /// The Arc screens III live state (S14).
+    pub arc3: Arc3Ui,
 }
 
 impl Default for ScreenUi {
@@ -624,6 +669,7 @@ impl ScreenUi {
             trail: Vec::new(),
             arc: ArcUi::default(),
             arc2: Arc2Ui::default(),
+            arc3: Arc3Ui::default(),
         }
     }
 
@@ -705,6 +751,11 @@ impl ScreenUi {
         }
         if self.arc2.press(id) {
             self.said = self.arc2.said.take();
+            self.menu = false;
+            return Moved::State;
+        }
+        if self.arc3.press(id) {
+            self.said = self.arc3.said.take();
             self.menu = false;
             return Moved::State;
         }
@@ -877,7 +928,7 @@ mod tests {
 
     #[test]
     fn every_set_has_screens_with_a_data_state() {
-        assert_eq!(SETS.len(), 11);
+        assert_eq!(SETS.len(), 12);
         for s in SETS {
             assert!(!s.screens.is_empty(), "{}", s.id);
             for x in s.screens {
@@ -973,6 +1024,22 @@ mod tests {
         assert_eq!(u.press("nav-helpcenter"), Moved::Screen);
         assert_eq!(u.press("state-noresults"), Moved::State);
         assert_eq!(u.split(), (ScreenState::Sample, "noresults"));
+    }
+
+    #[test]
+    fn arc3_screens_press_live_state() {
+        let mut u = ScreenUi::new(11);
+        assert_eq!(u.set_def().id, "s14");
+        assert_eq!(u.screen_def().slug, "market-terminal");
+        assert_eq!(u.press("mk-sym-3"), Moved::State);
+        assert_eq!(u.arc3.mk.sym, 3);
+        assert_eq!(u.press("nav-products"), Moved::Screen);
+        assert_eq!(u.screen_def().slug, "product-list");
+        assert_eq!(u.press("pl-view"), Moved::State);
+        assert_eq!(u.said.as_deref(), Some("List view"));
+        assert_eq!(u.press("nav-signin"), Moved::Screen);
+        assert_eq!(u.press("state-wrong"), Moved::State);
+        assert_eq!(u.split(), (ScreenState::Sample, "wrong"));
     }
 
     #[test]
