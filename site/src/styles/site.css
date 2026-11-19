@@ -25,20 +25,42 @@ code{font-family:var(--oxyn-font-mono)}
 html[data-announce="hidden"] .announce{display:none}
 
 /* ── Landing ────────────────────────────────────────────────────────── */
-.lp-hero{position:relative;overflow:hidden;padding:132px 20px 100px;text-align:center}
-.lp-hero-in{position:relative;z-index:2;max-width:760px;margin:0 auto;display:flex;flex-direction:column;align-items:center}
-.badge-pill{display:inline-flex;align-items:center;gap:8px;height:30px;padding:0 12px 0 3px;border-radius:999px;background:var(--pn);box-shadow:inset 0 0 0 1px var(--ln);font-size:13px;color:var(--fg2);text-decoration:none}
-.badge-pill b{display:inline-flex;align-items:center;height:24px;padding:0 9px;border-radius:999px;background:var(--chip);color:var(--fg);font-weight:600}
+/* Hero: a centred lockup (badge, two-tone headline, lede, CTAs, a quiet facts row) over a faint dot
+   field, then a stage of three live components. Monochrome chrome; colour only from the components.
+   Kept self-contained (.lp-hero*, .hv-*) so the hero brief can swap it wholesale. */
+.lp-hero{position:relative;overflow:hidden;padding:112px 20px 0;text-align:center;isolation:isolate}
+.lp-hero-bg{position:absolute;inset:0 0 auto;height:820px;z-index:-1;pointer-events:none;
+  background:radial-gradient(circle,var(--hero-dot) 1px,transparent 1.4px) 0 0 / 22px 22px;
+  -webkit-mask-image:radial-gradient(60% 56% at 50% 34%,#000 10%,transparent 78%);mask-image:radial-gradient(60% 56% at 50% 34%,#000 10%,transparent 78%)}
+.lp-hero{--hero-dot:rgb(0 0 0 / .11)}
+[data-theme="dark"] .lp-hero{--hero-dot:rgb(255 255 255 / .09)}
+.lp-hero-in{position:relative;z-index:2;max-width:820px;margin:0 auto;display:flex;flex-direction:column;align-items:center}
+.badge-pill{display:inline-flex;align-items:center;gap:8px;height:30px;padding:0 12px 0 3px;border-radius:999px;background:var(--pn);box-shadow:inset 0 0 0 1px var(--ln),0 6px 18px -12px rgb(0 0 0 / .3);font-size:13px;color:var(--fg2);text-decoration:none;transition:color .16s,box-shadow .16s}
+.badge-pill b{display:inline-flex;align-items:center;height:24px;padding:0 9px;border-radius:999px;background:var(--ink);color:var(--on-ink);font-weight:600}
+.badge-pill .bp-go{transition:transform .16s}
 .badge-pill:hover{color:var(--fg)}
-.lp-hero h1{margin:24px 0 0;font-size:68px;line-height:1.04;letter-spacing:-.04em;font-weight:580}
-.lp-lede{margin:18px 0 0;font-size:18.5px;line-height:1.5;color:var(--fg2);max-width:620px;text-wrap:balance}
-.lp-cta{display:flex;gap:10px;margin-top:28px;flex-wrap:wrap;justify-content:center}
-.x-ghost{position:absolute;top:50%;width:460px;opacity:.34;filter:blur(1.6px);pointer-events:none;z-index:1;-webkit-mask-image:linear-gradient(90deg,transparent,#000 30%,#000 70%,transparent);mask-image:linear-gradient(90deg,transparent,#000 30%,#000 70%,transparent)}
-.ghost-l{left:-70px;transform:translateY(-50%) rotate(-2deg);-webkit-mask-image:linear-gradient(90deg,transparent,#000 18%,#000 72%,transparent);mask-image:linear-gradient(90deg,transparent,#000 18%,#000 72%,transparent)}
-.ghost-l .oxcc{width:460px}
-.ghost-r{right:-150px;transform:translateY(-46%) rotate(2deg)}
-.x-ghost .oxd-mini .oxd-main{border:0}
-.x-ghost .oxd-stage{background:none;padding:0}
+.badge-pill:hover .bp-go{transform:translateX(2px)}
+.lp-h1{margin:26px 0 0;font-size:clamp(40px,6.4vw,76px);line-height:1.02;letter-spacing:-.045em;font-weight:600;text-wrap:balance}
+.lp-h1 span{display:inline-block}
+.lp-h1-2{color:var(--fg3)}
+.lp-lede{margin:22px 0 0;font-size:18.5px;line-height:1.55;color:var(--fg2);max-width:600px;text-wrap:balance}
+.lp-cta{display:flex;gap:10px;margin-top:30px;flex-wrap:wrap;justify-content:center}
+.lp-meta{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 0;margin:26px 0 0;padding:0;list-style:none;font-size:13px;color:var(--fg3)}
+.lp-meta li{display:inline-flex;align-items:center}
+.lp-meta li+li::before{content:"";width:3px;height:3px;margin:0 12px;border-radius:50%;background:currentColor;opacity:.6}
+/* The stage: a wide soft panel the three cards stand in, faded into the page at the bottom. */
+.lp-hero-vis{position:relative;max-width:1120px;margin:64px auto 0;padding:0 20px;text-align:left}
+.hv-stage{position:relative;display:grid;grid-template-columns:1fr minmax(0,480px) 1fr;align-items:center;gap:20px;min-height:420px;padding:44px 36px 64px;border-radius:28px 28px 0 0;
+  background:linear-gradient(180deg,var(--fill),transparent 88%);box-shadow:inset 0 1px 0 var(--ln),inset 1px 0 0 var(--ln2),inset -1px 0 0 var(--ln2);
+  -webkit-mask-image:linear-gradient(180deg,#000 70%,transparent);mask-image:linear-gradient(180deg,#000 70%,transparent)}
+.hv-card{min-width:0;pointer-events:none}
+.hv-card .oxd-mini .oxd-main{border:0}
+.hv-card .oxd-stage{background:none!important;padding:0!important;min-height:0!important}
+.hv-c{position:relative;z-index:2;filter:drop-shadow(0 24px 40px rgb(0 0 0 / .12))}
+[data-theme="dark"] .hv-c{filter:drop-shadow(0 24px 40px rgb(0 0 0 / .5))}
+.hv-l,.hv-r{width:340px;opacity:.7;transform:scale(.9)}
+.hv-l{justify-self:end;margin-right:-64px;transform-origin:100% 50%;-webkit-mask-image:linear-gradient(90deg,transparent,#000 46%);mask-image:linear-gradient(90deg,transparent,#000 46%)}
+.hv-r{justify-self:start;margin-left:-64px;transform-origin:0 50%;-webkit-mask-image:linear-gradient(270deg,transparent,#000 46%);mask-image:linear-gradient(270deg,transparent,#000 46%)}
 .lp-sec{max-width:1120px;margin:0 auto;padding:120px 20px 0}
 .lp-sec>h2{margin:0;text-align:center;font-size:38px;line-height:1.18;letter-spacing:-.03em;font-weight:600}
 .lp-sub{text-align:center;margin:14px auto 0;color:var(--fg);font-size:15px;max-width:640px}
@@ -108,15 +130,18 @@ html[data-announce="hidden"] .announce{display:none}
 .cmp-before,.cmp-after{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:24px}
 .cmp-before{background:#fff;color:#000;font-family:Arial,Helvetica,sans-serif}
 /* The Oxyn side is revealed by two opposite translations (clip box → --pos, content ← --pos), so
-   moving the divider only changes transforms, no layout. The clip box starts 12 px left of the
-   divider (and overhangs the right side by as much); its left edge is masked by the same sine as the drawn wave (a 24 × 120 tile, then
-   solid), flowing down in step with it: the seam is the wave itself, in light and dark alike. */
-.cmp-clip{position:absolute;inset:0;overflow:hidden;transform:translateX(calc(var(--pos) - 12px));will-change:transform;
-  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='120' viewBox='0 0 24 120'%3E%3Cpath d='M12 0Q22 30 12 60T12 120H24V0Z'/%3E%3C/svg%3E") 0 0 / 24px 120px repeat-y,linear-gradient(#000,#000) 24px 0 / calc(100% - 24px) 100% no-repeat;
-  mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='120' viewBox='0 0 24 120'%3E%3Cpath d='M12 0Q22 30 12 60T12 120H24V0Z'/%3E%3C/svg%3E") 0 0 / 24px 120px repeat-y,linear-gradient(#000,#000) 24px 0 / calc(100% - 24px) 100% no-repeat;
-  animation:cmp-mask 2.8s linear infinite}
-@keyframes cmp-mask{to{-webkit-mask-position:0 120px,24px 0;mask-position:0 120px,24px 0}}
-.cmp-clip .cmp-after{background:var(--fill);transform:translateX(calc(12px - var(--pos)));will-change:transform}
+   moving the divider only changes transforms, no layout. The clip box starts 24 px left of the
+   divider. Inside it one element (.cmp-ride, one wavelength taller than the slider) flows down by a
+   wavelength per loop and carries both the drawn wave and the clipped box: its left edge is cut by
+   the same sine (a vector clip-path, 1200 px tall; a mask image left a 1 px seam at its edge), so
+   the seam IS the wave, in light and dark, with no straight edge under it. The content counter-flows (.cmp-anti, same timing) and stays still. */
+.cmp-clip{position:absolute;inset:0;overflow:hidden;transform:translateX(calc(var(--pos) - 24px));will-change:transform}
+.cmp-ride{position:absolute;left:0;right:0;top:-120px;bottom:0;will-change:transform;animation:cmp-ride 3.2s linear infinite}
+.cmp-mbox{position:absolute;inset:0;clip-path:path('M24 0 Q36 30 24 60 T24 120 T24 180 T24 240 T24 300 T24 360 T24 420 T24 480 T24 540 T24 600 T24 660 T24 720 T24 780 T24 840 T24 900 T24 960 T24 1020 T24 1080 T24 1140 T24 1200 L9999 1200 L9999 0 Z')}
+.cmp-anti{position:absolute;left:0;right:0;top:120px;bottom:0;will-change:transform;animation:cmp-anti 3.2s linear infinite}
+@keyframes cmp-ride{from{transform:translateY(0)}to{transform:translateY(120px)}}
+@keyframes cmp-anti{from{transform:translateY(0)}to{transform:translateY(-120px)}}
+.cmp-clip .cmp-after{background:var(--fill);transform:translateX(calc(24px - var(--pos)));will-change:transform}
 .cmp-after oxyn-demo{width:100%;max-width:560px}
 .cmp-after .oxd-mini .oxd-main{border:0}
 .cmp-after .oxd-stage{background:none;min-height:0!important}
@@ -131,29 +156,27 @@ html[data-announce="hidden"] .announce{display:none}
 .cmp-tag.l{left:14px;background:#EFEFEF;color:#333}
 [data-theme="dark"] .cmp-tag.l{background:#333;color:#E8E8E8}
 .cmp-tag.r{right:14px;background:var(--pro-bg);color:var(--pro-fg);box-shadow:inset 0 0 0 1px var(--ln)}
-/* Divider: a wavy line (SVG sine) that flows downwards, a glint travelling along it and glitter
-   stars twinkling beside it. It and the handle ride one transform. Reduced motion: a still wave. */
-.cmp-line{position:absolute;inset:0;z-index:4;pointer-events:none;transform:translateX(var(--pos));will-change:transform}
-.cmp-wave{position:absolute;top:0;left:-12px;width:24px;height:100%;overflow:visible}
+/* Divider: the wave (drawn in .cmp-ride, so it flows with the cut edge), a soft halo, a glint that
+   runs down it and glitter stars twinkling beside it. The handle rides its own transform on the
+   divider. Reduced motion: a still wave, no glint, no stars. */
+.cmp-wave{position:absolute;left:0;top:0;width:48px;height:100%;overflow:visible;pointer-events:none}
 .cmp-wave path{fill:none;stroke-linecap:round}
-.cmp-halo{stroke:var(--fg);stroke-width:9;opacity:.08}
-[data-theme="dark"] .cmp-halo{opacity:.14}
-.cmp-stroke{stroke:var(--fg2);stroke-width:2.2}
-.cmp-glint{stroke:#fff;stroke-width:2.6;stroke-dasharray:30 640;filter:drop-shadow(0 0 2.5px rgb(0 0 0 / .45))}
-[data-theme="dark"] .cmp-stroke{stroke:var(--fg3)}
-[data-theme="dark"] .cmp-glint{filter:drop-shadow(0 0 4px rgb(255 255 255 / .9))}
-.cmp-wave path.cmp-spark{fill:#fff;stroke:none;opacity:0;transform-box:fill-box;transform-origin:50% 50%;filter:drop-shadow(0 0 1.2px rgb(0 0 0 / .55))}
-[data-theme="dark"] .cmp-wave path.cmp-spark{filter:drop-shadow(0 0 3px rgb(255 255 255 / .95))}
-.cmp-flow{animation:cmp-flow 2.8s linear infinite}
-.cmp-glint{animation:cmp-glint 2.4s cubic-bezier(.45,.1,.55,.9) infinite}
-.cmp-wave path.cmp-spark{animation:cmp-spark 2.2s ease-in-out infinite;animation-delay:calc(var(--i) * -.27s)}
-@keyframes cmp-flow{to{transform:translateY(120px)}}
-@keyframes cmp-glint{from{stroke-dashoffset:60}to{stroke-dashoffset:-640}}
+.cmp-halo{stroke:var(--fg);stroke-width:10;opacity:.07}
+[data-theme="dark"] .cmp-halo{stroke:#fff;opacity:.12}
+.cmp-stroke{stroke:var(--fg2);stroke-width:2}
+[data-theme="dark"] .cmp-stroke{stroke:#D4D4D8}
+.cmp-glint{stroke:#111;stroke-width:2.6;stroke-dasharray:36 600;filter:drop-shadow(0 0 3px rgb(255 255 255 / .9));animation:cmp-glint 2.6s cubic-bezier(.45,.1,.55,.9) infinite}
+[data-theme="dark"] .cmp-glint{stroke:#fff;filter:drop-shadow(0 0 5px rgb(255 255 255 / .95))}
+.cmp-wave path.cmp-spark{fill:#2A2A2E;stroke:none;opacity:0;transform-box:fill-box;transform-origin:50% 50%;filter:drop-shadow(0 0 2px rgb(255 255 255 / .9));animation:cmp-spark 2.2s ease-in-out infinite;animation-delay:calc(var(--i) * -.27s)}
+[data-theme="dark"] .cmp-wave path.cmp-spark{fill:#fff;filter:drop-shadow(0 0 3px rgb(255 255 255 / .95))}
+@keyframes cmp-glint{from{stroke-dashoffset:720}to{stroke-dashoffset:60}}
 @keyframes cmp-spark{0%,100%{opacity:0;transform:scale(.2) rotate(0deg)}45%{opacity:1;transform:scale(1) rotate(45deg)}70%{opacity:.35;transform:scale(.6) rotate(70deg)}}
-@media (prefers-reduced-motion:reduce){.cmp-clip,.cmp-flow,.cmp-glint,.cmp-wave path.cmp-spark{animation:none}.cmp-glint,.cmp-wave path.cmp-spark{display:none}}
-html[data-oxyn-reduced] .cmp-clip,html[data-oxyn-reduced] .cmp-flow,html[data-oxyn-reduced] .cmp-glint,html[data-oxyn-reduced] .cmp-wave path.cmp-spark{animation:none}
+@media (prefers-reduced-motion:reduce){.cmp-ride,.cmp-anti,.cmp-glint,.cmp-wave path.cmp-spark{animation:none}.cmp-glint,.cmp-wave path.cmp-spark{display:none}}
+html[data-oxyn-reduced] .cmp-ride,html[data-oxyn-reduced] .cmp-anti,html[data-oxyn-reduced] .cmp-glint,html[data-oxyn-reduced] .cmp-wave path.cmp-spark{animation:none}
 html[data-oxyn-reduced] .cmp-glint,html[data-oxyn-reduced] .cmp-wave path.cmp-spark{display:none}
-.cmp-handle{position:absolute;top:50%;left:0;width:36px;height:36px;margin:-18px 0 0 -18px;border-radius:50%;background:var(--pn);box-shadow:0 2px 10px rgb(0 0 0 / .18),inset 0 0 0 1px var(--ln);display:grid;place-items:center;font-size:15px;color:var(--fg)}
+.cmp-line{position:absolute;inset:0;z-index:4;pointer-events:none;transform:translateX(var(--pos));will-change:transform}
+.cmp-handle{position:absolute;top:50%;left:0;width:38px;height:38px;margin:-19px 0 0 -19px;border-radius:50%;background:var(--pn);box-shadow:0 4px 14px rgb(0 0 0 / .18),inset 0 0 0 1px var(--ln);display:grid;place-items:center;color:var(--fg);transition:transform .16s}
+.x-cmp:active .cmp-handle{transform:scale(1.08)}
 .cmp-range{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:ew-resize;z-index:5}
 .x-cmp:has(.cmp-range:focus-visible) .cmp-handle{outline:2px solid var(--oxyn-color-focus);outline-offset:2px}
 .faq{max-width:720px;margin:30px auto 0;border-top:1px solid var(--ln)}
@@ -493,7 +516,8 @@ body.fullscreen{background:var(--oxyn-color-bg-base)}
 }
 /* ── Responsive ─────────────────────────────────────────────────────── */
 @media (max-width:1280px){.x-art,.lend{width:min(76%,880px)}}
-@media (max-width:1100px){.cgrid{grid-template-columns:repeat(2,minmax(0,1fr))}.x-ghost{width:360px}.ghost-l{left:-200px}.ghost-r{right:-200px}}
+@media (max-width:1100px){.cgrid{grid-template-columns:repeat(2,minmax(0,1fr))}.hv-stage{grid-template-columns:1fr minmax(0,460px) 1fr;padding-left:0;padding-right:0}.hv-l,.hv-r{width:280px}.hv-l{margin-right:-110px}.hv-r{margin-left:-110px}}
+@media (max-width:900px){.hv-stage{display:flex;justify-content:center}.hv-c{width:min(100%,480px)}.hv-l,.hv-r{display:none}}
 @media (max-width:900px){
   .lib-grid,html[data-sidebar="hidden"] .lib-grid{grid-template-columns:minmax(0,1fr)}
   .lsb{position:fixed;left:0;top:0;bottom:0;width:min(300px,86vw);height:100%;visibility:visible!important;transform:translateX(-102%);transition:transform .22s cubic-bezier(.2,.8,.2,1);z-index:120;box-shadow:0 0 40px rgb(0 0 0 / .2)}
@@ -520,8 +544,8 @@ body.fullscreen{background:var(--oxyn-color-bg-base)}
 }
 @media (max-width:640px){
   .cgrid,.cgrid.two{grid-template-columns:minmax(0,1fr)}
-  .lp-hero{padding:64px 16px 60px}.lp-hero h1{font-size:44px}.lp-lede{font-size:17px}
-  .x-ghost{display:none}
+  .lp-hero{padding:56px 16px 0}.lp-lede{font-size:16.5px}.lp-meta{font-size:12.5px}.lp-meta li+li::before{margin:0 9px}.lp-meta li:nth-child(4){display:none}
+  .lp-hero-vis{margin-top:40px;padding:0}.hv-stage{display:block;min-height:0;padding:24px 14px 44px;border-radius:22px 22px 0 0}.hv-l,.hv-r{display:none}
   .lp-sec{padding-top:64px}.lp-sec>h2{font-size:27px}
   .tb-r .theme-radios,.tb-r .pill-black{display:none}
   .lbar .theme-radios{display:none}
@@ -648,7 +672,7 @@ oxyn-demo:focus-within,oxyn-demo:has(.oxyn-layer:not(.contained)){z-index:45}
 .x-lap-tab:focus-visible{outline:2px solid var(--oxyn-color-focus);outline-offset:2px}
 /* Scene: lid 78cqw wide (≈ 50cqw tall), the deck below it projects to ≈ 22cqw plus its front edge,
    so the laptop is ≈ 76cqw tall. Width is capped so that height plus the sticky tab bar fit. */
-.x-lap-scene{position:relative;container-type:inline-size;width:min(100%,1080px,calc((100svh - 104px) / .8));margin:18px auto 0}
+.x-lap-scene{position:relative;container-type:inline-size;width:min(100%,1080px,calc((100svh - 104px) / .73));margin:18px auto 0}
 /* Wide screens: the scene sticks under the tab bar (12 + 54 + 16 px) while the pin's spacer (its
    ::after, inside the content box that bounds the sticky scene) scrolls by, and the lid opens over that stretch. Narrow screens and reduced motion: no pin. */
 @media (min-width:901px){
@@ -658,13 +682,13 @@ oxyn-demo:focus-within,oxyn-demo:has(.oxyn-layer:not(.contained)){z-index:45}
 @media (prefers-reduced-motion:reduce){.x-lap-pin::after{display:none!important}.x-lap-pin .x-lap-scene{position:relative!important;top:0!important}}
 html[data-oxyn-reduced] .x-lap-pin::after{display:none!important}
 html[data-oxyn-reduced] .x-lap-pin .x-lap-scene{position:relative!important;top:0!important}
-.x-lap-dev{position:relative;padding-bottom:27.5cqw;transform-origin:50% 60%;will-change:transform;
+.x-lap-dev{position:relative;padding-bottom:18.6cqw;transform-origin:50% 60%;will-change:transform;
   transform:translateY(calc((1 - var(--x-lap-p)) * 5cqw)) scale(calc(.94 + var(--x-lap-p) * .06))}
-.x-lap-unit{position:relative;width:78%;margin:0 auto}
+.x-lap-unit{position:relative;width:80%;margin:0 auto}
 /* site.js writes the dev / lid transforms and the shade opacity inline each frame (the var() forms
    here are the no-script and reduced-motion state: open). */
 .x-lap-lid{position:relative;z-index:2;transform-origin:50% 100%;transform-style:preserve-3d;will-change:transform;
-  transform:perspective(340cqw) rotateX(calc((1 - var(--x-lap-p)) * -116deg))}
+  transform:perspective(340cqw) rotateX(calc((1 - var(--x-lap-p)) * -106deg))}
 .x-lap-face,.x-lap-back{border-radius:2.6cqw 2.6cqw .5cqw .5cqw;backface-visibility:hidden;-webkit-backface-visibility:hidden}
 .x-lap-back{border-radius:.5cqw .5cqw 2.6cqw 2.6cqw}
 /* Lid: silver aluminium rim (lit from above), thin black bezel with the notch. */
@@ -692,32 +716,36 @@ html[data-oxyn-reduced] .x-lap-pin .x-lap-scene{position:relative!important;top:
 .x-lap-edge{position:absolute;left:1.2cqw;right:1.2cqw;top:0;height:.62cqw;transform-origin:50% 0;transform:rotateX(-90deg);border-radius:.3cqw;background:linear-gradient(180deg,var(--x-lap-edge1),var(--x-lap-edge2))}
 .x-lap-logo{display:block;width:5cqw;color:var(--x-lap-logo);transform:scaleY(-1)}
 .x-lap-logo svg{display:block;width:100%;height:auto}
-/* Base (MacBook Pro): one aluminium slab as deep as the lid is tall, so the closed lid covers it
-   exactly. The deck is laid back 64° about the hinge with the lid's perspective (same origin, the
-   hinge's centre), so the near edge comes out wider: a base seen from above. Under its near edge the
-   front face stands upright: a lit chamfer on top, the brushed face darkening down to rounded
-   lower corners, the finger notch scooped out of its top in the middle, two feet, and a soft
-   contact shadow on the floor. The dark hinge strip shows between screen and deck. */
-.x-lap-deck{position:absolute;left:0;right:0;top:100%;z-index:1;height:49.9cqw;transform-origin:50% 0;transform-style:preserve-3d;transform:perspective(340cqw) rotateX(64deg)}
-.x-lap-top{position:absolute;inset:0;border-radius:.5cqw .5cqw 2.4cqw 2.4cqw;background:linear-gradient(180deg,var(--x-lap-al1),var(--x-lap-al2) 70%,var(--x-lap-al3));box-shadow:inset 0 -.3cqw .25cqw rgb(255 255 255 / .4),inset 0 0 0 .08cqw rgb(0 0 0 / .08)}
-[data-theme="dark"] .x-lap-top{box-shadow:inset 0 -.3cqw .25cqw rgb(255 255 255 / .07),inset 0 0 0 .08cqw rgb(255 255 255 / .05)}
-.x-lap-hinge{position:absolute;left:8.5%;right:8.5%;top:0;height:2.4%;border-radius:0 0 .7cqw .7cqw;background:linear-gradient(180deg,var(--x-lap-hinge2),var(--x-lap-hinge1))}
-.x-lap-kb{position:absolute;left:12.6%;right:12.6%;top:6%;height:41%;padding:.55cqw;border-radius:.9cqw;background:var(--x-lap-well);box-shadow:inset 0 .2cqw .4cqw rgb(0 0 0 / .45)}
+/* Base (MacBook Pro 14, after the reference photo): one aluminium slab as deep as the lid is tall,
+   so the closed lid covers it exactly. The deck is laid back 74° about the hinge with the lid's own
+   perspective (same origin: the hinge line), so its near edge comes out a little wider. On it, from
+   the back: the black hinge band almost the lid's full width, the keyboard close behind it (black
+   keys in a black well, 80% of the width, function row half height), speaker grilles either side,
+   the wide trackpad, then a thin rounded front edge with the finger scoop. Closed, the lid rotates
+   -106° onto it (180° - 74°). */
+.x-lap-deck{position:absolute;left:0;right:0;top:100%;z-index:1;height:49.9cqw;transform-origin:50% 0;transform-style:preserve-3d;transform:perspective(340cqw) rotateX(74deg)}
+.x-lap-top{position:absolute;inset:0;border-radius:.4cqw .4cqw 2.2cqw 2.2cqw;
+  background:linear-gradient(180deg,var(--x-lap-al2),var(--x-lap-al1) 18%,var(--x-lap-al1) 62%,var(--x-lap-al2) 92%,var(--x-lap-al3));
+  box-shadow:inset 0 -.35cqw .2cqw rgb(255 255 255 / .45),inset .25cqw 0 .3cqw -.1cqw rgb(255 255 255 / .35),inset -.25cqw 0 .3cqw -.1cqw rgb(255 255 255 / .35),inset 0 0 0 .08cqw rgb(0 0 0 / .1)}
+[data-theme="dark"] .x-lap-top{box-shadow:inset 0 -.35cqw .2cqw rgb(255 255 255 / .08),inset 0 0 0 .08cqw rgb(255 255 255 / .06)}
+.x-lap-hinge{position:absolute;left:1.6%;right:1.6%;top:0;height:3.4%;border-radius:0 0 .5cqw .5cqw;background:linear-gradient(180deg,var(--x-lap-hinge2) 0 45%,var(--x-lap-hinge1));box-shadow:0 .15cqw .2cqw rgb(0 0 0 / .18)}
+.x-lap-kb{position:absolute;left:10%;right:10%;top:6.2%;height:46%;padding:.42cqw;border-radius:.7cqw;background:var(--x-lap-well);box-shadow:inset 0 .12cqw .25cqw rgb(0 0 0 / .5),0 0 0 .06cqw rgb(0 0 0 / .2)}
 .x-lap-kb svg{display:block;width:100%;height:100%}
-.x-lap-kb rect{fill:url(#x-lap-keyg);stroke:var(--x-lap-keyln);stroke-width:.06}
-.x-lap-grill{position:absolute;top:6%;height:41%;width:7.4%;border-radius:.4cqw;
-  background:radial-gradient(circle,var(--x-lap-hole) 34%,transparent 40%) 0 0 / .62cqw .62cqw}
+.x-lap-kb rect{fill:url(#x-lap-keyg);stroke:var(--x-lap-keyln);stroke-width:.05}
+.x-lap-grill{position:absolute;top:6.2%;height:46%;width:5.2%;border-radius:.3cqw;
+  background:radial-gradient(circle,var(--x-lap-hole) 32%,transparent 40%) 0 0 / .5cqw .5cqw}
 .x-lap-grill.l{left:3.6%}.x-lap-grill.r{right:3.6%}
-.x-lap-pad{position:absolute;left:28%;right:28%;top:51.5%;height:38%;border-radius:1.3cqw;box-shadow:inset 0 0 0 .12cqw var(--x-lap-pad),inset 0 .25cqw .35cqw rgb(0 0 0 / .05)}
-.x-lap-front{position:absolute;left:.9%;right:.9%;top:calc(100% - .2cqw);height:2.3cqw;transform-origin:50% 0;transform:rotateX(-64deg);border-radius:.25cqw .25cqw 1.5cqw 1.5cqw;
-  background:linear-gradient(180deg,var(--x-lap-lip) 0 .16cqw,var(--x-lap-edge1) .3cqw,var(--x-lap-edge2) 88%,var(--x-lap-edge3));
+.x-lap-pad{position:absolute;left:26.5%;right:26.5%;top:56.5%;height:37%;border-radius:1.2cqw;background:linear-gradient(180deg,rgb(255 255 255 / .1),rgb(0 0 0 / .02));box-shadow:inset 0 0 0 .1cqw var(--x-lap-pad),inset 0 .2cqw .3cqw rgb(0 0 0 / .04)}
+[data-theme="dark"] .x-lap-pad{background:linear-gradient(180deg,rgb(255 255 255 / .03),rgb(0 0 0 / .08))}
+/* Front edge: thin and upright under the deck's near edge, a lit chamfer, the brushed face, rounded
+   lower corners, the finger scoop in the middle and a soft contact shadow on the floor. */
+.x-lap-front{position:absolute;left:.6%;right:.6%;top:calc(100% - .15cqw);height:1.45cqw;transform-origin:50% 0;transform:rotateX(-74deg);border-radius:.2cqw .2cqw 1.3cqw 1.3cqw;
+  background:linear-gradient(180deg,var(--x-lap-lip) 0 .12cqw,var(--x-lap-edge1) .24cqw,var(--x-lap-edge2) 86%,var(--x-lap-edge3));
   box-shadow:inset .5cqw 0 .5cqw -.4cqw rgb(0 0 0 / .12),inset -.5cqw 0 .5cqw -.4cqw rgb(0 0 0 / .12)}
-.x-lap-front i{position:absolute;left:50%;top:0;width:12%;height:62%;transform:translateX(-50%);border-radius:0 0 50% 50% / 0 0 100% 100%;
-  background:linear-gradient(180deg,var(--x-lap-scoop1),var(--x-lap-scoop2));box-shadow:inset 0 -.07cqw 0 rgb(255 255 255 / .35)}
-.x-lap-front::before,.x-lap-front::after{content:"";position:absolute;bottom:-.2cqw;width:4%;height:.24cqw;border-radius:0 0 .3cqw .3cqw;background:var(--x-lap-foot)}
-.x-lap-front::before{left:6%}.x-lap-front::after{right:6%}
-.x-lap-shadow{position:absolute;left:-2%;right:-2%;bottom:-1.6cqw;height:3.4cqw;border-radius:50%;pointer-events:none;
-  background:radial-gradient(50% 24% at 50% 46%,var(--x-lap-contact),transparent),radial-gradient(closest-side,var(--x-lap-floor),rgb(0 0 0 / 0))}
+.x-lap-front i{position:absolute;left:50%;top:0;width:11%;height:48%;transform:translateX(-50%);border-radius:0 0 50% 50% / 0 0 100% 100%;
+  background:linear-gradient(180deg,var(--x-lap-scoop1),var(--x-lap-scoop2));box-shadow:inset 0 -.06cqw 0 rgb(255 255 255 / .35)}
+.x-lap-shadow{position:absolute;left:-1%;right:-1%;bottom:-1.2cqw;height:3cqw;border-radius:50%;pointer-events:none;
+  background:radial-gradient(50% 22% at 50% 44%,var(--x-lap-contact),transparent),radial-gradient(closest-side,var(--x-lap-floor),rgb(0 0 0 / 0))}
 @media (prefers-reduced-motion:reduce){.x-lap-scene{--x-lap-p:1!important}.x-lap-shot{transition:none}}
 html[data-oxyn-reduced] .x-lap-scene{--x-lap-p:1!important}
 /* The screen demo inside the lid: the 1440 × 900 stage fills the 16:10 screen edge to edge, live. */
@@ -754,8 +782,10 @@ html[data-oxyn-reduced] .x-lap-scene{--x-lap-p:1!important}
   .x-lap-deck,.x-lap-shadow,.x-lap-back,.x-lap-edge,.x-lap-notch,.x-lap-glare,.x-lap-shade{display:none}
   .x-lap-dev,.x-lap-lid{padding-bottom:0;transform:none!important;will-change:auto}
   .x-lap-unit{width:100%}
-  .x-lap-face,.x-lap-glass{padding:0;background:none;box-shadow:none;border-radius:16px}
-  .x-lap-scr{aspect-ratio:auto;height:min(76svh,620px);border-radius:16px;box-shadow:inset 0 0 0 1px var(--ln),0 18px 40px -28px rgb(0 0 0 / .45)}
+  .x-lap-face{padding:0;background:none;box-shadow:none;border-radius:22px}
+  /* A thin black device bezel round the full-width screen, so it still reads as the device. */
+  .x-lap-glass{padding:6px;border-radius:22px;background:#050506;box-shadow:inset 0 0 0 1px #1F1F22,0 22px 44px -28px rgb(0 0 0 / .5)}
+  .x-lap-scr{aspect-ratio:auto;height:min(74svh,600px);border-radius:16px}
   .x-lap-scr .oxstage-box{aspect-ratio:auto;height:100%}
   .x-lap-scr .oxstage-canvas{position:static;width:100%!important;height:100%!important;transform:none}
 }

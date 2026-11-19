@@ -368,6 +368,9 @@
   .oxs12-stat:nth-child(-n+2){border-bottom:1px solid var(--oxth-line)}
 }
 @container oxs12 (max-width:640px){
+  /* Phones: the breadcrumb keeps only the current page (a squeezed trail left just "›"). */
+  .oxs12-cr:not([aria-current="page"]),.oxs12-cr .oxs12-sep{display:none}
+  .oxs12-cr[aria-current="page"]{flex-shrink:1;min-width:64px}
   .oxs12-meta{display:none}
   .oxs12-acts .oxs12-btl{display:none}
   .oxs12-acts .oxs12-btn{width:32px;padding:0;justify-content:center}
@@ -396,3 +399,6 @@
   .oxs12-pmeta{gap:10px}
 }
 @media (prefers-reduced-motion:reduce){.oxs12-side,.oxs12-chev,.oxs12-swt,.oxs12-swt::after{transition:none}.oxs12-sb{animation:none}}
+/* Dark themes: marks whose official colour is a dark navy or near-black ink (Visa, Linear) take
+   their official light variant, so they never sit dark on dark. */
+:is([data-oxyn-theme="dark"],[data-oxyn-theme="hc-dark"]) .oxs12 .oxyn-brand:is([data-brand="visa"],[data-brand="linear"]){--ox-brand-tone:#FFFFFF}
