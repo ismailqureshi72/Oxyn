@@ -255,6 +255,11 @@ pub(super) fn Frame(
     let mut pnar = pnar;
     let sd = side();
     let style = format!("--oxs10-h:{height}px");
+    let back = match app {
+        "ss" => "Back to session",
+        "wc" => "Back to chat",
+        _ => "Back to thread",
+    };
     rsx! {
         div { class: "oxs10", "data-app": "{app}", "data-layout": "{layout}", "data-side": "{sd}", "data-drawer": "{dr()}", "data-pane": "{pane()}", "data-pnar": "{pnar()}", style: "{style}",
             if sd != "hidden" { {sidebar} }
@@ -273,7 +278,12 @@ pub(super) fn Frame(
                 }
                 div { class: "oxs10-split",
                     div { class: "oxs10-col", {body} }
-                    aside { class: "oxs10-pane", id: "oxs10-pane-{app}", "aria-label": "{pane_label}", {panel} }
+                    aside { class: "oxs10-pane", id: "oxs10-pane-{app}", "aria-label": "{pane_label}",
+                        div { class: "oxs10-pback",
+                            button { r#type: "button", class: "oxscn-btn oxs10-sbtn", "aria-controls": "oxs10-pane-{app}", onclick: move |_| pnar.set(false), {nico("back")} span { "{back}" } }
+                        }
+                        {panel}
+                    }
                 }
             }
             p { class: "oxs10-sr", role: "status", "aria-live": "polite", "{said}" }
@@ -580,7 +590,8 @@ fn CommandCenterApp(
     });
     let mut drawer = use_signal(|| false);
     let pane = use_signal(|| true);
-    let mut pnar = use_signal(|| false);
+    // At narrow widths a pane state opens the pane in place of the thread.
+    let mut pnar = use_signal(move || matches!(own, "terminal" | "browser"));
     let mut text = use_signal(String::new);
     let mut err = use_signal(|| None::<&'static str>);
     let mut model = use_signal(|| 0usize);
@@ -1124,7 +1135,8 @@ fn SessionStudioApp(
     });
     let mut drawer = use_signal(|| false);
     let pane = use_signal(|| true);
-    let pnar = use_signal(|| false);
+    // At narrow widths a pane state opens the pane in place of the session.
+    let pnar = use_signal(move || matches!(own, "chat" | "arrange"));
     let mut mode = use_signal(|| Mode::Ask);
     let mut model = use_signal(|| 1usize);
     let mut text = use_signal(String::new);
