@@ -8,8 +8,9 @@ import { mark, brands } from '../components/v2/brands';
 import { demos, counts, screens, inGroup, demoUrl, REPO } from '../lib/data';
 
 const find = (s: string) => demos.find((d) => d.slug === s)!;
-const ghostL = demos.find((d) => d.slug === 'chat-composer') ?? find('approval-card');
-const ghostR = find('agent-plan');
+// Hero visual (swappable when the hero brief lands): three live components on one stage, the
+// approval in front, a plan and a tool call either side.
+const heroCards: [string, (typeof demos)[number]][] = [['l', find('agent-plan')], ['c', find('approval-card')], ['r', find('agent-trail')]];
 const tabSets: [string, string, string[] | null][] = [
   ['components', 'Components', ['approval-card', 'tool-call', 'agent-plan', 'model-picker', 'thinking-loader', 'context-meter']],
   ['screens', 'Screens', screens.slice(0, 6).map((d) => d.slug)],
@@ -23,11 +24,12 @@ const compareTabs = [
   ['chat', 'Agent chat', find('reasoning-block')],
 ] as const;
 const free = counts.components + counts.screens;
-// The compare divider: a vertical sine (wavelength 120 px, amplitude ~5 px) in px units, one
-// wavelength above the top so the flow animation (translateY 0 → 120 px) loops seamlessly.
-const wave = `M12 -120 ${Array.from({ length: 12 }, (_, i) => (i === 0 ? 'q10 30 0 60' : 't0 60')).join(' ')}`;
-// Glitter: four-point stars of a few sizes scattered along the wave, each twinkling on its own beat.
-const sparks: [number, number, number, number][] = [[18, -80, 0, 3.2], [6, -10, 5, 2], [19, 40, 2, 2.6], [5, 110, 7, 3.4], [17, 170, 1, 1.8], [7, 230, 4, 2.8], [20, 290, 6, 2.2], [4, 350, 3, 3], [16, 410, 8, 2.4], [8, 470, 2, 1.8]];
+// The compare seam: a vertical sine (wavelength 120 px, amplitude 6 px) drawn in a 48 px band whose
+// centre (x 24) is the divider. The same sine masks the Oxyn side, and both live in one element that
+// flows down by one wavelength per loop, so the drawn line and the cut edge can never drift apart.
+const wave = `M24 0 ${Array.from({ length: 16 }, (_, i) => (i === 0 ? 'q12 30 0 60' : 't0 60')).join(' ')}`;
+// Glitter: four-point stars of a few sizes along the wave, each twinkling on its own beat.
+const sparks: [number, number, number, number][] = [[31, 20, 0, 3.2], [17, 80, 5, 2], [32, 150, 2, 2.6], [16, 205, 7, 3.4], [30, 270, 1, 1.8], [18, 330, 4, 2.8], [33, 395, 6, 2.2], [15, 450, 3, 3], [29, 515, 8, 2.4], [19, 575, 2, 1.8]];
 const star = (x: number, y: number, r: number) => `M${x} ${y - r}Q${x} ${y} ${x + r} ${y}Q${x} ${y} ${x} ${y + r}Q${x} ${y} ${x - r} ${y}Q${x} ${y} ${x} ${y - r}Z`;
 const agents = ['claude-code', 'cursor', 'codex', 'windsurf', 'github-copilot', 'gemini-cli', 'zed', 'cline', 'opencode', 'amp'];
 // Brand names in running text get their mark in front (the name stays as text).
@@ -46,16 +48,28 @@ const faq: [string, string, keyof typeof icon][] = [
 ];
 ---
 <Base title="Oxyn — UI for AI agents, in Rust" description="Agent-UI components for Rust: runs, tool calls, approvals and chat, for Dioxus and GPUI." type="Page" promo>
-  <section class="lp-hero">
-    <div class="x-ghost ghost-l" aria-hidden="true" inert><OxynDemo slug={ghostL.slug} html={ghostL.variants[0].html} variant={0} /></div>
-    <div class="x-ghost ghost-r" aria-hidden="true" inert><OxynDemo slug={ghostR.slug} html={ghostR.variants[0].html} variant={0} /></div>
+  <section class="lp-hero" data-hero>
+    <div class="lp-hero-bg" aria-hidden="true"></div>
     <div class="lp-hero-in">
-      <a class="badge-pill" href="/components/"><b>{free} free</b><span>{free}+ components, screens &amp; variants →</span></a>
-      <h1>Agent UI</h1>
-      <p class="lp-lede">Rust components for agent runs, tool calls, approvals and chat – for Dioxus and GPUI.</p>
+      <a class="badge-pill" href="/components/"><b>{free} free</b><span>Components, screens and variants</span><span class="bp-go" aria-hidden="true">→</span></a>
+      <h1 class="lp-h1"><span>UI for AI agents,</span> <span class="lp-h1-2">written in Rust</span></h1>
+      <p class="lp-lede">Chat, approvals, tool calls and live runs: components and complete screens for the agent side of your app. One Rust core, rendered with Dioxus on the web and GPUI on the desktop.</p>
       <div class="lp-cta">
         <a class="x-pill pill-black pill-lg" href="/components/">Browse library</a>
         <a class="x-pill pill-grey pill-lg" href="/docs/installation/">Get started</a>
+      </div>
+      <ul class="lp-meta" aria-label="At a glance">
+        <li>MIT licensed</li>
+        <li>Dioxus and GPUI</li>
+        <li>Light and dark</li>
+        <li>Accessible by default</li>
+      </ul>
+    </div>
+    <div class="lp-hero-vis" aria-hidden="true" inert>
+      <div class="hv-stage">
+        {heroCards.map(([pos, d]) => (
+          <div class={`hv-card hv-${pos}`}><OxynDemo slug={d.slug} html={d.variants[0].html} variant={0} defer /></div>
+        ))}
       </div>
     </div>
   </section>
@@ -155,13 +169,15 @@ const faq: [string, string, keyof typeof icon][] = [
                   <div class="vibe"><p><b>You:</b> why did the build fail?</p><p><b>AI:</b> Thinking...</p><p>Thinking...</p><p>The build failed because of a missing dependency in the lockfile. Run install again.</p></div>
                 )}
               </div>
-              <div class="cmp-clip" aria-hidden="true"><div class="cmp-after" inert><OxynDemo slug={d.slug} html={d.variants[0].html} variant={0} defer /></div></div>
+              <div class="cmp-clip" aria-hidden="true">
+                <div class="cmp-ride">
+                  <div class="cmp-mbox"><div class="cmp-anti"><div class="cmp-after" inert><OxynDemo slug={d.slug} html={d.variants[0].html} variant={0} defer /></div></div></div>
+                  <svg class="cmp-wave" focusable="false"><path class="cmp-halo" d={wave} /><path class="cmp-stroke" d={wave} /><path class="cmp-glint" d={wave} />{sparks.map(([x, y, i, r]) => <path class="cmp-spark" d={star(x, y, r)} style={`--i:${i}`} />)}</svg>
+                </div>
+              </div>
               <span class="cmp-tag l">Vibecoded</span>
               <span class="cmp-tag r"><span aria-hidden="true">✦</span> With Oxyn</span>
-              <div class="cmp-line" aria-hidden="true">
-                <svg class="cmp-wave" focusable="false"><g class="cmp-flow"><path class="cmp-halo" d={wave} /><path class="cmp-stroke" d={wave} /><path class="cmp-glint" d={wave} />{sparks.map(([x, y, i, r]) => <path class="cmp-spark" d={star(x, y, r)} style={`--i:${i}`} />)}</g></svg>
-                <span class="cmp-handle">↔</span>
-              </div>
+              <div class="cmp-line" aria-hidden="true"><span class="cmp-handle"><svg viewBox="0 0 20 20" width="16" height="16" focusable="false"><path d="M7 5 2 10l5 5M13 5l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg></span></div>
               <input class="cmp-range" type="range" min="0" max="100" value="50" aria-label={`Drag to compare: plain ${l.toLowerCase()} against Oxyn's ${d.name}`} />
             </div>
           </div>

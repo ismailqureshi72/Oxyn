@@ -195,12 +195,14 @@ const CAT_ORDER = ['approvals', 'tools', 'checkpoints-git', 'composer', 'chat', 
 const rank = (d: Demo) => { const i = CAT_ORDER.indexOf(d.category); return i < 0 ? CAT_ORDER.length : i; };
 export const inGroup = (g: string) => components.filter((d) => groupSlugOf(d) === g).sort((a, b) => rank(a) - rank(b));
 export { isScreen };
-/** Newest components: the ones the latest parity plan built (docs/parity/status.csv). */
-const latestPlan = parity.filter((r) => r.status.startsWith("built")).reduce((m, r) => Math.max(m, parseInt((r.plan_pr || '#0').slice(1)) || 0), 0);
-const newSpecs = new Set(
-  parity.filter((r) => r.plan_pr === `#${latestPlan}` && r.status.startsWith('built')).flatMap((r) => (r.oxyn_spec || '').split(',').map((x) => x.trim())),
-);
-export const newDemos = components.filter((d) => newSpecs.has(d.spec) || newSpecs.has(d.slug));
+/** Newest components: the ones the latest parity plan that built components added (docs/parity/status.csv).
+ *  A plan that only built screens is skipped, so the promo strip and /components/new/ never go empty. */
+const builtRows = parity.filter((r) => r.status.startsWith('built'));
+const planNo = (r: { plan_pr?: string }) => parseInt((r.plan_pr || '#0').slice(1)) || 0;
+const specsOf = (n: number) => new Set(builtRows.filter((r) => planNo(r) === n).flatMap((r) => (r.oxyn_spec || '').split(',').map((x) => x.trim())));
+const plansDesc = [...new Set(builtRows.map(planNo))].filter((n) => n > 0).sort((a, b) => b - a);
+const inPlan = (n: number) => { const sp = specsOf(n); return components.filter((d) => sp.has(d.spec) || sp.has(d.slug)); };
+export const newDemos = (() => { for (const n of plansDesc) { const v = inPlan(n); if (v.length) return v; } return [] as typeof components; })();
 export const motionDemos = ['text-shimmer', 'verb-cycler', 'text-reveal', 'number-ticker', 'glyph-loader'].map((s) => demos.find((d) => d.slug === s)!).filter(Boolean);
 /** Screens composed on the site from several components (no single Rust demo). */
 export const composedScreens = [{ name: 'Agent workspace', href: '/screens/agent-workspace/', summary: 'A complete AI agent app: threads, the agent thread and the work pane.' }];

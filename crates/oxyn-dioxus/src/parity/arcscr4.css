@@ -164,5 +164,22 @@
   .oxs15-mt th:last-child{width:92px}
   .oxs15-mt td{max-width:none;overflow:hidden}
   .oxs15-mt .oxs15-who{overflow:hidden}
+  /* Phones: the audit log and the API keys table stack each row into a small card (the columns
+     would otherwise run off the side): who and result, then the action, then the time; or the
+     key's name and its code beside the Roll / Revoke buttons. Headers stay for screen readers.
+     Picked by what their rows hold (the audit time cell, the Roll button), so no markup changes. */
+  .oxs15-t:has(.oxs15-time),.oxs15-t:has(.oxs15-time) tbody,.oxs15-t:has(button[aria-label^="Roll "]),.oxs15-t:has(button[aria-label^="Roll "]) tbody{display:block;width:100%}
+  .oxs15-t:has(.oxs15-time) thead,.oxs15-t:has(button[aria-label^="Roll "]) thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .oxs15-t:has(.oxs15-time) tr,.oxs15-t:has(button[aria-label^="Roll "]) tr{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:4px 12px;padding:11px 4px;border-bottom:1px solid var(--oxth-line)}
+  .oxs15-t:has(.oxs15-time) td,.oxs15-t:has(button[aria-label^="Roll "]) td{display:block;height:auto;max-width:none;min-width:0;padding:0;border:0;white-space:normal}
+  .oxs15-t:has(.oxs15-time) td:nth-child(1){grid-area:3/1/4/3;font-size:11.5px;color:var(--oxth-mute)}
+  .oxs15-t:has(.oxs15-time) td:nth-child(2){grid-area:1/1/2/2;font-weight:500}
+  .oxs15-t:has(.oxs15-time) td:nth-child(3){grid-area:2/1/3/3}
+  .oxs15-t:has(.oxs15-time) td:nth-child(3) .oxs15-rowb{white-space:normal;text-align:left}
+  .oxs15-t:has(.oxs15-time) td:nth-child(4),.oxs15-t:has(.oxs15-time) td:nth-child(5),.oxs15-t:has(button[aria-label^="Roll "]) td:nth-child(3),.oxs15-t:has(button[aria-label^="Roll "]) td:nth-child(4),.oxs15-t:has(button[aria-label^="Roll "]) td:nth-child(5){display:none}
+  .oxs15-t:has(.oxs15-time) td:nth-child(6){grid-area:1/2/2/3}
+  .oxs15-t:has(button[aria-label^="Roll "]) td:nth-child(1){grid-area:1/1/2/2}
+  .oxs15-t:has(button[aria-label^="Roll "]) td:nth-child(2){grid-area:2/1/3/2;overflow:hidden;text-overflow:ellipsis}
+  .oxs15-t:has(button[aria-label^="Roll "]) td:nth-child(6){grid-area:1/2/3/3}
 }
 @media (prefers-reduced-motion:reduce){.oxs15-tl[data-live="true"]::before,.oxs15-calling .oxs12-dot{animation:none}.oxs15-sw>span{transition:none}}

@@ -418,9 +418,9 @@ document.addEventListener('oxyn-demo-live', (e) => {
   // on its own (a sine around the middle, picked up from wherever the user left it), only while it
   // is on screen. Moving it writes three transforms (clip box, its content, the divider) inline, so
   // the live demo inside is never restyled by an inherited --pos per frame (--pos stays in the CSS
-  // as the no-script state). The wave mask on the clip box and the drawn wave flow on two separate
-  // CSS animations of the same length: they are pinned to the same start time whenever the slider
-  // comes into view, so the masked edge always sits on the drawn line.
+  // as the no-script state). The drawn wave and the masked edge flow together in one element
+  // (.cmp-ride); its counter-flow (.cmp-anti, which keeps the content still) is pinned to the same
+  // start time whenever the slider comes into view.
   const calm = () => d.hasAttribute('data-oxyn-reduced') || matchMedia('(prefers-reduced-motion: reduce)').matches;
   document.querySelectorAll('.x-cmp').forEach((c) => {
     const r = c.querySelector('.cmp-range');
@@ -432,8 +432,8 @@ document.addEventListener('oxyn-demo-live', (e) => {
       pos = v;
       const p = `${v.toFixed(2)}%`;
       if (clip && after && line) {
-        clip.style.transform = `translateX(calc(${p} - 12px))`;
-        after.style.transform = `translateX(calc(12px - ${p}))`;
+        clip.style.transform = `translateX(calc(${p} - 24px))`;
+        after.style.transform = `translateX(calc(24px - ${p}))`;
         line.style.transform = `translateX(${p})`;
       } else c.style.setProperty('--pos', p);
       const iv = String(Math.round(v));
@@ -455,7 +455,7 @@ document.addEventListener('oxyn-demo-live', (e) => {
       const t0 = document.timeline?.currentTime;
       if (t0 == null) return;
       c.getAnimations({ subtree: true }).forEach((a) => {
-        if (a.animationName === 'cmp-mask' || a.animationName === 'cmp-flow') a.startTime = t0 - (t0 % 2800);
+        if (a.animationName === 'cmp-ride' || a.animationName === 'cmp-anti') a.startTime = t0 - (t0 % 3200);
       });
     };
     // Resume from the current spot: choose the phase whose sine gives the current position.
@@ -535,7 +535,7 @@ document.addEventListener('oxyn-demo-live', (e) => {
       // Closed, the laptop is lifted into the middle of the scene (the open lid's space above it
       // would otherwise sit empty); it settles back down as the lid opens.
       dev.style.transform = `translate3d(0,${(q * q * -LIFT).toFixed(3)}cqw,0) scale(${(0.94 + p * 0.06).toFixed(4)})`;
-      lid.style.transform = `perspective(340cqw) rotateX(${(q * -116).toFixed(3)}deg)`;
+      lid.style.transform = `perspective(340cqw) rotateX(${(q * -106).toFixed(3)}deg)`;
       if (shade) shade.style.opacity = (q * 0.8).toFixed(3);
       scene.toggleAttribute('data-closed', p < 0.02);
     };
@@ -552,7 +552,8 @@ document.addEventListener('oxyn-demo-live', (e) => {
       const sh = scene.offsetHeight;
       const stick = Math.max(0, pin.offsetHeight - sh);
       const cs = getComputedStyle(scene);
-      const top = cs.position === 'sticky' ? parseFloat(cs.top) || 0 : 16;
+      // Not pinned (tablets): fully open once the scene is centred in the viewport.
+      const top = cs.position === 'sticky' ? parseFloat(cs.top) || 0 : Math.max(16, (vh - sh) / 2);
       pinTop = pin.getBoundingClientRect().top + scrollY;
       z = top - stick * 0.82;
       // Where the fully closed laptop sits in the scene: opening starts only once all of it is in

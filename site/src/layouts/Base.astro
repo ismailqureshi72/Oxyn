@@ -22,6 +22,11 @@ interface Props {
 const { title, description, type = 'Page', promo = false } = Astro.props;
 const path = Astro.url.pathname;
 const fullTitle = path === '/' ? title : `${title} · Oxyn`;
+// Promo strip: the newest components by name, then how many more (never "0 more").
+const promoNames = newDemos.slice(0, 2).map((d) => d.name);
+const promoMore = newDemos.length - promoNames.length;
+const promoText = promoNames.length === 0 ? 'New components, all free →'
+  : `${promoNames.join(promoNames.length === 2 && promoMore === 0 ? ' and ' : ', ')}${promoMore > 0 ? ` and ${promoMore} more new component${promoMore === 1 ? '' : 's'}` : ` ${promoNames.length === 1 ? 'is' : 'are'} new`}, all free →`;
 ---
 <!doctype html>
 <html lang="en" data-theme="light" data-oxyn-theme="light">
@@ -30,7 +35,7 @@ const fullTitle = path === '/' ? title : `${title} · Oxyn`;
     <a class="x-skip" href="#main">Skip to content</a>
     {promo && (
       <div class="announce" role="region" aria-label="Announcement" data-pagefind-ignore>
-        <a href="/components/new/"><span aria-hidden="true">✦</span> Checkpoint lanes, Thread list and {Math.max(newDemos.length - 2, 0)} more new components, all free →</a>
+        <a href="/components/new/"><span aria-hidden="true">✦</span> {promoText}</a>
         <button type="button" data-close-announce aria-label="Dismiss announcement">✕</button>
       </div>
     )}
