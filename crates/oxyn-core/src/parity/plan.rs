@@ -288,6 +288,10 @@ pub struct TrailStep {
     pub tool: Option<String>,
     /// Sub-steps.
     pub sub: Vec<(String, StepState)>,
+    /// A short fact per sub-step, by index (`cart.ts:142`, `182/214`); missing or empty for none.
+    pub details: Vec<String>,
+    /// What a gated step asks you to approve ("Open PR #482 against main – 3 files").
+    pub ask: Option<String>,
 }
 
 impl TrailStep {
@@ -302,7 +306,26 @@ impl TrailStep {
             gate: false,
             tool: None,
             sub: Vec::new(),
+            details: Vec::new(),
+            ask: None,
         }
+    }
+    /// The detail of sub-step `i`, keeping its end when longer than `max` characters
+    /// (`src/…Wrapper.tsx:1284`).
+    pub fn detail(&self, i: usize, max: usize) -> Option<String> {
+        let d = self.details.get(i).filter(|d| !d.is_empty())?;
+        Some(keep_end(d, max))
+    }
+    /// The running sub-step, else the first pending one, else the last.
+    pub fn current_sub(&self) -> Option<usize> {
+        if self.sub.is_empty() {
+            return None;
+        }
+        self.sub
+            .iter()
+            .position(|(_, s)| *s == StepState::Running)
+            .or_else(|| self.sub.iter().position(|(_, s)| *s == StepState::Pending))
+            .or(Some(self.sub.len() - 1))
     }
     /// Badge text: "Approval", "Needs you", "Declined", "Failed".
     pub fn badge(&self) -> Option<&'static str> {
@@ -330,8 +353,137 @@ pub struct Trail {
 impl Trail {
     /// "3/5".
     pub fn count(&self) -> String {
-        let d = self.steps.iter().filter(|s| s.state.settled()).count();
-        format!("{d}/{}", self.steps.len())
+        format!("{}/{}", self.done(), self.steps.len())
+    }
+    /// Settled steps (done, skipped, declined).
+    pub fn done(&self) -> usize {
+        self.steps.iter().filter(|s| s.state.settled()).count()
+    }
+    /// The header count read out: "3 of 5 steps done".
+    pub fn count_label(&self) -> String {
+        format!("{} of {} steps done", self.done(), self.steps.len())
+    }
+    /// The step the agent is on: running, else waiting, else none.
+    pub fn current(&self) -> Option<usize> {
+        self.steps
+            .iter()
+            .position(|s| s.state == StepState::Running)
+            .or_else(|| {
+                self.steps
+                    .iter()
+                    .position(|s| s.state == StepState::Waiting)
+            })
+    }
+    /// One step read out: "Read the bug report – Done, 8s".
+    pub fn step_label(&self, i: usize, now: ClockMs) -> String {
+        let Some(s) = self.steps.get(i) else {
+            return String::new();
+        };
+        let title = if s.title.is_empty() {
+            "Untitled step"
+        } else {
+            &s.title
+        };
+        let word = match s.state {
+            StepState::Done => "Done",
+            StepState::Running => "Running",
+            StepState::Waiting => "Needs you",
+            StepState::Failed => "Failed",
+            StepState::Declined => "Declined",
+            StepState::Skipped => "Skipped",
+            StepState::Pending if s.gate => "Pending, needs approval",
+            StepState::Pending => "Pending",
+        };
+        match trail_time(s, now) {
+            Some(t) => format!("{title} – {word}, {t}"),
+            None => format!("{title} – {word}"),
+        }
+    }
+    /// Approves waiting step `i`: it runs from `now`. Returns what to announce.
+    pub fn approve(&mut self, i: usize, now: ClockMs) -> Option<String> {
+        let s = self.steps.get_mut(i)?;
+        if s.state != StepState::Waiting {
+            return None;
+        }
+        s.state = StepState::Running;
+        s.started = Some(now);
+        Some(format!("Approved: {}", s.title))
+    }
+    /// Declines waiting step `i` (struck through, settled). Returns what to announce.
+    pub fn decline(&mut self, i: usize) -> Option<String> {
+        let s = self.steps.get_mut(i)?;
+        if s.state != StepState::Waiting {
+            return None;
+        }
+        s.state = StepState::Declined;
+        Some(format!("Declined: {}", s.title))
+    }
+}
+
+/// A step's time: the live timer of a running step, else how long a settled one took.
+pub fn trail_time(s: &TrailStep, now: ClockMs) -> Option<String> {
+    match (s.state, s.started, s.took_ms) {
+        (StepState::Running, Some(st), _) => {
+            let ms = now.0.saturating_sub(st.0);
+            Some(if ms < 1000 {
+                "<1s".into()
+            } else {
+                short_duration(ms)
+            })
+        }
+        (_, _, Some(t)) if t < 1000 => Some("<1s".into()),
+        (_, _, Some(t)) => Some(short_duration(t)),
+        _ => None,
+    }
+}
+
+/// Keeps the end of `s` within `max` characters: `src/…Wrapper.tsx:1284`. Keeps the first path
+/// segment when there is one.
+pub fn keep_end(s: &str, max: usize) -> String {
+    let n = s.chars().count();
+    if n <= max || max < 4 {
+        return s.to_string();
+    }
+    let head: String = match s.find('/') {
+        Some(i) if i + 1 < max / 2 => s[..=i].to_string(),
+        _ => String::new(),
+    };
+    let keep = max - 1 - head.chars().count();
+    let tail: String = s.chars().skip(n - keep).collect();
+    format!("{head}…{tail}")
+}
+
+/// Which sub-steps show when a list folds: more than six fold to five rows around `cur`.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct Fold {
+    /// First shown index.
+    pub start: usize,
+    /// One past the last shown index.
+    pub end: usize,
+    /// Hidden before ("+N earlier").
+    pub earlier: usize,
+    /// Hidden after ("+N more").
+    pub more: usize,
+}
+
+/// The fold of `n` sub-steps around `cur`; `all` shows every one.
+pub fn fold(n: usize, cur: Option<usize>, all: bool) -> Fold {
+    if all || n <= 6 {
+        return Fold {
+            start: 0,
+            end: n,
+            earlier: 0,
+            more: 0,
+        };
+    }
+    let c = cur.unwrap_or(0).min(n - 1);
+    let start = c.saturating_sub(2).min(n - 5);
+    let end = start + 5;
+    Fold {
+        start,
+        end,
+        earlier: start,
+        more: n - end,
     }
 }
 
@@ -667,5 +819,96 @@ mod tests {
         };
         assert_eq!(b.schedule()[2], (2.0, 4.0));
         assert!(b.on_track());
+    }
+
+    #[test]
+    fn trail_fold_gate_and_labels() {
+        assert_eq!(
+            fold(5, Some(2), false),
+            Fold {
+                start: 0,
+                end: 5,
+                earlier: 0,
+                more: 0
+            }
+        );
+        assert_eq!(
+            fold(12, Some(8), false),
+            Fold {
+                start: 6,
+                end: 11,
+                earlier: 6,
+                more: 1
+            }
+        );
+        assert_eq!(
+            fold(12, Some(0), false),
+            Fold {
+                start: 0,
+                end: 5,
+                earlier: 0,
+                more: 7
+            }
+        );
+        assert_eq!(
+            fold(12, Some(11), false),
+            Fold {
+                start: 7,
+                end: 12,
+                earlier: 7,
+                more: 0
+            }
+        );
+        assert_eq!(fold(12, Some(8), true).end, 12);
+        assert_eq!(
+            keep_end("src/components/checkout/FormWrapper.tsx:1284", 25),
+            "src/…FormWrapper.tsx:1284"
+        );
+        assert_eq!(keep_end("182/214", 24), "182/214");
+        let mut t = Trail {
+            title: "Fix the checkout crash".into(),
+            agent: None,
+            steps: vec![
+                TrailStep {
+                    took_ms: Some(8_000),
+                    ..TrailStep::new("Read the bug report", StepState::Done)
+                },
+                TrailStep {
+                    gate: true,
+                    ask: Some("Open PR".into()),
+                    ..TrailStep::new("Open a pull request", StepState::Waiting)
+                },
+                TrailStep::new("", StepState::Pending),
+            ],
+        };
+        assert_eq!(t.count_label(), "1 of 3 steps done");
+        assert_eq!(
+            t.step_label(0, ClockMs(0)),
+            "Read the bug report – Done, 8s"
+        );
+        assert_eq!(t.step_label(2, ClockMs(0)), "Untitled step – Pending");
+        assert_eq!(t.current(), Some(1));
+        assert!(t.decline(0).is_none());
+        assert_eq!(
+            t.decline(1).as_deref(),
+            Some("Declined: Open a pull request")
+        );
+        assert_eq!(t.count(), "2/3");
+        t.steps[1].state = StepState::Waiting;
+        assert!(t.approve(1, ClockMs(5_000)).is_some());
+        assert_eq!(t.steps[1].state, StepState::Running);
+        assert_eq!(
+            trail_time(&t.steps[1], ClockMs(5_400)).as_deref(),
+            Some("<1s")
+        );
+        let mut s = TrailStep::new("x", StepState::Running);
+        s.sub = vec![
+            ("a".into(), StepState::Done),
+            ("b".into(), StepState::Running),
+        ];
+        s.details = vec![String::new(), "182/214".into()];
+        assert_eq!(s.current_sub(), Some(1));
+        assert_eq!(s.detail(0, 20), None);
+        assert_eq!(s.detail(1, 20).as_deref(), Some("182/214"));
     }
 }
