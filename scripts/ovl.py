@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # Overlap + overflow guard for the screen demos on a running site preview (Playwright + Chromium).
 # Usage: OXYN_PREVIEW=http://localhost:4321 python3 scripts/ovl.py [slugs,...|all|full] [themes] [widths]
+#   OXYN_PAGES="name=/path/ ..." adds any page; OXYN_COOKIES="k=v; k2=v2" sets cookies (signed-in checks).
 #   all  = every screen page plus the agent orchestrator page; full = every screen's /full/ view;
 #   landing = the landing page: its demos plus the site chrome marked data-ovl (navbar, question pills, footer).
 #   Slugs come from OXYN_SLUGS (space separated), else from the links on the preview's /screens/ index.
@@ -33,6 +34,9 @@ if arg == 'landing':
 PAGES = {s: path(s) for s in slugs}
 if arg == 'landing':
     PAGES['landing'] = '/'
+# Any other pages: OXYN_PAGES="login=/login/ account=/account/" (checked as well as the above).
+for kv in os.environ.get('OXYN_PAGES', '').split():
+    k, _, u = kv.partition('='); PAGES[k] = u
 if arg == 'all':
     PAGES['orchestrator'] = '/components/tools/agent-orchestrator/'
 THEMES = sys.argv[2].split(',') if len(sys.argv) > 2 else ['light', 'dark']
@@ -77,7 +81,11 @@ async def main():
         b = await p.chromium.launch(**({'executable_path': exe} if exe else {}), args=['--no-sandbox'])
         for th in THEMES:
             for w in WIDTHS:
-                ctx = await b.new_context(viewport={'width': w, 'height': 900}, color_scheme=th); pg = await ctx.new_page()
+                ctx = await b.new_context(viewport={'width': w, 'height': 900}, color_scheme=th)
+                # OXYN_COOKIES="name=value; name2=value2": e.g. a session cookie to check signed-in pages.
+                ck = [c.split('=', 1) for c in os.environ.get('OXYN_COOKIES', '').split(';') if '=' in c]
+                if ck: await ctx.add_cookies([{'name': k.strip(), 'value': v.strip(), 'url': BASE} for k, v in ck])
+                pg = await ctx.new_page()
                 for k, u in PAGES.items():
                     await pg.goto(BASE + u); await pg.wait_for_timeout(1000)
                     await pg.evaluate(TH, th)
