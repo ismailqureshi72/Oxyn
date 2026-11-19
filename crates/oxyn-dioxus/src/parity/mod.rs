@@ -5,6 +5,7 @@ mod agentscr;
 mod agentsfid;
 mod answers;
 mod approvals;
+mod arcscr;
 mod attachfid;
 mod autonomyfid;
 mod awayfid;
@@ -87,6 +88,10 @@ pub use answers::{
 pub use approvals::{
     AgentApprovals, ApprovalGates, ConfirmMorph, ConfirmPopover, HoldToConfirm, PermissionRequest,
     gate_dot,
+};
+pub use arcscr::{
+    GanttTimelineScreen, KanbanBoardScreen, MetricsDashboardScreen, ProjectBoardScreen,
+    TeamDirectoryScreen, s12_states,
 };
 pub use attachfid::{AttachmentChips, DropLanes, FileIcon, PolaroidStack, UploadDropzone};
 pub use autonomyfid::AutonomyDial;
