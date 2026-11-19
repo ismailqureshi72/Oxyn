@@ -1,0 +1,5 @@
+---
+// The Feedback button in the site bars (top bar, library bar). Opens the panel in Feedback.astro.
+import { icon } from './v2/icons';
+---
+<button type="button" class="fb-btn" data-open-feedback aria-haspopup="dialog" aria-controls="feedback" aria-expanded="false" aria-label="Send feedback" title="Send feedback"><Fragment set:html={icon.chat} /><span>Feedback</span></button>

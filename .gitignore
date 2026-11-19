@@ -13,6 +13,7 @@ node_modules/
 .astro/
 .vercel/
 .wrangler/
+.dev.vars
 
 # Editors / OS
 .idea/

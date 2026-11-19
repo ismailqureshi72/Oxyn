@@ -1,0 +1,52 @@
+---
+// The Feedback panel: Bug / Idea / Question to POST /api/feedback (site/worker/index.ts), with an
+// optional email and screenshot. One per page, next to the search dialog; behaviour in /feedback.js.
+import { icon } from './v2/icons';
+---
+<div class="fb-dlg" id="feedback" role="dialog" aria-modal="true" aria-labelledby="fb-title" data-pagefind-ignore hidden>
+  <form class="fb-box" novalidate data-state="form">
+    <div class="fb-head">
+      <h2 id="fb-title">Send feedback</h2>
+      <button type="button" class="iconbtn fb-x" data-close-feedback aria-label="Close"><Fragment set:html={icon.close} /></button>
+    </div>
+    <div class="fb-body" data-fb-form>
+      <div class="fb-kinds" role="radiogroup" aria-label="Kind of feedback">
+        <button type="button" role="radio" aria-checked="true" data-kind="Bug" tabindex="0">Bug</button>
+        <button type="button" role="radio" aria-checked="false" data-kind="Idea" tabindex="-1">Idea</button>
+        <button type="button" role="radio" aria-checked="false" data-kind="Question" tabindex="-1">Question</button>
+      </div>
+      <label class="fb-field">
+        <span class="fb-lbl">Message</span>
+        <textarea name="message" rows="5" maxlength="4000" required placeholder="What went wrong? Steps help." aria-describedby="fb-count"></textarea>
+        <span class="fb-count" id="fb-count" aria-live="off">0 / 4000</span>
+      </label>
+      <label class="fb-field">
+        <span class="fb-lbl">Email <i>optional, only for a reply</i></span>
+        <input type="email" name="email" maxlength="254" autocomplete="email" placeholder="you@example.com" />
+      </label>
+      <div class="fb-shot">
+        <input type="file" id="fb-file" name="screenshot" accept="image/png,image/jpeg,image/webp,image/gif" class="fb-file" tabindex="-1" />
+        <label for="fb-file" class="fb-attach"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="m20.5 16-5-5-8 8"/></svg><span>Add screenshot</span></label>
+        <span class="fb-fname" data-fb-fname hidden></span>
+        <button type="button" class="fb-rm" data-fb-rm hidden aria-label="Remove screenshot"><Fragment set:html={icon.close} /></button>
+        <span class="fb-hint">PNG, JPEG, WebP or GIF, up to 2 MB</span>
+      </div>
+      <div class="fb-hp" aria-hidden="true"><label>Website <input type="text" name="website" tabindex="-1" autocomplete="off" /></label></div>
+      <p class="fb-err" role="alert" data-fb-err hidden></p>
+      <div class="fb-foot">
+        <span class="fb-note">Sends this page's address. Bugs and ideas may become public GitHub issues; your email stays private.</span>
+        <button type="submit" class="x-pill pill-black fb-send" data-fb-send>Send</button>
+      </div>
+    </div>
+    <div class="fb-done" data-fb-done hidden tabindex="-1" role="status">
+      <span class="fb-tick" aria-hidden="true"><Fragment set:html={icon.check} /></span>
+      <p class="fb-done-h">Thanks, it's in.</p>
+      <p class="fb-done-p">We read every message. If you left an email, we may write back.</p>
+      <div class="fb-done-act">
+        <button type="button" class="x-pill pill-grey" data-fb-again>Send another</button>
+        <button type="button" class="x-pill pill-black" data-close-feedback>Close</button>
+      </div>
+    </div>
+  </form>
+</div>
+<script is:inline src="/feedback.js" defer></script>
