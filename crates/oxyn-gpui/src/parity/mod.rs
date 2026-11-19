@@ -72,6 +72,7 @@ mod runningfid;
 mod schedfid;
 mod screens2fid;
 mod screensfid;
+mod screenview;
 mod seqfid;
 mod setscr;
 mod setscr2;
@@ -172,6 +173,7 @@ pub use screens2fid::OrchestrationEl;
 pub use screensfid::{
     AccountMenuEl, ScreenRailEl, ScreenShellEl, ScreenStageEl, SettingsEl, WorkflowEl,
 };
+pub use screenview::{ScreenView, screen_element};
 pub use seqfid::AgentSequenceEl;
 pub use setscr::{
     BillingSettingsEl, GeneralSettingsEl, MembersSettingsEl, ModelsSettingsEl,
