@@ -219,6 +219,7 @@ pub fn arc4_element(
         "members-roles" => el!(MembersRolesEl),
         "billing-usage" => el!(BillingUsageEl),
         "agent-tool-calls" => el!(AgentToolCallsEl),
+        "admin-overview" => el!(AdminOverviewEl),
         // Not an S15 slug: the first S15 screen.
         _ => el!(AdminOverviewEl),
     }
