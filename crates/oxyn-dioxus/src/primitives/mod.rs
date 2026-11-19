@@ -98,6 +98,7 @@ pub const PRIMITIVES_CSS: &str = concat!(
     include_str!("../parity/cmdboard.css"),
     include_str!("../parity/arcscr.css"),
     include_str!("../parity/arcscr2.css"),
+    include_str!("../parity/arcscr3.css"),
     include_str!("../parity/buildscr.css"),
     include_str!("../parity/themefid.css"),
     include_str!("../parity/gooeyfid.css"),

@@ -29,6 +29,10 @@ use oxyn_dioxus::{
     WeekCalendarScreen, s13_states,
 };
 use oxyn_dioxus::{
+    InvoiceStudioScreen, MarketTerminalScreen, ProductDetailScreen, ProductListScreen,
+    SignInSplitScreen, s14_states,
+};
+use oxyn_dioxus::{
     OnboardingBrandScreen, OnboardingReadyScreen, OnboardingToneScreen, OnboardingWebsiteScreen,
     s8_states,
 };
@@ -5229,6 +5233,11 @@ pub(crate) fn demos() -> Vec<Demo> {
         ib2_demo(),
         sp2_demo(),
         hc_demo(),
+        mt_demo(),
+        pl_demo(),
+        pd_demo(),
+        iv_demo(),
+        si_demo(),
     ]
 }
 
@@ -5514,6 +5523,278 @@ fn hc_demo() -> Demo {
                 "Feedback",
                 "A No vote asking what went wrong, a reason picked.",
             ),
+        ],
+    )
+}
+
+// ---------- Arc screens III: Market terminal, Products, Invoice studio, Sign-in (S14) ----------
+
+/// The state key for a Data label of an S14 screen (`Order placed` → `placed`).
+fn arc3_key(slug: &str, label: &str) -> String {
+    s14_states(slug)
+        .iter()
+        .find(|(_, l)| l.eq_ignore_ascii_case(label))
+        .map(|(k, _)| k.to_string())
+        .unwrap_or_else(|| low(label))
+}
+
+fn arc3_el(slug: &'static str, lay: String, s: String, now: ClockMs) -> Element {
+    match slug {
+        "product-list" => rsx! { ProductListScreen { layout: lay, state: s } },
+        "product-detail" => rsx! { ProductDetailScreen { layout: lay, state: s } },
+        "invoice-studio" => rsx! { InvoiceStudioScreen { layout: lay, state: s } },
+        "sign-in-split" => rsx! { SignInSplitScreen { layout: lay, state: s } },
+        _ => rsx! { MarketTerminalScreen { layout: lay, state: s, now } },
+    }
+}
+
+fn arc3_screen(slug: &'static str, v: &Vals, now: ClockMs) -> Element {
+    let (_, lay, key) = frame(v);
+    let st = arc3_key(slug, v.s("data"));
+    let key = format!("{key}-{st}");
+    rsx! {
+        div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
+            ScreenStage { state: st, states: s14_states(slug), screen: move |s: String| arc3_el(slug, lay.clone(), s, now) }
+        }
+    }
+}
+
+fn arc3_code(name: &str, slug: &str, v: &Vals) -> String {
+    Code::new(name)
+        .s("layout", &low(v.s("frame")), "inset")
+        .s("state", &arc3_key(slug, v.s("data")), "sample")
+        .done()
+}
+
+#[allow(clippy::too_many_arguments)]
+fn arc3_demo(
+    slug: &'static str,
+    name: &'static str,
+    summary: &'static str,
+    dx: &'static str,
+    gp: &'static str,
+    render: fn(&Vals, ClockMs) -> Element,
+    code: fn(&Vals) -> String,
+    keyboard: Vec<(&'static str, &'static str)>,
+    a11y: Vec<&'static str>,
+    own: &[(&'static str, &'static str, &'static str)],
+) -> Demo {
+    let mut d = arc_demo(
+        slug, name, summary, dx, gp, render, code, keyboard, a11y, own,
+    );
+    d.source = "parity/arcscr3.rs";
+    d
+}
+
+fn mt_screen(v: &Vals, now: ClockMs) -> Element {
+    arc3_screen("market-terminal", v, now)
+}
+fn mt_code(v: &Vals) -> String {
+    arc3_code("MarketTerminalScreen", "market-terminal", v)
+}
+fn pl_screen(v: &Vals, now: ClockMs) -> Element {
+    arc3_screen("product-list", v, now)
+}
+fn pl_code(v: &Vals) -> String {
+    arc3_code("ProductListScreen", "product-list", v)
+}
+fn pd_screen(v: &Vals, now: ClockMs) -> Element {
+    arc3_screen("product-detail", v, now)
+}
+fn pd_code(v: &Vals) -> String {
+    arc3_code("ProductDetailScreen", "product-detail", v)
+}
+fn iv_screen(v: &Vals, now: ClockMs) -> Element {
+    arc3_screen("invoice-studio", v, now)
+}
+fn iv_code(v: &Vals) -> String {
+    arc3_code("InvoiceStudioScreen", "invoice-studio", v)
+}
+fn si_screen(v: &Vals, now: ClockMs) -> Element {
+    arc3_screen("sign-in-split", v, now)
+}
+fn si_code(v: &Vals) -> String {
+    arc3_code("SignInSplitScreen", "sign-in-split", v)
+}
+
+fn mt_demo() -> Demo {
+    arc3_demo(
+        "market-terminal",
+        "Market terminal",
+        "Arc screens / Market terminal: a brokerage trade screen with fictional symbols. A watchlist with prices, day change and the account value; the open symbol's live price, ticking with the clock (Pause holds it), and its chart over 1D, 1W, 1M, 3M or 1Y; positions with return, open orders with Cancel and today's fills. The order ticket switches Buy / Sell and Market / Limit, steps shares and the limit price, shows the estimate and refuses an order the cash or the shares cannot cover.",
+        "MarketTerminalScreen",
+        "MarketTerminalEl",
+        mt_screen,
+        mt_code,
+        vec![
+            (
+                "Tab",
+                "Watchlist, range, positions, orders, then the ticket",
+            ),
+            ("Enter", "Place the order from the ticket"),
+        ],
+        vec![
+            "The price is a status region; gains and losses carry a sign as well as a colour.",
+            "Buy / Sell and Market / Limit are radio groups; a refusal is an alert.",
+        ],
+        &[
+            (
+                "limit",
+                "Limit order",
+                "The ticket on Limit with a price below the market.",
+            ),
+            (
+                "placed",
+                "Order placed",
+                "A market buy filled, listed under Filled today.",
+            ),
+            (
+                "closed",
+                "Market closed",
+                "The market closed: prices still, market orders queue.",
+            ),
+        ],
+    )
+}
+
+fn pl_demo() -> Demo {
+    arc3_demo(
+        "product-list",
+        "Product list",
+        "Arc screens / Product list: a shop's catalogue. Collections with counts, a search, colour swatches, an Under $150 filter, a sort (Featured, price either way, Newest) and Grid / List. Cards show the price (sale prices struck through), rating, colours and stock in words and colour; open one for its product page.",
+        "ProductListScreen",
+        "ProductListEl",
+        pl_screen,
+        pl_code,
+        vec![
+            (
+                "Tab",
+                "Collections, search, swatches, filters, then the products",
+            ),
+            ("Escape", "Clear the search"),
+        ],
+        vec![
+            "The result count is a status region; swatches are toggle buttons named with their colour.",
+            "Stock is written out (In stock, 3 left, Sold out), not only coloured.",
+        ],
+        &[
+            (
+                "filtered",
+                "Filtered",
+                "Outerwear under $200 with Clear filters.",
+            ),
+            ("listview", "List view", "The catalogue as a table."),
+            (
+                "nomatch",
+                "No matches",
+                "A search with no products and a way back.",
+            ),
+        ],
+    )
+}
+
+fn pd_demo() -> Demo {
+    arc3_demo(
+        "product-detail",
+        "Product detail",
+        "Arc screens / Product detail: a product page. A gallery that follows the colour, the price and rating, colour swatches, sizes with stock (sold-out sizes refuse and say so), a quantity stepper capped by stock, Add to cart with the line total, and the cart with its subtotal and Check out.",
+        "ProductDetailScreen",
+        "ProductDetailEl",
+        pd_screen,
+        pd_code,
+        vec![("Tab", "Back, colours, sizes, quantity, then Add to cart")],
+        vec![
+            "Colours and sizes are radio groups; sold-out sizes are aria-disabled and named sold out.",
+            "Refusals (Pick a size, sold out) are alerts tied to the size group.",
+        ],
+        &[
+            (
+                "nosize",
+                "Pick a size",
+                "Add to cart pressed before a size was picked.",
+            ),
+            (
+                "soldout",
+                "Sold out",
+                "A sold-out size pressed: it refuses and says why.",
+            ),
+            (
+                "added",
+                "Added to cart",
+                "A size and colour added; the cart shows the line.",
+            ),
+        ],
+    )
+}
+
+fn iv_demo() -> Demo {
+    arc3_demo(
+        "invoice-studio",
+        "Invoice studio",
+        "Arc screens / Invoice studio: invoices grouped Overdue, Open, Drafts and Paid, and the open invoice as paper edited in place: line items to add, describe, step and remove (with Undo), live subtotal, tax and total, the client, payment terms with an absolute due date, sales tax and reminders. Preview shows what the client sees; Send checks the email, the lines and the total first.",
+        "InvoiceStudioScreen",
+        "InvoiceStudioEl",
+        iv_screen,
+        iv_code,
+        vec![
+            (
+                "Tab",
+                "Invoices, the paper's lines, Add line, then the details",
+            ),
+            ("Enter", "Edit a line's description"),
+        ],
+        vec![
+            "Line items are a table; totals are a description list.",
+            "The send check is a status message tied to Send invoice.",
+        ],
+        &[
+            (
+                "editing",
+                "Editing",
+                "A new line being written, totals live.",
+            ),
+            ("preview", "Preview", "The invoice as the client sees it."),
+            (
+                "sent",
+                "Sent",
+                "The draft sent: Open, due date and activity.",
+            ),
+        ],
+    )
+}
+
+fn si_demo() -> Demo {
+    arc3_demo(
+        "sign-in-split",
+        "Sign-in split",
+        "Arc screens / Sign-in split: a split sign-in page. The form on the left: Continue with Google or GitHub (official marks), or email and password with checks on submit, Show password, Forgot password, a wrong-password count and a lock after three tries, and a demo account to fill in. The art panel on the right with a customer quote steps aside on narrow widths.",
+        "SignInSplitScreen",
+        "SignInSplitEl",
+        si_screen,
+        si_code,
+        vec![
+            ("Enter", "Sign in"),
+            (
+                "Tab",
+                "SSO buttons, email, Forgot password, password, Show, Sign in",
+            ),
+        ],
+        vec![
+            "Fields have labels and aria-invalid with the message tied by aria-describedby.",
+            "The wrong-password line is an alert; SSO buttons report aria-busy while signing in.",
+        ],
+        &[
+            (
+                "invalid",
+                "Invalid",
+                "Submitted with a short password and a bad email.",
+            ),
+            (
+                "wrong",
+                "Wrong password",
+                "A wrong password: two tries left.",
+            ),
+            ("signing", "Signing in", "Continuing with GitHub."),
         ],
     )
 }
