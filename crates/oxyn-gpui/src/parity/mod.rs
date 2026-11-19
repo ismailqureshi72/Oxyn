@@ -20,6 +20,7 @@ mod approvals;
 mod apps;
 mod arcscr;
 mod arcscr2;
+mod arcscr3;
 mod attachfid;
 mod autonomyfid;
 mod awayfid;
@@ -105,6 +106,9 @@ pub use arcscr::{
 };
 pub use arcscr2::{
     HelpCenterEl, InboxTriageEl, MonthCalendarEl, SupportConversationEl, WeekCalendarEl,
+};
+pub use arcscr3::{
+    InvoiceStudioEl, MarketTerminalEl, ProductDetailEl, ProductListEl, SignInSplitEl,
 };
 pub use attachfid::{AttachmentChipsEl, DropLanesEl, PolaroidStackEl, UploadDropzoneEl};
 pub use autonomyfid::AutonomyDialEl;

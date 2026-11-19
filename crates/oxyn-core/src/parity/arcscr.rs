@@ -159,6 +159,22 @@ pub fn ws(slug: &str) -> Ws {
             name: "Quillmoor Help",
             domain: "quillmoor.example",
         },
+        "market-terminal" => Ws {
+            name: "Individual",
+            domain: "tallowmere.example",
+        },
+        "product-list" | "product-detail" => Ws {
+            name: "Fellside Goods",
+            domain: "fellside.example",
+        },
+        "invoice-studio" => Ws {
+            name: "Northwyn Studio",
+            domain: "northwyn.example",
+        },
+        "sign-in-split" => Ws {
+            name: "Harrowgate",
+            domain: "harrowgate.example",
+        },
         _ => Ws {
             name: "Lumenfield",
             domain: "lumenfield.example",
@@ -203,6 +219,20 @@ pub fn acct_menu(slug: &str) -> &'static [(&'static str, &'static str, &'static 
         "inbox-triage" | "support-conversation" => &[
             ("clock", "Set yourself away", ""),
             ("kbd", "Keyboard shortcuts", "?"),
+            ("logout", "Sign out", ""),
+        ],
+        "market-terminal" => &[
+            ("file", "Statements and activity", ""),
+            ("logout", "Sign out", ""),
+        ],
+        "product-list" | "product-detail" => &[
+            ("eye", "Show cost and margin", ""),
+            ("undo", "Reset demo data", ""),
+            ("logout", "Sign out", ""),
+        ],
+        "invoice-studio" => &[
+            ("download", "Export invoices", ""),
+            ("gear", "Business details", ""),
             ("logout", "Sign out", ""),
         ],
         "help-center" => &[
