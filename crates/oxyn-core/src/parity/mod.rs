@@ -84,6 +84,8 @@
 //!   keys and webhooks, Members, Billing; and Agent / Tool calls
 //! - [`wscoder`]: Screens S11 (Agent apps III): Workspace Coder
 //! - [`cmdboard`]: Screens S11 (Agent apps III): Command Board
+//! - [`threadbar`], [`tabstack`], [`repodesk`], [`previewdesk`]: Screens S16 (Agent apps IV):
+//!   Threadbar, Tabstack, Repo Desk, Preview Desk
 //! - [`appui`]: interaction state shared by the six agent apps (rows, views, rail, menu, composer)
 //! - [`screenui`]: interaction state shared by the screen sets S0–S8 (set, screen, state bar,
 //!   presses, keys and the command bar)
@@ -148,10 +150,12 @@ pub mod opsscr;
 pub mod parallelfid;
 pub mod plan;
 pub mod planfid;
+pub mod previewdesk;
 pub mod queuefid;
 pub mod ratefid;
 pub mod reasonfid;
 pub mod recapfid;
+pub mod repodesk;
 pub mod rootfid;
 pub mod runningfid;
 pub mod schedfid;
@@ -163,10 +167,12 @@ pub mod setscr;
 pub mod setscr2;
 pub mod stairsfid;
 pub mod storagefid;
+pub mod tabstack;
 pub mod taskdeck;
 pub mod text;
 pub mod themefid;
 pub mod thinkfid;
+pub mod threadbar;
 pub mod toolmapfid;
 pub mod tools;
 pub mod tracefid;
