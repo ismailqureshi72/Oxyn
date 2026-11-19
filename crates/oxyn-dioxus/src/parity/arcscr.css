@@ -311,6 +311,9 @@
 .oxs12-gb[data-late="true"]{border-color:var(--h-rose)}
 .oxs12-gb[data-focus="true"],.oxs12-gms[data-focus="true"]{outline:2px solid var(--hue);outline-offset:1px}
 .oxs12-gtip{position:absolute;bottom:calc(100% + 6px);left:0;z-index:8;padding:4px 8px;border-radius:6px;background:var(--oxth-fg);color:var(--oxth-card);font-size:11.5px;white-space:nowrap;pointer-events:none}
+.oxs12-gtip[data-at="below"]{top:calc(100% + 6px);bottom:auto}
+.oxs12-gtip[data-at="right"]{top:50%;bottom:auto;left:var(--tl,16px);transform:translateY(-50%)}
+.oxs12-gtip[data-at="left"]{top:50%;bottom:auto;left:auto;right:calc(100% + 12px);transform:translateY(-50%)}
 .oxs12-gms{position:absolute;z-index:2;display:flex;align-items:center;gap:6px;height:36px;padding:0;border:0;border-radius:4px;background:transparent;font-size:12px;white-space:nowrap;cursor:grab;touch-action:none}
 .oxs12-gms .oxs12-dia{width:11px;height:11px;margin:0 2px}
 .oxs12-gml{font-weight:500}
@@ -356,7 +359,9 @@
   .oxs12-bar{padding-left:12px;flex-wrap:wrap}
   .oxs12-tbls{grid-template-columns:minmax(0,1fr)}
   .oxs12-pgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .oxs12-kpis{grid-template-columns:repeat(5,minmax(150px,1fr));overflow-x:auto}
+  .oxs12-kpis{grid-template-columns:repeat(5,minmax(0,1fr))}
+  .oxs12-kpi{padding:12px}
+  .oxs12-kv{font-size:21px}
   .oxs12-mst{grid-template-columns:repeat(5,minmax(150px,1fr));overflow-x:auto}
   .oxs12-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
   .oxs12-stat:nth-child(2){border-right:0}
@@ -370,6 +375,10 @@
   .oxs12-hint{display:none}
   .oxs12-mx,.oxs12-pb,.oxs12-td{padding:14px}
   .oxs12-pgrid{grid-template-columns:minmax(0,1fr)}
+  .oxs12-kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--oxth-line)}
+  .oxs12-kpi{border-right:0;background:var(--oxth-card)}
+  .oxs12-kpi[aria-selected="true"]{background:var(--oxth-sel)}
+  .oxs12-kpi:last-child{grid-column:1/-1}
   .oxs12-pr2{grid-template-columns:minmax(0,1fr) auto}
   .oxs12-rt{display:none}
   .oxs12-glst{width:150px}
