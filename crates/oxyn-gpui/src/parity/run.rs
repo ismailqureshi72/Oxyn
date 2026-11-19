@@ -343,37 +343,56 @@ impl RenderOnce for AgentTrailEl {
                 });
             list = list.child(row);
             if s.state == StepState::Waiting && answer {
-                list = list.child(
-                    div()
-                        .ml(px(24.))
-                        .mb(px(6.))
-                        .p(px(10.))
-                        .rounded(px(10.))
-                        .border_1()
-                        .border_color(warn)
-                        .flex()
-                        .flex_col()
-                        .gap(px(8.))
-                        .child(
-                            s.ask
-                                .clone()
-                                .unwrap_or_else(|| format!("Let the agent {}", title.to_lowercase())),
-                        )
-                        .child(
-                            div()
-                                .flex()
-                                .gap(px(6.))
-                                .child(button(t, "trail-approve", "Approve", Weight::Primary, "trail-approve", self.act.clone()))
-                                .child(button(t, "trail-decline", "Decline", Weight::Plain, "trail-decline", self.act.clone())),
-                        ),
-                );
+                list =
+                    list.child(
+                        div()
+                            .ml(px(24.))
+                            .mb(px(6.))
+                            .p(px(10.))
+                            .rounded(px(10.))
+                            .border_1()
+                            .border_color(warn)
+                            .flex()
+                            .flex_col()
+                            .gap(px(8.))
+                            .child(s.ask.clone().unwrap_or_else(|| {
+                                format!("Let the agent {}", title.to_lowercase())
+                            }))
+                            .child(
+                                div()
+                                    .flex()
+                                    .gap(px(6.))
+                                    .child(button(
+                                        t,
+                                        "trail-approve",
+                                        "Approve",
+                                        Weight::Primary,
+                                        "trail-approve",
+                                        self.act.clone(),
+                                    ))
+                                    .child(button(
+                                        t,
+                                        "trail-decline",
+                                        "Decline",
+                                        Weight::Plain,
+                                        "trail-decline",
+                                        self.act.clone(),
+                                    )),
+                            ),
+                    );
             }
             if Some(i) == cur && s.state == StepState::Running && !s.sub.is_empty() {
                 let f = oxyn_core::parity::plan::fold(s.sub.len(), s.current_sub(), false);
                 let k = s.current_sub();
                 let mut subs = div().ml(px(24.)).flex().flex_col();
                 if f.earlier > 0 {
-                    subs = subs.child(div().h(px(24.)).flex().items_center().child(muted(t, format!("+{} earlier", f.earlier))));
+                    subs = subs.child(
+                        div()
+                            .h(px(24.))
+                            .flex()
+                            .items_center()
+                            .child(muted(t, format!("+{} earlier", f.earlier))),
+                    );
                 }
                 for j in f.start..f.end {
                     let (x, st) = &s.sub[j];
@@ -398,12 +417,24 @@ impl RenderOnce for AgentTrailEl {
                             )
                             .when_some(s.detail(j, 24), |d, x| d.child(muted(t, x)))
                             .when(on, |d| {
-                                d.child(div().w(px(18.)).h(px(2.)).rounded(px(1.)).bg(alpha(fg, 0.6)))
+                                d.child(
+                                    div()
+                                        .w(px(18.))
+                                        .h(px(2.))
+                                        .rounded(px(1.))
+                                        .bg(alpha(fg, 0.6)),
+                                )
                             }),
                     );
                 }
                 if f.more > 0 {
-                    subs = subs.child(div().h(px(24.)).flex().items_center().child(muted(t, format!("+{} more", f.more))));
+                    subs = subs.child(
+                        div()
+                            .h(px(24.))
+                            .flex()
+                            .items_center()
+                            .child(muted(t, format!("+{} more", f.more))),
+                    );
                 }
                 list = list.child(subs);
             }
@@ -424,7 +455,11 @@ impl RenderOnce for AgentTrailEl {
                             d.children(crate::brand::brand_mark(&a, 14., fg))
                                 .child(muted(t, a))
                         })
-                        .child(div().flex_1().child(header(t, tr.title.clone(), tr.count()))),
+                        .child(
+                            div()
+                                .flex_1()
+                                .child(header(t, tr.title.clone(), tr.count())),
+                        ),
                 )
             })
             .child(list)

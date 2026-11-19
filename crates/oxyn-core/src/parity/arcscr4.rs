@@ -196,7 +196,7 @@ pub fn ov_series(k: usize, r: usize) -> Vec<i64> {
     };
     (0..n)
         .map(|i| {
-            let wave = ((i as f64 / n as f64) * 6.28).sin();
+            let wave = ((i as f64 / n as f64) * std::f64::consts::TAU).sin();
             let noise = (lcg(&mut seed) % 1000) as f64 / 1000.0 - 0.5;
             let f = 1.0 + 0.12 * wave + 0.18 * noise + i as f64 / n as f64 * 0.08;
             ((base as f64) * f).round().max(1.0) as i64
@@ -2353,7 +2353,7 @@ impl ToolCalls {
             }
             return said;
         }
-        if self.paused || self.tick % 3 != 0 {
+        if self.paused || !self.tick.is_multiple_of(3) {
             return None;
         }
         let n = (self.tick / 3) as usize;
