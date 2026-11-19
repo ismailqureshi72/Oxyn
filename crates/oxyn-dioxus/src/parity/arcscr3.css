@@ -3,13 +3,14 @@
    for gains and losses, stock, statuses, collections and the official SSO marks. */
 .oxs14-num{font-variant-numeric:tabular-nums}
 .oxs14-r{text-align:right}
+.oxs14-vh{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 .oxs14-pad{padding:4px 0 10px}
 .oxs14-fine{margin:4px 0 0;font-size:11.5px;white-space:normal}
 .oxs14-lnk{flex:none;margin-left:8px;padding:0;border:0;background:transparent;color:var(--oxth-fg);font:inherit;font-weight:500;text-decoration:underline;text-underline-offset:2px;cursor:pointer}
 .oxs14-dl{flex:none;color:var(--hue);font-size:12px;font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums}
 .oxs14-tkb{display:grid;place-items:center;flex:none;width:26px;height:26px;border-radius:7px;background:color-mix(in srgb,var(--hue) 16%,var(--oxth-card));color:var(--hue);font-size:12px;font-weight:700}
 .oxs14-cav{display:grid;place-items:center;width:18px;height:18px;border-radius:50%;background:color-mix(in srgb,var(--hue) 18%,var(--oxth-card));color:var(--hue);font-size:10px;font-weight:700}
-.oxs14-spk{flex:none;overflow:visible}
+.oxs14-spk{flex:none;width:40px;overflow:visible}
 .oxs14-spk path{fill:none;stroke:var(--hue);stroke-width:1.4;stroke-linejoin:round}
 .oxs14-acv{display:flex;flex-direction:column;gap:2px;min-width:0}
 .oxs14-acv>b{font-size:17px;font-weight:600}

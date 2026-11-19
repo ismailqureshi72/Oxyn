@@ -155,6 +155,7 @@ pub fn MarketTerminalScreen(
                         onclick: move |_| { let mut w = mk.write(); w.tick = live_tick; let r = w.open_sym(i); said.set(r); },
                         {tk_badge(i)}
                         span { class: "oxs12-an", b { "{tk}" } span { class: "oxs12-ell", "{name}" } }
+                        {spark(&series(i, 0))}
                         span { class: "oxs14-wlr", span { class: "oxs14-num", "{money(p)}" } {delta(bp)} }
                       } } }
                 }
@@ -685,7 +686,7 @@ pub fn InvoiceStudioScreen(
                                     div { span { class: "oxs12-q", "Due" } b { "{iso(i.due())}" } span { class: "oxs12-q", "{TERMS[i.terms].0}" } }
                                 }
                                 table { class: "oxs14-t oxs14-li",
-                                    thead { tr { th { "Item" } th { class: "oxs14-r", "Qty" } th { class: "oxs14-r oxs14-hide", "Rate" } th { class: "oxs14-r", "Amount" } if edit { th { span { class: "oxs12-live", "Actions" } } } } }
+                                    thead { tr { th { "Item" } th { class: "oxs14-r", "Qty" } th { class: "oxs14-r oxs14-hide", "Rate" } th { class: "oxs14-r", "Amount" } if edit { th { span { class: "oxs14-vh", "Actions" } } } } }
                                     tbody {
                                         for l in i.lines.iter().cloned() {
                                             { let lid = l.id; let on = edit && v.edit == Some(lid);

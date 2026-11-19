@@ -5583,6 +5583,8 @@ fn arc3_demo(
         slug, name, summary, dx, gp, render, code, keyboard, a11y, own,
     );
     d.source = "parity/arcscr3.rs";
+    // The market's price ticks with the clock.
+    d.live = slug == "market-terminal";
     d
 }
 
