@@ -1,8 +1,12 @@
-//! Interaction state for the screen sets S0–S8 (the app shells, AI Chat, Workspace, Agent ops I
-//! and II, Orchestration / Workflow / Evals, Settings I and II, Onboarding) as one renderer-free
+//! Interaction state for the screen sets S0–S8 and S12 (the app shells, AI Chat, Workspace, Agent
+//! ops I and II, Orchestration / Workflow / Evals, Settings I and II, Onboarding, Arc screens I)
+//! as one renderer-free
 //! model, so a GPUI view and any other host drive every screen with the same rules: which set and
 //! screen are open, the screen's state (its state bar: Data, Loading, Empty and its own states),
 //! the account menu, the command bar and the last thing said.
+//!
+//! The Arc screens' own presses (`mx-*`, `kb-*`, `pb-*`, `gt-*`, `td-*`) go first to the live
+//! [`ArcUi`]: range, board moves, tasks, bars and filters.
 //!
 //! Presses arrive as the screens' own ids (`nav-<key>`, `set-<page>`, `open-<page>`,
 //! `state-<key>`, `continue`, `export`…). [`ScreenUi::press`] routes them in this order: the
@@ -15,6 +19,7 @@
 //! the first state, Enter runs the command bar.
 
 use super::appui::AppKey;
+use super::arcscr::{self as a12, ArcUi};
 use super::screensfid::ScreenState;
 
 /// A state bar: (key, label).
@@ -70,7 +75,7 @@ const fn sc(
 use super::{agentscr as a3, buildscr as b5, opsscr as o4, screensfid as s1, setscr as s6};
 use super::{setscr2 as s7, workscr as w2};
 
-/// Every screen set, S0 to S8.
+/// Every screen set, S0 to S8, then S12.
 pub const SETS: &[SetDef] = &[
     SetDef {
         id: "s0",
@@ -410,6 +415,48 @@ pub const SETS: &[SetDef] = &[
             ),
         ],
     },
+    SetDef {
+        id: "s12",
+        name: "Arc screens I",
+        wizard: false,
+        screens: &[
+            sc(
+                "metrics-dashboard",
+                "Metrics",
+                a12::METRICS_STATES,
+                &["overview", "metrics"],
+                &[("export", "exported")],
+            ),
+            sc(
+                "kanban-board",
+                "Kanban board",
+                a12::KANBAN_STATES,
+                &["cycle", "issues"],
+                &[],
+            ),
+            sc(
+                "project-board",
+                "Project board",
+                a12::PROJECT_STATES,
+                &["project", "mytasks"],
+                &[],
+            ),
+            sc(
+                "gantt-timeline",
+                "Gantt",
+                a12::GANTT_STATES,
+                &["timeline", "gantt"],
+                &[],
+            ),
+            sc(
+                "team-directory",
+                "Team directory",
+                a12::TEAM_STATES,
+                &["people", "directory"],
+                &[("invite", "inviting")],
+            ),
+        ],
+    },
 ];
 
 const ONB_WEBSITE: StateList = &[
@@ -506,6 +553,8 @@ pub struct ScreenUi {
     pub said: Option<String>,
     /// Screens opened before, newest last (Back walks them).
     pub trail: Vec<(usize, usize)>,
+    /// The Arc screens' live state (S12).
+    pub arc: ArcUi,
 }
 
 impl Default for ScreenUi {
@@ -526,6 +575,7 @@ impl ScreenUi {
             last: None,
             said: None,
             trail: Vec::new(),
+            arc: ArcUi::default(),
         }
     }
 
@@ -600,6 +650,11 @@ impl ScreenUi {
 
     /// Routes a press (see the module docs).
     pub fn press(&mut self, id: &'static str) -> Moved {
+        if self.arc.press(id) {
+            self.said = self.arc.said.take();
+            self.menu = false;
+            return Moved::State;
+        }
         let sd = self.screen_def();
         if let Some(&(_, k)) = sd.acts.iter().find(|(a, _)| *a == id) {
             self.said = Some(words(id));
@@ -769,7 +824,7 @@ mod tests {
 
     #[test]
     fn every_set_has_screens_with_a_data_state() {
-        assert_eq!(SETS.len(), 9);
+        assert_eq!(SETS.len(), 10);
         for s in SETS {
             assert!(!s.screens.is_empty(), "{}", s.id);
             for x in s.screens {
@@ -831,6 +886,24 @@ mod tests {
         u.press("acct");
         assert_eq!(u.key(AppKey::Escape), Moved::Chrome);
         assert!(!u.menu);
+    }
+
+    #[test]
+    fn arc_screens_press_live_state() {
+        let mut u = ScreenUi::new(9);
+        assert_eq!(u.set_def().id, "s12");
+        assert_eq!(u.press("mx-range-7d"), Moved::State);
+        assert_eq!(u.arc.range, 0);
+        assert_eq!(u.press("export"), Moved::State);
+        assert_eq!(u.state_key(), "exported");
+        assert_eq!(u.press("nav-timeline"), Moved::Screen);
+        assert_eq!(u.screen_def().slug, "gantt-timeline");
+        assert_eq!(u.press("gt-pick-5"), Moved::State);
+        assert_eq!(u.press("gt-longer"), Moved::State);
+        assert!(u.said.as_deref().unwrap_or("").contains("16 days"));
+        assert_eq!(u.press("nav-people"), Moved::Screen);
+        assert_eq!(u.press("invite"), Moved::State);
+        assert_eq!(u.state_key(), "inviting");
     }
 
     #[test]

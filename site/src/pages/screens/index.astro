@@ -2,7 +2,7 @@
 import Library from '../../layouts/Library.astro';
 import LibTabs from '../../components/v2/LibTabs.astro';
 import CompCard from '../../components/v2/CompCard.astro';
-import { screens, appScreens, agentApps, composedScreens } from '../../lib/data';
+import { screens, appScreens, agentApps, arcScreens, composedScreens } from '../../lib/data';
 ---
 <Library title="Screens" description={`${screens.length} whole app frames for agent products, built from the components.`} type="Category">
   <div class="lidx">
@@ -17,6 +17,10 @@ import { screens, appScreens, agentApps, composedScreens } from '../../lib/data'
     <h2 class="x-sec-h" id="agent-apps">Agent apps – whole desktop agent apps, in the patterns those apps share.</h2>
     <div class="cgrid">
       {agentApps.map((d) => <CompCard demo={d} />)}
+    </div>
+    <h2 class="x-sec-h" id="arc-screens">Arc screens – work-app screens: metrics, boards, timelines and people.</h2>
+    <div class="cgrid">
+      {arcScreens.map((d) => <CompCard demo={d} />)}
     </div>
   </div>
 </Library>

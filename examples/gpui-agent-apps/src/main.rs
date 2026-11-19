@@ -1,6 +1,6 @@
 //! Every Oxyn screen set as interactive GPUI views in one native window. The strip at the top
-//! picks a screen set (S0 app shells … S8 onboarding) or one of the six agent apps (Taskdeck,
-//! Command Center, Session Studio, Fleet Window, Workspace Coder, Command Board).
+//! picks a screen set (S0 app shells … S8 onboarding, S12 Arc screens I) or one of the six agent
+//! apps (Taskdeck, Command Center, Session Studio, Fleet Window, Workspace Coder, Command Board).
 //!
 //! Screen sets: press the sidebar, buttons and the account row as in any app; the bar above the
 //! screen has the set's screens, the state bar and a command bar (type a screen or a state, then
@@ -12,7 +12,11 @@
 //! closes the menu, then the rail.
 //!
 //! Run from the repo root: `cargo run --manifest-path examples/gpui-agent-apps/Cargo.toml`.
-//! `OXYN_OPEN=<n>` opens strip item `n` first (0 is S0).
+//! `OXYN_OPEN=<n>` opens strip item `n` first (0 is S0, 9 is S12 Arc screens I).
+//!
+//! Arc screens I: press a board card, then a column (or drag the card there), Alt + arrows move
+//! the picked card; press a timeline bar, then Earlier / Later (Alt + ← / →) or drag it onto a
+//! day; type in the directory's search; switch the metrics range, KPI and Compare.
 
 use gpui::{
     App, Bounds, Context, Entity, Focusable, Render, Window, WindowBounds, WindowOptions, div,
@@ -22,7 +26,7 @@ use gpui_platform::application;
 use oxyn_gpui::{AgentApp, AgentAppView, ScreenView, bind_ime_keys};
 
 /// Strip labels for the screen sets, in `oxyn_core::parity::screenui::SETS` order.
-const SETS: [&str; 9] = [
+const SETS: [&str; 10] = [
     "S0 Shells",
     "S1 Chat",
     "S2 Workspace",
@@ -32,6 +36,7 @@ const SETS: [&str; 9] = [
     "S6 Settings I",
     "S7 Settings II",
     "S8 Onboarding",
+    "S12 Arc I",
 ];
 
 struct Gallery {
@@ -39,6 +44,9 @@ struct Gallery {
     apps: Vec<Entity<AgentAppView>>,
     /// The open strip item: a set below `SETS.len()`, then the apps.
     open: usize,
+    /// Redraws the strip when the screen view moves to another set (a sidebar press or the
+    /// command bar can open a screen of another set).
+    _watch: gpui::Subscription,
 }
 
 impl Gallery {
@@ -57,6 +65,12 @@ impl Gallery {
 
 impl Render for Gallery {
     fn render(&mut self, _: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        // The highlighted item follows the set the screen view shows, not only the last press.
+        let cur = if self.open < SETS.len() {
+            self.screens.read(cx).ui().set.min(SETS.len() - 1)
+        } else {
+            self.open
+        };
         let mut bar = div()
             .flex()
             .flex_wrap()
@@ -78,7 +92,7 @@ impl Render for Gallery {
                     .rounded(px(7.))
                     .cursor_pointer()
                     .when(i == SETS.len(), |d| d.ml(px(10.)))
-                    .when(i == self.open, |d| d.bg(rgb(0x2A2A2E)))
+                    .when(i == cur, |d| d.bg(rgb(0x2A2A2E)))
                     .child(name)
                     .on_click(cx.listener(move |this, _, w, cx| this.show(i, w, cx))),
             );
@@ -123,10 +137,14 @@ fn main() {
                     apps[first - SETS.len()].read(cx).focus_handle(cx)
                 };
                 window.focus(&f, cx);
-                cx.new(|_| Gallery {
-                    screens,
-                    apps,
-                    open: first,
+                cx.new(|cx| {
+                    let _watch = cx.observe(&screens, |_, _, cx| cx.notify());
+                    Gallery {
+                        screens,
+                        apps,
+                        open: first,
+                        _watch,
+                    }
                 })
             },
         )
