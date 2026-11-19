@@ -8,7 +8,7 @@ Usage: python3 scripts/warm_darks.py [--all]   (--all also prints the light warm
 """
 import colorsys, os, re, sys
 
-ROOTS = ['crates', 'apps', 'site/src', 'site/public', 'site/astro.config.mjs', 'tokens', 'tools', 'docs/site']
+ROOTS = ['crates', 'apps', 'site/src', 'site/public', 'site/worker', 'site/astro.config.mjs', 'tokens', 'tools', 'docs/site']
 EXT = ('.css', '.rs', '.json', '.ts', '.astro', '.mjs', '.js', '.html', '.svg')
 SKIP = ('site/src/generated', 'site/public/wasm', 'node_modules', '/target', 'tokens/presets')
 HEX = re.compile(r'#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})\b')

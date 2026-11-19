@@ -1,21 +1,24 @@
 # Backend
 
 The Oxyn site runs as one Cloudflare Worker, `ui` (https://ui.oxyn.workers.dev). It serves the
-static site from `site/dist` and a small API under `/api/*`. Everything stays on Cloudflare:
+static site from `site/dist`, a small API under `/api/*` and the maintainers' admin panel under
+`/admin` ([admin.md](admin.md)). Everything stays on Cloudflare:
 Workers, D1 (SQLite) and R2 (object storage). No other services.
 
 ## Architecture
 
 ```
-browser ──► Cloudflare edge ──► static assets (site/dist)        every path except /api/*
-                           └──► Worker  site/worker/index.ts      /api/* only
+browser ──► Cloudflare edge ──► static assets (site/dist)        every path except /api/* and /admin*
+                           ├──► Cloudflare Access (admins only)   /admin*, /api/admin/*  → Worker
+                           └──► Worker  site/worker/index.ts      /api/*, /admin*
                                   ├─ D1  "oxyn"          (binding DB)       feedback, rate limits, admins, settings
                                   ├─ R2  "oxyn-uploads"  (binding UPLOADS)  feedback screenshots
                                   └─ GitHub REST API     (secret GITHUB_TOKEN, optional)
 ```
 
-- Config: `site/wrangler.jsonc`. `assets.run_worker_first: ["/api/*"]` makes assets answer first,
-  so the site never runs Worker code and a Worker bug cannot take pages down.
+- Config: `site/wrangler.jsonc`. `assets.run_worker_first: ["/api/*", "/admin", "/admin/*"]` makes
+  assets answer first for everything else, so the site never runs Worker code and a Worker bug
+  cannot take pages down.
 - The Worker is plain TypeScript with no dependencies. `wrangler` bundles it with esbuild at deploy
   time, so CI needs nothing beyond the existing Node step. Rust (workers-rs) was not used: it would
   add a second wasm build and toolchain to the site job for two small endpoints.
@@ -34,6 +37,16 @@ Unknown `/api/*` routes return 404 `not_found`; wrong methods 405 `method_not_al
 
 `200 {"ok": true, "service": "oxyn-site", "db": "ok", "time": "<ISO>"}`; `503` with `"db": "error"`
 when D1 does not answer.
+
+### `GET /api/flags`
+
+`200 {"ok": true, "flags": {"<name>": "<value>"}}`: the content flags that are switched on in the admin
+panel (Settings), `cache-control: public, max-age=60`.
+
+### `/api/admin/*`
+
+The admin panel's API, behind Cloudflare Access, the Worker's own JWT check and the shared password.
+See [admin.md](admin.md).
 
 ### `POST /api/feedback`
 
@@ -69,8 +82,10 @@ Migrations live in `site/migrations/` (`migrations_dir` in `wrangler.jsonc`).
 |---|---|
 | `feedback` | `id`, `kind` (Bug/Idea/Question), `message`, `page_url`, `email`, `ua`, `screenshot_key`, `created_at` (ISO, UTC), `status` (new/triaged/closed), `github_issue_url` |
 | `rate_limits` | `key` (`<scope>:<ip hash>`), `window_start`, `count` |
-| `admins` | maintainers allowed into `/admin` (B2) |
-| `settings` | key/value settings (B2: shared admin password hash, flags) |
+| `admins` | maintainers allowed into `/admin`; `access_synced`, `removed_at` track the Access group sync (0002) |
+| `settings` | key/value: `admin_password` (PBKDF2 record), `admin_session_key`, `flag:<name>`, `access_sync_error` |
+| `admin_sessions` | admin sessions: id, email, password version, expiry (0002) |
+| `audit_log` | admin actions: time, actor, action, target, detail (0002) |
 
 Apply new migrations from `site/` (CI does not apply them):
 
@@ -87,6 +102,8 @@ Add a migration with `npx wrangler d1 migrations create oxyn <name>`; never edit
 |---|---|---|
 | `GITHUB_TOKEN` | Worker secret, optional | Opening feedback issues. A fine-grained token limited to `ismailqureshi72/Oxyn` with **Issues: Read and write** only. Set with `npx wrangler secret put GITHUB_TOKEN` from `site/`. |
 | `RATE_SALT` | Worker secret, optional | Salt for IP hashes (a fixed default is used when unset). |
+| `CF_ADMIN_TOKEN`, `ADMIN_SESSION_KEY` | Worker secrets, optional | Admin panel: Access group sync, session HMAC key ([admin.md](admin.md)). |
+| `ACCESS_TEAM_DOMAIN`, `ACCESS_AUD`, `ACCESS_GROUP_ID`, `CF_ACCOUNT_ID` | vars in `wrangler.jsonc` | Admin panel: Access JWT check and group sync. |
 | `GITHUB_REPO` | var in `wrangler.jsonc` | Repository for feedback issues. |
 | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` | GitHub Actions secrets | The deploy step on `main`. The token needs Workers Scripts Edit; D1 and R2 Edit are needed for the bindings and for applying migrations from a machine. |
 

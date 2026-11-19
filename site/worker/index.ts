@@ -1,35 +1,20 @@
 // The Oxyn site Worker. Static assets (dist/) are served by Cloudflare before this code runs;
-// wrangler.jsonc routes only /api/* here (assets.run_worker_first), so the site itself never
+// wrangler.jsonc routes only /api/* and /admin* here (assets.run_worker_first), so the site never
 // touches the Worker. Plain TypeScript with no dependencies: wrangler bundles it with esbuild,
 // so CI needs no extra toolchain next to the Rust + Astro build.
 //
 //   GET  /api/health    liveness + a D1 round trip
 //   POST /api/feedback  multipart/form-data or JSON from the site's Feedback panel
+//   GET  /api/flags     enabled content flags (edited in the admin panel)
+//   /admin, /api/admin/* the maintainers' panel, see admin.ts and docs/admin.md
 //
 // Bindings (wrangler.jsonc): DB (D1 "oxyn"), UPLOADS (R2 "oxyn-uploads"), ASSETS.
 // Secrets (optional): GITHUB_TOKEN opens a GitHub issue per feedback; RATE_SALT salts IP hashes.
 
-interface D1Result<T = Record<string, unknown>> { results?: T[]; meta?: Record<string, unknown> }
-interface D1Stmt {
-  bind(...v: unknown[]): D1Stmt;
-  first<T = Record<string, unknown>>(): Promise<T | null>;
-  run(): Promise<D1Result>;
-  all<T = Record<string, unknown>>(): Promise<D1Result<T>>;
-}
-interface D1 { prepare(q: string): D1Stmt; batch(s: D1Stmt[]): Promise<D1Result[]> }
-interface R2 { put(key: string, value: ArrayBuffer, opts?: { httpMetadata?: { contentType?: string }; customMetadata?: Record<string, string> }): Promise<unknown> }
-interface Ctx { waitUntil(p: Promise<unknown>): void }
-export interface Env {
-  DB: D1;
-  UPLOADS: R2;
-  ASSETS: { fetch(r: Request): Promise<Response> };
-  GITHUB_TOKEN?: string;
-  GITHUB_REPO?: string;
-  RATE_SALT?: string;
-}
+import { EMAIL_RE, HttpError, KINDS, fail, json, openIssue, sha256Hex, type Ctx, type Env, type Kind } from './shared';
+import { handleAdmin, publicFlags } from './admin';
 
-const KINDS = ['Bug', 'Idea', 'Question'] as const;
-type Kind = (typeof KINDS)[number];
+export type { Env } from './shared';
 
 /** Limits, shared with docs/backend.md and the client (public/feedback.js). */
 export const LIMITS = {
@@ -45,35 +30,23 @@ export const LIMITS = {
   daily: { window: 86_400, max: 30 }, // 30 per day
 };
 const IMAGE_TYPES: Record<string, string> = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/webp': 'webp', 'image/gif': 'gif' };
-const EMAIL_RE = /^[^\s@<>"']{1,64}@[^\s@<>"']+\.[^\s@<>"']{2,}$/;
-
-class HttpError extends Error {
-  constructor(public status: number, public code: string, message: string, public field?: string) { super(message); }
-}
-
-const json = (body: unknown, status = 200, extra: Record<string, string> = {}) =>
-  new Response(JSON.stringify(body), {
-    status,
-    headers: {
-      'content-type': 'application/json; charset=utf-8',
-      'cache-control': 'no-store',
-      'x-content-type-options': 'nosniff',
-      ...extra,
-    },
-  });
-const fail = (e: HttpError) =>
-  json({ ok: false, error: { code: e.code, message: e.message, ...(e.field ? { field: e.field } : {}) } }, e.status,
-    e.status === 429 ? { 'retry-after': '600' } : {});
 
 export default {
   async fetch(req: Request, env: Env, ctx: Ctx): Promise<Response> {
     const url = new URL(req.url);
+    // /admin* and /api/admin/*: Cloudflare Access + the Worker's own JWT check + shared password.
+    if (url.pathname === '/admin' || url.pathname.startsWith('/admin/') || url.pathname === '/api/admin' || url.pathname.startsWith('/api/admin/'))
+      return handleAdmin(req, env, ctx, url);
     if (!url.pathname.startsWith('/api/')) return env.ASSETS.fetch(req);
     try {
       const route = url.pathname.replace(/\/+$/, '');
       if (route === '/api/health') {
         if (req.method !== 'GET' && req.method !== 'HEAD') throw new HttpError(405, 'method_not_allowed', 'Use GET.');
         return await health(env);
+      }
+      if (route === '/api/flags') {
+        if (req.method !== 'GET' && req.method !== 'HEAD') throw new HttpError(405, 'method_not_allowed', 'Use GET.');
+        return await publicFlags(env);
       }
       if (route === '/api/feedback') {
         if (req.method !== 'POST') throw new HttpError(405, 'method_not_allowed', 'Use POST.');
@@ -121,11 +94,6 @@ async function readInput(req: Request): Promise<Input> {
     return { kind: str(b.kind), message: str(b.message), page_url: str(b.page_url), email: str(b.email), website: str(b.website), file: null };
   }
   throw new HttpError(415, 'unsupported_media_type', 'Send multipart/form-data or application/json.');
-}
-
-async function sha256Hex(s: string) {
-  const d = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
-  return [...new Uint8Array(d)].map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 
 /** Fixed-window counters in D1, keyed by a salted hash of the client IP. Throws 429 when over. */
@@ -204,36 +172,4 @@ async function feedback(req: Request, env: Env, ctx: Ctx, url: URL): Promise<Res
 
   if (env.GITHUB_TOKEN) ctx.waitUntil(openIssue(env, { id, kind, message, page, hasShot: !!key, created }).catch((e) => console.error('github issue', e)));
   return json({ ok: true, id }, 201);
-}
-
-/** Opens a GitHub issue labelled "feedback". The reporter's email and user agent stay private in D1. */
-async function openIssue(env: Env, f: { id: string; kind: Kind; message: string; page: string; hasShot: boolean; created: string }) {
-  const repo = env.GITHUB_REPO || 'ismailqureshi72/Oxyn';
-  const first = f.message.split('\n')[0].slice(0, 72);
-  // Quote the message and break @mentions so a note cannot ping people.
-  const quoted = f.message.replace(/@(?=\w)/g, '@\u200b').split('\n').map((l) => `> ${l}`).join('\n');
-  const body = [
-    `**${f.kind}** from the site feedback button.`,
-    '',
-    quoted,
-    '',
-    `- Page: ${f.page ? `https://ui.oxyn.workers.dev${f.page}` : 'unknown'}`,
-    `- Received: ${f.created}`,
-    `- Screenshot: ${f.hasShot ? 'yes (in the admin inbox)' : 'no'}`,
-    `- Feedback id: \`${f.id}\``,
-  ].join('\n');
-  const r = await fetch(`https://api.github.com/repos/${repo}/issues`, {
-    method: 'POST',
-    headers: {
-      authorization: `Bearer ${env.GITHUB_TOKEN}`,
-      accept: 'application/vnd.github+json',
-      'x-github-api-version': '2022-11-28',
-      'user-agent': 'oxyn-site-worker',
-      'content-type': 'application/json',
-    },
-    body: JSON.stringify({ title: `[${f.kind}] ${first}`, body, labels: ['feedback'] }),
-  });
-  if (!r.ok) throw new Error(`GitHub ${r.status}: ${(await r.text()).slice(0, 200)}`);
-  const issue = (await r.json()) as { html_url?: string };
-  if (issue.html_url) await env.DB.prepare('UPDATE feedback SET github_issue_url = ?1 WHERE id = ?2').bind(issue.html_url, f.id).run();
 }
