@@ -27,7 +27,7 @@ The Arc frame (shared with the S12–S14 screens): a 248 px sidebar (Corvel Labs
 States: Data · Loading (grey cards and rows) · Empty (the agent alone, a dashed slot Connect the first tool) · **Needs approval** (a Stripe refund waiting) · **Failed call** (a Slack post with Run again) · **Agent paused**. Frame: Inset · Flat.
 
 ## 5. Keyboard and accessibility
-The chart is a labelled section of buttons that read name, source, mode and numbers; calls are buttons naming tool, time and status; the panel is a region; Approve and Reject sit in an alert; modes are a radio group. Every action says itself back in the frame's polite live region. Focus rings show for the keyboard only.
+The chart is a labelled section of buttons that read name, source, mode and numbers; calls are buttons naming tool, time and status; the panel is a region; Approve and Reject sit in an alert; modes are a radio group. Every action says itself back in the frame's polite live region. The focus outline appears only when moving by keyboard.
 
 ## 6. Responsive
 Authored on the 1440 × 900 stage and scaled to its column; `/full` renders at the real viewport. Under 960 px the sidebar is a drawer from the header's menu button and the right card hides; under 640 px header actions become icon buttons. scripts/ovl.py checks text overlap at 1440, 768 and 390 in light and dark.

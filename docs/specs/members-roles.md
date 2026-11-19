@@ -26,7 +26,7 @@ The Arc frame (shared with the S12–S14 screens): a 248 px sidebar (Corvel Labs
 States: Data · Loading · Empty (Just you so far) · **Invite open** (a half-typed email with its error) · **Seats full** (the invite refuses) · **Admins only**. Frame: Inset · Flat.
 
 ## 5. Keyboard and accessibility
-The seat bar is role meter with its value; invite errors are alerts; role buttons name the person, the role and the change. Every action says itself back in the frame's polite live region. Focus rings show for the keyboard only.
+The seat bar is role meter with its value; invite errors are alerts; role buttons name the person, the role and the change. Every action says itself back in the frame's polite live region. The focus outline appears only when moving by keyboard.
 
 ## 6. Responsive
 Authored on the 1440 × 900 stage and scaled to its column; `/full` renders at the real viewport. Under 960 px the sidebar is a drawer from the header's menu button and the right card hides; under 640 px header actions become icon buttons. scripts/ovl.py checks text overlap at 1440, 768 and 390 in light and dark.

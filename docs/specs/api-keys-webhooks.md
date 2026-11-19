@@ -26,7 +26,7 @@ The Arc frame (shared with the S12–S14 screens): a 248 px sidebar (Corvel Labs
 States: Data · Loading · Empty (No API keys) · **Key created** · **Webhooks** · **Failing endpoint**. Frame: Inset · Flat.
 
 ## 5. Keyboard and accessibility
-The secret is an alert with Copy; Revoke and Remove ask again before acting; the endpoint switch is role switch; codes are words as well as colour. Every action says itself back in the frame's polite live region. Focus rings show for the keyboard only.
+The secret is an alert with Copy; Revoke and Remove ask again before acting; the endpoint switch is role switch; codes are words as well as colour. Every action says itself back in the frame's polite live region. The focus outline appears only when moving by keyboard.
 
 ## 6. Responsive
 Authored on the 1440 × 900 stage and scaled to its column; `/full` renders at the real viewport. Under 960 px the sidebar is a drawer from the header's menu button and the right card hides; under 640 px header actions become icon buttons. scripts/ovl.py checks text overlap at 1440, 768 and 390 in light and dark.

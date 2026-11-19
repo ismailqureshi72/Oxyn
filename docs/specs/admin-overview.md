@@ -26,7 +26,7 @@ The Arc frame (shared with the S12–S14 screens): a 248 px sidebar (Corvel Labs
 States: Data · Loading · Empty (No traffic yet, Create an API key) · **Last 7 days** · **Incident** (banner up) · **Error rate** (the error chart over 30 days). Frame: Inset · Flat.
 
 ## 5. Keyboard and accessibility
-KPIs are tabs (aria-selected); the readout is a status region; every bar is a button named with its date and value; changes carry a sign as well as a colour. Every action says itself back in the frame's polite live region. Focus rings show for the keyboard only.
+KPIs are tabs (aria-selected); the readout is a status region; every bar is a button named with its date and value; changes carry a sign as well as a colour. Every action says itself back in the frame's polite live region. The focus outline appears only when moving by keyboard.
 
 ## 6. Responsive
 Authored on the 1440 × 900 stage and scaled to its column; `/full` renders at the real viewport. Under 960 px the sidebar is a drawer from the header's menu button and the right card hides; under 640 px header actions become icon buttons. scripts/ovl.py checks text overlap at 1440, 768 and 390 in light and dark.
