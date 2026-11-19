@@ -41,6 +41,10 @@ use oxyn_dioxus::{
     s8_states,
 };
 use oxyn_dioxus::{
+    PreviewDeskScreen, RepoDeskScreen, TabstackScreen, ThreadbarScreen, s16_previewdesk_states,
+    s16_repodesk_states, s16_tabstack_states, s16_threadbar_states,
+};
+use oxyn_dioxus::{
     TaskdeckBoardScreen, TaskdeckPluginsScreen, TaskdeckScheduledScreen, TaskdeckSitesScreen,
     TaskdeckStartScreen, TaskdeckTaskScreen, s9_states,
 };
@@ -4475,6 +4479,10 @@ fn ag_states(slug: &str) -> Vec<(&'static str, &'static str)> {
         "fleet-window" => s11_fleet_states(),
         "workspace-coder" => s11_coder_states(),
         "command-board" => s11_board_states(),
+        "threadbar" => s16_threadbar_states(),
+        "tabstack" => s16_tabstack_states(),
+        "repo-desk" => s16_repodesk_states(),
+        "preview-desk" => s16_previewdesk_states(),
         _ => s10_states(slug),
     }
 }
@@ -4500,6 +4508,18 @@ fn ag_el(slug: &'static str, lay: String, s: String, a: bool, b: bool) -> Elemen
         }
         "command-board" => {
             rsx! { CommandBoardScreen { layout: lay, state: s, rail: a, sidebar_hidden: b } }
+        }
+        "threadbar" => {
+            rsx! { ThreadbarScreen { layout: lay, state: s, rail: a, sidebar_hidden: b } }
+        }
+        "tabstack" => {
+            rsx! { TabstackScreen { layout: lay, state: s, rail: a, sidebar_hidden: b } }
+        }
+        "repo-desk" => {
+            rsx! { RepoDeskScreen { layout: lay, state: s, rail: a, sidebar_hidden: b } }
+        }
+        "preview-desk" => {
+            rsx! { PreviewDeskScreen { layout: lay, state: s, rail: a, sidebar_hidden: b } }
         }
         _ => rsx! { CommandCenterScreen { layout: lay, state: s, rail: a, sidebar_hidden: b } },
     }
@@ -4623,6 +4643,10 @@ fn ag_demo(
                 "fleet-window" => "parity/fleetwin.rs",
                 "workspace-coder" => "parity/wscoder.rs",
                 "command-board" => "parity/cmdboard.rs",
+                "threadbar" => "parity/threadbar.rs",
+                "tabstack" => "parity/tabstack.rs",
+                "repo-desk" => "parity/repodesk.rs",
+                "preview-desk" => "parity/previewdesk.rs",
                 _ => "parity/cmdstudio.rs",
             },
         )
@@ -4850,6 +4874,180 @@ fn cb_demo() -> Demo {
             "planner",
             "Planner",
             "The Workspace pane on Planner: the agent's plan with each step done, running or to do.",
+        )],
+    )
+}
+
+// ---------- Agent apps IV: Threadbar, Tabstack, Repo Desk, Preview Desk (S16) ----------
+
+fn tb_screen(v: &Vals, _now: ClockMs) -> Element {
+    ag_screen("threadbar", v)
+}
+fn tb_code(v: &Vals) -> String {
+    ag_code("ThreadbarScreen", "threadbar", v)
+}
+
+fn tb_demo() -> Demo {
+    ag_demo(
+        "threadbar",
+        "Threadbar",
+        "Agent apps / Threadbar: a code editor's agent panel as a desktop app. Threads grouped by project, agent threads and terminal threads side by side; the open thread's tool calls (searched, read, edited, ran) and the edit's diff to Keep or Reject; a composer with Profile (Write, Ask, Minimal), Agent (the built-in agent or an outside agent over the agent protocol, with its mark) and Model; a Project pane with Files (a tree with git letters) and Git (stage files, a commit message and Commit).",
+        "ThreadbarScreen",
+        "ThreadbarEl",
+        (
+            "terminal",
+            "Terminal thread",
+            "A terminal thread open: the test run's output and a command line that runs what you type.",
+        ),
+        tb_screen,
+        tb_code,
+        vec![
+            (
+                "Enter",
+                "Send, or run the command (Shift + Enter for a new line)",
+            ),
+            ("← →", "Move between the Files and Git tabs"),
+            ("Escape", "Close the profile, agent, model or account menu"),
+        ],
+        vec![
+            "The sidebar is a nav landmark; threads sit under their project; the open one carries aria-current=page.",
+            "The edit is a labelled group with Keep and Reject; the diff marks added and removed lines with + and −, not colour alone.",
+            "Files and Git are a tablist (roving tabindex, arrow keys); each changed file is a labelled checkbox.",
+            "Profile, Agent and Model are menus of menuitemradio; every action reports in a polite live region.",
+        ],
+        &[(
+            "git",
+            "Git",
+            "The Project pane on Git: staged files with their line counts, the suggested message and Commit.",
+        )],
+    )
+}
+
+fn ts_screen(v: &Vals, _now: ClockMs) -> Element {
+    ag_screen("tabstack", v)
+}
+fn ts_code(v: &Vals) -> String {
+    ag_code("TabstackScreen", "tabstack", v)
+}
+
+fn ts_demo() -> Demo {
+    ag_demo(
+        "tabstack",
+        "Tabstack",
+        "Agent apps / Tabstack: an agent-first terminal. Vertical tabs, one per shell or agent session, each with the agent's mark, branch and pull request; a terminal of blocks (the command, its output, exit status and time) with the agent's turns between them and Ask agent on a failed block; the command the agent wants to run waits on Run, Edit or Deny; an input that switches between Terminal and Agent with Profile (Default, Auto, Prod) and Model; a pane with Agents (local and cloud runs) and Review.",
+        "TabstackScreen",
+        "TabstackEl",
+        (
+            "approval",
+            "Needs approval",
+            "The agent asks to run a command: the command in full with Run, Edit and Deny, and the tab marked as waiting.",
+        ),
+        ts_screen,
+        ts_code,
+        vec![
+            (
+                "Enter",
+                "Run the command or send to the agent (Shift + Enter for a new line)",
+            ),
+            (
+                "Tab",
+                "Tabs, blocks, the approval card, the input, then the pane",
+            ),
+            ("Escape", "Close the profile, model or account menu"),
+        ],
+        vec![
+            "The tabs are a nav landmark; the open tab carries aria-current=page and its state in words.",
+            "Blocks are a list; each block names its exit status in text; Ask agent is a real button.",
+            "The approval card is an alertdialog with the command in full and Run, Edit and Deny.",
+            "Terminal / Agent are toggle buttons (aria-pressed); every action reports in a polite live region.",
+        ],
+        &[(
+            "review",
+            "Review",
+            "The pane on Review: the session's diff with Approve and Request changes.",
+        )],
+    )
+}
+
+fn rd_screen(v: &Vals, _now: ClockMs) -> Element {
+    ag_screen("repo-desk", v)
+}
+fn rd_code(v: &Vals) -> String {
+    ag_code("RepoDeskScreen", "repo-desk", v)
+}
+
+fn rd_demo() -> Demo {
+    ag_demo(
+        "repo-desk",
+        "Repo Desk",
+        "Agent apps / Repo Desk: a chat-first desktop app for an agent that works on a code host, with no code editor. Home, Inbox and Projects in the nav and the sessions below, each on a branch of its own; a session's chat beside canvases the agent shares (Plan to tick, Pull request with checks and Mark ready, Terminal, Browser); the Inbox of issues, reviews and pull requests that need you with filters, Done and Start session; a Project with its goal, due date and milestones.",
+        "RepoDeskScreen",
+        "RepoDeskEl",
+        (
+            "inbox",
+            "Inbox",
+            "The Inbox: five items with their repository, number and why they need you; Start session hands one to the agent.",
+        ),
+        rd_screen,
+        rd_code,
+        vec![
+            ("Enter", "Send (Shift + Enter for a new line)"),
+            ("← →", "Move between the canvases"),
+            ("Escape", "Close the model or account menu"),
+        ],
+        vec![
+            "The sidebar is a nav landmark; Home, Inbox and Projects carry aria-current=page when open.",
+            "Inbox filters are a radiogroup; each item names its kind in text; Start session and Done are buttons.",
+            "The canvases are a tablist (roving tabindex, arrow keys); plan steps and milestones are real checkboxes.",
+            "The goal's progress is a progressbar with its value; every action reports in a polite live region.",
+        ],
+        &[(
+            "project",
+            "Project",
+            "A Project: the goal, its due date and progress, milestones to tick and the sessions working on it.",
+        )],
+    )
+}
+
+fn pv_screen(v: &Vals, _now: ClockMs) -> Element {
+    ag_screen("preview-desk", v)
+}
+fn pv_code(v: &Vals) -> String {
+    ag_code("PreviewDeskScreen", "preview-desk", v)
+}
+
+fn pv_demo() -> Demo {
+    ag_demo(
+        "preview-desk",
+        "Preview Desk",
+        "Agent apps / Preview Desk: a desktop app that shows a coding agent's work as previews. Sessions in the sidebar, each on a machine of its own (this computer or a persistent one) with a count of open comments; the session's steps; preview tabs beside the chat (the live site, a doc, the diff); Design mode, where you pick an element on the live site and send the agent a comment about it; line comments on the diff and Approve. Machine, working folder and model in the composer.",
+        "PreviewDeskScreen",
+        "PreviewDeskEl",
+        (
+            "design",
+            "Design mode",
+            "Design mode on the live site: the Team plan card picked, outlined, with a comment box to send to the agent.",
+        ),
+        pv_screen,
+        pv_code,
+        vec![
+            (
+                "Enter",
+                "Send, or send the comment (Shift + Enter for a new line)",
+            ),
+            ("← →", "Move between the preview tabs"),
+            ("Escape", "Close the machine, model or account menu"),
+        ],
+        vec![
+            "The sidebar is a nav landmark; the open session carries aria-current=page.",
+            "The preview tabs are a tablist (roving tabindex, arrow keys); Design mode is a toggle button.",
+            "Each diff line is a button named with its number and text; comments sit under their line.",
+            "The comment box is a labelled group; every action reports in a polite live region.",
+        ],
+        &[(
+            "diff",
+            "Diff review",
+            "The diff of PlanCard.tsx with a comment on line 9 and Approve changes.",
         )],
     )
 }
@@ -5227,6 +5425,10 @@ pub(crate) fn demos() -> Vec<Demo> {
         fw_demo(),
         wc_demo(),
         cb_demo(),
+        tb_demo(),
+        ts_demo(),
+        rd_demo(),
+        pv_demo(),
         mx_demo(),
         kb2_demo(),
         pb_demo(),
