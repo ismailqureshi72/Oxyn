@@ -161,6 +161,9 @@ pub use parity::{ConflictRadarEl, MergeAct, MergeConflictEl, RadarAct};
 pub use parity::{
     ExpandableCardEl, JsonViewerEl, LinkUnfurlEl, ToolCallCardEl, ToolCallEl, ToolChipsEl,
 };
+pub use parity::{
+    HelpCenterEl, InboxTriageEl, MonthCalendarEl, SupportConversationEl, WeekCalendarEl,
+};
 pub use parity::{ImeEvent, ImeInput, bind_ime_keys};
 pub use parity::{LoadingStateEl, ShimmerEl, SlotTextEl, ThinkingLoaderEl};
 pub use parity::{OnboardingBrandEl, OnboardingReadyEl, OnboardingToneEl, OnboardingWebsiteEl};

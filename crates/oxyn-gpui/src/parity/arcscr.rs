@@ -132,7 +132,7 @@ arc_el!(
     TeamDirectoryEl
 );
 
-fn hue(p: &ThPal, h: &str) -> Hsla {
+pub(super) fn hue(p: &ThPal, h: &str) -> Hsla {
     let dark = p.fg.l > 0.5;
     let x = match (h, dark) {
         ("teal", true) => 0x3CCBBF,
@@ -154,13 +154,13 @@ fn hue(p: &ThPal, h: &str) -> Hsla {
     rgb(x).into()
 }
 
-fn tint(p: &ThPal, h: &str, a: f32) -> Hsla {
+pub(super) fn tint(p: &ThPal, h: &str, a: f32) -> Hsla {
     let mut c = hue(p, h);
     c.a = a;
     c
 }
 
-fn q(p: &ThPal, t: impl Into<SharedString>) -> Div {
+pub(super) fn q(p: &ThPal, t: impl Into<SharedString>) -> Div {
     div()
         .flex_none()
         .whitespace_nowrap()
@@ -169,7 +169,7 @@ fn q(p: &ThPal, t: impl Into<SharedString>) -> Div {
         .child(t.into())
 }
 
-fn av(p: &ThPal, who: usize, size: f32) -> Div {
+pub(super) fn av(p: &ThPal, who: usize, size: f32) -> Div {
     let h = HUES[PEOPLE[who % PEOPLE.len()].1];
     div()
         .flex_none()
@@ -185,11 +185,11 @@ fn av(p: &ThPal, who: usize, size: f32) -> Div {
         .child(initials(who))
 }
 
-fn dot(c: Hsla, s: f32) -> Div {
+pub(super) fn dot(c: Hsla, s: f32) -> Div {
     div().flex_none().size(px(s)).rounded_full().bg(c)
 }
 
-fn btn(
+pub(super) fn btn(
     p: &ThPal,
     act: &Option<Act>,
     id: &'static str,
@@ -213,7 +213,7 @@ fn btn(
         .child(l.into())
 }
 
-fn chip(
+pub(super) fn chip(
     p: &ThPal,
     act: &Option<Act>,
     id: &'static str,
@@ -234,7 +234,7 @@ fn chip(
         .child(l.into())
 }
 
-fn seg(p: &ThPal, items: Vec<Stateful<Div>>) -> Div {
+pub(super) fn seg(p: &ThPal, items: Vec<Stateful<Div>>) -> Div {
     div()
         .flex_none()
         .flex()
@@ -245,7 +245,7 @@ fn seg(p: &ThPal, items: Vec<Stateful<Div>>) -> Div {
         .children(items)
 }
 
-fn nrow(
+pub(super) fn nrow(
     p: &ThPal,
     act: &Option<Act>,
     id: &'static str,
@@ -269,7 +269,7 @@ fn nrow(
         .child(q(p, n.into()))
 }
 
-fn glyph(p: &ThPal, t: &'static str) -> Div {
+pub(super) fn glyph(p: &ThPal, t: &'static str) -> Div {
     div()
         .flex_none()
         .w(px(16.))
@@ -280,7 +280,7 @@ fn glyph(p: &ThPal, t: &'static str) -> Div {
         .child(t)
 }
 
-fn icon_for(k: &str) -> &'static str {
+pub(super) fn icon_for(k: &str) -> &'static str {
     match k {
         "grid" => "▦",
         "file" => "▤",
@@ -301,11 +301,22 @@ fn icon_for(k: &str) -> &'static str {
         "flash" => "ϟ",
         "people" => "◉",
         "tree" => "⋔",
+        "mail" => "✉",
+        "link" => "↗",
+        "check" => "✓",
+        "bell" => "◔",
+        "doc" => "▤",
+        "web" => "◍",
+        "star" => "☆",
+        "card" => "▭",
+        "plug" => "⌁",
+        "bug" => "✱",
+        "term" => "›",
         _ => "•",
     }
 }
 
-fn group(p: &ThPal, l: &'static str) -> Div {
+pub(super) fn group(p: &ThPal, l: &'static str) -> Div {
     div()
         .flex_none()
         .mt(px(10.))
@@ -318,7 +329,7 @@ fn group(p: &ThPal, l: &'static str) -> Div {
         .child(l)
 }
 
-fn skel(p: &ThPal, n: usize) -> Div {
+pub(super) fn skel(p: &ThPal, n: usize) -> Div {
     let mut d = div().flex().flex_col().gap(px(10.)).p(px(12.));
     for i in 0..n {
         d = d.child(
@@ -332,7 +343,7 @@ fn skel(p: &ThPal, n: usize) -> Div {
     d
 }
 
-fn none(p: &ThPal, t: &'static str, l: &'static str) -> Div {
+pub(super) fn none(p: &ThPal, t: &'static str, l: &'static str) -> Div {
     div()
         .flex()
         .flex_col()
@@ -349,7 +360,7 @@ fn none(p: &ThPal, t: &'static str, l: &'static str) -> Div {
         .child(div().text_color(p.mute).child(l))
 }
 
-fn card(p: &ThPal) -> Div {
+pub(super) fn card(p: &ThPal) -> Div {
     div()
         .rounded(px(12.))
         .border_1()
@@ -357,20 +368,20 @@ fn card(p: &ThPal) -> Div {
         .bg(p.card)
 }
 
-struct Frame {
-    slug: &'static str,
-    side: Div,
-    ctx: Option<Div>,
-    crumbs: Vec<String>,
-    meta: String,
-    actions: Div,
-    bar: Option<Div>,
-    body: Div,
-    foot: Option<Div>,
-    right: Option<Div>,
+pub(super) struct Frame {
+    pub(super) slug: &'static str,
+    pub(super) side: Div,
+    pub(super) ctx: Option<Div>,
+    pub(super) crumbs: Vec<String>,
+    pub(super) meta: String,
+    pub(super) actions: Div,
+    pub(super) bar: Option<Div>,
+    pub(super) body: Div,
+    pub(super) foot: Option<Div>,
+    pub(super) right: Option<Div>,
 }
 
-fn frame(p: &ThPal, lay: ShellLayout, act: &Option<Act>, f: Frame) -> Div {
+pub(super) fn frame(p: &ThPal, lay: ShellLayout, act: &Option<Act>, f: Frame) -> Div {
     let w = ws(f.slug);
     let flat = lay == ShellLayout::Flat;
     let mut crumbs = div()
