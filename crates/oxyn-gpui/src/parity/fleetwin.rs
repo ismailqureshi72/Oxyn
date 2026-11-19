@@ -228,7 +228,7 @@ pub(super) fn s11_frame(
     lay: ShellLayout,
     extra: &'static str,
     side: Div,
-    title: &'static str,
+    title: impl Into<SharedString>,
     pl: Option<(&'static str, &'static str)>,
     body: Div,
     pane: Div,
@@ -242,7 +242,7 @@ pub(super) fn s11_frame(
         .gap(px(8.))
         .border_b_1()
         .border_color(p.line)
-        .child(div().font_weight(FontWeight::SEMIBOLD).child(title));
+        .child(div().font_weight(FontWeight::SEMIBOLD).child(title.into()));
     if let Some((l, t)) = pl {
         bar = bar.child(pill(p, l, t));
     }

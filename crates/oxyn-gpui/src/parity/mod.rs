@@ -64,10 +64,12 @@ mod onbscr;
 mod opsscr;
 mod parallelfid;
 mod planfid;
+mod previewdesk;
 mod queuefid;
 mod ratefid;
 mod reasonfid;
 mod recapfid;
+mod repodesk;
 mod review;
 mod rootfid;
 mod rulerfid;
@@ -82,9 +84,11 @@ mod setscr;
 mod setscr2;
 mod stairsfid;
 mod storagefid;
+mod tabstack;
 mod taskdeck;
 mod text;
 mod themefid;
+mod threadbar;
 mod toolmapfid;
 mod tools;
 mod tracefid;
@@ -168,10 +172,12 @@ pub use onbscr::{OnboardingBrandEl, OnboardingReadyEl, OnboardingToneEl, Onboard
 pub use opsscr::{AgentsEl, PermissionsEl, RunDetailEl, SchedulesEl, SkillsEl, UsageEl};
 pub use parallelfid::ParallelAttemptsEl;
 pub use planfid::PlanVsActualEl;
+pub use previewdesk::PreviewDeskEl;
 pub use queuefid::AgentQueueEl;
 pub use ratefid::RateLimitPlannerEl;
 pub use reasonfid::ReasoningPanelEl;
 pub use recapfid::AgentRecapEl;
+pub use repodesk::RepoDeskEl;
 pub use review::{
     AiInlineEditEl, ChangeSummaryEl, CodeSuggestionEl, CommentThreadEl, DiffTableEl,
     DiffTimelineEl, DiffViewerEl, HunkAct, IdAct, ImageCompareEl, InlineDiffEl, ReviewCardEl,
@@ -199,6 +205,7 @@ pub use setscr::{
 };
 pub use stairsfid::EffortStairsEl;
 pub use storagefid::{StorageCleanupEl, StorageForecastEl, StorageMeterEl, StorageWaffleEl};
+pub use tabstack::TabstackEl;
 pub use taskdeck::{
     TaskdeckBoardEl, TaskdeckPluginsEl, TaskdeckScheduledEl, TaskdeckSitesEl, TaskdeckStartEl,
     TaskdeckTaskEl,
@@ -208,6 +215,7 @@ pub use themefid::{
     AccentDensityEl, AppIconPickerEl, BackgroundPickerEl, DisplayComfortEl, LightPlaygroundEl,
     ThemeGridEl, ThemeScheduleEl, ThemeSplitEl, TypeScaleEl,
 };
+pub use threadbar::ThreadbarEl;
 pub use toolmapfid::ToolAccessMapEl;
 pub use tools::{
     ExpandableCardEl, JsonViewerEl, LinkUnfurlEl, ToolCallCardEl, ToolCallEl, ToolChipsEl,
