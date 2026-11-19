@@ -528,10 +528,13 @@ document.addEventListener('oxyn-demo-live', (e) => {
     const phone = matchMedia('(max-width:640px)');
     let raf = 0, live = false, cur = -1, target = 1, last = 0;
     let a = 0, z = 0, pinTop = 0;
+    const LIFT = 22;
     const still = () => reduced() || phone.matches;
     const paint = (p) => {
       const q = 1 - p;
-      dev.style.transform = `translate3d(0,${(q * 5).toFixed(3)}cqw,0) scale(${(0.94 + p * 0.06).toFixed(4)})`;
+      // Closed, the laptop is lifted into the middle of the scene (the open lid's space above it
+      // would otherwise sit empty); it settles back down as the lid opens.
+      dev.style.transform = `translate3d(0,${(q * q * -LIFT).toFixed(3)}cqw,0) scale(${(0.94 + p * 0.06).toFixed(4)})`;
       lid.style.transform = `perspective(340cqw) rotateX(${(q * -116).toFixed(3)}deg)`;
       if (shade) shade.style.opacity = (q * 0.8).toFixed(3);
       scene.toggleAttribute('data-closed', p < 0.02);
@@ -552,7 +555,14 @@ document.addEventListener('oxyn-demo-live', (e) => {
       const top = cs.position === 'sticky' ? parseFloat(cs.top) || 0 : 16;
       pinTop = pin.getBoundingClientRect().top + scrollY;
       z = top - stick * 0.82;
-      a = Math.max(z + 240, vh - sh * 0.86);
+      // Where the fully closed laptop sits in the scene: opening starts only once all of it is in
+      // view, with its middle at about 60% of the viewport (never later than its bottom edge
+      // reaching 24 px above the viewport's bottom).
+      paint(0);
+      const sr = scene.getBoundingClientRect(), dr = dev.getBoundingClientRect(), lr = lid.getBoundingClientRect();
+      const cb = dr.bottom - sr.top, cm = (lr.top + dr.bottom) / 2 - sr.top;
+      if (cur >= 0) paint(cur); else clear();
+      a = Math.max(z + 240, Math.min(vh - 24 - cb, vh * 0.6 - cm));
     };
     const aim = () => {
       const t = Math.min(1, Math.max(0, (a - (pinTop - scrollY)) / (a - z)));
