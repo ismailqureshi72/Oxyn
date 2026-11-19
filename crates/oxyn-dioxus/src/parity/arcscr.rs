@@ -14,8 +14,8 @@ use oxyn_core::parity::arcscr::{
     bar_dates, col_counts, column, conflicts, end_of, find_people, initials, iso, issue_key,
     issues, kpi_value, load_of, local_time, members, month_day, move_issue, ms_done, ms_progress,
     my_email, nice_top, nudge, office_count, office_open, phase_span, plan_done, point_day, points,
-    range_span, s12_states as core_states, series, stats, table, tasks, thousands, toggle_task,
-    weekday, ws, zoom_window,
+    range_span, s12_states as core_states, series, stats, table, tasks, thousands, tip_at, tip_w,
+    toggle_task, weekday, ws, zoom_window,
 };
 
 use super::screensfid::{MenuButton, nico, stage_scale};
@@ -1196,6 +1196,9 @@ pub fn GanttTimelineScreen(
     });
     let mut focus = use_signal(|| None::<u32>);
     let mut today_el = use_signal(|| None::<std::rc::Rc<MountedData>>);
+    // the timeline's visible window (scroll left, width): a tooltip that would run past it goes
+    // before the bar instead
+    let mut view = use_signal(|| (0.0f64, f64::INFINITY));
     let loading = st == ScreenState::Loading;
     let p = plan();
     let ppd = ZOOMS[zoom()].2 as f64;
@@ -1272,6 +1275,49 @@ pub fn GanttTimelineScreen(
         }
     }
     let height = rows.len() as f64 * ROW_H;
+    // what each row holds on the time axis (bars with their outside labels, milestones, phase
+    // summaries, the Today pill on the first row): a dragged bar's tooltip goes where it covers
+    // none of them
+    let today_x = xof(TODAY) + ppd / 2.0;
+    let spans: Vec<Vec<(f64, f64)>> = rows
+        .iter()
+        .enumerate()
+        .map(|(ri, r)| {
+            let mut v = Vec::new();
+            if ri == 0 {
+                v.push((today_x - 64.0, today_x + 64.0));
+            }
+            if let Some(ph) = r.0
+                && let Some((a, z, _)) = phase_span(&p.bars, ph)
+            {
+                v.push((xof(a), xof(z + 1)));
+            }
+            if let Some(b) = &r.1 {
+                let (s, len) = geo(b);
+                let name_w = b.name.chars().count() as f64 * 7.0;
+                if b.len == 0 {
+                    let x = xof(s) + ppd / 2.0;
+                    v.push((x - 7.0, x + 20.0 + name_w + 80.0));
+                } else {
+                    let (l, w) = (xof(s), len as f64 * ppd);
+                    v.push((l, l + w + if w > 120.0 { 0.0 } else { 8.0 + name_w }));
+                }
+            }
+            v
+        })
+        .collect();
+    let tip_place = |ri: usize, x: f64, end: f64, t: &str| -> (&'static str, f64) {
+        let w = tip_w(t);
+        let above = if ri == 0 {
+            None
+        } else {
+            spans.get(ri - 1).map(|v| v.as_slice())
+        };
+        let below = spans.get(ri + 1).map(|v| v.as_slice());
+        let (vl, vw) = view();
+        let at = tip_at(x, w, end, width.min(vl + vw), above, below);
+        (at.key(), end - x + 16.0)
+    };
     // month labels and ticks
     let mut months: Vec<(f64, String)> = Vec::new();
     let mut ticks: Vec<(f64, String, bool)> = Vec::new();
@@ -1378,6 +1424,8 @@ pub fn GanttTimelineScreen(
                         }
                     }
                     div { class: "oxs12-gr",
+                        onmounted: move |e: MountedEvent| async move { if let Ok(r) = e.get_client_rect().await { let w = r.size.width / stage_scale(); view.with_mut(|v| v.1 = w); } },
+                        onscroll: move |e: ScrollEvent| view.set((e.scroll_left(), e.client_width() as f64)),
                         onpointermove: move |e: PointerEvent| { if let Some(mut d) = drag() { d.dx = (e.client_coordinates().x - d.x0) / stage_scale(); if own != "dragging" { drag.set(Some(d)); } } },
                         onpointerup: end_drag,
                         onpointerleave: move |_| if own != "dragging" { drag.set(None) },
@@ -1409,6 +1457,13 @@ pub fn GanttTimelineScreen(
                                         let live = dg.is_some_and(|d| d.id == id);
                                         let late = bad.iter().any(|x| x.1 == id);
                                         let tip = if live { let mut c = b.clone(); c.start = s; c.len = len; Some(bar_dates(&c)) } else { None };
+                                        let place = tip.as_ref().map(|t| {
+                                            let x = xof(s);
+                                            let w = if b.len == 0 { 20.0 + b.name.chars().count() as f64 * 7.0 + 80.0 } else { len as f64 * ppd };
+                                            let out = if b.len > 0 && w <= 120.0 { 8.0 + b.name.chars().count() as f64 * 7.0 } else { 0.0 };
+                                            tip_place(ri, x, x + w + out, t)
+                                        });
+                                        let (at, tl) = place.unwrap_or(("above", 0.0));
                                         let kbd = move |e: KeyboardEvent| {
                                             let k = e.key();
                                             let dd = match k { Key::ArrowLeft => -1, Key::ArrowRight => 1, _ => return };
@@ -1423,7 +1478,7 @@ pub fn GanttTimelineScreen(
                                                     onkeydown: kbd, onclick: move |_| focus.set(Some(id)),
                                                     onpointerdown: move |e: PointerEvent| { let x0 = e.client_coordinates().x; drag.set(Some(GDrag { id, edge: 0, x0, dx: 0.0 })); },
                                                     span { class: "oxs12-dia", "data-hue": "{h}" } b { class: "oxs12-gml", "{nm}" } span { class: "oxs12-q", "{iso(s)}" }
-                                                    if let Some(t) = tip { span { class: "oxs12-gtip", role: "tooltip", "{t}" } }
+                                                    if let Some(t) = tip { span { class: "oxs12-gtip", "data-at": "{at}", style: "--tl:{tl:.0}px", role: "tooltip", "{t}" } }
                                                 }
                                             }
                                         } else {
@@ -1443,7 +1498,7 @@ pub fn GanttTimelineScreen(
                                                     span { class: "oxs12-ge", "data-e": "l", "aria-hidden": "true", onpointerdown: move |e: PointerEvent| { e.stop_propagation(); let x0 = e.client_coordinates().x; drag.set(Some(GDrag { id, edge: 1, x0, dx: 0.0 })); } }
                                                     span { class: "oxs12-ge", "data-e": "r", "aria-hidden": "true", onpointerdown: move |e: PointerEvent| { e.stop_propagation(); let x0 = e.client_coordinates().x; drag.set(Some(GDrag { id, edge: 2, x0, dx: 0.0 })); } }
                                                     if !inside { span { class: "oxs12-gout", "{nm}" } }
-                                                    if let Some(t) = tip { span { class: "oxs12-gtip", role: "tooltip", "{t}" } }
+                                                    if let Some(t) = tip { span { class: "oxs12-gtip", "data-at": "{at}", style: "--tl:{tl:.0}px", role: "tooltip", "{t}" } }
                                                 }
                                             }
                                         }

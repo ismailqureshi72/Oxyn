@@ -1656,6 +1656,71 @@ pub fn bar_dates(b: &Bar) -> String {
     }
 }
 
+/// Where a dragged bar's date tooltip goes, so it never covers the bars around it.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum TipAt {
+    /// Over the bar, in the row above.
+    Above,
+    /// Under the bar, in the row below.
+    Below,
+    /// After the bar (and its label), in its own row.
+    Right,
+    /// Before the bar, in its own row.
+    Left,
+}
+
+impl TipAt {
+    /// `above`, `below`, `right` or `left`.
+    pub fn key(self) -> &'static str {
+        match self {
+            TipAt::Above => "above",
+            TipAt::Below => "below",
+            TipAt::Right => "right",
+            TipAt::Left => "left",
+        }
+    }
+}
+
+/// Free space for a tooltip `w` wide that starts at the bar's start `x`: the row above when
+/// nothing there is under it, else the row below, else after the bar (`end`: where the bar and
+/// its outside label stop) when that fits in `width`, else before the bar. `above` and `below`
+/// are the spans (start, end) taken in those rows; `None` means there is no row there (the
+/// header sits above the first row).
+pub fn tip_at(
+    x: f64,
+    w: f64,
+    end: f64,
+    width: f64,
+    above: Option<&[(f64, f64)]>,
+    below: Option<&[(f64, f64)]>,
+) -> TipAt {
+    let free = |r: Option<&[(f64, f64)]>| {
+        r.is_some_and(|v| v.iter().all(|(a, b)| *b < x - 4.0 || *a > x + w + 4.0))
+    };
+    if free(above) {
+        TipAt::Above
+    } else if free(below) {
+        TipAt::Below
+    } else if end + 16.0 + w <= width {
+        TipAt::Right
+    } else {
+        TipAt::Left
+    }
+}
+
+/// The width of a tooltip with text `t` (11.5 px type, 8 px padding each side).
+pub fn tip_w(t: &str) -> f64 {
+    t.chars().count() as f64 * 6.6 + 18.0
+}
+
+/// The owners of a plan's bars, sorted and once each.
+pub fn owners(v: &[Bar]) -> Vec<usize> {
+    let mut o: Vec<usize> = v.iter().map(|b| b.who).collect();
+    o.sort();
+    o.dedup();
+    o
+}
+
 /// Gantt sidebar: (key, icon, label, count).
 pub const GT_NAV: [(&str, &str, &str, &str); 3] = [
     ("timeline", "chart", "Timeline", ""),
@@ -2040,6 +2105,8 @@ pub struct ArcUi {
     pub bar: Option<u32>,
     /// Index into [`ZOOMS`].
     pub gzoom: usize,
+    /// The timeline's owner filter (index into [`PEOPLE`]).
+    pub gowner: Option<usize>,
     /// Directory search.
     pub query: String,
     /// Team filter.
@@ -2077,6 +2144,7 @@ impl Default for ArcUi {
             plan: Plan::new(true),
             bar: None,
             gzoom: 1,
+            gowner: None,
             query: String::new(),
             team: None,
             status: None,
@@ -2102,7 +2170,8 @@ impl ArcUi {
     ///   `kb-group`, `kb-by-status`, `kb-by-person`;
     /// - project: `pb-task-<n>`, `pb-ms-<n>`, `pb-tab-<n>`, `pb-health-<n>`, `pb-panel`;
     /// - gantt: `gt-pick-<id>`, `gt-grab-<id>`, `gt-earlier|later|shorter|longer`, `gt-at-<day>`,
-    ///   `gt-zoom-<n>`, `gt-undo`, `gt-reset`, `gt-today`;
+    ///   `gt-zoom-<n>`, `gt-undo`, `gt-reset`, `gt-today`, `gt-owner` (the next owner, then
+    ///   everyone);
     /// - directory: `td-team-<n>`, `td-status-<n>`, `td-office-<n>`, `td-view`, `td-grid`,
     ///   `td-list`, `td-fav-<n>`, `td-clear`.
     pub fn press(&mut self, id: &str) -> bool {
@@ -2304,6 +2373,16 @@ impl ArcUi {
             "gt-undo" => self.plan.undo() && said(self, "undone".into()),
             "gt-reset" => self.plan.reset() && said(self, "plan reset".into()),
             "gt-today" => said(self, format!("Today {}", iso(TODAY))),
+            "gt-owner" => {
+                let o = owners(&self.plan.bars);
+                self.gowner = match self.gowner.and_then(|w| o.iter().position(|x| *x == w)) {
+                    Some(i) if i + 1 < o.len() => Some(o[i + 1]),
+                    Some(_) => None,
+                    None => o.first().copied(),
+                };
+                let w = self.gowner.map(|w| PEOPLE[w].0).unwrap_or("Everyone");
+                said(self, format!("Owner: {w}"))
+            }
             "td-view" => {
                 self.list = !self.list;
                 true
@@ -2461,6 +2540,38 @@ mod tests {
         assert_eq!(weekday(TODAY), 3, "2026-11-12 is a Thursday");
         assert_eq!(month_day(41), ("2026-11".to_string(), 11));
         assert_eq!(thousands(1234567), "1,234,567");
+    }
+
+    #[test]
+    fn s12_gantt_tooltip_finds_free_space() {
+        let b9 = [(585.0, 795.0)];
+        let b11 = [(705.0, 840.0)];
+        assert_eq!(
+            tip_at(645.0, 234.0, 855.0, 1590.0, Some(&b9), Some(&b11)),
+            TipAt::Right
+        );
+        assert_eq!(
+            tip_at(645.0, 234.0, 1500.0, 1590.0, Some(&b9), Some(&b11)),
+            TipAt::Left
+        );
+        assert_eq!(
+            tip_at(645.0, 234.0, 855.0, 1590.0, Some(&[]), Some(&b11)),
+            TipAt::Above
+        );
+        assert_eq!(
+            tip_at(645.0, 234.0, 855.0, 1590.0, None, Some(&[(100.0, 200.0)])),
+            TipAt::Below
+        );
+        assert_eq!(TipAt::Below.key(), "below");
+        assert!(tip_w("2026-11-16 → 2026-11-29 · 14 days") > 200.0);
+        let mut u = ArcUi::default();
+        let o = owners(&u.plan.bars);
+        assert!(u.press("gt-owner"));
+        assert_eq!(u.gowner, Some(o[0]));
+        for _ in 0..o.len() {
+            u.press("gt-owner");
+        }
+        assert_eq!(u.gowner, None, "back to everyone");
     }
 
     #[test]

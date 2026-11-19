@@ -30,7 +30,7 @@ States: Data · Loading (skeleton tiles, chart and tables) · Empty (zeros, "No 
 The KPIs are a tablist (Tab, then Enter); the chart is an image named for its metric and dates; Compare is a switch; menus close on Escape. Table tabs are tablists; rows are toggle buttons. The sidebar is a nav landmark; the open row has aria-current=page; the account menu and every menu close on Escape.
 
 ## 6. Responsive
-Authored on the 1440 × 900 stage and scaled to its column; `/full` renders at the real viewport. Under 960 px the sidebar is a drawer from the header's menu button (Escape or the scrim closes it). Under 640 px header actions become icon buttons, the meta line hides and grids drop to one column. scripts/ovl.py finds no text overlap at 1440, 768 and 390 in light and dark.
+Authored on the 1440 × 900 stage and scaled to its column; `/full` renders at the real viewport. Under 960 px the sidebar is a drawer from the header's menu button (Escape or the scrim closes it). Under 960 px the five KPI tabs stay in one row with tighter padding; under 640 px they wrap into two columns (Visit duration spans both), so none is cut off or hidden behind a sideways scroll. Under 640 px header actions become icon buttons, the meta line hides and grids drop to one column. scripts/ovl.py finds no text overlap at 1440, 768 and 390 in light and dark.
 
 ## 7. Data
 `MetricsDashboardScreen` takes `layout` and `state`; its numbers come from the functions in `oxyn_core::parity::arcscr` (`series`, `kpi_value`, `table`), which a host replaces with its own source.
