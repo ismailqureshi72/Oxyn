@@ -1,12 +1,14 @@
-//! Interaction state for the screen sets S0–S8 and S12 (the app shells, AI Chat, Workspace, Agent
-//! ops I and II, Orchestration / Workflow / Evals, Settings I and II, Onboarding, Arc screens I)
+//! Interaction state for the screen sets S0–S8, S12 and S13 (the app shells, AI Chat, Workspace,
+//! Agent ops I and II, Orchestration / Workflow / Evals, Settings I and II, Onboarding, Arc
+//! screens I and II)
 //! as one renderer-free
 //! model, so a GPUI view and any other host drive every screen with the same rules: which set and
 //! screen are open, the screen's state (its state bar: Data, Loading, Empty and its own states),
 //! the account menu, the command bar and the last thing said.
 //!
 //! The Arc screens' own presses (`mx-*`, `kb-*`, `pb-*`, `gt-*`, `td-*`) go first to the live
-//! [`ArcUi`]: range, board moves, tasks, bars and filters.
+//! [`ArcUi`]: range, board moves, tasks, bars and filters; the S13 presses (`cal-*`, `ib-*`,
+//! `sp-*`, `hc-*`) to [`Arc2Ui`]: calendar views and moves, triage, replies and articles.
 //!
 //! Presses arrive as the screens' own ids (`nav-<key>`, `set-<page>`, `open-<page>`,
 //! `state-<key>`, `continue`, `export`…). [`ScreenUi::press`] routes them in this order: the
@@ -20,6 +22,7 @@
 
 use super::appui::AppKey;
 use super::arcscr::{self as a12, ArcUi};
+use super::arcscr2::{self as b13, Arc2Ui};
 use super::screensfid::ScreenState;
 
 /// A state bar: (key, label).
@@ -75,7 +78,7 @@ const fn sc(
 use super::{agentscr as a3, buildscr as b5, opsscr as o4, screensfid as s1, setscr as s6};
 use super::{setscr2 as s7, workscr as w2};
 
-/// Every screen set, S0 to S8, then S12.
+/// Every screen set, S0 to S8, then S12 and S13.
 pub const SETS: &[SetDef] = &[
     SetDef {
         id: "s0",
@@ -457,6 +460,48 @@ pub const SETS: &[SetDef] = &[
             ),
         ],
     },
+    SetDef {
+        id: "s13",
+        name: "Arc screens II",
+        wizard: false,
+        screens: &[
+            sc(
+                "week-calendar",
+                "Week calendar",
+                b13::WEEK_STATES,
+                &["weekcal", "calendar-week"],
+                &[],
+            ),
+            sc(
+                "month-calendar",
+                "Month calendar",
+                b13::MONTH_STATES,
+                &["monthcal", "calendar-month"],
+                &[],
+            ),
+            sc(
+                "inbox-triage",
+                "Inbox triage",
+                b13::INBOX_STATES,
+                &["triage", "ibx"],
+                &[],
+            ),
+            sc(
+                "support-conversation",
+                "Support",
+                b13::SUPPORT_STATES,
+                &["support", "tickets"],
+                &[],
+            ),
+            sc(
+                "help-center",
+                "Help center",
+                b13::HELP_STATES,
+                &["helpcenter", "articles"],
+                &[],
+            ),
+        ],
+    },
 ];
 
 const ONB_WEBSITE: StateList = &[
@@ -555,6 +600,8 @@ pub struct ScreenUi {
     pub trail: Vec<(usize, usize)>,
     /// The Arc screens' live state (S12).
     pub arc: ArcUi,
+    /// The Arc screens II live state (S13).
+    pub arc2: Arc2Ui,
 }
 
 impl Default for ScreenUi {
@@ -576,6 +623,7 @@ impl ScreenUi {
             said: None,
             trail: Vec::new(),
             arc: ArcUi::default(),
+            arc2: Arc2Ui::default(),
         }
     }
 
@@ -652,6 +700,11 @@ impl ScreenUi {
     pub fn press(&mut self, id: &'static str) -> Moved {
         if self.arc.press(id) {
             self.said = self.arc.said.take();
+            self.menu = false;
+            return Moved::State;
+        }
+        if self.arc2.press(id) {
+            self.said = self.arc2.said.take();
             self.menu = false;
             return Moved::State;
         }
@@ -824,7 +877,7 @@ mod tests {
 
     #[test]
     fn every_set_has_screens_with_a_data_state() {
-        assert_eq!(SETS.len(), 10);
+        assert_eq!(SETS.len(), 11);
         for s in SETS {
             assert!(!s.screens.is_empty(), "{}", s.id);
             for x in s.screens {
@@ -904,6 +957,22 @@ mod tests {
         assert_eq!(u.press("nav-people"), Moved::Screen);
         assert_eq!(u.press("invite"), Moved::State);
         assert_eq!(u.state_key(), "inviting");
+    }
+
+    #[test]
+    fn arc2_screens_press_live_state() {
+        let mut u = ScreenUi::new(10);
+        assert_eq!(u.set_def().id, "s13");
+        assert_eq!(u.screen_def().slug, "week-calendar");
+        assert_eq!(u.press("cal-view-2"), Moved::State);
+        assert_eq!(u.arc2.cview, 2);
+        assert_eq!(u.press("nav-triage"), Moved::Screen);
+        assert_eq!(u.screen_def().slug, "inbox-triage");
+        assert_eq!(u.press("ib-e"), Moved::State);
+        assert!(u.said.as_deref().unwrap_or("").starts_with("Resolved"));
+        assert_eq!(u.press("nav-helpcenter"), Moved::Screen);
+        assert_eq!(u.press("state-noresults"), Moved::State);
+        assert_eq!(u.split(), (ScreenState::Sample, "noresults"));
     }
 
     #[test]
