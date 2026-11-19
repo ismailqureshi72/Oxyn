@@ -130,15 +130,18 @@ html[data-announce="hidden"] .announce{display:none}
 .cmp-before,.cmp-after{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:24px}
 .cmp-before{background:#fff;color:#000;font-family:Arial,Helvetica,sans-serif}
 /* The Oxyn side is revealed by two opposite translations (clip box → --pos, content ← --pos), so
-   moving the divider only changes transforms, no layout. The clip box starts 12 px left of the
-   divider (and overhangs the right side by as much); its left edge is masked by the same sine as the drawn wave (a 24 × 120 tile, then
-   solid), flowing down in step with it: the seam is the wave itself, in light and dark alike. */
-.cmp-clip{position:absolute;inset:0;overflow:hidden;transform:translateX(calc(var(--pos) - 12px));will-change:transform;
-  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='120' viewBox='0 0 24 120'%3E%3Cpath d='M12 0Q22 30 12 60T12 120H24V0Z'/%3E%3C/svg%3E") 0 0 / 24px 120px repeat-y,linear-gradient(#000,#000) 24px 0 / calc(100% - 24px) 100% no-repeat;
-  mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='120' viewBox='0 0 24 120'%3E%3Cpath d='M12 0Q22 30 12 60T12 120H24V0Z'/%3E%3C/svg%3E") 0 0 / 24px 120px repeat-y,linear-gradient(#000,#000) 24px 0 / calc(100% - 24px) 100% no-repeat;
-  animation:cmp-mask 2.8s linear infinite}
-@keyframes cmp-mask{to{-webkit-mask-position:0 120px,24px 0;mask-position:0 120px,24px 0}}
-.cmp-clip .cmp-after{background:var(--fill);transform:translateX(calc(12px - var(--pos)));will-change:transform}
+   moving the divider only changes transforms, no layout. The clip box starts 24 px left of the
+   divider. Inside it one element (.cmp-ride, one wavelength taller than the slider) flows down by a
+   wavelength per loop and carries both the drawn wave and the clipped box: its left edge is cut by
+   the same sine (a vector clip-path, 1200 px tall; a mask image left a 1 px seam at its edge), so
+   the seam IS the wave, in light and dark, with no straight edge under it. The content counter-flows (.cmp-anti, same timing) and stays still. */
+.cmp-clip{position:absolute;inset:0;overflow:hidden;transform:translateX(calc(var(--pos) - 24px));will-change:transform}
+.cmp-ride{position:absolute;left:0;right:0;top:-120px;bottom:0;will-change:transform;animation:cmp-ride 3.2s linear infinite}
+.cmp-mbox{position:absolute;inset:0;clip-path:path('M24 0 Q36 30 24 60 T24 120 T24 180 T24 240 T24 300 T24 360 T24 420 T24 480 T24 540 T24 600 T24 660 T24 720 T24 780 T24 840 T24 900 T24 960 T24 1020 T24 1080 T24 1140 T24 1200 L9999 1200 L9999 0 Z')}
+.cmp-anti{position:absolute;left:0;right:0;top:120px;bottom:0;will-change:transform;animation:cmp-anti 3.2s linear infinite}
+@keyframes cmp-ride{from{transform:translateY(0)}to{transform:translateY(120px)}}
+@keyframes cmp-anti{from{transform:translateY(0)}to{transform:translateY(-120px)}}
+.cmp-clip .cmp-after{background:var(--fill);transform:translateX(calc(24px - var(--pos)));will-change:transform}
 .cmp-after oxyn-demo{width:100%;max-width:560px}
 .cmp-after .oxd-mini .oxd-main{border:0}
 .cmp-after .oxd-stage{background:none;min-height:0!important}
@@ -153,29 +156,27 @@ html[data-announce="hidden"] .announce{display:none}
 .cmp-tag.l{left:14px;background:#EFEFEF;color:#333}
 [data-theme="dark"] .cmp-tag.l{background:#333;color:#E8E8E8}
 .cmp-tag.r{right:14px;background:var(--pro-bg);color:var(--pro-fg);box-shadow:inset 0 0 0 1px var(--ln)}
-/* Divider: a wavy line (SVG sine) that flows downwards, a glint travelling along it and glitter
-   stars twinkling beside it. It and the handle ride one transform. Reduced motion: a still wave. */
-.cmp-line{position:absolute;inset:0;z-index:4;pointer-events:none;transform:translateX(var(--pos));will-change:transform}
-.cmp-wave{position:absolute;top:0;left:-12px;width:24px;height:100%;overflow:visible}
+/* Divider: the wave (drawn in .cmp-ride, so it flows with the cut edge), a soft halo, a glint that
+   runs down it and glitter stars twinkling beside it. The handle rides its own transform on the
+   divider. Reduced motion: a still wave, no glint, no stars. */
+.cmp-wave{position:absolute;left:0;top:0;width:48px;height:100%;overflow:visible;pointer-events:none}
 .cmp-wave path{fill:none;stroke-linecap:round}
-.cmp-halo{stroke:var(--fg);stroke-width:9;opacity:.08}
-[data-theme="dark"] .cmp-halo{opacity:.14}
-.cmp-stroke{stroke:var(--fg2);stroke-width:2.2}
-.cmp-glint{stroke:#fff;stroke-width:2.6;stroke-dasharray:30 640;filter:drop-shadow(0 0 2.5px rgb(0 0 0 / .45))}
-[data-theme="dark"] .cmp-stroke{stroke:var(--fg3)}
-[data-theme="dark"] .cmp-glint{filter:drop-shadow(0 0 4px rgb(255 255 255 / .9))}
-.cmp-wave path.cmp-spark{fill:#fff;stroke:none;opacity:0;transform-box:fill-box;transform-origin:50% 50%;filter:drop-shadow(0 0 1.2px rgb(0 0 0 / .55))}
-[data-theme="dark"] .cmp-wave path.cmp-spark{filter:drop-shadow(0 0 3px rgb(255 255 255 / .95))}
-.cmp-flow{animation:cmp-flow 2.8s linear infinite}
-.cmp-glint{animation:cmp-glint 2.4s cubic-bezier(.45,.1,.55,.9) infinite}
-.cmp-wave path.cmp-spark{animation:cmp-spark 2.2s ease-in-out infinite;animation-delay:calc(var(--i) * -.27s)}
-@keyframes cmp-flow{to{transform:translateY(120px)}}
-@keyframes cmp-glint{from{stroke-dashoffset:60}to{stroke-dashoffset:-640}}
+.cmp-halo{stroke:var(--fg);stroke-width:10;opacity:.07}
+[data-theme="dark"] .cmp-halo{stroke:#fff;opacity:.12}
+.cmp-stroke{stroke:var(--fg2);stroke-width:2}
+[data-theme="dark"] .cmp-stroke{stroke:#D4D4D8}
+.cmp-glint{stroke:#111;stroke-width:2.6;stroke-dasharray:36 600;filter:drop-shadow(0 0 3px rgb(255 255 255 / .9));animation:cmp-glint 2.6s cubic-bezier(.45,.1,.55,.9) infinite}
+[data-theme="dark"] .cmp-glint{stroke:#fff;filter:drop-shadow(0 0 5px rgb(255 255 255 / .95))}
+.cmp-wave path.cmp-spark{fill:#2A2A2E;stroke:none;opacity:0;transform-box:fill-box;transform-origin:50% 50%;filter:drop-shadow(0 0 2px rgb(255 255 255 / .9));animation:cmp-spark 2.2s ease-in-out infinite;animation-delay:calc(var(--i) * -.27s)}
+[data-theme="dark"] .cmp-wave path.cmp-spark{fill:#fff;filter:drop-shadow(0 0 3px rgb(255 255 255 / .95))}
+@keyframes cmp-glint{from{stroke-dashoffset:720}to{stroke-dashoffset:60}}
 @keyframes cmp-spark{0%,100%{opacity:0;transform:scale(.2) rotate(0deg)}45%{opacity:1;transform:scale(1) rotate(45deg)}70%{opacity:.35;transform:scale(.6) rotate(70deg)}}
-@media (prefers-reduced-motion:reduce){.cmp-clip,.cmp-flow,.cmp-glint,.cmp-wave path.cmp-spark{animation:none}.cmp-glint,.cmp-wave path.cmp-spark{display:none}}
-html[data-oxyn-reduced] .cmp-clip,html[data-oxyn-reduced] .cmp-flow,html[data-oxyn-reduced] .cmp-glint,html[data-oxyn-reduced] .cmp-wave path.cmp-spark{animation:none}
+@media (prefers-reduced-motion:reduce){.cmp-ride,.cmp-anti,.cmp-glint,.cmp-wave path.cmp-spark{animation:none}.cmp-glint,.cmp-wave path.cmp-spark{display:none}}
+html[data-oxyn-reduced] .cmp-ride,html[data-oxyn-reduced] .cmp-anti,html[data-oxyn-reduced] .cmp-glint,html[data-oxyn-reduced] .cmp-wave path.cmp-spark{animation:none}
 html[data-oxyn-reduced] .cmp-glint,html[data-oxyn-reduced] .cmp-wave path.cmp-spark{display:none}
-.cmp-handle{position:absolute;top:50%;left:0;width:36px;height:36px;margin:-18px 0 0 -18px;border-radius:50%;background:var(--pn);box-shadow:0 2px 10px rgb(0 0 0 / .18),inset 0 0 0 1px var(--ln);display:grid;place-items:center;font-size:15px;color:var(--fg)}
+.cmp-line{position:absolute;inset:0;z-index:4;pointer-events:none;transform:translateX(var(--pos));will-change:transform}
+.cmp-handle{position:absolute;top:50%;left:0;width:38px;height:38px;margin:-19px 0 0 -19px;border-radius:50%;background:var(--pn);box-shadow:0 4px 14px rgb(0 0 0 / .18),inset 0 0 0 1px var(--ln);display:grid;place-items:center;color:var(--fg);transition:transform .16s}
+.x-cmp:active .cmp-handle{transform:scale(1.08)}
 .cmp-range{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:ew-resize;z-index:5}
 .x-cmp:has(.cmp-range:focus-visible) .cmp-handle{outline:2px solid var(--oxyn-color-focus);outline-offset:2px}
 .faq{max-width:720px;margin:30px auto 0;border-top:1px solid var(--ln)}
