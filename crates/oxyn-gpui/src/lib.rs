@@ -165,6 +165,9 @@ pub use parity::{
     HelpCenterEl, InboxTriageEl, MonthCalendarEl, SupportConversationEl, WeekCalendarEl,
 };
 pub use parity::{ImeEvent, ImeInput, bind_ime_keys};
+pub use parity::{
+    InvoiceStudioEl, MarketTerminalEl, ProductDetailEl, ProductListEl, SignInSplitEl,
+};
 pub use parity::{LoadingStateEl, ShimmerEl, SlotTextEl, ThinkingLoaderEl};
 pub use parity::{OnboardingBrandEl, OnboardingReadyEl, OnboardingToneEl, OnboardingWebsiteEl};
 pub use parity::{
