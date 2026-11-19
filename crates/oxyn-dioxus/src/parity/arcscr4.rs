@@ -460,7 +460,7 @@ pub fn ApiKeysWebhooksScreen(
             side: side("api-keys-webhooks", said),
             card: plan_card(),
             actions: rsx! {
-                {seg("Section", tabs, if k.tab == 0 { "keys" } else { "hooks" }, EventHandler::new(move |x: &'static str| { ak.write().tab = if x == "keys" { 0 } else { 1 }; said.set(if x == "keys" { "API keys".to_string() } else { "Webhooks".to_string() }); }))}
+                div { class: "oxs15-hseg", {seg("Section", tabs, if k.tab == 0 { "keys" } else { "hooks" }, EventHandler::new(move |x: &'static str| { ak.write().tab = if x == "keys" { 0 } else { 1 }; said.set(if x == "keys" { "API keys".to_string() } else { "Webhooks".to_string() }); }))} }
                 if k.tab == 0 { {btn("New key", "plus", true, EventHandler::new(move |_| { let r = ak.write().open_new(); said.set(r); }))} }
                 else { {btn("Add endpoint", "plus", true, EventHandler::new(move |_| said.set("Add endpoint".to_string())))} }
             },
@@ -621,7 +621,7 @@ pub fn MembersRolesScreen(
             side: side("members-roles", said),
             card: plan_card(),
             actions: rsx! {
-                {seg("Role", filters, fkey, EventHandler::new(move |x: &'static str| { let mut w = mb.write(); w.filter = x.parse().ok(); said.set(if x == "all" { "Everyone".to_string() } else { format!("{}s", ROLES[x.parse::<usize>().unwrap_or(2)]) }); }))}
+                div { class: "oxs15-hseg", {seg("Role", filters, fkey, EventHandler::new(move |x: &'static str| { let mut w = mb.write(); w.filter = x.parse().ok(); said.set(if x == "all" { "Everyone".to_string() } else { format!("{}s", ROLES[x.parse::<usize>().unwrap_or(2)]) }); }))} }
                 {btn("Invite", "plus", true, EventHandler::new(move |_| { let mut w = mb.write(); w.form = !w.form; said.set("Invite a member".to_string()); }))}
             },
             if loading {
@@ -650,7 +650,7 @@ pub fn MembersRolesScreen(
                     if m.list.len() <= 1 && m.invites.is_empty() {
                         {none("people", "Just you so far", "Invite your team; admins manage keys and billing, members build, viewers read.", rsx! { button { r#type: "button", class: "oxs12-btn oxs12-sm", "data-pri": "true", onclick: move |_| mb.write().form = true, {nico("plus")} span { class: "oxs12-btl", "Invite people" } } })}
                     }
-                    table { class: "oxs14-t oxs15-t",
+                    table { class: "oxs14-t oxs15-t oxs15-mt",
                         thead { tr { th { "Name" } th { "Role" } th { class: "oxs14-hide", "Two-step" } th { class: "oxs15-hide", "Last active" } th { class: "oxs14-r", "Actions" } } }
                         tbody {
                             for (i, x) in shown.iter().cloned() {
@@ -997,7 +997,7 @@ pub fn AgentToolCallsScreen(
             side: side("agent-tool-calls", said),
             card: plan_card(),
             actions: rsx! {
-                {seg("Range", ranges, TC_RANGES[t.range].0, EventHandler::new(move |k: &'static str| { if let Some(i) = TC_RANGES.iter().position(|r| r.0 == k) { tc.write().range = i; said.set(k.to_string()); } }))}
+                div { class: "oxs15-hseg", {seg("Range", ranges, TC_RANGES[t.range].0, EventHandler::new(move |k: &'static str| { if let Some(i) = TC_RANGES.iter().position(|r| r.0 == k) { tc.write().range = i; said.set(k.to_string()); } }))} }
                 button { r#type: "button", class: "oxs12-btn", "aria-pressed": "{t.paused}", onclick: move |_| { let r = tc.write().pause(); said.set(r); }, {nico(if t.paused { "flash" } else { "pause" })} span { class: "oxs12-btl", if t.paused { "Resume agent" } else { "Pause agent" } } }
                 {btn("Connect tool", "plug", true, EventHandler::new(move |_| { let mut w = tc.write(); w.picker = !w.picker; said.set("Connect a tool".to_string()); }))}
             },
