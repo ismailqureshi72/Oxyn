@@ -77,6 +77,8 @@
 //! - [`wscoder`]: Screens S11 (Agent apps III): Workspace Coder
 //! - [`cmdboard`]: Screens S11 (Agent apps III): Command Board
 //! - [`appui`]: interaction state shared by the six agent apps (rows, views, rail, menu, composer)
+//! - [`screenui`]: interaction state shared by the screen sets S0–S8 (set, screen, state bar,
+//!   presses, keys and the command bar)
 //! - [`answers`]: fidelity batch, family A: AI Answer markup and streaming, Cited Answer
 //!   sentences and quotes, Message Actions, Thinking Loader phases, Thinking State steps and the
 //!   Writing Assistant's sample writer and dictation.
@@ -143,6 +145,7 @@ pub mod runningfid;
 pub mod schedfid;
 pub mod screens2fid;
 pub mod screensfid;
+pub mod screenui;
 pub mod seqfid;
 pub mod setscr;
 pub mod setscr2;
