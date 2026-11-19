@@ -9,6 +9,7 @@ import Head from '../components/v2/Head.astro';
 import TopBar from '../components/v2/TopBar.astro';
 import Footer from '../components/v2/Footer.astro';
 import SearchModal from '../components/SearchModal.astro';
+import Feedback from '../components/Feedback.astro';
 import { newDemos } from '../lib/data';
 
 interface Props {
@@ -39,5 +40,6 @@ const fullTitle = path === '/' ? title : `${title} · Oxyn`;
     </main>
     <Footer />
     <SearchModal />
+    <Feedback />
   </body>
 </html>

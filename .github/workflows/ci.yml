@@ -114,6 +114,12 @@ jobs:
             echo "$big"
             exit 1
           fi
+      # Bundles site/worker/index.ts and checks wrangler.jsonc (bindings, routes) without credentials.
+      - name: worker bundle check (wrangler deploy --dry-run)
+        working-directory: site
+        run: npx --yes wrangler@4 deploy --dry-run --outdir "$RUNNER_TEMP/worker-dry"
+      # Uploads the assets, the /api Worker and its D1 + R2 bindings together. D1 migrations are
+      # applied separately (docs/backend.md).
       - name: deploy to Cloudflare (main, when credentials are set)
         if: github.event_name == 'push' && github.ref == 'refs/heads/main' && env.CF_TOKEN != ''
         working-directory: site

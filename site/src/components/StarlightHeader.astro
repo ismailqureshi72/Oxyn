@@ -1,10 +1,12 @@
 ---
 import TopBar from './v2/TopBar.astro';
 import SearchModal from './SearchModal.astro';
+import Feedback from './Feedback.astro';
 const path = Astro.url.pathname;
 ---
 <div data-pagefind-ignore style="display:contents"><TopBar current={path} inStarlight /></div>
 <SearchModal />
+<Feedback />
 <script is:inline src="/site.js" defer></script>
 <script is:inline>
   // Starlight sets data-theme; the site defaults to light and mirrors it onto data-oxyn-theme.
