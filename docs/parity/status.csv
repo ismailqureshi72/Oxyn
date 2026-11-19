@@ -15,7 +15,7 @@ affectUI,Agent Queue,https://www.affectui.com/components/agent-queue,Components 
 affectUI,Agent Recap,https://www.affectui.com/components/agent-recap,Components · Agents,Pro,"agent-recap (exact, overnight batch B part 4), background-jobs",C5,#32,built
 affectUI,Agent Sequence,https://www.affectui.com/components/agent-sequence,Components · Agents,Pro,"agent-sequence (exact, overnight batch B part 4), trace-view, subagent-tree",,#32,built
 affectUI,Agent Steering,https://www.affectui.com/components/agent-steering,Components · Agents,Pro,composer-queue-stack,,#27,built
-affectUI,Agent Trail,https://www.affectui.com/components/agent-trail,Components · Agents,Pro,"plan-todo, status-indicator, elapsed-timer",,#28,built
+affectUI,Agent Trail,https://www.affectui.com/components/agent-trail,Components · Agents,Pro,"agent-trail (full spec S15: light, fold, gate panel, declined, logos, RTL)",S15,#28,built
 affectUI,Agent Tree,https://www.affectui.com/components/agent-tree,Components · Agents,Pro,subagent-tree,,#28,built
 affectUI,AI Answer,https://www.affectui.com/components/ai-answer,Components · Chat,Pro,"ai-answer (exact, overnight batch A), citations-sources",,#32,built
 affectUI,Approval Card,https://www.affectui.com/components/approval-card,Components · Agents,Pro,approval-card,,#28,built
@@ -736,3 +736,10 @@ Arc UI,Screens · Product list,https://uiarc.dev/components/screens/product-list
 Arc UI,Screens · Product detail,https://uiarc.dev/components/screens/product-detail,Arc screens,Free,product-detail,S14,S14,built
 Arc UI,Screens · Invoice studio,https://uiarc.dev/components/screens/invoice-studio,Arc screens,Free,invoice-studio,S14,S14,built
 Arc UI,Screens · Sign-in split,https://uiarc.dev/demo,Arc screens,Free,sign-in-split,S14,S14,built
+Arc UI,Screens · Overview,https://uiarc.dev/demo,Arc screens,Free,admin-overview,S15,S15,built
+Arc UI,Screens · Audit log,https://uiarc.dev/demo,Arc screens,Free,audit-log,S15,S15,built
+Arc UI,Screens · Status,https://uiarc.dev/demo,Arc screens,Free,status-board,S15,S15,built
+Arc UI,Screens · API keys and webhooks,https://uiarc.dev/demo,Arc screens,Free,api-keys-webhooks,S15,S15,built
+Arc UI,Screens · Members,https://uiarc.dev/demo,Arc screens,Free,members-roles,S15,S15,built
+Arc UI,Screens · Billing,https://uiarc.dev/demo,Arc screens,Free,billing-usage,S15,S15,built
+affectUI,Agent / Tool Calls,https://www.affectui.com/screens/agent-tool-calls,App screens,Pro,agent-tool-calls,S15,S15,built

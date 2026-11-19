@@ -25,6 +25,13 @@ specified just as deeply. When we point at one component as an example, the stan
 ## Specs
 | Spec | Status |
 |---|---|
+| [admin-overview.md](admin-overview.md) | v0.1 — built (S15) |
+| [audit-log.md](audit-log.md) | v0.1 — built (S15) |
+| [status-board.md](status-board.md) | v0.1 — built (S15) |
+| [api-keys-webhooks.md](api-keys-webhooks.md) | v0.1 — built (S15) |
+| [members-roles.md](members-roles.md) | v0.1 — built (S15) |
+| [billing-usage.md](billing-usage.md) | v0.1 — built (S15) |
+| [agent-tool-calls.md](agent-tool-calls.md) | v0.1 — built (S15) |
 | [composer.md](composer.md) | draft v0.1 — composer family overview |
 | [status-indicator.md](status-indicator.md) | v1 — implemented (plan #15) |
 | [composer-send-control.md](composer-send-control.md) | draft v0.2 — worked example |
