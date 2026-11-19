@@ -559,7 +559,7 @@ impl AgentAppView {
             }
             return;
         }
-        // Command Board: [ and ] scrub the timeline.
+        // Command Board: Alt + Left / Right scrub the timeline.
         if self.app == AgentApp::CommandBoard && ev.keystroke.modifiers.alt {
             let back = k == AppKey::Left;
             if matches!(k, AppKey::Left | AppKey::Right) && self.own.data.scrub_step(back) {
