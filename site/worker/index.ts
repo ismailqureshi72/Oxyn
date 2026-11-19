@@ -7,12 +7,15 @@
 //   POST /api/feedback  multipart/form-data or JSON from the site's Feedback panel
 //   GET  /api/flags     enabled content flags (edited in the admin panel)
 //   /admin, /api/admin/* the maintainers' panel, see admin.ts and docs/admin.md
+//   /api/auth/*         site accounts: sign in with GitHub or email, see auth.ts and docs/auth.md
 //
 // Bindings (wrangler.jsonc): DB (D1 "oxyn"), UPLOADS (R2 "oxyn-uploads"), ASSETS.
-// Secrets (optional): GITHUB_TOKEN opens a GitHub issue per feedback; RATE_SALT salts IP hashes.
+// Secrets (optional): GITHUB_TOKEN opens a GitHub issue per feedback; RATE_SALT salts IP hashes;
+// GITHUB_OAUTH_CLIENT_ID / GITHUB_OAUTH_CLIENT_SECRET turn on "Continue with GitHub".
 
-import { EMAIL_RE, HttpError, KINDS, fail, json, openIssue, sha256Hex, type Ctx, type Env, type Kind } from './shared';
+import { EMAIL_RE, HttpError, KINDS, fail, json, openIssue, sameOrigin, sha256Hex, type Ctx, type Env, type Kind } from './shared';
 import { handleAdmin, publicFlags } from './admin';
+import { handleAuth } from './auth';
 
 export type { Env } from './shared';
 
@@ -38,6 +41,8 @@ export default {
     if (url.pathname === '/admin' || url.pathname.startsWith('/admin/') || url.pathname === '/api/admin' || url.pathname.startsWith('/api/admin/'))
       return handleAdmin(req, env, ctx, url);
     if (!url.pathname.startsWith('/api/')) return env.ASSETS.fetch(req);
+    // /api/auth/*: site accounts (GitHub or email + password), see auth.ts and docs/auth.md.
+    if (url.pathname.startsWith('/api/auth/')) return handleAuth(req, env, ctx, url);
     try {
       const route = url.pathname.replace(/\/+$/, '');
       if (route === '/api/health') {
@@ -65,15 +70,6 @@ async function health(env: Env): Promise<Response> {
   let db = 'ok';
   try { await env.DB.prepare('SELECT 1 AS one').first(); } catch { db = 'error'; }
   return json({ ok: db === 'ok', service: 'oxyn-site', db, time: new Date().toISOString() }, db === 'ok' ? 200 : 503);
-}
-
-/** Only the site's own pages may post: the Origin (or Referer) must be this host. */
-function sameOrigin(req: Request, url: URL) {
-  const origin = req.headers.get('origin');
-  if (origin) return origin === url.origin;
-  const ref = req.headers.get('referer');
-  if (ref) { try { return new URL(ref).origin === url.origin; } catch { return false; } }
-  return req.headers.get('sec-fetch-site') === 'same-origin';
 }
 
 interface Input { kind: string; message: string; page_url: string; email: string; website: string; file: File | null }

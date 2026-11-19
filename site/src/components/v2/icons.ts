@@ -21,6 +21,8 @@ export const icon = {
   arrowRight: s('<path d="M4.5 12h15M13.5 6l6 6-6 6"/>'),
   arrowDownRight: s('<path d="M7 7l10 10M17 8.5V17H8.5"/>'),
   bolt: s('<path d="M13 3 5 13.5h6L10 21l8-10.5h-6z"/>'),
+  user: s('<circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0"/>'),
+  signout: s('<path d="M14 4.5h4a1.5 1.5 0 0 1 1.5 1.5v12a1.5 1.5 0 0 1-1.5 1.5h-4M10 16.5 14.5 12 10 7.5M14.5 12H4.5"/>'),
   check: s('<path d="m5 12.5 4.5 4.5L19 7.5"/>'),
   menu: s('<path d="M4 7h16M4 12h16M4 17h16"/>'),
   close: s('<path d="M6 6l12 12M18 6 6 18"/>'),
