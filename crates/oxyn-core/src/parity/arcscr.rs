@@ -175,6 +175,11 @@ pub fn ws(slug: &str) -> Ws {
             name: "Harrowgate",
             domain: "harrowgate.example",
         },
+        "admin-overview" | "audit-log" | "status-board" | "api-keys-webhooks" | "members-roles"
+        | "billing-usage" | "agent-tool-calls" => Ws {
+            name: "Corvel Labs",
+            domain: "corvel.example",
+        },
         _ => Ws {
             name: "Lumenfield",
             domain: "lumenfield.example",
@@ -228,6 +233,12 @@ pub fn acct_menu(slug: &str) -> &'static [(&'static str, &'static str, &'static 
         "product-list" | "product-detail" => &[
             ("eye", "Show cost and margin", ""),
             ("undo", "Reset demo data", ""),
+            ("logout", "Sign out", ""),
+        ],
+        "admin-overview" | "audit-log" | "status-board" | "api-keys-webhooks" | "members-roles"
+        | "billing-usage" | "agent-tool-calls" => &[
+            ("gear", "Workspace settings", ""),
+            ("kbd", "Keyboard shortcuts", "?"),
             ("logout", "Sign out", ""),
         ],
         "invoice-studio" => &[

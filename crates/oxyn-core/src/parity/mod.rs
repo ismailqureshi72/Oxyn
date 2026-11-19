@@ -80,6 +80,8 @@
 //!   Support conversation, Help center
 //! - [`arcscr3`]: Screens S14 (Arc screens III): Market terminal, Product list, Product detail,
 //!   Invoice studio, Sign-in split
+//! - [`arcscr4`]: Screens S15 (Arc screens IV, admin demo app): Overview, Audit log, Status, API
+//!   keys and webhooks, Members, Billing; and Agent / Tool calls
 //! - [`wscoder`]: Screens S11 (Agent apps III): Workspace Coder
 //! - [`cmdboard`]: Screens S11 (Agent apps III): Command Board
 //! - [`appui`]: interaction state shared by the six agent apps (rows, views, rail, menu, composer)
@@ -99,6 +101,7 @@ pub mod appui;
 pub mod arcscr;
 pub mod arcscr2;
 pub mod arcscr3;
+pub mod arcscr4;
 pub mod attachfid;
 pub mod autonomyfid;
 pub mod awayfid;

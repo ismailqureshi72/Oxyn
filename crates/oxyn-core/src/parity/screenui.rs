@@ -1,4 +1,4 @@
-//! Interaction state for the screen sets S0–S8, S12, S13 and S14 (the app shells, AI Chat, Workspace,
+//! Interaction state for the screen sets S0–S8 and S12–S15 (the app shells, AI Chat, Workspace,
 //! Agent ops I and II, Orchestration / Workflow / Evals, Settings I and II, Onboarding, Arc
 //! screens I and II)
 //! as one renderer-free
@@ -24,6 +24,7 @@ use super::appui::AppKey;
 use super::arcscr::{self as a12, ArcUi};
 use super::arcscr2::{self as b13, Arc2Ui};
 use super::arcscr3::{self as c14, Arc3Ui};
+use super::arcscr4::{self as d15, Arc4Ui};
 use super::screensfid::ScreenState;
 
 /// A state bar: (key, label).
@@ -545,6 +546,56 @@ pub const SETS: &[SetDef] = &[
             ),
         ],
     },
+    SetDef {
+        id: "s15",
+        name: "Arc screens IV",
+        wizard: false,
+        screens: &[
+            sc(
+                "admin-overview",
+                "Overview",
+                d15::OVERVIEW_STATES,
+                &["overview", "home"],
+                &[],
+            ),
+            sc("audit-log", "Audit log", d15::AUDIT_STATES, &["audit"], &[]),
+            sc(
+                "status-board",
+                "Status",
+                d15::STATUS_STATES,
+                &["status"],
+                &[],
+            ),
+            sc(
+                "api-keys-webhooks",
+                "API keys and webhooks",
+                d15::KEYS_STATES,
+                &["keys", "webhooks"],
+                &[],
+            ),
+            sc(
+                "members-roles",
+                "Members",
+                d15::MEMBERS_STATES,
+                &["members"],
+                &[],
+            ),
+            sc(
+                "billing-usage",
+                "Billing",
+                d15::BILLING_STATES,
+                &["billing"],
+                &[],
+            ),
+            sc(
+                "agent-tool-calls",
+                "Agent / Tool calls",
+                d15::TOOLS_STATES,
+                &["tools", "agent"],
+                &[],
+            ),
+        ],
+    },
 ];
 
 const ONB_WEBSITE: StateList = &[
@@ -647,6 +698,8 @@ pub struct ScreenUi {
     pub arc2: Arc2Ui,
     /// The Arc screens III live state (S14).
     pub arc3: Arc3Ui,
+    /// The Arc screens IV live state (S15).
+    pub arc4: Arc4Ui,
 }
 
 impl Default for ScreenUi {
@@ -670,6 +723,7 @@ impl ScreenUi {
             arc: ArcUi::default(),
             arc2: Arc2Ui::default(),
             arc3: Arc3Ui::default(),
+            arc4: Arc4Ui::default(),
         }
     }
 
@@ -756,6 +810,11 @@ impl ScreenUi {
         }
         if self.arc3.press(id) {
             self.said = self.arc3.said.take();
+            self.menu = false;
+            return Moved::State;
+        }
+        if self.arc4.press(id) {
+            self.said = self.arc4.said.take();
             self.menu = false;
             return Moved::State;
         }
@@ -928,7 +987,7 @@ mod tests {
 
     #[test]
     fn every_set_has_screens_with_a_data_state() {
-        assert_eq!(SETS.len(), 12);
+        assert_eq!(SETS.len(), 13);
         for s in SETS {
             assert!(!s.screens.is_empty(), "{}", s.id);
             for x in s.screens {
@@ -1040,6 +1099,23 @@ mod tests {
         assert_eq!(u.press("nav-signin"), Moved::Screen);
         assert_eq!(u.press("state-wrong"), Moved::State);
         assert_eq!(u.split(), (ScreenState::Sample, "wrong"));
+    }
+
+    #[test]
+    fn arc4_screens_press_live_state() {
+        let mut u = ScreenUi::new(12);
+        assert_eq!(u.set_def().id, "s15");
+        assert_eq!(u.screen_def().slug, "admin-overview");
+        assert_eq!(u.press("ov-range-0"), Moved::State);
+        assert_eq!(u.said.as_deref(), Some("Last 24h"));
+        assert_eq!(u.press("nav-tools"), Moved::Screen);
+        assert_eq!(u.screen_def().slug, "agent-tool-calls");
+        assert_eq!(u.press("tc-tool-2"), Moved::State);
+        assert_eq!(u.press("tc-mode-off"), Moved::State);
+        assert_eq!(u.said.as_deref(), Some("Stripe: Paused"));
+        assert_eq!(u.press("nav-billing"), Moved::Screen);
+        assert_eq!(u.press("state-pastdue"), Moved::State);
+        assert_eq!(u.split(), (ScreenState::Sample, "pastdue"));
     }
 
     #[test]

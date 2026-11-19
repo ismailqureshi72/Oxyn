@@ -126,75 +126,164 @@ fn plan_code(_: &Vals) -> String {
 
 // ---------- agent trail ----------
 
-fn sample_trail(stage: &str, now: ClockMs) -> Trail {
+fn sample_trail(stage: &str, long: bool, now: ClockMs) -> Trail {
+    if stage == "empty" {
+        return Trail {
+            title: "Fix the checkout crash".into(),
+            agent: Some("Claude".into()),
+            steps: vec![],
+        };
+    }
+    let mut sub: Vec<(String, StepState)> = vec![
+        ("Found the empty-cart case".into(), StepState::Done),
+        ("Added a guard and 2 tests".into(), StepState::Done),
+        ("Running the test suite".into(), StepState::Running),
+        ("Check the e2e checkout".into(), StepState::Pending),
+    ];
+    let mut details: Vec<String> = vec![
+        "src/components/checkout/CartWrapper.tsx:1284".into(),
+        "+18 −3".into(),
+        "182/214".into(),
+        String::new(),
+    ];
+    if long {
+        let pre = [
+            ("Read the stack trace", "sentry #9921"),
+            ("Opened checkout/form.tsx", "412 lines"),
+            ("Searched for totals()", "6 hits"),
+            ("Read cart.ts", "cart.ts:142"),
+            ("Ran the failing test", "1 failed"),
+            ("Bisected to 4f2a91c", "7 steps"),
+        ];
+        for (i, (t, d)) in pre.iter().enumerate() {
+            sub.insert(i, ((*t).into(), StepState::Done));
+            details.insert(i, (*d).into());
+        }
+        sub.push(("Update the snapshot".into(), StepState::Pending));
+        details.push(String::new());
+    }
     let mut s = vec![
         TrailStep {
-            took_ms: Some(4_000),
-            tool: Some("GitHub".into()),
-            ..TrailStep::new("Read issue #482", StepState::Done)
+            took_ms: Some(8_000),
+            tool: Some("Linear".into()),
+            ..TrailStep::new("Read the bug report", StepState::Done)
         },
         TrailStep {
-            took_ms: Some(64_000),
-            tool: Some("Code".into()),
-            ..TrailStep::new("Reproduce the race", StepState::Done)
+            took_ms: Some(34_000),
+            tool: Some("Sentry".into()),
+            ..TrailStep::new("Reproduce the crash", StepState::Done)
         },
         TrailStep {
             status: Some("Testing".into()),
             started: ago(now, 23_000),
-            tool: Some("Code".into()),
-            sub: vec![
-                ("Patch refresh()".into(), StepState::Done),
-                ("Run auth tests".into(), StepState::Running),
-                ("Run e2e login".into(), StepState::Pending),
-            ],
-            ..TrailStep::new("Fix the refresh-token race", StepState::Running)
+            tool: Some("GitHub".into()),
+            sub,
+            details,
+            ..TrailStep::new("Patch the checkout form", StepState::Running)
+        },
+        TrailStep {
+            tool: Some("Notion".into()),
+            ..TrailStep::new("Write the release note", StepState::Pending)
         },
         TrailStep {
             gate: true,
             tool: Some("GitHub".into()),
+            ask: Some("Open PR #482 against main – 3 files, 214 tests passing".into()),
             ..TrailStep::new("Open a pull request", StepState::Pending)
         },
-        TrailStep {
-            tool: Some("Linear".into()),
-            ..TrailStep::new("Close the Linear ticket", StepState::Pending)
-        },
     ];
+    let finish = |x: &mut TrailStep, ms: u64| {
+        x.state = StepState::Done;
+        x.took_ms = Some(ms);
+        x.sub.iter_mut().for_each(|y| y.1 = StepState::Done);
+    };
     match stage {
         "waiting" => {
-            s[2] = TrailStep {
-                took_ms: Some(41_000),
-                ..TrailStep::new("Fix the refresh-token race", StepState::Done)
-            };
-            s[3].state = StepState::Waiting;
+            finish(&mut s[2], 41_000);
+            s[3].state = StepState::Done;
+            s[3].took_ms = Some(12_000);
+            s[4].state = StepState::Waiting;
         }
         "failed" => {
             s[2].state = StepState::Failed;
             s[2].took_ms = Some(23_000);
         }
         "declined" => {
-            s[2].state = StepState::Done;
-            s[2].took_ms = Some(41_000);
-            s[3].state = StepState::Declined;
+            finish(&mut s[2], 41_000);
+            s[3].state = StepState::Done;
+            s[3].took_ms = Some(12_000);
+            s[4].state = StepState::Declined;
+        }
+        "done" => {
+            finish(&mut s[2], 41_000);
+            s[3].state = StepState::Done;
+            s[3].took_ms = Some(12_000);
+            s[4].state = StepState::Done;
+            s[4].took_ms = Some(900);
         }
         _ => {}
     }
     Trail {
-        title: "Fix login loop (#482)".into(),
+        title: "Fix the checkout crash".into(),
         agent: Some("Claude".into()),
         steps: s,
     }
 }
 
 fn trail(v: &Vals, now: ClockMs) -> Element {
-    let t = sample_trail(v.s("stage"), now);
-    rsx! { div { class: "oxd-w520", AgentTrail { trail: t, now, substeps: v.b("sub"), dense: v.b("dense") } } }
+    rsx! {
+        LiveTrail {
+            stage: v.string("stage"),
+            long: v.s("subs") == "long",
+            sub: v.b("sub"),
+            dense: v.b("dense"),
+            variant: v.string("variant"),
+            rtl: v.s("dir") == "rtl",
+            now,
+        }
+    }
+}
+
+#[component]
+fn LiveTrail(
+    stage: String,
+    long: bool,
+    sub: bool,
+    dense: bool,
+    variant: String,
+    rtl: bool,
+    now: ClockMs,
+) -> Element {
+    keyed!(
+        t,
+        format!("{stage}-{long}"),
+        sample_trail(&stage, long, now)
+    );
+    rsx! {
+        div { class: "oxd-w520",
+            AgentTrail {
+                trail: t(),
+                now,
+                substeps: sub,
+                dense,
+                variant,
+                rtl,
+                on_approve: move |i: usize| { let _ = t.write().approve(i, now); },
+                on_decline: move |i: usize| { let _ = t.write().decline(i); },
+            }
+        }
+    }
 }
 
 fn trail_code(v: &Vals) -> String {
     Code::new("AgentTrail")
-        .raw("trail", "trail() // Trail { title, agent, steps }")
+        .raw("trail", "trail() // Trail { title, agent, steps: [TrailStep { tool, gate, ask, sub, details, .. }] }")
         .raw("now", "clock.now()")
+        .s("variant", v.s("variant"), "plain")
         .b("dense", v.b("dense"))
+        .b("rtl", v.s("dir") == "rtl")
+        .raw("on_approve", "move |i| trail.write().approve(i, now)")
+        .raw("on_decline", "move |i| trail.write().decline(i)")
         .done()
 }
 
@@ -1260,46 +1349,90 @@ pub fn demos() -> Vec<Demo> {
                 sel(
                     "stage",
                     "Stage",
-                    &["running", "waiting", "failed", "declined"],
+                    &["running", "waiting", "failed", "declined", "done", "empty"],
                     "running",
                 ),
-                tog("sub", "Sub-steps", true),
+                sel("subs", "Sub-steps", &["short", "long"], "short"),
+                sel("variant", "Variant", &["plain", "card", "inline"], "plain"),
+                sel("dir", "Direction", &["ltr", "rtl"], "ltr"),
+                tog("sub", "Show sub-steps", true),
                 tog("dense", "Dense", false),
             ],
             variants: vec![
                 var(
                     "running",
-                    "Step 3 testing, with sub-steps and a live timer.",
+                    "Step 3 testing: the light runs down to the running sub-step, live timer.",
                     &[],
                 ),
                 var(
                     "needs-you",
-                    "The gated PR step needs you.",
+                    "The gated PR step waits: Needs you opens Approve and Decline.",
                     &[("stage", "waiting")],
                 ),
-                var("failed", "The fix failed.", &[("stage", "failed")]),
                 var(
-                    "dense",
-                    "Dense, no sub-steps.",
-                    &[("dense", "true"), ("sub", "false")],
+                    "declined",
+                    "You said no: the step is struck through.",
+                    &[("stage", "declined")],
                 ),
+                var("failed", "The patch failed.", &[("stage", "failed")]),
+                var(
+                    "folded",
+                    "Twelve sub-steps fold to five around the running one: +N earlier, +N more.",
+                    &[("subs", "long")],
+                ),
+                var(
+                    "card",
+                    "As a card, every step done.",
+                    &[("variant", "card"), ("stage", "done")],
+                ),
+                var(
+                    "inline",
+                    "Inline, no header rule, dense.",
+                    &[("variant", "inline"), ("dense", "true")],
+                ),
+                var(
+                    "rtl",
+                    "Right to left: the rail moves to the right edge.",
+                    &[("dir", "rtl")],
+                ),
+                var("empty", "No steps yet.", &[("stage", "empty")]),
             ],
             render: trail,
             code: trail_code,
-            keyboard: vec![("—", "Read-only; the host links steps where needed")],
-            a11y: vec![
-                "Ordered list; state is in each step's badge text and data-state.",
-                "The live timer is text; shimmer is decorative.",
+            keyboard: vec![
+                (
+                    "Tab",
+                    "Each step with sub-steps, +N earlier / +N more, Needs you",
+                ),
+                (
+                    "Enter / Space",
+                    "Open or close a step's sub-steps; show every sub-step",
+                ),
+                (
+                    "Enter",
+                    "On Needs you: open Approve and Decline, focus on Approve",
+                ),
+                ("Escape", "Close the answer panel"),
             ],
-            responsive: vec!["Tool marks and times keep their width; titles take the rest."],
-            height: 360,
+            a11y: vec![
+                "An ordered list named after the task; the running step and sub-step carry aria-current=step.",
+                "The header count reads 3 of 5 steps done; each step reads its title, state and time.",
+                "A step with sub-steps toggles them and reports aria-expanded; times and details keep their direction in RTL.",
+                "A polite live region says Approved or Declined; the focus outline appears only when moving by keyboard.",
+            ],
+            responsive: vec![
+                "Rows are fixed: 32 px a step, 24 px a sub-step, 40 and 28 px on touch screens.",
+                "Long sub-step lists fold to five around the running one; the right side never takes more than 40%.",
+                "Right to left: the rail moves to the right edge and the branch bends the other way.",
+            ],
+            height: 440,
             align: Align::Start,
             live: true,
             ..mk(
                 "agent-trail",
                 "Agent trail",
                 "tools",
-                "The steps an agent works through as one quiet trail: a header with the task and 3/5, done steps with a check and their time, the current one shimmering what it does with a live timer and its sub-steps, gated steps marked Approval, then Needs you.",
+                "The steps an agent works through as one quiet trail: a header with the agent's mark, the task and 3/5; done steps with a check and their time; the running step shimmering what it does with a live timer, a short fading light running down the trail into the sub-step it is on; long sub-step lists fold to five (+N earlier, +N more); a gated step waits with a dashed ring and Approval, then Needs you opens Approve and Decline; declined steps are struck through; each step shows its tool's coloured logo. RTL, keyboard and live-region built in.",
                 "AgentTrail",
                 "AgentTrailEl",
                 "agent-trail",
