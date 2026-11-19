@@ -5,7 +5,7 @@ import specsJson from '../generated/specs.json';
 import parityJson from '../generated/parity.json';
 import wasmJson from '../generated/wasm.json';
 import motionJson from '../generated/motion.json';
-import { GROUPS, groupSlugOf, isScreen, isAgentApp, pageUrl } from './taxonomy.mjs';
+import { GROUPS, groupSlugOf, isScreen, isAgentApp, isArcScreen, ARC_SCREENS, pageUrl } from './taxonomy.mjs';
 
 export type Control = {
   key: string;
@@ -186,7 +186,9 @@ export const screens = demos.filter((d) => isScreen(d));
 export const components = demos.filter((d) => !isScreen(d));
 /** Agent apps: the screens of whole desktop agent apps, their own category after Screens. */
 export const agentApps = screens.filter((d) => isAgentApp(d));
-export const appScreens = screens.filter((d) => !isAgentApp(d));
+/** Arc screens: work-app screens on the Arc frame, their own category after Agent apps. */
+export const arcScreens = ARC_SCREENS.map((s) => screens.find((d) => d.slug === s)!).filter(Boolean);
+export const appScreens = screens.filter((d) => !isAgentApp(d) && !isArcScreen(d));
 export const groupOf = (d: Demo) => groups.find((g) => g.slug === groupSlugOf(d))!;
 // Within a category, the agent-specific parts come first (approvals before status text).
 const CAT_ORDER = ['approvals', 'tools', 'checkpoints-git', 'composer', 'chat', 'status-text'];
@@ -206,6 +208,7 @@ export const counts = {
   components: components.length,
   screens: screens.length + composedScreens.length,
   agentApps: agentApps.length,
+  arcScreens: arcScreens.length,
   blocks: 0,
   illustrations: 0,
   motion: motionDemos.length,

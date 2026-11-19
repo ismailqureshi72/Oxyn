@@ -4,7 +4,7 @@
 // so it stays in reach anywhere in the long list.
 import { icon } from './icons';
 import { lockup } from './logo';
-import { components, appScreens, agentApps, counts, demoUrl, isPro, motionDemos, composedScreens } from '../../lib/data';
+import { components, appScreens, agentApps, arcScreens, counts, demoUrl, isPro, motionDemos, composedScreens } from '../../lib/data';
 import { FAMILY_NAV, navFamilyOf } from '../../lib/families.mjs';
 interface Props { current?: string }
 const { current = '' } = Astro.props;
@@ -23,8 +23,9 @@ const libActive = !current.startsWith('/docs') && !current.startsWith('/pricing'
 const groupsList = [
   { label: 'Components', href: '/components/', n: counts.components, items: [], head: true },
   ...families,
-  { label: 'Screens', href: '/screens/', n: counts.screens - counts.agentApps, items: [...composedScreens.map((c) => [c.name, c.href, false] as const), ...appScreens.map((d) => [d.name, demoUrl(d), isPro(d)] as const)] },
+  { label: 'Screens', href: '/screens/', n: counts.screens - counts.agentApps - counts.arcScreens, items: [...composedScreens.map((c) => [c.name, c.href, false] as const), ...appScreens.map((d) => [d.name, demoUrl(d), isPro(d)] as const)] },
   { label: 'Agent apps', href: '/screens/#agent-apps', n: counts.agentApps, items: agentApps.map((d) => [d.name, demoUrl(d), isPro(d)] as const) },
+  { label: 'Arc screens', href: '/screens/#arc-screens', n: counts.arcScreens, items: arcScreens.map((d) => [d.name, demoUrl(d), isPro(d)] as const) },
   { label: 'Blocks', href: '/blocks/', n: 0, items: [] },
   { label: 'Illustrations', href: '/illustrations/', n: 0, items: [] },
   { label: 'Motion', href: '/motion/', n: counts.motion, items: [...motionDemos.map((d) => [d.name, demoUrl(d), isPro(d)] as const), ['Motion tokens', '/motion/', false] as const] },

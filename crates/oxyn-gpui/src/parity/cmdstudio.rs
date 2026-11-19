@@ -1287,12 +1287,11 @@ fn ss_panes(
                 .gap(px(4.))
                 .child(hit(div().px(px(4.)).child(quiet(p, "↑")), act, "pane-up"))
                 .child(hit(div().px(px(4.)).child(quiet(p, "↓")), act, "pane-down"));
+            // The picked pane (Up / Down pick, Alt + Up / Down move) gets a strong edge and a
+            // filled background; `pane` sets the resting border, so the pick goes after it.
             let mut row = hit(
-                pane(
-                    div()
-                        .when(pos == pick, |d| d.border_color(p.fg2))
-                        .child(head(title).child(moves)),
-                ),
+                pane(div().child(head(title).child(moves)))
+                    .when(pos == pick, |d| d.border_2().border_color(p.fg).bg(p.sel)),
                 act,
                 ids::at(&ids::PANE, pos),
             );

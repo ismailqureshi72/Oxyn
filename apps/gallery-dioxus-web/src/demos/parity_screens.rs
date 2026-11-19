@@ -21,6 +21,10 @@ use oxyn_dioxus::{CommandBoardScreen, s11_board_states};
 use oxyn_dioxus::{CommandCenterScreen, SessionStudioScreen, s10_states};
 use oxyn_dioxus::{FleetWindowScreen, s11_fleet_states};
 use oxyn_dioxus::{
+    GanttTimelineScreen, KanbanBoardScreen, MetricsDashboardScreen, ProjectBoardScreen,
+    TeamDirectoryScreen, s12_states,
+};
+use oxyn_dioxus::{
     OnboardingBrandScreen, OnboardingReadyScreen, OnboardingToneScreen, OnboardingWebsiteScreen,
     s8_states,
 };
@@ -4838,6 +4842,321 @@ fn cb_demo() -> Demo {
     )
 }
 
+// ---------- Arc screens I: Metrics, Kanban board, Project board, Gantt, Team directory (S12) ----------
+
+/// The state key for a Data label of an S12 screen (`By assignee` → `assignee`).
+fn arc_key(slug: &str, label: &str) -> String {
+    s12_states(slug)
+        .iter()
+        .find(|(_, l)| l.eq_ignore_ascii_case(label))
+        .map(|(k, _)| k.to_string())
+        .unwrap_or_else(|| low(label))
+}
+
+fn arc_el(slug: &'static str, lay: String, s: String) -> Element {
+    match slug {
+        "kanban-board" => rsx! { KanbanBoardScreen { layout: lay, state: s } },
+        "project-board" => rsx! { ProjectBoardScreen { layout: lay, state: s } },
+        "gantt-timeline" => rsx! { GanttTimelineScreen { layout: lay, state: s } },
+        "team-directory" => rsx! { TeamDirectoryScreen { layout: lay, state: s } },
+        _ => rsx! { MetricsDashboardScreen { layout: lay, state: s } },
+    }
+}
+
+fn arc_screen(slug: &'static str, v: &Vals) -> Element {
+    let (_, lay, key) = frame(v);
+    let st = arc_key(slug, v.s("data"));
+    let key = format!("{key}-{st}");
+    rsx! {
+        div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
+            ScreenStage { state: st, states: s12_states(slug), screen: move |s: String| arc_el(slug, lay.clone(), s) }
+        }
+    }
+}
+
+fn arc_code(name: &str, slug: &str, v: &Vals) -> String {
+    Code::new(name)
+        .s("layout", &low(v.s("frame")), "inset")
+        .s("state", &arc_key(slug, v.s("data")), "sample")
+        .done()
+}
+
+#[allow(clippy::too_many_arguments)]
+fn arc_demo(
+    slug: &'static str,
+    name: &'static str,
+    summary: &'static str,
+    dx: &'static str,
+    gp: &'static str,
+    render: fn(&Vals, ClockMs) -> Element,
+    code: fn(&Vals) -> String,
+    keyboard: Vec<(&'static str, &'static str)>,
+    a11y: Vec<&'static str>,
+    own: &[(&'static str, &'static str, &'static str)],
+) -> Demo {
+    let labels: Vec<&'static str> = own.iter().map(|m| m.1).collect();
+    let c = controls_x("inset", &labels);
+    let mut variants = vec![
+        var(
+            "sample",
+            "Sample data, the page as an inset card beside the sidebar.",
+            &[],
+        ),
+        var(
+            "flat",
+            "The same view with the page edge to edge.",
+            &[("frame", "Flat")],
+        ),
+        var(
+            "loading",
+            "Skeletons where the data lands.",
+            &[("data", "Loading")],
+        ),
+        var(
+            "empty",
+            "A first run: what will show here and how to start.",
+            &[("data", "Empty")],
+        ),
+    ];
+    for (k, l, n) in own.iter().copied() {
+        variants.push(var(k, n, &[("data", l)]));
+    }
+    Demo {
+        controls: c,
+        variants,
+        render,
+        code,
+        keyboard,
+        a11y,
+        responsive: vec![
+            "Authored on the 1440 × 900 canvas: a 248 px sidebar, the page as an inset card and, where the screen has one, a 328 px right card in the gutter.",
+            "Under 960 px the sidebar becomes a drawer from the header's menu button and the right card hides.",
+            "Under 640 px header actions turn into icon buttons, grids drop to one column and labels ellipsise.",
+        ],
+        height: 240,
+        live: false,
+        align: Align::Start,
+        ..mk(slug, name, CAT, summary, dx, gp, slug, "parity/arcscr.rs")
+    }
+}
+
+fn mx_screen(v: &Vals, _now: ClockMs) -> Element {
+    arc_screen("metrics-dashboard", v)
+}
+fn mx_code(v: &Vals) -> String {
+    arc_code("MetricsDashboardScreen", "metrics-dashboard", v)
+}
+fn kb2_screen(v: &Vals, _now: ClockMs) -> Element {
+    arc_screen("kanban-board", v)
+}
+fn kb2_code(v: &Vals) -> String {
+    arc_code("KanbanBoardScreen", "kanban-board", v)
+}
+fn pb_screen(v: &Vals, _now: ClockMs) -> Element {
+    arc_screen("project-board", v)
+}
+fn pb_code(v: &Vals) -> String {
+    arc_code("ProjectBoardScreen", "project-board", v)
+}
+fn gt_screen(v: &Vals, _now: ClockMs) -> Element {
+    arc_screen("gantt-timeline", v)
+}
+fn gt_code(v: &Vals) -> String {
+    arc_code("GanttTimelineScreen", "gantt-timeline", v)
+}
+fn dir_screen(v: &Vals, _now: ClockMs) -> Element {
+    arc_screen("team-directory", v)
+}
+fn dir_code(v: &Vals) -> String {
+    arc_code("TeamDirectoryScreen", "team-directory", v)
+}
+
+fn mx_demo() -> Demo {
+    arc_demo(
+        "metrics-dashboard",
+        "Metrics dashboard",
+        "Arc screens / Metrics dashboard: a web analytics overview. A date range (7 days to 12 months) and Export, five KPI tabs (visitors, page views, signups, bounce rate, visit duration) over one chart with hover readouts, drag across to zoom and a Compare switch for the period before, then pages, sources and places with inline bars. Saved views in the sidebar set the range; an Online now card sits above the account.",
+        "MetricsDashboardScreen",
+        "MetricsDashboardEl",
+        mx_screen,
+        mx_code,
+        vec![
+            (
+                "Tab",
+                "Range, Export, the KPI tabs, Compare, then each table's tabs and rows",
+            ),
+            ("Escape", "Close the range or filter menu"),
+        ],
+        vec![
+            "The KPI tabs are a tablist; the chart is an image named for its metric and dates.",
+            "Compare is a switch; zoom resets with a labelled button.",
+            "Every action reports in a polite live region.",
+        ],
+        &[
+            (
+                "compare",
+                "Compare",
+                "The previous period drawn dashed under the current one.",
+            ),
+            (
+                "zoomed",
+                "Zoomed",
+                "A dragged window of two weeks, with Reset zoom.",
+            ),
+            (
+                "exported",
+                "Exported",
+                "Export done: the button turns to Exported and the file name shows.",
+            ),
+        ],
+    )
+}
+
+fn kb2_demo() -> Demo {
+    arc_demo(
+        "kanban-board",
+        "Kanban board",
+        "Arc screens / Kanban board: a cycle board for a product team. Issues in Backlog, Todo, In progress and In review (with work-in-progress limits) and Done; cards with key, linked pull request, label, priority, sub-issues, comments, due date and assignee. Drag a card, or pick it with Space and move it with the arrow keys; filter by text, label or priority; group by status or assignee; add issues per column. The cycle card counts done points as cards reach Done.",
+        "KanbanBoardScreen",
+        "KanbanBoardEl",
+        kb2_screen,
+        kb2_code,
+        vec![
+            ("Space / Enter", "Pick up or put down the focused card"),
+            (
+                "← → ↑ ↓",
+                "Move the picked card across columns or within one (Alt + arrows without picking)",
+            ),
+            (
+                "Escape",
+                "Put the card down, clear the filter field, close a menu",
+            ),
+        ],
+        vec![
+            "Columns are labelled regions with their counts; a column over its limit says so.",
+            "Cards are buttons with aria-roledescription Draggable issue and aria-pressed while picked.",
+            "Moves and filters report in a polite live region.",
+        ],
+        &[
+            (
+                "dragging",
+                "Dragging",
+                "A card lifted mid-drag over In review.",
+            ),
+            (
+                "filtered",
+                "Filtered",
+                "The Backend label filter on, with its chip.",
+            ),
+            (
+                "assignee",
+                "By assignee",
+                "Open issues grouped by the person they belong to.",
+            ),
+        ],
+    )
+}
+
+fn pb_demo() -> Demo {
+    arc_demo(
+        "project-board",
+        "Project board",
+        "Arc screens / Project board: one project's home. Status (On track, At risk, Off track), lead, dates and people; four stat tiles (complete, open, due this week, until launch); a milestone track that picks the task list; tasks to complete or reopen that move the numbers; Tasks and Activity tabs; and a right card with the team's open load and the project's links to copy.",
+        "ProjectBoardScreen",
+        "ProjectBoardEl",
+        pb_screen,
+        pb_code,
+        vec![
+            ("Tab", "Tabs, status, milestones, then each task's checkbox"),
+            ("Space", "Complete or reopen the focused task"),
+            ("Escape", "Close the status menu"),
+        ],
+        vec![
+            "Tabs and milestones are tablists; tasks are checkboxes named for the task.",
+            "The status is a menu of menuitemradio; the side card hides with a pressed toggle.",
+        ],
+        &[
+            (
+                "atrisk",
+                "At risk",
+                "Status set to At risk, with a note on what is late.",
+            ),
+            (
+                "activity",
+                "Activity",
+                "The Activity tab: who did what, with ISO dates.",
+            ),
+        ],
+    )
+}
+
+fn gt_demo() -> Demo {
+    arc_demo(
+        "gantt-timeline",
+        "Gantt timeline",
+        "Arc screens / Gantt timeline: a release plan by phase. Bars with progress, milestones as diamonds and dependency arrows that turn red when a task starts before the one it waits on ends; drag a bar to move it or its edges to change dates (or focus it and use the arrow keys), Day / Week / Month zoom, Today, collapsible phases, a filter and an owner menu, Undo and Reset.",
+        "GanttTimelineScreen",
+        "GanttTimelineEl",
+        gt_screen,
+        gt_code,
+        vec![
+            ("← →", "Move the focused bar a day"),
+            ("Shift + ← →", "Change the focused bar's end"),
+            ("Escape", "Clear the filter field, close a menu"),
+        ],
+        vec![
+            "Each bar is a button named with its dates and progress; milestones name their day.",
+            "Phases are buttons with aria-expanded; changes report in a polite live region.",
+        ],
+        &[
+            (
+                "dragging",
+                "Dragging",
+                "A bar mid-drag four days later, its new dates in a tooltip.",
+            ),
+            (
+                "month",
+                "Month view",
+                "The Month zoom: the whole plan at a glance.",
+            ),
+        ],
+    )
+}
+
+fn dir_demo() -> Demo {
+    arc_demo(
+        "team-directory",
+        "Team directory",
+        "Arc screens / Team directory: people by team with their office's local time and availability (available, busy until, out until, starts on, online at). Search names, roles and skills (/ focuses), filter by team, status or office (the sidebar's offices show who is working now), star favourites, switch Grid and List, and invite by email with validation.",
+        "TeamDirectoryScreen",
+        "TeamDirectoryEl",
+        dir_screen,
+        dir_code,
+        vec![
+            ("/", "Focus the search"),
+            ("Escape", "Clear the search, close the invite or a menu"),
+            ("Enter", "Send the invite"),
+        ],
+        vec![
+            "Teams are labelled sections; favourites are toggle buttons named for the person.",
+            "The invite field is marked invalid with an alert when the address is wrong.",
+        ],
+        &[
+            ("list", "List", "The List view: one row per person."),
+            (
+                "noresults",
+                "No results",
+                "A search that matches no one, with Clear search.",
+            ),
+            (
+                "inviting",
+                "Invite",
+                "The invite bar open with an address ready to send.",
+            ),
+        ],
+    )
+}
+
 pub(crate) fn demos() -> Vec<Demo> {
     vec![
         shell_inset_demo(),
@@ -4896,5 +5215,10 @@ pub(crate) fn demos() -> Vec<Demo> {
         fw_demo(),
         wc_demo(),
         cb_demo(),
+        mx_demo(),
+        kb2_demo(),
+        pb_demo(),
+        gt_demo(),
+        dir_demo(),
     ]
 }

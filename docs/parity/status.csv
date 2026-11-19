@@ -721,3 +721,8 @@ Oxyn,Agent apps · Session Studio (sessions + tools desktop pattern),https://cod
 Oxyn,Agent apps · Fleet Window (parallel agents + compare desktop pattern),https://cursor.com/docs/agent/overview,Agent apps,Free,fleet-window,S11,S11,built (GPUI interactive #59)
 Oxyn,Agent apps · Workspace Coder (chat + agent computer pattern),https://www.kimi.com/,Agent apps,Free,workspace-coder,S11,S11,built (GPUI interactive #59)
 Oxyn,Agent apps · Command Board (autonomous sessions + workspace pattern),https://docs.devin.ai/,Agent apps,Free,command-board,S11,S11,built (GPUI interactive #59)
+Arc UI,Screens · Metrics dashboard,https://uiarc.dev/components/screens/metrics-dashboard,Arc screens,Free,metrics-dashboard,S12,S12,built
+Arc UI,Screens · Kanban board,https://uiarc.dev/components/screens/kanban-board,Arc screens,Free,kanban-board,S12,S12,built
+Arc UI,Screens · Project board,https://uiarc.dev/components/screens/project-board,Arc screens,Free,project-board,S12,S12,built
+Arc UI,Screens · Gantt timeline,https://uiarc.dev/components/screens/gantt-timeline,Arc screens,Free,gantt-timeline,S12,S12,built
+Arc UI,Screens · Team directory,https://uiarc.dev/components/screens/team-directory,Arc screens,Free,team-directory,S12,S12,built
