@@ -118,17 +118,22 @@ jobs:
       - name: worker bundle check (wrangler deploy --dry-run)
         working-directory: site
         run: npx --yes wrangler@4 deploy --dry-run --outdir "$RUNNER_TEMP/worker-dry"
-      # site/worker/dev.ts swaps the Access JWT check for a localhost stub. It must never be deployed:
-      # fail if its marker is in the bundle, and prove the check would see it (dev.ts bundle).
-      - name: admin dev stub is not deployed
+      # site/worker/dev.ts swaps the Access JWT check and GitHub sign-in for localhost stubs. They
+      # must never be deployed: fail if either marker is in the bundle, and prove the check would see
+      # them (dev.ts bundle).
+      - name: dev stubs are not deployed (admin Access, GitHub sign-in)
         working-directory: site
         run: |
-          if grep -rq OXYN_DEV_ACCESS_STUB "$RUNNER_TEMP/worker-dry"; then
-            echo "::error::the admin dev stub (worker/dev.ts) is in the deploy bundle"; exit 1
-          fi
+          for m in OXYN_DEV_ACCESS_STUB OXYN_DEV_GITHUB_STUB fake-github.oxyn.invalid; do
+            if grep -rq "$m" "$RUNNER_TEMP/worker-dry"; then
+              echo "::error::dev stub marker $m (worker/dev.ts) is in the deploy bundle"; exit 1
+            fi
+          done
           npx --yes wrangler@4 deploy --dry-run worker/dev.ts --outdir "$RUNNER_TEMP/worker-dev"
-          grep -rq OXYN_DEV_ACCESS_STUB "$RUNNER_TEMP/worker-dev" || { echo "::error::marker check is broken"; exit 1; }
-          echo "deploy bundle has no dev stub"
+          for m in OXYN_DEV_ACCESS_STUB OXYN_DEV_GITHUB_STUB fake-github.oxyn.invalid; do
+            grep -rq "$m" "$RUNNER_TEMP/worker-dev" || { echo "::error::marker check for $m is broken"; exit 1; }
+          done
+          echo "deploy bundle has no dev stubs"
       # Uploads the assets, the /api Worker and its D1 + R2 bindings together. D1 migrations are
       # applied separately (docs/backend.md).
       - name: deploy to Cloudflare (main, when credentials are set)
