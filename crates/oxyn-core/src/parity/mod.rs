@@ -74,6 +74,8 @@
 //! - [`taskdeck`]: Screens S9 (Agent apps I): Taskdeck (Start, Task, Board)
 //! - [`cmdstudio`]: Screens S10 (Agent apps II): Command Center and Session Studio
 //! - [`fleetwin`]: Screens S11 (Agent apps III): Fleet Window
+//! - [`arcscr`]: Screens S12 (Arc screens I): Metrics dashboard, Kanban board, Project board,
+//!   Gantt timeline, Team directory
 //! - [`wscoder`]: Screens S11 (Agent apps III): Workspace Coder
 //! - [`cmdboard`]: Screens S11 (Agent apps III): Command Board
 //! - [`appui`]: interaction state shared by the six agent apps (rows, views, rail, menu, composer)
@@ -90,6 +92,7 @@ pub mod agentscr;
 pub mod agentsfid;
 pub mod answers;
 pub mod appui;
+pub mod arcscr;
 pub mod attachfid;
 pub mod autonomyfid;
 pub mod awayfid;
