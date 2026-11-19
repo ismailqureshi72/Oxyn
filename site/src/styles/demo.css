@@ -179,3 +179,13 @@ oxyn-demo{display:block}
 .oxd-mini .oxd-stage:has(.oxs-frame,.oxyn-harness){overflow:hidden}
 /* Shell frames keep a desktop width on phones and zoom to fit, instead of squeezing their panes. */
 .oxd-full .oxd-app.oxs-frame,.oxd-full .oxyn-harness{min-width:760px}
+
+/* Skeleton: a preview whose server render has nothing to show yet (the live component fills it in)
+   gets neutral placeholder bars instead of an empty card (oxyn-demo.js sets data-skel). */
+oxyn-demo[data-skel] .oxd-mount{min-height:96px;min-width:min(260px,100%);position:relative}
+oxyn-demo[data-skel] .oxd-mount::before{content:"";position:absolute;inset:0;margin:auto;width:min(260px,100%);height:84px;border-radius:12px;
+  background:linear-gradient(var(--site-line) 0 0) 16px 18px / 46% 10px no-repeat,linear-gradient(var(--site-line) 0 0) 16px 38px / 72% 8px no-repeat,
+    linear-gradient(var(--site-line) 0 0) 16px 56px / 58% 8px no-repeat,var(--site-inset);box-shadow:inset 0 0 0 1px var(--site-line-soft);
+  animation:oxd-skel 1.4s ease-in-out infinite}
+@keyframes oxd-skel{50%{opacity:.55}}
+@media (prefers-reduced-motion:reduce){oxyn-demo[data-skel] .oxd-mount::before{animation:none}}

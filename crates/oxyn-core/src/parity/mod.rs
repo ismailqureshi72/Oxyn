@@ -73,6 +73,10 @@
 //! - [`onbscr`]: Screens S8: Onboarding wizard (Website, Brand, Tone, Ready)
 //! - [`taskdeck`]: Screens S9 (Agent apps I): Taskdeck (Start, Task, Board)
 //! - [`cmdstudio`]: Screens S10 (Agent apps II): Command Center and Session Studio
+//! - [`fleetwin`]: Screens S11 (Agent apps III): Fleet Window
+//! - [`wscoder`]: Screens S11 (Agent apps III): Workspace Coder
+//! - [`cmdboard`]: Screens S11 (Agent apps III): Command Board
+//! - [`appui`]: interaction state shared by the six agent apps (rows, views, rail, menu, composer)
 //! - [`answers`]: fidelity batch, family A: AI Answer markup and streaming, Cited Answer
 //!   sentences and quotes, Message Actions, Thinking Loader phases, Thinking State steps and the
 //!   Writing Assistant's sample writer and dictation.
@@ -83,11 +87,13 @@
 pub mod agentscr;
 pub mod agentsfid;
 pub mod answers;
+pub mod appui;
 pub mod attachfid;
 pub mod autonomyfid;
 pub mod awayfid;
 pub mod buildscr;
 pub mod chatfid;
+pub mod cmdboard;
 pub mod cmdstudio;
 pub mod collabfid;
 pub mod compose;
@@ -108,6 +114,7 @@ pub mod fanfid;
 pub mod fidelity;
 pub mod fields;
 pub mod fleet;
+pub mod fleetwin;
 pub mod gates;
 pub mod gooeyfid;
 pub mod graphfid;
@@ -150,6 +157,7 @@ pub mod tools;
 pub mod tracefid;
 pub mod upload;
 pub mod workscr;
+pub mod wscoder;
 
 /// Smoothstep ease used for rewinds and fills (0..1 in, 0..1 out).
 pub fn smooth(t: f32) -> f32 {

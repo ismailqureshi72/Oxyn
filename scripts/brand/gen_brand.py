@@ -30,6 +30,7 @@ def _slack(fill):
     return "".join(out)
 OWN = {"slack": _slack(False)}
 OWN_COLOURED = {
+  "mastercard": '<circle cx="7.416" cy="12" r="7.416" fill="#EB001B"></circle><circle cx="16.584" cy="12" r="7.416" fill="#F79E1B"></circle><path d="M12 6.17A7.416 7.416 0 0 1 12 17.83A7.416 7.416 0 0 1 12 6.17z" fill="#FF5F00"></path>',
   "slack": _slack(True),
   "gmail": '<path d="M1.5 6.6 6 9.9V20H3a1.5 1.5 0 01-1.5-1.5z" fill="#4285F4"></path><path d="M22.5 6.6 18 9.9V20h3a1.5 1.5 0 001.5-1.5z" fill="#34A853"></path><path d="M6 9.9 12 14.3l6-4.4V5l-6 4.4L6 5z" fill="#EA4335"></path><path d="M1.5 6.6v-1c0-1.7 1.9-2.6 3.3-1.6L6 5v4.9z" fill="#C5221F"></path><path d="M22.5 6.6v-1c0-1.7-1.9-2.6-3.3-1.6L18 5v4.9z" fill="#FBBC04"></path>',
   "googledrive": '<path d="M8 3 1 15l3.5 6 7-12z" fill="#00AC47"></path><path d="M8 3h8l7 12h-7z" fill="#FFBA00"></path><path d="M4.5 21h15l3.5-6H8z" fill="#2684FC"></path>',
@@ -63,6 +64,9 @@ ICONS = [
   ("vercel", "Vercel", S, "vercel", None, [], "integration"),
   ("notion", "Notion", S, "notion", None, [], "integration"),
   ("stripe", "Stripe", S, "stripe", None, [], "integration"),
+  ("visa", "Visa", S, "visa", None, [], "company"),
+  ("mastercard", "Mastercard", S, "mastercard", None, [], "company"),
+  ("americanexpress", "American Express", S, "americanexpress", None, ["amex"], "company"),
   ("postgresql", "PostgreSQL", S, "postgresql", None, ["postgres", "pg"], "integration"),
   ("supabase", "Supabase", S, "supabase", None, [], "integration"),
   ("jira", "Jira", S, "jira", None, [], "integration"),
