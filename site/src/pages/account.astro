@@ -1,0 +1,35 @@
+---
+// Your account: email, how you sign in, when it was created, and sign out here or everywhere.
+// Static like every page; public/account.js fills it from /api/auth/me.
+import Base from '../layouts/Base.astro';
+import { icon } from '../components/v2/icons';
+---
+<Base title="Account" description="Your Oxyn account." index={false}>
+  <section class="auth acct-page" data-ovl>
+    <div class="auth-card wide" data-account data-state="loading" aria-busy="true">
+      <div class="acct-load" data-account-loading role="status">Loading your account…</div>
+      <div data-account-out hidden>
+        <h1 class="auth-h">Account</h1>
+        <p class="auth-sub">You are not signed in.</p>
+        <div class="acct-actions"><a class="x-pill pill-black" href="/login/?next=/account/">Sign in</a><a class="x-pill pill-grey" href="/signup/?next=/account/">Create an account</a></div>
+      </div>
+      <div data-account-in hidden>
+        <div class="acct-top">
+          <span class="acct-av xl" data-acct-av aria-hidden="true"></span>
+          <div class="acct-top-t"><h1 class="auth-h" data-account-name>Account</h1><p class="auth-sub" data-account-email></p></div>
+        </div>
+        <dl class="acct-dl">
+          <div><dt>Email</dt><dd data-account-email2></dd></div>
+          <div><dt>Sign-in methods</dt><dd data-account-providers></dd></div>
+          <div><dt>Member since</dt><dd data-account-created></dd></div>
+        </dl>
+        <p class="auth-err" role="alert" data-account-err hidden></p>
+        <div class="acct-actions">
+          <button type="button" class="x-pill pill-black" data-acct-signout><Fragment set:html={icon.signout} />Sign out</button>
+          <button type="button" class="x-pill pill-grey" data-account-all>Sign out of all sessions</button>
+        </div>
+        <p class="auth-fine in">Signing out of all sessions ends every browser where this account is signed in, including this one.</p>
+      </div>
+    </div>
+  </section>
+</Base>
