@@ -194,7 +194,8 @@ fn WorkspaceCoderApp(
     });
     let mut drawer = use_signal(|| false);
     let pane = use_signal(|| true);
-    let mut pnar = use_signal(|| false);
+    // At narrow widths a pane state opens the workspace in place of the chat.
+    let mut pnar = use_signal(move || matches!(own, "preview" | "files"));
     let mut text = use_signal(String::new);
     let mut err = use_signal(|| None::<&'static str>);
     let mut model = use_signal(|| 0usize);
