@@ -1,5 +1,5 @@
 //! Every Oxyn screen set as interactive GPUI views in one native window. The strip at the top
-//! picks a screen set (S0 app shells … S8 onboarding, S12 to S14 Arc screens) or one of the six agent
+//! picks a screen set (S0 app shells … S8 onboarding, S12 to S15 Arc screens) or one of the six agent
 //! apps (Taskdeck, Command Center, Session Studio, Fleet Window, Workspace Coder, Command Board).
 //!
 //! Screen sets: press the sidebar, buttons and the account row as in any app; the bar above the
@@ -13,7 +13,7 @@
 //!
 //! Run from the repo root: `cargo run --manifest-path examples/gpui-agent-apps/Cargo.toml`.
 //! `OXYN_OPEN=<n>` opens strip item `n` first (0 is S0, 9 is S12 Arc screens I, 10 is S13 Arc
-//! screens II, 11 is S14 Arc screens III).
+//! screens II, 11 is S14 Arc screens III, 12 is S15 Arc screens IV).
 //!
 //! Arc screens I: press a board card, then a column (or drag the card there), Alt + arrows move
 //! the picked card; press a timeline bar, then Earlier / Later (Alt + ← / →) or drag it onto a
@@ -26,6 +26,9 @@
 //! Arc screens III: pick a symbol and range, step the ticket and place it; filter the products,
 //! open one, pick a size and add it; add, step and remove invoice lines, then Send; fill the
 //! demo account and sign in.
+//!
+//! Arc screens IV: range and KPI tabs, audit filters, status days, create, roll and revoke keys,
+//! invite and change roles, pick a plan; the agent's tools: modes, Approve / Reject, Run again.
 
 use gpui::{
     App, Bounds, Context, Entity, Focusable, Render, Window, WindowBounds, WindowOptions, div,
@@ -35,7 +38,7 @@ use gpui_platform::application;
 use oxyn_gpui::{AgentApp, AgentAppView, ScreenView, bind_ime_keys};
 
 /// Strip labels for the screen sets, in `oxyn_core::parity::screenui::SETS` order.
-const SETS: [&str; 12] = [
+const SETS: [&str; 13] = [
     "S0 Shells",
     "S1 Chat",
     "S2 Workspace",
@@ -48,6 +51,7 @@ const SETS: [&str; 12] = [
     "S12 Arc I",
     "S13 Arc II",
     "S14 Arc III",
+    "S15 Arc IV",
 ];
 
 struct Gallery {

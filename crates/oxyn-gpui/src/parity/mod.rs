@@ -21,6 +21,7 @@ mod apps;
 mod arcscr;
 mod arcscr2;
 mod arcscr3;
+mod arcscr4;
 mod attachfid;
 mod autonomyfid;
 mod awayfid;
@@ -109,6 +110,10 @@ pub use arcscr2::{
 };
 pub use arcscr3::{
     InvoiceStudioEl, MarketTerminalEl, ProductDetailEl, ProductListEl, SignInSplitEl,
+};
+pub use arcscr4::{
+    AdminOverviewEl, AgentToolCallsEl, ApiKeysWebhooksEl, AuditLogEl, BillingUsageEl,
+    MembersRolesEl, StatusBoardEl,
 };
 pub use attachfid::{AttachmentChipsEl, DropLanesEl, PolaroidStackEl, UploadDropzoneEl};
 pub use autonomyfid::AutonomyDialEl;
