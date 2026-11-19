@@ -120,7 +120,7 @@ pub struct Ws {
     pub domain: &'static str,
 }
 
-/// The workspace of an S12 screen.
+/// The workspace of an Arc screen (S12 and S13).
 pub fn ws(slug: &str) -> Ws {
     match slug {
         "kanban-board" => Ws {
@@ -138,6 +138,26 @@ pub fn ws(slug: &str) -> Ws {
         "team-directory" => Ws {
             name: "Saltwick",
             domain: "saltwick.example",
+        },
+        "week-calendar" => Ws {
+            name: "Ashgrove",
+            domain: "ashgrove.example",
+        },
+        "month-calendar" => Ws {
+            name: "Brackwater",
+            domain: "brackwater.example",
+        },
+        "inbox-triage" => Ws {
+            name: "Thistledown support",
+            domain: "thistledown.example",
+        },
+        "support-conversation" => Ws {
+            name: "Pinecrest",
+            domain: "pinecrest.example",
+        },
+        "help-center" => Ws {
+            name: "Quillmoor Help",
+            domain: "quillmoor.example",
         },
         _ => Ws {
             name: "Lumenfield",
@@ -168,6 +188,26 @@ pub fn acct_menu(slug: &str) -> &'static [(&'static str, &'static str, &'static 
         "team-directory" => &[
             ("user", "Your profile", ""),
             ("clock", "Appear away", ""),
+            ("logout", "Sign out", ""),
+        ],
+        "week-calendar" => &[
+            ("cal", "Start weeks on Sunday", ""),
+            ("kbd", "Keyboard shortcuts", "?"),
+            ("logout", "Sign out", ""),
+        ],
+        "month-calendar" => &[
+            ("eye", "Show weekends", ""),
+            ("kbd", "Keyboard shortcuts", "?"),
+            ("logout", "Sign out", ""),
+        ],
+        "inbox-triage" | "support-conversation" => &[
+            ("clock", "Set yourself away", ""),
+            ("kbd", "Keyboard shortcuts", "?"),
+            ("logout", "Sign out", ""),
+        ],
+        "help-center" => &[
+            ("eye", "Only my articles", ""),
+            ("web", "View help site", ""),
             ("logout", "Sign out", ""),
         ],
         _ => &[
