@@ -1,5 +1,6 @@
-//! [`ScreenView`]: every screen set from S0 to S8 (app shells, AI Chat, Workspace, Agent ops I and
-//! II, Orchestration / Workflow / Evals, Settings I and II, Onboarding) as one interactive GPUI view
+//! [`ScreenView`]: every screen set from S0 to S8 and S12 (app shells, AI Chat, Workspace, Agent ops
+//! I and II, Orchestration / Workflow / Evals, Settings I and II, Onboarding, Arc screens I) as one
+//! interactive GPUI view
 //! (`Entity` + `Render`). It keeps an [`ScreenUi`] from `oxyn_core::parity::screenui` and draws the
 //! open screen's snapshot element in the open state, so one set of rules drives every screen:
 //!
@@ -12,7 +13,12 @@
 //!   pick a match or press Enter) and the theme switch;
 //! - the account row opens a menu (Theme, Sign out) that Escape or a second press closes;
 //! - with focus on the view: Left / Right step the states, Up / Down the screens, Escape closes
-//!   the menu and then returns to Data, `/` focuses the command bar.
+//!   the menu and then returns to Data, `/` focuses the command bar;
+//! - the Arc screens (S12) draw the core's live `ArcUi`: the metrics range, KPI, Compare and zoom;
+//!   board cards picked by a press and dropped on a column (or dragged there), Alt + arrows move
+//!   the picked card; tasks completed or reopened; timeline bars picked and nudged (Alt + ← / →,
+//!   Alt + Shift for the end) or dragged onto a day; the directory's search is a second
+//!   [`ImeInput`] and its filters, views and favourites are presses.
 //!
 //! Create one with `cx.new(|cx| ScreenView::new(6, window, cx))` (set index into
 //! [`oxyn_core::parity::screenui::SETS`]) after calling [`super::bind_ime_keys`] once.
@@ -24,6 +30,7 @@ use gpui::{
     MouseButton, Render, SharedString, Window, div, px,
 };
 use oxyn_core::parity::appui::AppKey;
+use oxyn_core::parity::arcscr::ArcUi;
 use oxyn_core::parity::screensfid::{ScreenState, ShellLayout};
 use oxyn_core::parity::screenui::{Moved, SETS, ScreenUi};
 use oxyn_tokens::Theme;
@@ -107,7 +114,50 @@ pub fn screen_element(
         "onboarding-brand" => el!(OnboardingBrandEl),
         "onboarding-tone" => el!(OnboardingToneEl),
         "onboarding-ready" => el!(OnboardingReadyEl),
+        "metrics-dashboard" | "kanban-board" | "project-board" | "gantt-timeline"
+        | "team-directory" => arc_element(slug, st, extra, lay, theme, act, None, None),
         _ => el0!(ScreenShellEl),
+    }
+}
+
+/// An Arc screen (S12) for slug `slug`, drawing the live state `arc` when given (else the
+/// sample for the state) with `search` as the Team directory's search field.
+#[allow(clippy::too_many_arguments)]
+pub fn arc_element(
+    slug: &str,
+    st: ScreenState,
+    extra: &'static str,
+    lay: ShellLayout,
+    theme: &'static Theme,
+    act: Act,
+    arc: Option<ArcUi>,
+    search: Option<gpui::AnyView>,
+) -> AnyElement {
+    macro_rules! el {
+        ($t:ty) => {{
+            let mut e = <$t>::default()
+                .state(st)
+                .extra(extra)
+                .layout(lay)
+                .theme(theme)
+                .on_act(act);
+            if let Some(a) = arc {
+                e = e.arc(a);
+            }
+            if let Some(v) = search {
+                e = e.search(v);
+            }
+            e.into_any_element()
+        }};
+    }
+    match slug {
+        "kanban-board" => el!(KanbanBoardEl),
+        "project-board" => el!(ProjectBoardEl),
+        "gantt-timeline" => el!(GanttTimelineEl),
+        "team-directory" => el!(TeamDirectoryEl),
+        "metrics-dashboard" => el!(MetricsDashboardEl),
+        // Not an Arc slug: the first Arc screen.
+        _ => el!(MetricsDashboardEl),
     }
 }
 
@@ -118,6 +168,7 @@ pub struct ScreenView {
     layout: ShellLayout,
     focus: FocusHandle,
     input: Entity<ImeInput>,
+    search: Entity<ImeInput>,
 }
 
 impl Focusable for ScreenView {
@@ -147,6 +198,21 @@ impl ScreenView {
             cx.notify();
         })
         .detach();
+        let search = cx.new(|cx| {
+            let mut i = ImeInput::new(cx, "Search people, roles, skills");
+            i.set_bare(true);
+            i
+        });
+        cx.subscribe(&search, |this, inp, ev: &ImeEvent, cx| {
+            match ev {
+                ImeEvent::Changed | ImeEvent::Enter { .. } => {
+                    this.ui.arc.query = inp.read(cx).text().to_string();
+                }
+                ImeEvent::Accepted { .. } | ImeEvent::Dismissed(_) => {}
+            }
+            cx.notify();
+        })
+        .detach();
         let focus = cx.focus_handle();
         window.focus(&focus, cx);
         Self {
@@ -155,6 +221,7 @@ impl ScreenView {
             layout: ShellLayout::Inset,
             focus,
             input,
+            search,
         }
     }
 
@@ -176,6 +243,7 @@ impl ScreenView {
         self.dark = dark;
         let t = self.theme();
         self.input.update(cx, |i, cx| i.set_theme(t, cx));
+        self.search.update(cx, |i, cx| i.set_theme(t, cx));
         cx.notify();
     }
 
@@ -205,6 +273,11 @@ impl ScreenView {
                 self.ui.said = Some("signed out".into());
                 cx.notify();
             }
+            "td-clear" => {
+                self.ui.press(id);
+                self.search.update(cx, |i, cx| i.set_text("", cx));
+                cx.notify();
+            }
             _ => {
                 if self.ui.press(id) != Moved::None {
                     cx.notify();
@@ -213,8 +286,27 @@ impl ScreenView {
         }
     }
 
+    /// Alt + arrows on the Arc screens: move the picked board card, or nudge the picked bar
+    /// (Shift changes its end). True when handled.
+    fn arc_key(&mut self, name: &str, shift: bool) -> bool {
+        let id = match (self.ui.screen_def().slug, name, shift) {
+            ("kanban-board", "left", _) => "kb-left",
+            ("kanban-board", "right", _) => "kb-right",
+            ("kanban-board", "up", _) => "kb-up",
+            ("kanban-board", "down", _) => "kb-down",
+            ("gantt-timeline", "left", false) => "gt-earlier",
+            ("gantt-timeline", "right", false) => "gt-later",
+            ("gantt-timeline", "left", true) => "gt-shorter",
+            ("gantt-timeline", "right", true) => "gt-longer",
+            _ => return false,
+        };
+        self.ui.press(id);
+        true
+    }
+
     fn key(&mut self, ev: &KeyDownEvent, window: &mut Window, cx: &mut Context<Self>) {
-        let typing = self.input.read(cx).focus().is_focused(window);
+        let typing = self.input.read(cx).focus().is_focused(window)
+            || self.search.read(cx).focus().is_focused(window);
         let name = ev.keystroke.key.as_str();
         if typing {
             if name == "escape" {
@@ -224,8 +316,16 @@ impl ScreenView {
             return;
         }
         if name == "/" {
-            let f = self.input.read(cx).focus().clone();
+            let f = if self.ui.screen_def().slug == "team-directory" {
+                self.search.read(cx).focus().clone()
+            } else {
+                self.input.read(cx).focus().clone()
+            };
             window.focus(&f, cx);
+            return;
+        }
+        if ev.keystroke.modifiers.alt && self.arc_key(name, ev.keystroke.modifiers.shift) {
+            cx.notify();
             return;
         }
         if let Some(k) = AppKey::from_name(name)
@@ -447,14 +547,21 @@ impl Render for ScreenView {
         let p = th_pal(theme);
         let act = self.act(cx);
         let (st, extra) = self.ui.split();
-        let screen = screen_element(
-            self.ui.screen_def().slug,
-            st,
-            extra,
-            self.layout,
-            theme,
-            act.clone(),
-        );
+        let slug = self.ui.screen_def().slug;
+        let screen = if self.ui.set_def().id == "s12" {
+            arc_element(
+                slug,
+                st,
+                extra,
+                self.layout,
+                theme,
+                act.clone(),
+                Some(self.ui.arc.clone()),
+                Some(self.search.clone().into()),
+            )
+        } else {
+            screen_element(slug, st, extra, self.layout, theme, act.clone())
+        };
         let bar = self.bar(&p, cx);
         let found = self.found(&p, cx);
         let menu = self.ui.menu.then(|| self.menu(&p, &act));
