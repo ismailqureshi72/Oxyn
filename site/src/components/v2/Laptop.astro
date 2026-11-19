@@ -1,8 +1,8 @@
 ---
-// "Complete screens" on the landing: a modern 14-inch laptop seen from the front and a little above,
-// drawn in CSS: a silver lid with thin black bezels and a notch, standing on a base whose deck is a
-// real plane in perspective (black keyboard with its rows of keys, speaker grilles, trackpad, the
-// front edge). The screen is the selected tab's live screen demo (the same Rust component as its
+// "Complete screens" on the landing: a modern 14-inch MacBook Pro seen from the front and a little
+// above, drawn in CSS: a silver lid with thin black bezels and a notch, on a base whose deck is a real
+// plane in perspective laid back 74° (black hinge band, black keyboard close behind it, speaker
+// grilles, wide trackpad, thin front edge with the finger scoop). The screen is the selected tab's live screen demo (the same Rust component as its
 // /screens/<slug>/ page) on its 1440 × 900 stage: clickable, scrollable, real. Only the active tab
 // is mounted; the others mount the first time they are picked (site.js).
 // The lid opens with the scroll position across most of the section: on wide screens the scene
@@ -10,7 +10,8 @@
 // is seen. site.js eases the progress (0 closed → 1 open) toward the scroll position in one rAF loop
 // and writes transforms and opacity straight onto the moving parts.
 // Reduced motion: a static open laptop. The whole laptop and the tab bar fit in one viewport.
-// Phones (≤ 640px): the screen alone at its real size (the frame's own narrow layout), no body.
+// Phones (≤ 640px): the screen alone at its real size (the frame's own narrow layout) in a thin
+// black device bezel, full width, no body.
 import OxynDemo from '../OxynDemo.astro';
 import { icon } from './icons';
 import { markSvg } from './logo';
@@ -31,7 +32,7 @@ const tabs = (
 // row with the inverted-T arrows (up and down share one key's place). [x, y, w, h] per key.
 const GAP = 0.14;
 const rows: [number, number[]][] = [
-  [0.6, [1.5, ...Array(12).fill(1), 1.5]],
+  [0.85, [1.5, ...Array(12).fill(1), 1.5]],
   [1, [...Array(13).fill(1), 2]],
   [1, [1.5, ...Array(12).fill(1), 1.5]],
   [1, [1.8, ...Array(11).fill(1), 2.2]],
@@ -77,7 +78,7 @@ const r2 = (n: number) => Math.round(n * 100) / 100;
           <div class="x-lap-kb">
             <svg viewBox={`0 0 ${r2(kbW)} ${r2(kbH)}`} preserveAspectRatio="none" focusable="false">
               <defs><linearGradient id="x-lap-keyg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--x-lap-key1)" /><stop offset="1" stop-color="var(--x-lap-key2)" /></linearGradient></defs>
-              {keys.map(([x, y, w, h]) => <rect x={r2(x)} y={r2(y)} width={r2(w)} height={r2(h)} rx="0.14" />)}
+              {keys.map(([x, y, w, h]) => <rect x={r2(x)} y={r2(y)} width={r2(w)} height={r2(h)} rx="0.09" />)}
             </svg>
           </div>
           <span class="x-lap-grill r"></span>
