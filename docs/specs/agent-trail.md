@@ -55,10 +55,10 @@ Gallery variants: running, needs-you, declined, failed, folded (12 sub-steps), c
 
 ## 6. Accessibility
 - An ordered list named after the task; the running step and its running sub-step carry `aria-current="step"`.
-- The header count reads "3 of 5 steps done"; each row reads "Read the bug report – Done, 8s"; a step with sub-steps is a button with `aria-expanded`.
+- The header count reads "3 of 5 steps done"; each row reads "Read the bug report – Done, 8s"; a step with sub-steps toggles them and reports `aria-expanded`.
 - Times, badges and details read in their own direction (`<1s` stays `<1s` in RTL).
 - A polite live region says "Approved: …" or "Declined".
-- Focus rings show for the keyboard only (`:focus-visible`), in light and dark.
+- The focus outline appears only when moving by keyboard (`:focus-visible`), in light and dark.
 
 ## 7. Responsive
 Rows are fixed, so a changing status, timer or detail never moves another row; long titles end in … with the full text on hover; long sub-step lists fold to five around where the agent is.

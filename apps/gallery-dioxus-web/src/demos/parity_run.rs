@@ -1417,8 +1417,8 @@ pub fn demos() -> Vec<Demo> {
             a11y: vec![
                 "An ordered list named after the task; the running step and sub-step carry aria-current=step.",
                 "The header count reads 3 of 5 steps done; each step reads its title, state and time.",
-                "A step with sub-steps is a button with aria-expanded; times and details keep their direction in RTL.",
-                "A polite live region says Approved or Declined; focus rings show for the keyboard only.",
+                "A step with sub-steps toggles them and reports aria-expanded; times and details keep their direction in RTL.",
+                "A polite live region says Approved or Declined; the focus outline appears only when moving by keyboard.",
             ],
             responsive: vec![
                 "Rows are fixed: 32 px a step, 24 px a sub-step, 40 and 28 px on touch screens.",
