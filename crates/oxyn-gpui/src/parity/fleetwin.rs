@@ -13,7 +13,7 @@ use gpui::{
     App, Div, FontWeight, IntoElement, ParentElement, RenderOnce, SharedString, Stateful, Styled,
     Window, div, prelude::*, px,
 };
-use oxyn_core::parity::appui::row_id;
+use oxyn_core::parity::appui::{ids, row_id};
 use oxyn_core::parity::fleetwin::{
     COMPARE_PROMPT, FW_APP, FW_MODELS, FW_PROMPT, FW_STEPS, PERSON, ScreenState, agent_diff,
     best_attempt, fw_agents, mmss, sample_attempts, sample_plan,
@@ -368,15 +368,49 @@ pub(super) fn fw_screen(
         act,
         lv,
     );
-    let chips = vec![
-        chip(
-            p,
-            None,
-            if extra == "plan" { "Plan" } else { "Agent" },
-            false,
-        ),
-        chip(p, Some(brand(p, "claude")), "Sonnet 5.5", false),
-    ];
+    let mut chips = vec![chip(
+        p,
+        None,
+        if extra == "plan" { "Plan" } else { "Agent" },
+        false,
+    )];
+    match &lv.data {
+        // Live: every model is a toggle; two or more run the prompt in parallel.
+        Some(d) => {
+            for (m, (name, mk)) in FW_MODELS.iter().copied().enumerate() {
+                let on = d.models.contains(&m);
+                chips.push(
+                    div().child(hit(
+                        div()
+                            .flex_none()
+                            .h(px(28.))
+                            .px(px(8.))
+                            .flex()
+                            .items_center()
+                            .gap(px(6.))
+                            .rounded(px(14.))
+                            .border_1()
+                            .border_color(if on { p.fg2 } else { p.line })
+                            .text_size(px(12.5))
+                            .text_color(if on { p.fg } else { p.mute })
+                            .child(brand(p, mk))
+                            .child(name),
+                        act,
+                        ids::at(&ids::MODEL, m),
+                    )),
+                );
+            }
+            if d.models.len() > 1 {
+                chips.push(
+                    div()
+                        .text_color(p.mute)
+                        .text_size(px(12.))
+                        .child(format!("{} in parallel", d.models.len())),
+                );
+            }
+        }
+        None => chips.push(chip(p, Some(brand(p, "claude")), "Sonnet 5.5", false)),
+    }
     let comp = composer(
         p,
         chips,
@@ -481,11 +515,10 @@ pub(super) fn fw_screen(
             .gap(px(12.))
             .child(you(p, FW_PROMPT))
             .child(log)
-            .child(
-                div()
-                    .text_color(p.mute)
-                    .child("Running tests · 4 of 5 steps"),
-            )
+            .child(div().text_color(p.mute).child(match &lv.data {
+                Some(d) => format!("Running tests · 4 of 5 steps · {}", d.clock(194)),
+                None => "Running tests · 4 of 5 steps".to_string(),
+            }))
     };
     let files = if samp {
         agent_diff(if extra == "compare" { 3 } else { 2 })

@@ -15,7 +15,7 @@ use gpui::{
     Window, div, prelude::*, px,
 };
 use oxyn_core::icon_tone::IconTone;
-use oxyn_core::parity::appui::row_id;
+use oxyn_core::parity::appui::{ids, row_id};
 use oxyn_core::parity::cmdstudio::{
     BState, Block, CC_APP, CC_MODELS, CC_PROJECTS, CC_PROMPT, CC_WORK, DiffFile, Mode, Place,
     REASONING, SS_APP, SS_MODELS, ScreenState, TState, branch_for, cc_diff, file_stat, hunk_stat,
@@ -28,7 +28,7 @@ use oxyn_core::parity::screensfid::ShellLayout;
 use oxyn_tokens::Theme;
 
 use super::Act;
-use super::apps::{Live, hit};
+use super::apps::{Live, PaneDrag, hit};
 use super::chatscr::{clip, mark};
 use super::rulerfid::{ThPal, fire, th_pal};
 use super::screensfid::{gh, skel, tone_ic};
@@ -555,7 +555,9 @@ pub(super) fn composer(
     for c in chips {
         bar = bar.child(c);
     }
-    div()
+    let focus = fire(act, "focus-composer");
+    let live = lv.input.is_some();
+    let b = div()
         .p(px(10.))
         .pl(px(14.))
         .rounded(px(16.))
@@ -586,7 +588,13 @@ pub(super) fn composer(
                     .justify_center()
                     .child("↑"),
             ),
-        )
+        );
+    // A press anywhere in a live composer's box puts the caret in its text field.
+    if live {
+        div().child(b.id("composer").on_click(move |_, w, cx| focus(w, cx)))
+    } else {
+        b
+    }
 }
 
 fn cc_body(p: &ThPal, st: ScreenState, wt: bool, act: &Option<Act>, lv: &Live) -> Div {
@@ -970,7 +978,7 @@ fn side_col(p: &ThPal) -> Div {
         .bg(p.card)
 }
 
-fn tabs_row(p: &ThPal, on: &str) -> Div {
+fn tabs_row(p: &ThPal, on: &str, act: &Option<Act>) -> Div {
     let mut r = div()
         .flex()
         .gap(px(4.))
@@ -978,12 +986,12 @@ fn tabs_row(p: &ThPal, on: &str) -> Div {
         .pt(px(6.))
         .border_b_1()
         .border_color(p.line);
-    for (k, l) in [
-        ("review", "Review"),
-        ("terminal", "Terminal"),
-        ("browser", "Browser"),
+    for (k, l, id) in [
+        ("review", "Review", "tab-review"),
+        ("terminal", "Terminal", "view:terminal"),
+        ("browser", "Browser", "view:browser"),
     ] {
-        r = r.child(
+        r = r.child(hit(
             div()
                 .h(px(32.))
                 .px(px(10.))
@@ -995,45 +1003,71 @@ fn tabs_row(p: &ThPal, on: &str) -> Div {
                 })
                 .when(k != on, |d| d.text_color(p.mute))
                 .child(l),
-        );
+            act,
+            id,
+        ));
     }
     r
 }
 
-fn term_pane(p: &ThPal) -> Div {
-    let terms = sample_terms();
+fn term_pane(p: &ThPal, act: &Option<Act>, lv: &Live) -> Div {
+    let (terms, open) = match &lv.data {
+        Some(d) => (d.terms.clone(), d.term.min(d.terms.len().saturating_sub(1))),
+        None => (sample_terms(), 0),
+    };
     let mut tabs = div()
         .flex()
+        .items_center()
         .gap(px(4.))
         .p(px(6.))
         .border_b_1()
         .border_color(p.line);
     for (i, t) in terms.iter().enumerate() {
-        tabs = tabs.child(
+        tabs = tabs.child(hit(
             div()
                 .h(px(26.))
                 .px(px(8.))
                 .flex()
                 .items_center()
                 .rounded(px(7.))
-                .when(i == 0, |d| d.bg(p.sel))
+                .when(i == open, |d| d.bg(p.sel))
                 .text_size(px(12.))
                 .child(t.title.clone()),
+            act,
+            ids::at(&ids::TERM, i),
+        ));
+    }
+    tabs = tabs.child(hit(div().px(px(6.)).child(quiet(p, "+")), act, "term-new"));
+    let mut out = div().flex_1().p(px(12.)).flex().flex_col().bg(p.inset);
+    if let Some(t) = terms.get(open) {
+        for l in t.lines.iter().rev().take(18).rev() {
+            out = out.child(mono(l.clone()).text_color(if l.starts_with("$ ") {
+                p.fg
+            } else {
+                p.fg2
+            }));
+        }
+    }
+    if let Some(v) = &lv.aux {
+        out = out.child(
+            div()
+                .mt(px(6.))
+                .flex()
+                .items_center()
+                .gap(px(6.))
+                .child(mono("$"))
+                .child(div().flex_1().child(v.clone())),
         );
     }
-    tabs = tabs.child(quiet(p, "+"));
-    let mut out = div().flex_1().p(px(12.)).flex().flex_col().bg(p.inset);
-    for l in &terms[0].lines {
-        out = out.child(mono(l.clone()).text_color(if l.starts_with("$ ") { p.fg } else { p.fg2 }));
-    }
     side_col(p)
-        .child(tabs_row(p, "terminal"))
+        .child(tabs_row(p, "terminal", act))
         .child(tabs)
         .child(out)
 }
 
-fn browser_pane(p: &ThPal) -> Div {
-    let (addr, title, lines) = PAGES[0];
+fn browser_pane(p: &ThPal, act: &Option<Act>, lv: &Live) -> Div {
+    let at = lv.data.as_ref().map_or(0, |d| d.page);
+    let (addr, title, lines) = PAGES[at.min(PAGES.len() - 1)];
     let mut page = div()
         .flex_1()
         .p(px(20.))
@@ -1058,8 +1092,24 @@ fn browser_pane(p: &ThPal) -> Div {
                 .child(*l),
         );
     }
+    // Links to the other pages, so the pane can be browsed with clicks.
+    let mut links = div().flex().gap(px(10.)).pt(px(4.));
+    for (i, (_, t, _)) in PAGES.iter().enumerate() {
+        if i != at {
+            links = links.child(hit(
+                div().text_color(gpui::rgb(0x1A56DB)).child(*t),
+                act,
+                ids::at(&ids::PAGE, i),
+            ));
+        }
+    }
+    page = page.child(links);
+    let address = match &lv.aux {
+        Some(v) => div().flex_1().child(v.clone()),
+        None => div().child(addr),
+    };
     side_col(p)
-        .child(tabs_row(p, "browser"))
+        .child(tabs_row(p, "browser", act))
         .child(
             div()
                 .flex()
@@ -1068,7 +1118,12 @@ fn browser_pane(p: &ThPal) -> Div {
                 .p(px(6.))
                 .border_b_1()
                 .border_color(p.line)
-                .child(quiet(p, "←  ↻"))
+                .child(hit(div().px(px(4.)).child(quiet(p, "←")), act, "page-back"))
+                .child(hit(
+                    div().px(px(4.)).child(quiet(p, "↻")),
+                    act,
+                    "page-reload",
+                ))
                 .child(
                     div()
                         .flex_1()
@@ -1079,7 +1134,7 @@ fn browser_pane(p: &ThPal) -> Div {
                         .rounded(px(8.))
                         .bg(p.inset)
                         .text_size(px(12.5))
-                        .child(addr),
+                        .child(address),
                 ),
         )
         .child(page)
@@ -1172,7 +1227,20 @@ fn ss_panes(
     files: &[DiffFile],
     arrange: bool,
     act: &Option<Act>,
+    lv: &Live,
 ) -> Div {
+    let (order, pick, side): (Vec<usize>, usize, Vec<(bool, SharedString)>) = match &lv.data {
+        Some(d) => (
+            d.panes.clone(),
+            d.pane,
+            d.side.iter().map(|(m, t)| (*m, t.clone().into())).collect(),
+        ),
+        None => (
+            (0..PANES.len()).collect(),
+            usize::MAX,
+            SIDE_CHAT.iter().map(|(m, t)| (*m, (*t).into())).collect(),
+        ),
+    };
     let head = |l: &'static str| {
         div()
             .h(px(36.))
@@ -1183,7 +1251,6 @@ fn ss_panes(
             .when(arrange, |d| d.child(quiet(p, "⋮⋮")))
             .child(div().font_weight(FontWeight::SEMIBOLD).child(l))
             .child(div().flex_1())
-            .when(arrange, |d| d.child(quiet(p, "↑  ↓")))
     };
     let pane = |d: Div| {
         if arrange {
@@ -1197,7 +1264,8 @@ fn ss_panes(
         }
     };
     let mut chat = div().flex().flex_col().gap(px(6.)).px(px(12.)).pb(px(12.));
-    for (me, t) in SIDE_CHAT {
+    for (me, t) in side.iter().rev().take(6).rev() {
+        let me = *me;
         chat = chat.child(
             div().flex().when(me, |d| d.justify_end()).child(
                 div()
@@ -1206,20 +1274,55 @@ fn ss_panes(
                     .rounded(px(10.))
                     .bg(if me { p.sel } else { p.inset })
                     .text_size(px(12.5))
-                    .child(t),
+                    .child(t.clone()),
             ),
         );
     }
     let mut col = side_col(p);
     if arrange {
-        for (_, l) in PANES {
-            col = col.child(pane(div().child(head(l))));
+        for (pos, k) in order.iter().enumerate() {
+            let title = PANES[(*k).min(PANES.len() - 1)].1;
+            let moves = div()
+                .flex()
+                .gap(px(4.))
+                .child(hit(div().px(px(4.)).child(quiet(p, "↑")), act, "pane-up"))
+                .child(hit(div().px(px(4.)).child(quiet(p, "↓")), act, "pane-down"));
+            let mut row = hit(
+                pane(
+                    div()
+                        .when(pos == pick, |d| d.border_color(p.fg2))
+                        .child(head(title).child(moves)),
+                ),
+                act,
+                ids::at(&ids::PANE, pos),
+            );
+            if let Some(m) = lv.mover.clone() {
+                row = row
+                    .on_drag(PaneDrag { from: pos, title }, |d: &PaneDrag, _, _, cx| {
+                        let d = *d;
+                        cx.new(|_| d)
+                    })
+                    .drag_over::<PaneDrag>(|s, _, _, _| s.opacity(0.6))
+                    .on_drop(move |d: &PaneDrag, w, cx| m(d.from, pos, w, cx));
+            }
+            col = col.child(row);
         }
-        return col;
+        return col.child(
+            div()
+                .px(px(12.))
+                .child(quiet(p, "Drag a pane, or pick one and press Alt + ↑ / ↓")),
+        );
     }
     let diff = diff_pane(p, st, files, "Diff", act);
-    col.child(div().flex_1().min_h_0().flex().flex_col().child(diff))
-        .child(pane(div().child(head("Side chat")).child(chat)))
+    let first = order.first().copied().unwrap_or(0);
+    let chat_pane = pane(div().child(head("Side chat")).child(chat));
+    let diff_box = div().flex_1().min_h_0().flex().flex_col().child(diff);
+    // The pane order from Rearrange decides which sits on top.
+    if PANES.get(first).map(|x| x.0) == Some("chat") {
+        col.child(chat_pane).child(diff_box)
+    } else {
+        col.child(diff_box).child(chat_pane)
+    }
 }
 
 pub(super) fn screen(
@@ -1300,10 +1403,22 @@ pub(super) fn screen(
                 .flex()
                 .child(body)
                 .child(match (app, extra) {
-                    ("cc", "terminal") => term_pane(&p),
-                    ("cc", "browser") => browser_pane(&p),
-                    ("ss", "chat") => ss_panes(&p, st, &files, false, act),
-                    ("ss", "arrange") => ss_panes(&p, st, &files, true, act),
+                    ("cc", "terminal") => term_pane(&p, act, lv),
+                    ("cc", "browser") => browser_pane(&p, act, lv),
+                    ("ss", "chat") => ss_panes(&p, st, &files, false, act, lv),
+                    ("ss", "arrange") => ss_panes(&p, st, &files, true, act, lv),
+                    ("cc", _) => div()
+                        .w(px(440.))
+                        .flex_none()
+                        .h_full()
+                        .flex()
+                        .flex_col()
+                        .overflow_hidden()
+                        .border_l_1()
+                        .border_color(p.line)
+                        .bg(p.card)
+                        .child(tabs_row(&p, "review", act))
+                        .child(diff_pane(&p, st, &files, ptitle, act)),
                     _ => diff_pane(&p, st, &files, ptitle, act),
                 }),
         );

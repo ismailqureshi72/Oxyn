@@ -34,7 +34,7 @@ s11_el!(
     cb_screen
 );
 
-fn board_pane(p: &ThPal, st: ScreenState, extra: &str, act: &Option<Act>) -> Div {
+fn board_pane(p: &ThPal, st: ScreenState, extra: &str, act: &Option<Act>, lv: &Live) -> Div {
     let on = if extra == "planner" { 3 } else { 0 };
     let mut tabs = div()
         .flex()
@@ -78,7 +78,11 @@ fn board_pane(p: &ThPal, st: ScreenState, extra: &str, act: &Option<Act>) -> Div
     if ev.is_empty() {
         return d.child(faint(p, "The agent's workspace shows up here"));
     }
-    let at = ev.len() - 1;
+    let at = lv
+        .data
+        .as_ref()
+        .map_or(ev.len() - 1, |d| d.at().min(ev.len() - 1));
+    let live = lv.data.as_ref().is_none_or(|d| d.scrub.is_none());
     let mut body = div()
         .flex_1()
         .min_h_0()
@@ -115,6 +119,45 @@ fn board_pane(p: &ThPal, st: ScreenState, extra: &str, act: &Option<Act>) -> Div
             );
         }
     }
+    let label = clip(format!("{} · {}", ev[at].at, ev[at].label)).flex_1();
+    let Some(data) = &lv.data else {
+        return d.child(body).child(
+            div()
+                .p(px(12.))
+                .border_t_1()
+                .border_color(p.line)
+                .flex()
+                .flex_col()
+                .gap(px(6.))
+                .child(div().flex().child(label).child(pill(p, "Live", "bad")))
+                .child(div().h(px(4.)).rounded(px(2.)).bg(p.fg2)),
+        );
+    };
+    // Live: one stop per event to scrub to, step buttons, and Live to jump back.
+    let mut ticks = div().flex_1().flex().items_center().gap(px(3.));
+    for i in 0..ev.len() {
+        ticks = ticks.child(hit(
+            div().flex_1().h(px(10.)).rounded(px(3.)).bg(if i < at {
+                p.fg2
+            } else if i == at {
+                p.fg
+            } else {
+                p.sel
+            }),
+            act,
+            oxyn_core::parity::appui::ids::at(&oxyn_core::parity::appui::ids::SCRUB, i),
+        ));
+    }
+    let step = |l: &'static str, id: &'static str| hit(div().px(px(6.)).child(l), act, id);
+    let sleeping = data
+        .sessions
+        .first()
+        .is_some_and(|s| s.status == SStatus::Sleeping);
+    let clock = if sleeping {
+        "Asleep".to_string()
+    } else {
+        format!("Working {}", data.clock(611))
+    };
     d.child(body).child(
         div()
             .p(px(12.))
@@ -126,10 +169,29 @@ fn board_pane(p: &ThPal, st: ScreenState, extra: &str, act: &Option<Act>) -> Div
             .child(
                 div()
                     .flex()
-                    .child(clip(format!("{} · {}", ev[at].at, ev[at].label)).flex_1())
-                    .child(pill(p, "Live", "bad")),
+                    .items_center()
+                    .gap(px(6.))
+                    .child(label)
+                    .child(div().text_color(p.mute).child(clock))
+                    .child(hit(
+                        div().child(pill(
+                            p,
+                            if live { "Live" } else { "Go live" },
+                            if live { "bad" } else { "" },
+                        )),
+                        act,
+                        "live",
+                    )),
             )
-            .child(div().h(px(4.)).rounded(px(2.)).bg(p.fg2)),
+            .child(
+                div()
+                    .flex()
+                    .items_center()
+                    .gap(px(6.))
+                    .child(step("◀", "scrub-back"))
+                    .child(ticks)
+                    .child(step("▶", "scrub-fwd")),
+            ),
     )
 }
 
@@ -146,10 +208,15 @@ pub(super) fn cb_screen(
         .iter()
         .enumerate()
         .map(|(i, s)| {
+            let live = lv
+                .data
+                .as_ref()
+                .and_then(|d| d.sessions.get(i))
+                .map(|x| x.status);
             let status = if s.id == 1 && is_pr {
                 SStatus::PrOpen
             } else {
-                s.status
+                live.unwrap_or(s.status)
             };
             let mut tail = div().flex().items_center().gap(px(6.));
             if !s.from.is_empty() {
@@ -268,7 +335,34 @@ pub(super) fn cb_screen(
         }
         c
     };
-    let pane = board_pane(p, st, extra, act);
+    let pane = board_pane(p, st, extra, act, lv);
+    // Live: Sleep / Wake for the open session, above the conversation.
+    let inner = match lv.data.as_ref().and_then(|d| d.sessions.first()) {
+        Some(s) if st == ScreenState::Sample && !is_pr => {
+            let asleep = s.status == SStatus::Sleeping;
+            div()
+                .flex()
+                .flex_col()
+                .gap(px(12.))
+                .child(
+                    div()
+                        .flex()
+                        .items_center()
+                        .gap(px(8.))
+                        .child(pill(p, s.status.label(), s.status.tone()))
+                        .child(div().flex_1())
+                        .child(press(
+                            p,
+                            if asleep { "Wake" } else { "Sleep" },
+                            false,
+                            act,
+                            "sleep",
+                        )),
+                )
+                .child(inner)
+        }
+        _ => inner,
+    };
     let samp = st == ScreenState::Sample;
     let title = if samp {
         "CSV export on the reports page"
