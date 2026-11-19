@@ -535,7 +535,7 @@ document.addEventListener('oxyn-demo-live', (e) => {
       // Closed, the laptop is lifted into the middle of the scene (the open lid's space above it
       // would otherwise sit empty); it settles back down as the lid opens.
       dev.style.transform = `translate3d(0,${(q * q * -LIFT).toFixed(3)}cqw,0) scale(${(0.94 + p * 0.06).toFixed(4)})`;
-      lid.style.transform = `perspective(340cqw) rotateX(${(q * -116).toFixed(3)}deg)`;
+      lid.style.transform = `perspective(340cqw) rotateX(${(q * -106).toFixed(3)}deg)`;
       if (shade) shade.style.opacity = (q * 0.8).toFixed(3);
       scene.toggleAttribute('data-closed', p < 0.02);
     };
@@ -552,7 +552,8 @@ document.addEventListener('oxyn-demo-live', (e) => {
       const sh = scene.offsetHeight;
       const stick = Math.max(0, pin.offsetHeight - sh);
       const cs = getComputedStyle(scene);
-      const top = cs.position === 'sticky' ? parseFloat(cs.top) || 0 : 16;
+      // Not pinned (tablets): fully open once the scene is centred in the viewport.
+      const top = cs.position === 'sticky' ? parseFloat(cs.top) || 0 : Math.max(16, (vh - sh) / 2);
       pinTop = pin.getBoundingClientRect().top + scrollY;
       z = top - stick * 0.82;
       // Where the fully closed laptop sits in the scene: opening starts only once all of it is in
