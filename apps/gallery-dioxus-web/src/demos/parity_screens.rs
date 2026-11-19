@@ -13,6 +13,10 @@ use oxyn_dioxus::{
     TasksScreen, UsageScreen, WorkflowScreen, s2_states, s3_states, s4_states, s5_states,
 };
 use oxyn_dioxus::{
+    AdminOverviewScreen, AgentToolCallsScreen, ApiKeysWebhooksScreen, AuditLogScreen,
+    BillingUsageScreen, MembersRolesScreen, StatusBoardScreen, s15_states,
+};
+use oxyn_dioxus::{
     BillingSettingsScreen, GeneralSettingsScreen, MembersSettingsScreen, ModelsSettingsScreen,
     NotificationsSettingsScreen, OnboardingSettingsScreen, PreferencesSettingsScreen,
     PrivacySettingsScreen, ProfileSettingsScreen, SecuritySettingsScreen, s6_states,
@@ -5238,6 +5242,13 @@ pub(crate) fn demos() -> Vec<Demo> {
         pd_demo(),
         iv_demo(),
         si_demo(),
+        s15_demo("admin-overview"),
+        s15_demo("audit-log"),
+        s15_demo("status-board"),
+        s15_demo("api-keys-webhooks"),
+        s15_demo("members-roles"),
+        s15_demo("billing-usage"),
+        s15_demo("agent-tool-calls"),
     ]
 }
 
@@ -5799,4 +5810,299 @@ fn si_demo() -> Demo {
             ("signing", "Signing in", "Continuing with GitHub."),
         ],
     )
+}
+
+// ---------- Arc screens IV: the admin demo app and Agent / Tool calls (S15) ----------
+
+fn arc4_key(slug: &str, label: &str) -> String {
+    s15_states(slug)
+        .iter()
+        .find(|(_, l)| l.eq_ignore_ascii_case(label))
+        .map(|(k, _)| k.to_string())
+        .unwrap_or_else(|| low(label))
+}
+
+fn arc4_el(slug: &'static str, lay: String, s: String, now: ClockMs) -> Element {
+    match slug {
+        "audit-log" => rsx! { AuditLogScreen { layout: lay, state: s } },
+        "status-board" => rsx! { StatusBoardScreen { layout: lay, state: s } },
+        "api-keys-webhooks" => rsx! { ApiKeysWebhooksScreen { layout: lay, state: s } },
+        "members-roles" => rsx! { MembersRolesScreen { layout: lay, state: s } },
+        "billing-usage" => rsx! { BillingUsageScreen { layout: lay, state: s } },
+        "agent-tool-calls" => rsx! { AgentToolCallsScreen { layout: lay, state: s, now } },
+        _ => rsx! { AdminOverviewScreen { layout: lay, state: s } },
+    }
+}
+
+fn arc4_screen(slug: &'static str, v: &Vals, now: ClockMs) -> Element {
+    let (_, lay, key) = frame(v);
+    let st = arc4_key(slug, v.s("data"));
+    let key = format!("{key}-{st}");
+    rsx! {
+        div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
+            ScreenStage { state: st, states: s15_states(slug), screen: move |s: String| arc4_el(slug, lay.clone(), s, now) }
+        }
+    }
+}
+
+fn arc4_code(name: &str, slug: &str, v: &Vals) -> String {
+    Code::new(name)
+        .s("layout", &low(v.s("frame")), "inset")
+        .s("state", &arc4_key(slug, v.s("data")), "sample")
+        .done()
+}
+
+macro_rules! s15_fns {
+    ($($r:ident, $c:ident, $slug:literal, $name:literal);*) => {
+        $(
+            fn $r(v: &Vals, now: ClockMs) -> Element { arc4_screen($slug, v, now) }
+            fn $c(v: &Vals) -> String { arc4_code($name, $slug, v) }
+        )*
+    };
+}
+s15_fns!(
+    ov4_r, ov4_c, "admin-overview", "AdminOverviewScreen";
+    au4_r, au4_c, "audit-log", "AuditLogScreen";
+    st4_r, st4_c, "status-board", "StatusBoardScreen";
+    ak4_r, ak4_c, "api-keys-webhooks", "ApiKeysWebhooksScreen";
+    mb4_r, mb4_c, "members-roles", "MembersRolesScreen";
+    bl4_r, bl4_c, "billing-usage", "BillingUsageScreen";
+    tc4_r, tc4_c, "agent-tool-calls", "AgentToolCallsScreen"
+);
+
+#[allow(clippy::type_complexity)]
+fn s15_demo(slug: &'static str) -> Demo {
+    let (name, summary, dx, gp, r, c, kb, a11y, own): (
+        &'static str,
+        &'static str,
+        &'static str,
+        &'static str,
+        fn(&Vals, ClockMs) -> Element,
+        fn(&Vals) -> String,
+        Vec<(&'static str, &'static str)>,
+        Vec<&'static str>,
+        &[(&'static str, &'static str, &'static str)],
+    ) = match slug {
+        "audit-log" => (
+            "Audit log",
+            "Arc demo app / Audit log: every action in the workspace with its time in UTC as an absolute ISO date, the actor, the action, the target, the IP address and the result. Filter by type (Sign-in, API keys, Members, Billing) or failures only, search actor, action or IP, open an event for its details and its before and after, show more and export as CSV.",
+            "AuditLogScreen",
+            "AuditLogEl",
+            au4_r,
+            au4_c,
+            vec![
+                ("Tab", "Types, Failures only, search, then the rows"),
+                ("Enter", "Open or close an event"),
+                ("Escape", "Clear the search"),
+            ],
+            vec![
+                "Each action is a button with aria-expanded; the details are a labelled region.",
+                "Results carry words (OK, Blocked), not only colour.",
+            ],
+            &[
+                ("filtered", "Filtered", "Only API key events."),
+                (
+                    "detail",
+                    "Event open",
+                    "A role change open with its before and after.",
+                ),
+                (
+                    "nomatch",
+                    "No matches",
+                    "A search with no events and Clear filters.",
+                ),
+            ],
+        ),
+        "status-board" => (
+            "Status",
+            "Arc demo app / Status: the overall state, six components with 90 days of uptime as day bars (press a day for its date and record), the open incident with its timed updates, past incidents that open, and Subscribe.",
+            "StatusBoardScreen",
+            "StatusBoardEl",
+            st4_r,
+            st4_c,
+            vec![
+                (
+                    "Tab",
+                    "Subscribe, each component's today bar, past incidents",
+                ),
+                ("Enter", "Read a day or open an incident"),
+            ],
+            vec![
+                "The overall state is a status region; every day bar is named with its date and state.",
+                "States are words and colour: Operational, Degraded, Outage, Maintenance.",
+            ],
+            &[
+                (
+                    "degraded",
+                    "Degraded",
+                    "Webhooks degraded with three updates.",
+                ),
+                ("outage", "Outage", "API and dashboard down."),
+                (
+                    "maint",
+                    "Maintenance",
+                    "Background jobs in planned maintenance.",
+                ),
+            ],
+        ),
+        "api-keys-webhooks" => (
+            "API keys and webhooks",
+            "Arc demo app / API keys and webhooks: keys with their scope, who made them, created and last used; New key with a name and scope (checked), the secret shown once with Copy, Roll and Revoke (press twice). Webhooks: endpoints with events and delivery rate, recent deliveries with status codes, Send test, Retry a failed delivery and turn an endpoint off.",
+            "ApiKeysWebhooksScreen",
+            "ApiKeysWebhooksEl",
+            ak4_r,
+            ak4_c,
+            vec![
+                ("Tab", "Section, New key, then each key's Roll and Revoke"),
+                ("Enter", "Create the key from its form"),
+            ],
+            vec![
+                "The new secret is an alert with a Copy button; Revoke asks again before it acts.",
+                "Endpoint on and off is a switch; failing endpoints are named Failing.",
+            ],
+            &[
+                (
+                    "created",
+                    "Key created",
+                    "A new key with its secret shown once.",
+                ),
+                ("hooks", "Webhooks", "Endpoints and their deliveries."),
+                (
+                    "failing",
+                    "Failing endpoint",
+                    "An endpoint whose last deliveries failed.",
+                ),
+            ],
+        ),
+        "members-roles" => (
+            "Members",
+            "Arc demo app / Members: people with role, two-step sign-in and last active, seats used against the plan; Invite with an email and role (checked for format, duplicates and seats), pending invites with Resend and Revoke, change a role (the only owner keeps it), Remove (press twice) and filter by role.",
+            "MembersRolesScreen",
+            "MembersRolesEl",
+            mb4_r,
+            mb4_c,
+            vec![
+                (
+                    "Tab",
+                    "Role filter, Invite, then each member's role and Remove",
+                ),
+                ("Enter", "Send the invite"),
+            ],
+            vec![
+                "The seat meter is a meter with its value; invite errors are alerts tied to the field.",
+                "Role buttons say the person, the role and that pressing changes it.",
+            ],
+            &[
+                (
+                    "invite",
+                    "Invite open",
+                    "An invite with an email still being typed.",
+                ),
+                (
+                    "full",
+                    "Seats full",
+                    "Every seat taken: the invite refuses.",
+                ),
+                (
+                    "admins",
+                    "Admins only",
+                    "The list filtered to admins and owners.",
+                ),
+            ],
+        ),
+        "billing-usage" => (
+            "Billing",
+            "Arc demo app / Billing: three plans monthly or yearly, the prorated charge or credit for a change to confirm (refused when the seats do not fit), usage meters for seats, API calls and storage, the payment card with its official mark, and invoices with ISO dates, status and download; a past-due banner with Retry payment.",
+            "BillingUsageScreen",
+            "BillingUsageEl",
+            bl4_r,
+            bl4_c,
+            vec![
+                (
+                    "Tab",
+                    "Billing cycle, plans, then the confirm bar and invoices",
+                ),
+                ("Enter", "Pick a plan or confirm"),
+            ],
+            vec![
+                "Plans are a radio group; the change is a dialog with its sums written out.",
+                "Usage bars are meters with labels and values.",
+            ],
+            &[
+                ("yearly", "Yearly", "Yearly prices with two months free."),
+                (
+                    "change",
+                    "Change plan",
+                    "Scale picked: the prorated charge to confirm.",
+                ),
+                (
+                    "pastdue",
+                    "Past due",
+                    "The last payment failed: Retry payment.",
+                ),
+            ],
+        ),
+        "agent-tool-calls" => (
+            "Agent / Tool calls",
+            "Agent / Tool calls: one agent and the tools it may call as an org chart, its model's official mark on top and each tool's coloured logo, function, source, mode and numbers below; the tool called right now lights its line. Open the agent (Pause, Connect tool), a tool (Allowed, Ask first or Paused, its parameters, Disconnect pressed twice) or a call (its input and output, Approve or Reject a waiting one, Run again for a failed one). Every call sits in the table below with time, tool, status, duration, tokens and input; Today, 7 days or 30 days. The agent keeps making calls as the clock runs.",
+            "AgentToolCallsScreen",
+            "AgentToolCallsEl",
+            tc4_r,
+            tc4_c,
+            vec![
+                (
+                    "Tab",
+                    "Range, Pause, Connect tool, the agent, each tool, then the calls",
+                ),
+                ("Enter", "Open the card or call's panel"),
+                ("Escape", "Close the picker"),
+            ],
+            vec![
+                "Cards read their name, source, mode and numbers; calls read their tool, time and status.",
+                "The details panel is a region; a waiting call's Approve and Reject sit in an alert.",
+            ],
+            &[
+                (
+                    "waiting",
+                    "Needs approval",
+                    "A refund waiting for Approve or Reject.",
+                ),
+                (
+                    "failed",
+                    "Failed call",
+                    "A failed Slack post with Run again.",
+                ),
+                ("paused", "Agent paused", "The agent paused: no new calls."),
+            ],
+        ),
+        _ => (
+            "Overview",
+            "Arc demo app / Overview: KPI cards for requests, error rate, p95 latency and active members over 24 hours, 7 or 30 days (each opens its chart, with the change against the first half of the range), a bar chart with a readout per bar, component health with 90-day uptime, recent activity from the audit log, and an incident banner to dismiss.",
+            "AdminOverviewScreen",
+            "AdminOverviewEl",
+            ov4_r,
+            ov4_c,
+            vec![
+                ("Tab", "Range, Export, KPI tabs, then the chart's bars"),
+                ("Enter", "Open a KPI's chart or read a bar"),
+            ],
+            vec![
+                "KPIs are tabs; the readout is a status region; every bar is named with its date and value.",
+                "Changes carry a sign as well as a colour.",
+            ],
+            &[
+                ("week", "Last 7 days", "The overview over seven days."),
+                (
+                    "incident",
+                    "Incident",
+                    "The incident banner up and Webhooks degraded.",
+                ),
+                ("errors", "Error rate", "The error-rate chart over 30 days."),
+            ],
+        ),
+    };
+    let mut d = arc_demo(slug, name, summary, dx, gp, r, c, kb, a11y, own);
+    d.source = "parity/arcscr4.rs";
+    d.live = slug == "agent-tool-calls";
+    d
 }
