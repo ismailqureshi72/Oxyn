@@ -8,12 +8,13 @@
 
 use dioxus::prelude::*;
 use oxyn_core::parity::setscr2::{
-    ACCESS, AUDIT_KINDS, CANCEL_REASONS, CAPS, INTERVALS, INVOICES, MODELS, PLANS, PROVIDERS,
-    ROLES, SEATS, SESSION_LEN, STEPS, TEAMS, TOTP_SECRET, Ws, audit, cancel_next, chat_on, code_ok,
-    dollars, domain_error, expiry_ok, filter, invite, invite_error, key_error, luhn, mask,
-    meter_tone, meter_words, meters, models_in, next_bill, next_step, owners, progress,
-    progress_words, provider_on, qr_cells, recovery_codes, remove_error, role_error, rotated,
-    seat_price, seats_used, seats_words, set_model, team_size, txt_record,
+    ACCESS, AUDIT_KINDS, CANCEL_REASONS, CAPS, INTERVALS, INVOICES, MODELS, NETWORKS, PLANS,
+    PROVIDERS, ROLES, SEATS, SESSION_LEN, STEPS, TEAMS, TOTP_SECRET, Ws, audit, cancel_next,
+    card_network, card_number_ok, chat_on, code_ok, cvc_ok, demo_qr, dollars, domain_error,
+    expiry_ok, filter, invite, invite_error, key_error, mask, meter_tone, meter_words, meters,
+    models_in, next_bill, next_step, owners, progress, progress_words, provider_on, recovery_codes,
+    remove_error, role_error, rotated, seat_price, seats_used, seats_words, set_model, team_size,
+    txt_record,
 };
 
 use super::screensfid::{MenuButton, MenuItem, ico, nico};
@@ -487,7 +488,9 @@ pub(super) fn SecurityPage(ctx: Ctx, setup: bool) -> Element {
     let has_verified = p.domains.iter().any(|d| d.verified);
     let de = domain_error(&dom(), &p.domains);
     let codes = recovery_codes(seed());
-    let cells = qr_cells(3);
+    let qr = demo_qr();
+    let qn = qr.size + 4;
+    let qd = qr.svg_path(2);
     let ev = audit(af(), sample);
     let others = p.devices.len().saturating_sub(1);
     let st = step();
@@ -514,11 +517,9 @@ pub(super) fn SecurityPage(ctx: Ctx, setup: bool) -> Element {
                         }
                         if st == 1 {
                             div { class: "oxs7-qr-w",
-                                svg { class: "oxs7-qr", view_box: "0 0 23 23", role: "img", "aria-label": "QR code for your authenticator app (sample)",
-                                    rect { x: "0", y: "0", width: "23", height: "23", fill: "#fff" }
-                                    for (i, on) in cells.iter().enumerate() {
-                                        if *on { rect { key: "{i}", x: "{i % 21 + 1}", y: "{i / 21 + 1}", width: "1.02", height: "1.02", fill: "#111" } }
-                                    }
+                                svg { class: "oxs7-qr", view_box: "0 0 {qn} {qn}", role: "img", "aria-label": "QR code for your authenticator app (sample key)",
+                                    rect { x: "0", y: "0", width: "{qn}", height: "{qn}", fill: "#fff" }
+                                    path { d: "{qd}", fill: "#111" }
                                 }
                                 div { class: "oxs7-qr-t",
                                     b { "Scan with your authenticator app" }
@@ -734,10 +735,13 @@ pub(super) fn BillingPage(ctx: Ctx, cancelling: bool) -> Element {
     let bill = next_bill(p.plan, p.yearly, seats);
     let per = if p.yearly { "year" } else { "month" };
     let ms = meters(p.card.is_some(), seats);
-    let num_ok = luhn(&num());
+    let net = card_network(&num());
+    let num_ok = card_number_ok(&num());
     let exp_ok = expiry_ok(&exp());
-    let cvc_ok = cvc().len() >= 3 && cvc().len() <= 4 && cvc().chars().all(|c| c.is_ascii_digit());
-    let card_ok = num_ok && exp_ok && cvc_ok;
+    let cvc_good = cvc_ok(&num(), &cvc());
+    let card_ok = num_ok && exp_ok && cvc_good;
+    let saved_net = p.card_net.map(|i| NETWORKS[i]);
+    let saved_name = saved_net.map_or("Card", |n| n.1);
     let has_inv = p.card.is_some();
     let cs = cstep();
     rsx! {
@@ -813,9 +817,10 @@ pub(super) fn BillingPage(ctx: Ctx, cancelling: bool) -> Element {
         })}
         {sec("Payment method", rsx! {}, rsx! {
             div { class: "oxsst-row oxs6-row", "data-hit": "{ctx.hit(\"Payment method\")}",
-                span { class: "oxs7-cardi", {nico("card")} }
+                span { class: "oxs7-cardi", "data-net": "{saved_net.is_some() && p.card.is_some()}",
+                    if let (Some(n), true) = (saved_net, p.card.is_some()) { BrandIcon { name: n.0.to_string(), size: 22.0, coloured: true } } else { {nico("card")} } }
                 div { class: "oxsst-rl",
-                    span { class: "oxsst-lb", if let Some(l) = p.card.as_ref() { "Card ending {l}" } else { "No card yet" } }
+                    span { class: "oxsst-lb", if let Some(l) = p.card.as_ref() { "{saved_name} ending {l}" } else { "No card yet" } }
                     p { class: "oxsst-hint", if p.card.is_some() { "Expires 08/28 · charged on the 1st" } else { "Add one before you leave the Free plan." } }
                 }
                 div { class: "oxsst-rc", button { r#type: "button", class: "oxscn-btn", "aria-expanded": "{card_open}", onclick: move |_| { num.set(String::new()); exp.set(String::new()); cvc.set(String::new()); card_open.toggle(); }, if p.card.is_some() { "Update" } else { "Add card" } } }
@@ -823,20 +828,31 @@ pub(super) fn BillingPage(ctx: Ctx, cancelling: bool) -> Element {
                     div { class: "oxsst-ask oxs7-cardf", role: "group", "aria-label": "Card details",
                         onkeydown: move |e: KeyboardEvent| if e.key() == Key::Escape { card_open.set(false); },
                         label { class: "oxsst-fl oxs7-cn", "Card number"
-                            input { class: "oxsst-in", inputmode: "numeric", autocomplete: "cc-number", value: "{num}", placeholder: "4242 4242 4242 4242", onmounted: focus_on, "aria-invalid": "{!num().is_empty() && !num_ok}", oninput: move |e| num.set(e.value()) } }
+                            span { class: "oxs7-cnw",
+                                input { class: "oxsst-in", inputmode: "numeric", autocomplete: "cc-number", value: "{num}", placeholder: "4242 4242 4242 4242", onmounted: focus_on, "aria-invalid": "{!num().is_empty() && !num_ok}", "aria-describedby": "oxs7-nets", oninput: move |e| num.set(e.value()) }
+                                span { class: "oxs7-nets", id: "oxs7-nets", "aria-live": "polite",
+                                    span { class: "oxscn-sr", if let Some(i) = net { "{NETWORKS[i].1} card" } else { "Visa, Mastercard and American Express accepted" } }
+                                    for (i, (id, name, _, _)) in NETWORKS.iter().enumerate() {
+                                        span { key: "{id}", class: "oxs7-net", title: "{name}", "aria-hidden": "true", "data-on": "{net == Some(i)}", "data-off": "{net.is_some() && net != Some(i)}",
+                                            BrandIcon { name: id.to_string(), size: 18.0, coloured: true } }
+                                    }
+                                }
+                            }
+                        }
                         label { class: "oxsst-fl", "Expiry"
                             input { class: "oxsst-in", autocomplete: "cc-exp", value: "{exp}", placeholder: "MM/YY", "aria-invalid": "{!exp().is_empty() && !exp_ok}", oninput: move |e| exp.set(e.value()) } }
                         label { class: "oxsst-fl", "Security code"
-                            input { class: "oxsst-in", inputmode: "numeric", autocomplete: "cc-csc", r#type: "password", value: "{cvc}", placeholder: "123", "aria-invalid": "{!cvc().is_empty() && !cvc_ok}", oninput: move |e| cvc.set(e.value()) } }
+                            input { class: "oxsst-in", inputmode: "numeric", autocomplete: "cc-csc", r#type: "password", value: "{cvc}", placeholder: if net == Some(2) { "1234" } else { "123" }, "aria-invalid": "{!cvc().is_empty() && !cvc_good}", oninput: move |e| cvc.set(e.value()) } }
                         div { class: "oxsst-tfm oxs7-span",
                             if !num().is_empty() && !num_ok { span { class: "oxsst-err", "Check the card number" } }
+                            else if cvc().len() >= 4 && !cvc_good { span { class: "oxsst-err", if net == Some(2) { "American Express codes have 4 digits" } else { "Use the 3 digits on the back" } } }
                             else if !exp().is_empty() && !exp_ok { span { class: "oxsst-err", "Use MM/YY, not in the past" } }
                             else { span { class: "oxs6-q", {nico("lock")} " Sample form: nothing is sent." } }
                         }
                         div { class: "oxsin-acts oxs7-span",
                             button { r#type: "button", class: "oxscn-btn", onclick: move |_| card_open.set(false), "Cancel" }
                             button { r#type: "button", class: "oxscn-primary", disabled: !card_ok,
-                                onclick: move |_| { let d: String = num.peek().chars().filter(|c| c.is_ascii_digit()).collect(); let l = d[d.len() - 4..].to_string(); now(ctx, |w| w.card = Some(l.clone())); card_open.set(false); say(ctx, format!("Card ending {l} saved")); }, "Save card" }
+                                onclick: move |_| { let d: String = num.peek().chars().filter(|c| c.is_ascii_digit()).collect(); let l = d[d.len() - 4..].to_string(); let n = card_network(&d); now(ctx, |w| { w.card = Some(l.clone()); w.card_net = n; }); card_open.set(false); say(ctx, format!("Card ending {l} saved")); }, "Save card" }
                         }
                     }
                 }

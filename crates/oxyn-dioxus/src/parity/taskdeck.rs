@@ -10,11 +10,16 @@
 use dioxus::prelude::*;
 use oxyn_core::parity::screensfid::thousands;
 use oxyn_core::parity::taskdeck::{
-    ADD_MENU, APP, BROWSED, COLUMNS, EnvMode, MODELS, MODES, PANEL_TABS, PERSON, PERSON_EMAIL,
-    PERSON_INI, PERSON_PLAN, PLUGINS, PROJECTS, PROMPT, SHEET, SUGGEST, ScreenState, Status, Step,
-    StepState, TREE, Task, account_menu, add_task, advance, approve, artifacts, card_acts,
-    delete_task, elapsed, fmt_secs, headline, matches, move_task, progress, prompt_error, run_for,
-    run_status, split, states_for, tasks, terminal_lines, usage, view_of,
+    ADD_MENU, APP, BROWSED, CADENCES, CATALOG, COLUMNS, EnvMode, LastRun, MODELS, MODES,
+    PANEL_TABS, PERSON, PERSON_EMAIL, PERSON_INI, PERSON_PLAN, PLUGIN_CATS, PROJECTS, PROMPT,
+    SHEET, SUGGEST, ScreenState, Status, Step, StepState, TREE, Task, account_menu, add_task,
+    advance, approve, artifacts, card_acts, delete_task, elapsed, fmt_secs, headline, matches,
+    move_task, progress, prompt_error, run_for, run_status, split, states_for, terminal_lines,
+    usage, view_of,
+};
+use oxyn_core::parity::taskdeck::{
+    Schedule, Site, SiteStatus, Skill, TaskdeckData, cadence_words, finish_deploys, next_run,
+    plugins_in, redeploy, schedule_error, skill_error, view_title,
 };
 
 use super::screensfid::{file_ico, ico, nico, skel};
@@ -65,6 +70,14 @@ struct Ctx {
     drawer: Signal<bool>,
     /// The full prompt of the task started last: id and text.
     asked: Signal<(u32, String)>,
+    /// Plugins: (installed, on) per catalogue entry.
+    plugs: Signal<Vec<(bool, bool)>>,
+    /// Skills.
+    skills: Signal<Vec<Skill>>,
+    /// Scheduled tasks.
+    scheds: Signal<Vec<Schedule>>,
+    /// Deployed sites.
+    sites: Signal<Vec<Site>>,
 }
 
 impl Ctx {
@@ -81,11 +94,7 @@ impl Ctx {
     fn go(mut self, v: &'static str) {
         self.view.set(v);
         self.drawer.set(false);
-        let l = match v {
-            "board" => "Tasks",
-            _ => "New task",
-        };
-        self.said.set(l.to_string());
+        self.said.set(view_title(v).to_string());
     }
     /// Copy the run's progress and status onto the open task.
     fn sync(mut self) {
@@ -117,8 +126,7 @@ fn Sidebar(
     let mut acct = use_signal(move || menu_open);
     let mut sub = use_signal(|| "");
     let mut bell = use_signal(|| false);
-    let mut plug = use_signal(|| false);
-    let mut plugs = use_signal(|| PLUGINS.iter().map(|p| p.2).collect::<Vec<_>>());
+    let sched_n = (c.scheds)().iter().filter(|x| !x.paused).count();
     let mut search = use_signal(|| false);
     let mut q = use_signal(String::new);
     let mut shut = use_signal(Vec::<usize>::new);
@@ -214,22 +222,10 @@ fn Sidebar(
                 button { r#type: "button", class: "oxs9-nav", "data-on": "{on_board}", "aria-current": if on_board { "page" } else { "false" }, title: "Tasks",
                     onclick: move |_| c.go("board"), {nico("kanban")} span { class: "oxs9-nl", "Tasks" }
                     if run_n + need_n > 0 { span { class: "oxs9-cnt", "{run_n + need_n}" } } }
-                div { class: "oxs9-pw",
-                    button { r#type: "button", class: "oxs9-nav", "aria-haspopup": "dialog", "aria-expanded": "{plug()}", title: "Plugins & skills",
-                        onclick: move |_| plug.toggle(), {nico("plug")} span { class: "oxs9-nl", "Plugins & skills" } }
-                    if plug() {
-                        div { class: "oxscn-menu oxs9-plugs", role: "dialog", "aria-label": "Plugins & skills",
-                            onkeydown: move |e: KeyboardEvent| if e.key() == Key::Escape { plug.set(false); },
-                            p { class: "oxscn-pop-h", "Plugins" }
-                            for (i, (n, l, _)) in PLUGINS.iter().copied().enumerate() {
-                                label { key: "{n}", class: "oxs9-plug",
-                                    span { class: "oxs9-plt", b { "{n}" } span { "{l}" } }
-                                    input { r#type: "checkbox", role: "switch", class: "oxs9-sw", checked: plugs()[i], "aria-label": "{n}",
-                                        onchange: move |e| { plugs.write()[i] = e.checked(); c.said.set(format!("{n} {}", if e.checked() { "on" } else { "off" })); } }
-                                }
-                            }
-                        }
-                    }
+                for (vk, vl, vi) in [("plugins", "Plugins & skills", "plug"), ("scheduled", "Scheduled", "clock"), ("sites", "Sites", "web")] {
+                    button { key: "{vk}", r#type: "button", class: "oxs9-nav", "data-on": "{view == vk}", "aria-current": if view == vk { "page" } else { "false" }, title: "{vl}",
+                        onclick: move |_| c.go(vk), {nico(vi)} span { class: "oxs9-nl", "{vl}" }
+                        if vk == "scheduled" && sched_n > 0 { span { class: "oxs9-cnt", "{sched_n}" } } }
                 }
             }
             div { class: "oxs9-env", role: "radiogroup", "aria-label": "Where tasks run",
@@ -874,6 +870,341 @@ fn BoardView(ctx: Ctx, loading: bool) -> Element {
     }
 }
 
+// ─────────────────────────────────────────────────── Plugins & skills ──
+
+#[component]
+fn PluginsView(ctx: Ctx, loading: bool, skills_tab: bool) -> Element {
+    let mut c = ctx;
+    let mut tab = use_signal(move || if skills_tab { "skills" } else { "plugins" });
+    let mut cat = use_signal(|| "All");
+    let mut q = use_signal(String::new);
+    let mut open = use_signal(|| usize::MAX);
+    let mut adding = use_signal(|| false);
+    let mut nm = use_signal(String::new);
+    let mut wh = use_signal(String::new);
+    let mut tried = use_signal(|| false);
+    let st = (c.plugs)();
+    let sk = (c.skills)();
+    let shown = plugins_in(cat(), &q());
+    let installed = st.iter().filter(|x| x.0).count();
+    let err = skill_error(&nm(), &wh(), &sk);
+    let t = tab();
+    let on_pl = t == "plugins";
+    rsx! {
+        div { class: "oxs9-board oxs9-pg",
+            div { class: "oxs9-thd",
+                div { class: "oxs9-tti", h1 { class: "oxs9-h2", "Plugins & skills" }
+                    span { class: "oxs9-faint-s", "{installed} plugins installed · {sk.iter().filter(|s| s.on).count()} skills on" } }
+                div { class: "oxs9-seg", role: "radiogroup", "aria-label": "Show",
+                    button { r#type: "button", role: "radio", "aria-checked": "{on_pl}", onclick: move |_| tab.set("plugins"), {nico("plug")} "Plugins" }
+                    button { r#type: "button", role: "radio", "aria-checked": "{!on_pl}", onclick: move |_| tab.set("skills"), {nico("spark")} "Skills" }
+                }
+            }
+            if loading {
+                div { class: "oxs9-pgrid", "aria-busy": "true", for i in 0..6 { div { key: "{i}", class: "oxs9-bc", {skel(3)} } } }
+            } else if t == "plugins" {
+                div { class: "oxs9-pbar",
+                    input { class: "oxs9-find oxs9-pfind", r#type: "search", placeholder: "Search plugins", "aria-label": "Search plugins", value: "{q}", oninput: move |e| q.set(e.value()) }
+                    div { class: "oxs9-chips", role: "radiogroup", "aria-label": "Category",
+                        for k in PLUGIN_CATS {
+                            button { key: "{k}", r#type: "button", class: "oxs9-fchip", role: "radio", "aria-checked": "{cat() == k}", onclick: move |_| cat.set(k), "{k}" }
+                        }
+                    }
+                }
+                if shown.is_empty() {
+                    div { class: "oxs9-blank", span { class: "oxs9-hero", {nico("plug")} } p { class: "oxs9-bt1", "No plugins match" } p { class: "oxs9-faint", "Try another word or category." } }
+                } else {
+                    ul { class: "oxs9-pgrid", "aria-label": "Plugins",
+                        for i in shown {
+                            {
+                                let (k, name, mk, gl, cat_l, line, perms) = CATALOG[i];
+                                let (inst, on) = st.get(i).copied().unwrap_or((false, false));
+                                let o = open() == i;
+                                rsx! {
+                                    li { key: "{k}", class: "oxs9-bc oxs9-pc", "data-on": "{on}",
+                                        div { class: "oxs9-pch",
+                                            span { class: "oxs9-plogo", if mk.is_empty() { {nico(gl)} } else { BrandIcon { name: mk.to_string(), size: 18.0, coloured: true } } }
+                                            span { class: "oxs9-plt", b { "{name}" } span { "{cat_l}" } }
+                                            if inst {
+                                                input { r#type: "checkbox", role: "switch", class: "oxs9-sw", checked: on, "aria-label": "{name} on",
+                                                    onchange: move |e| { c.plugs.write()[i].1 = e.checked(); c.said.set(format!("{name} {}", if e.checked() { "on" } else { "off" })); } }
+                                            }
+                                        }
+                                        p { class: "oxs9-pl", "{line}" }
+                                        div { class: "oxs9-pacts",
+                                            if inst {
+                                                button { r#type: "button", class: "oxscn-btn", "aria-expanded": "{o}", onclick: move |_| open.set(if o { usize::MAX } else { i }), "Details" }
+                                                button { r#type: "button", class: "oxscn-btn", onclick: move |_| { c.plugs.write()[i] = (false, false); open.set(usize::MAX); c.said.set(format!("{name} removed")); }, "Remove" }
+                                            } else {
+                                                button { r#type: "button", class: "oxscn-primary", onclick: move |_| { c.plugs.write()[i] = (true, true); c.said.set(format!("{name} installed and on")); }, {nico("plus")} span { "Install" } }
+                                            }
+                                        }
+                                        if o {
+                                            div { class: "oxs9-perm", role: "group", "aria-label": "What {name} may do",
+                                                p { class: "oxs9-gh", "Can" }
+                                                ul { for pm in perms.iter() { li { key: "{pm}", {ico("check")} span { "{pm}" } } } }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                div { class: "oxs9-pbar",
+                    p { class: "oxs9-faint-s oxs9-grow", "Skills are saved instructions the agent loads when a task matches." }
+                    button { r#type: "button", class: "oxscn-primary", "aria-expanded": "{adding()}", onclick: move |_| { adding.toggle(); tried.set(false); nm.set(String::new()); wh.set(String::new()); }, {nico("plus")} span { "New skill" } }
+                }
+                if adding() {
+                    div { class: "oxs9-form", role: "group", "aria-label": "New skill",
+                        onkeydown: move |e: KeyboardEvent| if e.key() == Key::Escape { adding.set(false); },
+                        label { class: "oxs9-fl", "Name" input { class: "oxs9-inp", value: "{nm}", placeholder: "Weekly digest", onmounted: super::setscr::focus_on, "aria-invalid": "{tried() && err.is_some()}", oninput: move |e| nm.set(e.value()) } }
+                        label { class: "oxs9-fl", "When it applies" input { class: "oxs9-inp", value: "{wh}", placeholder: "Friday summaries for the team", oninput: move |e| wh.set(e.value()) } }
+                        div { class: "oxs9-facts",
+                            if let (true, Some(m)) = (tried(), err) { span { class: "oxs9-err", role: "alert", "{m}" } }
+                            span { class: "oxs9-grow" }
+                            button { r#type: "button", class: "oxscn-btn", onclick: move |_| adding.set(false), "Cancel" }
+                            button { r#type: "button", class: "oxscn-primary", onclick: move |_| {
+                                tried.set(true);
+                                if skill_error(&nm.peek(), &wh.peek(), &c.skills.peek()).is_none() {
+                                    let n = nm.peek().trim().to_string();
+                                    c.skills.write().insert(0, Skill { name: n.clone(), when: wh.peek().trim().to_string(), on: true, mine: true });
+                                    adding.set(false);
+                                    c.said.set(format!("Skill {n} saved"));
+                                }
+                            }, "Save skill" }
+                        }
+                    }
+                }
+                if sk.is_empty() && !adding() {
+                    div { class: "oxs9-blank", span { class: "oxs9-hero", {nico("spark")} } p { class: "oxs9-bt1", "No skills yet" } p { class: "oxs9-faint", "Save how you like things done once; every matching task uses it." } }
+                } else {
+                    ul { class: "oxs9-lst oxs9-sk-l", "aria-label": "Skills",
+                        for (i, k) in sk.iter().cloned().enumerate() {
+                            li { key: "{k.name}", class: "oxs9-skr",
+                                span { class: "oxs9-plogo", {nico("spark")} }
+                                span { class: "oxs9-plt", b { "{k.name}" } span { "{k.when}" } }
+                                span { class: "oxs9-pill", if k.mine { "Yours" } else { "Bundled" } }
+                                if k.mine {
+                                    button { r#type: "button", class: "oxscn-ib", "aria-label": "Delete {k.name}", onclick: move |_| { let n = c.skills.write().remove(i).name; c.said.set(format!("Skill {n} deleted")); }, {nico("trash")} }
+                                }
+                                input { r#type: "checkbox", role: "switch", class: "oxs9-sw", checked: k.on, "aria-label": "{k.name} on",
+                                    onchange: move |e| { c.skills.write()[i].on = e.checked(); } }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+// ─────────────────────────────────────────────────────────── Scheduled ──
+
+#[component]
+fn ScheduledView(ctx: Ctx, loading: bool, editing: bool) -> Element {
+    let mut c = ctx;
+    // 0 = closed, u32::MAX = new, else the schedule being edited.
+    let mut edit = use_signal(move || if editing { 2u32 } else { 0 });
+    let mut nm = use_signal(String::new);
+    let mut pr = use_signal(String::new);
+    let mut cad = use_signal(|| 2usize);
+    let mut at = use_signal(|| "09:00".to_string());
+    let mut tried = use_signal(|| false);
+    use_hook(move || {
+        if editing && let Some(x) = c.scheds.peek().iter().find(|x| x.id == 2) {
+            nm.set(x.name.clone());
+            pr.set(x.prompt.clone());
+            cad.set(x.cadence);
+            at.set(x.at.clone());
+        }
+    });
+    let list = (c.scheds)();
+    let e = edit();
+    let err = schedule_error(&nm(), &pr(), cad(), &at());
+    let bad_time = tried() && err == Some("Use a 24-hour time like 08:30");
+    let mut open_form = move |x: Option<Schedule>| {
+        tried.set(false);
+        match x {
+            Some(x) => {
+                nm.set(x.name);
+                pr.set(x.prompt);
+                cad.set(x.cadence);
+                at.set(x.at);
+                edit.set(x.id);
+            }
+            None => {
+                nm.set(String::new());
+                pr.set(String::new());
+                cad.set(2);
+                at.set("09:00".into());
+                edit.set(u32::MAX);
+            }
+        }
+    };
+    let form = rsx! {
+        div { class: "oxs9-form", role: "group", "aria-label": if e == u32::MAX { "New scheduled task" } else { "Edit scheduled task" },
+            onkeydown: move |k: KeyboardEvent| if k.key() == Key::Escape { edit.set(0); },
+            label { class: "oxs9-fl", "Name" input { class: "oxs9-inp", value: "{nm}", placeholder: "Morning briefing", onmounted: super::setscr::focus_on, "aria-invalid": "{tried() && nm().trim().is_empty()}", oninput: move |v| nm.set(v.value()) } }
+            label { class: "oxs9-fl oxs9-span", "What it does" textarea { class: "oxs9-inp oxs9-ta2", rows: "2", value: "{pr}", placeholder: "Summarise new mail and today's calendar in five lines.", oninput: move |v| pr.set(v.value()) } }
+            div { class: "oxs9-fl", span { "How often" }
+                div { class: "oxs9-chips", role: "radiogroup", "aria-label": "How often",
+                    for (i, (k, l)) in CADENCES.iter().copied().enumerate() {
+                        button { key: "{k}", r#type: "button", class: "oxs9-fchip", role: "radio", "aria-checked": "{cad() == i}", onclick: move |_| cad.set(i), "{l}" }
+                    }
+                }
+            }
+            if cad() > 0 {
+                label { class: "oxs9-fl", "At (24 h)" input { class: "oxs9-inp oxs9-time", value: "{at}", inputmode: "numeric", placeholder: "08:30", "aria-invalid": "{bad_time}", oninput: move |v| at.set(v.value()) } }
+            }
+            div { class: "oxs9-facts oxs9-span",
+                if let (true, Some(m)) = (tried(), err) { span { class: "oxs9-err", role: "alert", "{m}" } }
+                span { class: "oxs9-grow" }
+                button { r#type: "button", class: "oxscn-btn", onclick: move |_| edit.set(0), "Cancel" }
+                button { r#type: "button", class: "oxscn-primary", onclick: move |_| {
+                    tried.set(true);
+                    if schedule_error(&nm.peek(), &pr.peek(), *cad.peek(), &at.peek()).is_some() { return; }
+                    let id = *edit.peek();
+                    let env = *c.env.peek();
+                    let mut l = c.scheds.write();
+                    if id == u32::MAX {
+                        let nid = l.iter().map(|x| x.id).max().unwrap_or(0) + 1;
+                        l.insert(0, Schedule { id: nid, name: nm.peek().trim().into(), prompt: pr.peek().trim().into(), cadence: *cad.peek(), at: at.peek().trim().into(), paused: false, last: (LastRun::Never, String::new()), env });
+                    } else if let Some(x) = l.iter_mut().find(|x| x.id == id) {
+                        x.name = nm.peek().trim().into(); x.prompt = pr.peek().trim().into(); x.cadence = *cad.peek(); x.at = at.peek().trim().into();
+                    }
+                    drop(l);
+                    edit.set(0);
+                    c.said.set(format!("Saved: {}", cadence_words(*cad.peek(), &at.peek())));
+                }, "Save" }
+            }
+        }
+    };
+    rsx! {
+        div { class: "oxs9-board oxs9-pg",
+            div { class: "oxs9-thd",
+                div { class: "oxs9-tti", h1 { class: "oxs9-h2", "Scheduled" } span { class: "oxs9-faint-s", "{list.iter().filter(|x| !x.paused).count()} active · runs in the cloud while you're away" } }
+                button { r#type: "button", class: "oxscn-primary", onclick: move |_| open_form(None), {nico("plus")} span { "New schedule" } }
+            }
+            if e == u32::MAX { div { class: "oxs9-pad", {form.clone()} } }
+            if loading {
+                div { class: "oxs9-lst", "aria-busy": "true", for i in 0..4 { div { key: "{i}", class: "oxs9-schr", {skel(2)} } } }
+            } else if list.is_empty() && e == 0 {
+                div { class: "oxs9-blank", span { class: "oxs9-hero", {nico("clock")} } p { class: "oxs9-bt1", "Nothing scheduled" } p { class: "oxs9-faint", "Run a task every morning, weekday or Monday, here or in the cloud." }
+                    button { r#type: "button", class: "oxscn-primary", onclick: move |_| open_form(None), {nico("plus")} "New schedule" } }
+            } else {
+                ul { class: "oxs9-lst", "aria-label": "Scheduled tasks",
+                    for x in list.iter().cloned() {
+                        {
+                            let id = x.id;
+                            let xc = x.clone();
+                            let nr = next_run(&x);
+                            let (lr, ago) = x.last.clone();
+                            let xn = x.name.clone();
+                            rsx! {
+                                li { key: "{id}", class: "oxs9-schr", "data-paused": "{x.paused}",
+                                    div { class: "oxs9-schm",
+                                        span { class: "oxs9-plogo", {nico(if x.env == EnvMode::Cloud { "cloud" } else { "laptop" })} }
+                                        span { class: "oxs9-plt", b { "{x.name}" } span { "{cadence_words(x.cadence, &x.at)} · {nr}" } }
+                                        span { class: "oxs9-pill", "data-tone": "{lr.tone()}", span { class: "oxs9-dot" } "{lr.label()}" if !ago.is_empty() { " · {ago}" } }
+                                        div { class: "oxs9-schact",
+                                            button { r#type: "button", class: "oxscn-btn", disabled: lr == LastRun::Running, onclick: move |_| {
+                                                if let Some(s) = c.scheds.write().iter_mut().find(|s| s.id == id) { s.last = (LastRun::Running, "now".into()); }
+                                                c.said.set(format!("Running {xn}")); }, {nico("next")} span { "Run now" } }
+                                            button { r#type: "button", class: "oxscn-btn", "aria-pressed": "{x.paused}", onclick: move |_| {
+                                                let mut p = false;
+                                                if let Some(s) = c.scheds.write().iter_mut().find(|s| s.id == id) { s.paused = !s.paused; p = s.paused; }
+                                                c.said.set(if p { "Paused".to_string() } else { "Resumed".to_string() }); },
+                                                {nico(if x.paused { "next" } else { "pause" })} span { if x.paused { "Resume" } else { "Pause" } } }
+                                            button { r#type: "button", class: "oxscn-ib", "aria-label": "Edit {x.name}", "aria-expanded": "{e == id}", onclick: move |_| open_form(Some(xc.clone())), {nico("pen")} }
+                                            button { r#type: "button", class: "oxscn-ib", "aria-label": "Delete {x.name}", onclick: move |_| { c.scheds.write().retain(|s| s.id != id); c.said.set("Schedule deleted".to_string()); }, {nico("trash")} }
+                                        }
+                                    }
+                                    if lr == LastRun::Running {
+                                        span { class: "oxs9-tick oxs9-tick-l", onanimationend: move |_| { if let Some(s) = c.scheds.write().iter_mut().find(|s| s.id == id) { s.last = (LastRun::Ok, "just now".into()); } c.said.set("Run finished".to_string()); } }
+                                    }
+                                    if e == id { {form.clone()} }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+// ─────────────────────────────────────────────────────────────── Sites ──
+
+#[component]
+fn SitesView(ctx: Ctx, loading: bool, preview: bool) -> Element {
+    let mut c = ctx;
+    let mut pv = use_signal(move || if preview { 1u32 } else { 0 });
+    let list = (c.sites)();
+    let building = list.iter().any(|s| s.status == SiteStatus::Building);
+    let open = list.iter().find(|s| s.id == pv()).cloned();
+    rsx! {
+        div { class: "oxs9-board oxs9-pg",
+            div { class: "oxs9-thd",
+                div { class: "oxs9-tti", h1 { class: "oxs9-h2", "Sites" } span { class: "oxs9-faint-s", "{list.len()} sites · built and deployed by tasks" } }
+                button { r#type: "button", class: "oxscn-primary", onclick: move |_| c.go("start"), {nico("plus")} span { "Build a site" } }
+            }
+            if loading {
+                div { class: "oxs9-pgrid", "aria-busy": "true", for i in 0..3 { div { key: "{i}", class: "oxs9-bc", div { class: "oxs9-shot oxs9-sk" } {skel(2)} } } }
+            } else if list.is_empty() {
+                div { class: "oxs9-blank", span { class: "oxs9-hero", {nico("web")} } p { class: "oxs9-bt1", "No sites yet" } p { class: "oxs9-faint", "Ask a task to build a page; it deploys here with its own address." }
+                    button { r#type: "button", class: "oxscn-primary", onclick: move |_| c.go("start"), {nico("plus")} "Build a site" } }
+            } else {
+                div { class: "oxs9-sitesw", "data-pv": "{open.is_some()}",
+                    ul { class: "oxs9-pgrid", "aria-label": "Sites",
+                        for x in list.iter().cloned() {
+                            {
+                                let id = x.id;
+                                let on = pv() == id;
+                                let xn = x.name.clone();
+                                rsx! {
+                                    li { key: "{id}", class: "oxs9-bc oxs9-site", "data-on": "{on}",
+                                        button { r#type: "button", class: "oxs9-shot", "aria-label": "Preview {x.name}", onclick: move |_| pv.set(if on { 0 } else { id }),
+                                            span { class: "oxs9-mini", b { "{x.page.0}" } for k in 0..x.page.2 { i { key: "{k}" } } }
+                                        }
+                                        div { class: "oxs9-pch",
+                                            span { class: "oxs9-plt", b { "{x.name}" } span { class: "oxs9-ell", "{x.url}" } }
+                                            span { class: "oxs9-pill", "data-tone": "{x.status.tone()}", span { class: if x.status == SiteStatus::Building { "oxs9-dot oxs9-pulse" } else { "oxs9-dot" } } "{x.status.label()}" }
+                                        }
+                                        p { class: "oxs9-pl", "Deployed {x.deployed} · {x.deploys} deploys · from “{x.task}”" }
+                                        div { class: "oxs9-pacts",
+                                            button { r#type: "button", class: "oxscn-btn", "aria-pressed": "{on}", onclick: move |_| pv.set(if on { 0 } else { id }), {nico("eye")} span { "Preview" } }
+                                            button { r#type: "button", class: "oxscn-btn", disabled: x.status == SiteStatus::Building, onclick: move |_| { redeploy(&mut c.sites.write(), id); c.said.set(format!("Redeploying {xn}")); }, {nico("refresh")} span { "Redeploy" } }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if let Some(o) = open.clone() {
+                        aside { class: "oxs9-pvw", "aria-label": "Preview of {o.name}",
+                            div { class: "oxs9-pvbar",
+                                span { class: "oxs9-tl3", i {} i {} i {} }
+                                span { class: "oxs9-surl oxs9-ell", {nico("lock")} "{o.url}" }
+                                button { r#type: "button", class: "oxscn-ib", "aria-label": "Close preview", onclick: move |_| pv.set(0), {nico("close")} }
+                            }
+                            div { class: "oxs9-webpg",
+                                h2 { "{o.page.0}" }
+                                p { "{o.page.1}" }
+                                div { class: "oxs9-blocks", for k in 0..o.page.2 { span { key: "{k}" } } }
+                            }
+                        }
+                    }
+                }
+                if building {
+                    span { class: "oxs9-tick oxs9-tick-d", onanimationend: move |_| { let n = finish_deploys(&mut c.sites.write()); if n > 0 { c.said.set("Deploy finished: live".to_string()); } } }
+                }
+            }
+        }
+    }
+}
+
 // ─────────────────────────────────────────────────────────── App ──
 
 #[component]
@@ -884,17 +1215,20 @@ fn TaskdeckApp(
     height: u32,
     rail: bool,
     hidden: bool,
+    data: Option<TaskdeckData>,
 ) -> Element {
     let (st, own) = split(&state);
     let loading = st == ScreenState::Loading;
     let start_view = view_of(&slug);
+    let d0 = use_hook(move || data.unwrap_or_else(|| TaskdeckData::for_state(st)));
     let env0 = if own == "cloud" {
         EnvMode::Cloud
     } else {
         EnvMode::Local
     };
+    let d1 = d0.clone();
     let tasks_s = use_signal(move || {
-        let mut l = tasks(st);
+        let mut l = d1.tasks;
         if own == "approval"
             && let Some(t) = l.iter_mut().find(|t| t.id == 1)
         {
@@ -917,6 +1251,11 @@ fn TaskdeckApp(
     let said = use_signal(String::new);
     let drawer = use_signal(move || own == "menu");
     let asked = use_signal(|| (0u32, String::new()));
+    let (d2, d3, d4, d5) = (d0.clone(), d0.clone(), d0.clone(), d0);
+    let plugs = use_signal(move || d2.plugins);
+    let skills_s = use_signal(move || d3.skills);
+    let scheds = use_signal(move || d4.schedules);
+    let sites_s = use_signal(move || d5.sites);
     let ctx = Ctx {
         tasks: tasks_s,
         view,
@@ -926,6 +1265,10 @@ fn TaskdeckApp(
         said,
         drawer,
         asked,
+        plugs,
+        skills: skills_s,
+        scheds,
+        sites: sites_s,
     };
     let mut side = use_signal(move || {
         if hidden {
@@ -955,7 +1298,7 @@ fn TaskdeckApp(
                     if sd == "rail" {
                         button { r#type: "button", class: "oxscn-ib oxs9-wide", "aria-label": "Expand sidebar", onclick: move |_| side.set("full"), {nico("side")} }
                     }
-                    span { class: "oxs9-crumb oxs9-ell", if v == "start" { "New task" } else if v == "board" { "Tasks" } else { "Task" } }
+                    span { class: "oxs9-crumb oxs9-ell", "{view_title(v)}" }
                 }
                 match v {
                     "task" => rsx! {
@@ -971,6 +1314,9 @@ fn TaskdeckApp(
                         }
                     },
                     "board" => rsx! { BoardView { ctx, loading } },
+                    "plugins" => rsx! { PluginsView { ctx, loading, skills_tab: own == "skills" } },
+                    "scheduled" => rsx! { ScheduledView { ctx, loading, editing: own == "editing" } },
+                    "sites" => rsx! { SitesView { ctx, loading, preview: own == "preview" } },
                     _ => rsx! { StartView { ctx, loading } },
                 }
             }
@@ -999,8 +1345,12 @@ macro_rules! s9_screen {
             /// Oxyn: open with the sidebar hidden (the top bar brings it back).
             #[props(default)]
             sidebar_hidden: bool,
+            /// Your data (tasks, plugins, skills, schedules, sites). `None` shows the sample for
+            /// `state`; start from `TaskdeckData::default()` and replace what you have.
+            #[props(default)]
+            data: Option<TaskdeckData>,
         ) -> Element {
-            rsx! { TaskdeckApp { slug: $slug.to_string(), state, layout, height, rail, hidden: sidebar_hidden } }
+            rsx! { TaskdeckApp { slug: $slug.to_string(), state, layout, height, rail, hidden: sidebar_hidden, data } }
         }
     };
 }
@@ -1018,6 +1368,25 @@ s9_screen!(
     /// `approval` (the task waits for you).
     TaskdeckTaskScreen,
     "taskdeck-task"
+);
+s9_screen!(
+    /// Taskdeck / Plugins & skills: the plugin catalogue (search, categories, install, on/off,
+    /// what each may do, remove) and skills (bundled and yours, on/off, new skill with checks).
+    /// State `skills` (the Skills tab).
+    TaskdeckPluginsScreen,
+    "taskdeck-plugins"
+);
+s9_screen!(
+    /// Taskdeck / Scheduled: tasks that run on a schedule, with Run now, Pause / Resume, Edit,
+    /// Delete and New schedule (name, prompt, how often, a 24-hour time). State `editing`.
+    TaskdeckScheduledScreen,
+    "taskdeck-scheduled"
+);
+s9_screen!(
+    /// Taskdeck / Sites: sites tasks built and deployed, with status (Live, Deploying, Deploy
+    /// failed), a preview pane with its address bar and Redeploy. State `preview`.
+    TaskdeckSitesScreen,
+    "taskdeck-sites"
 );
 s9_screen!(
     /// Taskdeck / Board: tasks by status (Queued, Running, Needs you, Done) as a board or a list,

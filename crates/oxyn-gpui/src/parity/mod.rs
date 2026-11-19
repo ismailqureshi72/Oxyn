@@ -17,12 +17,14 @@ mod agentscr;
 mod agentsfid;
 mod answers;
 mod approvals;
+mod apps;
 mod attachfid;
 mod autonomyfid;
 mod awayfid;
 mod buildscr;
 mod chatfid;
 mod chatscr;
+mod cmdboard;
 mod cmdstudio;
 mod collabfid;
 mod costfid;
@@ -40,6 +42,7 @@ mod fallbackfid;
 mod fanfid;
 mod fidelity;
 mod fields;
+mod fleetwin;
 mod gooeyfid;
 mod graphfid;
 mod handofffid;
@@ -81,6 +84,7 @@ mod toolmapfid;
 mod tools;
 mod tracefid;
 mod workscr;
+mod wscoder;
 
 pub use agentscr::{ActivityEl, AgentThreadEl, InboxBoardEl, InboxScreenEl, MemoryEl, TasksEl};
 pub use agentsfid::{AgentFindingsEl, AgentInboxEl};
@@ -92,6 +96,7 @@ pub use approvals::{
     AgentApprovalsEl, ApprovalGatesEl, ApprovalPagerEl, ConfirmMorphEl, ConfirmPopoverEl,
     HoldConfirmEl, PermissionRequestEl,
 };
+pub use apps::{AgentApp, AgentAppView, Live, Own};
 pub use attachfid::{AttachmentChipsEl, DropLanesEl, PolaroidStackEl, UploadDropzoneEl};
 pub use autonomyfid::AutonomyDialEl;
 pub use awayfid::AwaySummaryEl;
@@ -100,6 +105,7 @@ pub use chatfid::{AgentRunPanelEl, ModelPickerMenuEl};
 pub use chatscr::{
     ChatAgentsEl, ChatOverviewEl, ChatProgressEl, ChatRailEl, ChatRunEl, ChatStartEl,
 };
+pub use cmdboard::CommandBoardEl;
 pub use cmdstudio::{CommandCenterEl, SessionStudioEl};
 pub use collabfid::CollabStreamEl;
 pub use costfid::CostWaterfallEl;
@@ -121,6 +127,7 @@ pub use fields::{
     GaugeEl, ModelMenuEl, ModelPillEl, MorphSelectEl, NumberFieldEl, Pick, RichTextEl,
     RunControlsEl, ScrubInputEl, SplitBarEl, UsageMeterEl,
 };
+pub use fleetwin::FleetWindowEl;
 pub use gooeyfid::{
     GooeyAttachMenuEl, GooeyComposerEl, GooeyModelMenuEl, LiquidDropsEl, LiquidTabsEl,
 };
@@ -173,7 +180,10 @@ pub use setscr::{
 };
 pub use stairsfid::EffortStairsEl;
 pub use storagefid::{StorageCleanupEl, StorageForecastEl, StorageMeterEl, StorageWaffleEl};
-pub use taskdeck::{TaskdeckBoardEl, TaskdeckStartEl, TaskdeckTaskEl};
+pub use taskdeck::{
+    TaskdeckBoardEl, TaskdeckPluginsEl, TaskdeckScheduledEl, TaskdeckSitesEl, TaskdeckStartEl,
+    TaskdeckTaskEl,
+};
 pub use text::{LoadingStateEl, ShimmerEl, SlotTextEl, ThinkingLoaderEl};
 pub use themefid::{
     AccentDensityEl, AppIconPickerEl, BackgroundPickerEl, DisplayComfortEl, LightPlaygroundEl,
@@ -185,6 +195,7 @@ pub use tools::{
 };
 pub use tracefid::TraceWaterfallEl;
 pub use workscr::{AnalyticsEl, CrmEl, FolderDetailEl, FoldersEl, IntegrationsEl, KanbanEl};
+pub use wscoder::WorkspaceCoderEl;
 
 /// Button callback: the action id and the window.
 pub type Act = Rc<dyn Fn(&'static str, &mut Window, &mut App)>;

@@ -121,6 +121,7 @@ pub use parity::{
     ActivityHeatmapEl, ActivityHomeEl, AttachmentStripEl, DocGridEl, ExperimentGridEl,
     PollingCostEl, RunModeMenuEl, ThreadListEl, TokenUsageChartEl,
 };
+pub use parity::{AgentApp, AgentAppView, Live, Own};
 pub use parity::{
     AgentCommentThreadEl, AgentRunPanelEl, CommentsPanelEl, ModelPickerMenuEl, ThreadMsg,
     file_badge,
@@ -151,6 +152,7 @@ pub use parity::{
     NotificationsSettingsEl, OnboardingSettingsEl, PreferencesSettingsEl, PrivacySettingsEl,
     ProfileSettingsEl, SecuritySettingsEl,
 };
+pub use parity::{CommandBoardEl, FleetWindowEl, WorkspaceCoderEl};
 pub use parity::{CommandCenterEl, SessionStudioEl};
 pub use parity::{ConflictRadarEl, MergeAct, MergeConflictEl, RadarAct};
 pub use parity::{
@@ -159,7 +161,10 @@ pub use parity::{
 pub use parity::{ImeEvent, ImeInput, bind_ime_keys};
 pub use parity::{LoadingStateEl, ShimmerEl, SlotTextEl, ThinkingLoaderEl};
 pub use parity::{OnboardingBrandEl, OnboardingReadyEl, OnboardingToneEl, OnboardingWebsiteEl};
-pub use parity::{TaskdeckBoardEl, TaskdeckStartEl, TaskdeckTaskEl};
+pub use parity::{
+    TaskdeckBoardEl, TaskdeckPluginsEl, TaskdeckScheduledEl, TaskdeckSitesEl, TaskdeckStartEl,
+    TaskdeckTaskEl,
+};
 pub use primitives::{
     ActionButtonEl, AvatarEl, BadgeEl, BadgeSize, ButtonEl, ButtonGroupEl, CheckboxEl, ChipEl,
     EmptyStateEl, EntityChipEl, ExpandingGroupEl, IconButtonEl, KbdEl, MenuEl, MonogramEl,

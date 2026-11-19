@@ -10,6 +10,7 @@ mod autonomyfid;
 mod awayfid;
 mod buildscr;
 mod chatfid;
+mod cmdboard;
 mod cmdstudio;
 mod collabfid;
 mod compose;
@@ -29,6 +30,7 @@ mod fallbackfid;
 mod fanfid;
 mod fidelity;
 mod fields;
+mod fleetwin;
 mod gooeyfid;
 mod graphfid;
 mod handofffid;
@@ -72,6 +74,7 @@ mod tools;
 mod tracefid;
 mod upload;
 mod workscr;
+mod wscoder;
 
 pub use agentscr::{
     ActivityScreen, AgentThreadScreen, InboxBoardScreen, InboxScreen, MemoryScreen, TasksScreen,
@@ -90,6 +93,7 @@ pub use autonomyfid::AutonomyDial;
 pub use awayfid::AwaySummary;
 pub use buildscr::{EvalsScreen, s5_states};
 pub use chatfid::{AgentRunPanel, ModelPickerMenu};
+pub use cmdboard::{CommandBoardScreen, s11_board_states};
 pub use cmdstudio::{CommandCenterScreen, SessionStudioScreen, s10_states};
 pub use collabfid::CollabStream;
 pub use compose::{
@@ -114,6 +118,7 @@ pub use fidelity::{
     ThreadNote,
 };
 pub use fields::{ElasticSlider, MorphSelect, NumberField, ScrubInput};
+pub use fleetwin::{FleetWindowScreen, s11_fleet_states};
 pub use gooeyfid::{GooeyAttachMenu, GooeyComposer, GooeyModelMenu, LiquidDrops, LiquidTabs};
 pub use graphfid::AgentGraph;
 pub use handofffid::AgentHandoff;
@@ -169,7 +174,10 @@ pub use setscr::{
 };
 pub use stairsfid::EffortStairs;
 pub use storagefid::{StorageCleanup, StorageForecast, StorageMeter, StorageWaffle};
-pub use taskdeck::{TaskdeckBoardScreen, TaskdeckStartScreen, TaskdeckTaskScreen, s9_states};
+pub use taskdeck::{
+    TaskdeckBoardScreen, TaskdeckPluginsScreen, TaskdeckScheduledScreen, TaskdeckSitesScreen,
+    TaskdeckStartScreen, TaskdeckTaskScreen, s9_states,
+};
 pub use text::{
     ActionSwapButton, InViewTitle, LoadingState, SlotReels, Source, StreamingText, SweepText,
     TextMorph, ThinkingLoader, WordReveal,
@@ -188,3 +196,4 @@ pub use upload::{AvatarUpload, FileDropzone};
 pub use workscr::{
     AnalyticsScreen, CrmScreen, FoldersScreen, IntegrationsScreen, KanbanScreen, s2_states,
 };
+pub use wscoder::{WorkspaceCoderScreen, s11_coder_states};

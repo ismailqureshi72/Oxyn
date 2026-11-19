@@ -173,6 +173,7 @@ fn SetShell(
     autosave: bool,
     #[props(default)] preview: bool,
     #[props(default)] on_back: EventHandler<()>,
+    #[props(default)] data: Option<Prefs>,
 ) -> Element {
     let (st, own) = split(&state);
     let thr = use_threads(st);
@@ -181,7 +182,7 @@ fn SetShell(
     let loading = st == ScreenState::Loading;
     let start = page_of(&slug);
     let mut saved = use_signal(move || {
-        let mut p = prefs(sample);
+        let mut p = data.unwrap_or_else(|| prefs(sample));
         match own {
             "memoff" => p.memory = false,
             "twostep" => p.ws.two_step_me = false,
@@ -900,8 +901,12 @@ macro_rules! s6_screen {
             /// Back to app pressed.
             #[props(default)]
             on_back: EventHandler<()>,
+            /// Your settings (profile, preferences, members, keys, billing…). `None` shows the
+            /// sample for `state`; start from `Prefs::default()` and replace what you have.
+            #[props(default)]
+            data: Option<Prefs>,
         ) -> Element {
-            rsx! { SetShell { layout, state, height, slug: $slug.to_string(), compact, autosave, preview: $slug == "settings-profile" && compact, on_back } }
+            rsx! { SetShell { layout, state, height, slug: $slug.to_string(), compact, autosave, preview: $slug == "settings-profile" && compact, on_back, data } }
         }
     };
 }

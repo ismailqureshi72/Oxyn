@@ -11,10 +11,13 @@ use dioxus::prelude::*;
 use oxyn_core::parity::cmdstudio::{
     ASK_CMD, Answer, BState, Block, CC_APP, CC_MODELS, CC_PROJECTS, CC_PROMPT, CC_WORK, DiffFile,
     Mode, PERSON, PERSON_INI, PERSON_PLAN, Place, REASONING, SS_APP, SS_MODELS, ScreenState,
-    Session, TState, Thread, Verdict, add_thread, answer, approve_plan, branch_for, cc_diff,
-    dequeue, diff_stat, enqueue, file_stat, file_verdict, finish_running, hunk_stat, prompt_error,
-    queue_up, review_line, reviewed, sample_queue, sample_todos, send, session_blocks, sessions,
-    set_file, set_hunk, split, ss_diff, states_for, threads, todo_progress, toggle_todo,
+    Session, TState, Thread, Verdict, add_thread, answer, approve_plan, branch_for, dequeue,
+    diff_stat, enqueue, file_stat, file_verdict, finish_running, hunk_stat, prompt_error, queue_up,
+    review_line, reviewed, send, set_file, set_hunk, split, states_for, todo_progress, toggle_todo,
+};
+use oxyn_core::parity::cmdstudio::{
+    Automation, CommandCenterData, PAGES, PANES, SIDE_CHAT, SessionStudioData, TRIGGERS, Term,
+    automation_error, close_term, move_pane, new_term, page_for, run_cmd, side_reply,
 };
 
 use super::screensfid::{ico, nico, skel};
@@ -25,7 +28,7 @@ pub fn s10_states(slug: &str) -> Vec<(&'static str, &'static str)> {
     states_for(slug).to_vec()
 }
 
-fn branch_ico() -> Element {
+pub(super) fn branch_ico() -> Element {
     rsx! {
         svg { class: "oxscn-ico", view_box: "0 0 24 24", fill: "none", stroke: "currentColor", stroke_width: "1.8", stroke_linecap: "round", "aria-hidden": "true",
             circle { cx: "6", cy: "5", r: "2" } circle { cx: "6", cy: "19", r: "2" } circle { cx: "18", cy: "7", r: "2" }
@@ -61,7 +64,7 @@ fn ss_mark(size: u32) -> Element {
     }
 }
 
-fn tmark(tone: &str) -> Element {
+pub(super) fn tmark(tone: &str) -> Element {
     match tone {
         "run" => rsx! { span { class: "oxs10-spin", "aria-hidden": "true" } },
         "ok" => rsx! { span { class: "oxs10-ok", {nico("check")} } },
@@ -70,13 +73,13 @@ fn tmark(tone: &str) -> Element {
     }
 }
 
-fn pill(label: &str, tone: &str) -> Element {
+pub(super) fn pill(label: &str, tone: &str) -> Element {
     rsx! { span { class: "oxs10-pill", "data-tone": "{tone}", span { class: "oxs10-pd" } "{label}" } }
 }
 
 /// A chip with a small menu (radio items).
 #[component]
-fn Pick(
+pub(super) fn Pick(
     label: String,
     lead: Element,
     items: Vec<(String, String, String)>,
@@ -112,7 +115,7 @@ fn Pick(
 
 /// The review pane: files, hunks, accept / revert per hunk and per file.
 #[component]
-fn DiffPane(
+pub(super) fn DiffPane(
     files: Signal<Vec<DiffFile>>,
     loading: bool,
     said: Signal<String>,
@@ -231,7 +234,7 @@ fn diff_key(k: char) -> &'static str {
 /// narrow).
 #[allow(clippy::too_many_arguments)]
 #[component]
-fn Frame(
+pub(super) fn Frame(
     app: &'static str,
     layout: String,
     height: u32,
@@ -308,10 +311,220 @@ fn side_foot(rail: bool) -> Element {
     }
 }
 
-fn opts2(v: &[(&str, &str)]) -> Vec<(String, String, String)> {
+pub(super) fn opts2(v: &[(&str, &str)]) -> Vec<(String, String, String)> {
     v.iter()
         .map(|x| (x.0.to_string(), String::new(), x.1.to_string()))
         .collect()
+}
+
+const DOLLAR: &str = "$ ";
+
+// ─────────────────────────────────────── Command Center: pane tabs ──
+
+/// The Command Center pane: Review, Terminal (tabs) and Browser.
+#[component]
+fn CcPane(
+    files: Signal<Vec<DiffFile>>,
+    loading: bool,
+    said: Signal<String>,
+    tab0: &'static str,
+    terms0: Vec<Term>,
+) -> Element {
+    let mut said = said;
+    let mut tab = use_signal(move || tab0);
+    let mut terms = use_signal(move || terms0);
+    let mut cur_t = use_signal(|| 1u32);
+    let mut cmd = use_signal(String::new);
+    let mut addr = use_signal(|| PAGES[0].0.to_string());
+    let mut page = use_signal(|| Some(0usize));
+    let mut hist = use_signal(|| vec![0usize]);
+    let mut loading_pg = use_signal(|| false);
+    let t = tab();
+    let tv = terms();
+    let ct = cur_t();
+    let open_t = tv
+        .iter()
+        .find(|x| x.id == ct)
+        .cloned()
+        .or_else(|| tv.first().cloned());
+    let tabs = [
+        ("review", "Review", "doc"),
+        ("terminal", "Terminal", "term"),
+        ("browser", "Browser", "globe"),
+    ];
+    let mut go = move |a: String| {
+        let p = page_for(&a);
+        page.set(p);
+        if let Some(i) = p {
+            hist.write().push(i);
+            addr.set(PAGES[i].0.to_string());
+        }
+        loading_pg.set(true);
+        said.set(match p {
+            Some(i) => format!("Opened {}", PAGES[i].1),
+            None => "Page not found".to_string(),
+        });
+    };
+    rsx! {
+        div { class: "oxs10-ptabs", role: "tablist", "aria-label": "Pane",
+            onkeydown: move |e: KeyboardEvent| {
+                let k = e.key();
+                let i = tabs.iter().position(|x| x.0 == *tab.peek()).unwrap_or(0);
+                if k == Key::ArrowRight { tab.set(tabs[(i + 1) % 3].0); } else if k == Key::ArrowLeft { tab.set(tabs[(i + 2) % 3].0); }
+            },
+            for (k, l, g) in tabs {
+                button { key: "{k}", r#type: "button", role: "tab", class: "oxs10-ptab", "aria-selected": "{t == k}", tabindex: if t == k { "0" } else { "-1" }, onclick: move |_| tab.set(k), {nico(g)} span { "{l}" } }
+            }
+        }
+        match t {
+            "terminal" => rsx! {
+                div { class: "oxs10-tt", role: "tablist", "aria-label": "Terminals",
+                    for x in tv.iter().cloned() {
+                        {
+                            let id = x.id;
+                            let on = open_t.as_ref().is_some_and(|o| o.id == id);
+                            rsx! {
+                                span { key: "{id}", class: "oxs10-tti", "data-on": "{on}",
+                                    button { r#type: "button", role: "tab", class: "oxs10-ttb", "aria-selected": "{on}", onclick: move |_| cur_t.set(id), {nico("term")} span { class: "oxs10-ell", "{x.title}" } }
+                                    if tv.len() > 1 {
+                                        button { r#type: "button", class: "oxs10-ttx", "aria-label": "Close {x.title}", onclick: move |_| { close_term(&mut terms.write(), id); if *cur_t.peek() == id { let f = terms.peek().first().map(|y| y.id).unwrap_or(0); cur_t.set(f); } said.set("Terminal closed".to_string()); }, {nico("close")} }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    button { r#type: "button", class: "oxscn-ib oxs10-hb", "aria-label": "New terminal", onclick: move |_| { let id = new_term(&mut terms.write()); cur_t.set(id); said.set("New terminal".to_string()); }, {nico("plus")} }
+                }
+                if let Some(o) = open_t.clone() {
+                    div { class: "oxs10-tpane", role: "log", "aria-label": "{o.title} output",
+                        pre { class: "oxs10-tout",
+                            for (i, l) in o.lines.iter().enumerate() { span { key: "{i}", class: "oxs10-tl", "data-cmd": "{l.starts_with(DOLLAR)}", "{l}" } }
+                        }
+                        label { class: "oxs10-tin", span { "aria-hidden": "true", "$" }
+                            input { class: "oxs10-tinp", value: "{cmd}", placeholder: "Type a command (clear wipes the output)", "aria-label": "Command for {o.title}", spellcheck: "false",
+                                oninput: move |e| cmd.set(e.value()),
+                                onkeydown: move |e: KeyboardEvent| if e.key() == Key::Enter { let c = cmd.peek().clone(); if run_cmd(&mut terms.write(), o.id, &c) { cmd.set(String::new()); } } }
+                        }
+                    }
+                }
+            },
+            "browser" => rsx! {
+                div { class: "oxs10-bbar",
+                    button { r#type: "button", class: "oxscn-ib oxs10-hb", "aria-label": "Back", disabled: hist().len() < 2,
+                        onclick: move |_| { let mut h = hist.write(); h.pop(); if let Some(i) = h.last().copied() { page.set(Some(i)); addr.set(PAGES[i].0.to_string()); } }, {nico("back")} }
+                    button { r#type: "button", class: "oxscn-ib oxs10-hb", "aria-label": "Reload", onclick: move |_| { loading_pg.set(true); said.set("Reloaded".to_string()); }, {nico("refresh")} }
+                    input { class: "oxs10-addr", value: "{addr}", "aria-label": "Address", spellcheck: "false",
+                        oninput: move |e| addr.set(e.value()),
+                        onkeydown: move |e: KeyboardEvent| if e.key() == Key::Enter { let a = addr.peek().clone(); go(a); } }
+                }
+                div { class: "oxs10-bview", "data-loading": "{loading_pg()}",
+                    if loading_pg() { span { class: "oxs10-bload", onanimationend: move |_| loading_pg.set(false) } }
+                    match page() {
+                        Some(i) => rsx! {
+                            div { class: "oxs10-bpage",
+                                h2 { "{PAGES[i].1}" }
+                                for (j, l) in PAGES[i].2.iter().enumerate() { p { key: "{j}", "{l}" } }
+                                div { class: "oxs10-blinks",
+                                    for (j, pg) in PAGES.iter().enumerate() {
+                                        if j != i { button { key: "{j}", r#type: "button", class: "oxs10-blink", onclick: move |_| go(pg.0.to_string()), "{pg.1}" } }
+                                    }
+                                }
+                            }
+                        },
+                        None => rsx! { div { class: "oxs10-pempty", {nico("globe")} p { "Can't reach that page. Try localhost:3000/uploads." } } },
+                    }
+                }
+            },
+            _ => rsx! { DiffPane { files, loading, said, title: "Review".to_string() } },
+        }
+    }
+}
+
+// ─────────────────────────────────────── Command Center: automations ──
+
+#[component]
+fn Automations(loading: bool, said: Signal<String>, list0: Vec<Automation>) -> Element {
+    let mut said = said;
+    let mut list = use_signal(move || list0);
+    let mut adding = use_signal(|| false);
+    let mut nm = use_signal(String::new);
+    let mut pr = use_signal(String::new);
+    let mut trig = use_signal(|| 0usize);
+    let mut tried = use_signal(|| false);
+    let l = list();
+    let err = automation_error(&nm(), &pr());
+    rsx! {
+        div { class: "oxs10-feed oxs10-auto",
+            div { class: "oxs10-in",
+                div { class: "oxs10-ahd",
+                    div { class: "oxs10-s2", h1 { class: "oxs10-h2", "Automations" } span { class: "oxs10-ssub", "Threads that start themselves on a schedule or an event, each in its own worktree." } }
+                    button { r#type: "button", class: "oxscn-primary oxs10-pbtn", "aria-expanded": "{adding()}", onclick: move |_| { adding.toggle(); tried.set(false); nm.set(String::new()); pr.set(String::new()); }, {nico("plus")} span { "New automation" } }
+                }
+                if adding() {
+                    div { class: "oxs10-aform", role: "group", "aria-label": "New automation",
+                        onkeydown: move |e: KeyboardEvent| if e.key() == Key::Escape { adding.set(false); },
+                        label { class: "oxs10-fl", "Name" input { class: "oxs10-fin", value: "{nm}", placeholder: "Nightly lint fixes", onmounted: super::setscr::focus_on, "aria-invalid": "{tried() && nm().trim().is_empty()}", oninput: move |e| nm.set(e.value()) } }
+                        div { class: "oxs10-fl", span { "When" }
+                            div { class: "oxs10-chips", role: "radiogroup", "aria-label": "When",
+                                for (i, (k, lb)) in TRIGGERS.iter().copied().enumerate() {
+                                    button { key: "{k}", r#type: "button", role: "radio", class: "oxs10-pchip", "aria-checked": "{trig() == i}", onclick: move |_| trig.set(i), "{lb}" }
+                                }
+                            }
+                        }
+                        label { class: "oxs10-fl", "What it does" textarea { class: "oxs10-fin oxs10-fta", rows: "2", value: "{pr}", placeholder: "Fix lint warnings and open a review thread.", oninput: move |e| pr.set(e.value()) } }
+                        div { class: "oxs10-facts",
+                            if let (true, Some(m)) = (tried(), err) { span { class: "oxs10-err", role: "alert", "{m}" } }
+                            span { class: "oxs10-grow" }
+                            button { r#type: "button", class: "oxscn-btn", onclick: move |_| adding.set(false), "Cancel" }
+                            button { r#type: "button", class: "oxscn-primary", onclick: move |_| {
+                                tried.set(true);
+                                if automation_error(&nm.peek(), &pr.peek()).is_some() { return; }
+                                let id = list.peek().iter().map(|a| a.id).max().unwrap_or(0) + 1;
+                                let n = nm.peek().trim().to_string();
+                                list.write().insert(0, Automation { id, name: n.clone(), trigger: *trig.peek(), prompt: pr.peek().trim().to_string(), project: 0, on: true, last: ("", String::new()) });
+                                adding.set(false);
+                                said.set(format!("Automation {n} on: {}", TRIGGERS[*trig.peek()].1));
+                            }, "Create" }
+                        }
+                    }
+                }
+                if loading {
+                    div { "aria-busy": "true", {skel(6)} }
+                } else if l.is_empty() && !adding() {
+                    div { class: "oxs10-pempty", {nico("bolt")} p { "No automations yet. Have a thread start itself every night, or when CI fails." } }
+                } else {
+                    ul { class: "oxs10-alist", "aria-label": "Automations",
+                        for a in l.iter().cloned() {
+                            {
+                                let id = a.id;
+                                let an = a.name.clone();
+                                rsx! {
+                                    li { key: "{id}", class: "oxs10-arow", "data-on": "{a.on}",
+                                        span { class: "oxs10-aic", {nico("bolt")} }
+                                        span { class: "oxs10-s2",
+                                            b { class: "oxs10-ell oxs10-stt", "{a.name}" }
+                                            span { class: "oxs10-ell oxs10-ssub", "{TRIGGERS[a.trigger].1} · {CC_PROJECTS[a.project].1}" }
+                                            span { class: "oxs10-ell oxs10-ssub", "{a.prompt}" }
+                                        }
+                                        if a.last.0 == "run" { {pill("Running", "run")} }
+                                        else if a.last.0 == "ok" { {pill(&format!("Ran {}", a.last.1), "ok")} }
+                                        else if a.last.0 == "bad" { {pill(&format!("Failed {}", a.last.1), "bad")} }
+                                        else { {pill("Not run yet", "")} }
+                                        button { r#type: "button", class: "oxscn-btn oxs10-sbtn", disabled: a.last.0 == "run", onclick: move |_| { if let Some(x) = list.write().iter_mut().find(|x| x.id == id) { x.last = ("run", "now".into()); } said.set(format!("Running {an}")); }, "Run now" }
+                                        input { r#type: "checkbox", role: "switch", class: "oxs10-sw", checked: a.on, "aria-label": "{a.name} on",
+                                            onchange: move |e| { if let Some(x) = list.write().iter_mut().find(|x| x.id == id) { x.on = e.checked(); } } }
+                                        if a.last.0 == "run" {
+                                            span { class: "oxs10-tick", onanimationend: move |_| { if let Some(x) = list.write().iter_mut().find(|x| x.id == id) { x.last = ("ok", "just now".into()); } said.set("Automation finished · a review thread is ready".to_string()); } }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 // ────────────────────────────────────────────── Command Center ──
@@ -323,33 +536,38 @@ fn CommandCenterApp(
     height: u32,
     rail: bool,
     hidden: bool,
+    data: Option<CommandCenterData>,
 ) -> Element {
     let (st, own) = split(&state);
+    let d0 = use_hook(move || data.unwrap_or_else(|| CommandCenterData::for_state(st)));
+    let dd = use_hook(|| Signal::new(d0.clone()));
     let loading = st == ScreenState::Loading;
     let wt = own == "worktree";
+    let mut view = use_signal(move || {
+        if own == "automations" {
+            "automations"
+        } else {
+            "thread"
+        }
+    });
+    let d1 = d0.clone();
     let mut list = use_signal(move || {
-        let mut l = threads(st);
+        let mut l = d1.threads;
         if wt && let Some(t) = l.first_mut() {
             t.state = TState::Review;
             t.place = Place::Worktree;
         }
         l
     });
-    let mut open = use_signal(move || if st == ScreenState::Sample { 1u32 } else { 0 });
+    let first = d0.threads.first().map(|t| t.id).unwrap_or(0);
+    let mut open = use_signal(move || first);
+    let d2 = d0.clone();
     let mut files = use_signal(move || {
-        if st == ScreenState::Sample {
-            cc_diff()
-        } else {
-            Vec::new()
-        }
+        let first = d2.threads.first().map(|t| t.id).unwrap_or(0);
+        d2.diff(first)
     });
-    let mut queue = use_signal(move || {
-        if st == ScreenState::Sample {
-            sample_queue()
-        } else {
-            Vec::new()
-        }
-    });
+    let d3 = d0.clone();
+    let mut queue = use_signal(move || d3.queue);
     let mut said = use_signal(String::new);
     let side = use_signal(move || {
         if hidden {
@@ -440,13 +658,17 @@ fn CommandCenterApp(
     let mk = CC_MODELS[model()].1;
     let can = prompt_error(&text()).is_none();
     let ql = q();
+    let auto_v = view() == "automations";
 
     let sidebar = rsx! {
         nav { class: "oxs10-side", "data-rail": "{rl}", "aria-label": "{CC_APP}",
             {side_top("cc", rl, side, drawer)}
-            button { r#type: "button", class: "oxs10-nav", "data-on": "{oid == 0}", "aria-current": if oid == 0 { "page" } else { "false" },
-                onclick: move |_| { open.set(0); files.set(Vec::new()); drawer.set(false); said.set("New thread".to_string()); },
+            button { r#type: "button", class: "oxs10-nav", "data-on": "{oid == 0 && !auto_v}", "aria-current": if oid == 0 && !auto_v { "page" } else { "false" },
+                onclick: move |_| { open.set(0); view.set("thread"); files.set(Vec::new()); drawer.set(false); said.set("New thread".to_string()); },
                 {nico("pen")} if !rl { span { class: "oxs10-nl", "New thread" } span { class: "oxs10-kbd", "⌘N" } } }
+            button { r#type: "button", class: "oxs10-nav", "data-on": "{auto_v}", "aria-current": if auto_v { "page" } else { "false" }, title: "Automations",
+                onclick: move |_| { view.set("automations"); drawer.set(false); said.set("Automations".to_string()); },
+                {nico("bolt")} if !rl { span { class: "oxs10-nl", "Automations" } } }
             if !rl {
                 input { class: "oxs10-find", r#type: "search", placeholder: "Search threads", "aria-label": "Search threads", value: "{ql}", oninput: move |e| q.set(e.value()) }
                 div { class: "oxs10-list",
@@ -471,8 +693,8 @@ fn CommandCenterApp(
                                                         let title = t.title.clone();
                                                         rsx! {
                                                             li { key: "{id}",
-                                                                button { r#type: "button", class: "oxs10-row", "data-on": "{on}", "aria-current": if on { "page" } else { "false" },
-                                                                    onclick: move |_| { open.set(id); files.set(if id == 1 { cc_diff() } else { Vec::new() }); drawer.set(false); said.set(format!("Opened {title}")); },
+                                                                button { r#type: "button", class: "oxs10-row", "data-on": "{on && !auto_v}", "aria-current": if on && !auto_v { "page" } else { "false" },
+                                                                    onclick: move |_| { open.set(id); view.set("thread"); files.set(dd.peek().diff(id)); drawer.set(false); said.set(format!("Opened {title}")); },
                                                                     {tmark(t.state.tone())}
                                                                     span { class: "oxs10-nl", "{t.title}" }
                                                                     if t.stat.0 + t.stat.1 > 0 { span { class: "oxs10-st oxs10-st-s", span { class: "oxs10-add", "+{t.stat.0}" } span { class: "oxs10-del", "−{t.stat.1}" } } }
@@ -496,8 +718,8 @@ fn CommandCenterApp(
     };
 
     let bar = rsx! {
-        span { class: "oxs10-ttl oxs10-ell", if loading { "" } else if let Some(t) = &cur { "{t.title}" } else { "New thread" } }
-        if let Some(t) = &cur { {pill(t.state.label(), t.state.tone())} }
+        span { class: "oxs10-ttl oxs10-ell", if loading { "" } else if auto_v { "Automations" } else if let Some(t) = &cur { "{t.title}" } else { "New thread" } }
+        if let (false, Some(t)) = (auto_v, &cur) { {pill(t.state.label(), t.state.tone())} }
         span { class: "oxs10-grow" }
         if !loading {
             Pick { label: "Work in".to_string(), lead: place_ico(place), items: places, cur: pidx, up: false, right: true,
@@ -556,7 +778,9 @@ fn CommandCenterApp(
         }
     };
 
-    let body = if loading {
+    let body = if auto_v {
+        rsx! { Automations { loading, said, list0: d0.automations.clone() } }
+    } else if loading {
         rsx! { div { class: "oxs10-feed", "aria-busy": "true", div { class: "oxs10-in", {skel(3)} {skel(5)} } } }
     } else if let Some(t) = cur.clone() {
         let st = t.state;
@@ -629,8 +853,144 @@ fn CommandCenterApp(
             div { class: "oxs10-foot", {composer} }
         }
     };
-    let panel = rsx! { DiffPane { files, loading, said, title: "Review".to_string() } };
+    let tab0 = match own {
+        "terminal" => "terminal",
+        "browser" => "browser",
+        _ => "review",
+    };
+    let panel = rsx! { CcPane { files, loading, said, tab0, terms0: d0.terminals.clone() } };
     rsx! { Frame { app: "cc", layout, height, side, drawer, pane, pnar, said, sidebar, bar, body, panel, pane_label } }
+}
+
+// ─────────────────────────────────────── Session Studio: side panes ──
+
+/// Session Studio's side column: Diff, Side chat and Context as panes you can collapse and, in
+/// Rearrange, drag into a new order (or move with the arrow buttons / Alt + ↑ ↓).
+#[component]
+fn SsPanes(
+    files: Signal<Vec<DiffFile>>,
+    loading: bool,
+    said: Signal<String>,
+    chat0: bool,
+    arrange0: bool,
+    mode_label: String,
+    folder: String,
+) -> Element {
+    let mut said = said;
+    let mut order = use_signal(|| vec![0usize, 1, 2]);
+    let mut shown = use_signal(move || vec![true, chat0 || arrange0, arrange0]);
+    let mut arrange = use_signal(move || arrange0);
+    let mut drag = use_signal(|| None::<usize>);
+    let mut over = use_signal(|| None::<usize>);
+    let mut msgs = use_signal(|| {
+        SIDE_CHAT
+            .iter()
+            .map(|(me, t)| (*me, t.to_string()))
+            .collect::<Vec<_>>()
+    });
+    let mut q = use_signal(String::new);
+    let ord = order();
+    let sh = shown();
+    let ar = arrange();
+    let (a, r) = diff_stat(&files());
+    let mut ask = move || {
+        let t = q.peek().trim().to_string();
+        if t.is_empty() {
+            return;
+        }
+        let rep = side_reply(&t);
+        msgs.write().push((true, t));
+        msgs.write().push((false, rep.to_string()));
+        q.set(String::new());
+        said.set("Side chat answered".to_string());
+    };
+    rsx! {
+        div { class: "oxs10-ssbar",
+            for (pi, (k, l)) in PANES.iter().copied().enumerate() {
+                button { key: "{k}", r#type: "button", class: "oxs10-pchip", "aria-pressed": "{sh[pi]}",
+                    onclick: move |_| { let v = !shown.peek()[pi]; shown.write()[pi] = v; said.set(format!("{l} {}", if v { "shown" } else { "hidden" })); }, "{l}" }
+            }
+            span { class: "oxs10-grow" }
+            button { r#type: "button", class: "oxscn-btn oxs10-sbtn", "aria-pressed": "{ar}", onclick: move |_| { arrange.toggle(); said.set(if *arrange.peek() { "Rearrange: drag a pane by its handle, or use the arrows".to_string() } else { "Layout saved".to_string() }); }, {nico("grip")} span { if ar { "Done" } else { "Rearrange" } } }
+        }
+        div { class: "oxs10-panes", "data-arrange": "{ar}", role: "list", "aria-label": "Panes",
+            for (pos, pi) in ord.iter().copied().enumerate() {
+                if sh[pi] {
+                    {
+                        let (k, l) = PANES[pi];
+                        let n = ord.len();
+                        rsx! {
+                            section { key: "{k}", class: "oxs10-pn", role: "listitem", "aria-label": "{l}", "data-k": "{k}",
+                                "data-drag": "{drag() == Some(pos)}", "data-over": "{over() == Some(pos) && drag() != Some(pos)}",
+                                draggable: "{ar}",
+                                ondragstart: move |_| { drag.set(Some(pos)); },
+                                ondragover: move |e: DragEvent| { e.prevent_default(); if over.peek().as_ref() != Some(&pos) { over.set(Some(pos)); } },
+                                ondragleave: move |_| { if over.peek().as_ref() == Some(&pos) { over.set(None); } },
+                                ondrop: move |e: DragEvent| { e.prevent_default(); let f = *drag.peek(); if let Some(f) = f && move_pane(&mut order.write(), f, pos) { said.set(format!("{l} moved to place {}", pos + 1)); } drag.set(None); over.set(None); },
+                                ondragend: move |_| { drag.set(None); over.set(None); },
+                                div { class: "oxs10-pnh",
+                                    if ar {
+                                        span { class: "oxs10-grip", "aria-hidden": "true", {nico("grip")} }
+                                    }
+                                    b { class: "oxs10-ell", "{l}" }
+                                    if k == "diff" && a + r > 0 { span { class: "oxs10-st", span { class: "oxs10-add", "+{a}" } span { class: "oxs10-del", "−{r}" } } }
+                                    span { class: "oxs10-grow" }
+                                    if ar {
+                                        button { r#type: "button", class: "oxscn-ib oxs10-hb", "aria-label": "Move {l} up", disabled: pos == 0,
+                                            onclick: move |_| { if move_pane(&mut order.write(), pos, pos.saturating_sub(1)) { said.set(format!("{l} moved up")); } }, "↑" }
+                                        button { r#type: "button", class: "oxscn-ib oxs10-hb", "aria-label": "Move {l} down", disabled: pos + 1 >= n,
+                                            onclick: move |_| { if move_pane(&mut order.write(), pos, pos + 1) { said.set(format!("{l} moved down")); } }, "↓" }
+                                    } else {
+                                        button { r#type: "button", class: "oxscn-ib oxs10-hb", "aria-label": "Hide {l}", onclick: move |_| { shown.write()[pi] = false; said.set(format!("{l} hidden")); }, {nico("close")} }
+                                    }
+                                }
+                                if !ar {
+                                    div { class: "oxs10-pnb", "data-k": "{k}",
+                                        onkeydown: move |e: KeyboardEvent| {
+                                            if e.modifiers().alt() && e.key() == Key::ArrowUp && move_pane(&mut order.write(), pos, pos.saturating_sub(1)) { said.set(format!("{l} moved up")); }
+                                            if e.modifiers().alt() && e.key() == Key::ArrowDown && move_pane(&mut order.write(), pos, pos + 1) { said.set(format!("{l} moved down")); }
+                                        },
+                                        match k {
+                                            "diff" => rsx! { DiffPane { files, loading, said, title: "Diff".to_string() } },
+                                            "chat" => rsx! {
+                                                div { class: "oxs10-chat",
+                                                    p { class: "oxs10-ssub", "Ask about this session without interrupting it." }
+                                                    ul { class: "oxs10-cmsg", "aria-live": "polite",
+                                                        for (i, (me, t)) in msgs().iter().cloned().enumerate() {
+                                                            li { key: "{i}", class: "oxs10-cm", "data-me": "{me}", "{t}" }
+                                                        }
+                                                    }
+                                                    div { class: "oxs10-cin",
+                                                        input { class: "oxs10-fin", value: "{q}", placeholder: "Ask a side question", "aria-label": "Side question",
+                                                            oninput: move |e| q.set(e.value()),
+                                                            onkeydown: move |e: KeyboardEvent| if e.key() == Key::Enter { e.prevent_default(); ask(); } }
+                                                        button { r#type: "button", class: "oxs10-send", "aria-label": "Ask", disabled: q().trim().is_empty(), onclick: move |_| ask(), {nico("send")} }
+                                                    }
+                                                }
+                                            },
+                                            _ => rsx! {
+                                                dl { class: "oxs10-ctx",
+                                                    dt { "Folder" } dd { "{folder}" }
+                                                    dt { "Mode" } dd { "{mode_label}" }
+                                                    dt { "Context used" } dd { span { class: "oxs10-meter", span { style: "width:38%" } } " 38% of 200k" }
+                                                    dt { "Changed" } dd { "+{a} −{r} in {files().len()} files" }
+                                                }
+                                            },
+                                        }
+                                    }
+                                } else {
+                                    p { class: "oxs10-pnp", "Drag by the handle, or use ↑ ↓." }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if sh.iter().all(|x| !x) {
+                div { class: "oxs10-pempty", {nico("panel")} p { "All panes are hidden. Turn one on above." } }
+            }
+        }
+    }
 }
 
 // ────────────────────────────────────────────── Session Studio ──
@@ -736,33 +1096,22 @@ fn SessionStudioApp(
     height: u32,
     rail: bool,
     hidden: bool,
+    data: Option<SessionStudioData>,
 ) -> Element {
     let (st, own) = split(&state);
     let loading = st == ScreenState::Loading;
     let ask = own == "permission";
-    let list: Vec<Session> = sessions(st);
-    let mut open = use_signal(move || if st == ScreenState::Sample { 1u32 } else { 0 });
-    let mut blocks = use_signal(move || {
-        if st == ScreenState::Sample {
-            session_blocks(ask)
-        } else {
-            Vec::new()
-        }
-    });
-    let mut todos = use_signal(move || {
-        if st == ScreenState::Sample {
-            sample_todos(ask)
-        } else {
-            Vec::new()
-        }
-    });
-    let mut files = use_signal(move || {
-        if st == ScreenState::Sample {
-            ss_diff()
-        } else {
-            Vec::new()
-        }
-    });
+    let d0 = use_hook(move || data.unwrap_or_else(|| SessionStudioData::for_state(st, ask)));
+    let list: Vec<Session> = d0.sessions.clone();
+    let first = list.first().map(|s| s.0).unwrap_or(0);
+    let mut open = use_signal(move || first);
+    let d1 = d0.clone();
+    let mut blocks = use_signal(move || d1.blocks);
+    let d2 = d0.clone();
+    let mut todos = use_signal(move || d2.todos);
+    let d3 = d0.clone();
+    let mut files = use_signal(move || d3.diff(first));
+    let dd = use_hook(|| Signal::new(d0.clone()));
     let mut said = use_signal(String::new);
     let side = use_signal(move || {
         if hidden {
@@ -836,7 +1185,7 @@ fn SessionStudioApp(
                             for (id, title, folder, ago, tone) in list.iter().copied() {
                                 li { key: "{id}",
                                     button { r#type: "button", class: "oxs10-srow", "data-on": "{id == oid}", "aria-current": if id == oid { "page" } else { "false" },
-                                        onclick: move |_| { open.set(id); let one = id == 1; blocks.set(if one { session_blocks(ask) } else { Vec::new() }); todos.set(if one { sample_todos(ask) } else { Vec::new() }); files.set(if one { ss_diff() } else { Vec::new() }); drawer.set(false); said.set(format!("Opened {title}")); },
+                                        onclick: move |_| { open.set(id); let one = id == first; blocks.set(if one { dd.peek().blocks.clone() } else { Vec::new() }); todos.set(if one { dd.peek().todos.clone() } else { Vec::new() }); files.set(dd.peek().diff(id)); drawer.set(false); said.set(format!("Opened {title}")); },
                                         {tmark(if tone.is_empty() { "idle" } else { tone })}
                                         span { class: "oxs10-s2", span { class: "oxs10-ell oxs10-stt", "{title}" } span { class: "oxs10-ell oxs10-ssub", "{folder} · {ago}" } }
                                     }
@@ -932,7 +1281,8 @@ fn SessionStudioApp(
             div { class: "oxs10-foot", {todo_el} {composer} }
         }
     };
-    let panel = rsx! { DiffPane { files, loading, said, title: "Diff".to_string() } };
+    let folder = cur.map(|s| s.2).unwrap_or("billing-svc").to_string();
+    let panel = rsx! { SsPanes { files, loading, said, chat0: own == "chat", arrange0: own == "arrange", mode_label: md.label().to_string(), folder } };
     rsx! { Frame { app: "ss", layout, height, side, drawer, pane, pnar, said, sidebar, bar, body, panel, pane_label } }
 }
 
@@ -966,8 +1316,12 @@ pub fn CommandCenterScreen(
     /// Oxyn: open with the sidebar hidden (the top bar brings it back).
     #[props(default)]
     sidebar_hidden: bool,
+    /// Your data. `None` shows the sample for `state`; start from `CommandCenterData::default()` and
+    /// replace what you have.
+    #[props(default)]
+    data: Option<CommandCenterData>,
 ) -> Element {
-    rsx! { CommandCenterApp { state, layout, height, rail, hidden: sidebar_hidden } }
+    rsx! { CommandCenterApp { state, layout, height, rail, hidden: sidebar_hidden, data } }
 }
 
 /// Session Studio: the sessions-and-tools desktop agent app. A session list, a chat whose turns
@@ -991,6 +1345,10 @@ pub fn SessionStudioScreen(
     /// Oxyn: open with the sidebar hidden (the top bar brings it back).
     #[props(default)]
     sidebar_hidden: bool,
+    /// Your data. `None` shows the sample for `state`; start from `SessionStudioData::default()` and
+    /// replace what you have.
+    #[props(default)]
+    data: Option<SessionStudioData>,
 ) -> Element {
-    rsx! { SessionStudioApp { state, layout, height, rail, hidden: sidebar_hidden } }
+    rsx! { SessionStudioApp { state, layout, height, rail, hidden: sidebar_hidden, data } }
 }

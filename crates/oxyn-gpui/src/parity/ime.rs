@@ -201,6 +201,12 @@ impl ImeInput {
             None => cx.propagate(),
         }
     }
+    /// Light or dark text and caret.
+    pub fn set_theme(&mut self, t: &'static Theme, cx: &mut Context<Self>) {
+        self.theme = t;
+        cx.notify();
+    }
+
     /// Placeholder text.
     pub fn set_placeholder(&mut self, p: impl Into<SharedString>) {
         self.placeholder = p.into();

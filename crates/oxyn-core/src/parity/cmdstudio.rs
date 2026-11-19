@@ -25,16 +25,29 @@ const CC_STATES: StateList = &[
     ("loading", "Loading"),
     ("empty", "Empty"),
     ("worktree", "Worktree"),
+    ("automations", "Automations"),
+    ("terminal", "Terminals"),
+    ("browser", "Browser"),
 ];
 const SS_STATES: StateList = &[
     ("sample", "Data"),
     ("loading", "Loading"),
     ("empty", "Empty"),
     ("permission", "Permission"),
+    ("chat", "Side chat"),
+    ("arrange", "Rearrange"),
 ];
 
 /// The screens' own states.
-pub const OWN: [&str; 2] = ["worktree", "permission"];
+pub const OWN: [&str; 7] = [
+    "worktree",
+    "permission",
+    "automations",
+    "terminal",
+    "browser",
+    "chat",
+    "arrange",
+];
 
 /// The states of an S10 screen by its slug.
 pub fn states_for(slug: &str) -> StateList {
@@ -251,10 +264,14 @@ pub fn sample_threads() -> Vec<Thread> {
     ]
 }
 
-/// The threads for a data state.
+/// The threads for a data state (each sample thread's line counts come from its own diff).
 pub fn threads(st: ScreenState) -> Vec<Thread> {
     if st == ScreenState::Sample {
-        sample_threads()
+        let mut l = sample_threads();
+        for t in l.iter_mut() {
+            t.stat = diff_stat(&thread_diff(t.id));
+        }
+        l
     } else {
         Vec::new()
     }
@@ -360,8 +377,151 @@ fn hk(head: &'static str, lines: &[(char, &'static str)]) -> Hunk {
     }
 }
 
-/// The open Command Center thread's changes.
+/// The open Command Center thread's changes (thread 1).
 pub fn cc_diff() -> Vec<DiffFile> {
+    thread_diff(OPEN_THREAD)
+}
+
+fn one(
+    path: &'static str,
+    new: bool,
+    head: &'static str,
+    lines: &[(char, &'static str)],
+) -> DiffFile {
+    DiffFile {
+        path,
+        new,
+        hunks: vec![hk(head, lines)],
+    }
+}
+
+/// Each sample thread's own changes (empty for threads you start).
+pub fn thread_diff(id: u32) -> Vec<DiffFile> {
+    match id {
+        1 => thread1_diff(),
+        2 => vec![
+            one(
+                "src/api/audit.rs",
+                false,
+                "@@ -14,8 +14,15 @@ pub async fn list",
+                &[
+                    (
+                        ' ',
+                        "pub async fn list(q: Query<AuditQuery>) -> Json<Page<Entry>> {",
+                    ),
+                    ('-', "    let rows = db::audit::all().await?;"),
+                    ('-', "    Json(rows)"),
+                    ('+', "    let limit = q.limit.unwrap_or(50).min(200);"),
+                    (
+                        '+',
+                        "    let rows = db::audit::after(q.cursor, limit + 1).await?;",
+                    ),
+                    (
+                        '+',
+                        "    let next = (rows.len() > limit).then(|| rows[limit - 1].id);",
+                    ),
+                    (
+                        '+',
+                        "    Json(Page { items: rows.into_iter().take(limit).collect(), next })",
+                    ),
+                    (' ', "}"),
+                ],
+            ),
+            one(
+                "src/api/page.rs",
+                true,
+                "@@ -0,0 +1,5 @@",
+                &[
+                    ('+', "#[derive(Serialize)]"),
+                    ('+', "pub struct Page<T> {"),
+                    ('+', "    pub items: Vec<T>,"),
+                    ('+', "    pub next: Option<i64>,"),
+                    ('+', "}"),
+                ],
+            ),
+        ],
+        3 => vec![one(
+            "tests/webhook.rs",
+            false,
+            "@@ -30,6 +30,7 @@ async fn delivers_once",
+            &[
+                (' ', "    let hook = server.hook(\"/paid\").await;"),
+                ('-', "    sleep(Duration::from_millis(50)).await;"),
+                ('+', "    hook.wait_for(1, Duration::from_secs(2)).await;"),
+                (
+                    '+',
+                    "    // Wait for the delivery instead of a fixed sleep (was flaky on CI).",
+                ),
+                (' ', "    assert_eq!(hook.count(), 1);"),
+            ],
+        )],
+        4 => vec![
+            one(
+                "web/settings/theme.css",
+                false,
+                "@@ -1,4 +1,12 @@",
+                &[
+                    (' ', ":root {"),
+                    ('-', "  --bg: #fff;"),
+                    ('+', "  --bg: light-dark(#fff, #111);"),
+                    ('+', "  --fg: light-dark(#111, #eee);"),
+                    ('+', "  --line: light-dark(#e5e5e5, #2a2a2a);"),
+                    ('+', "  color-scheme: light dark;"),
+                    (' ', "}"),
+                ],
+            ),
+            one(
+                "web/settings/Toggle.tsx",
+                true,
+                "@@ -0,0 +1,4 @@",
+                &[
+                    ('+', "export function ThemeToggle() {"),
+                    ('+', "  const [t, setT] = useTheme();"),
+                    (
+                        '+',
+                        "  return <Switch label=\"Dark mode\" checked={t === \"dark\"} onChange={setT} />;",
+                    ),
+                    ('+', "}"),
+                ],
+            ),
+        ],
+        5 => vec![one(
+            "web/photos/Grid.tsx",
+            false,
+            "@@ -18,9 +18,6 @@ export function Grid",
+            &[
+                (' ', "  return photos.map((p) => ("),
+                ('-', "    <img src={p.url} width={p.w} height={p.h} />"),
+                ('-', "    // TODO: lazy load"),
+                ('-', "    // (all images load at once today)"),
+                (
+                    '+',
+                    "    <img src={p.url} width={p.w} height={p.h} loading=\"lazy\" decoding=\"async\" />",
+                ),
+                (' ', "  ));"),
+            ],
+        )],
+        6 => vec![one(
+            "src/export/markdown.rs",
+            true,
+            "@@ -0,0 +1,6 @@",
+            &[
+                ('+', "pub fn to_markdown(n: &Note) -> String {"),
+                ('+', "    let mut s = format!(\"# {}\\n\\n\", n.title);"),
+                ('+', "    s.push_str(&n.body);"),
+                (
+                    '+',
+                    "    for t in &n.tags { s.push_str(&format!(\"\\n#{t}\")); }",
+                ),
+                ('+', "    s"),
+                ('+', "}"),
+            ],
+        )],
+        _ => Vec::new(),
+    }
+}
+
+fn thread1_diff() -> Vec<DiffFile> {
     vec![
         DiffFile {
             path: "src/upload/client.rs",
@@ -853,6 +1013,82 @@ pub fn toggle_todo(t: &mut [(String, BState)], i: usize) -> bool {
 
 /// The open session's diff (for the diff pane).
 pub fn ss_diff() -> Vec<DiffFile> {
+    session_diff(1)
+}
+
+/// Each sample session's own changes (empty for sessions you start).
+pub fn session_diff(id: u32) -> Vec<DiffFile> {
+    match id {
+        1 => session1_diff(),
+        2 => vec![one(
+            "jobs/sync.py",
+            false,
+            "@@ -40,7 +40,8 @@ def sync_all():",
+            &[
+                (' ', "def sync_all():"),
+                ('-', "    for acct in Account.objects.all():"),
+                (
+                    '+',
+                    "    accts = Account.objects.select_related(\"plan\").only(\"id\", \"plan\")",
+                ),
+                ('+', "    for acct in accts.iterator(chunk_size=500):"),
+                (' ', "        sync(acct)"),
+            ],
+        )],
+        3 => vec![
+            one(
+                "src/forms/signup.ts",
+                false,
+                "@@ -3,6 +3,6 @@",
+                &[
+                    ('-', "import { validate } from \"../old-validator\";"),
+                    ('+', "import { v } from \"@atlas/validator\";"),
+                    (' ', "export const signup = form({"),
+                    ('-', "  email: validate.email(),"),
+                    ('+', "  email: v.string().email(),"),
+                ],
+            ),
+            one(
+                "src/forms/billing.ts",
+                false,
+                "@@ -5,4 +5,4 @@",
+                &[
+                    ('-', "  zip: validate.pattern(/^\\d{5}$/),"),
+                    ('+', "  zip: v.string().regex(/^\\d{5}$/),"),
+                ],
+            ),
+        ],
+        4 => vec![one(
+            "src/cli/help.rs",
+            false,
+            "@@ -1,3 +1,8 @@",
+            &[
+                (' ', "pub const HELP: &str = \"\\"),
+                ('+', "tidy: keep a folder neat\\n\\n\\"),
+                ('+', "USAGE: tidy [OPTIONS] <DIR>\\n\\n\\"),
+                ('+', "  -n, --dry-run   show what would move\\n\\"),
+                (
+                    '+',
+                    "  -r, --rules     a rules file (default .tidy.toml)\\n\\",
+                ),
+                ('+', "\";"),
+            ],
+        )],
+        5 => vec![one(
+            "src/http/health.rs",
+            true,
+            "@@ -0,0 +1,3 @@",
+            &[
+                ('+', "pub async fn health() -> &'static str {"),
+                ('+', "    \"ok\""),
+                ('+', "}"),
+            ],
+        )],
+        _ => Vec::new(),
+    }
+}
+
+fn session1_diff() -> Vec<DiffFile> {
     vec![
         DiffFile {
             path: "src/invoices/pdf.ts",
@@ -886,9 +1122,413 @@ pub fn ss_diff() -> Vec<DiffFile> {
     ]
 }
 
+// ───────────────────────────────────────────── Command Center extras ──
+
+/// What starts an automation: key, label.
+pub const TRIGGERS: [(&str, &str); 4] = [
+    ("nightly", "Every night at 02:00"),
+    ("issue", "When an issue is labelled bug"),
+    ("ci", "When CI fails on main"),
+    ("weekly", "Every Monday at 09:00"),
+];
+
+/// An automation: a prompt the app runs on a trigger.
+#[derive(Clone, Debug, PartialEq)]
+pub struct Automation {
+    /// Stable id.
+    pub id: u32,
+    /// Name.
+    pub name: String,
+    /// Index into [`TRIGGERS`].
+    pub trigger: usize,
+    /// What it asks for.
+    pub prompt: String,
+    /// Index into [`CC_PROJECTS`].
+    pub project: usize,
+    /// Switched on.
+    pub on: bool,
+    /// Last run: tone (`ok`, `bad`, `run`, `` for never) and when.
+    pub last: (&'static str, String),
+}
+
+/// The sample automations (none when empty).
+pub fn automations(st: ScreenState) -> Vec<Automation> {
+    if st != ScreenState::Sample {
+        return Vec::new();
+    }
+    let a = |id, n: &str, t, p: &str, pj, on, tone, ago: &str| Automation {
+        id,
+        name: n.into(),
+        trigger: t,
+        prompt: p.into(),
+        project: pj,
+        on,
+        last: (tone, ago.into()),
+    };
+    vec![
+        a(
+            1,
+            "Bump dependencies",
+            0,
+            "Update patch versions, run the tests, open a review thread if they pass.",
+            0,
+            true,
+            "ok",
+            "6h ago",
+        ),
+        a(
+            2,
+            "Triage new bugs",
+            1,
+            "Reproduce the bug, find the likely file and write a first fix in a worktree.",
+            1,
+            true,
+            "ok",
+            "2d ago",
+        ),
+        a(
+            3,
+            "Fix red CI",
+            2,
+            "Read the failing job, fix the cause in a worktree and wait for review.",
+            0,
+            false,
+            "bad",
+            "3d ago",
+        ),
+        a(
+            4,
+            "Weekly changelog",
+            3,
+            "Summarise merged changes since last Monday into CHANGELOG.md.",
+            2,
+            true,
+            "",
+            "",
+        ),
+    ]
+}
+
+/// Why an automation cannot be saved, if it cannot.
+pub fn automation_error(name: &str, prompt: &str) -> Option<&'static str> {
+    if name.trim().is_empty() {
+        Some("Give it a name")
+    } else if prompt.trim().chars().count() < 8 {
+        Some("Say what it should do")
+    } else {
+        None
+    }
+}
+
+/// A terminal tab: id, title and its lines (`$ ` starts a command).
+#[derive(Clone, Debug, PartialEq)]
+pub struct Term {
+    /// Stable id.
+    pub id: u32,
+    /// Tab title.
+    pub title: String,
+    /// Scrollback.
+    pub lines: Vec<String>,
+}
+
+/// The sample terminals: the thread's test run and a shell.
+pub fn sample_terms() -> Vec<Term> {
+    vec![
+        Term {
+            id: 1,
+            title: "cargo test".into(),
+            lines: vec![
+                "$ cargo test retry".into(),
+                "   Compiling upload v0.4.2".into(),
+                "running 3 tests".into(),
+                "test retries_a_503_then_succeeds ... ok".into(),
+                "test gives_up_after_four_tries ... ok".into(),
+                "test does_not_retry_a_400 ... ok".into(),
+                "test result: ok. 3 passed; 0 failed".into(),
+            ],
+        },
+        Term {
+            id: 2,
+            title: "zsh".into(),
+            lines: vec![
+                "$ git status --short".into(),
+                " M src/upload/client.rs".into(),
+                "?? tests/retry.rs".into(),
+            ],
+        },
+    ]
+}
+
+/// Open a new shell tab. Returns its id.
+pub fn new_term(t: &mut Vec<Term>) -> u32 {
+    let id = t.iter().map(|x| x.id).max().unwrap_or(0) + 1;
+    t.push(Term {
+        id,
+        title: format!("zsh {id}"),
+        lines: Vec::new(),
+    });
+    id
+}
+
+/// Close a tab; the last one cannot close. Returns false when it did not.
+pub fn close_term(t: &mut Vec<Term>, id: u32) -> bool {
+    if t.len() <= 1 {
+        return false;
+    }
+    let n = t.len();
+    t.retain(|x| x.id != id);
+    t.len() < n
+}
+
+/// Run a command in a tab: echo it and print a (simulated) answer. `clear` empties the tab.
+pub fn run_cmd(t: &mut [Term], id: u32, cmd: &str) -> bool {
+    let c = cmd.trim();
+    let Some(x) = t.iter_mut().find(|x| x.id == id) else {
+        return false;
+    };
+    if c.is_empty() {
+        return false;
+    }
+    if c == "clear" {
+        x.lines.clear();
+        return true;
+    }
+    x.lines.push(format!("$ {c}"));
+    let out: &[&str] = match c.split_whitespace().next().unwrap_or("") {
+        "ls" => &["Cargo.toml  README.md  src  tests"],
+        "pwd" => &["~/code/upload-svc"],
+        "git" => &[
+            "On branch main",
+            "Changes not staged: src/upload/client.rs, tests/retry.rs",
+        ],
+        "cargo" => &["running 3 tests", "test result: ok. 3 passed; 0 failed"],
+        "echo" => &[],
+        _ => &["(sample terminal: commands are simulated)"],
+    };
+    if let Some(rest) = c.strip_prefix("echo ") {
+        x.lines.push(rest.to_string());
+    }
+    x.lines.extend(out.iter().map(|s| s.to_string()));
+    true
+}
+
+/// Pages the browser pane can show: address, title, lines.
+pub const PAGES: [(&str, &str, &[&str]); 3] = [
+    (
+        "localhost:3000/uploads",
+        "Uploads",
+        &[
+            "Drop files to upload",
+            "report-q3.pdf · retried 2× · done",
+            "photos.zip · uploading 64%",
+        ],
+    ),
+    (
+        "localhost:3000/settings",
+        "Settings",
+        &["Storage region: eu-west", "Retries: 4 with backoff"],
+    ),
+    (
+        "docs.upload.example/retries",
+        "Retries · Upload docs",
+        &[
+            "Retry 5xx and timeouts with exponential backoff.",
+            "Never retry a 4xx.",
+        ],
+    ),
+];
+
+/// The page for an address the user typed (scheme and `www.` ignored); None when unknown.
+pub fn page_for(addr: &str) -> Option<usize> {
+    let a = addr
+        .trim()
+        .trim_start_matches("https://")
+        .trim_start_matches("http://")
+        .trim_start_matches("www.")
+        .trim_end_matches('/');
+    PAGES.iter().position(|p| p.0 == a)
+}
+
+// ───────────────────────────────────────────── Session Studio extras ──
+
+/// The side chat's opening messages: (from you, text). A side chat asks about the session without
+/// interrupting it.
+pub const SIDE_CHAT: [(bool, &str); 2] = [
+    (true, "Why key the cache by version and not by updated_at?"),
+    (
+        false,
+        "Versions only change when the invoice does; updated_at also moves on unrelated edits, so the cache would miss more often.",
+    ),
+];
+
+/// The side chat's answer to a question (canned, about the open session).
+pub fn side_reply(q: &str) -> &'static str {
+    let q = q.to_lowercase();
+    if q.contains("test") {
+        "The session runs npm test -- invoices after the edit; it asks first in Ask mode."
+    } else if q.contains("memory") || q.contains("size") {
+        "The cache is an LRU of 200 PDFs, about 40 MB at the sample sizes."
+    } else {
+        "Noted. I answered from the session so far without interrupting it."
+    }
+}
+
+/// Session Studio's side panes, in default order: key, title.
+pub const PANES: [(&str, &str); 3] = [
+    ("diff", "Diff"),
+    ("chat", "Side chat"),
+    ("context", "Context"),
+];
+
+/// Move the pane at `from` to `to` (both clamped). Returns false when nothing moved.
+pub fn move_pane(order: &mut Vec<usize>, from: usize, to: usize) -> bool {
+    if order.is_empty() {
+        return false;
+    }
+    let (f, t) = (from.min(order.len() - 1), to.min(order.len() - 1));
+    if f == t {
+        return false;
+    }
+    let x = order.remove(f);
+    order.insert(t, x);
+    true
+}
+
+// ──────────────────────────────────────────────────────────── Data ──
+
+/// Everything the Command Center shows. Pass it to the screen's `data` prop to show your own
+/// threads, their changes, the queue and automations; `Default` is the sample data.
+#[derive(Clone, Debug, PartialEq)]
+pub struct CommandCenterData {
+    /// Threads in the sidebar.
+    pub threads: Vec<Thread>,
+    /// Each thread's changes: (thread id, files).
+    pub diffs: Vec<(u32, Vec<DiffFile>)>,
+    /// The task queue: (id, text).
+    pub queue: Vec<(u32, String)>,
+    /// Automations.
+    pub automations: Vec<Automation>,
+    /// Terminal tabs.
+    pub terminals: Vec<Term>,
+}
+
+impl CommandCenterData {
+    /// The data for a demo state (sample, or nothing for empty and loading).
+    pub fn for_state(st: ScreenState) -> Self {
+        let threads = threads(st);
+        let diffs = threads.iter().map(|t| (t.id, thread_diff(t.id))).collect();
+        let samp = st == ScreenState::Sample;
+        Self {
+            threads,
+            diffs,
+            queue: if samp { sample_queue() } else { Vec::new() },
+            automations: automations(st),
+            terminals: sample_terms(),
+        }
+    }
+    /// A thread's changes (empty when it has none).
+    pub fn diff(&self, id: u32) -> Vec<DiffFile> {
+        self.diffs
+            .iter()
+            .find(|d| d.0 == id)
+            .map(|d| d.1.clone())
+            .unwrap_or_default()
+    }
+}
+
+impl Default for CommandCenterData {
+    fn default() -> Self {
+        Self::for_state(ScreenState::Sample)
+    }
+}
+
+/// Everything Session Studio shows. Pass it to the screen's `data` prop; `Default` is the sample.
+#[derive(Clone, Debug, PartialEq)]
+pub struct SessionStudioData {
+    /// Sessions in the sidebar.
+    pub sessions: Vec<Session>,
+    /// The open session's chat blocks.
+    pub blocks: Vec<Block>,
+    /// The open session's todos.
+    pub todos: Vec<(String, BState)>,
+    /// Each session's changes: (session id, files).
+    pub diffs: Vec<(u32, Vec<DiffFile>)>,
+}
+
+impl SessionStudioData {
+    /// The data for a demo state; `ask` ends the chat on a permission prompt.
+    pub fn for_state(st: ScreenState, ask: bool) -> Self {
+        let sessions = sessions(st);
+        let samp = st == ScreenState::Sample;
+        Self {
+            diffs: sessions.iter().map(|s| (s.0, session_diff(s.0))).collect(),
+            sessions,
+            blocks: if samp {
+                session_blocks(ask)
+            } else {
+                Vec::new()
+            },
+            todos: if samp { sample_todos(ask) } else { Vec::new() },
+        }
+    }
+    /// A session's changes (empty when it has none).
+    pub fn diff(&self, id: u32) -> Vec<DiffFile> {
+        self.diffs
+            .iter()
+            .find(|d| d.0 == id)
+            .map(|d| d.1.clone())
+            .unwrap_or_default()
+    }
+}
+
+impl Default for SessionStudioData {
+    fn default() -> Self {
+        Self::for_state(ScreenState::Sample, false)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn s10_extras() {
+        assert_eq!(split("browser").1, "browser");
+        assert_eq!(states_for("session-studio")[5].0, "arrange");
+        for id in 1..=6 {
+            assert!(!thread_diff(id).is_empty(), "thread {id}");
+            assert_eq!(
+                threads(ScreenState::Sample)[(id - 1) as usize].stat,
+                diff_stat(&thread_diff(id))
+            );
+        }
+        for id in 1..=5 {
+            assert!(!session_diff(id).is_empty(), "session {id}");
+        }
+        assert_ne!(thread_diff(2), thread_diff(3));
+        assert!(thread_diff(9).is_empty());
+        assert_eq!(automation_error("", "x"), Some("Give it a name"));
+        assert!(automation_error("Nightly", "Update the lockfile").is_none());
+        let mut t = sample_terms();
+        let id = new_term(&mut t);
+        assert_eq!(id, 3);
+        assert!(run_cmd(&mut t, id, "echo hi"));
+        assert_eq!(t[2].lines, vec!["$ echo hi", "hi"]);
+        assert!(run_cmd(&mut t, id, "clear") && t[2].lines.is_empty());
+        assert!(close_term(&mut t, 1) && close_term(&mut t, 2));
+        assert!(!close_term(&mut t, 3));
+        assert_eq!(page_for("https://localhost:3000/settings/"), Some(1));
+        assert_eq!(page_for("example.org"), None);
+        let mut o = vec![0, 1, 2];
+        assert!(move_pane(&mut o, 2, 0));
+        assert_eq!(o, vec![2, 0, 1]);
+        assert!(!move_pane(&mut o, 1, 1));
+        assert!(side_reply("does it run the tests?").contains("npm test"));
+        let d = CommandCenterData::default();
+        assert_eq!(d.diff(2), thread_diff(2));
+        assert!(d.diff(99).is_empty());
+        assert_eq!(SessionStudioData::default().diff(3), session_diff(3));
+    }
 
     #[test]
     fn s10_cmdstudio() {

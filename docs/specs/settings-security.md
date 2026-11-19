@@ -13,7 +13,7 @@ How you and everyone here sign in, and what happened lately.
 |---|---|
 | Sidebar (272) | Settings shell: Back to app, a search over every setting that counts matches per page (Enter opens the first), then the Personal group and the Workspace group of pages with this one current, and the account row with its menu |
 | Column | Centred, 696 px: heading, one-line lead, then sections of rows in cards |
-| Your sign-in | Two-step sign-in with a three-step setup: a QR code (placeholder pattern) and its typed key, a six-digit code check, then ten recovery codes to copy or download; Recovery codes (show, new codes); passkeys with Remove and Add passkey |
+| Your sign-in | Two-step sign-in with a three-step setup: a real, scannable QR code (the `otpauth://totp/…` link for the demo key, encoded with the `qrcodegen` crate, MIT, and drawn as one SVG path in Dioxus and a painted path in GPUI) and its typed key, a six-digit code check, then ten recovery codes to copy or download; Recovery codes (show, new codes); passkeys with Remove and Add passkey |
 | Workspace sign-in | Require two-step for everyone; Require single sign-on (needs a verified domain, else "Verify a domain first" blocks Save) with the Google Workspace mark and Entity ID / Reply URL to copy; Session length; Join by domain |
 | Email domains | Each domain Verified or Pending with its TXT record and Verify; Add domain with checks |
 | Signed-in devices | Person, device, place and when; Sign out, and Sign out everyone else (asks first) |
@@ -34,5 +34,8 @@ The sidebar is a labelled nav with aria-current on this page. Every control has 
 ## 6. Responsive
 Authored on the 1440 × 900 stage (rule R1) and scaled to its column; the full view (`/screens/settings-security/full`) renders at the real viewport with the state bar under it (R2). Under 640 px the settings sidebar slides in from a menu button. Under 760 px plan cards stack and meters go two by two; under 560 px tables drop their extra columns and rows put their control under the label. Every label ellipsises in a flex child with min-width 0 (R5); scripts/ovl.py finds no text overlap at 1440, 768 and 390 in light and dark.
 
-## 7. Known gaps
+## 7. Data
+Every settings screen takes `data: Option<Prefs>` (`oxyn_core::parity::setscr::Prefs`: profile, preferences, notifications, privacy and general fields, and `ws: Ws` for members, models and keys, security, billing and the checklist). `None` shows the sample for the state; to show your own, start from `Prefs::default()` (the sample) and replace what you have. The save bar compares edits against this data.
+
+## 8. Known gaps
 GPUI is a static snapshot: `.extra(...)` draws the screen's own state or `compact`; typing, menus and timers belong to the host. Sample people, keys, cards, domains and the workspace are fictional; model versions are fictional, marks are the providers' official ones. There is no backend: invites, keys, payments and sign-in changes are simulated.

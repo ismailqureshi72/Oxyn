@@ -6,22 +6,29 @@
 //! `permission`) or the Oxyn options `rail` and `hidden`. Presses fire `new`, `send`, `accept-all`,
 //! `revert-all`, `allow-once`, `allow-always`, `deny` and `handoff` through `on_act`. Rules come
 //! from `oxyn_core::parity::cmdstudio`.
+//!
+//! [`super::AgentAppView`] draws these screens as a live, interactive GPUI view; the elements
+//! below stay single-state snapshots.
 
 use gpui::{
     App, Div, FontWeight, Hsla, IntoElement, ParentElement, RenderOnce, SharedString, Styled,
     Window, div, prelude::*, px,
 };
 use oxyn_core::icon_tone::IconTone;
+use oxyn_core::parity::appui::row_id;
 use oxyn_core::parity::cmdstudio::{
     BState, Block, CC_APP, CC_MODELS, CC_PROJECTS, CC_PROMPT, CC_WORK, DiffFile, Mode, Place,
     REASONING, SS_APP, SS_MODELS, ScreenState, TState, branch_for, cc_diff, file_stat, hunk_stat,
     review_line, sample_queue, sample_todos, session_blocks, sessions, ss_diff, threads,
-    todo_progress,
+};
+use oxyn_core::parity::cmdstudio::{
+    PAGES, PANES, SIDE_CHAT, TRIGGERS, automations, sample_terms, todo_progress,
 };
 use oxyn_core::parity::screensfid::ShellLayout;
 use oxyn_tokens::Theme;
 
 use super::Act;
+use super::apps::{Live, hit};
 use super::chatscr::{clip, mark};
 use super::rulerfid::{ThPal, fire, th_pal};
 use super::screensfid::{gh, skel, tone_ic};
@@ -72,7 +79,7 @@ macro_rules! s10_el {
         }
         impl RenderOnce for $name {
             fn render(self, _: &mut Window, _: &mut App) -> impl IntoElement {
-                screen(self.theme, self.layout, self.state, self.extra, &self.act, $app)
+                screen(self.theme, self.layout, self.state, self.extra, &self.act, $app, &Live::default())
             }
         }
     };
@@ -91,7 +98,7 @@ s10_el!(
     "ss"
 );
 
-fn tone_of(p: &ThPal, t: &str) -> Hsla {
+pub(super) fn tone_of(p: &ThPal, t: &str) -> Hsla {
     match t {
         "run" => tone(p, IconTone::Running),
         "wait" => tone(p, IconTone::Approval),
@@ -101,11 +108,11 @@ fn tone_of(p: &ThPal, t: &str) -> Hsla {
     }
 }
 
-fn dot(c: Hsla) -> Div {
+pub(super) fn dot(c: Hsla) -> Div {
     div().flex_none().w(px(8.)).h(px(8.)).rounded(px(4.)).bg(c)
 }
 
-fn pill(p: &ThPal, l: &'static str, t: &str) -> Div {
+pub(super) fn pill(p: &ThPal, l: &'static str, t: &str) -> Div {
     div()
         .flex_none()
         .h(px(22.))
@@ -121,7 +128,7 @@ fn pill(p: &ThPal, l: &'static str, t: &str) -> Div {
         .child(l)
 }
 
-fn chip(p: &ThPal, lead: Option<Div>, l: impl Into<SharedString>, border: bool) -> Div {
+pub(super) fn chip(p: &ThPal, lead: Option<Div>, l: impl Into<SharedString>, border: bool) -> Div {
     let mut d = div()
         .flex_none()
         .h(px(30.))
@@ -141,7 +148,7 @@ fn chip(p: &ThPal, lead: Option<Div>, l: impl Into<SharedString>, border: bool) 
     d.child(l.into()).child("▾")
 }
 
-fn brand(p: &ThPal, id: &str) -> Div {
+pub(super) fn brand(p: &ThPal, id: &str) -> Div {
     let mut d = div()
         .flex_none()
         .w(px(16.))
@@ -155,7 +162,13 @@ fn brand(p: &ThPal, id: &str) -> Div {
     d
 }
 
-fn press(p: &ThPal, l: &'static str, primary: bool, act: &Option<Act>, id: &'static str) -> Div {
+pub(super) fn press(
+    p: &ThPal,
+    l: &'static str,
+    primary: bool,
+    act: &Option<Act>,
+    id: &'static str,
+) -> Div {
     let f = fire(act, id);
     div().child(
         btn(p, l, primary)
@@ -164,14 +177,14 @@ fn press(p: &ThPal, l: &'static str, primary: bool, act: &Option<Act>, id: &'sta
     )
 }
 
-fn mono(t: impl Into<SharedString>) -> Div {
+pub(super) fn mono(t: impl Into<SharedString>) -> Div {
     div()
         .font_family("monospace")
         .text_size(px(11.5))
         .child(t.into())
 }
 
-fn stat(p: &ThPal, a: u32, d: u32) -> Div {
+pub(super) fn stat(p: &ThPal, a: u32, d: u32) -> Div {
     div()
         .flex_none()
         .flex()
@@ -190,7 +203,8 @@ fn stat(p: &ThPal, a: u32, d: u32) -> Div {
         )
 }
 
-fn sidebar(p: &ThPal, st: ScreenState, app: &str, rail: bool, act: &Option<Act>) -> Div {
+fn sidebar(p: &ThPal, st: ScreenState, app: &str, rail: bool, act: &Option<Act>, lv: &Live) -> Div {
+    let mut k = 0usize;
     let w = if rail { 56. } else { 272. };
     let f = fire(act, "new");
     let mut s = div()
@@ -209,7 +223,7 @@ fn sidebar(p: &ThPal, st: ScreenState, app: &str, rail: bool, act: &Option<Act>)
                 .items_center()
                 .gap(px(8.))
                 .font_weight(FontWeight::SEMIBOLD)
-                .child(
+                .child(hit(
                     div()
                         .w(px(16.))
                         .h(px(16.))
@@ -217,7 +231,9 @@ fn sidebar(p: &ThPal, st: ScreenState, app: &str, rail: bool, act: &Option<Act>)
                         .border_2()
                         .border_color(p.fg)
                         .flex_none(),
-                )
+                    act,
+                    "rail",
+                ))
                 .when(!rail, |d| {
                     d.child(if app == "cc" { CC_APP } else { SS_APP })
                 }),
@@ -241,12 +257,14 @@ fn sidebar(p: &ThPal, st: ScreenState, app: &str, rail: bool, act: &Option<Act>)
                 }),
         );
     if rail {
-        return s.child(div().flex_1()).child(
+        return s.child(div().flex_1()).child(hit(
             div()
                 .flex()
                 .justify_center()
                 .child(super::setscr::av(p, "RV", 28.)),
-        );
+            act,
+            "acct",
+        ));
     }
     let mut body = div().flex_1().min_h_0().overflow_hidden().flex().flex_col();
     if st == ScreenState::Loading {
@@ -282,8 +300,10 @@ fn sidebar(p: &ThPal, st: ScreenState, app: &str, rail: bool, act: &Option<Act>)
                     .child(quiet(p, inner.len().to_string())),
             );
             for t in inner {
-                let on = t.id == 1;
-                body = body.child(
+                let on = lv.on(k, t.id == 1);
+                let id = row_id(k);
+                k += 1;
+                body = body.child(hit(
                     div()
                         .h(px(32.))
                         .pl(px(24.))
@@ -298,7 +318,9 @@ fn sidebar(p: &ThPal, st: ScreenState, app: &str, rail: bool, act: &Option<Act>)
                         .child(dot(tone_of(p, t.state.tone())))
                         .child(clip(t.title.clone()))
                         .child(stat(p, t.stat.0, t.stat.1)),
-                );
+                    act,
+                    id,
+                ));
             }
         }
     } else {
@@ -314,8 +336,8 @@ fn sidebar(p: &ThPal, st: ScreenState, app: &str, rail: bool, act: &Option<Act>)
                     .child("No sessions yet"),
             );
         }
-        for (id, title, folder, ago, t) in list {
-            body = body.child(
+        for (i, (id, title, folder, ago, t)) in list.into_iter().enumerate() {
+            body = body.child(hit(
                 div()
                     .min_h(px(46.))
                     .px(px(8.))
@@ -323,7 +345,7 @@ fn sidebar(p: &ThPal, st: ScreenState, app: &str, rail: bool, act: &Option<Act>)
                     .items_center()
                     .gap(px(10.))
                     .rounded(px(9.))
-                    .when(id == 1, |d| d.bg(p.sel))
+                    .when(lv.on(i, id == 1), |d| d.bg(p.sel))
                     .child(dot(tone_of(p, t)))
                     .child(
                         div()
@@ -338,11 +360,13 @@ fn sidebar(p: &ThPal, st: ScreenState, app: &str, rail: bool, act: &Option<Act>)
                                     .text_color(p.mute),
                             ),
                     ),
-            );
+                act,
+                row_id(i),
+            ));
         }
     }
     s = s.child(body);
-    s.child(
+    s.child(hit(
         div()
             .mt(px(6.))
             .pt(px(6.))
@@ -353,10 +377,12 @@ fn sidebar(p: &ThPal, st: ScreenState, app: &str, rail: bool, act: &Option<Act>)
             .gap(px(9.))
             .child(super::setscr::av(p, "RV", 28.))
             .child(clip(oxyn_core::parity::cmdstudio::PERSON)),
-    )
+        act,
+        "acct",
+    ))
 }
 
-fn diff_pane(
+pub(super) fn diff_pane(
     p: &ThPal,
     st: ScreenState,
     files: &[DiffFile],
@@ -504,8 +530,27 @@ fn diff_pane(
     d.child(body)
 }
 
-fn composer(p: &ThPal, chips: Vec<Div>, hint: &'static str, plan: bool, act: &Option<Act>) -> Div {
+pub(super) fn composer(
+    p: &ThPal,
+    chips: Vec<Div>,
+    hint: &'static str,
+    plan: bool,
+    act: &Option<Act>,
+    lv: &Live,
+) -> Div {
     let f = fire(act, "send");
+    let mut sent = div().flex().flex_col().gap(px(2.));
+    for t in lv.sent.iter().rev().take(3).rev() {
+        sent = sent.child(
+            div()
+                .flex()
+                .gap(px(6.))
+                .text_size(px(12.))
+                .text_color(p.fg2)
+                .child(div().text_color(p.mute).child("Sent"))
+                .child(clip(t.clone())),
+        );
+    }
     let mut bar = div().flex().items_center().gap(px(6.));
     for c in chips {
         bar = bar.child(c);
@@ -521,7 +566,11 @@ fn composer(p: &ThPal, chips: Vec<Div>, hint: &'static str, plan: bool, act: &Op
         .flex()
         .flex_col()
         .gap(px(6.))
-        .child(div().min_h(px(40.)).text_color(p.mute).child(hint))
+        .when(!lv.sent.is_empty(), |d| d.child(sent))
+        .child(match &lv.input {
+            Some(v) => div().min_h(px(40.)).child(v.clone()),
+            None => div().min_h(px(40.)).text_color(p.mute).child(hint),
+        })
         .child(
             bar.child(div().flex_1()).child(
                 div()
@@ -540,7 +589,7 @@ fn composer(p: &ThPal, chips: Vec<Div>, hint: &'static str, plan: bool, act: &Op
         )
 }
 
-fn cc_body(p: &ThPal, st: ScreenState, wt: bool, act: &Option<Act>) -> Div {
+fn cc_body(p: &ThPal, st: ScreenState, wt: bool, act: &Option<Act>, lv: &Live) -> Div {
     let col = div().flex_1().min_w_0().h_full().flex().flex_col();
     let chips = vec![
         chip(p, Some(brand(p, CC_MODELS[0].1)), CC_MODELS[0].0, false),
@@ -578,6 +627,7 @@ fn cc_body(p: &ThPal, st: ScreenState, wt: bool, act: &Option<Act>) -> Div {
                 "Ask for a change · @ to add files",
                 false,
                 act,
+                lv,
             )));
     }
     let mut feed = div()
@@ -696,6 +746,7 @@ fn cc_body(p: &ThPal, st: ScreenState, wt: bool, act: &Option<Act>) -> Div {
         },
         false,
         act,
+        lv,
     )))
 }
 
@@ -803,7 +854,7 @@ fn block(p: &ThPal, b: &Block, act: &Option<Act>) -> Div {
     }
 }
 
-fn ss_body(p: &ThPal, st: ScreenState, ask: bool, act: &Option<Act>) -> Div {
+fn ss_body(p: &ThPal, st: ScreenState, ask: bool, act: &Option<Act>, lv: &Live) -> Div {
     let col = div().flex_1().min_w_0().h_full().flex().flex_col();
     let chips = vec![
         chip(p, None, Mode::Ask.label(), false),
@@ -835,6 +886,7 @@ fn ss_body(p: &ThPal, st: ScreenState, ask: bool, act: &Option<Act>) -> Div {
                 "Ask for a change · Shift + Tab switches mode",
                 false,
                 act,
+                lv,
             )));
     }
     let mut feed = div()
@@ -901,17 +953,283 @@ fn ss_body(p: &ThPal, st: ScreenState, ask: bool, act: &Option<Act>) -> Div {
                 "Ask for a change · Shift + Tab switches mode",
                 false,
                 act,
+                lv,
             )),
     )
 }
 
-fn screen(
+fn side_col(p: &ThPal) -> Div {
+    div()
+        .w(px(440.))
+        .flex_none()
+        .h_full()
+        .flex()
+        .flex_col()
+        .border_l_1()
+        .border_color(p.line)
+        .bg(p.card)
+}
+
+fn tabs_row(p: &ThPal, on: &str) -> Div {
+    let mut r = div()
+        .flex()
+        .gap(px(4.))
+        .px(px(8.))
+        .pt(px(6.))
+        .border_b_1()
+        .border_color(p.line);
+    for (k, l) in [
+        ("review", "Review"),
+        ("terminal", "Terminal"),
+        ("browser", "Browser"),
+    ] {
+        r = r.child(
+            div()
+                .h(px(32.))
+                .px(px(10.))
+                .flex()
+                .items_center()
+                .text_size(px(12.5))
+                .when(k == on, |d| {
+                    d.border_b_2().border_color(p.fg).text_color(p.fg)
+                })
+                .when(k != on, |d| d.text_color(p.mute))
+                .child(l),
+        );
+    }
+    r
+}
+
+fn term_pane(p: &ThPal) -> Div {
+    let terms = sample_terms();
+    let mut tabs = div()
+        .flex()
+        .gap(px(4.))
+        .p(px(6.))
+        .border_b_1()
+        .border_color(p.line);
+    for (i, t) in terms.iter().enumerate() {
+        tabs = tabs.child(
+            div()
+                .h(px(26.))
+                .px(px(8.))
+                .flex()
+                .items_center()
+                .rounded(px(7.))
+                .when(i == 0, |d| d.bg(p.sel))
+                .text_size(px(12.))
+                .child(t.title.clone()),
+        );
+    }
+    tabs = tabs.child(quiet(p, "+"));
+    let mut out = div().flex_1().p(px(12.)).flex().flex_col().bg(p.inset);
+    for l in &terms[0].lines {
+        out = out.child(mono(l.clone()).text_color(if l.starts_with("$ ") { p.fg } else { p.fg2 }));
+    }
+    side_col(p)
+        .child(tabs_row(p, "terminal"))
+        .child(tabs)
+        .child(out)
+}
+
+fn browser_pane(p: &ThPal) -> Div {
+    let (addr, title, lines) = PAGES[0];
+    let mut page = div()
+        .flex_1()
+        .p(px(20.))
+        .flex()
+        .flex_col()
+        .gap(px(8.))
+        .bg(gpui::rgb(0xFFFFFF))
+        .text_color(gpui::rgb(0x111111))
+        .child(
+            div()
+                .text_size(px(20.))
+                .font_weight(FontWeight::BOLD)
+                .child(title),
+        );
+    for l in lines {
+        page = page.child(
+            div()
+                .p(px(10.))
+                .rounded(px(8.))
+                .border_1()
+                .border_color(gpui::rgb(0xE6E6E6))
+                .child(*l),
+        );
+    }
+    side_col(p)
+        .child(tabs_row(p, "browser"))
+        .child(
+            div()
+                .flex()
+                .items_center()
+                .gap(px(6.))
+                .p(px(6.))
+                .border_b_1()
+                .border_color(p.line)
+                .child(quiet(p, "←  ↻"))
+                .child(
+                    div()
+                        .flex_1()
+                        .h(px(28.))
+                        .px(px(10.))
+                        .flex()
+                        .items_center()
+                        .rounded(px(8.))
+                        .bg(p.inset)
+                        .text_size(px(12.5))
+                        .child(addr),
+                ),
+        )
+        .child(page)
+}
+
+fn auto_body(p: &ThPal, st: ScreenState) -> Div {
+    let list = automations(st);
+    let mut d = div()
+        .flex_1()
+        .min_w_0()
+        .p(px(24.))
+        .flex()
+        .flex_col()
+        .gap(px(12.))
+        .child(
+            div()
+                .text_size(px(18.))
+                .font_weight(FontWeight::SEMIBOLD)
+                .child("Automations"),
+        )
+        .child(quiet(
+            p,
+            "Threads that start themselves on a schedule or an event, each in its own worktree.",
+        ));
+    if st == ScreenState::Loading {
+        return d.child(skel(p, 6));
+    }
+    let mut l = div()
+        .flex()
+        .flex_col()
+        .rounded(px(12.))
+        .border_1()
+        .border_color(p.line);
+    for a in &list {
+        let (tone, ago) = &a.last;
+        l = l.child(
+            div()
+                .p(px(12.))
+                .flex()
+                .items_center()
+                .gap(px(10.))
+                .border_b_1()
+                .border_color(p.line)
+                .child(
+                    div()
+                        .flex_1()
+                        .min_w_0()
+                        .flex()
+                        .flex_col()
+                        .child(
+                            div()
+                                .font_weight(FontWeight::MEDIUM)
+                                .when(!a.on, |x| x.text_color(p.mute))
+                                .child(a.name.clone()),
+                        )
+                        .child(quiet(
+                            p,
+                            format!("{} · {}", TRIGGERS[a.trigger].1, CC_PROJECTS[a.project].1),
+                        )),
+                )
+                .child(pill(
+                    p,
+                    match *tone {
+                        "ok" => "Ran",
+                        "bad" => "Failed",
+                        "run" => "Running",
+                        _ => "Not run yet",
+                    },
+                    tone,
+                ))
+                .child(quiet(p, ago.clone()))
+                .child(pill(
+                    p,
+                    if a.on { "On" } else { "Off" },
+                    if a.on { "ok" } else { "" },
+                )),
+        );
+    }
+    if list.is_empty() {
+        d = d.child(quiet(p, "No automations yet."));
+    } else {
+        d = d.child(l);
+    }
+    d
+}
+
+fn ss_panes(
+    p: &ThPal,
+    st: ScreenState,
+    files: &[DiffFile],
+    arrange: bool,
+    act: &Option<Act>,
+) -> Div {
+    let head = |l: &'static str| {
+        div()
+            .h(px(36.))
+            .px(px(12.))
+            .flex()
+            .items_center()
+            .gap(px(8.))
+            .when(arrange, |d| d.child(quiet(p, "⋮⋮")))
+            .child(div().font_weight(FontWeight::SEMIBOLD).child(l))
+            .child(div().flex_1())
+            .when(arrange, |d| d.child(quiet(p, "↑  ↓")))
+    };
+    let pane = |d: Div| {
+        if arrange {
+            d.m(px(8.))
+                .rounded(px(10.))
+                .border_1()
+                .border_color(p.line)
+                .bg(p.inset)
+        } else {
+            d.border_b_1().border_color(p.line)
+        }
+    };
+    let mut chat = div().flex().flex_col().gap(px(6.)).px(px(12.)).pb(px(12.));
+    for (me, t) in SIDE_CHAT {
+        chat = chat.child(
+            div().flex().when(me, |d| d.justify_end()).child(
+                div()
+                    .max_w(px(360.))
+                    .p(px(8.))
+                    .rounded(px(10.))
+                    .bg(if me { p.sel } else { p.inset })
+                    .text_size(px(12.5))
+                    .child(t),
+            ),
+        );
+    }
+    let mut col = side_col(p);
+    if arrange {
+        for (_, l) in PANES {
+            col = col.child(pane(div().child(head(l))));
+        }
+        return col;
+    }
+    let diff = diff_pane(p, st, files, "Diff", act);
+    col.child(div().flex_1().min_h_0().flex().flex_col().child(diff))
+        .child(pane(div().child(head("Side chat")).child(chat)))
+}
+
+pub(super) fn screen(
     theme: &'static Theme,
     lay: ShellLayout,
     st: ScreenState,
     extra: &'static str,
     act: &Option<Act>,
     app: &'static str,
+    lv: &Live,
 ) -> Div {
     let p = th_pal(theme);
     let samp = st == ScreenState::Sample;
@@ -921,7 +1239,11 @@ fn screen(
         (
             "Retry failed uploads with backoff",
             Some((state.label(), state.tone())),
-            cc_body(&p, st, wt, act),
+            if extra == "automations" {
+                auto_body(&p, st)
+            } else {
+                cc_body(&p, st, wt, act, lv)
+            },
             if samp { cc_diff() } else { Vec::new() },
             "Review",
         )
@@ -929,7 +1251,7 @@ fn screen(
         (
             "Cache invoice PDFs",
             None,
-            ss_body(&p, st, extra == "permission", act),
+            ss_body(&p, st, extra == "permission", act, lv),
             if samp { ss_diff() } else { Vec::new() },
             "Diff",
         )
@@ -960,7 +1282,7 @@ fn screen(
         } else {
             Place::Local
         };
-        bar = bar.child(chip(&p, None, place.label(), true));
+        bar = bar.child(hit(chip(&p, None, place.label(), true), act, "place"));
     }
     let main = div()
         .flex_1()
@@ -977,7 +1299,13 @@ fn screen(
                 .min_h_0()
                 .flex()
                 .child(body)
-                .child(diff_pane(&p, st, &files, ptitle, act)),
+                .child(match (app, extra) {
+                    ("cc", "terminal") => term_pane(&p),
+                    ("cc", "browser") => browser_pane(&p),
+                    ("ss", "chat") => ss_panes(&p, st, &files, false, act),
+                    ("ss", "arrange") => ss_panes(&p, st, &files, true, act),
+                    _ => diff_pane(&p, st, &files, ptitle, act),
+                }),
         );
     let mut main = match lay {
         ShellLayout::Inset => main
@@ -995,7 +1323,7 @@ fn screen(
         .text_color(p.fg)
         .text_size(px(13.));
     if extra != "hidden" {
-        root = root.child(sidebar(&p, st, app, extra == "rail", act));
+        root = root.child(sidebar(&p, st, app, extra == "rail" || lv.rail, act, lv));
     } else {
         main = main.ml(px(8.));
     }

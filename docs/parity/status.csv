@@ -710,8 +710,14 @@ Oxyn,Screens · Settings shell,,Screens,Free,settings,screens-1,#42,built
 Oxyn,Screens · Settings / Get started (onboarding checklist),,Screens,Free,settings-onboarding,S7,S7,built
 Oxyn,Screens · Agent · Orchestration,,Screens,Free,agent-orchestration,screens-2,#43,built
 Oxyn,Screens · Agent · Thread,,Screens,Free,agent-thread,screens-2,#43,built
-Oxyn,Agent apps · Taskdeck / Start (task-runner desktop pattern),https://agent.minimax.io/download,Agent apps,Free,taskdeck-start,S9,S9,built
-Oxyn,Agent apps · Taskdeck / Task (step timeline + side panel),https://agent.minimax.io/download,Agent apps,Free,taskdeck-task,S9,S9,built
-Oxyn,Agent apps · Taskdeck / Board,https://agent.minimax.io/download,Agent apps,Free,taskdeck-board,S9,S9,built
-Oxyn,Agent apps · Command Center (threads + review desktop pattern),https://developers.openai.com/codex/app/,Agent apps,Free,command-center,S10,S10,built
-Oxyn,Agent apps · Session Studio (sessions + tools desktop pattern),https://code.claude.com/docs/en/desktop,Agent apps,Free,session-studio,S10,S10,built
+Oxyn,Agent apps · Taskdeck / Start (task-runner desktop pattern),https://agent.minimax.io/download,Agent apps,Free,taskdeck-start,S9,S9,built (GPUI interactive #59)
+Oxyn,Agent apps · Taskdeck / Task (step timeline + side panel),https://agent.minimax.io/download,Agent apps,Free,taskdeck-task,S9,S9,built (GPUI interactive #59)
+Oxyn,Agent apps · Taskdeck / Board,https://agent.minimax.io/download,Agent apps,Free,taskdeck-board,S9,S9,built (GPUI interactive #59)
+Oxyn,Agent apps · Taskdeck / Plugins & skills,https://agent.minimax.io/download,Agent apps,Free,taskdeck-plugins,S9,#59,built (GPUI interactive #59)
+Oxyn,Agent apps · Taskdeck / Scheduled,https://agent.minimax.io/download,Agent apps,Free,taskdeck-scheduled,S9,#59,built (GPUI interactive #59)
+Oxyn,Agent apps · Taskdeck / Sites,https://agent.minimax.io/download,Agent apps,Free,taskdeck-sites,S9,#59,built (GPUI interactive #59)
+Oxyn,Agent apps · Command Center (threads + review desktop pattern),https://developers.openai.com/codex/app/,Agent apps,Free,command-center,S10,S10,built (GPUI interactive #59)
+Oxyn,Agent apps · Session Studio (sessions + tools desktop pattern),https://code.claude.com/docs/en/desktop,Agent apps,Free,session-studio,S10,S10,built (GPUI interactive #59)
+Oxyn,Agent apps · Fleet Window (parallel agents + compare desktop pattern),https://cursor.com/docs/agent/overview,Agent apps,Free,fleet-window,S11,S11,built (GPUI interactive #59)
+Oxyn,Agent apps · Workspace Coder (chat + agent computer pattern),https://www.kimi.com/,Agent apps,Free,workspace-coder,S11,S11,built (GPUI interactive #59)
+Oxyn,Agent apps · Command Board (autonomous sessions + workspace pattern),https://docs.devin.ai/,Agent apps,Free,command-board,S11,S11,built (GPUI interactive #59)

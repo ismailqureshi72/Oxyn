@@ -17,12 +17,18 @@ use oxyn_dioxus::{
     NotificationsSettingsScreen, OnboardingSettingsScreen, PreferencesSettingsScreen,
     PrivacySettingsScreen, ProfileSettingsScreen, SecuritySettingsScreen, s6_states,
 };
+use oxyn_dioxus::{CommandBoardScreen, s11_board_states};
 use oxyn_dioxus::{CommandCenterScreen, SessionStudioScreen, s10_states};
+use oxyn_dioxus::{FleetWindowScreen, s11_fleet_states};
 use oxyn_dioxus::{
     OnboardingBrandScreen, OnboardingReadyScreen, OnboardingToneScreen, OnboardingWebsiteScreen,
     s8_states,
 };
-use oxyn_dioxus::{TaskdeckBoardScreen, TaskdeckStartScreen, TaskdeckTaskScreen, s9_states};
+use oxyn_dioxus::{
+    TaskdeckBoardScreen, TaskdeckPluginsScreen, TaskdeckScheduledScreen, TaskdeckSitesScreen,
+    TaskdeckStartScreen, TaskdeckTaskScreen, s9_states,
+};
+use oxyn_dioxus::{WorkspaceCoderScreen, s11_coder_states};
 
 use super::{Code, mk, sel, var};
 use crate::{Align, Demo, Vals};
@@ -4166,6 +4172,15 @@ fn td_el(slug: &'static str, lay: String, s: String, a: bool, b: bool) -> Elemen
         "taskdeck-board" => {
             rsx! { TaskdeckBoardScreen { layout: lay, state: s, rail: a, sidebar_hidden: b } }
         }
+        "taskdeck-plugins" => {
+            rsx! { TaskdeckPluginsScreen { layout: lay, state: s, rail: a, sidebar_hidden: b } }
+        }
+        "taskdeck-scheduled" => {
+            rsx! { TaskdeckScheduledScreen { layout: lay, state: s, rail: a, sidebar_hidden: b } }
+        }
+        "taskdeck-sites" => {
+            rsx! { TaskdeckSitesScreen { layout: lay, state: s, rail: a, sidebar_hidden: b } }
+        }
         _ => {
             rsx! { TaskdeckStartScreen { layout: lay, state: s, rail: a, sidebar_hidden: b } }
         }
@@ -4211,6 +4226,24 @@ fn td_task_code(v: &Vals) -> String {
 }
 fn td_board_code(v: &Vals) -> String {
     td_code("TaskdeckBoardScreen", "taskdeck-board", v)
+}
+fn td_plugins_screen(v: &Vals, _now: ClockMs) -> Element {
+    td_screen("taskdeck-plugins", v)
+}
+fn td_scheduled_screen(v: &Vals, _now: ClockMs) -> Element {
+    td_screen("taskdeck-scheduled", v)
+}
+fn td_sites_screen(v: &Vals, _now: ClockMs) -> Element {
+    td_screen("taskdeck-sites", v)
+}
+fn td_plugins_code(v: &Vals) -> String {
+    td_code("TaskdeckPluginsScreen", "taskdeck-plugins", v)
+}
+fn td_scheduled_code(v: &Vals) -> String {
+    td_code("TaskdeckScheduledScreen", "taskdeck-scheduled", v)
+}
+fn td_sites_code(v: &Vals) -> String {
+    td_code("TaskdeckSitesScreen", "taskdeck-sites", v)
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -4351,10 +4384,87 @@ fn td_board_demo() -> Demo {
     )
 }
 
+fn td_plugins_demo() -> Demo {
+    td_demo(
+        "taskdeck-plugins",
+        "Taskdeck · Plugins & skills",
+        "Agent apps / Taskdeck: the Plugins & skills page. Plugins: a searchable catalogue by category (Browse, Work, Code, Create) with official marks, Install, an on/off switch, Details (what the plugin may do) and Remove. Skills: bundled and your own saved instructions with on/off, delete and New skill (name and when it applies, checked before saving).",
+        "TaskdeckPluginsScreen",
+        "TaskdeckPluginsEl",
+        (
+            "skills",
+            "Skills tab",
+            "The Skills tab: bundled and your own skills.",
+        ),
+        td_plugins_screen,
+        td_plugins_code,
+        vec![
+            (
+                "Tab",
+                "Search, categories, then each plugin's switch and buttons",
+            ),
+            ("Space", "Turn a plugin or skill on or off"),
+            ("Escape", "Close the New skill form"),
+        ],
+    )
+}
+
+fn td_scheduled_demo() -> Demo {
+    td_demo(
+        "taskdeck-scheduled",
+        "Taskdeck · Scheduled",
+        "Agent apps / Taskdeck: tasks that run on a schedule. Each row shows where it runs, how often, the next run and how the last one went; Run now runs it (Running, then Succeeded), Pause / Resume, Edit opens the form in place and Delete removes it. New schedule takes a name, what it does, how often and a 24-hour time, checked before saving.",
+        "TaskdeckScheduledScreen",
+        "TaskdeckScheduledEl",
+        (
+            "editing",
+            "Editing",
+            "A schedule open for editing in place.",
+        ),
+        td_scheduled_screen,
+        td_scheduled_code,
+        vec![
+            ("Tab", "Each row's Run now, Pause, Edit and Delete"),
+            ("Escape", "Close the schedule form"),
+        ],
+    )
+}
+
+fn td_sites_demo() -> Demo {
+    td_demo(
+        "taskdeck-sites",
+        "Taskdeck · Sites",
+        "Agent apps / Taskdeck: sites that tasks built and deployed. Cards show a thumbnail, the address, status (Live, Deploying, Deploy failed), the last deploy and the task that made it; Preview opens the page beside the list with its address bar, and Redeploy deploys again (Deploying, then Live).",
+        "TaskdeckSitesScreen",
+        "TaskdeckSitesEl",
+        (
+            "preview",
+            "Preview",
+            "A site's preview open beside the list.",
+        ),
+        td_sites_screen,
+        td_sites_code,
+        vec![
+            ("Tab", "Each site's thumbnail, Preview and Redeploy"),
+            ("Enter", "Open or close the preview"),
+        ],
+    )
+}
+
 // ---------- Agent apps II: Command Center and Session Studio (S10) ----------
 
+/// The state bar of an Agent apps screen (S10 and S11).
+fn ag_states(slug: &str) -> Vec<(&'static str, &'static str)> {
+    match slug {
+        "fleet-window" => s11_fleet_states(),
+        "workspace-coder" => s11_coder_states(),
+        "command-board" => s11_board_states(),
+        _ => s10_states(slug),
+    }
+}
+
 fn s10_key(slug: &str, label: &str) -> String {
-    s10_states(slug)
+    ag_states(slug)
         .iter()
         .find(|(_, l)| l.eq_ignore_ascii_case(label))
         .map(|(k, _)| k.to_string())
@@ -4362,10 +4472,20 @@ fn s10_key(slug: &str, label: &str) -> String {
 }
 
 fn ag_el(slug: &'static str, lay: String, s: String, a: bool, b: bool) -> Element {
-    if slug == "session-studio" {
-        rsx! { SessionStudioScreen { layout: lay, state: s, rail: a, sidebar_hidden: b } }
-    } else {
-        rsx! { CommandCenterScreen { layout: lay, state: s, rail: a, sidebar_hidden: b } }
+    match slug {
+        "session-studio" => {
+            rsx! { SessionStudioScreen { layout: lay, state: s, rail: a, sidebar_hidden: b } }
+        }
+        "fleet-window" => {
+            rsx! { FleetWindowScreen { layout: lay, state: s, rail: a, sidebar_hidden: b } }
+        }
+        "workspace-coder" => {
+            rsx! { WorkspaceCoderScreen { layout: lay, state: s, rail: a, sidebar_hidden: b } }
+        }
+        "command-board" => {
+            rsx! { CommandBoardScreen { layout: lay, state: s, rail: a, sidebar_hidden: b } }
+        }
+        _ => rsx! { CommandCenterScreen { layout: lay, state: s, rail: a, sidebar_hidden: b } },
     }
 }
 
@@ -4376,7 +4496,7 @@ fn ag_screen(slug: &'static str, v: &Vals) -> Element {
     let (a, b) = (v.b("x1"), v.b("x2"));
     rsx! {
         div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
-            ScreenStage { state: st, states: s10_states(slug), screen: move |s: String| ag_el(slug, lay.clone(), s, a, b) }
+            ScreenStage { state: st, states: ag_states(slug), screen: move |s: String| ag_el(slug, lay.clone(), s, a, b) }
         }
     }
 }
@@ -4416,46 +4536,53 @@ fn ag_demo(
     code: fn(&Vals) -> String,
     keyboard: Vec<(&'static str, &'static str)>,
     a11y: Vec<&'static str>,
+    more: &[(&'static str, &'static str, &'static str)],
 ) -> Demo {
     let (own_key, own_label, own_note) = own;
-    let mut c = controls_x("inset", &[own_label]);
+    let mut labels = vec![own_label];
+    labels.extend(more.iter().map(|m| m.1));
+    let mut c = controls_x("inset", &labels);
     c.push(super::tog("x1", "Icon rail", false));
     c.push(super::tog("x2", "Sidebar hidden", false));
+    let mut variants = vec![
+        var(
+            "sample",
+            "Sample data, the main area as an inset card.",
+            &[],
+        ),
+        var(
+            "flat",
+            "The same view with the main area edge to edge.",
+            &[("frame", "Flat")],
+        ),
+        var(
+            "loading",
+            "Skeletons in the sidebar, the conversation and the pane.",
+            &[("data", "Loading")],
+        ),
+        var(
+            "empty",
+            "A first run: nothing yet, the composer front and centre.",
+            &[("data", "Empty")],
+        ),
+        var(own_key, own_note, &[("data", own_label)]),
+        var(
+            "x1",
+            "Oxyn: the sidebar as a 56 px icon rail; the top bar expands it.",
+            &[("x1", "true")],
+        ),
+        var(
+            "x2",
+            "Oxyn: the sidebar hidden for focus; the top bar brings it back.",
+            &[("x2", "true")],
+        ),
+    ];
+    for (k, l, n) in more.iter().copied() {
+        variants.push(var(k, n, &[("data", l)]));
+    }
     Demo {
         controls: c,
-        variants: vec![
-            var(
-                "sample",
-                "Sample data, the main area as an inset card.",
-                &[],
-            ),
-            var(
-                "flat",
-                "The same view with the main area edge to edge.",
-                &[("frame", "Flat")],
-            ),
-            var(
-                "loading",
-                "Skeletons in the sidebar, the conversation and the pane.",
-                &[("data", "Loading")],
-            ),
-            var(
-                "empty",
-                "A first run: nothing yet, the composer front and centre.",
-                &[("data", "Empty")],
-            ),
-            var(own_key, own_note, &[("data", own_label)]),
-            var(
-                "x1",
-                "Oxyn: the sidebar as a 56 px icon rail; the top bar expands it.",
-                &[("x1", "true")],
-            ),
-            var(
-                "x2",
-                "Oxyn: the sidebar hidden for focus; the top bar brings it back.",
-                &[("x2", "true")],
-            ),
-        ],
+        variants,
         render,
         code,
         keyboard,
@@ -4476,7 +4603,12 @@ fn ag_demo(
             dx,
             gp,
             slug,
-            "parity/cmdstudio.rs",
+            match slug {
+                "fleet-window" => "parity/fleetwin.rs",
+                "workspace-coder" => "parity/wscoder.rs",
+                "command-board" => "parity/cmdboard.rs",
+                _ => "parity/cmdstudio.rs",
+            },
         )
     }
 }
@@ -4485,7 +4617,7 @@ fn cc_demo() -> Demo {
     ag_demo(
         "command-center",
         "Command Center",
-        "Agent apps / Command Center: a desktop coding-agent app in the threads-and-review pattern. Projects and their threads in the sidebar (status, lines changed), a running thread with its work log that finishes on its own, a review pane of the changes (files, hunks, Accept or Revert per hunk and file, Accept all), a Local / Worktree / Cloud switch with the branch, a task queue that fills while the thread runs, and a composer with model and reasoning pickers and Stop.",
+        "Agent apps / Command Center: a desktop coding-agent app in the threads-and-review pattern. Projects and their threads in the sidebar (status, lines changed), Automations, a running thread with its work log that finishes on its own, a pane with Review (each thread its own changes), Terminal tabs and a Browser; the review (files, hunks, Accept or Revert per hunk and file, Accept all), a Local / Worktree / Cloud switch with the branch, a task queue that fills while the thread runs, and a composer with model and reasoning pickers and Stop.",
         "CommandCenterScreen",
         "CommandCenterEl",
         (
@@ -4512,6 +4644,23 @@ fn cc_demo() -> Demo {
             "The review pane is a labelled complementary region; each file is a section with Accept and Revert buttons naming the file and hunk.",
             "The queue is an ordered list with Move up and Remove; every action reports in a polite live region.",
         ],
+        &[
+            (
+                "automations",
+                "Automations",
+                "Automations: threads that start on a schedule or an event, with Run now, on/off and New automation.",
+            ),
+            (
+                "terminal",
+                "Terminals",
+                "The pane on Terminal: tabs for the test run and a shell, a new tab, close, and a prompt that runs commands.",
+            ),
+            (
+                "browser",
+                "Browser",
+                "The pane on Browser: back, reload, an address bar and the app's page.",
+            ),
+        ],
     )
 }
 
@@ -4519,7 +4668,7 @@ fn ss_demo() -> Demo {
     ag_demo(
         "session-studio",
         "Session Studio",
-        "Agent apps / Session Studio: a desktop coding-agent app in the session-and-tools pattern. A session list; a chat whose turns show Read, Edit (inline diff) and Bash blocks; permission prompts (Allow once, Always allow, Deny, keys 1 2 3); a permission mode (Ask before edits, Accept edits, Plan mode; Shift + Tab cycles) where Plan mode answers with a plan to approve that becomes the todo list; a todo list with progress; and a diff pane with Accept and Revert.",
+        "Agent apps / Session Studio: a desktop coding-agent app in the session-and-tools pattern. A session list; a chat whose turns show Read, Edit (inline diff) and Bash blocks; permission prompts (Allow once, Always allow, Deny, keys 1 2 3); a permission mode (Ask before edits, Accept edits, Plan mode; Shift + Tab cycles) where Plan mode answers with a plan to approve that becomes the todo list; a todo list with progress; and side panes (Diff with each session's own changes, a side chat, Context) that collapse and can be dragged into a new order.",
         "SessionStudioScreen",
         "SessionStudioEl",
         (
@@ -4546,6 +4695,146 @@ fn ss_demo() -> Demo {
             "Todos are real checkboxes; the running one shows a spinner and the waiting one an amber dot.",
             "Permission mode and model are menus of menuitemradio; every action reports in a polite live region.",
         ],
+        &[
+            (
+                "chat",
+                "Side chat",
+                "The side chat pane under the diff: ask about the session without interrupting it.",
+            ),
+            (
+                "arrange",
+                "Rearrange",
+                "Rearrange: drag the Diff, Side chat and Context panes by their handles, or move them with the arrow buttons.",
+            ),
+        ],
+    )
+}
+
+// ---------- Agent apps III: Fleet Window, Workspace Coder, Command Board (S11) ----------
+
+fn fw_screen(v: &Vals, _now: ClockMs) -> Element {
+    ag_screen("fleet-window", v)
+}
+fn fw_code(v: &Vals) -> String {
+    ag_code("FleetWindowScreen", "fleet-window", v)
+}
+
+fn fw_demo() -> Demo {
+    ag_demo(
+        "fleet-window",
+        "Fleet Window",
+        "Agent apps / Fleet Window: a desktop coding-agent app in the agents-window pattern. Agents in the sidebar, each on its own worktree with its model mark, status and lines changed; the open agent's steps finishing on their own into a Changes pane (accept or revert per hunk and file); a composer with Agent / Plan / Ask and a multi-model picker that runs one prompt on several models at once; Compare ranks the attempts by tests, size and time and applies one (the rest are discarded, with Undo); Plan mode returns a checklist to Build.",
+        "FleetWindowScreen",
+        "FleetWindowEl",
+        (
+            "compare",
+            "Compare",
+            "Three models ran the same prompt in parallel: tests, lines changed and time side by side, a suggested pick, View changes and Apply.",
+        ),
+        fw_screen,
+        fw_code,
+        vec![
+            ("Enter", "Send (Shift + Enter for a new line)"),
+            ("Escape", "Close the mode, model or account menu"),
+            (
+                "Tab",
+                "Agents, the conversation, the composer, then the Changes pane",
+            ),
+        ],
+        vec![
+            "The sidebar is a nav landmark; the open agent carries aria-current=page; a parallel run is a button that opens Compare.",
+            "Mode is a menu of menuitemradio; models are menuitemcheckbox, so several can be on at once.",
+            "Compare is a list of attempts; Apply and View changes name the model; Changes is a labelled complementary region.",
+            "Plan steps are real checkboxes; every action reports in a polite live region.",
+        ],
+        &[(
+            "plan",
+            "Plan",
+            "Plan mode: the agent answered with a checklist to tick, Build or Dismiss.",
+        )],
+    )
+}
+
+fn wc_screen(v: &Vals, _now: ClockMs) -> Element {
+    ag_screen("workspace-coder", v)
+}
+fn wc_code(v: &Vals) -> String {
+    ag_code("WorkspaceCoderScreen", "workspace-coder", v)
+}
+
+fn wc_demo() -> Demo {
+    ag_demo(
+        "workspace-coder",
+        "Workspace Coder",
+        "Agent apps / Workspace Coder: a desktop agent app in the chat-plus-computer pattern. Chats by day in the sidebar; the agent's progress list and tool log while it works; a Workspace pane that is its own computer (Files with a file viewer, Terminal, Browser, Preview); a finished website to preview at desktop or phone width and publish to a link. Mode (Chat, Researcher, Workspace), Thinking and model in the composer.",
+        "WorkspaceCoderScreen",
+        "WorkspaceCoderEl",
+        (
+            "preview",
+            "Preview",
+            "The task finished: the Workspace pane shows the built page with Desktop / Phone and Publish.",
+        ),
+        wc_screen,
+        wc_code,
+        vec![
+            ("Enter", "Send (Shift + Enter for a new line)"),
+            ("← →", "Move between the Workspace tabs"),
+            ("Escape", "Close the mode, model or account menu"),
+        ],
+        vec![
+            "The sidebar is a nav landmark; the open chat carries aria-current=page.",
+            "Progress is a labelled group with a disclosure; the tool log is an ordered list.",
+            "The Workspace is a labelled complementary region with a tablist (roving tabindex, arrow keys).",
+            "Desktop / Phone are toggle buttons (aria-pressed); every action reports in a polite live region.",
+        ],
+        &[(
+            "files",
+            "Files",
+            "The Workspace pane on Files: the file list and a viewer with line numbers.",
+        )],
+    )
+}
+
+fn cb_screen(v: &Vals, _now: ClockMs) -> Element {
+    ag_screen("command-board", v)
+}
+fn cb_code(v: &Vals) -> String {
+    ag_code("CommandBoardScreen", "command-board", v)
+}
+
+fn cb_demo() -> Demo {
+    ag_demo(
+        "command-board",
+        "Command Board",
+        "Agent apps / Command Board: a desktop app for an autonomous coding agent in the session-and-workspace pattern. Sessions with their repo and where they started (a ticket, a chat channel); the agent's updates and a question with quick answers; Sleep / Wake; the pull request it opens with its checks; and a Workspace pane (Shell, Browser, Editor, Planner) with a timeline to scrub back to any moment and Live to return.",
+        "CommandBoardScreen",
+        "CommandBoardEl",
+        (
+            "pr",
+            "Pull request",
+            "The agent opened a pull request: branch, lines changed and four checks, with View diff and Open PR.",
+        ),
+        cb_screen,
+        cb_code,
+        vec![
+            ("Enter", "Send a reply (Shift + Enter for a new line)"),
+            (
+                "← →",
+                "Workspace tabs; on the timeline, step through events",
+            ),
+            ("Escape", "Close the repository or account menu"),
+        ],
+        vec![
+            "The sidebar is a nav landmark; the open session carries aria-current=page.",
+            "The agent's question is a labelled group; quick answers are buttons that send the reply.",
+            "The timeline is a range input whose value text names the moment; Live is a toggle button.",
+            "Checks list their state in words; every action reports in a polite live region.",
+        ],
+        &[(
+            "planner",
+            "Planner",
+            "The Workspace pane on Planner: the agent's plan with each step done, running or to do.",
+        )],
     )
 }
 
@@ -4599,7 +4888,13 @@ pub(crate) fn demos() -> Vec<Demo> {
         td_start_demo(),
         td_task_demo(),
         td_board_demo(),
+        td_plugins_demo(),
+        td_scheduled_demo(),
+        td_sites_demo(),
         cc_demo(),
         ss_demo(),
+        fw_demo(),
+        wc_demo(),
+        cb_demo(),
     ]
 }
