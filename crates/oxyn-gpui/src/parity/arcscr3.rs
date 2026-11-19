@@ -479,7 +479,7 @@ impl RenderOnce for MarketTerminalEl {
                     .font_weight(FontWeight::SEMIBOLD)
                     .when(check.is_none(), |d| {
                         d.bg(hue(&p, if t.side == Side::Buy { "green" } else { "rose" }))
-                            .text_color(rgb(0xFFFFFF))
+                            .text_color(p.card)
                     })
                     .when(check.is_some(), |d| d.bg(p.sel).text_color(p.mute))
                     .child(format!("{side_w} {} {}", t.qty, SYMBOLS[s].0)),

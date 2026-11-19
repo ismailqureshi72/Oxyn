@@ -67,7 +67,7 @@
 .oxs14-bs .oxs12-sego[data-side="buy"][aria-checked="true"]{color:var(--h-green)}
 .oxs14-bs .oxs12-sego[data-side="sell"][aria-checked="true"]{color:var(--h-rose)}
 .oxs14-fr{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:32px}
-.oxs14-tkt .oxs14-go{border:0;background:var(--h-green);color:#fff;font-weight:600}
+.oxs14-tkt .oxs14-go{border:0;background:var(--h-green);color:var(--oxth-card);font-weight:600}
 .oxs14-tkt .oxs14-go[data-side="sell"]{background:var(--h-rose)}
 .oxs14-tkt .oxs14-go:disabled{background:var(--oxth-sel);color:var(--oxth-mute)}
 
