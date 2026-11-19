@@ -8,6 +8,7 @@ mod approvals;
 mod arcscr;
 mod arcscr2;
 mod arcscr3;
+mod arcscr4;
 mod attachfid;
 mod autonomyfid;
 mod awayfid;
@@ -102,6 +103,10 @@ pub use arcscr2::{
 pub use arcscr3::{
     InvoiceStudioScreen, MarketTerminalScreen, ProductDetailScreen, ProductListScreen,
     SignInSplitScreen, s14_states,
+};
+pub use arcscr4::{
+    AdminOverviewScreen, AgentToolCallsScreen, ApiKeysWebhooksScreen, AuditLogScreen,
+    BillingUsageScreen, MembersRolesScreen, StatusBoardScreen, s15_slugs, s15_states,
 };
 pub use attachfid::{AttachmentChips, DropLanes, FileIcon, PolaroidStack, UploadDropzone};
 pub use autonomyfid::AutonomyDial;
