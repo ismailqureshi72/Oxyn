@@ -148,6 +148,9 @@ pub use parity::{
     WritingAssistantEl,
 };
 pub use parity::{
+    ArcDrag, GanttTimelineEl, KanbanBoardEl, MetricsDashboardEl, ProjectBoardEl, TeamDirectoryEl,
+};
+pub use parity::{
     BillingSettingsEl, GeneralSettingsEl, MembersSettingsEl, ModelsSettingsEl,
     NotificationsSettingsEl, OnboardingSettingsEl, PreferencesSettingsEl, PrivacySettingsEl,
     ProfileSettingsEl, SecuritySettingsEl,
