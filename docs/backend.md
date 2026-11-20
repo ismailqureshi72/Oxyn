@@ -47,6 +47,13 @@ Plans, checkout redirects, the signed-in plan, Team seats, Pro code and the Pola
 `200 {"ok": true, "flags": {"<name>": "<value>"}}`: the content flags that are switched on in the admin
 panel (Settings), `cache-control: public, max-age=60`.
 
+### `POST /api/events`
+
+`202 {"ok": true, "stored": n}`: privacy-friendly page events from the site's own pages (page views,
+Pro copy attempts, pricing views, checkout clicks) for the admin Activity tab. Same-origin, up to 20
+events per request, rate limited per IP, bots dropped, no IP / user agent / email stored, kept 90
+days. See [admin.md](admin.md#site-events-post-apievents) and `site/worker/events.ts`.
+
 ### `/api/auth/*`
 
 Site accounts: one sign-in for everyone with Google, GitHub or an email and a password, sessions in D1. See [auth.md](auth.md).
