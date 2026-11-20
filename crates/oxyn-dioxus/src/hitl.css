@@ -308,3 +308,5 @@
 .oxyn-cp.lanes .bar .t{flex-shrink:0}
 @container (max-width:460px){.oxyn-cp.lanes .bar .t{flex-shrink:1;max-width:none}.oxyn-cp.lanes .bar .task,.oxyn-cp.lanes .meta .files,.oxyn-cp.lanes .meta .cost,.oxyn-cp.lanes .bar .day{display:none}.oxyn-cp.lanes .badge.att{display:inline-flex}}
 @container (max-width:340px){.oxyn-cp.lanes .meta .du{display:inline}.oxyn-cp.lanes .badge.att{display:inline-flex}}
+.oxyn-cp.lanes .ti.logo.stripe{background:#635BFF;border-color:transparent;color:#fff}
+@container (max-width:460px){.oxyn-cp.lanes .bar .t{flex:none;max-width:none;overflow:visible}.oxyn-cp.lanes .bar .n{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;font-size:12px}}
