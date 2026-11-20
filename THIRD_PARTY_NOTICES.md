@@ -69,6 +69,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
   next to repositories and pull requests, and Claude, OpenAI and Gemini (Lobe Icons) mark models in
   model pickers. They name the real product a user picks (nominative use) and are never used as the
   logo of these Oxyn apps, which have their own drawn marks.
+- Agent apps IV, part b (Hangar, Halo Chat, Pilot Panel, Courier): Gemini, Claude, OpenAI and DeepSeek
+  (Lobe Icons) mark models in model pickers. They name the real model a user picks (nominative use)
+  and are never used as the logo of these Oxyn apps, which have their own drawn marks; the apps'
+  names, copy and data are Oxyn's own and fictional.
 - Source: https://github.com/simple-icons/simple-icons (`simple-icons` 16.37.0)
 - License: CC0 1.0 Universal (public domain dedication). See https://github.com/simple-icons/simple-icons/blob/develop/DISCLAIMER.md.
 

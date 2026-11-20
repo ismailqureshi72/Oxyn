@@ -86,6 +86,8 @@
 //! - [`cmdboard`]: Screens S11 (Agent apps III): Command Board
 //! - [`threadbar`], [`tabstack`], [`repodesk`], [`previewdesk`]: Screens S16 (Agent apps IV):
 //!   Threadbar, Tabstack, Repo Desk, Preview Desk
+//! - [`hangar`], [`halochat`], [`pilotpanel`], [`courier`]: Screens S16 (Agent apps IV, part b):
+//!   Hangar, Halo Chat, Pilot Panel, Courier
 //! - [`appui`]: interaction state shared by the six agent apps (rows, views, rail, menu, composer)
 //! - [`screenui`]: interaction state shared by the screen sets S0–S8 (set, screen, state bar,
 //!   presses, keys and the command bar)
@@ -115,6 +117,7 @@ pub mod collabfid;
 pub mod compose;
 pub mod confirm;
 pub mod costfid;
+pub mod courier;
 pub mod crewfid;
 pub mod ctxmapfid;
 pub mod ctxvisfid;
@@ -134,7 +137,9 @@ pub mod fleetwin;
 pub mod gates;
 pub mod gooeyfid;
 pub mod graphfid;
+pub mod halochat;
 pub mod handofffid;
+pub mod hangar;
 pub mod home;
 pub mod input;
 pub mod judgefid;
@@ -148,6 +153,7 @@ pub mod nozzlefid;
 pub mod onbscr;
 pub mod opsscr;
 pub mod parallelfid;
+pub mod pilotpanel;
 pub mod plan;
 pub mod planfid;
 pub mod previewdesk;

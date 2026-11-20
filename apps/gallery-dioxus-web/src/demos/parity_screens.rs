@@ -23,6 +23,10 @@ use oxyn_dioxus::{
 };
 use oxyn_dioxus::{CommandBoardScreen, s11_board_states};
 use oxyn_dioxus::{CommandCenterScreen, SessionStudioScreen, s10_states};
+use oxyn_dioxus::{
+    CourierScreen, HaloChatScreen, HangarScreen, PilotPanelScreen, s16_courier_states,
+    s16_halochat_states, s16_hangar_states, s16_pilotpanel_states,
+};
 use oxyn_dioxus::{FleetWindowScreen, s11_fleet_states};
 use oxyn_dioxus::{
     GanttTimelineScreen, KanbanBoardScreen, MetricsDashboardScreen, ProjectBoardScreen,
@@ -4483,6 +4487,10 @@ fn ag_states(slug: &str) -> Vec<(&'static str, &'static str)> {
         "tabstack" => s16_tabstack_states(),
         "repo-desk" => s16_repodesk_states(),
         "preview-desk" => s16_previewdesk_states(),
+        "hangar" => s16_hangar_states(),
+        "halo-chat" => s16_halochat_states(),
+        "pilot-panel" => s16_pilotpanel_states(),
+        "courier" => s16_courier_states(),
         _ => s10_states(slug),
     }
 }
@@ -4520,6 +4528,18 @@ fn ag_el(slug: &'static str, lay: String, s: String, a: bool, b: bool) -> Elemen
         }
         "preview-desk" => {
             rsx! { PreviewDeskScreen { layout: lay, state: s, rail: a, sidebar_hidden: b } }
+        }
+        "hangar" => {
+            rsx! { HangarScreen { layout: lay, state: s, rail: a, sidebar_hidden: b } }
+        }
+        "halo-chat" => {
+            rsx! { HaloChatScreen { layout: lay, state: s, rail: a, sidebar_hidden: b } }
+        }
+        "pilot-panel" => {
+            rsx! { PilotPanelScreen { layout: lay, state: s, rail: a, sidebar_hidden: b } }
+        }
+        "courier" => {
+            rsx! { CourierScreen { layout: lay, state: s, rail: a, sidebar_hidden: b } }
         }
         _ => rsx! { CommandCenterScreen { layout: lay, state: s, rail: a, sidebar_hidden: b } },
     }
@@ -4647,6 +4667,10 @@ fn ag_demo(
                 "tabstack" => "parity/tabstack.rs",
                 "repo-desk" => "parity/repodesk.rs",
                 "preview-desk" => "parity/previewdesk.rs",
+                "hangar" => "parity/hangar.rs",
+                "halo-chat" => "parity/halochat.rs",
+                "pilot-panel" => "parity/pilotpanel.rs",
+                "courier" => "parity/courier.rs",
                 _ => "parity/cmdstudio.rs",
             },
         )
@@ -5052,6 +5076,168 @@ fn pv_demo() -> Demo {
     )
 }
 
+// ---------- Agent apps IV (part b): Hangar, Halo Chat, Pilot Panel, Courier (S16) ----------
+
+fn hg_screen(v: &Vals, _now: ClockMs) -> Element {
+    ag_screen("hangar", v)
+}
+fn hg_code(v: &Vals) -> String {
+    ag_code("HangarScreen", "hangar", v)
+}
+
+fn hg_demo() -> Demo {
+    ag_demo(
+        "hangar",
+        "Hangar",
+        "Agent apps / Hangar: an agent manager as a desktop app. Conversations grouped by workspace, with an Inbox of those that wait on your review; the open conversation's task list and the artifacts the agent made (an implementation plan, a walkthrough recording, a screenshot); Planning or Fast and a model in the composer; a Surfaces pane with the Editor and the agent's edits, the Browser it drives (its actions with times) and the Plan, where any line takes a comment before Proceed.",
+        "HangarScreen",
+        "HangarEl",
+        (
+            "artifact",
+            "Artifact review",
+            "The Plan artifact open: comment on a line, then Proceed or send the comments back to the agent.",
+        ),
+        hg_screen,
+        hg_code,
+        vec![
+            ("Enter", "Send (Shift + Enter for a new line)"),
+            ("← →", "Move between Editor, Browser and Plan"),
+            ("Escape", "Close the mode, model or account menu"),
+        ],
+        vec![
+            "The sidebar is a nav landmark; conversations sit under their workspace and name their state in text.",
+            "Inbox is a toggle button (aria-pressed) with the count of conversations waiting on review.",
+            "Editor, Browser and Plan are a tablist (roving tabindex, arrow keys); each plan line is a button that opens a labelled comment box.",
+            "The task list names each task's state in text, not colour alone; every action reports in a polite live region.",
+        ],
+        &[(
+            "browser",
+            "Browser surface",
+            "The Browser surface: the checkout at 390 px as the agent sees it, and what it did, with times.",
+        )],
+    )
+}
+
+fn ha_screen(v: &Vals, _now: ClockMs) -> Element {
+    ag_screen("halo-chat", v)
+}
+fn ha_code(v: &Vals) -> String {
+    ag_code("HaloChatScreen", "halo-chat", v)
+}
+
+fn ha_demo() -> Demo {
+    ag_demo(
+        "halo-chat",
+        "Halo Chat",
+        "Agent apps / Halo Chat: a desktop assistant app. Helpers (saved instructions) and chats, pinned first, in the sidebar; the assistant's tool calls as cards in the chat (a web search with its sources, code it ran with the output, a table it built), each opening and closing; Tools (Deep research, Canvas, Create image, Run code), Mode and Model in the composer; a pane with Sources and a Canvas draft; a mini chat that opens over any app from a shortcut.",
+        "HaloChatScreen",
+        "HaloChatEl",
+        (
+            "mini",
+            "Mini chat",
+            "The mini chat over the desktop: one question and its answer, an input and Open full chat.",
+        ),
+        ha_screen,
+        ha_code,
+        vec![
+            ("Enter", "Send (Shift + Enter for a new line)"),
+            ("← →", "Move between Sources and Canvas"),
+            ("Escape", "Close the tools, mode, model or account menu"),
+        ],
+        vec![
+            "The sidebar is a nav landmark; helpers are toggle buttons (aria-pressed); the open chat carries aria-current=page.",
+            "Each tool card opens and closes from its header (aria-expanded); the table has a header row.",
+            "The research plan's steps are labelled checkboxes; Start research reports an error in an alert when no step is on.",
+            "The mini chat is a labelled dialog; every action reports in a polite live region.",
+        ],
+        &[(
+            "research",
+            "Research plan",
+            "Deep research on: the plan's steps to switch on or off, the estimated time and Start research.",
+        )],
+    )
+}
+
+fn pk_screen(v: &Vals, _now: ClockMs) -> Element {
+    ag_screen("pilot-panel", v)
+}
+fn pk_code(v: &Vals) -> String {
+    ag_code("PilotPanelScreen", "pilot-panel", v)
+}
+
+fn pk_demo() -> Demo {
+    ag_demo(
+        "pilot-panel",
+        "Pilot Panel",
+        "Agent apps / Pilot Panel: an editor's agent panel as a desktop app. Task history with each task's cost; the task as steps (files it read, its notes, edits, a command) with a checkpoint after every change to Compare or Restore; Plan and Act (Plan only reads and proposes); tool calls that wait on Approve or Reject unless auto-approve covers them; a context meter with tokens and cost; an Editor pane with the diff and the checkpoints.",
+        "PilotPanelScreen",
+        "PilotPanelEl",
+        (
+            "plan",
+            "Plan mode",
+            "Plan mode: the agent read the route and proposes four steps; Switch to Act lets it change files.",
+        ),
+        pk_screen,
+        pk_code,
+        vec![
+            ("Enter", "Send (Shift + Enter for a new line)"),
+            ("← →", "Move between Editor and Checkpoints"),
+            ("Escape", "Close the model or account menu"),
+        ],
+        vec![
+            "The sidebar is a nav landmark; each task names its date and cost in text.",
+            "Plan and Act sit in a labelled group as toggles (aria-pressed); auto-approve is a group of labelled checkboxes.",
+            "A command waiting on you is an alertdialog with the command in full and Approve and Reject.",
+            "Checkpoints are labelled groups with Compare and Restore; every action reports in a polite live region.",
+        ],
+        &[(
+            "approval",
+            "Needs approval",
+            "A command waits on Approve or Reject because Run commands is not on auto-approve.",
+        )],
+    )
+}
+
+fn cr_screen(v: &Vals, _now: ClockMs) -> Element {
+    ag_screen("courier", v)
+}
+fn cr_code(v: &Vals) -> String {
+    ag_code("CourierScreen", "courier", v)
+}
+
+fn cr_demo() -> Demo {
+    ag_demo(
+        "courier",
+        "Courier",
+        "Agent apps / Courier: a coding-agent app built around threads. Every active thread in the sidebar with All, Running and Needs you; the agent's tool lines and one edits card per turn (files with line counts, each diff on demand); suggested replies above the composer; Model and Effort; a Pod pane, the thread's own cloud machine, with Desktop, Ports (open or forward) and Changes (revert a file).",
+        "CourierScreen",
+        "CourierEl",
+        (
+            "changes",
+            "Changes",
+            "The pod on Changes: three files with their line counts and Revert on each.",
+        ),
+        cr_screen,
+        cr_code,
+        vec![
+            ("Enter", "Send (Shift + Enter for a new line)"),
+            ("← →", "Move between Desktop, Ports and Changes"),
+            ("Escape", "Close the model, effort or account menu"),
+        ],
+        vec![
+            "The sidebar is a nav landmark; All, Running and Needs you are a radiogroup; each thread names its state.",
+            "Each file in the edits card opens its diff (aria-expanded).",
+            "Suggested replies are a labelled group of buttons that fill the composer.",
+            "Desktop, Ports and Changes are a tablist (roving tabindex, arrow keys); every action reports in a polite live region.",
+        ],
+        &[(
+            "desktop",
+            "Pod desktop",
+            "The pod's desktop: the product page in the pod's browser with the cached price.",
+        )],
+    )
+}
+
 // ---------- Arc screens I: Metrics, Kanban board, Project board, Gantt, Team directory (S12) ----------
 
 /// The state key for a Data label of an S12 screen (`By assignee` → `assignee`).
@@ -5429,6 +5615,10 @@ pub(crate) fn demos() -> Vec<Demo> {
         ts_demo(),
         rd_demo(),
         pv_demo(),
+        hg_demo(),
+        ha_demo(),
+        pk_demo(),
+        cr_demo(),
         mx_demo(),
         kb2_demo(),
         pb_demo(),

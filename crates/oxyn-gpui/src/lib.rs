@@ -162,6 +162,7 @@ pub use parity::{
 pub use parity::{CommandBoardEl, FleetWindowEl, WorkspaceCoderEl};
 pub use parity::{CommandCenterEl, SessionStudioEl};
 pub use parity::{ConflictRadarEl, MergeAct, MergeConflictEl, RadarAct};
+pub use parity::{CourierEl, HaloChatEl, HangarEl, PilotPanelEl};
 pub use parity::{
     ExpandableCardEl, JsonViewerEl, LinkUnfurlEl, ToolCallCardEl, ToolCallEl, ToolChipsEl,
 };

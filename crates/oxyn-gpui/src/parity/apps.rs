@@ -1,6 +1,6 @@
 //! Interactive GPUI views for the agent apps: Taskdeck, Command Center, Session Studio,
-//! Fleet Window, Workspace Coder, Command Board, Threadbar, Tabstack, Repo Desk and Preview
-//! Desk. Each [`AgentAppView`] is a real GPUI view (`Entity` + `Render`) that keeps an [`AppUi`]
+//! Fleet Window, Workspace Coder, Command Board, Threadbar, Tabstack, Repo Desk, Preview Desk,
+//! Hangar, Halo Chat, Pilot Panel and Courier. Each [`AgentAppView`] is a real GPUI view (`Entity` + `Render`) that keeps an [`AppUi`]
 //! from `oxyn_core::parity::appui` and redraws the same screens as the snapshot elements from
 //! it, so the Dioxus apps and these views share one set of rules:
 //!
@@ -36,7 +36,8 @@ use gpui::{
 use oxyn_core::parity::appui::{AppData, AppKey, AppUi, views};
 use oxyn_core::parity::screensfid::{ScreenState, ShellLayout};
 use oxyn_core::parity::{
-    cmdboard, cmdstudio, fleetwin, previewdesk, repodesk, tabstack, taskdeck, threadbar, wscoder,
+    cmdboard, cmdstudio, courier, fleetwin, halochat, hangar, pilotpanel, previewdesk, repodesk,
+    tabstack, taskdeck, threadbar, wscoder,
 };
 use oxyn_tokens::Theme;
 
@@ -126,11 +127,19 @@ pub enum AgentApp {
     RepoDesk,
     /// S16 Preview Desk: sessions shown as previews, Design mode and line comments.
     PreviewDesk,
+    /// S16 Hangar: an agent manager with artifacts and Editor / Browser surfaces.
+    Hangar,
+    /// S16 Halo Chat: an assistant app with tool cards, a mini chat and a research plan.
+    HaloChat,
+    /// S16 Pilot Panel: an editor's agent panel with Plan / Act, approvals and checkpoints.
+    PilotPanel,
+    /// S16 Courier: threads with edits cards and a pod (Desktop, Ports, Changes).
+    Courier,
 }
 
 impl AgentApp {
     /// The apps, in gallery order.
-    pub const ALL: [AgentApp; 10] = [
+    pub const ALL: [AgentApp; 14] = [
         AgentApp::Taskdeck,
         AgentApp::CommandCenter,
         AgentApp::SessionStudio,
@@ -141,6 +150,10 @@ impl AgentApp {
         AgentApp::Tabstack,
         AgentApp::RepoDesk,
         AgentApp::PreviewDesk,
+        AgentApp::Hangar,
+        AgentApp::HaloChat,
+        AgentApp::PilotPanel,
+        AgentApp::Courier,
     ];
 
     /// The app's display name.
@@ -156,6 +169,10 @@ impl AgentApp {
             Self::Tabstack => "Tabstack",
             Self::RepoDesk => "Repo Desk",
             Self::PreviewDesk => "Preview Desk",
+            Self::Hangar => "Hangar",
+            Self::HaloChat => "Halo Chat",
+            Self::PilotPanel => "Pilot Panel",
+            Self::Courier => "Courier",
         }
     }
 
@@ -172,6 +189,10 @@ impl AgentApp {
             Self::Tabstack => views::TABSTACK,
             Self::RepoDesk => views::REPO_DESK,
             Self::PreviewDesk => views::PREVIEW_DESK,
+            Self::Hangar => views::HANGAR,
+            Self::HaloChat => views::HALO_CHAT,
+            Self::PilotPanel => views::PILOT_PANEL,
+            Self::Courier => views::COURIER,
         }
     }
 
@@ -195,6 +216,10 @@ impl AgentApp {
             Self::Tabstack => tabstack::ts_tabs(st).len(),
             Self::RepoDesk => repodesk::rd_sessions(st).len(),
             Self::PreviewDesk => previewdesk::pd_sessions(st).len(),
+            Self::Hangar => hangar::hg_convs(st).len(),
+            Self::HaloChat => halochat::hc_chats(st).len(),
+            Self::PilotPanel => pilotpanel::pk_tasks(st).len(),
+            Self::Courier => courier::cr_threads(st).len(),
         }
     }
 
@@ -219,6 +244,10 @@ impl AgentApp {
             Self::Tabstack => "Ask the agent · it asks before it writes",
             Self::RepoDesk => "Ask the agent to work on something · # for issues",
             Self::PreviewDesk => "Describe a change, or reply to the agent",
+            Self::Hangar => "Ask the agent to build, fix or check something",
+            Self::HaloChat => "Ask anything",
+            Self::PilotPanel => "Describe the change · @ to add files",
+            Self::Courier => "Reply, or start something new · @ to mention files",
         }
     }
 
@@ -339,7 +368,32 @@ impl AgentApp {
                 ui.sent.push("Started a session from the Inbox".into());
                 ui.open_view("")
             }
-            (Self::RepoDesk | Self::PreviewDesk, _) if id.starts_with("row-") => {
+            (Self::Hangar, "proceed")
+            | (Self::HaloChat, "start")
+            | (Self::PilotPanel, "approve" | "reject" | "restore")
+            | (Self::Courier, "revert") => {
+                ui.last = Some(id);
+                true
+            }
+            (Self::HaloChat, "full") | (Self::PilotPanel, "act") => {
+                ui.last = Some(id);
+                ui.open_view("")
+            }
+            (Self::Courier, _) if id.starts_with("suggest-") => {
+                let i = id
+                    .trim_start_matches("suggest-")
+                    .parse::<usize>()
+                    .unwrap_or(0);
+                ui.draft = courier::CR_SUGGEST
+                    .get(i)
+                    .copied()
+                    .unwrap_or_default()
+                    .to_string();
+                true
+            }
+            (Self::RepoDesk | Self::PreviewDesk | Self::Hangar | Self::HaloChat, _)
+                if id.starts_with("row-") =>
+            {
                 let moved = ui.press(id);
                 ui.open_view("") || moved
             }
@@ -753,6 +807,10 @@ impl Render for AgentAppView {
             AgentApp::Tabstack => super::tabstack::ts_screen(&p, lay, st, extra, &act, &lv),
             AgentApp::RepoDesk => super::repodesk::rd_screen(&p, lay, st, extra, &act, &lv),
             AgentApp::PreviewDesk => super::previewdesk::pd_screen(&p, lay, st, extra, &act, &lv),
+            AgentApp::Hangar => super::hangar::hg_screen(&p, lay, st, extra, &act, &lv),
+            AgentApp::HaloChat => super::halochat::hc_screen(&p, lay, st, extra, &act, &lv),
+            AgentApp::PilotPanel => super::pilotpanel::pk_screen(&p, lay, st, extra, &act, &lv),
+            AgentApp::Courier => super::courier::cr_screen(&p, lay, st, extra, &act, &lv),
         };
         let menu = self.ui.menu.then(|| self.menu(&p, &act));
         div()
@@ -857,5 +915,42 @@ mod tests {
         assert_eq!(d.extra(&ui, &own), "design");
         d.press(&mut ui, &mut own, "row-2");
         assert_eq!((d.extra(&ui, &own), ui.sel), ("", 2));
+    }
+
+    #[test]
+    fn s16b_presses() {
+        let mut own = Own::default();
+        let h = AgentApp::Hangar;
+        let mut ui = AppUi::new(h.rows(ScreenState::Sample, false), h.views());
+        h.press(&mut ui, &mut own, "view:artifact");
+        assert_eq!(h.extra(&ui, &own), "artifact");
+        h.press(&mut ui, &mut own, "proceed");
+        assert_eq!(ui.last, Some("proceed"));
+        h.press(&mut ui, &mut own, "row-2");
+        assert_eq!((h.extra(&ui, &own), ui.sel), ("", 2));
+        let c = AgentApp::HaloChat;
+        let mut ui = AppUi::new(c.rows(ScreenState::Sample, false), c.views());
+        ui.key(AppKey::Right);
+        assert_eq!(c.extra(&ui, &own), "research");
+        c.press(&mut ui, &mut own, "view:mini");
+        assert_eq!(c.extra(&ui, &own), "mini");
+        c.press(&mut ui, &mut own, "full");
+        assert_eq!((c.extra(&ui, &own), ui.last), ("", Some("full")));
+        let k = AgentApp::PilotPanel;
+        let mut ui = AppUi::new(k.rows(ScreenState::Sample, false), k.views());
+        k.press(&mut ui, &mut own, "view:plan");
+        assert_eq!(k.extra(&ui, &own), "plan");
+        k.press(&mut ui, &mut own, "act");
+        assert_eq!(k.extra(&ui, &own), "");
+        k.press(&mut ui, &mut own, "view:approval");
+        k.press(&mut ui, &mut own, "approve");
+        assert_eq!((k.extra(&ui, &own), ui.last), ("approval", Some("approve")));
+        let r = AgentApp::Courier;
+        let mut ui = AppUi::new(r.rows(ScreenState::Sample, false), r.views());
+        r.press(&mut ui, &mut own, "suggest-2");
+        assert_eq!(ui.draft, "Open a pull request");
+        r.press(&mut ui, &mut own, "view:changes");
+        r.press(&mut ui, &mut own, "revert");
+        assert_eq!((r.extra(&ui, &own), ui.last), ("changes", Some("revert")));
     }
 }
