@@ -121,6 +121,97 @@
   $$('[data-acct-signout]').forEach((b) => b.addEventListener('click', () => signOut(false)));
   $('[data-account-all]')?.addEventListener('click', () => signOut(true));
 
+  // ── Plan (docs/pricing.md) ─────────────────────────────────────────────────────────────────────
+  // Signed in: GET /api/billing/me once per page. The answer goes on <html data-plan="free|pro|team">
+  // and window.__oxynPlanP (a promise; null when signed out), and fires "oxyn:plan" for the page
+  // scripts (public/pro.js, public/pricing.js).
+  let planResolve;
+  window.__oxynPlanP = new Promise((r) => { planResolve = r; });
+  const TIER = { free: 'Free', pro: 'Pro', team: 'Team' };
+  function setPlan(plan) {
+    window.__oxynPlan = plan;
+    document.documentElement.dataset.plan = plan ? plan.tier : 'none';
+    if (plan && plan.pro) document.documentElement.dataset.pro = '1'; else delete document.documentElement.dataset.pro;
+    planResolve(plan);
+    document.dispatchEvent(new CustomEvent('oxyn:plan', { detail: plan }));
+    $$('[data-acct-plan]').forEach((el) => { el.textContent = plan ? TIER[plan.tier] || 'Free' : 'Free'; el.dataset.tier = plan ? plan.tier : 'free'; });
+    $$('[data-acct-billing]').forEach((a) => { a.hidden = !(plan && plan.has_billing); });
+    fillPlan(plan);
+  }
+  const fmtDay = (s) => { const d = new Date(s); return isNaN(d) ? '' : d.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }); };
+  const money = (c, cur) => { try { return (c / 100).toLocaleString(undefined, { style: 'currency', currency: (cur || 'usd').toUpperCase() }); } catch { return '$' + (c / 100).toFixed(2); } };
+  function fillPlan(plan) {
+    const box = $('[data-plan]');
+    if (!box || !plan) return;
+    const chip = $('[data-plan-chip]', box), line = $('[data-plan-line]', box), note = $('[data-plan-note]', box);
+    const up = $('[data-plan-upgrade]', box), manage = $('[data-plan-manage]', box);
+    const s = plan.subscription;
+    chip.textContent = TIER[plan.tier] || 'Free';
+    chip.dataset.tier = plan.tier;
+    manage.hidden = !plan.has_billing;
+    up.hidden = plan.pro;
+    let text = 'Every component and primitive, free and MIT licensed.';
+    if (plan.via === 'subscription' && s) {
+      const what = `${s.plan === 'team' ? 'Team' : 'Pro'}${s.founder ? ' at the founder rate' : ''}, ${money(s.amount, s.currency)} a ${s.interval}`;
+      const when = s.current_period_end ? fmtDay(s.current_period_end) : '';
+      text = s.cancel_at_period_end ? `${what}. Cancelled: Pro stays open until ${when || 'the end of the period'}.`
+        : s.status === 'past_due' ? `${what}. The last payment did not go through; update your card in Manage billing.`
+        : `${what}.${when ? ` Renews on ${when}.` : ''}`;
+    } else if (plan.via === 'seat' && plan.seat) {
+      text = `Pro through a Team plan (seat from ${plan.seat.owner_email}).`;
+    } else if (plan.via === 'grant' && plan.grant) {
+      text = `${plan.grant.plan === 'team' ? 'Team' : 'Pro'}, given by the Oxyn team${plan.grant.expires_at ? ` until ${fmtDay(plan.grant.expires_at)}` : ''}.`;
+    } else if (s && !s.active) {
+      text = `Your ${s.plan === 'team' ? 'Team' : 'Pro'} subscription has ended. Code you installed keeps working; subscribe again to get the Pro code and updates.`;
+    }
+    line.textContent = text;
+    const p = new URLSearchParams(location.search);
+    if (p.get('billing') === 'active') { note.textContent = 'You already have an active plan. To change it, use Manage billing.'; note.hidden = false; }
+    else if (!plan.pro && !plan.email_verified && plan.tier === 'free') { note.textContent = 'Got a Team seat? Sign in once with Google or GitHub on this email to verify it, and the seat opens.'; note.hidden = false; }
+    // Team owner: seats
+    const seats = $('[data-seats]', box);
+    if (!seats) return;
+    seats.hidden = !plan.seats;
+    if (!plan.seats) return;
+    const list = $('[data-seat-list]', seats);
+    $('[data-seat-count]', seats).textContent = `${plan.seats.length} of ${plan.seat_limit} teammates`;
+    list.textContent = '';
+    for (const st of plan.seats) {
+      const li = document.createElement('li');
+      const em = document.createElement('span'); em.textContent = st.email;
+      const rm = document.createElement('button'); rm.type = 'button'; rm.className = 'x-pill pill-grey pill-sm'; rm.textContent = 'Remove';
+      rm.setAttribute('aria-label', `Remove ${st.email}`);
+      rm.addEventListener('click', async () => {
+        rm.disabled = true;
+        const r = await apiDelete('/api/billing/seats/' + encodeURIComponent(st.email));
+        if (r.ok) loadPlan(); else { seatErr(r.data.error?.message || 'Could not remove that seat.'); rm.disabled = false; }
+      });
+      li.append(em, rm); list.append(li);
+    }
+    const form = $('[data-seat-form]', seats);
+    form.hidden = plan.seats.length >= plan.seat_limit;
+  }
+  function seatErr(t) { const e = $('[data-seat-err]'); if (e) { e.textContent = t || ''; e.hidden = !t; } }
+  async function apiDelete(path) {
+    try { const r = await fetch(path, { method: 'DELETE', credentials: 'same-origin', headers: { accept: 'application/json' } }); let d = {}; try { d = await r.json(); } catch { /* empty */ } return { ok: r.ok, data: d }; }
+    catch { return { ok: false, data: { error: { message: 'Could not reach Oxyn. Check your connection and try again.' } } }; }
+  }
+  async function loadPlan() {
+    const r = await api('/api/billing/me');
+    setPlan(r.ok ? r.data : null);
+  }
+  const seatForm = $('[data-seat-form]');
+  if (seatForm) seatForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const em = seatForm.elements.email.value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)) { seatErr('Enter a valid email address.'); return; }
+    seatErr('');
+    const b = seatForm.querySelector('button'); b.disabled = true;
+    const r = await api('/api/billing/seats', { email: em });
+    b.disabled = false;
+    if (r.ok) { seatForm.reset(); loadPlan(); } else seatErr(r.data.error?.message || 'Could not add that seat.');
+  });
+
   // ── Sign-in / sign-up card ───────────────────────────────────────────────────────────────────
   const GH_ERRORS = {
     google_state: 'That Google sign-in expired or came from another tab. Please try again.',
@@ -230,9 +321,10 @@
     }
     if (me && me.signed_in) {
       showSignedIn(me.user, me);
+      loadPlan();
       // Already signed in: the sign-in pages have nothing to do, so go on.
       if (authCard) { location.replace(nextPath()); return; }
-    } else showSignedOut();
+    } else { showSignedOut(); setPlan(null); }
     setupCard(me);
     fillAccount(me);
   }
