@@ -2,15 +2,17 @@
 import Library from '../../layouts/Library.astro';
 import LibTabs from '../../components/v2/LibTabs.astro';
 import CompCard from '../../components/v2/CompCard.astro';
+import { icon } from '../../components/v2/icons';
 import { screens, appScreens, agentApps, arcScreens, composedScreens } from '../../lib/data';
 ---
 <Library title="Screens" description={`${screens.length} whole app frames for agent products, built from the components.`} type="Category">
   <div class="lidx">
     <h1 class="lidx-title">Complete screens – whole app frames built from the components.</h1>
+    <p class="lede pro-lede"><span class="x-chip pro-chip"><Fragment set:html={icon.bolt} />Pro</span> Screens and agent apps are part of <a href="/pricing/">Oxyn Pro</a>. Every preview here is free to open and try; Pro opens their code.</p>
     <LibTabs active="screens" />
     <div class="cgrid">
       {composedScreens.map((c) => (
-        <article class="x-cc cc-composed"><div class="cc-top"><span class="x-chip">Screen</span><span class="x-chip soft">Full app</span></div><div class="cc-prev cc-art" aria-hidden="true"><span></span><span></span><span></span></div><div class="cc-foot"><div class="cc-txt"><h3 class="cc-name"><a href={c.href}>{c.name}</a></h3><p>{c.summary}</p></div></div></article>
+        <article class="x-cc cc-composed"><div class="cc-top"><span class="x-chip">Screen</span><span class="x-chip soft">Full app</span><span class="x-chip pro-chip" title="Oxyn Pro: the preview is free, the code needs Pro"><Fragment set:html={icon.bolt} />Pro</span></div><div class="cc-prev cc-art" aria-hidden="true"><span></span><span></span><span></span></div><div class="cc-foot"><div class="cc-txt"><h3 class="cc-name"><a href={c.href}>{c.name}</a></h3><p>{c.summary}</p></div></div></article>
       ))}
       {appScreens.map((d) => <CompCard demo={d} />)}
     </div>
