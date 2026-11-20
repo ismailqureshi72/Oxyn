@@ -406,6 +406,600 @@ pub fn header(cps: &[Checkpoint]) -> String {
     s
 }
 
+// ── Interactive models: keys, rewind, branch tree, film strip, undo ladder, restore preview ──
+
+/// A key the checkpoint views act on, the same for both renderers.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum CpKey {
+    /// Previous row (↑).
+    Up,
+    /// Next row (↓).
+    Down,
+    /// Previous frame, or fold a branch (←).
+    Left,
+    /// Next frame, or unfold a branch (→).
+    Right,
+    /// First.
+    Home,
+    /// Last.
+    End,
+    /// Act on the focused item (Enter / Space).
+    Enter,
+    /// Close or cancel (Esc).
+    Escape,
+    /// Undo (⌘Z / Ctrl+Z).
+    Undo,
+    /// Redo (⇧⌘Z / Ctrl+Y).
+    Redo,
+}
+
+impl CpKey {
+    /// From a DOM / GPUI key name (`ArrowUp`, `up`, `Home`, `enter`, ` `, `Escape`, …).
+    pub fn from_name(k: &str) -> Option<Self> {
+        Some(match k {
+            "ArrowUp" | "up" => Self::Up,
+            "ArrowDown" | "down" => Self::Down,
+            "ArrowLeft" | "left" => Self::Left,
+            "ArrowRight" | "right" => Self::Right,
+            "Home" | "home" => Self::Home,
+            "End" | "end" => Self::End,
+            "Enter" | "enter" | " " | "space" => Self::Enter,
+            "Escape" | "escape" => Self::Escape,
+            _ => return None,
+        })
+    }
+}
+
+/// Roving focus over `len` items: ↑ / ← back, ↓ / → on, Home / End to the ends (clamped, no wrap).
+pub fn roving(len: usize, at: usize, key: CpKey) -> usize {
+    if len == 0 {
+        return 0;
+    }
+    let last = len - 1;
+    match key {
+        CpKey::Up | CpKey::Left => at.min(last).saturating_sub(1),
+        CpKey::Down | CpKey::Right => (at + 1).min(last),
+        CpKey::Home => 0,
+        CpKey::End => last,
+        _ => at.min(last),
+    }
+}
+
+/// Absolute ISO timestamp of a checkpoint: the run's start (`YYYY-MM-DD`, `HH:MM`) plus `at`,
+/// as `2026-11-14 15:31:09`. Rolls over midnight into the next day.
+pub fn iso_at(start_day: &str, start_hm: (u32, u32), at: Duration) -> String {
+    let day = crate::primitives::date::Date::parse_iso(start_day)
+        .unwrap_or_else(|| crate::primitives::date::Date::clamped(2026, 1, 1));
+    let secs = u64::from(start_hm.0) * 3_600 + u64::from(start_hm.1) * 60 + at.as_secs();
+    let d = day.add_days((secs / 86_400) as i64);
+    let s = secs % 86_400;
+    format!(
+        "{} {:02}:{:02}:{:02}",
+        d.iso(),
+        s / 3_600,
+        s / 60 % 60,
+        s % 60
+    )
+}
+
+/// A run you can rewind: the checkpoints, the head and the focused row. Rewinding to a
+/// checkpoint stops whatever is running and starts a new attempt from it; nothing is removed.
+#[derive(Clone, Debug, PartialEq)]
+pub struct CheckpointRun {
+    /// Checkpoints in the order taken.
+    pub checkpoints: Vec<Checkpoint>,
+    /// Where the agent stands (`None` = the last one).
+    pub head: Option<String>,
+    /// Focused row (roving tab stop).
+    pub focus: usize,
+    rewinds: u32,
+}
+
+impl CheckpointRun {
+    /// A run at `head`, focused on the head.
+    pub fn new(checkpoints: Vec<Checkpoint>, head: Option<String>) -> Self {
+        let mut r = Self {
+            checkpoints,
+            head,
+            focus: 0,
+            rewinds: 0,
+        };
+        r.focus = r.head_index();
+        r
+    }
+
+    /// Id of the head.
+    pub fn head_id(&self) -> String {
+        self.head
+            .clone()
+            .or_else(|| self.checkpoints.last().map(|c| c.id.clone()))
+            .unwrap_or_default()
+    }
+
+    /// Index of the head.
+    pub fn head_index(&self) -> usize {
+        let h = self.head_id();
+        self.checkpoints.iter().position(|c| c.id == h).unwrap_or(0)
+    }
+
+    /// Can `i` be rewound to (not the head, not still running)?
+    pub fn can_rewind(&self, i: usize) -> bool {
+        self.checkpoints
+            .get(i)
+            .is_some_and(|c| c.status != CheckpointStatus::Running && i != self.head_index())
+    }
+
+    /// Rewinds to `i`: a running checkpoint becomes `Stopped`, a new running attempt starts from
+    /// `i` and becomes the head. Returns the new checkpoint's id, or `None` when `i` can't be
+    /// rewound to.
+    pub fn rewind(&mut self, i: usize) -> Option<String> {
+        if !self.can_rewind(i) {
+            return None;
+        }
+        for c in &mut self.checkpoints {
+            if c.status == CheckpointStatus::Running {
+                c.status = CheckpointStatus::Stopped;
+            }
+        }
+        self.rewinds += 1;
+        let from = self.checkpoints[i].clone();
+        let at = self
+            .checkpoints
+            .iter()
+            .map(|c| c.at)
+            .max()
+            .unwrap_or_default()
+            + Duration::from_secs(14);
+        let id = format!("r{}", self.rewinds);
+        let mut n = Checkpoint::new(
+            &id,
+            Some(&from.id),
+            &format!("Retry from {}", from.title),
+            0,
+        )
+        .with(CheckpointStatus::Running);
+        n.at = at;
+        n.tool = Some("Edit".into());
+        n.cost_cents = from.cost_cents;
+        self.checkpoints.push(n);
+        self.head = Some(id.clone());
+        self.focus = self.checkpoints.len() - 1;
+        Some(id)
+    }
+
+    /// Lane rows for the current state.
+    pub fn rows(&self) -> Vec<CheckpointRow> {
+        lanes(&self.checkpoints, self.head.as_deref())
+    }
+
+    /// One key: arrows / Home / End move focus, Enter rewinds to the focused row. Returns the
+    /// new head id when a rewind happened.
+    pub fn key(&mut self, k: CpKey) -> Option<String> {
+        match k {
+            CpKey::Enter => self.rewind(self.focus),
+            _ => {
+                self.focus = roving(self.checkpoints.len(), self.focus, k);
+                None
+            }
+        }
+    }
+}
+
+/// One row of the branch tree: a checkpoint indented under the one it follows, with tree guides.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct TreeRow {
+    /// Index into the checkpoints.
+    pub index: usize,
+    /// Depth in forks (0 = the first attempt; each fork indents one level).
+    pub depth: usize,
+    /// Starts a fork (its parent already had a child).
+    pub fork: bool,
+    /// Last child of its parent (draw `└` instead of `├`).
+    pub last: bool,
+    /// Checkpoints below it in its own subtree (shown as "+N" when folded).
+    pub below: usize,
+    /// On the way to the head.
+    pub on_path: bool,
+    /// The head.
+    pub current: bool,
+    /// Hidden because an ancestor fork is folded.
+    pub hidden: bool,
+}
+
+/// Lays checkpoints out as a tree of forks: the first child continues the same line, every
+/// later child of the same parent opens a fork one level deeper. `folded` holds ids whose
+/// subtrees are collapsed.
+pub fn branch_tree(cps: &[Checkpoint], head: Option<&str>, folded: &[String]) -> Vec<TreeRow> {
+    struct Walk<'a> {
+        cps: &'a [Checkpoint],
+        rows: Vec<CheckpointRow>,
+        folded: &'a [String],
+        out: Vec<TreeRow>,
+    }
+    impl Walk<'_> {
+        fn kids(&self, id: &str) -> Vec<usize> {
+            (0..self.cps.len())
+                .filter(|&i| self.cps[i].parent.as_deref() == Some(id))
+                .collect()
+        }
+        // `(depth, fork, last, hidden)`; returns how many rows its subtree adds below it.
+        fn go(&mut self, i: usize, at: (usize, bool, bool, bool)) -> usize {
+            let (depth, fork, last, hidden) = at;
+            let me = self.out.len();
+            self.out.push(TreeRow {
+                index: i,
+                depth,
+                fork,
+                last,
+                below: 0,
+                on_path: self.rows[i].on_path,
+                current: self.rows[i].current,
+                hidden,
+            });
+            let ks = self.kids(&self.cps[i].id);
+            let hide = hidden || self.folded.contains(&self.cps[i].id);
+            let mut n = 0;
+            // Later children are forks, one level deeper; the first child continues the line
+            // and is drawn after them so the main line reads straight down.
+            for (j, &k) in ks.iter().enumerate().skip(1) {
+                n += 1 + self.go(k, (depth + 1, true, j + 1 == ks.len(), hide));
+            }
+            if let Some(&k) = ks.first() {
+                n += 1 + self.go(k, (depth, false, true, hide));
+            }
+            self.out[me].below = n;
+            n
+        }
+    }
+    let mut w = Walk {
+        cps,
+        rows: lanes(cps, head),
+        folded,
+        out: vec![],
+    };
+    for (i, c) in cps.iter().enumerate() {
+        if c.parent.is_none() {
+            w.go(i, (0, false, true, false));
+        }
+    }
+    w.out
+}
+
+/// Number of checkpoints a fork row hides when folded, counting forks below it.
+pub fn forks_of(cps: &[Checkpoint], id: &str) -> usize {
+    cps.iter()
+        .filter(|c| c.parent.as_deref() == Some(id))
+        .count()
+        .saturating_sub(1)
+}
+
+/// The film strip: one frame per checkpoint with a scrub position.
+#[derive(Clone, Debug, PartialEq)]
+pub struct FilmStrip {
+    /// Frames (checkpoints in the order taken).
+    pub len: usize,
+    /// Selected frame.
+    pub at: usize,
+}
+
+impl FilmStrip {
+    /// A strip of `len` frames on frame `at`.
+    pub fn new(len: usize, at: usize) -> Self {
+        Self {
+            len,
+            at: at.min(len.saturating_sub(1)),
+        }
+    }
+
+    /// Scrubs to a fraction `0..=1` of the track (pointer x over the track width).
+    pub fn scrub(&mut self, frac: f32) -> usize {
+        if self.len > 0 {
+            let f = frac.clamp(0.0, 1.0);
+            self.at = ((f * (self.len - 1) as f32).round() as usize).min(self.len - 1);
+        }
+        self.at
+    }
+
+    /// Playhead position `0..=1` of the selected frame.
+    pub fn playhead(&self) -> f32 {
+        if self.len < 2 {
+            0.0
+        } else {
+            self.at as f32 / (self.len - 1) as f32
+        }
+    }
+
+    /// ← / → / Home / End.
+    pub fn key(&mut self, k: CpKey) -> usize {
+        self.at = roving(self.len, self.at, k);
+        self.at
+    }
+}
+
+/// A deterministic thumbnail sketch for a frame: `rows` bars of widths `0..=100` (percent), so a
+/// checkpoint always draws the same miniature without an image.
+pub fn thumb_bars(c: &Checkpoint, rows: usize) -> Vec<(u8, bool)> {
+    let mut h: u32 = 2_166_136_261;
+    for b in c.id.bytes().chain(c.title.bytes()) {
+        h = (h ^ u32::from(b)).wrapping_mul(16_777_619);
+    }
+    let changed = c.files.min(rows as u32) as usize;
+    (0..rows)
+        .map(|i| {
+            h = h.wrapping_mul(1_103_515_245).wrapping_add(12_345);
+            let w = 30 + (h >> 16) % 66;
+            (w as u8, i < changed)
+        })
+        .collect()
+}
+
+/// One reversible step on the undo ladder.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct UndoStep {
+    /// What the step did ("Renamed Plan to Tier").
+    pub title: String,
+    /// What it touched ("2 files", "1 migration").
+    pub detail: String,
+    /// Can be undone; a step that can't (a sent email, a deploy) stops the ladder there.
+    pub reversible: bool,
+}
+
+impl UndoStep {
+    /// A reversible step.
+    pub fn new(title: &str, detail: &str) -> Self {
+        Self {
+            title: title.into(),
+            detail: detail.into(),
+            reversible: true,
+        }
+    }
+
+    /// Builder: can't be undone.
+    pub fn fixed(mut self) -> Self {
+        self.reversible = false;
+        self
+    }
+}
+
+/// A vertical stepper of steps you can walk back and forward: `applied` steps are in effect,
+/// the rest are undone (and can be redone until a new step is pushed).
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct UndoLadder {
+    /// Steps, oldest first.
+    pub steps: Vec<UndoStep>,
+    /// How many are in effect.
+    pub applied: usize,
+    /// Focused rung.
+    pub focus: usize,
+}
+
+impl UndoLadder {
+    /// All steps applied, focus on the newest.
+    pub fn new(steps: Vec<UndoStep>) -> Self {
+        let n = steps.len();
+        Self {
+            steps,
+            applied: n,
+            focus: n.saturating_sub(1),
+        }
+    }
+
+    /// Lowest `applied` reachable: everything after the newest step that can't be undone.
+    pub fn floor(&self) -> usize {
+        self.steps
+            .iter()
+            .rposition(|s| !s.reversible)
+            .map_or(0, |i| i + 1)
+    }
+
+    /// Undo one step; `false` at the floor.
+    pub fn undo(&mut self) -> bool {
+        if self.applied > self.floor() {
+            self.applied -= 1;
+            self.focus = self.applied.saturating_sub(1);
+            true
+        } else {
+            false
+        }
+    }
+
+    /// Redo one step; `false` when everything is applied.
+    pub fn redo(&mut self) -> bool {
+        if self.applied < self.steps.len() {
+            self.applied += 1;
+            self.focus = self.applied - 1;
+            true
+        } else {
+            false
+        }
+    }
+
+    /// Jump so that steps `0..=i` are in effect (clamped to the floor). Returns the steps
+    /// undone (negative) or redone (positive).
+    pub fn jump(&mut self, i: usize) -> i32 {
+        let target = (i + 1).min(self.steps.len()).max(self.floor());
+        let d = target as i32 - self.applied as i32;
+        self.applied = target;
+        self.focus = i.min(self.steps.len().saturating_sub(1));
+        d
+    }
+
+    /// State of rung `i`: `"applied"`, `"undone"` or `"locked"` (applied and below the floor).
+    pub fn state(&self, i: usize) -> &'static str {
+        if i >= self.applied {
+            "undone"
+        } else if i < self.floor() {
+            "locked"
+        } else {
+            "applied"
+        }
+    }
+
+    /// One key: ↑ / ↓ / Home / End move focus, Enter jumps there, Undo / Redo step.
+    pub fn key(&mut self, k: CpKey) {
+        match k {
+            CpKey::Enter => {
+                self.jump(self.focus);
+            }
+            CpKey::Undo => {
+                self.undo();
+            }
+            CpKey::Redo => {
+                self.redo();
+            }
+            _ => self.focus = roving(self.steps.len(), self.focus, k),
+        }
+    }
+
+    /// Status line: "4 of 6 applied · 2 undone".
+    pub fn summary(&self) -> String {
+        let undone = self.steps.len() - self.applied;
+        let mut s = format!("{} of {} applied", self.applied, self.steps.len());
+        if undone > 0 {
+            s.push_str(&format!(" · {undone} undone"));
+        }
+        s
+    }
+}
+
+/// How a file changes when a checkpoint is restored.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum FileChange {
+    /// Its content goes back.
+    Modified,
+    /// It comes back (was deleted since).
+    Restored,
+    /// It goes away (was created since).
+    Removed,
+}
+
+impl FileChange {
+    /// Short tag (`M`, `A`, `D`), never colour alone.
+    pub fn tag(self) -> &'static str {
+        match self {
+            Self::Modified => "M",
+            Self::Restored => "A",
+            Self::Removed => "D",
+        }
+    }
+}
+
+/// One file in the restore preview.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct PreviewFile {
+    /// Path.
+    pub path: String,
+    /// Change.
+    pub change: FileChange,
+    /// Lines added and removed by the restore.
+    pub lines: (u32, u32),
+}
+
+/// Where the restore preview sheet is.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum PreviewPhase {
+    /// Reading the diff summary.
+    Review,
+    /// Asked to confirm ("Restore 3 files?").
+    Confirm,
+    /// Restored.
+    Done,
+    /// Closed without restoring.
+    Cancelled,
+}
+
+/// The restore preview sheet: what restoring a checkpoint will change, then Restore → confirm.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct RestorePreview {
+    /// Files that change.
+    pub files: Vec<PreviewFile>,
+    /// Turns of the conversation that are rewound.
+    pub turns: u32,
+    /// What is restored.
+    pub action: RestoreAction,
+    /// Phase.
+    pub phase: PreviewPhase,
+}
+
+impl RestorePreview {
+    /// A sheet in review.
+    pub fn new(files: Vec<PreviewFile>, turns: u32, action: RestoreAction) -> Self {
+        Self {
+            files,
+            turns,
+            action,
+            phase: PreviewPhase::Review,
+        }
+    }
+
+    /// Totals `(+, −)`.
+    pub fn totals(&self) -> (u32, u32) {
+        self.files
+            .iter()
+            .fold((0, 0), |(a, d), f| (a + f.lines.0, d + f.lines.1))
+    }
+
+    /// Summary line: "3 files · +42 −17 · 2 turns".
+    pub fn summary(&self) -> String {
+        let (a, d) = self.totals();
+        let n = self.files.len();
+        let mut s = String::new();
+        if !matches!(self.action, RestoreAction::Chat) {
+            s = format!(
+                "{n} {} · +{a} \u{2212}{d}",
+                if n == 1 { "file" } else { "files" }
+            );
+        }
+        if !matches!(self.action, RestoreAction::Files) && self.turns > 0 {
+            if !s.is_empty() {
+                s.push_str(" · ");
+            }
+            s.push_str(&format!(
+                "{} {}",
+                self.turns,
+                if self.turns == 1 { "turn" } else { "turns" }
+            ));
+        }
+        s
+    }
+
+    /// Primary button label for the phase.
+    pub fn primary(&self) -> String {
+        match self.phase {
+            PreviewPhase::Review => self.action.confirm(self.files.len() as u32, self.turns),
+            PreviewPhase::Confirm => "Yes, restore".into(),
+            PreviewPhase::Done | PreviewPhase::Cancelled => "Close".into(),
+        }
+    }
+
+    /// Primary pressed: Review → Confirm → Done.
+    pub fn press(&mut self) {
+        self.phase = match self.phase {
+            PreviewPhase::Review => PreviewPhase::Confirm,
+            PreviewPhase::Confirm => PreviewPhase::Done,
+            p => p,
+        };
+    }
+
+    /// Cancel / Esc: Confirm steps back to Review, Review closes.
+    pub fn cancel(&mut self) {
+        self.phase = match self.phase {
+            PreviewPhase::Confirm => PreviewPhase::Review,
+            PreviewPhase::Review => PreviewPhase::Cancelled,
+            p => p,
+        };
+    }
+
+    /// Enter presses, Esc cancels.
+    pub fn key(&mut self, k: CpKey) {
+        match k {
+            CpKey::Enter => self.press(),
+            CpKey::Escape => self.cancel(),
+            _ => {}
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -483,5 +1077,86 @@ mod tests {
         };
         assert_eq!(f.toast(ClockMs(5_000)).unwrap().2, 0.5);
         assert!(f.toast(ClockMs(10_000)).is_none());
+    }
+
+    #[test]
+    fn c1a_models() {
+        assert_eq!(roving(5, 2, CpKey::Up), 1);
+        assert_eq!(roving(5, 4, CpKey::Down), 4);
+        assert_eq!(roving(5, 2, CpKey::End), 4);
+        assert_eq!(roving(0, 3, CpKey::Down), 0);
+        assert_eq!(CpKey::from_name("ArrowDown"), Some(CpKey::Down));
+        assert_eq!(
+            iso_at("2026-11-14", (15, 31), Duration::from_secs(64)),
+            "2026-11-14 15:32:04"
+        );
+        assert_eq!(
+            iso_at("2026-11-14", (23, 59), Duration::from_secs(120)),
+            "2026-11-15 00:01:00"
+        );
+        let mut r = CheckpointRun::new(run(), Some("c4".into()));
+        assert_eq!(r.focus, 3);
+        assert!(r.key(CpKey::Enter).is_none());
+        r.key(CpKey::Home);
+        r.key(CpKey::Down);
+        assert_eq!(r.key(CpKey::Enter).as_deref(), Some("r1"));
+        assert_eq!(r.checkpoints[3].status, CheckpointStatus::Stopped);
+        assert_eq!(r.head_id(), "r1");
+        assert_eq!(r.rows()[4].lane, 2);
+        let t = branch_tree(&run(), Some("c4"), &[]);
+        assert_eq!(
+            t.iter().map(|x| (x.index, x.depth)).collect::<Vec<_>>(),
+            vec![(0, 0), (1, 0), (3, 1), (2, 0)]
+        );
+        assert!(t[2].fork && t[1].below == 2);
+        let t = branch_tree(&run(), None, &["c2".into()]);
+        assert!(t[2].hidden && t[3].hidden && !t[1].hidden);
+        let mut f = FilmStrip::new(6, 0);
+        assert_eq!(f.scrub(0.5), 3);
+        assert_eq!(f.key(CpKey::End), 5);
+        assert_eq!(f.playhead(), 1.0);
+        assert_eq!(thumb_bars(&run()[1], 5), thumb_bars(&run()[1], 5));
+        let mut l = UndoLadder::new(vec![
+            UndoStep::new("a", "1 file"),
+            UndoStep::new("b", "sent").fixed(),
+            UndoStep::new("c", "2 files"),
+            UndoStep::new("d", "1 file"),
+        ]);
+        assert_eq!(l.floor(), 2);
+        assert!(l.undo() && l.undo() && !l.undo());
+        assert_eq!(l.summary(), "2 of 4 applied · 2 undone");
+        assert_eq!(
+            (l.state(0), l.state(1), l.state(3)),
+            ("locked", "locked", "undone")
+        );
+        assert_eq!(l.jump(3), 2);
+        assert_eq!(l.jump(0), -2);
+        l.key(CpKey::Undo);
+        assert_eq!(l.applied, 2);
+        let mut p = RestorePreview::new(
+            vec![
+                PreviewFile {
+                    path: "a.rs".into(),
+                    change: FileChange::Modified,
+                    lines: (3, 1),
+                },
+                PreviewFile {
+                    path: "b.rs".into(),
+                    change: FileChange::Removed,
+                    lines: (0, 9),
+                },
+            ],
+            2,
+            RestoreAction::Both,
+        );
+        assert_eq!(p.summary(), "2 files · +3 \u{2212}10 · 2 turns");
+        assert_eq!(p.primary(), "Restore 2 files and rewind 2 turns");
+        p.key(CpKey::Enter);
+        assert_eq!(p.phase, PreviewPhase::Confirm);
+        p.key(CpKey::Escape);
+        assert_eq!(p.phase, PreviewPhase::Review);
+        p.press();
+        p.press();
+        assert_eq!(p.phase, PreviewPhase::Done);
     }
 }

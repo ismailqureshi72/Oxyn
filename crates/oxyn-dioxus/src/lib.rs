@@ -26,8 +26,10 @@ pub use chat::{
     SupportConversation, ThinkingTraces,
 };
 pub use checkpoint::{
-    CheckpointLanes, CheckpointLanesProps, CheckpointList, CheckpointListProps, CheckpointMarker,
-    CheckpointMarkerProps, RestoreToast, RestoreToastProps,
+    CheckpointFilmStrip, CheckpointFilmStripProps, CheckpointLanes, CheckpointLanesProps,
+    CheckpointList, CheckpointListProps, CheckpointMarker, CheckpointMarkerProps, CheckpointTree,
+    CheckpointTreeProps, RestorePreviewSheet, RestorePreviewSheetProps, RestoreToast,
+    RestoreToastProps, UndoLadder, UndoLadderProps,
 };
 pub use composer::{
     AgentSteering, AgentSteeringProps, DictationButton, DictationButtonProps, MentionInput,

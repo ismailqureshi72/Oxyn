@@ -6,6 +6,7 @@
 
 mod brand;
 mod chat;
+mod checkpoints;
 mod composer;
 mod composer_parts;
 mod forms;
@@ -25,6 +26,7 @@ pub use chat::{
     AnswerEl, ChatThreadEl, FeedbackEl, MarkdownEl, MessageEl, ReasoningEl, SourceCardsEl,
     StartersEl, TraceEl,
 };
+pub use checkpoints::{CheckpointsView, CpState, CpVariant};
 pub use composer::{Composer, ComposerEvent};
 pub use composer_parts::{
     DictationEl, MentionListEl, ModeSwitchEl, PermissionEl, QueueStackEl, SteeringEl, ToolsMenuEl,
