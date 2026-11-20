@@ -5,16 +5,18 @@ import Library from '../../layouts/Library.astro';
 import OxynDemo from '../OxynDemo.astro';
 import ThemeRadios from './ThemeRadios.astro';
 import CompCard from './CompCard.astro';
+import ProLock from './ProLock.astro';
 import { icon } from './icons';
 import { mark } from './brands';
 import {
   groupOf, demoUrl, props, specSection, md, highlightRust, cssConst, installLine, whenToUse, whenNotToUse,
-  related, keyChips, notesForAi, guidesFor, isScreen, REPO, type Demo,
+  related, keyChips, notesForAi, guidesFor, isScreen, isPro, REPO, type Demo,
 } from '../../lib/data';
 
 interface Props { demo: Demo }
 const { demo } = Astro.props;
 const screen = isScreen(demo);
+const pro = isPro(demo);
 const g = screen ? null : groupOf(demo);
 const comps = demo.dioxus.split(',').map((s) => s.trim());
 const tables = comps.map((c) => ({ name: c, info: props[c] })).filter((t) => t.info);
@@ -23,7 +25,8 @@ const edgeSpec = specSection(demo.spec, 'Responsive', 'Edge cases');
 const motionSpec = specSection(demo.spec, 'Micro-interactions');
 const timing = specSection(demo.spec, 'Timing');
 const usage = `use oxyn_dioxus::{${comps.join(', ')}, ${cssConst(demo.source)}};`;
-const install = installLine(demo);
+// Pro items install through the Pro CLI (licence checked); copying it without a plan leads to pricing.
+const install = pro ? `oxyn add pro/${demo.slug}` : installLine(demo);
 const site = 'https://ui.oxyn.workers.dev';
 const url = demoUrl(demo);
 const prompt = `Add the ${demo.name} component from Oxyn (Rust, Dioxus) to my app. Docs: ${site}${url}`;
@@ -50,11 +53,11 @@ const kind = screen ? 'screen' : 'component';
         <><a href="/components/">Components</a><span aria-hidden="true">›</span><a href={`/components/${g!.slug}/`}>{g!.name}</a><span aria-hidden="true">›</span><span aria-current="page">{demo.name}</span></>
       )}
     </nav>
-    <h1 class="art-title" data-pagefind-meta="title">{demo.name}</h1>
+    <h1 class="art-title" data-pagefind-meta="title">{demo.name}{pro && <a class="x-chip pro-chip" href={`/pricing/?from=${demo.slug}`} title="Part of Oxyn Pro: the preview is free, the code needs Pro"><Fragment set:html={icon.bolt} />Pro</a>}</h1>
     <p class="art-lede">{demo.summary}</p>
-    <div class="install-pill copyable"><code>{install}</code><button class="pill-copy" type="button" data-copy={install} aria-label="Copy install command"><Fragment set:html={icon.copy} /></button></div>
+    <div class="install-pill copyable"><code>{install}</code><button class="pill-copy" type="button" data-copy={install} data-pro-cli={pro ? 'true' : undefined} aria-label="Copy install command"><Fragment set:html={icon.copy} /></button></div>
 
-    <div class="pvwrap copyable" id="preview">
+    <div class:list={['pvwrap copyable', { 'is-pro': pro }]} id="preview" data-pro-slug={pro ? demo.slug : undefined}>
       <div class="pvbar" data-pagefind-ignore>
         <div class="x-seg" role="tablist" aria-label="Preview or code">
           <button type="button" role="tab" aria-selected="true" data-pv="preview"><Fragment set:html={icon.eye} />Preview</button>
@@ -75,10 +78,12 @@ const kind = screen ? 'screen' : 'component';
           {ai.map(([l, id, h]) => <a class="aibtn x-aibtn-logo" href={h} target="_blank" rel="noopener" title={`Open in ${l}`} aria-label={`Open in ${l}`}><Fragment set:html={mark(id)} /></a>)}
           <a class="aibtn x-aibtn-mcp" href="/docs/installation/" title="MCP server (planned with the oxyn CLI)"><Fragment set:html={mark('mcp')} />MCP</a>
           <button class="x-pill pill-black pill-sm x-copy" type="button" data-copy-from="pv"><Fragment set:html={icon.copy} />Copy</button>
+          {pro && <a class="x-pill pill-black pill-sm x-getpro" href={`/pricing/?from=${demo.slug}`}><Fragment set:html={icon.bolt} />Get Pro</a>}
         </div>
       </div>
       <div class:list={['pv', { 'pv-screen': screen }]} data-view="preview" data-controls="hidden" data-cstyle="clean">
-        <OxynDemo slug={demo.slug} html={demo.html} controls />
+        <OxynDemo slug={demo.slug} html={demo.html} controls proLock={pro} />
+        {pro && <ProLock from={demo.slug} />}
       </div>
       <p class="pv-live" data-live-label data-pagefind-ignore>Rendered from Rust at build time · goes live when visible</p>
     </div>
@@ -99,14 +104,18 @@ const kind = screen ? 'screen' : 'component';
 
     <section class="sec" id="installation">
       <h2>Installation</h2>
-      <p class="x-muted">{demo.name} is free and MIT. Oxyn is not on crates.io yet, so depend on the repository, then import the {kind} and its stylesheet. The <code>oxyn add</code> CLI that copies one file into your project is planned.</p>
+      <p class="x-muted">{pro ? <>{demo.name} is part of <a href="/pricing/">Oxyn Pro</a>; the preview is free.</> : <>{demo.name} is free and MIT.</>} Oxyn is not on crates.io yet, so depend on the repository, then import the {kind} and its stylesheet. The <code>oxyn add</code> CLI that copies one file into your project is planned.</p>
       <div class="codeblk copyable"><div class="codeblk-h"><span>Terminal</span><button class="pill-copy" type="button" data-copy={`cargo add oxyn-dioxus oxyn-core --git ${REPO}`} aria-label="Copy"><Fragment set:html={icon.copy} /></button></div><pre><code>cargo add oxyn-dioxus oxyn-core --git {REPO}</code></pre></div>
       <div class="codeblk copyable"><div class="codeblk-h"><span>Rust</span><button class="pill-copy" type="button" data-copy={usage} aria-label="Copy"><Fragment set:html={icon.copy} /></button></div><pre><code>{usage}</code></pre></div>
     </section>
 
     <section class="sec" id="usage">
       <h2>Usage</h2>
-      <div class="codeblk copyable"><div class="codeblk-h"><span>Dioxus · rust</span><button class="pill-copy" type="button" data-copy-from="next" aria-label="Copy"><Fragment set:html={icon.copy} /></button></div><pre><code set:html={highlightRust(demo.code)} /></pre></div>
+      {pro ? (
+        <div class="codeblk copyable pro-code" data-pro-code="usage"><div class="codeblk-h"><span>Dioxus · rust</span><button class="pill-copy" type="button" data-copy-from="next" aria-label="Copy" hidden><Fragment set:html={icon.copy} /></button></div><pre hidden><code></code></pre><ProLock compact from={demo.slug} /></div>
+      ) : (
+        <div class="codeblk copyable"><div class="codeblk-h"><span>Dioxus · rust</span><button class="pill-copy" type="button" data-copy-from="next" aria-label="Copy"><Fragment set:html={icon.copy} /></button></div><pre><code set:html={highlightRust(demo.code)} /></pre></div>
+      )}
     </section>
 
     {demo.variants.length > 0 && (
@@ -117,7 +126,11 @@ const kind = screen ? 'screen' : 'component';
             <h3>{v.name.replace(/-/g, ' ').replace(/^./, (c) => c.toUpperCase())}</h3>
             {v.note && <p class="x-muted">{v.note}</p>}
             <div class="ex-prev"><OxynDemo slug={demo.slug} html={v.html} variant={i} /></div>
-            <details class="ex-code"><summary>Code</summary><pre><code set:html={highlightRust(v.code)} /></pre></details>
+            {pro ? (
+              <details class="ex-code pro-code" data-pro-code={String(i)}><summary>Code <span class="x-chip pro-chip sm"><Fragment set:html={icon.bolt} />Pro</span></summary><pre hidden><code></code></pre><ProLock compact from={demo.slug} /></details>
+            ) : (
+              <details class="ex-code"><summary>Code</summary><pre><code set:html={highlightRust(v.code)} /></pre></details>
+            )}
           </div>
         ))}
       </section>
@@ -206,4 +219,5 @@ const kind = screen ? 'screen' : 'component';
       </div>
     </section>
   </article>
+  {pro && <script is:inline src="/pro.js" defer data-pro-name={demo.name}></script>}
 </Library>

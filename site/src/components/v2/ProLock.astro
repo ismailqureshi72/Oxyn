@@ -1,0 +1,17 @@
+---
+// The locked code panel of a Pro item (docs/pricing.md). The preview stays open to everyone; the
+// code is not in the static page at all. For a Pro account, public/pro.js fetches it from
+// /api/pro/source/<slug> and fills the matching [data-pro-code] block.
+import { icon } from './icons';
+interface Props { compact?: boolean; from?: string }
+const { compact = false, from } = Astro.props;
+const href = from ? `/pricing/?from=${from}` : '/pricing/';
+---
+<div class:list={['pro-lock', { compact }]} data-pro-lock>
+  <span class="pro-lock-i" aria-hidden="true"><Fragment set:html={icon.lock} /></span>
+  <div class="pro-lock-t">
+    <b data-pro-lock-title>The code is part of Oxyn Pro</b>
+    <p data-pro-lock-msg>{compact ? 'The preview is free. Pro opens the code of every screen and template.' : 'The preview stays free for everyone. Pro opens the code of every screen, agent-app template, block and kit, plus the Pro CLI.'}</p>
+  </div>
+  <a class="x-pill pill-black pro-lock-go" href={href} data-pro-lock-go><Fragment set:html={icon.bolt} />Get Pro</a>
+</div>
