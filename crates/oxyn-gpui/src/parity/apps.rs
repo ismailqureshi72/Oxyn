@@ -1,8 +1,8 @@
-//! Interactive GPUI views for the six agent apps: Taskdeck, Command Center, Session Studio,
-//! Fleet Window, Workspace Coder and Command Board. Each [`AgentAppView`] is a real GPUI view
-//! (`Entity` + `Render`) that keeps an [`AppUi`] from `oxyn_core::parity::appui` and redraws the
-//! same screens as the snapshot elements from it, so the Dioxus apps and these views share one
-//! set of rules:
+//! Interactive GPUI views for the agent apps: Taskdeck, Command Center, Session Studio,
+//! Fleet Window, Workspace Coder, Command Board, Threadbar, Tabstack, Repo Desk and Preview
+//! Desk. Each [`AgentAppView`] is a real GPUI view (`Entity` + `Render`) that keeps an [`AppUi`]
+//! from `oxyn_core::parity::appui` and redraws the same screens as the snapshot elements from
+//! it, so the Dioxus apps and these views share one set of rules:
 //!
 //! - sidebar rows, nav items and pane tabs are pressable (`row-N`, `view:<name>`, the app's own
 //!   ids such as `tasks`, `place`, `open-pr`);
@@ -35,7 +35,9 @@ use gpui::{
 };
 use oxyn_core::parity::appui::{AppData, AppKey, AppUi, views};
 use oxyn_core::parity::screensfid::{ScreenState, ShellLayout};
-use oxyn_core::parity::{cmdboard, cmdstudio, fleetwin, taskdeck, wscoder};
+use oxyn_core::parity::{
+    cmdboard, cmdstudio, fleetwin, previewdesk, repodesk, tabstack, taskdeck, threadbar, wscoder,
+};
 use oxyn_tokens::Theme;
 
 use super::Act;
@@ -101,7 +103,7 @@ pub(super) fn hit(d: Div, act: &Option<Act>, id: &'static str) -> Stateful<Div> 
     d.id(id).cursor_pointer().on_click(move |_, w, cx| f(w, cx))
 }
 
-/// One of the six agent apps.
+/// One of the agent apps.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum AgentApp {
     /// S9 Taskdeck: tasks, plugins and skills, schedules, sites.
@@ -116,17 +118,29 @@ pub enum AgentApp {
     WorkspaceCoder,
     /// S11 Command Board: autonomous sessions with a workspace timeline.
     CommandBoard,
+    /// S16 Threadbar: an editor's agent panel with threads by project and a Project pane.
+    Threadbar,
+    /// S16 Tabstack: an agent-first terminal with vertical tabs and command blocks.
+    Tabstack,
+    /// S16 Repo Desk: a chat-first app on a code host with Inbox, Projects and canvases.
+    RepoDesk,
+    /// S16 Preview Desk: sessions shown as previews, Design mode and line comments.
+    PreviewDesk,
 }
 
 impl AgentApp {
-    /// The six apps, in gallery order.
-    pub const ALL: [AgentApp; 6] = [
+    /// The apps, in gallery order.
+    pub const ALL: [AgentApp; 10] = [
         AgentApp::Taskdeck,
         AgentApp::CommandCenter,
         AgentApp::SessionStudio,
         AgentApp::FleetWindow,
         AgentApp::WorkspaceCoder,
         AgentApp::CommandBoard,
+        AgentApp::Threadbar,
+        AgentApp::Tabstack,
+        AgentApp::RepoDesk,
+        AgentApp::PreviewDesk,
     ];
 
     /// The app's display name.
@@ -138,6 +152,10 @@ impl AgentApp {
             Self::FleetWindow => "Fleet Window",
             Self::WorkspaceCoder => "Workspace Coder",
             Self::CommandBoard => "Command Board",
+            Self::Threadbar => "Threadbar",
+            Self::Tabstack => "Tabstack",
+            Self::RepoDesk => "Repo Desk",
+            Self::PreviewDesk => "Preview Desk",
         }
     }
 
@@ -150,6 +168,10 @@ impl AgentApp {
             Self::FleetWindow => views::FLEET_WINDOW,
             Self::WorkspaceCoder => views::WORKSPACE_CODER,
             Self::CommandBoard => views::COMMAND_BOARD,
+            Self::Threadbar => views::THREADBAR,
+            Self::Tabstack => views::TABSTACK,
+            Self::RepoDesk => views::REPO_DESK,
+            Self::PreviewDesk => views::PREVIEW_DESK,
         }
     }
 
@@ -169,6 +191,10 @@ impl AgentApp {
             Self::FleetWindow => fleetwin::fw_agents(st).len(),
             Self::WorkspaceCoder => wscoder::wc_chats(st).len(),
             Self::CommandBoard => cmdboard::cb_sessions(st).len(),
+            Self::Threadbar => threadbar::tb_threads(st).len(),
+            Self::Tabstack => tabstack::ts_tabs(st).len(),
+            Self::RepoDesk => repodesk::rd_sessions(st).len(),
+            Self::PreviewDesk => previewdesk::pd_sessions(st).len(),
         }
     }
 
@@ -189,6 +215,10 @@ impl AgentApp {
             Self::FleetWindow => "Plan, build, fix anything",
             Self::WorkspaceCoder => "Ask anything, or describe what to build",
             Self::CommandBoard => "Reply, or add something for the agent to do",
+            Self::Threadbar => "Message the agent · @ to add files",
+            Self::Tabstack => "Ask the agent · it asks before it writes",
+            Self::RepoDesk => "Ask the agent to work on something · # for issues",
+            Self::PreviewDesk => "Describe a change, or reply to the agent",
         }
     }
 
@@ -280,6 +310,39 @@ impl AgentApp {
                 ui.open_view("")
             }
             (Self::CommandBoard, "open-pr") => ui.open_view("pr"),
+            (Self::Threadbar, _) if id.starts_with("row-") => {
+                let i = oxyn_core::parity::appui::parse_row(id).unwrap_or(0);
+                let term = threadbar::tb_threads(ui.st)
+                    .get(i)
+                    .is_some_and(|t| t.terminal);
+                let moved = ui.press(id);
+                let v = if term { "terminal" } else { "" };
+                ui.open_view(v) || moved
+            }
+            (Self::Threadbar, "keep" | "reject" | "commit")
+            | (Self::Tabstack, "approve" | "changes")
+            | (Self::RepoDesk, "ready")
+            | (Self::PreviewDesk, "approve") => {
+                ui.last = Some(id);
+                true
+            }
+            (Self::Tabstack, "run") => {
+                ui.last = Some(id);
+                ui.open_view("review")
+            }
+            (Self::Tabstack, "deny") => {
+                ui.last = Some(id);
+                ui.open_view("")
+            }
+            (Self::RepoDesk, _) if id.starts_with("start-") => {
+                ui.last = Some(id);
+                ui.sent.push("Started a session from the Inbox".into());
+                ui.open_view("")
+            }
+            (Self::RepoDesk | Self::PreviewDesk, _) if id.starts_with("row-") => {
+                let moved = ui.press(id);
+                ui.open_view("") || moved
+            }
             (Self::CommandBoard, "answer") => {
                 ui.last = Some(id);
                 ui.sent.push("Answered the agent's question".into());
@@ -686,6 +749,10 @@ impl Render for AgentAppView {
             AgentApp::FleetWindow => super::fleetwin::fw_screen(&p, lay, st, extra, &act, &lv),
             AgentApp::WorkspaceCoder => super::wscoder::wc_screen(&p, lay, st, extra, &act, &lv),
             AgentApp::CommandBoard => super::cmdboard::cb_screen(&p, lay, st, extra, &act, &lv),
+            AgentApp::Threadbar => super::threadbar::tb_screen(&p, lay, st, extra, &act, &lv),
+            AgentApp::Tabstack => super::tabstack::ts_screen(&p, lay, st, extra, &act, &lv),
+            AgentApp::RepoDesk => super::repodesk::rd_screen(&p, lay, st, extra, &act, &lv),
+            AgentApp::PreviewDesk => super::previewdesk::pd_screen(&p, lay, st, extra, &act, &lv),
         };
         let menu = self.ui.menu.then(|| self.menu(&p, &act));
         div()
@@ -759,5 +826,36 @@ mod tests {
         for app in AgentApp::ALL {
             assert!(app.rows(ScreenState::Sample, false) > 0, "{}", app.name());
         }
+    }
+
+    #[test]
+    fn s16_presses() {
+        let mut own = Own::default();
+        let t = AgentApp::Threadbar;
+        let mut ui = AppUi::new(t.rows(ScreenState::Sample, false), t.views());
+        assert!(t.press(&mut ui, &mut own, "row-1"));
+        assert_eq!(t.extra(&ui, &own), "terminal");
+        assert!(t.press(&mut ui, &mut own, "row-0"));
+        assert_eq!(t.extra(&ui, &own), "");
+        t.press(&mut ui, &mut own, "view:git");
+        assert_eq!(t.extra(&ui, &own), "git");
+        let w = AgentApp::Tabstack;
+        let mut ui = AppUi::new(4, w.views());
+        ui.key(AppKey::Right);
+        assert_eq!(w.extra(&ui, &own), "approval");
+        w.press(&mut ui, &mut own, "run");
+        assert_eq!((w.extra(&ui, &own), ui.last), ("review", Some("run")));
+        let r = AgentApp::RepoDesk;
+        let mut ui = AppUi::new(4, r.views());
+        r.press(&mut ui, &mut own, "view:inbox");
+        assert_eq!(r.extra(&ui, &own), "inbox");
+        r.press(&mut ui, &mut own, "start-2");
+        assert_eq!((r.extra(&ui, &own), ui.sent.len()), ("", 1));
+        let d = AgentApp::PreviewDesk;
+        let mut ui = AppUi::new(4, d.views());
+        d.press(&mut ui, &mut own, "view:design");
+        assert_eq!(d.extra(&ui, &own), "design");
+        d.press(&mut ui, &mut own, "row-2");
+        assert_eq!((d.extra(&ui, &own), ui.sel), ("", 2));
     }
 }

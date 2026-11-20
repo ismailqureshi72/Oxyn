@@ -64,6 +64,11 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 - Git: the Git logo by Jason Long is licensed under CC BY 3.0
   (https://creativecommons.org/licenses/by/3.0/); Simple Icons records this licence for `git`.
 - GitHub Copilot (Lobe Icons `githubcopilot`) is MIT in Simple Icons' metadata too.
+- Agent apps IV (Threadbar, Tabstack, Repo Desk, Preview Desk): Claude Code, Codex and GitHub Copilot
+  (Lobe Icons) mark outside agents in agent pickers and tabs, GitHub (Simple Icons) marks the code host
+  next to repositories and pull requests, and Claude, OpenAI and Gemini (Lobe Icons) mark models in
+  model pickers. They name the real product a user picks (nominative use) and are never used as the
+  logo of these Oxyn apps, which have their own drawn marks.
 - Source: https://github.com/simple-icons/simple-icons (`simple-icons` 16.37.0)
 - License: CC0 1.0 Universal (public domain dedication). See https://github.com/simple-icons/simple-icons/blob/develop/DISCLAIMER.md.
 
