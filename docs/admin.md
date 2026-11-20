@@ -1,14 +1,17 @@
 # Admin panel
 
-`/admin` on https://ui.oxyn.workers.dev is the maintainers' panel: the feedback inbox, the list of
-admins, content flags and an audit log. Every response carries
+`/admin` on https://ui.oxyn.workers.dev is the maintainers' panel: site activity, every account and
+its plan, grants (Pro or Team without payment), the feedback inbox, billing, the list of admins,
+content flags and an audit log. Every response carries
 `X-Robots-Tag: noindex, nofollow, noarchive`, and none of it is in `site/dist`: the Worker serves the
 page (`site/worker/admin-ui/`) only after the checks below. The only link to it is the **Admin** item
 in the account menu, which only admins see.
 
-Code: `site/worker/admin.ts` (checks + API), `site/worker/admin-ui/` (page, CSS, JS; bundled into the
-Worker as text), `site/worker/auth.ts` (the site sign-in it relies on), migrations `0002_admin.sql`
-and `0004_unified_admin.sql`. The rest of the backend is in [backend.md](backend.md).
+Code: `site/worker/admin.ts` (checks + API), `site/worker/access.ts` (Users, Grants, Activity),
+`site/worker/emailcheck.ts` (grant email checks), `site/worker/events.ts` (site events),
+`site/worker/admin-ui/` (page, CSS, JS; bundled into the Worker as text), `site/worker/auth.ts`
+(the site sign-in it relies on), migrations `0002_admin.sql`, `0004_unified_admin.sql` and
+`0006_admin_access.sql`. The rest of the backend is in [backend.md](backend.md).
 
 ## How you get in
 
@@ -57,6 +60,50 @@ served before the checks, for the refusal pages.
 
 ## What is in it
 
+The panel opens on **Activity**. Times are shown in the admin's own time zone (Pakistan time for us),
+and the day buckets of the charts follow it too.
+
+- **Activity**: accounts active in the last day / 7 / 30 days (an account counts when it signs in or
+  browses while signed in), visitors and page views today, MRR and ARR (same numbers as Billing),
+  active subscriptions by plan, churn (subscriptions canceled or ended in the last 30 days, and how
+  many are set to cancel), grants in effect; signups and page views per day (7, 30 or 90 days);
+  sign-ins by provider; pricing views → checkout clicks → paid subscriptions; the most viewed
+  components and screens; and **Pro copy attempts** per item (Copy button, Ctrl/⌘+C or the CLI
+  command on a Pro item without a plan, which leads to pricing): the clearest sign of what people
+  want to buy. Charts are plain SVG and CSS.
+- **Users**: total signups with today / 7 / 30 days and the change against the period before; one
+  row per account with its email, name, sign-in methods, verified (Google/GitHub) or not, signed
+  up, last active and **current plan**: Free, Pro, Founder, Team owner, Team member (a seat on a
+  paid Team) or Granted (with what was granted and until when), plus where it comes from (Polar,
+  a seat, a grant) and a note when a grant is waiting for the email to be verified. Search by email
+  or name, filter by plan, sort, 50 per page, **Export CSV** (the filtered list; cells that would
+  start a spreadsheet formula are prefixed with `'`). Click a row for the account: its grants
+  (Revoke / Restore), its Polar subscriptions and **Change plan**: Free (removes the grant), Pro
+  (optionally showing the founder rate; display only, nothing is charged) or Team (the account as
+  owner plus up to 3 teammate emails, 4 people in all). A plan paid through Polar cannot be removed
+  here: the panel says so and links **Manage in Polar**.
+- **Grants**: give Pro or Team without payment, to one email, a Team (owner + up to 3) or a bulk
+  paste (up to 200, one per line or separated by commas). The grant can be given **before or after
+  someone signs up**: it turns on when the person signs in with Google or GitHub on that exact
+  email; an email + password account does not get it until Google or GitHub verified the email.
+  Safeguards (the browser shows them at once, the Worker checks everything again and decides):
+  - format check and normalising (trim, lower case, `Name <email>` unwrapped); Gmail dots and
+    `+tags` are kept as typed, with a note that the grant only matches that exact address;
+  - **typo check** on common domains (`gmial.com`, `gamil.com`, `gmail.co`, `hotmial.com`,
+    `yahooo.com`, `outlok.com`, a wrong `.con`/`.cmo`, or one letter off a big provider): "Did you
+    mean …?" with **Use** and **Keep as typed**; a typo is never granted unless kept;
+  - duplicates in the list, an email that already has an active grant (refused: revoke it or change
+    the plan instead), an email that already pays through Polar (refused unless "grant anyway");
+  - a **reason** is required, the **end date** is optional and must be in the future (end of that
+    day, admin's time);
+  - **Check and preview** shows a line-by-line report and writes nothing; in a bulk paste the lines
+    that do not pass are left out and listed;
+  - the confirm dialog asks to **type the email** (or, for a bulk grant, the number of emails);
+    more than 20 also needs "I checked all N emails"; at most 300 grant emails per admin per hour;
+  - **Revoke** is soft (a Team owner's grant takes its teammates along) with **Undo** for 30
+    seconds, and **History** keeps every revoked grant with **Restore**. Nothing is ever deleted.
+  Every add, revoke, restore and plan change is in the audit log with the admin's email and the
+  state before and after.
 - **Inbox**: feedback from the site's Feedback button. Filter by kind (Bug / Idea / Question) and
   status (New / Triaged / Closed / All), search messages and emails, open one to read the full
   message, page, reply email, browser and the screenshot (served from R2 through the Worker). Change
@@ -68,8 +115,8 @@ served before the checks, for the refusal pages.
   founder spots used, and warnings when a Polar secret is missing or the founder products still need
   archiving. Read-only; refunds and plan changes happen in Polar. See [pricing.md](pricing.md).
 - **Admins**: the D1 `admins` list, with whether each email is verified yet. **Add admin** takes an
-  email; **Remove** asks first. The last active admin cannot be removed; removing yourself closes
-  the panel for you at once.
+  email; **Remove** asks first. The last active admin cannot be removed, and removing yourself asks
+  you to type your own email (the Worker checks it too) because it closes the panel for you at once.
 - **Settings → Content and flags**: key/value flags in `settings`
   (`flag:<name>` = `{"enabled": bool, "value": text}`), switched on/off and edited inline.
   `GET /api/flags` (public, cached 60 s) returns the flags that are on as `{name: value}`.
@@ -108,6 +155,31 @@ Every route needs a verified admin (above).
 | `GET /admins`, `POST /admins` `{email}`, `DELETE /admins/:email` | admin list (`409 already_admin` / `last_admin`) |
 | `GET /flags`, `PUT /flags/:key` `{enabled, value}`, `DELETE /flags/:key` | flags |
 | `GET /audit?before=` | last 100 actions |
+| `GET /users?q=&plan=&sort=&dir=&page=&size=&tz=&format=csv` | accounts with plan and source, summary counts, CSV |
+| `GET /users/:id`, `POST /users/:id/plan` | one account; change its plan (`409 paid_subscription` for a Polar plan) |
+| `GET /grants?status=active\|pending\|revoked\|expired\|all&q=` | grants, Team members nested under the owner |
+| `POST /grants/check` | per-line report, writes nothing |
+| `POST /grants` | adds (`409 duplicate` / `typo_suspected` / `paid_subscription`, `400 confirm_mismatch` / `reason_required` / `expiry_in_past` / `bulk_ack_required`) |
+| `POST /grants/:id/revoke`, `POST /grants/:id/restore` | soft revoke and its undo |
+| `GET /activity?days=7\|30\|90&tz=` | the Activity numbers |
+
+`DELETE /admins/:email` for your own email needs `?confirm=<your email>` (`400 confirm_self`).
+
+## Site events (`POST /api/events`)
+
+The Activity tab reads a small event log the site writes itself, built to stay privacy-friendly:
+
+- **What**: page views, `pricing_view` (with the Pro item that led there), `pro_copy` (item and how:
+  copy, Ctrl/⌘+C, CLI), `checkout_click` (plan key), and sign-ins per provider (written by the
+  Worker). Paths only, never query strings; `/admin` and `/api` are never recorded.
+- **Who**: no IP, user agent, email or referrer is stored. `visitor` is a salted hash of IP + user
+  agent + the UTC day, so a visitor is counted once a day but cannot be followed across days. The
+  account id is stored only for a signed-in visitor and is read from the session, never from the
+  request.
+- **Limits**: same-origin only, up to 20 events per request (the site batches them and sends with
+  `sendBeacon` when a page is left), 30 requests a minute and 300 an hour per IP (`429`), bots and
+  headless browsers are accepted and dropped (`202`, `stored: 0`), nothing is sent when Do Not
+  Track or Global Privacy Control is on, no cookie is set. Rows older than **90 days** are deleted.
 
 ## Local development
 
@@ -120,7 +192,7 @@ migration adds the two maintainers), for example
 ## Migrations
 
 ```sh
-npx wrangler d1 migrations apply oxyn --remote    # from site/; 0002 and 0004 are additive
+npx wrangler d1 migrations apply oxyn --remote    # from site/; 0002, 0004 and 0006 are additive
 ```
 
 `0004_unified_admin.sql` deletes the old shared-password hash, the admin-session HMAC key and all

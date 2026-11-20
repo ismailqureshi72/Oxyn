@@ -93,8 +93,9 @@ One helper in `site/worker/billing.ts` answers "what may this account use", and 
    `past_due` (Polar is retrying the card) and not ended;
 2. a seat on a live Team subscription;
 3. a manual grant (`grants`, D1 migration 0005): unrevoked and with `expires_at` empty or in the
-   future, it counts exactly like an active subscription. The admin UI for grants comes in G2; until
-   then a grant is a row added with `wrangler d1 execute`.
+   future, it counts exactly like an active subscription. Grants are given, revoked and restored in
+   the admin panel (**Grants**, or **Users → Change plan**; see [admin.md](admin.md)). A Team grant
+   is the owner's row plus one row per teammate (`parent_id`, migration 0006).
 
 Emails (licence fallback, seats, grants) only count once Google or GitHub verified them.
 
