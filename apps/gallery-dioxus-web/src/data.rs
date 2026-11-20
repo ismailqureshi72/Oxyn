@@ -832,13 +832,55 @@ pub fn checkpoints() -> Vec<Checkpoint> {
     v
 }
 
-/// Wall-clock labels for [`checkpoints`].
+/// Day and start time of the sample run (times are shown as absolute ISO timestamps).
+pub const RUN_DAY: &str = "2026-11-14";
+/// Start of the sample run, `(hour, minute)`.
+pub const RUN_START: (u32, u32) = (15, 30);
+
+/// Absolute ISO labels for [`checkpoints`] (`2026-11-14 15:31:04`).
 pub fn checkpoint_times() -> Vec<String> {
-    [
-        "3:31 PM", "3:33 PM", "3:36 PM", "3:38 PM", "3:42 PM", "3:45 PM",
+    checkpoints().iter().map(iso_of).collect()
+}
+
+/// Absolute ISO label of one checkpoint of the sample run.
+pub fn iso_of(c: &Checkpoint) -> String {
+    oxyn_core::checkpoint::iso_at(RUN_DAY, RUN_START, c.at)
+}
+
+/// Steps of an agent turn for the undo ladder; `fixed` marks the deploy as not undoable.
+pub fn undo_steps(fixed: bool) -> Vec<oxyn_core::checkpoint::UndoStep> {
+    use oxyn_core::checkpoint::UndoStep;
+    let mut deploy = UndoStep::new("Deployed the preview build", "preview environment");
+    if fixed {
+        deploy = deploy.fixed();
+    }
+    vec![
+        UndoStep::new("Added the pricing table", "3 files · +120 \u{2212}4"),
+        UndoStep::new("Renamed Plan to Tier", "6 files · +38 \u{2212}38"),
+        deploy,
+        UndoStep::new("Moved prices to cents", "2 files · +21 \u{2212}17"),
+        UndoStep::new("Added the annual toggle", "2 files · +54 \u{2212}6"),
+        UndoStep::new("Updated the snapshot tests", "4 files · +12 \u{2212}12"),
     ]
-    .map(String::from)
-    .to_vec()
+}
+
+/// Files a restore to the pricing-table checkpoint would change.
+pub fn preview_files() -> Vec<oxyn_core::checkpoint::PreviewFile> {
+    use oxyn_core::checkpoint::{FileChange, PreviewFile};
+    [
+        ("src/pricing/table.rs", FileChange::Modified, (14, 61)),
+        ("src/checkout/stripe.rs", FileChange::Removed, (0, 88)),
+        ("src/checkout/webhooks.rs", FileChange::Removed, (0, 41)),
+        ("src/pricing/plan.rs", FileChange::Restored, (36, 0)),
+        ("tests/checkout.rs", FileChange::Modified, (3, 22)),
+    ]
+    .into_iter()
+    .map(|(p, change, lines)| PreviewFile {
+        path: p.into(),
+        change,
+        lines,
+    })
+    .collect()
 }
 
 // ── Primitives ──────────────────────────────────────────────────────────────
