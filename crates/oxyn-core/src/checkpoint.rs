@@ -1000,6 +1000,160 @@ impl RestorePreview {
     }
 }
 
+// ── Lane rail geometry (C1b): one drawing for the whole list, shared by both renderers ──
+
+/// Height of a lane row, in px.
+pub const RAIL_ROW_H: f32 = 32.0;
+/// X of the first lane's centre, in px.
+pub const RAIL_X0: f32 = 16.0;
+/// Distance between two lanes, in px.
+pub const RAIL_LANE_W: f32 = 14.0;
+
+/// One stroke of the rail: a straight run in one lane, or a fork that bends out of the parent's
+/// dot into a new lane and then runs straight down to the attempt's first checkpoint.
+#[derive(Clone, Debug, PartialEq)]
+pub struct RailEdge {
+    /// The checkpoint this edge leads to (stable key for animation).
+    pub child: usize,
+    /// Parent dot.
+    pub from: (f32, f32),
+    /// Child dot.
+    pub to: (f32, f32),
+    /// Bends into another lane.
+    pub fork: bool,
+    /// On the way to the head.
+    pub on_path: bool,
+}
+
+impl RailEdge {
+    /// The bend ends one row below the parent (or at the child, when sooner).
+    pub fn bend_end(&self) -> f32 {
+        (self.from.1 + RAIL_ROW_H).min(self.to.1)
+    }
+
+    /// SVG path data: `M x y L x y` or the fork curve plus its straight tail.
+    pub fn svg_d(&self) -> String {
+        let (x1, y1) = self.from;
+        let (x2, y2) = self.to;
+        if !self.fork {
+            return format!("M{x1} {y1} L{x2} {y2}");
+        }
+        let e = self.bend_end();
+        let h = e - y1;
+        let mut d = format!(
+            "M{x1} {y1} C{x1} {} {x2} {} {x2} {e}",
+            y1 + h * 0.62,
+            y1 + h * 0.38
+        );
+        if y2 > e {
+            d.push_str(&format!(" L{x2} {y2}"));
+        }
+        d
+    }
+}
+
+/// One dot of the rail.
+#[derive(Clone, Debug, PartialEq)]
+pub struct RailDot {
+    /// Index into the checkpoints.
+    pub index: usize,
+    /// Centre.
+    pub at: (f32, f32),
+    /// Radius: 3.5, the head 5.
+    pub r: f32,
+    /// On the way to the head (filled), else a hollow ring.
+    pub on_path: bool,
+    /// The head.
+    pub current: bool,
+    /// Status of the checkpoint.
+    pub status: CheckpointStatus,
+}
+
+/// The whole rail of a lane list: its size, edges (left-behind first, so the live path draws on
+/// top) and dots.
+#[derive(Clone, Debug, PartialEq)]
+pub struct Rail {
+    /// Gutter width (rows pad their content by this much).
+    pub width: f32,
+    /// Height of all rows.
+    pub height: f32,
+    /// Strokes.
+    pub edges: Vec<RailEdge>,
+    /// Dots, in row order.
+    pub dots: Vec<RailDot>,
+}
+
+/// Centre of `lane` at row `i`.
+pub fn rail_point(lane: usize, i: usize) -> (f32, f32) {
+    (
+        RAIL_X0 + RAIL_LANE_W * lane as f32,
+        RAIL_ROW_H * i as f32 + RAIL_ROW_H / 2.0,
+    )
+}
+
+/// Lays out the rail for `lanes(cps, head)`.
+pub fn rail(cps: &[Checkpoint], rows: &[CheckpointRow]) -> Rail {
+    let n_lanes = rows.iter().map(|r| r.lane).max().map_or(1, |m| m + 1);
+    let mut edges = vec![];
+    for (i, c) in cps.iter().enumerate() {
+        let Some(p) = c
+            .parent
+            .as_ref()
+            .and_then(|pid| cps[..i].iter().position(|o| &o.id == pid))
+        else {
+            continue;
+        };
+        let (Some(rp), Some(rc)) = (rows.get(p), rows.get(i)) else {
+            continue;
+        };
+        edges.push(RailEdge {
+            child: i,
+            from: rail_point(rp.lane, p),
+            to: rail_point(rc.lane, i),
+            fork: rp.lane != rc.lane,
+            on_path: rc.on_path,
+        });
+    }
+    edges.sort_by_key(|e| e.on_path);
+    let dots = rows
+        .iter()
+        .map(|r| RailDot {
+            index: r.index,
+            at: rail_point(r.lane, r.index),
+            r: if r.current { 5.0 } else { 3.5 },
+            on_path: r.on_path,
+            current: r.current,
+            status: cps
+                .get(r.index)
+                .map_or(CheckpointStatus::Done, |c| c.status),
+        })
+        .collect();
+    Rail {
+        width: RAIL_X0 + RAIL_LANE_W * (n_lanes - 1) as f32 + 16.0,
+        height: RAIL_ROW_H * rows.len() as f32,
+        edges,
+        dots,
+    }
+}
+
+/// Splits an absolute label `2026-11-14 15:31:09` into its day and its time of day; any other
+/// label is all time.
+pub fn split_day(label: &str) -> (Option<&str>, &str) {
+    match label.split_once(' ') {
+        Some((d, t)) if d.len() == 10 && d.as_bytes()[4] == b'-' && d.as_bytes()[7] == b'-' => {
+            (Some(d), t)
+        }
+        _ => (None, label),
+    }
+}
+
+/// The day every label shares (shown once in the bar), when they all share one.
+pub fn shared_day(labels: &[String]) -> Option<&str> {
+    let mut it = labels.iter().map(|l| split_day(l).0);
+    let first = it.next()??;
+    it.all(|d| d == Some(first)).then_some(first)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -1158,5 +1312,45 @@ mod tests {
         p.press();
         p.press();
         assert_eq!(p.phase, PreviewPhase::Done);
+    }
+
+    #[test]
+    fn c1b_rail_geometry() {
+        let cps = vec![
+            Checkpoint::new("a", None, "A", 1),
+            Checkpoint::new("b", Some("a"), "B", 2),
+            Checkpoint::new("c", Some("b"), "C", 3).with(CheckpointStatus::Failed),
+            Checkpoint::new("d", Some("b"), "D", 4).with(CheckpointStatus::Running),
+        ];
+        let rows = lanes(&cps, None);
+        let r = rail(&cps, &rows);
+        assert_eq!(r.height, 4.0 * RAIL_ROW_H);
+        assert_eq!(r.width, RAIL_X0 + RAIL_LANE_W + 16.0);
+        assert_eq!(r.edges.len(), 3);
+        // left-behind first, so the live path paints over it
+        assert!(!r.edges[0].on_path && r.edges[0].child == 2);
+        let fork = r.edges.iter().find(|e| e.child == 3).unwrap();
+        assert!(fork.fork && fork.on_path);
+        assert_eq!(fork.from, rail_point(0, 1));
+        assert_eq!(fork.to, rail_point(1, 3));
+        assert!(fork.svg_d().starts_with("M16 48 C16 "));
+        assert!(fork.svg_d().ends_with(" L30 112"));
+        assert_eq!(r.dots[3].r, 5.0);
+        assert!(!r.dots[2].on_path);
+        assert_eq!(
+            split_day("2026-11-14 15:31:09"),
+            (Some("2026-11-14"), "15:31:09")
+        );
+        assert_eq!(split_day("1:05"), (None, "1:05"));
+        let l = vec![
+            "2026-11-14 15:30:09".to_string(),
+            "2026-11-14 15:31:09".into(),
+        ];
+        assert_eq!(shared_day(&l), Some("2026-11-14"));
+        let l2 = vec![
+            "2026-11-14 23:59:09".to_string(),
+            "2026-11-15 00:01:09".into(),
+        ];
+        assert_eq!(shared_day(&l2), None);
     }
 }
