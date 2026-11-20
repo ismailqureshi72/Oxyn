@@ -29,7 +29,7 @@ export const FAMILY_NAV = [
   { slug: "memory", name: "Memory", blurb: "What the agent remembers about you and the work.", members: ["memory-panel"] },
   { slug: "diff", name: "Diff & Review", blurb: "Changes the agent made, line by line, and the review around them.", members: ["diff-viewer", "inline-diff", "diff-table", "diff-timeline", "change-summary", "code-suggestion", "ai-inline-edit", "review-center", "review-card", "image-compare"] },
   { slug: "merge", name: "Merge Conflict", blurb: "Resolving two versions of the same change.", members: ["merge-conflict", "conflict-radar"] },
-  { slug: "checkpoints", name: "Checkpoints", blurb: "Rewind a run to any point; branch new attempts from it.", members: ["checkpoint-lanes", "checkpoint-list", "checkpoint-marker", "restore-toast"] },
+  { slug: "checkpoints", name: "Checkpoints", blurb: "Rewind a run to any point; branch new attempts from it.", members: ["checkpoint-lanes", "checkpoint-tree", "checkpoint-film-strip", "checkpoint-list", "checkpoint-marker", "undo-ladder", "restore-preview", "restore-toast"] },
   { slug: "comments", name: "Comments & Reactions", blurb: "Talking about the work: threads, panels, reactions.", members: ["comment-thread", "comments-panel", "threaded-comments", "reactions", "reaction-bar"] },
   { slug: "schedule", name: "Schedule & Time", blurb: "Dates, times and when agents run.", members: ["scheduled-runs", "calendar", "date-picker", "date-range-picker", "time-picker", "time-dial", "date-reel"] },
   { slug: "buttons", name: "Buttons", blurb: "Buttons, icon buttons, split buttons and the groups they sit in.", members: ["button", "icon-button", "action-button", "split-button", "button-group", "floating-button-group", "expanding-button-group", "copy-button"] },

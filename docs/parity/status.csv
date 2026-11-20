@@ -1,5 +1,5 @@
 source,item,url,section,tier,oxyn_spec,batch,plan_pr,status
-affectUI,Agent Checkpoints,https://www.affectui.com/components/agent-checkpoints,Components · Agents,Pro,"checkpoint-timeline, checkpoints-git",,#28,built
+affectUI,Agent Checkpoints,https://www.affectui.com/components/agent-checkpoints,Components · Agents,Pro,"checkpoint-timeline, checkpoints-git",C1,#28 + C1a,built (full parity: keys / a11y / ISO times; GPUI interactive)
 affectUI,Agent Crew,https://www.affectui.com/components/agent-crew,Components · Agents,Pro,"agent-crew (exact, overnight batch B part 2), subagent-tree",,#32,built
 affectUI,Agent Cursors,https://www.affectui.com/components/agent-cursors,Components · Agents,Pro,"agent-cursors (exact, overnight batch B part 3), acting-indicator, takeover-banner",C6,#32,built
 affectUI,Agent Findings,https://www.affectui.com/components/agent-findings,Components · Agents,Pro,"agent-findings (exact, overnight batch B), fanout-grid, review-card",C6,#32,built
@@ -751,3 +751,7 @@ Oxyn,Agent apps · Hangar (agent manager + editor / browser surfaces pattern),ht
 Oxyn,Agent apps · Halo Chat (assistant chat + tool cards pattern),https://gemini.google/desktop,Agent apps,Free,halo-chat,S16,S16b,built (GPUI interactive)
 Oxyn,Agent apps · Pilot Panel (editor agent panel with plan / act and checkpoints pattern),https://docs.cline.bot/usage/cline-desktop,Agent apps,Free,pilot-panel,S16,S16b,built (GPUI interactive)
 Oxyn,Agent apps · Courier (thread-first agent with cloud sandbox pattern),https://ampcode.com/docs/apps,Agent apps,Free,courier,S16,S16b,built (GPUI interactive)
+Oxyn,Checkpoints · Checkpoint tree (forked checkpoints as an indented tree),https://ui.oxyn.workers.dev/components/agents/checkpoint-tree/,Components · Agents,Free,checkpoint-timeline,C1,C1a,built (GPUI interactive)
+Oxyn,Checkpoints · Checkpoint film strip (thumbnail per checkpoint on a scrubbable track),https://ui.oxyn.workers.dev/components/agents/checkpoint-film-strip/,Components · Agents,Free,checkpoint-timeline,C1,C1a,built (GPUI interactive)
+Oxyn,Checkpoints · Undo ladder (vertical stepper of reversible steps),https://ui.oxyn.workers.dev/components/agents/undo-ladder/,Components · Agents,Free,checkpoint-timeline,C1,C1a,built (GPUI interactive)
+Oxyn,Checkpoints · Restore preview sheet (diff summary with Restore / confirm / Cancel),https://ui.oxyn.workers.dev/components/agents/restore-preview/,Components · Agents,Free,checkpoint-timeline + rollback-impact,C1,C1a,built (GPUI interactive)

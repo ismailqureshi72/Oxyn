@@ -290,13 +290,9 @@ Resolving two versions of the same change.
 ## Checkpoints (`checkpoints`)
 Rewind a run to any point; branch new attempts from it.
 
-**Existing:** Checkpoint lanes (`checkpoint-lanes`), Checkpoint list (`checkpoint-list`), Checkpoint marker (`checkpoint-marker`), Restore toast (`restore-toast`)
+**Existing:** Checkpoint lanes (`checkpoint-lanes`), Checkpoint tree (`checkpoint-tree`), Checkpoint film strip (`checkpoint-film-strip`), Checkpoint list (`checkpoint-list`), Checkpoint marker (`checkpoint-marker`), Undo ladder (`undo-ladder`), Restore preview sheet (`restore-preview`), Restore toast (`restore-toast`)
 
-**New variants to build:**
-- Branch tree with restore points
-- Film strip of checkpoints
-- Undo ladder
-- Restore preview sheet
+**Built in C1a (2026-11-20):** the tree, film strip, undo ladder and restore preview sheet, plus keyboard / accessibility / ISO-time parity for the four existing members.
 
 ## Comments & Reactions (`comments`)
 Talking about the work: threads, panels, reactions.
