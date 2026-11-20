@@ -424,3 +424,49 @@ yet; variants `playing` and `neutral` join `rewound`, `single`, `credits`, `scro
 GPUI `CheckpointsView` lanes: same geometry painted on a canvas (edges via `PathBuilder`, dots
 and halo as quads), same bar and pills, Rewind on hover / focus. Gaps: GPUI shows the tool's
 initial rather than its icon, and is not animated.
+
+## C1c: Checkpoint lanes, exact affectUI look and motion (2026-11-20)
+
+Measured from a screen recording of affectUI's Agent Checkpoints (1 CSS px = 1.5 video px) and
+compared frame by frame with ours (behaviour and visual parity; no code, copy or styling taken).
+
+**Geometry** (`oxyn-core::checkpoint`, shared by Dioxus and GPUI): rows `RAIL_ROW_H` **30**; lane 1
+at `RAIL_X0` **21** inside the border (22 from the card's edge), lanes 14 apart; content at the last
+lane + `RAIL_GAP` 15 (tile at 37 / 51 / 65 from the edge as lanes are added). A fork leaves the
+bottom of the parent dot and is vertical in the new lane `RAIL_BEND_H` **22** px lower: a symmetric
+S, `C x1 y1+12, x2 y1+10, x2 y1+22`, then a straight run to the child. Lines 1.5 px. Dots r 3, the
+head r 4, left-behind rings r 4.25 (stroke 1.3); every dot sits on a 1.3 px knockout in the card
+colour so no line touches a dot. `RailEdge::len` gives each stroke's length.
+
+**Lane rule**: a rewind always opens a new lane (git-graph style). A checkpoint starts a lane when
+its parent already has a child or when other checkpoints came between it and its parent, so
+rewinding to a failed leaf branches too and shows `Attempt N`. `CheckpointRun::rewind_with(i,
+title)` names the new attempt's first step.
+
+**Colour** (semantic, so allowed under the monochrome rule; `RailTone::Neutral` stays mono):
+live path dark `#0C96F6` / light `#83C7FE`; head dark `#54B4F6` / light a glint `#75B2E9` → `#0070D6`;
+left-behind lines and rings `border-default`. Card hairline `border-subtle`; hover band 4 % of the
+foreground, inset 6 px and under the rail; tool tile one step below the card.
+
+**Content**: bar 38 px (mark centred on the rail, title, task, then `N checkpoints · N attempts ·
+$x` at 13 px; attempts only from two). Rows: tool tile with the app's own mark when the tool is an
+app (`Checkpoint::tool_brand`: Slack, GitHub, Notion, Figma, Stripe, Linear, Vercel; `tool_logos`,
+default on) else the tool-kind glyph; title 13 px regular; `Failed` / `Stopped` / `Attempt N` (muted)
+pills; files and **run time `m:ss`** in 13 px sans. Absolute ISO times (`times`) and per-step
+costs (`step_costs`, now default **off**) are opt-in.
+
+**Motion** (off under `prefers-reduced-motion`):
+- New checkpoint: the card grows (0.25 s) and reveals the row at its bottom edge; its edge draws
+  down; the previous head shrinks to a normal dot; the running title shimmers.
+- Rewind (~270 ms): the new row appends with its dot in the new lane; all row content slides right
+  14 px (0.18 s ease-out); the fork draws from the parent dot at a constant ~0.38 px/ms (bend, then
+  tail); the abandoned edges turn grey and their dots become rings (0.2 s); their rows fade to 50 %.
+- The page's top demo plays the run on a loop (≈1.1 s a step, the rewind after the failing tests,
+  a 3.5 s hold); a Rewind press takes over. With reduced motion it shows the finished run.
+
+**GPUI**: same geometry, colours, knockouts, rings, head glint and app marks in the tool tiles; it
+does not animate (known gap).
+
+**Not changed**: `run/run.css` keeps its shared helper classes (`.du`, `.shim`, `.sp`…) global, since
+other components use them; the lanes rules override them with more specific selectors. The C1a
+lane rules in `hitl.css` are scoped to `.oxyn-cp:not(.lanes)`.
