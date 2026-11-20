@@ -622,13 +622,6 @@ document.addEventListener('oxyn-demo-live', (e) => {
   });
 })();
 
-// Hero scene: its loop runs only while it is on screen.
-document.querySelectorAll('[data-fix]').forEach((f) => {
-  f.toggleAttribute('data-paused', true);
-  if ('IntersectionObserver' in window) new IntersectionObserver((es) => es.forEach((e) => f.toggleAttribute('data-paused', !e.isIntersecting))).observe(f);
-  else f.removeAttribute('data-paused');
-});
-
 // ── Landing pass 2: laptop screens, condensing top bar ────────────────────────────────────────
 (function () {
   const d = document.documentElement;
