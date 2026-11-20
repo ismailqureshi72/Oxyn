@@ -414,20 +414,26 @@ document.addEventListener('oxyn-demo-live', (e) => {
     });
   });
 
-  // Before/after compare: drag (the range input) or let it drift. When idle it eases back and forth
-  // on its own (a sine around the middle, picked up from wherever the user left it), only while it
-  // is on screen. Moving it writes three transforms (clip box, its content, the divider) inline, so
-  // the live demo inside is never restyled by an inherited --pos per frame (--pos stays in the CSS
-  // as the no-script state). The drawn wave and the masked edge flow together in one element
-  // (.cmp-ride); its counter-flow (.cmp-anti, which keeps the content still) is pinned to the same
-  // start time whenever the slider comes into view.
+  // Before/after compare: drag (the range input) or let it travel. When idle it sweeps from one
+  // edge to the other and back (eased at each end), only while it is on screen. After a drag or a
+  // key press it waits a moment, then carries on from wherever the user left it, in the direction
+  // it was last moving, easing back up to speed (never jumping to a fixed spot). Moving it writes
+  // three transforms (clip box, its content, the divider) inline, so the live demo inside is never
+  // restyled by an inherited --pos per frame (--pos stays in the CSS as the no-script state). The
+  // drawn wave and the masked edge flow together in one element (.cmp-ride); its counter-flow
+  // (.cmp-anti, which keeps the content still) is pinned to the same start time whenever the
+  // slider comes into view.
   const calm = () => d.hasAttribute('data-oxyn-reduced') || matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const ease = (s) => (1 - Math.cos(Math.PI * s)) / 2;
+  const unease = (u) => Math.acos(1 - 2 * Math.max(0, Math.min(1, u))) / Math.PI;
   document.querySelectorAll('.x-cmp').forEach((c) => {
     const r = c.querySelector('.cmp-range');
     if (!r) return;
-    const MID = 50, AMP = 20, PERIOD = 7000, IDLE = 2200;
-    let pos = MID, phase = 0, last = 0, raf = 0, seen = false, held = false, touched = -1e9;
+    const LEG = 5200, IDLE = 1600, RAMP = 700, EDGE = 22;
+    let pos = 50, dir = 1, s = 0.5, last = 0, raf = 0, seen = false, held = false, touched = -1e9;
     const clip = c.querySelector('.cmp-clip'), after = c.querySelector('.cmp-after'), line = c.querySelector('.cmp-line');
+    // The travel range: edge to edge, keeping the divider's handle just inside the box.
+    const ends = () => { const w = c.clientWidth || 1; const m = Math.min(12, (EDGE / w) * 100); return [m, 100 - m]; };
     const put = (v) => {
       pos = v;
       const p = `${v.toFixed(2)}%`;
@@ -439,12 +445,20 @@ document.addEventListener('oxyn-demo-live', (e) => {
       const iv = String(Math.round(v));
       if (r.value !== iv) r.value = iv;
     };
+    // Progress along the current leg that gives the current position (so motion resumes there).
+    const resumeFrom = () => { const [lo, hi] = ends(); const u = (pos - lo) / (hi - lo); s = unease(dir > 0 ? u : 1 - u); };
     const tick = (t) => {
       raf = 0;
       if (!seen || calm() || document.hidden) return;
-      if (!held && t - touched > IDLE) {
-        if (last) phase += (t - last) / PERIOD;
-        put(MID + AMP * Math.sin(phase * 2 * Math.PI));
+      const quiet = t - touched;
+      if (!held && quiet > IDLE) {
+        if (last) {
+          const k = Math.min(1, (quiet - IDLE) / RAMP);
+          s += ((t - last) / LEG) * (k * k * (3 - 2 * k));
+          if (s >= 1) { s = Math.min(1, s - 1); dir = -dir; }
+        }
+        const [lo, hi] = ends();
+        put(dir > 0 ? lo + (hi - lo) * ease(s) : hi - (hi - lo) * ease(s));
       }
       last = t;
       raf = requestAnimationFrame(tick);
@@ -458,19 +472,22 @@ document.addEventListener('oxyn-demo-live', (e) => {
         if (a.animationName === 'cmp-ride' || a.animationName === 'cmp-anti') a.startTime = t0 - (t0 % 3200);
       });
     };
-    // Resume from the current spot: choose the phase whose sine gives the current position.
-    const resumeFrom = () => { phase = Math.asin(Math.max(-1, Math.min(1, (pos - MID) / AMP))) / (2 * Math.PI); };
     const user = () => { touched = performance.now(); resumeFrom(); };
-    r.addEventListener('input', () => { put(Number(r.value)); user(); });
+    r.addEventListener('input', () => {
+      const v = Number(r.value);
+      if (v !== pos) dir = v > pos ? 1 : -1;
+      put(v); user();
+    });
     r.addEventListener('pointerdown', () => { held = true; user(); });
     addEventListener('pointerup', () => { if (held) { held = false; user(); } });
-    r.addEventListener('focus', () => { held = true; });
-    r.addEventListener('blur', () => { held = false; user(); });
+    addEventListener('pointercancel', () => { if (held) { held = false; user(); } });
+    r.addEventListener('keydown', user);
     if ('IntersectionObserver' in window) {
       new IntersectionObserver((es) => es.forEach((e) => { seen = e.isIntersecting; if (seen) { sync(); run(); } })).observe(c);
     }
     document.addEventListener('visibilitychange', run);
-    put(Number(r.value) || MID);
+    put(Number(r.value) || 50);
+    resumeFrom();
   });
 })();
 
