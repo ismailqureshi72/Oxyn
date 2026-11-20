@@ -961,11 +961,15 @@ html[data-oxyn-reduced] .x-lap-scene{--x-lap-p:1!important}
 .auth-card.wide{max-width:520px}
 .auth-h{margin:0;font-size:24px;line-height:1.2;font-weight:620;letter-spacing:-.02em;color:var(--fg)}
 .auth-sub{margin:6px 0 0;font-size:14px;line-height:1.5;color:var(--fg2)}
-.auth-gh{box-sizing:border-box;display:flex;align-items:center;justify-content:center;gap:10px;width:100%;height:42px;margin-top:22px;border-radius:999px;background:var(--ink);color:var(--on-ink);font-size:14.5px;font-weight:560;text-decoration:none}
-.auth-gh svg{width:18px;height:18px}
+.auth-sso{display:flex;flex-direction:column;gap:10px;margin-top:22px}
+.auth-gh{box-sizing:border-box;display:flex;align-items:center;justify-content:center;gap:10px;width:100%;height:42px;border-radius:999px;border:1px solid var(--ink);background:var(--ink);color:var(--on-ink);font-size:14.5px;font-weight:560;text-decoration:none}
+.auth-gh svg{width:18px;height:18px;flex:none}
 .auth-gh:hover{opacity:.9}
+.auth-gg{background:var(--pn);color:var(--fg);border-color:var(--ln)}
+.auth-gg:hover{opacity:1;background:var(--hov)}
 .auth-gh:focus-visible{outline:2px solid var(--oxyn-color-focus);outline-offset:2px}
-.auth-gh[aria-disabled="true"]{background:var(--chip);color:var(--fg3);cursor:not-allowed;opacity:1;pointer-events:none}
+.auth-gh[aria-disabled="true"]{background:var(--chip);border-color:var(--chip);color:var(--fg3);cursor:not-allowed;opacity:1;pointer-events:none}
+.auth-gg[aria-disabled="true"] svg{opacity:.55}
 .auth-ghnote{margin:8px 0 0;text-align:center;font-size:12.5px;color:var(--fg3)}
 .auth-ghnote[hidden]{display:none}
 .auth-or{display:flex;align-items:center;gap:12px;margin:20px 0 16px;font-size:12px;color:var(--fg3)}

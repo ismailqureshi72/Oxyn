@@ -22,16 +22,12 @@ export interface Env {
   GITHUB_TOKEN?: string;
   GITHUB_REPO?: string;
   RATE_SALT?: string;
-  // Admin panel (docs/admin.md)
-  ACCESS_TEAM_DOMAIN?: string; // https://<team>.cloudflareaccess.com
-  ACCESS_AUD?: string; // Access application audience tag
-  ACCESS_GROUP_ID?: string; // Access group "oxyn-admins"
-  CF_ACCOUNT_ID?: string;
-  CF_ADMIN_TOKEN?: string; // secret: Access Groups edit, keeps the group in sync with the admin list
-  ADMIN_SESSION_KEY?: string; // secret, optional: HMAC key for session cookies (else generated into D1)
-  // Site accounts (docs/auth.md): the GitHub OAuth app. Unset = GitHub sign-in shows "coming soon".
+  // Site accounts (docs/auth.md): the GitHub OAuth app and the Google OAuth client. Unset = that
+  // button shows "coming soon" and its routes answer 503.
   GITHUB_OAUTH_CLIENT_ID?: string; // secret
   GITHUB_OAUTH_CLIENT_SECRET?: string; // secret
+  GOOGLE_OAUTH_CLIENT_ID?: string; // secret
+  GOOGLE_OAUTH_CLIENT_SECRET?: string; // secret
 }
 
 export const KINDS = ['Bug', 'Idea', 'Question'] as const;

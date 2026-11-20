@@ -13,7 +13,7 @@
     "not_found_handling": "404-page",
     "html_handling": "auto-trailing-slash",
     // Assets answer first; only the API and the admin panel run the Worker. /admin is not in
-    // dist/: the Worker serves it (site/worker/admin-ui/) after the Access + admin checks.
+    // dist/: the Worker serves it (site/worker/admin-ui/) to signed-in, verified admins only.
     "run_worker_first": ["/api/*", "/admin", "/admin/*"]
   },
   "d1_databases": [
@@ -31,13 +31,7 @@
     }
   ],
   "vars": {
-    "GITHUB_REPO": "ismailqureshi72/Oxyn",
-    // Admin panel (docs/admin.md): Cloudflare Access team, the "Oxyn admin" application's
-    // audience tag, and the "oxyn-admins" group the Admins page keeps in sync.
-    "ACCESS_TEAM_DOMAIN": "https://holy-block-5356.cloudflareaccess.com",
-    "ACCESS_AUD": "f8fbeb67b5a457e2369499aa179ff5f839e274606312d2535450faf90301ef97",
-    "ACCESS_GROUP_ID": "8f402031-18dc-4901-9886-48d2d268ae83",
-    "CF_ACCOUNT_ID": "773b642dbd01a6ff88b33ad8af7251cc"
+    "GITHUB_REPO": "ismailqureshi72/Oxyn"
   },
   // The admin UI files are bundled into the Worker as text (never published as assets).
   "rules": [{ "type": "Text", "globs": ["**/admin-ui/*.html", "**/admin-ui/*.css", "**/admin-ui/*.js"], "fallthrough": false }],

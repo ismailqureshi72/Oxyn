@@ -9,7 +9,6 @@ Workers, D1 (SQLite) and R2 (object storage). No other services.
 
 ```
 browser ──► Cloudflare edge ──► static assets (site/dist)        every path except /api/* and /admin*
-                           ├──► Cloudflare Access (admins only)   /admin*, /api/admin/*  → Worker
                            └──► Worker  site/worker/index.ts      /api/*, /admin*
                                   ├─ D1  "oxyn"          (binding DB)       feedback, rate limits, admins, settings
                                   ├─ R2  "oxyn-uploads"  (binding UPLOADS)  feedback screenshots
@@ -45,12 +44,12 @@ panel (Settings), `cache-control: public, max-age=60`.
 
 ### `/api/auth/*`
 
-Site accounts: sign in with GitHub or an email and a password, sessions in D1. See [auth.md](auth.md).
+Site accounts: one sign-in for everyone with Google, GitHub or an email and a password, sessions in D1. See [auth.md](auth.md).
 
 ### `/api/admin/*`
 
-The admin panel's API, behind Cloudflare Access, the Worker's own JWT check and the shared password.
-See [admin.md](admin.md).
+The admin panel's API: the normal site session of an account whose email Google or GitHub verified,
+and that email on the D1 `admins` list. See [admin.md](admin.md).
 
 ### `POST /api/feedback`
 
@@ -86,12 +85,12 @@ Migrations live in `site/migrations/` (`migrations_dir` in `wrangler.jsonc`).
 |---|---|
 | `feedback` | `id`, `kind` (Bug/Idea/Question), `message`, `page_url`, `email`, `ua`, `screenshot_key`, `created_at` (ISO, UTC), `status` (new/triaged/closed), `github_issue_url` |
 | `rate_limits` | `key` (`<scope>:<ip hash>`), `window_start`, `count` |
-| `admins` | maintainers allowed into `/admin`; `access_synced`, `removed_at` track the Access group sync (0002) |
-| `settings` | key/value: `admin_password` (PBKDF2 record), `admin_session_key`, `flag:<name>`, `access_sync_error` |
-| `admin_sessions` | admin sessions: id, email, password version, expiry (0002) |
+| `admins` | maintainers allowed into `/admin` (with a verified sign-in); `removed_at` set = removed (0002). `access_synced` is unused since A1 |
+| `settings` | key/value: `flag:<name>` (the old admin password keys were deleted by 0004) |
+| `admin_sessions` | unused since A1 (emptied by 0004; the admin panel uses `sessions`) |
 | `audit_log` | admin actions: time, actor, action, target, detail (0002) |
-| `users` | site accounts: email, verified flag, GitHub name and avatar, PBKDF2 password record or NULL (0003, [auth.md](auth.md)) |
-| `oauth_accounts` | linked GitHub accounts: provider, provider id, user, login (0003) |
+| `users` | site accounts: email, `email_verified` (1 after a Google or GitHub sign-in), name and avatar, PBKDF2 password record or NULL (0003, [auth.md](auth.md)) |
+| `oauth_accounts` | linked Google and GitHub accounts: provider, provider id, user, login (0003) |
 | `sessions` | site sessions: SHA-256 of the cookie token, user, provider, expiry (0003) |
 
 Apply new migrations from `site/` (CI does not apply them):
@@ -110,8 +109,7 @@ Add a migration with `npx wrangler d1 migrations create oxyn <name>`; never edit
 | `GITHUB_TOKEN` | Worker secret, optional | Opening feedback issues. A fine-grained token limited to `ismailqureshi72/Oxyn` with **Issues: Read and write** only. Set with `npx wrangler secret put GITHUB_TOKEN` from `site/`. |
 | `GITHUB_OAUTH_CLIENT_ID`, `GITHUB_OAUTH_CLIENT_SECRET` | Worker secrets, optional | "Continue with GitHub" on `/login/`. Until set, the button reads "coming soon" and the GitHub routes answer 503. Setup in [auth.md](auth.md). |
 | `RATE_SALT` | Worker secret, optional | Salt for IP hashes (a fixed default is used when unset). |
-| `CF_ADMIN_TOKEN`, `ADMIN_SESSION_KEY` | Worker secrets, optional | Admin panel: Access group sync, session HMAC key ([admin.md](admin.md)). |
-| `ACCESS_TEAM_DOMAIN`, `ACCESS_AUD`, `ACCESS_GROUP_ID`, `CF_ACCOUNT_ID` | vars in `wrangler.jsonc` | Admin panel: Access JWT check and group sync. |
+| `GOOGLE_OAUTH_CLIENT_ID`, `GOOGLE_OAUTH_CLIENT_SECRET` | Worker secrets, optional | "Continue with Google" on `/login/`. Until set, the button reads "coming soon" and the Google routes answer 503. Setup in [auth.md](auth.md). Google or GitHub sign-in is also what opens the admin panel ([admin.md](admin.md)). |
 | `GITHUB_REPO` | var in `wrangler.jsonc` | Repository for feedback issues. |
 | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` | GitHub Actions secrets | The deploy step on `main`. The token needs Workers Scripts Edit; D1 and R2 Edit are needed for the bindings and for applying migrations from a machine. |
 

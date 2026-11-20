@@ -1,8 +1,9 @@
 ---
-// The sign-in and sign-up card: "Continue with GitHub", then email + password. Behaviour in
-// public/account.js (POST /api/auth/login or /api/auth/signup, then back to where you came from).
-// The GitHub button starts disabled ("coming soon") and turns on when /api/auth/me reports the
-// OAuth app is set up, so the page never offers a sign-in that cannot work.
+// The one sign-in card for everyone (admins too): "Continue with Google", "Continue with GitHub",
+// then email + password. Behaviour in public/account.js (POST /api/auth/login or /api/auth/signup,
+// then back to where you came from). Each provider button starts disabled ("coming soon") and turns
+// on when /api/auth/me reports that provider is set up, so the page never offers a sign-in that
+// cannot work.
 import { icon } from './icons';
 interface Props { mode: 'login' | 'signup' }
 const { mode } = Astro.props;
@@ -12,10 +13,15 @@ const login = mode === 'login';
   <div class="auth-card" data-auth={mode}>
     <h1 class="auth-h">{login ? 'Sign in to Oxyn' : 'Create your Oxyn account'}</h1>
     <p class="auth-sub">{login ? 'Welcome back. Pick up where you left off.' : 'Free, optional, and only for you. The library works without it.'}</p>
-    <a class="auth-gh" href="/api/auth/github/start" data-auth-gh aria-disabled="true" aria-describedby="auth-gh-note" tabindex="-1">
-      <Fragment set:html={icon.github} /><span>Continue with GitHub</span>
-    </a>
-    <p class="auth-ghnote" id="auth-gh-note" data-auth-ghnote>GitHub sign-in coming soon</p>
+    <div class="auth-sso">
+      <a class="auth-gh auth-gg" href="/api/auth/google/start" rel="nofollow" data-astro-prefetch="false" data-auth-gg aria-disabled="true" aria-describedby="auth-gh-note" tabindex="-1">
+        <Fragment set:html={icon.google} /><span>Continue with Google</span>
+      </a>
+      <a class="auth-gh" href="/api/auth/github/start" rel="nofollow" data-astro-prefetch="false" data-auth-gh aria-disabled="true" aria-describedby="auth-gh-note" tabindex="-1">
+        <Fragment set:html={icon.github} /><span>Continue with GitHub</span>
+      </a>
+    </div>
+    <p class="auth-ghnote" id="auth-gh-note" data-auth-ghnote>Google and GitHub sign-in coming soon</p>
     <div class="auth-or" role="separator"><span>or with email</span></div>
     <form class="auth-form" novalidate data-auth-form>
       <label class="fb-field">
@@ -34,5 +40,5 @@ const login = mode === 'login';
     </form>
     <p class="auth-alt">{login ? <>New to Oxyn? <a href="/signup/" data-auth-keep-next>Create an account</a></> : <>Already have an account? <a href="/login/" data-auth-keep-next>Sign in</a></>}</p>
   </div>
-  <p class="auth-fine">{login ? 'Forgot your password? Email resets are not available yet; sign in with GitHub on the same email, or send us feedback.' : 'We store a salted hash of your password, never the password itself. No newsletters.'}</p>
+  <p class="auth-fine">{login ? 'Forgot your password? Email resets are not available yet; sign in with Google or GitHub on the same email, or send us feedback.' : 'We store a salted hash of your password, never the password itself. No newsletters.'}</p>
 </section>

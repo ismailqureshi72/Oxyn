@@ -1,15 +1,19 @@
-// Site accounts (L2): sign in with GitHub or with an email and a password. Separate from the
-// maintainers' admin panel (admin.ts). Pages are static (/login/, /signup/, /account/); they and
-// the navbar menu call these routes from the browser (public/account.js), so nothing here touches
-// the static cache. See docs/auth.md.
+// Site accounts: one sign-in for everyone, with Google, GitHub, or an email and a password. The
+// maintainers' admin panel (admin.ts) uses these same sessions: an admin is a signed-in account
+// whose email Google or GitHub verified and that is on the D1 `admins` list. Pages are static
+// (/login/, /signup/, /account/); they and the navbar menu call these routes from the browser
+// (public/account.js), so nothing here touches the static cache. See docs/auth.md.
 //
-//   GET  /api/auth/me                 who is signed in ({signed_in:false} when nobody), providers
+//   GET  /api/auth/me                 who is signed in ({signed_in:false} when nobody), providers,
+//                                     is_admin
 //   POST /api/auth/signup             {email, password}           -> session cookie
 //   POST /api/auth/login              {email, password}           -> session cookie
 //   POST /api/auth/logout             ends this session
 //   POST /api/auth/logout-all         ends every session of this account
 //   GET  /api/auth/github/start       redirect to GitHub (503 JSON until the OAuth app is set up)
 //   GET  /api/auth/github/callback    GitHub redirects back here
+//   GET  /api/auth/google/start       redirect to Google (503 JSON until the OAuth client is set up)
+//   GET  /api/auth/google/callback    Google redirects back here (OpenID Connect, code + PKCE)
 //
 // Sessions: a random 256-bit token in an HttpOnly, Secure, SameSite=Lax cookie; D1 keeps only its
 // SHA-256, so signing out (or "sign out everywhere") is a row delete. Passwords: PBKDF2-SHA256,
@@ -22,6 +26,7 @@ export const AUTH = {
   cookie: 'oxyn_session',
   hint: 'oxyn_signed_in', // readable by the page: "a session may exist, ask /api/auth/me"
   stateCookie: 'oxyn_gh_state',
+  googleCookie: 'oxyn_gg_state',
   sessionDays: 30,
   pbkdf2: 100_000, // the Workers runtime allows at most 100 000
   passwordMin: 10,
@@ -32,6 +37,7 @@ export const AUTH = {
   login: [{ scope: 'li10m', window: 600, max: 10 }, { scope: 'li1d', window: 86_400, max: 100 }],
   loginEmail: { scope: 'lie10m', window: 600, max: 8 },
   github: [{ scope: 'gh10m', window: 600, max: 20 }],
+  google: [{ scope: 'gg10m', window: 600, max: 20 }],
 };
 
 /** Where GitHub lives. Production uses github.com; worker/dev.ts swaps in a local mock (an
@@ -43,6 +49,15 @@ export const GITHUB: GitHubEndpoints = {
   api: 'https://api.github.com',
 };
 
+/** Where Google lives. Production uses Google's OpenID Connect endpoints; worker/dev.ts swaps in a
+ *  local mock. `issuers` are the accepted `iss` values of the ID token. */
+export interface GoogleEndpoints { authorize: string; token: string; issuers: string[] }
+export const GOOGLE: GoogleEndpoints = {
+  authorize: 'https://accounts.google.com/o/oauth2/v2/auth',
+  token: 'https://oauth2.googleapis.com/token',
+  issuers: ['https://accounts.google.com', 'accounts.google.com'],
+};
+
 const enc = new TextEncoder();
 function b64u(bytes: ArrayBuffer | Uint8Array) {
   const u = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
@@ -51,7 +66,8 @@ function b64u(bytes: ArrayBuffer | Uint8Array) {
   return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
 function unb64u(s: string) {
-  const b = atob(s.replace(/-/g, '+').replace(/_/g, '/'));
+  const t = s.replace(/-/g, '+').replace(/_/g, '/');
+  const b = atob(t + '='.repeat((4 - (t.length % 4)) % 4));
   return Uint8Array.from(b, (c) => c.charCodeAt(0));
 }
 const randomB64u = (n: number) => b64u(crypto.getRandomValues(new Uint8Array(n)));
@@ -165,9 +181,23 @@ function validEmail(email: string) {
 }
 
 const githubReady = (env: Env) => !!(env.GITHUB_OAUTH_CLIENT_ID && env.GITHUB_OAUTH_CLIENT_SECRET);
+const googleReady = (env: Env) => !!(env.GOOGLE_OAUTH_CLIENT_ID && env.GOOGLE_OAUTH_CLIENT_SECRET);
 
-function publicUser(u: UserRow, providers: string[], session: string) {
+/** Admin standing of a signed-in account. `admin`: the email is on the active admin list and a
+ *  provider (Google or GitHub) verified it, so the admin panel opens. `verify`: on the list, but
+ *  only an email + password account so far (nobody has checked that this person owns the email). */
+export async function adminStanding(env: Env, u: { id: string; email: string; email_verified: number }): Promise<'admin' | 'verify' | null> {
+  const row = await env.DB.prepare(
+    'SELECT (SELECT 1 FROM admins WHERE email = ?1 AND removed_at IS NULL) AS listed, ' +
+      '(SELECT COUNT(*) FROM oauth_accounts WHERE user_id = ?2) AS linked',
+  ).bind(u.email, u.id).first<{ listed: number | null; linked: number }>();
+  if (!row?.listed) return null;
+  return u.email_verified && row.linked > 0 ? 'admin' : 'verify';
+}
+
+function publicUser(u: UserRow, providers: string[], session: string, standing: 'admin' | 'verify' | null) {
   return {
+    admin_needs_verification: standing === 'verify',
     email: u.email,
     name: u.name,
     avatar_url: u.avatar_url,
@@ -180,16 +210,31 @@ function publicUser(u: UserRow, providers: string[], session: string) {
 
 /** A relative path on this site to land on after signing in; anything else falls back to /account/. */
 function safeNext(v: string | null) {
-  if (!v || !v.startsWith('/') || v.startsWith('//') || v.startsWith('/\\') || v.startsWith('/api/') || v.startsWith('/admin') || v.length > 512) return '/account/';
+  if (!v || !v.startsWith('/') || v.startsWith('//') || v.startsWith('/\\') || v.startsWith('/api/') || v.length > 512) return '/account/';
   return v;
 }
 
-export function makeAuthHandler(gh: GitHubEndpoints, fetchGh: typeof fetch = (i, init) => fetch(i, init)) {
+export interface Providers {
+  github: GitHubEndpoints;
+  google: GoogleEndpoints;
+  fetch: typeof fetch; // used for the token and API calls of both providers
+}
+const realFetch: typeof fetch = (i, init) => fetch(i, init);
+
+/** A browser prefetch (link rel=prefetch, speculation rules) of a sign-in start link must not start
+ *  a sign-in: it would replace the state cookie of the real click. */
+const isPrefetch = (req: Request) => /prefetch|prerender/i.test(`${req.headers.get('sec-purpose') || ''} ${req.headers.get('purpose') || ''}`);
+const PREFETCH_SKIP = () => new Response(null, { status: 204, headers: { 'cache-control': 'no-store' } });
+
+export function makeAuthHandler(p: Providers = { github: GITHUB, google: GOOGLE, fetch: realFetch }) {
   return async function handleAuth(req: Request, env: Env, _ctx: Ctx, url: URL): Promise<Response> {
     const route = url.pathname.replace(/\/+$/, '');
     try {
-      if (route === '/api/auth/github/start') return await githubStart(req, env, url, gh);
-      if (route === '/api/auth/github/callback') return await githubCallback(req, env, url, gh, fetchGh);
+      if ((route === '/api/auth/github/start' || route === '/api/auth/google/start') && isPrefetch(req)) return PREFETCH_SKIP();
+      if (route === '/api/auth/github/start') return await githubStart(req, env, url, p.github);
+      if (route === '/api/auth/github/callback') return await githubCallback(req, env, url, p.github, p.fetch);
+      if (route === '/api/auth/google/start') return await googleStart(req, env, url, p.google);
+      if (route === '/api/auth/google/callback') return await googleCallback(req, env, url, p.google, p.fetch);
       if (route === '/api/auth/me') {
         if (req.method !== 'GET' && req.method !== 'HEAD') throw new HttpError(405, 'method_not_allowed', 'Use GET.');
         return await me(req, env);
@@ -212,7 +257,7 @@ export function makeAuthHandler(gh: GitHubEndpoints, fetchGh: typeof fetch = (i,
     }
   };
 }
-export const handleAuth = makeAuthHandler(GITHUB);
+export const handleAuth = makeAuthHandler();
 
 async function providersOf(env: Env, userId: string) {
   const r = await env.DB.prepare('SELECT provider FROM oauth_accounts WHERE user_id = ?1').bind(userId).all<{ provider: string }>();
@@ -222,14 +267,16 @@ async function providersOf(env: Env, userId: string) {
 async function me(req: Request, env: Env) {
   const u = await currentUser(req, env);
   const github = githubReady(env);
+  const google = googleReady(env);
   if (!u) {
     // A stale hint cookie (expired or revoked session) is cleared so the page stops asking.
-    const res = json({ ok: true, signed_in: false, github });
+    const res = json({ ok: true, signed_in: false, github, google, is_admin: false });
     return cookies(req)[AUTH.hint] || cookies(req)[AUTH.cookie] ? withCookies(res, clearCookies()) : res;
   }
   const providers = await providersOf(env, u.id);
   if (u.password) providers.unshift('password');
-  return json({ ok: true, signed_in: true, github, user: publicUser(u, providers, u.provider) });
+  const standing = await adminStanding(env, u);
+  return json({ ok: true, signed_in: true, github, google, is_admin: standing === 'admin', user: publicUser(u, providers, u.provider, standing) });
 }
 
 const SIGNUP_FAIL = 'We could not create an account with that email and password. If you already have one, sign in instead.';
@@ -352,44 +399,155 @@ async function githubCallback(req: Request, env: Env, url: URL, gh: GitHubEndpoi
   if (!g?.id || !primary) return toLogin(url, 'github_email', [clearState]);
   const email = primary.email.trim().toLowerCase();
   const pid = String(g.id);
-  const now = new Date().toISOString();
   const avatar = typeof g.avatar_url === 'string' && g.avatar_url.startsWith('https://') ? g.avatar_url.slice(0, 500) : null;
   const name = (g.name || g.login || '').slice(0, 100) || null;
 
-  let userId: string;
-  const linked = await env.DB.prepare('SELECT user_id FROM oauth_accounts WHERE provider = ?1 AND provider_id = ?2').bind('github', pid).first<{ user_id: string }>();
-  if (linked) {
-    userId = linked.user_id;
-    await env.DB.batch([
-      env.DB.prepare('UPDATE oauth_accounts SET login = ?1 WHERE provider = ?2 AND provider_id = ?3').bind(g.login, 'github', pid),
-      env.DB.prepare('UPDATE users SET name = ?1, avatar_url = ?2 WHERE id = ?3').bind(name, avatar, userId),
-    ]);
-  } else {
-    const byEmail = await env.DB.prepare('SELECT * FROM users WHERE email = ?1').bind(email).first<UserRow>();
-    if (byEmail) {
-      userId = byEmail.id;
-      // GitHub verified this email; ours never did. If the account was only ever a password, the
-      // password may have been set by someone else, so it is dropped and its sessions end.
-      const stmts = [
-        env.DB.prepare('INSERT INTO oauth_accounts (provider, provider_id, user_id, login, created_at) VALUES (?1, ?2, ?3, ?4, ?5)').bind('github', pid, userId, g.login, now),
-        env.DB.prepare('UPDATE users SET name = COALESCE(name, ?1), avatar_url = ?2, email_verified = 1 WHERE id = ?3').bind(name, avatar, userId),
-      ];
-      if (!byEmail.email_verified) {
-        stmts.push(env.DB.prepare('UPDATE users SET password = NULL WHERE id = ?1').bind(userId));
-        stmts.push(env.DB.prepare('DELETE FROM sessions WHERE user_id = ?1').bind(userId));
-      }
-      await env.DB.batch(stmts);
-    } else {
-      userId = crypto.randomUUID();
-      await env.DB.batch([
-        env.DB.prepare('INSERT INTO users (id, email, email_verified, name, avatar_url, created_at) VALUES (?1, ?2, 1, ?3, ?4, ?5)').bind(userId, email, name, avatar, now),
-        env.DB.prepare('INSERT INTO oauth_accounts (provider, provider_id, user_id, login, created_at) VALUES (?1, ?2, ?3, ?4, ?5)').bind('github', pid, userId, g.login, now),
-      ]);
-    }
-  }
+  const userId = await linkProvider(env, { provider: 'github', pid, email, login: g.login, name, avatar });
   const token = await startSession(env, userId, 'github');
+  return signedInRedirect(url, next, token, clearState);
+}
+
+// ── Account linking (shared by GitHub and Google) ─────────────────────────────────────────────
+
+interface ProviderUser { provider: 'github' | 'google'; pid: string; email: string; login: string | null; name: string | null; avatar: string | null }
+
+/** Signs a provider identity in: the account it is linked to, else the account with the same
+ *  (provider-verified) email, else a new account. Returns the user id. */
+async function linkProvider(env: Env, p: ProviderUser): Promise<string> {
+  const now = new Date().toISOString();
+  const linked = await env.DB.prepare('SELECT user_id FROM oauth_accounts WHERE provider = ?1 AND provider_id = ?2').bind(p.provider, p.pid).first<{ user_id: string }>();
+  if (linked) {
+    await env.DB.batch([
+      env.DB.prepare('UPDATE oauth_accounts SET login = ?1 WHERE provider = ?2 AND provider_id = ?3').bind(p.login, p.provider, p.pid),
+      env.DB.prepare('UPDATE users SET name = COALESCE(?1, name), avatar_url = COALESCE(?2, avatar_url), email_verified = 1 WHERE id = ?3').bind(p.name, p.avatar, linked.user_id),
+    ]);
+    return linked.user_id;
+  }
+  const byEmail = await env.DB.prepare('SELECT * FROM users WHERE email = ?1').bind(p.email).first<UserRow>();
+  if (byEmail) {
+    // The provider verified this email; ours never did. If the account was only ever a password,
+    // the password may have been set by someone else, so it is dropped and its sessions end.
+    const stmts = [
+      env.DB.prepare('INSERT INTO oauth_accounts (provider, provider_id, user_id, login, created_at) VALUES (?1, ?2, ?3, ?4, ?5)').bind(p.provider, p.pid, byEmail.id, p.login, now),
+      env.DB.prepare('UPDATE users SET name = COALESCE(name, ?1), avatar_url = COALESCE(?2, avatar_url), email_verified = 1 WHERE id = ?3').bind(p.name, p.avatar, byEmail.id),
+    ];
+    if (!byEmail.email_verified) {
+      stmts.push(env.DB.prepare('UPDATE users SET password = NULL WHERE id = ?1').bind(byEmail.id));
+      stmts.push(env.DB.prepare('DELETE FROM sessions WHERE user_id = ?1').bind(byEmail.id));
+    }
+    await env.DB.batch(stmts);
+    return byEmail.id;
+  }
+  const id = crypto.randomUUID();
+  await env.DB.batch([
+    env.DB.prepare('INSERT INTO users (id, email, email_verified, name, avatar_url, created_at) VALUES (?1, ?2, 1, ?3, ?4, ?5)').bind(id, p.email, p.name, p.avatar, now),
+    env.DB.prepare('INSERT INTO oauth_accounts (provider, provider_id, user_id, login, created_at) VALUES (?1, ?2, ?3, ?4, ?5)').bind(p.provider, p.pid, id, p.login, now),
+  ]);
+  return id;
+}
+
+function signedInRedirect(url: URL, next: string, token: string, clear: string) {
   return new Response(null, {
     status: 302,
-    headers: [['location', `${url.origin}${next}`], ['cache-control', 'no-store'], ['set-cookie', clearState], ...sessionCookies(token).map((c) => ['set-cookie', c] as [string, string])],
+    headers: [['location', `${url.origin}${next}`], ['cache-control', 'no-store'], ['set-cookie', clear], ...sessionCookies(token).map((c) => ['set-cookie', c] as [string, string])],
   });
+}
+
+// ── Google (OpenID Connect: authorization code flow + PKCE S256 + nonce) ─────────────────────
+//
+// The browser gets a 10-minute HttpOnly cookie scoped to /api/auth/google holding the `state`,
+// the `nonce`, the PKCE verifier and `next`. The callback compares `state` in constant time,
+// exchanges the code with the verifier and the client secret, and reads the ID token that the
+// token endpoint returns over TLS (OpenID Connect Core 3.1.3.7: a token received directly from
+// the token endpoint may rely on TLS instead of its signature). Its iss, aud, exp, iat and nonce
+// are checked, and only email_verified = true is accepted.
+
+const googleCallbackUrl = (url: URL) => `${url.origin}/api/auth/google/callback`;
+const clearGoogle = `${AUTH.googleCookie}=; Path=/api/auth/google; HttpOnly; Secure; SameSite=Lax; Max-Age=0`;
+const GOOGLE_OFF = 'Google sign-in is coming soon. Use your email for now.';
+
+async function googleStart(req: Request, env: Env, url: URL, g: GoogleEndpoints) {
+  if (req.method !== 'GET' && req.method !== 'HEAD') throw new HttpError(405, 'method_not_allowed', 'Use GET.');
+  if (!googleReady(env)) throw new HttpError(503, 'google_unavailable', GOOGLE_OFF);
+  await rateLimit(env, req, AUTH.google);
+  const state = randomB64u(32);
+  const nonce = randomB64u(32);
+  const verifier = randomB64u(48); // 64 characters, inside RFC 7636's 43..128
+  const challenge = b64u(await crypto.subtle.digest('SHA-256', enc.encode(verifier)));
+  const next = safeNext(url.searchParams.get('next'));
+  const q = new URLSearchParams({
+    client_id: env.GOOGLE_OAUTH_CLIENT_ID!,
+    redirect_uri: googleCallbackUrl(url),
+    response_type: 'code',
+    scope: 'openid email profile',
+    state,
+    nonce,
+    code_challenge: challenge,
+    code_challenge_method: 'S256',
+    prompt: 'select_account',
+  });
+  return new Response(null, {
+    status: 302,
+    headers: [
+      ['location', `${g.authorize.startsWith('/') ? url.origin : ''}${g.authorize}?${q}`],
+      ['cache-control', 'no-store'],
+      ['set-cookie', `${AUTH.googleCookie}=${state}.${nonce}.${verifier}.${b64u(enc.encode(next))}; Path=/api/auth/google; HttpOnly; Secure; SameSite=Lax; Max-Age=600`],
+    ],
+  });
+}
+
+interface IdClaims { iss?: string; aud?: string | string[]; azp?: string; sub?: string; exp?: number; iat?: number; nonce?: string; email?: string; email_verified?: boolean | string; name?: string; picture?: string }
+
+function readIdToken(tok: unknown): IdClaims | null {
+  if (typeof tok !== 'string' || tok.length > 8192) return null;
+  const parts = tok.split('.');
+  if (parts.length !== 3) return null;
+  try { return JSON.parse(new TextDecoder().decode(unb64u(parts[1]))) as IdClaims; } catch { return null; }
+}
+
+async function googleCallback(req: Request, env: Env, url: URL, g: GoogleEndpoints, fetch: typeof globalThis.fetch) {
+  if (req.method !== 'GET') throw new HttpError(405, 'method_not_allowed', 'Use GET.');
+  if (!googleReady(env)) throw new HttpError(503, 'google_unavailable', GOOGLE_OFF);
+  const back = (code: string) => toLogin(url, code, [clearGoogle]);
+  const [want, nonce, verifier, nextEnc] = (cookies(req)[AUTH.googleCookie] || '').split('.');
+  const got = url.searchParams.get('state') || '';
+  if (!want || !nonce || !verifier || !got || !sameText(want, got)) return back('google_state');
+  let next = '/account/';
+  try { next = safeNext(new TextDecoder().decode(unb64u(nextEnc || ''))); } catch { /* default */ }
+  if (url.searchParams.get('error')) return back('google_denied');
+  const code = url.searchParams.get('code');
+  if (!code || code.length > 2048) return back('google_failed');
+
+  const tr = await fetch(g.token, {
+    method: 'POST',
+    headers: { 'content-type': 'application/x-www-form-urlencoded', accept: 'application/json', 'user-agent': 'oxyn-site-worker' },
+    body: new URLSearchParams({
+      grant_type: 'authorization_code',
+      code,
+      client_id: env.GOOGLE_OAUTH_CLIENT_ID!,
+      client_secret: env.GOOGLE_OAUTH_CLIENT_SECRET!,
+      redirect_uri: googleCallbackUrl(url),
+      code_verifier: verifier,
+    }).toString(),
+  });
+  const tj = (await tr.json().catch(() => ({}))) as { id_token?: string };
+  const c = tr.ok ? readIdToken(tj.id_token) : null;
+  if (!c) return back('google_failed');
+  const t = Math.floor(Date.now() / 1000);
+  const auds = Array.isArray(c.aud) ? c.aud : [c.aud];
+  const valid =
+    g.issuers.includes(c.iss || '') &&
+    auds.includes(env.GOOGLE_OAUTH_CLIENT_ID) && (auds.length === 1 || c.azp === env.GOOGLE_OAUTH_CLIENT_ID) &&
+    typeof c.exp === 'number' && c.exp > t - 60 &&
+    (typeof c.iat !== 'number' || c.iat < t + 300) &&
+    typeof c.nonce === 'string' && sameText(c.nonce, nonce) &&
+    typeof c.sub === 'string' && c.sub.length > 0 && c.sub.length <= 255;
+  if (!valid) return back('google_failed');
+  const email = (c.email || '').trim().toLowerCase();
+  if (!email || email.length > AUTH.email || !EMAIL_RE.test(email) || !(c.email_verified === true || c.email_verified === 'true')) return back('google_email');
+  const avatar = typeof c.picture === 'string' && c.picture.startsWith('https://') ? c.picture.slice(0, 500) : null;
+  const name = (typeof c.name === 'string' ? c.name : '').slice(0, 100) || null;
+  const userId = await linkProvider(env, { provider: 'google', pid: c.sub!, email, login: email, name, avatar });
+  const token = await startSession(env, userId, 'google');
+  return signedInRedirect(url, next, token, clearGoogle);
 }
