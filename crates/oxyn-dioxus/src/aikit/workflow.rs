@@ -68,10 +68,6 @@ pub fn AiWorkflow(
         .sequence()
         .iter()
         .any(|s| w.status(s.id, n) == StepSt::Failed);
-    let waiting = w
-        .sequence()
-        .iter()
-        .any(|s| w.status(s.id, n) == StepSt::Approval);
     let rows = w.menu_rows();
     let render_step = move |s: Step, nested: bool, w: &Workflow, next: Option<u32>| -> Element {
         let st = w.status(s.id, n);
@@ -189,7 +185,7 @@ pub fn AiWorkflow(
                 }
             }
             div { class: "oxaik-row oxaik-between oxaik-wf-foot",
-                span { class: if failed { "oxaik-mute oxaik-bad" } else if waiting { "oxaik-mute" } else { "oxaik-mute" }, "{w.outcome(n)}" }
+                span { class: if failed { "oxaik-mute oxaik-bad" } else { "oxaik-mute" }, "{w.outcome(n)}" }
                 if editable && !w.loading {
                     div { class: "oxaik-menu-wrap",
                         button { class: "oxaik-btn sm", r#type: "button", "aria-haspopup": "listbox", "aria-expanded": "{w.menu}", onclick: move |_| act("wf-add".into()),

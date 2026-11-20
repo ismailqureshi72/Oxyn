@@ -80,7 +80,7 @@ pub fn ModelCard(
     let names: Vec<String> = c
         .models
         .iter()
-        .map(|x| x.name.replace("Claude ", "").replace("Gemini ", "Gemini "))
+        .map(|x| x.name.replace("Claude ", ""))
         .collect();
     let rows = c.bench_rows();
     let readout = c
