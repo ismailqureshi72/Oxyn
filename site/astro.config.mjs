@@ -22,8 +22,8 @@ const movedUrls = {
 };
 
 // Static site: Astro pages for the component gallery, Starlight for docs and guides.
-// Search is one Pagefind index over every page (built after `astro build`, see package.json),
-// so Starlight's own Pagefind run is off and its header is replaced by the site nav.
+// Search is the site's own ⌘K palette over /search-index.json (src/pages/search-index.json.ts),
+// so Starlight's Pagefind run is off and its header is replaced by the site nav.
 export default defineConfig({
   site: 'https://ui.oxyn.workers.dev',
   output: 'static',

@@ -2,13 +2,13 @@
   "name": "oxyn-site",
   "private": true,
   "type": "module",
-  "description": "The Oxyn website: Astro (static) + Starlight docs, Pagefind search, live Dioxus WASM demos.",
+  "description": "The Oxyn website: Astro (static) + Starlight docs, a ⌘K search palette, live Dioxus WASM demos.",
   "scripts": {
     "gen": "node scripts/gen.mjs",
     "gen:wasm": "node scripts/gen.mjs --wasm",
     "dev": "astro dev",
-    "build": "node scripts/gen.mjs --wasm && astro build && pagefind --site dist",
-    "build:site": "astro build && pagefind --site dist",
+    "build": "node scripts/gen.mjs --wasm && astro build",
+    "build:site": "astro build",
     "preview": "astro preview"
   },
   "engines": {
