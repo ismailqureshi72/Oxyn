@@ -2,7 +2,7 @@
 
 Generated 2026-11-16 for PR #39 (variants 1); PR #40 (variants 2) added the Storage and Menu Motion families and built variants in Context Visualizer and Attachments. Every existing component sits in exactly one family; each family will hold many variants. The site sidebar groups components by these families (`site/src/lib/families.mjs`).
 
-38 families, 268 existing components before variants (PR #39 added 8, PR #40 added 17).
+39 families, 268 existing components before variants (PR #39 added 8, PR #40 added 17).
 
 ## Composer (`composer`)
 The prompt box itself, the field and what sits in it.
@@ -293,6 +293,13 @@ Rewind a run to any point; branch new attempts from it.
 **Existing:** Checkpoint lanes (`checkpoint-lanes`), Checkpoint tree (`checkpoint-tree`), Checkpoint film strip (`checkpoint-film-strip`), Checkpoint list (`checkpoint-list`), Checkpoint marker (`checkpoint-marker`), Undo ladder (`undo-ladder`), Restore preview sheet (`restore-preview`), Restore toast (`restore-toast`)
 
 **Built in C1a (2026-11-20):** the tree, film strip, undo ladder and restore preview sheet, plus keyboard / accessibility / ISO-time parity for the four existing members.
+
+## AI Components (`ai-components`)
+Pro: the Arc "Special components · AI" set, each a self-contained card with its own state machine in `oxyn_core::aikit`, Dioxus components in `oxyn_dioxus::aikit` and the GPUI `AiKitView`. Pages live at `/components/ai/<slug>/`.
+
+**Existing:** Agent timeline (`agent-timeline`), Model card (`model-card`), AI workflow (`ai-workflow`), Image generation (`image-generation`), Speech player (`speech-player`), Meeting summary (`meeting-summary`), Reply draft (`reply-draft`), Human handoff (`human-handoff`), PII redaction (`pii-redaction`), LLM cost calculator (`llm-cost-calculator`), Provider keys (`provider-keys`), Generation stats (`generation-stats`), AI translate (`ai-translate`), TL;DR toggle (`tldr-toggle`), Connector setup (`connector-setup`), Enrich column (`enrich-column`), Ticket router (`ticket-router`)
+
+**Built in C1d (2026-11-21):** all 17, three or four variants each (Oxyn extras marked in the demos). Arc "Agent handoff" ships as `human-handoff` because `agent-handoff` is the agent-to-agent component in Multi-agent.
 
 ## Comments & Reactions (`comments`)
 Talking about the work: threads, panels, reactions.
