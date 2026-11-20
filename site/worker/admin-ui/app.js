@@ -124,7 +124,7 @@
   }
 
   // ── Tabs + routing ─────────────────────────────────────────────────────────────────
-  const TABS = ['inbox', 'admins', 'settings', 'audit'];
+  const TABS = ['inbox', 'billing', 'admins', 'settings', 'audit'];
   function route() {
     const [tab, id] = location.hash.replace(/^#/, '').split('/');
     const prevTab = state.tab;
@@ -149,7 +149,7 @@
       }
       return;
     }
-    ({ inbox: renderInbox, admins: renderAdmins, settings: renderSettings, audit: renderAudit })[state.tab]();
+    ({ inbox: renderInbox, billing: renderBilling, admins: renderAdmins, settings: renderSettings, audit: renderAudit })[state.tab]();
   }
   function go(hash) { if (location.hash !== '#' + hash) location.hash = hash; else route(); }
 
@@ -301,6 +301,41 @@
         h('div', { class: 'card' }, h('ul', { class: 'alist', 'aria-label': 'Admins' }, lis)),
         h('div', { class: 'card section' }, form,
           h('p', { class: 'hint muted addhint' }, 'They open the panel by signing in to Oxyn with Google or GitHub on this email. An email and password account on it is not enough until Google or GitHub has verified the address.'))));
+  }
+
+  // ── Billing (Polar subscriptions, written by the signed webhook; docs/pricing.md) ──────────────
+  const usd = (c) => '$' + (c / 100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  async function renderBilling() {
+    document.title = 'Billing · Oxyn admin';
+    const box = h('div', { class: 'stack' }, h('div', { class: 'card' }, h('p', { class: 'empty' }, 'Loading…')));
+    main().replaceChildren(h('div', { class: 'page' }, h('div', { class: 'head' }, h('h1', {}, 'Billing'), h('span', { class: 'muted' }, 'Subscriptions from Polar')), box));
+    let r;
+    try { r = await api('/billing'); } catch (e) { box.replaceChildren(h('div', { class: 'card' }, h('p', { class: 'empty' }, e.message))); return; }
+    const c = r.counts, f = r.founder;
+    const stat = (k, v, sub) => h('div', { class: 'stat card' }, h('span', { class: 'k' }, k), h('b', {}, v), sub ? h('small', {}, sub) : null);
+    const notes = [];
+    if (!r.webhook_ready) notes.push('The POLAR_WEBHOOK_SECRET Worker secret is not set: Polar webhooks are refused and nothing is recorded.');
+    if (!r.api_token) notes.push('No POLAR_ACCESS_TOKEN Worker secret: Manage billing opens Polar’s portal sign-in instead of a pre-signed session, and the founder products cannot be archived automatically.');
+    if (f.archive && f.archive !== 'done') notes.push(`Founder products in Polar: ${f.archive}.`);
+    const rows = r.items.map((s) => h('tr', {},
+      h('td', { class: 'u' }, s.customer_email, s.linked ? null : h('span', { class: 'chip outline', title: 'Not linked to a site account yet' }, 'no account')),
+      h('td', {}, cap(s.plan) + (s.founder ? ' · founder' : ''), s.seats ? ` · ${s.seats} seats` : ''),
+      h('td', {}, s.interval === 'year' ? 'Yearly' : 'Monthly'),
+      h('td', {}, usd(s.amount)),
+      h('td', {}, h('span', { class: 'chip' + (s.active ? ' solid' : '') }, s.cancel_at_period_end && s.active ? 'canceling' : s.status)),
+      h('td', { class: 't' }, s.current_period_end ? fmtDate(s.current_period_end) : '—'),
+      h('td', { class: 't' }, h('time', { datetime: s.created_at, title: fmtDate(s.created_at) }, ago(s.created_at)))));
+    box.replaceChildren(
+      h('div', { class: 'stats' },
+        stat('MRR', usd(r.mrr_cents), `${usd(r.arr_cents)} a year`),
+        stat('Active', String(c.active), `${c.pro} Pro · ${c.team} Team`),
+        stat('Founder spots', `${f.claimed} / ${f.cap}`, f.open ? `${f.remaining} left` : 'closed'),
+        stat('Canceling', String(c.canceling), `${c.ended} ended`)),
+      notes.length ? h('div', { class: 'note' }, h('div', {}, ...notes.map((n) => h('p', { class: 'nline' }, n)))) : null,
+      h('div', { class: 'card' }, r.items.length ? h('div', { class: 'twrap' }, h('table', { class: 'audit subs' },
+        h('caption', { class: 'sr' }, 'Subscribers, newest first'),
+        h('thead', {}, h('tr', {}, ['Email', 'Plan', 'Billing', 'Amount', 'Status', 'Renews / ends', 'Since'].map((t) => h('th', { scope: 'col' }, t)))),
+        h('tbody', {}, rows))) : h('p', { class: 'empty' }, 'No subscribers yet.')));
   }
 
   // ── Settings ───────────────────────────────────────────────────────────────────────
