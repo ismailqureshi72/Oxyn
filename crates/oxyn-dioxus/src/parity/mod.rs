@@ -19,6 +19,7 @@ mod cmdstudio;
 mod collabfid;
 mod compose;
 mod costfid;
+mod courier;
 mod crewfid;
 mod ctxefffid;
 mod ctxmapfid;
@@ -37,7 +38,9 @@ mod fields;
 mod fleetwin;
 mod gooeyfid;
 mod graphfid;
+mod halochat;
 mod handofffid;
+mod hangar;
 mod home;
 mod input;
 mod judgefid;
@@ -52,6 +55,7 @@ mod nozzlefid;
 mod onbscr;
 mod opsscr;
 mod parallelfid;
+mod pilotpanel;
 mod planfid;
 mod previewdesk;
 mod queuefid;
@@ -124,6 +128,7 @@ pub use compose::{
     AiComposer, MenuModel, ModelMenu, ModelPill, PillModel, RichTextEditor, RunControls,
 };
 pub use costfid::CostWaterfall;
+pub use courier::{CourierScreen, s16_courier_states};
 pub use crewfid::AgentCrew;
 pub use ctxefffid::ContextEffortMenu;
 pub use ctxmapfid::ContextMap;
@@ -145,7 +150,9 @@ pub use fields::{ElasticSlider, MorphSelect, NumberField, ScrubInput};
 pub use fleetwin::{FleetWindowScreen, s11_fleet_states};
 pub use gooeyfid::{GooeyAttachMenu, GooeyComposer, GooeyModelMenu, LiquidDrops, LiquidTabs};
 pub use graphfid::AgentGraph;
+pub use halochat::{HaloChatScreen, s16_halochat_states};
 pub use handofffid::AgentHandoff;
+pub use hangar::{HangarScreen, s16_hangar_states};
 pub use home::{
     ActivityHeatmap, ActivityHome, AttachmentStrip, DocGrid, ExperimentGrid, PollingCost,
     RunModeMenu, ThreadList, TokenUsageChart,
@@ -169,6 +176,7 @@ pub use opsscr::{
     s4_states,
 };
 pub use parallelfid::ParallelAttempts;
+pub use pilotpanel::{PilotPanelScreen, s16_pilotpanel_states};
 pub use planfid::PlanVsActual;
 pub use previewdesk::{PreviewDeskScreen, s16_previewdesk_states};
 pub use queuefid::AgentQueue;

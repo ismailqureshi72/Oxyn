@@ -32,6 +32,7 @@ mod cmdboard;
 mod cmdstudio;
 mod collabfid;
 mod costfid;
+mod courier;
 mod crewfid;
 mod ctxefffid;
 mod ctxmapfid;
@@ -49,7 +50,9 @@ mod fields;
 mod fleetwin;
 mod gooeyfid;
 mod graphfid;
+mod halochat;
 mod handofffid;
+mod hangar;
 mod home;
 mod ime;
 mod judgefid;
@@ -63,6 +66,7 @@ mod nozzlefid;
 mod onbscr;
 mod opsscr;
 mod parallelfid;
+mod pilotpanel;
 mod planfid;
 mod previewdesk;
 mod queuefid;
@@ -131,6 +135,7 @@ pub use cmdboard::CommandBoardEl;
 pub use cmdstudio::{CommandCenterEl, SessionStudioEl};
 pub use collabfid::CollabStreamEl;
 pub use costfid::CostWaterfallEl;
+pub use courier::CourierEl;
 pub use crewfid::AgentCrewEl;
 pub use ctxefffid::ContextEffortMenuEl;
 pub use ctxmapfid::ContextMapEl;
@@ -154,7 +159,9 @@ pub use gooeyfid::{
     GooeyAttachMenuEl, GooeyComposerEl, GooeyModelMenuEl, LiquidDropsEl, LiquidTabsEl,
 };
 pub use graphfid::AgentGraphEl;
+pub use halochat::HaloChatEl;
 pub use handofffid::AgentHandoffEl;
+pub use hangar::HangarEl;
 pub use home::{
     ActivityHeatmapEl, ActivityHomeEl, AttachmentStripEl, DocGridEl, ExperimentGridEl,
     PollingCostEl, RunModeMenuEl, ThreadListEl, TokenUsageChartEl,
@@ -171,6 +178,7 @@ pub use nozzlefid::NozzleSliderEl;
 pub use onbscr::{OnboardingBrandEl, OnboardingReadyEl, OnboardingToneEl, OnboardingWebsiteEl};
 pub use opsscr::{AgentsEl, PermissionsEl, RunDetailEl, SchedulesEl, SkillsEl, UsageEl};
 pub use parallelfid::ParallelAttemptsEl;
+pub use pilotpanel::PilotPanelEl;
 pub use planfid::PlanVsActualEl;
 pub use previewdesk::PreviewDeskEl;
 pub use queuefid::AgentQueueEl;
