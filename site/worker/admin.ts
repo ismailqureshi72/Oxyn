@@ -14,10 +14,15 @@
 import { EMAIL_RE, HttpError, KINDS, fail, json, openIssue, sha256Hex, type Ctx, type Env, type Kind } from './shared';
 import { adminStanding, currentUser } from './auth';
 import { adminBilling } from './billing';
+import { activity, addGrants, changePlan, checkGrants, getUser, listGrants, listUsers, restoreGrant, revokeGrant } from './access';
 import PAGE from './admin-ui/index.html';
 import CSS from './admin-ui/app.css';
 import JS from './admin-ui/app.js';
 import THEME from './admin-ui/theme.js';
+// The current Oxyn lockup (same SVG as the site's top bar), drawn in currentColor.
+import { lockup } from '../src/components/v2/logo';
+const BRAND = `${lockup}<span class="sr">Oxyn</span><span class="tag">Admin</span>`;
+const ICONS = '<link rel="icon" href="/favicon.svg" type="image/svg+xml">\n<link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32">\n<link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180">';
 
 export const ADMIN = {
   flagValueMax: 500,
@@ -42,7 +47,7 @@ async function writeLimit(env: Env, email: string) {
   if (r && r.count > w.max) throw new HttpError(429, 'rate_limited', 'Too many changes in a short time. Wait a few minutes and try again.');
 }
 
-async function audit(env: Env, actor: string, action: string, target: string | null = null, detail: unknown = null) {
+export async function audit(env: Env, actor: string, action: string, target: string | null = null, detail: unknown = null) {
   await env.DB.prepare('INSERT INTO audit_log (at, actor, action, target, detail) VALUES (?1, ?2, ?3, ?4, ?5)')
     .bind(iso(), actor, action, target, detail == null ? null : typeof detail === 'string' ? detail : JSON.stringify(detail)).run();
 }
@@ -74,12 +79,12 @@ function deniedPage(title: string, msg: string, status: number, actions: [string
 <meta name="robots" content="noindex, nofollow, noarchive">
 <meta name="referrer" content="no-referrer">
 <title>${esc(title)} · Oxyn admin</title>
-<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+${ICONS}
 <link rel="stylesheet" href="/admin/app.css">
 <script src="/admin/theme.js"></script>
 </head>
 <body>
-<header class="bar"><a class="brand" href="/"><span class="mark" aria-hidden="true">O</span><span class="name">Oxyn</span><span class="tag">Admin</span></a></header>
+<header class="bar"><a class="brand" href="/" aria-label="Oxyn admin, back to the site">${BRAND}</a></header>
 <main id="main"><div class="auth"><div class="card">
 <h1>${esc(title)}</h1>
 <p>${esc(msg)}</p>
@@ -136,13 +141,14 @@ export { isAdminPath };
 
 function ui(req: Request, p: string) {
   if (req.method !== 'GET' && req.method !== 'HEAD') return deniedPage('Not allowed', 'Method not allowed.', 405);
-  if (p === '/admin') return page(PAGE, 'text/html; charset=utf-8');
+  if (p === '/admin') return page(PAGE.replace('<!--BRAND-->', BRAND).replace('<!--ICONS-->', ICONS), 'text/html; charset=utf-8');
   if (p === '/admin/app.js') return page(JS, 'text/javascript; charset=utf-8');
   return deniedPage('Not found', 'There is no admin page here.', 404, [['/admin', 'Open the admin panel', 'primary']]);
 }
 
 async function body(req: Request): Promise<Record<string, unknown>> {
   if (!(req.headers.get('content-type') || '').startsWith('application/json')) throw new HttpError(415, 'unsupported_media_type', 'Send application/json.');
+  if (Number(req.headers.get('content-length') || '0') > 64_000) throw new HttpError(413, 'too_large', 'That request is too large.');
   try { return (await req.json()) as Record<string, unknown>; } catch { throw new HttpError(400, 'bad_body', 'The JSON body could not be read.'); }
 }
 
@@ -224,10 +230,28 @@ async function api(req: Request, env: Env, ctx: Ctx, url: URL, email: string, na
     if (!row) throw new HttpError(404, 'not_found', 'That email is not an admin.');
     const n = await env.DB.prepare('SELECT COUNT(*) AS n FROM admins WHERE removed_at IS NULL').first<{ n: number }>();
     if (!n || n.n <= 1) throw new HttpError(409, 'last_admin', 'Keep at least one admin. Add someone else first.');
+    // Removing yourself locks you out at once: the panel asks you to type your own email.
+    if (target === email.toLowerCase() && (url.searchParams.get('confirm') || '').trim().toLowerCase() !== target)
+      throw new HttpError(400, 'confirm_self', 'You are removing yourself. Type your own email to confirm.', 'confirm');
     await env.DB.prepare('UPDATE admins SET removed_at = ?2 WHERE email = ?1').bind(target, iso()).run();
     await audit(env, email, 'admin.remove', target);
     return json({ ok: true, self: target === email });
   }
+
+  // Users, grants and activity (access.ts)
+  if (route === '/users' && m === 'GET') return listUsers(env, url);
+  const um = route.match(/^\/users\/([0-9a-f-]{36})(\/plan)?$/);
+  if (um && !um[2] && m === 'GET') return getUser(env, um[1]);
+  if (um && um[2] && m === 'POST') return changePlan(env, email, um[1], await body(req));
+  if (route === '/grants' && m === 'GET') return listGrants(env, url);
+  if (route === '/grants/check' && m === 'POST') return checkGrants(env, await body(req));
+  if (route === '/grants' && m === 'POST') return addGrants(env, email, await body(req));
+  const gm = route.match(/^\/grants\/(\d{1,12})\/(revoke|restore)$/);
+  if (gm && m === 'POST') {
+    const b = await body(req);
+    return gm[2] === 'revoke' ? revokeGrant(env, email, Number(gm[1]), typeof b.reason === 'string' ? b.reason : '') : restoreGrant(env, email, Number(gm[1]));
+  }
+  if (route === '/activity' && m === 'GET') return activity(env, ctx, url);
 
   // Billing: subscribers and recurring revenue (Polar webhook copy in D1, see billing.ts)
   if (route === '/billing' && m === 'GET') return adminBilling(env);
