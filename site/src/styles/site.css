@@ -811,10 +811,13 @@ html[data-oxyn-reduced] .x-lap-pin .x-lap-scene{position:relative!important;top:
    the wide trackpad, then a thin rounded front edge with the finger scoop. Closed, the lid rotates
    -106° onto it (180° - 74°). */
 .x-lap-deck{position:absolute;left:0;right:0;top:100%;z-index:1;height:49.9cqw;transform-origin:50% 0;transform-style:preserve-3d;transform:perspective(340cqw) rotateX(74deg)}
-.x-lap-top{position:absolute;inset:0;border-radius:.4cqw .4cqw 2.2cqw 2.2cqw;
-  background:linear-gradient(180deg,var(--x-lap-al2),var(--x-lap-al1) 18%,var(--x-lap-al1) 62%,var(--x-lap-al2) 92%,var(--x-lap-al3));
-  box-shadow:inset 0 -.35cqw .2cqw rgb(255 255 255 / .45),inset .25cqw 0 .3cqw -.1cqw rgb(255 255 255 / .35),inset -.25cqw 0 .3cqw -.1cqw rgb(255 255 255 / .35),inset 0 0 0 .08cqw rgb(0 0 0 / .1)}
-[data-theme="dark"] .x-lap-top{box-shadow:inset 0 -.35cqw .2cqw rgb(255 255 255 / .08),inset 0 0 0 .08cqw rgb(255 255 255 / .06)}
+.x-lap-top{position:absolute;inset:0}
+/* The slab (Laptop.astro): one SVG outline under the deck's parts, 96 × ~18 units over the 80-wide unit. */
+.x-lap-slab{position:absolute;left:-10%;top:100%;z-index:0;width:120%;height:auto;overflow:visible;filter:drop-shadow(0 .5cqw .6cqw rgb(0 0 0 / .14))}
+[data-theme="dark"] .x-lap-slab{filter:drop-shadow(0 .5cqw .7cqw rgb(0 0 0 / .5))}
+.x-lap-slab-body{stroke:rgb(0 0 0 / .1);stroke-width:.08}
+[data-theme="dark"] .x-lap-slab-body{stroke:rgb(255 255 255 / .07)}
+.x-lap-slab-lip{fill:none;stroke:var(--x-lap-lip);stroke-width:.16;stroke-linecap:round;stroke-linejoin:round;opacity:.9}
 .x-lap-hinge{position:absolute;left:1.6%;right:1.6%;top:0;height:3.4%;border-radius:0 0 .5cqw .5cqw;background:linear-gradient(180deg,var(--x-lap-hinge2) 0 45%,var(--x-lap-hinge1));box-shadow:0 .15cqw .2cqw rgb(0 0 0 / .18)}
 .x-lap-kb{position:absolute;left:10%;right:10%;top:6.2%;height:46%;padding:.42cqw;border-radius:.7cqw;background:var(--x-lap-well);box-shadow:inset 0 .12cqw .25cqw rgb(0 0 0 / .5),0 0 0 .06cqw rgb(0 0 0 / .2)}
 .x-lap-kb svg{display:block;width:100%;height:100%}
@@ -824,13 +827,6 @@ html[data-oxyn-reduced] .x-lap-pin .x-lap-scene{position:relative!important;top:
 .x-lap-grill.l{left:3.6%}.x-lap-grill.r{right:3.6%}
 .x-lap-pad{position:absolute;left:26.5%;right:26.5%;top:56.5%;height:37%;border-radius:1.2cqw;background:linear-gradient(180deg,rgb(255 255 255 / .1),rgb(0 0 0 / .02));box-shadow:inset 0 0 0 .1cqw var(--x-lap-pad),inset 0 .2cqw .3cqw rgb(0 0 0 / .04)}
 [data-theme="dark"] .x-lap-pad{background:linear-gradient(180deg,rgb(255 255 255 / .03),rgb(0 0 0 / .08))}
-/* Front edge: thin and upright under the deck's near edge, a lit chamfer, the brushed face, rounded
-   lower corners, the finger scoop in the middle and a soft contact shadow on the floor. */
-.x-lap-front{position:absolute;left:.6%;right:.6%;top:calc(100% - .15cqw);height:1.45cqw;transform-origin:50% 0;transform:rotateX(-74deg);border-radius:.2cqw .2cqw 1.3cqw 1.3cqw;
-  background:linear-gradient(180deg,var(--x-lap-lip) 0 .12cqw,var(--x-lap-edge1) .24cqw,var(--x-lap-edge2) 86%,var(--x-lap-edge3));
-  box-shadow:inset .5cqw 0 .5cqw -.4cqw rgb(0 0 0 / .12),inset -.5cqw 0 .5cqw -.4cqw rgb(0 0 0 / .12)}
-.x-lap-front i{position:absolute;left:50%;top:0;width:11%;height:48%;transform:translateX(-50%);border-radius:0 0 50% 50% / 0 0 100% 100%;
-  background:linear-gradient(180deg,var(--x-lap-scoop1),var(--x-lap-scoop2));box-shadow:inset 0 -.06cqw 0 rgb(255 255 255 / .35)}
 .x-lap-shadow{position:absolute;left:-1%;right:-1%;bottom:-1.2cqw;height:3cqw;border-radius:50%;pointer-events:none;
   background:radial-gradient(50% 22% at 50% 44%,var(--x-lap-contact),transparent),radial-gradient(closest-side,var(--x-lap-floor),rgb(0 0 0 / 0))}
 @media (prefers-reduced-motion:reduce){.x-lap-scene{--x-lap-p:1!important}.x-lap-shot{transition:none}}
@@ -866,7 +862,7 @@ html[data-oxyn-reduced] .x-lap-scene{--x-lap-p:1!important}
   .x-lap-cap p{flex-basis:100%}
   /* Phones: the screen alone, no laptop body, at its real size (the frame's own narrow layout
      takes over through its container queries) instead of a 1440 px stage shrunk to a stamp. */
-  .x-lap-deck,.x-lap-shadow,.x-lap-back,.x-lap-edge,.x-lap-notch,.x-lap-glare,.x-lap-shade{display:none}
+  .x-lap-deck,.x-lap-slab,.x-lap-shadow,.x-lap-back,.x-lap-edge,.x-lap-notch,.x-lap-glare,.x-lap-shade{display:none}
   .x-lap-dev,.x-lap-lid{padding-bottom:0;transform:none!important;will-change:auto}
   .x-lap-unit{width:100%}
   .x-lap-face{padding:0;background:none;box-shadow:none;border-radius:22px}

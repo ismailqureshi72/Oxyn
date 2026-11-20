@@ -2,7 +2,7 @@
 // "Complete screens" on the landing: a modern 14-inch MacBook Pro seen from the front and a little
 // above, drawn in CSS: a silver lid with thin black bezels and a notch, on a base whose deck is a real
 // plane in perspective laid back 74° (black hinge band, black keyboard close behind it, speaker
-// grilles, wide trackpad, thin front edge with the finger scoop). The screen is the selected tab's live screen demo (the same Rust component as its
+// grilles, wide trackpad) and one continuous slab outline with the thin front edge and finger scoop). The screen is the selected tab's live screen demo (the same Rust component as its
 // /screens/<slug>/ page) on its 1440 × 900 stage: clickable, scrollable, real. Only the active tab
 // is mounted; the others mount the first time they are picked (site.js).
 // The lid opens with the scroll position across most of the section: on wide screens the scene
@@ -56,6 +56,55 @@ for (const [h, ws] of rows) {
 const kbW = 15 - GAP;
 const kbH = ky - GAP;
 const r2 = (n: number) => Math.round(n * 100) / 100;
+// The base as ONE shape: the deck plane is fixed (laid back 74° about the hinge, perspective 340cqw,
+// both about the hinge line), so its outline on screen is known. The slab is drawn as a single SVG
+// path in the unit's own units (1 = 1cqw; the unit is 80 wide, the deck 49.9 deep): the deck's far
+// edge, its sides, the rounded near corners carried straight on round into the thin front edge, and
+// the front edge's rounded lower corners: one continuous outline with one gradient, a lit chamfer
+// line along the near edge (round the corners too) and the finger scoop centred in it. The 3D deck
+// above it only carries the parts (hinge, keyboard, grilles, trackpad), so no seams can show.
+const DECK = 49.9, HALF = 40, TILT = (74 * Math.PI) / 180, PERSP = 340, CR = 2.6, FRONT = 1.5, PAD = 8;
+const proj = (x: number, y: number): [number, number] => {
+  const f = PERSP / (PERSP - y * Math.sin(TILT));
+  return [HALF + x * f + PAD, y * Math.cos(TILT) * f];
+};
+// The near-left corner arc in deck units (from the side edge round to the near edge), projected.
+const arc = (sx: number, dy = 0) => Array.from({ length: 13 }, (_, i) => {
+  const a = Math.PI - (i / 12) * (Math.PI / 2);
+  const [X, Y] = proj(sx * (-HALF + CR + CR * Math.cos(a)), DECK - CR + CR * Math.sin(a));
+  return [X, Y + dy] as [number, number];
+});
+const fNear = PERSP / (PERSP - DECK * Math.sin(TILT));
+const band = FRONT * fNear;
+const pt = ([x, y]: [number, number]) => `${r2(x)} ${r2(y)}`;
+const topL = arc(1), topR = arc(-1);
+const botL = arc(1, band), botR = arc(-1, band);
+// Outline: far edge, the left side straight down, one smooth curve from the side round the corner
+// into the front edge's lower arc (so the top's corner and the front edge share one rounded corner),
+// along the front, and the mirror image back up the right side.
+const farL = proj(-HALF + 0.5, 0), farR = proj(HALF - 0.5, 0);
+const corner = (top: [number, number][], bot: [number, number][], far: [number, number]) => {
+  const s = top[0], e = bot[8], t = [bot[9][0] - bot[7][0], bot[9][1] - bot[7][1]];
+  const sl = Math.hypot(s[0] - far[0], s[1] - far[1]), tl = Math.hypot(t[0], t[1]);
+  const k1 = band * 1.25, k2 = Math.hypot(e[0] - s[0], e[1] - s[1]) * 0.5;
+  const c1: [number, number] = [s[0] + ((s[0] - far[0]) / sl) * k1, s[1] + ((s[1] - far[1]) / sl) * k1];
+  const c2: [number, number] = [e[0] - (t[0] / tl) * k2, e[1] - (t[1] / tl) * k2];
+  return { s, c1, c2, e };
+};
+const cl = corner(topL, botL, farL), cr = corner(topR, botR, farR);
+const slabD = [
+  `M${pt(farL)}L${pt(cl.s)}C${pt(cl.c1)} ${pt(cl.c2)} ${pt(cl.e)}`,
+  ...botL.slice(9).map((q) => `L${pt(q)}`),
+  ...botR.slice(9).reverse().map((q) => `L${pt(q)}`),
+  `L${pt(cr.e)}C${pt(cr.c2)} ${pt(cr.c1)} ${pt(cr.s)}L${pt(farR)}Z`,
+].join('');
+// The chamfer: the near edge of the deck, corner to corner, as one line.
+const lipD = `M${topL.map(pt).join('L')}L${topR.slice().reverse().map(pt).join('L')}`;
+const [, nearY] = proj(0, DECK);
+const slabW = 80 + PAD * 2, slabH = r2(nearY + band + 0.6);
+// Finger scoop: a shallow dip in the middle of the front edge, under the chamfer.
+const scoopD = `M${r2(HALF + PAD - 5)} ${r2(nearY)}C${r2(HALF + PAD - 2.6)} ${r2(nearY + band * 0.62)} ${r2(HALF + PAD + 2.6)} ${r2(nearY + band * 0.62)} ${r2(HALF + PAD + 5)} ${r2(nearY)}Z`;
+const g = (y: number) => r2(y / slabH);
 ---
 <div class="x-lap" data-lap>
   <div class="x-lap-bar">
@@ -71,6 +120,19 @@ const r2 = (n: number) => Math.round(n * 100) / 100;
   <div class="x-lap-scene">
     <div class="x-lap-dev">
       <div class="x-lap-unit">
+      <svg class="x-lap-slab" viewBox={`0 0 ${slabW} ${slabH}`} aria-hidden="true" focusable="false">
+        <defs>
+          <linearGradient id="x-lap-slabg" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2={slabH}>
+            <stop offset="0" stop-color="var(--x-lap-al2)" /><stop offset={g(3)} stop-color="var(--x-lap-al1)" /><stop offset={g(nearY * 0.62)} stop-color="var(--x-lap-al1)" />
+            <stop offset={g(nearY - 0.6)} stop-color="var(--x-lap-al2)" /><stop offset={g(nearY)} stop-color="var(--x-lap-edge1)" />
+            <stop offset={g(nearY + band * 0.7)} stop-color="var(--x-lap-edge2)" /><stop offset="1" stop-color="var(--x-lap-edge3)" />
+          </linearGradient>
+          <linearGradient id="x-lap-scoopg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--x-lap-scoop1)" /><stop offset="1" stop-color="var(--x-lap-scoop2)" /></linearGradient>
+        </defs>
+        <path class="x-lap-slab-body" d={slabD} fill="url(#x-lap-slabg)" />
+        <path class="x-lap-slab-lip" d={lipD} />
+        <path class="x-lap-slab-scoop" d={scoopD} fill="url(#x-lap-scoopg)" />
+      </svg>
       <div class="x-lap-deck" aria-hidden="true">
         <div class="x-lap-top">
           <span class="x-lap-hinge"></span>
@@ -84,7 +146,6 @@ const r2 = (n: number) => Math.round(n * 100) / 100;
           <span class="x-lap-grill r"></span>
           <span class="x-lap-pad"></span>
         </div>
-        <div class="x-lap-front"><i></i></div>
       </div>
       <div class="x-lap-lid">
         <div class="x-lap-face">
