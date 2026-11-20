@@ -8,15 +8,20 @@
 //   GET  /api/flags     enabled content flags (edited in the admin panel)
 //   /admin, /api/admin/* the maintainers' panel (site sign-in + admin list), see admin.ts, docs/admin.md
 //   /api/auth/*         site accounts: Google, GitHub or email, see auth.ts and docs/auth.md
+//   /api/billing/*, /api/pro/*, /api/polar/webhook   Pro and Team through Polar, see billing.ts
+//                       and docs/pricing.md
 //
 // Bindings (wrangler.jsonc): DB (D1 "oxyn"), UPLOADS (R2 "oxyn-uploads"), ASSETS.
 // Secrets (optional): GITHUB_TOKEN opens a GitHub issue per feedback; RATE_SALT salts IP hashes;
 // GITHUB_OAUTH_CLIENT_ID / GITHUB_OAUTH_CLIENT_SECRET turn on "Continue with GitHub";
-// GOOGLE_OAUTH_CLIENT_ID / GOOGLE_OAUTH_CLIENT_SECRET turn on "Continue with Google".
+// GOOGLE_OAUTH_CLIENT_ID / GOOGLE_OAUTH_CLIENT_SECRET turn on "Continue with Google";
+// POLAR_WEBHOOK_SECRET turns on the Polar webhook; POLAR_ACCESS_TOKEN (optional) adds pre-signed
+// customer portal links and archives the founder products at 100.
 
 import { EMAIL_RE, HttpError, KINDS, fail, json, openIssue, sameOrigin, sha256Hex, type Ctx, type Env, type Kind } from './shared';
 import { handleAdmin, isAdminPath, publicFlags } from './admin';
 import { handleAuth } from './auth';
+import { handleBilling, isBillingPath } from './billing';
 
 export type { Env } from './shared';
 
@@ -43,6 +48,7 @@ export default {
     // /api/auth/*: site accounts (Google, GitHub or email + password), see auth.ts and docs/auth.md.
     if (!url.pathname.startsWith('/api/')) return env.ASSETS.fetch(req);
     if (url.pathname.startsWith('/api/auth/')) return handleAuth(req, env, ctx, url);
+    if (isBillingPath(url.pathname)) return handleBilling(req, env, ctx, url);
     try {
       const route = url.pathname.replace(/\/+$/, '');
       if (route === '/api/health') {

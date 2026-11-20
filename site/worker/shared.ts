@@ -28,6 +28,11 @@ export interface Env {
   GITHUB_OAUTH_CLIENT_SECRET?: string; // secret
   GOOGLE_OAUTH_CLIENT_ID?: string; // secret
   GOOGLE_OAUTH_CLIENT_SECRET?: string; // secret
+  // Pro and Team through Polar (docs/pricing.md). POLAR_WEBHOOK_SECRET verifies Polar's webhook
+  // (unset: the webhook answers 503 and nothing is written). POLAR_ACCESS_TOKEN (optional) lets the
+  // Worker open pre-signed customer portal sessions and archive the founder products at 100.
+  POLAR_WEBHOOK_SECRET?: string; // secret
+  POLAR_ACCESS_TOKEN?: string; // secret
 }
 
 export const KINDS = ['Bug', 'Idea', 'Question'] as const;
