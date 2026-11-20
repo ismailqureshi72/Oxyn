@@ -29,7 +29,9 @@
     return out + esc(code.slice(last));
   }
 
-  function toPricing() {
+  function toPricing(how) {
+    // The conversion signal for the admin Activity tab (sent before the page changes).
+    try { window.oxynTrack?.('pro_copy', slug, how || 'copy', true); } catch { /* never block */ }
     try { sessionStorage.setItem('oxyn_pro_from', JSON.stringify({ slug, name, url: location.pathname })); } catch { /* private mode */ }
     location.assign('/pricing/?from=' + encodeURIComponent(slug));
   }
@@ -79,7 +81,7 @@
     const el = node && (node.nodeType === 1 ? node : node.parentElement);
     return !!el && !!el.closest('[data-pro-lock], [data-pro-code], .pvwrap[data-pro-slug] .pv[data-view="code"], .install-pill');
   };
-  async function decide(e, go) {
+  async function decide(e, go, how) {
     if (isPro()) return; // let the normal copy run
     e.preventDefault();
     e.stopImmediatePropagation();
@@ -88,21 +90,21 @@
       plan = await planP;
       if (isPro()) { await load(); go?.(); return; }
     }
-    toPricing();
+    toPricing(how);
   }
   window.addEventListener('click', (e) => {
     const b = e.target.closest?.('button, a');
     if (!gated(b)) return;
-    decide(e, () => b.click());
+    decide(e, () => b.click(), b.closest('[data-pro-cli]') ? 'cli' : 'copy');
   }, true);
   document.addEventListener('keydown', (e) => {
     if (!(e.ctrlKey || e.metaKey) || e.key.toLowerCase() !== 'c' || isPro()) return;
     const sel = document.getSelection();
-    if (inLocked(document.activeElement) || (sel && !sel.isCollapsed && (inLocked(sel.anchorNode) || inLocked(sel.focusNode)))) decide(e);
+    if (inLocked(document.activeElement) || (sel && !sel.isCollapsed && (inLocked(sel.anchorNode) || inLocked(sel.focusNode)))) decide(e, null, 'keys');
   }, true);
   document.addEventListener('copy', (e) => {
     if (isPro()) return;
     const sel = document.getSelection();
-    if (sel && (inLocked(sel.anchorNode) || inLocked(sel.focusNode))) { e.preventDefault(); toPricing(); }
+    if (sel && (inLocked(sel.anchorNode) || inLocked(sel.focusNode))) { e.preventDefault(); toPricing('menu'); }
   }, true);
 })();
