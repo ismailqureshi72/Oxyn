@@ -87,6 +87,8 @@ class OxynDemo extends HTMLElement {
     const root = this.querySelector('.oxd-root');
     try {
       const m = await loadModule();
+      // Oxyn Pro items: the live playground leaves the generated code out (served to Pro only).
+      if (this.dataset.proItem === 'true' && m.hide_code) m.hide_code(this.dataset.slug);
       m.mount(root, this.dataset.slug, Number(this.dataset.variant ?? -1), this.dataset.controls === 'true');
       delete this.dataset.skel;
       this.dataset.state = 'live';

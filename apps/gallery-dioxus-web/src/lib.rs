@@ -205,6 +205,23 @@ fn stage_key(v: &Vals) -> String {
     format!("k{h:x}")
 }
 
+thread_local! {
+    /// Demos whose live playground leaves out the generated code: Oxyn Pro items, whose code the
+    /// site serves only to Pro accounts (from its Worker, never in the page). Set by [`hide_code`].
+    static CODE_HIDDEN: std::cell::RefCell<std::collections::BTreeSet<String>> =
+        const { std::cell::RefCell::new(std::collections::BTreeSet::new()) };
+}
+
+/// Leaves the generated code out of every later mount of `slug` (an Oxyn Pro item). The site calls
+/// it before [`mount`] for Pro pages.
+#[cfg(target_arch = "wasm32")]
+#[wasm_bindgen::prelude::wasm_bindgen]
+pub fn hide_code(slug: String) {
+    CODE_HIDDEN.with(|h| {
+        h.borrow_mut().insert(slug);
+    });
+}
+
 /// Preview stage, controls panel and generated code for one component.
 #[component]
 pub fn Playground(slug: String, variant: Option<usize>, controls: bool) -> Element {
@@ -238,7 +255,12 @@ pub fn Playground(slug: String, variant: Option<usize>, controls: bool) -> Eleme
     let key = format!("{}-{}", stage_key(&v), nonce());
     let render = demo.render;
     let t = now();
-    let code = (demo.code)(&v);
+    let show_code = controls && !CODE_HIDDEN.with(|h| h.borrow().contains(&slug));
+    let code = if show_code {
+        (demo.code)(&v)
+    } else {
+        String::new()
+    };
     let align = demo.align.id();
     let h = demo.height;
     let ctl = demo.controls.clone();
@@ -277,7 +299,7 @@ pub fn Playground(slug: String, variant: Option<usize>, controls: bool) -> Eleme
                     }
                 }
             }
-            if controls {
+            if show_code {
                 div { class: "oxd-code",
                     div { class: "oxd-ch",
                         span { "Dioxus" }

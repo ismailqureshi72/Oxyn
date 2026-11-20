@@ -1,5 +1,6 @@
 ---
-// Your account: email, how you sign in, when it was created, and sign out here or everywhere.
+// Your account: email, how you sign in, when it was created, your plan (and Team seats), and sign
+// out here or everywhere.
 // Static like every page; public/account.js fills it from /api/auth/me.
 import Base from '../layouts/Base.astro';
 import { icon } from '../components/v2/icons';
@@ -23,6 +24,25 @@ import { icon } from '../components/v2/icons';
           <div><dt>Sign-in methods</dt><dd data-account-providers></dd></div>
           <div><dt>Member since</dt><dd data-account-created></dd></div>
         </dl>
+        <section class="acct-plan" id="plan" aria-labelledby="h-plan" data-plan>
+          <div class="acct-plan-h"><h2 id="h-plan">Plan</h2><span class="x-chip" data-plan-chip>Free</span></div>
+          <p class="acct-plan-line" data-plan-line>Every component and primitive, free and MIT licensed.</p>
+          <p class="auth-err acct-plan-note" role="status" data-plan-note hidden></p>
+          <div class="acct-actions">
+            <a class="x-pill pill-black" href="/pricing/" data-plan-upgrade><Fragment set:html={icon.bolt} />See Pro plans</a>
+            <a class="x-pill pill-grey" href="/api/billing/portal" rel="nofollow" data-astro-prefetch="false" data-plan-manage hidden><Fragment set:html={icon.card} />Manage billing</a>
+          </div>
+          <div class="acct-seats" data-seats hidden>
+            <h3>Team seats <span class="acct-seats-n" data-seat-count></span></h3>
+            <p class="acct-plan-line">A Team is up to 4 people: you plus 3 teammates. Add a teammate's email. They sign in to Oxyn with Google or GitHub on that email, and Pro opens for them.</p>
+            <ul class="acct-seat-list" data-seat-list></ul>
+            <form class="acct-seat-form" novalidate data-seat-form>
+              <label class="fb-field"><span class="fb-lbl">Teammate email</span><input type="email" name="email" required maxlength="254" autocomplete="off" inputmode="email" placeholder="teammate@example.com" aria-describedby="seat-err" /></label>
+              <button type="submit" class="x-pill pill-black">Add seat</button>
+            </form>
+            <p class="auth-err" id="seat-err" role="alert" data-seat-err hidden></p>
+          </div>
+        </section>
         <p class="auth-err" role="alert" data-account-err hidden></p>
         <div class="acct-actions">
           <button type="button" class="x-pill pill-black" data-acct-signout><Fragment set:html={icon.signout} />Sign out</button>

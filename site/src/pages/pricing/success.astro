@@ -1,0 +1,22 @@
+---
+// Where Polar sends a buyer after a successful checkout (success_url of every checkout link, with
+// ?checkout_id=). Polar's webhook usually reaches the Worker within seconds; public/pricing.js polls
+// /api/billing/me until the plan shows up, then says so.
+import Base from '../../layouts/Base.astro';
+import { icon } from '../../components/v2/icons';
+---
+<Base title="Thank you" description="Your Oxyn subscription." index={false}>
+  <section class="auth acct-page" data-ovl>
+    <div class="auth-card wide pr-done" data-pr-success data-state="wait" aria-live="polite">
+      <span class="pr-done-i" aria-hidden="true"><Fragment set:html={icon.check} /></span>
+      <h1 class="auth-h" data-pr-done-h>Thank you</h1>
+      <p class="auth-sub" data-pr-done-msg>Payment received. Turning on your plan, this usually takes a few seconds…</p>
+      <div class="acct-actions">
+        <a class="x-pill pill-black" href="/screens/" data-pr-done-go hidden>Open the screens</a>
+        <a class="x-pill pill-grey" href="/account/#plan">Your plan</a>
+      </div>
+      <p class="auth-fine in">Your receipt comes from Polar, our merchant of record. You can manage or cancel the subscription any time from Manage billing in the account menu.</p>
+    </div>
+  </section>
+  <script is:inline src="/pricing.js" defer></script>
+</Base>
