@@ -20,6 +20,7 @@ function FAMILY_GROUPS() {
 /** The eight component categories, then the families, in sidebar order. */
 export const GROUPS = [
   { slug: 'agents', name: 'Agents', blurb: 'What an agent is doing and what it needs from you: status, tool calls, plans, approvals and checkpoints.' },
+  { slug: 'ai', name: 'AI', blurb: 'Pro AI components: run timelines, model cards, workflows, image generation, speech, meeting notes, replies, handoff, redaction, costs, keys, stats, translation, summaries, connectors, enrichment and routing.' },
   { slug: 'chat', name: 'Chat', blurb: 'The conversation: composer, messages, streaming answers, reasoning and sources.' },
   { slug: 'inputs', name: 'Inputs', blurb: 'Fields, choices, pickers and form flows.' },
   { slug: 'data-display', name: 'Data display', blurb: 'Numbers, meters, charts, badges, avatars and code.' },
@@ -38,6 +39,7 @@ export const OLD_TO_GROUP = {
   tools: 'agents',
   approvals: 'agents',
   'checkpoints-git': 'agents',
+  'ai-special': 'ai',
   buttons: 'buttons',
   inputs: 'inputs',
   forms: 'inputs',
@@ -80,6 +82,10 @@ export const groupSlugOf = (d) => ITEM_GROUP[d.slug] ?? OLD_TO_GROUP[d.category]
 /** True for a demo that belongs to a multi-variant family. */
 export const familyOf = (d) => FAMILIES.find((f) => f.slug === d.category) ?? null;
 export const isScreen = (d) => SCREENS.includes(d.slug);
+/** Pro components (docs/pricing.md): the AI special components (C1d). Like screens, the preview is
+ * free and the code needs Pro. */
+export const PRO_COMPONENTS = ['agent-timeline', 'model-card', 'ai-workflow', 'image-generation', 'speech-player', 'meeting-summary', 'reply-draft', 'human-handoff', 'pii-redaction', 'llm-cost-calculator', 'provider-keys', 'generation-stats', 'ai-translate', 'tldr-toggle', 'connector-setup', 'enrich-column', 'ticket-router'];
+export const isProComponent = (d) => PRO_COMPONENTS.includes(d.slug);
 /** Agent apps: whole desktop agent apps (our own designs in the patterns those apps share). They are
  * screens too (pages at /screens/<slug>/), listed in their own category after Screens. */
 export const AGENT_APPS = [{ slug: 'taskdeck', name: 'Taskdeck', blurb: 'A task-runner agent app: composer, running task with steps and artifacts, a task board, plugins & skills, scheduled tasks and deployed sites.', screens: ['taskdeck-start', 'taskdeck-task', 'taskdeck-board', 'taskdeck-plugins', 'taskdeck-scheduled', 'taskdeck-sites'] }, { slug: 'command-center', name: 'Command Center', blurb: 'A coding-agent app: threads by project, a running thread, a review pane of hunks to accept or revert, Local / Worktree / Cloud and a task queue.', screens: ['command-center'] }, { slug: 'session-studio', name: 'Session Studio', blurb: 'A coding-agent app: sessions, read / edit / bash tool blocks, permission prompts, plan mode, a todo list and a diff pane.', screens: ['session-studio'] }, { slug: 'fleet-window', name: 'Fleet Window', blurb: 'A coding-agent app: parallel agents on their own worktrees, one prompt on several models compared side by side, plan mode and a changes pane.', screens: ['fleet-window'] }, { slug: 'workspace-coder', name: 'Workspace Coder', blurb: 'An agent app with its own computer: progress and tool log in the chat, a workspace of files, terminal, browser and a preview to publish.', screens: ['workspace-coder'] }, { slug: 'command-board', name: 'Command Board', blurb: 'An autonomous-agent app: sessions from tickets and chat, questions with quick answers, a pull request with checks and a workspace timeline you can scrub.', screens: ['command-board'] }, { slug: 'threadbar', name: 'Threadbar', blurb: 'An editor agent panel: threads by project with terminal threads, tool calls and an edit to keep or reject, profiles and outside agents, Files and Git.', screens: ['threadbar'] }, { slug: 'tabstack', name: 'Tabstack', blurb: 'An agent-first terminal: vertical tabs with branch and PR, command blocks, a command waiting on Run / Edit / Deny, agent runs and review.', screens: ['tabstack'] }, { slug: 'repo-desk', name: 'Repo Desk', blurb: 'A chat-first app on a code host: an Inbox of issues and PRs, projects with goals, sessions on their own branches and shared canvases.', screens: ['repo-desk'] }, { slug: 'preview-desk', name: 'Preview Desk', blurb: 'Agent work as previews: sessions on their own machines, the live site with Design mode comments, a doc and a diff with line comments.', screens: ['preview-desk'] }, { slug: 'hangar', name: 'Hangar', blurb: 'An agent manager: conversations by workspace with an Inbox, a task list and artifacts, a plan to comment on line by line, and Editor and Browser surfaces.', screens: ['hangar'] }, { slug: 'halo-chat', name: 'Halo Chat', blurb: 'An assistant app: helpers and pinned chats, tool cards for search, code and tables, Sources and Canvas, a mini chat and a research plan.', screens: ['halo-chat'] }, { slug: 'pilot-panel', name: 'Pilot Panel', blurb: 'An editor agent panel: Plan and Act, commands that wait on approval, a checkpoint after every change to compare or restore, tokens and cost.', screens: ['pilot-panel'] }, { slug: 'courier', name: 'Courier', blurb: 'A thread-first coding agent: running threads, an edits card per turn, suggested replies, model and effort, and a pod with Desktop, Ports and Changes.', screens: ['courier'] }];
