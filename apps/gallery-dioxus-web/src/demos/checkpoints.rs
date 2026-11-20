@@ -19,9 +19,19 @@ fn iso_all(cps: &[Checkpoint]) -> Vec<String> {
     cps.iter().map(data::iso_of).collect()
 }
 
-/// Lanes on a live run: Rewind (button, Enter or Space) adds an attempt and moves the head.
-/// With `autoplay` the run plays itself: checkpoints arrive one by one, the tests fail, the agent
-/// rewinds and the second attempt bends out; any Rewind press takes over.
+/// What the agent does first after a rewind in the demo (the pool cycles).
+const NEXT_STEPS: [&str; 4] = [
+    "Switched to Stripe Elements",
+    "Simplified the checkout flow",
+    "Rewrote the failing tests",
+    "Tried a smaller change",
+];
+
+/// Lanes on a live run: Rewind (button, Enter or Space) adds an attempt in a new lane and moves
+/// the head. With `autoplay` the run plays itself as in the affectUI reference: checkpoints
+/// arrive one by one, the tests fail, the agent rewinds to the pricing table and attempt two
+/// bends out and runs to the pull request; then it holds and starts over. Any Rewind press
+/// takes over; with reduced motion it shows the finished run and does not play.
 #[component]
 fn LanesLive(
     cps: Vec<Checkpoint>,
@@ -36,8 +46,16 @@ fn LanesLive(
     empty: bool,
 ) -> Element {
     let full = cps.clone();
-    let mut run = use_signal(move || CheckpointRun::new(cps, head));
+    // Autoplay starts from the first checkpoint, so the rows that arrive later draw in at once.
+    let mut run = use_signal(move || {
+        if autoplay && cfg!(target_arch = "wasm32") {
+            CheckpointRun::new(cps.into_iter().take(1).collect(), None)
+        } else {
+            CheckpointRun::new(cps, head)
+        }
+    });
     let mut playing = use_signal(move || autoplay);
+    let mut rewinds = use_signal(|| 0usize);
     #[cfg(not(target_arch = "wasm32"))]
     let _ = (&full, autoplay);
     #[cfg(target_arch = "wasm32")]
@@ -48,20 +66,40 @@ fn LanesLive(
             if !autoplay {
                 return;
             }
+            let reduced = web_sys::window()
+                .and_then(|w| {
+                    w.match_media("(prefers-reduced-motion: reduce)")
+                        .ok()
+                        .flatten()
+                })
+                .is_some_and(|m| m.matches());
+            if reduced {
+                run.set(CheckpointRun::new(full, None));
+                return;
+            }
             let mut k = 1usize;
             loop {
                 if !*playing.peek() {
                     return;
                 }
                 let mut v: Vec<Checkpoint> = full.iter().take(k).cloned().collect();
+                let failed = v
+                    .last()
+                    .is_some_and(|c| c.status == CheckpointStatus::Failed);
                 if let Some(last) = v.last_mut()
-                    && last.status != CheckpointStatus::Failed
+                    && !failed
                     && k < full.len()
                 {
                     last.status = CheckpointStatus::Running;
                 }
                 run.set(CheckpointRun::new(v, None));
-                let wait = if k >= full.len() { 3600 } else { 1150 };
+                let wait = if k >= full.len() {
+                    3500
+                } else if failed {
+                    1600
+                } else {
+                    1100
+                };
                 gloo_timers::future::TimeoutFuture::new(wait).await;
                 k = if k >= full.len() { 1 } else { k + 1 };
             }
@@ -72,28 +110,32 @@ fn LanesLive(
     let times = if iso { iso_all(&cps_now) } else { vec![] };
     rsx! {
         CheckpointLanes { checkpoints: cps_now, head: r.head.clone(), times, max_rows,
-            task: Some("Add Stripe checkout".to_string()), tool_icons: tools, step_costs: costs,
+            task: Some("Ship the pricing page".to_string()), tool_icons: tools, step_costs: costs,
             tone: if neutral { RailTone::Neutral } else { RailTone::Live },
             format: if credits { Some(Callback::new(|c: u32| format!("{} cr", c * 10))) } else { None },
             on_rewind: move |id: String| {
                 playing.set(false);
                 let i = run.peek().checkpoints.iter().position(|c| c.id == id);
-                if let Some(i) = i { run.write().rewind(i); }
+                if let Some(i) = i {
+                    let n = *rewinds.peek();
+                    rewinds.set(n + 1);
+                    run.write().rewind_with(i, NEXT_STEPS[n % NEXT_STEPS.len()]);
+                }
             },
         }
     }
 }
 
 fn lanes(v: &Vals, _: ClockMs) -> Element {
-    let mut cps = data::checkpoints();
+    let mut cps = data::lane_script();
     if !v.b("rewound") {
-        cps.truncate(4);
+        cps.truncate(6);
     }
     let head = v.opt("head").filter(|h| cps.iter().any(|c| &c.id == h));
     // The stage remounts on every control change, so autoplay restarts from the first checkpoint.
     let auto = v.b("autoplay");
     rsx! {
-        div { class: "oxd-w560",
+        div { class: "oxd-w480",
             LanesLive { cps, head, iso: v.s("time") == "iso", tools: v.b("tools"), costs: v.b("costs"), credits: v.s("currency") == "credits", max_rows: v.u("rows"), neutral: v.s("rail") == "neutral", autoplay: auto, empty: v.b("empty") }
         }
     }
@@ -102,11 +144,12 @@ fn lanes(v: &Vals, _: ClockMs) -> Element {
 fn lanes_code(v: &Vals) -> String {
     let mut c = Code::new("CheckpointLanes")
         .pre("let checkpoints = vec![")
-        .pre("    Checkpoint::new(\"c1\", None, \"Read the brief\", 9),")
-        .pre("    Checkpoint::new(\"c2\", Some(\"c1\"), \"Built the pricing table\", 64).files(3, 120, 4),")
-        .pre("    Checkpoint::new(\"c4\", Some(\"c2\"), \"Tests failing – 4 of 12\", 131).with(CheckpointStatus::Failed),")
-        .pre("    // a rewind: the next attempt branches from c2")
-        .pre("    Checkpoint::new(\"c5\", Some(\"c2\"), \"Switched to Stripe Elements\", 169),")
+        .pre("    Checkpoint::new(\"c1\", None, \"Read the brief\", 9).tool(\"mcp__slack__read_thread\"),")
+        .pre("    Checkpoint::new(\"c4\", Some(\"c1\"), \"Built the pricing table\", 81).tool(\"mcp__figma__get_design\"),")
+        .pre("    Checkpoint::new(\"c5\", Some(\"c4\"), \"Added Stripe checkout\", 122),")
+        .pre("    Checkpoint::new(\"c6\", Some(\"c5\"), \"Tests failing – 4 of 12\", 148).with(CheckpointStatus::Failed),")
+        .pre("    // a rewind: the next attempt opens a new lane from c4")
+        .pre("    Checkpoint::new(\"c7\", Some(\"c4\"), \"Switched to Stripe Elements\", 186),")
         .pre("];")
         .pre("let mut run = use_signal(|| CheckpointRun::new(checkpoints, None));")
         .raw("checkpoints", "run.read().checkpoints.clone()")
@@ -120,8 +163,8 @@ fn lanes_code(v: &Vals) -> String {
     if !v.b("tools") {
         c = c.raw("tool_icons", "false");
     }
-    if !v.b("costs") {
-        c = c.raw("step_costs", "false");
+    if v.b("costs") {
+        c = c.raw("step_costs", "true");
     }
     if v.s("rows") != "14" {
         c = c.raw("max_rows", v.s("rows"));
@@ -138,10 +181,10 @@ fn lanes_code(v: &Vals) -> String {
             "Some(Callback::new(|cents: u32| format!(\"{} cr\", cents * 10)))",
         );
     }
-    c.raw("task", q("Add Stripe checkout"))
+    c.raw("task", q("Ship the pricing page"))
         .raw(
             "on_rewind",
-            "move |id: String| { let i = run.peek().checkpoints.iter().position(|c| c.id == id); if let Some(i) = i { run.write().rewind(i); } }",
+            "move |id: String| { let i = run.peek().checkpoints.iter().position(|c| c.id == id); if let Some(i) = i { run.write().rewind_with(i, \"Switched to Stripe Elements\"); } }",
         )
         .done()
 }
@@ -412,12 +455,12 @@ pub(crate) fn demos() -> Vec<Demo> {
             source: "checkpoint.rs",
             controls: vec![
                 tog("rewound", "Rewound once (two attempts)", true),
-                sel("head", "Head", &["none", "c2", "c4", "c5", "c6"], "none"),
-                sel("time", "Time", &["iso", "run time"], "iso"),
+                sel("head", "Head", &["none", "c4", "c6", "c7", "c9"], "none"),
+                sel("time", "Time", &["run time", "iso"], "run time"),
                 tog("tools", "Tool icon per checkpoint", true),
-                tog("costs", "Step cost", true),
+                tog("costs", "Step cost", false),
                 sel("rail", "Rail colour", &["live", "neutral"], "live"),
-                tog("autoplay", "Play the run", false),
+                tog("autoplay", "Play the run", true),
                 tog("empty", "No checkpoints yet", false),
                 sel(
                     "currency",
@@ -428,31 +471,40 @@ pub(crate) fn demos() -> Vec<Demo> {
                 rng("rows", "Rows before scrolling", 3.0, 14.0, 1.0, "14"),
             ],
             variants: vec![
-                var("rewound", "Attempt two running after a rewind.", &[]),
+                var(
+                    "rewound",
+                    "Attempt two after a rewind, settled.",
+                    &[("autoplay", "false")],
+                ),
                 var(
                     "single",
                     "One attempt, failing tests.",
-                    &[("rewound", "false")],
+                    &[("rewound", "false"), ("autoplay", "false")],
+                ),
+                var(
+                    "iso",
+                    "Absolute ISO times (the day once in the bar) and per-step costs, both opt-in.",
+                    &[("time", "iso"), ("costs", "true"), ("autoplay", "false")],
                 ),
                 var(
                     "credits",
                     "A custom cost formatter (credits), no tool icons.",
-                    &[("currency", "credits"), ("tools", "false")],
+                    &[
+                        ("currency", "credits"),
+                        ("tools", "false"),
+                        ("costs", "true"),
+                        ("autoplay", "false"),
+                    ],
                 ),
                 var(
                     "scrolling",
                     "Four rows tall: overflow scrolls in place, and the head is scrolled into sight.",
-                    &[("rows", "4")],
-                ),
-                var(
-                    "playing",
-                    "The run plays itself: checkpoints arrive, tests fail, attempt two bends out.",
-                    &[("autoplay", "true")],
+                    &[("rows", "4"), ("autoplay", "false")],
                 ),
                 var(
                     "neutral",
-                    "Monochrome rail, run-time clock instead of ISO times.",
-                    &[("rail", "neutral"), ("time", "run time")],
+                    "Monochrome rail.",
+                    &[("rail", "neutral"), ("autoplay", "false")],
                 ),
             ],
             render: lanes,
@@ -467,17 +519,17 @@ pub(crate) fn demos() -> Vec<Demo> {
                 ),
             ],
             a11y: vec![
-                "An ordered list with a roving tab stop; each row is named by its title, attempt, status, place on the path and ISO time, and the head has aria-current=step.",
+                "An ordered list with a roving tab stop; each row is named by its title, attempt, status, place on the path and time, and the head has aria-current=step.",
                 "Rewind buttons are pointer shortcuts (hidden from assistive tech); Enter on the row does the same.",
                 "A new attempt updates the run total in the bar, which screen readers hear politely.",
-                "Status is never colour alone: Failed, Stopped and Attempt are written badges; the head is announced as current and drawn as the larger dot with a halo.",
-                "Motion: rows lift in, dots scale up, edges stroke downward; after a rewind the new lane curves away from its source checkpoint and the abandoned attempt goes grey. With reduced motion nothing animates.",
+                "Status is never colour alone: Failed, Stopped and Attempt are written badges; the head is announced as current and drawn as the larger, lighter dot.",
+                "Motion: a new checkpoint is revealed as the card grows and its edge draws down; a rewind opens a new lane, slides the rows right, draws the fork out of the parent dot and turns the abandoned attempt into grey rings (about 270 ms). The top demo plays the run on a loop; with reduced motion it shows the finished run and nothing animates.",
             ],
             responsive: vec![
-                "Rows hold a fixed 32 px height under one rail, so status changes never shift the layout; on hover or focus a Rewind pill swaps in where files and time sit.",
+                "Rows hold a fixed 30 px height beside one rail, so status changes never shift the layout; on hover or focus a Rewind pill swaps in where files and time sit.",
                 "Beyond max_rows, rows scroll within the card (thin pill scrollbar).",
-                "Under 460 px the task, the day, file counts and costs give way; the title ellipses before the totals do; the time of day always stays.",
-                "When every ISO time shares a day, the day shows once in the bar and rows show the time of day (full ISO in the tooltip and the accessible name).",
+                "Under 460 px the task, the day, file counts and costs give way; the title ellipses before the totals do; the time always stays.",
+                "With opt-in ISO times that share a day, the day shows once in the bar and rows show the time of day (full ISO in the tooltip and the accessible name).",
             ],
             height: 340,
             align: Align::Start,

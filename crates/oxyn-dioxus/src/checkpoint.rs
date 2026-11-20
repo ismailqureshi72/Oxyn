@@ -13,9 +13,9 @@ use oxyn_core::{
     ClockMs,
     checkpoint::{
         Checkpoint, CheckpointKind, CheckpointStatus, CpKey, FilmStrip, PreviewFile, PreviewPhase,
-        RAIL_ROW_H, Rail, RestoreAction, RestoreFlow, RestorePreview, UndoLadder as LadderModel,
-        UndoStep, branch_tree, format_at, format_cost, header, lanes, rail, roving, shared_day,
-        split_day, step_cost, thumb_bars,
+        RAIL_KNOCKOUT, RAIL_ROW_H, Rail, RestoreAction, RestoreFlow, RestorePreview,
+        UndoLadder as LadderModel, UndoStep, branch_tree, format_at, format_cost, header, lanes,
+        rail, roving, shared_day, split_day, step_cost, thumb_bars,
     },
 };
 
@@ -55,6 +55,7 @@ fn label_at(times: &[String], c: &Checkpoint, i: usize) -> String {
     times.get(i).cloned().unwrap_or_else(|| format_at(c.at))
 }
 
+use crate::BrandIcon;
 use crate::composer::icons::Icon;
 
 fn status_cls(s: CheckpointStatus) -> &'static str {
@@ -76,36 +77,42 @@ pub enum RailTone {
     Neutral,
 }
 
-/// The rail of [`CheckpointLanes`]: one SVG under all rows, edges keyed by the checkpoint they
-/// lead to, so a new edge draws itself in and a left-behind one only loses its live layer.
+/// The rail of [`CheckpointLanes`]: one SVG over the row gutters, edges keyed by the checkpoint
+/// they lead to, so a new edge draws itself in (at a constant speed, by its length) and a
+/// left-behind one only changes colour. Every dot sits on a knockout disc in the card colour.
 #[component]
-fn LaneRail(rail: Rail) -> Element {
+fn LaneRail(rail: Rail, uid: usize, first_n: usize) -> Element {
     let w = rail.width;
     let h = rail.height;
     // Stable order (by the checkpoint each edge leads to) so no edge moves in the DOM and
-    // replays its draw; the live path is a second layer on top that draws in when it lights up.
+    // replays its draw.
     let mut base = rail.edges.clone();
     base.sort_by_key(|e| e.child);
+    // The first render staggers in; anything that arrives later starts at once.
+    let delay = move |i: usize| if i < first_n { i * 55 } else { 0 };
     rsx! {
         svg { class: "rail", width: "{w}", height: "{h}", view_box: "0 0 {w} {h}", "aria-hidden": "true",
-            g { class: "base",
-                for e in base.iter() {
-                    path { key: "e{e.child}", d: "{e.svg_d()}", "pathLength": "1", fill: "none", class: "ed", style: "--d:{e.child * 55}ms" }
+            style: "--glint:url(#cp-glint-{uid})",
+            defs {
+                radialGradient { id: "cp-glint-{uid}", cx: "35%", cy: "30%", r: "75%",
+                    stop { class: "g0", offset: "0" }
+                    stop { class: "g1", offset: "1" }
                 }
             }
-            g { class: "live",
-                for e in base.iter().filter(|e| e.on_path) {
-                    path { key: "l{e.child}", d: "{e.svg_d()}", "pathLength": "1", fill: "none", class: "ed on", style: "--d:{e.child * 55}ms" }
-                }
+            for e in base.iter() {
+                path { key: "e{e.child}", d: "{e.svg_d()}", "pathLength": "1", fill: "none",
+                    class: if e.on_path { "ed on" } else { "ed" },
+                    style: "--d:{delay(e.child)}ms;--len:{e.len():.1}" }
             }
             for d in rail.dots.iter() {
                 {
                     let st = status_cls(d.status);
-                    let cls = format!("dt {st}{}{}", if d.on_path { " on" } else { "" }, if d.current { " cur" } else { "" });
+                    let cls = format!("dt {st}{}{}", if d.on_path { " on" } else { " off" }, if d.current { " cur" } else { "" });
                     let (x, y) = d.at;
+                    let ko = d.r + RAIL_KNOCKOUT;
                     rsx! {
-                        g { key: "d{d.index}", class: "{cls}", style: "--d:{d.index * 55}ms",
-                            if d.current { circle { class: "halo", cx: "{x}", cy: "{y}", r: "9" } }
+                        g { key: "d{d.index}", class: "{cls}", style: "--d:{delay(d.index)}ms",
+                            circle { class: "ko", cx: "{x}", cy: "{y}", r: "{ko}" }
                             circle { class: "core", cx: "{x}", cy: "{y}", r: "{d.r}" }
                         }
                     }
@@ -125,7 +132,7 @@ fn folder_glyph() -> Element {
 
 fn branch_mark() -> Element {
     rsx! {
-        svg { class: "mk", width: "16", height: "16", view_box: "0 0 16 16", fill: "none", "aria-hidden": "true",
+        svg { class: "mk", width: "11", height: "11", view_box: "0 0 16 16", fill: "none", "aria-hidden": "true",
             path { d: "M4.5 3v10M4.5 6.5c0 2.6 2 3.5 4.6 3.6", stroke: "currentColor", stroke_width: "1.5", stroke_linecap: "round" }
             circle { cx: "4.5", cy: "3.5", r: "2", fill: "currentColor" }
             circle { cx: "11.2", cy: "10.2", r: "2", fill: "currentColor" }
@@ -134,8 +141,9 @@ fn branch_mark() -> Element {
 }
 
 /// Run checkpoints as lanes: rewinding branches a new attempt that bends out of the checkpoint
-/// it starts from; the abandoned attempt stays listed, greyed. One SVG rail runs under fixed
-/// 32 px rows; the way to the head is drawn in the live colour.
+/// it starts from (every rewind opens a new lane); the abandoned attempt stays listed, greyed.
+/// One SVG rail runs beside fixed 30 px rows; the way to the head is drawn in the live colour,
+/// and the row content slides right as lanes are added.
 /// One tab stop: ↑ / ↓ / Home / End move between rows, Enter or Space rewinds to the focused row.
 #[component]
 pub fn CheckpointLanes(
@@ -150,8 +158,8 @@ pub fn CheckpointLanes(
     /// Heading of the bar.
     #[props(default = "Checkpoints".to_string())]
     title: String,
-    /// Time labels, same order (absolute ISO, `2026-11-14 15:31:09`); default the run time
-    /// (`1:05`). When every label shares one day, the day shows once in the bar and rows show
+    /// Time labels, same order (absolute ISO, `2026-11-14 15:31:09`, opt-in); default the run
+    /// time (`1:05`). When every label shares one day, the day shows once in the bar and rows show
     /// the time of day (the full label stays in the tooltip and the accessible name).
     #[props(default)]
     times: Vec<String>,
@@ -164,8 +172,13 @@ pub fn CheckpointLanes(
     /// Show the tool that made each checkpoint as an icon before its title.
     #[props(default = true)]
     tool_icons: bool,
-    /// Show what each step cost (`+$0.11`) beside its time.
+    /// Show the app's own logo in the tool tile when the tool is an app Oxyn knows
+    /// ([`Checkpoint::tool_brand`]), else the tool-kind glyph.
     #[props(default = true)]
+    tool_logos: bool,
+    /// Show what each step cost (`+$0.11`) beside its time (off by default; the total is in the
+    /// bar).
+    #[props(default = false)]
     step_costs: bool,
     /// Cost formatter, cents in (default `format_cost`: `$0.42`, `$1.2k`).
     #[props(default)]
@@ -179,6 +192,12 @@ pub fn CheckpointLanes(
 ) -> Element {
     let rows = lanes(&checkpoints, head.as_deref());
     let rl = rail(&checkpoints, &rows);
+    let uid = use_hook(|| {
+        use std::sync::atomic::{AtomicUsize, Ordering};
+        static NEXT: AtomicUsize = AtomicUsize::new(0);
+        NEXT.fetch_add(1, Ordering::Relaxed)
+    });
+    let first_n = use_hook(|| checkpoints.len());
     let head_i = rows.iter().position(|r| r.current).unwrap_or(0);
     let mut focus = use_signal(|| head_i);
     let els: Els = use_signal(Vec::new);
@@ -234,7 +253,11 @@ pub fn CheckpointLanes(
     let view_style = format!(
         "--g:{}px;height:{view_h}px;{}",
         rl.width,
-        if scrolls { "overflow-y:auto" } else { "" }
+        if scrolls {
+            "overflow-y:auto"
+        } else {
+            "overflow:hidden"
+        }
     );
     rsx! {
         div { class: "oxyn-cp lanes {tone_cls}",
@@ -253,7 +276,7 @@ pub fn CheckpointLanes(
             } else {
                 div { class: "view oxyn-cp-scroll", style: "{view_style}",
                     onmounted: move |e: MountedEvent| scroller.set(Some(e.data())),
-                    LaneRail { rail: rl.clone() }
+                    LaneRail { rail: rl.clone(), uid, first_n }
                     ol { class: "rows", "aria-label": "{title}",
                         onkeydown: move |e: KeyboardEvent| {
                             let Some(k) = cp_key(&e) else { return };
@@ -280,12 +303,15 @@ pub fn CheckpointLanes(
                                 let dt = match d_of { Some(d) => format!("{d}T{tod}"), None => String::new() };
                                 let label = format!("{}, {full}{}", r.aria, if can { " – press Enter to rewind here" } else { "" });
                                 let att = r.branch_from.is_some();
+                                let dl = if i < first_n { i * 55 } else { 0 };
                                 rsx! {
                                     li { key: "{id}", class: "{cls}", "aria-current": if r.current { "step" } else { "false" }, "aria-label": "{label}", tabindex: if i == f { "0" } else { "-1" },
-                                        style: "--d:{i * 55}ms",
+                                        style: "--d:{dl}ms",
                                         onmounted: move |e| keep(els, i, e), onfocus: move |_| focus.set(i),
                                         if tool_icons {
-                                            if let Some(ic) = c.tool_icon() {
+                                            if let Some(b) = c.tool_brand().filter(|_| tool_logos) {
+                                                span { class: "ti logo {b}", title: "{c.tool.clone().unwrap_or_default()}", "aria-hidden": "true", BrandIcon { name: b.to_string(), size: 13.0 } }
+                                            } else if let Some(ic) = c.tool_icon() {
                                                 span { class: "ti", title: "{c.tool.clone().unwrap_or_default()}", "aria-hidden": "true", Icon { name: ic, size: 12.0 } }
                                             } else {
                                                 span { class: "ti none", "aria-hidden": "true" }
