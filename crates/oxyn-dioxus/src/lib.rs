@@ -28,7 +28,7 @@ pub use chat::{
 pub use checkpoint::{
     CheckpointFilmStrip, CheckpointFilmStripProps, CheckpointLanes, CheckpointLanesProps,
     CheckpointList, CheckpointListProps, CheckpointMarker, CheckpointMarkerProps, CheckpointTree,
-    CheckpointTreeProps, RestorePreviewSheet, RestorePreviewSheetProps, RestoreToast,
+    CheckpointTreeProps, RailTone, RestorePreviewSheet, RestorePreviewSheetProps, RestoreToast,
     RestoreToastProps, UndoLadder, UndoLadderProps,
 };
 pub use composer::{
