@@ -1,5 +1,5 @@
--- Oxyn Pro and Team (G1): subscriptions sold through Polar, the licences they grant, Team seats and
--- the founder-rate counter. Polar is the merchant of record and the source of truth; these tables
+-- Oxyn Pro and Team (G1): subscriptions sold through Polar, the licences they grant, Team seats,
+-- the founder-rate counter, and manual grants (the admin UI for grants comes in G2). Polar is the merchant of record and the source of truth; these tables
 -- are the Worker's copy, written only by the signed Polar webhook (site/worker/billing.ts).
 -- Additive only, so it is safe to apply before the Worker that uses it. Apply with:
 --   npx wrangler d1 migrations apply oxyn --remote   (from site/)
@@ -46,8 +46,8 @@ CREATE TABLE licences (
 CREATE INDEX licences_user ON licences (user_id);
 CREATE INDEX licences_email ON licences (email);
 
--- Team seats: the owner of a Team subscription invites up to four emails. A seat opens Pro for the
--- account with that email once Google or GitHub verified it.
+-- Team seats: a Team is up to 4 people, so its owner invites up to three teammate emails. A seat
+-- opens Pro for the account with that email once Google or GitHub verified it.
 CREATE TABLE team_seats (
   subscription_id TEXT NOT NULL REFERENCES subscriptions (id) ON DELETE CASCADE,
   email           TEXT NOT NULL COLLATE NOCASE,
@@ -82,3 +82,20 @@ CREATE TABLE webhook_events (
   received_at TEXT NOT NULL
 );
 CREATE INDEX webhook_events_received ON webhook_events (received_at);
+
+-- Manual grants: Pro or Team given by a maintainer without a Polar subscription (a sponsor, a
+-- contributor, a refund made good). plan_for() in worker/billing.ts treats an unrevoked grant whose
+-- expires_at is NULL or in the future exactly like an active subscription. Matched by email, once
+-- Google or GitHub verified that email. Written by the admin panel from G2 on.
+CREATE TABLE grants (
+  id         INTEGER PRIMARY KEY AUTOINCREMENT,
+  email      TEXT NOT NULL COLLATE NOCASE,
+  plan       TEXT NOT NULL CHECK (plan IN ('pro', 'team')),
+  seats      INTEGER NOT NULL DEFAULT 1,                   -- Team grants: seats it includes
+  expires_at TEXT,                                         -- ISO 8601, UTC; NULL = no end
+  reason     TEXT,
+  granted_by TEXT NOT NULL,                                -- admin email
+  created_at TEXT NOT NULL,
+  revoked_at TEXT
+);
+CREATE INDEX grants_email ON grants (email);
