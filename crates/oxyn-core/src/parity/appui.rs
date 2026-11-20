@@ -1,5 +1,5 @@
 //! Interaction state for the agent apps (Taskdeck, Command Center, Session Studio, Fleet
-//! Window, Workspace Coder, Command Board, Threadbar, Tabstack, Repo Desk, Preview Desk) as one
+//! Window, Workspace Coder, Command Board, Threadbar, Tabstack, Repo Desk, Preview Desk, Hangar, Halo Chat, Pilot Panel, Courier) as one
 //! renderer-free model, so the GPUI views and any other host drive the same rules: the open
 //! sidebar row, the view tab, the rail, the account menu, the composer draft and its queue, and
 //! the last press. Keys follow the Dioxus apps: Escape closes the account menu first, then the
@@ -600,6 +600,14 @@ pub mod views {
     pub const REPO_DESK: &[&str] = &["", "inbox", "project"];
     /// Preview Desk: the session with its site, Design mode, the diff.
     pub const PREVIEW_DESK: &[&str] = &["", "design", "diff"];
+    /// Hangar: the conversation with the Editor, the Plan artifact, the Browser.
+    pub const HANGAR: &[&str] = &["", "artifact", "browser"];
+    /// Halo Chat: the chat, the research plan, the mini chat.
+    pub const HALO_CHAT: &[&str] = &["", "research", "mini"];
+    /// Pilot Panel: the task in Act, Plan mode, the step that waits on approval.
+    pub const PILOT_PANEL: &[&str] = &["", "plan", "approval"];
+    /// Courier: the thread with its pod, the pod's Changes, the pod's Desktop.
+    pub const COURIER: &[&str] = &["", "changes", "desktop"];
 }
 
 #[cfg(test)]
