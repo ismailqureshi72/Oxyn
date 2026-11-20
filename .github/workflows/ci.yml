@@ -121,16 +121,16 @@ jobs:
       # site/worker/dev.ts swaps the Access JWT check and GitHub sign-in for localhost stubs. They
       # must never be deployed: fail if either marker is in the bundle, and prove the check would see
       # them (dev.ts bundle).
-      - name: dev stubs are not deployed (admin Access, GitHub sign-in)
+      - name: dev stubs are not deployed (fake Google and GitHub sign-in)
         working-directory: site
         run: |
-          for m in OXYN_DEV_ACCESS_STUB OXYN_DEV_GITHUB_STUB fake-github.oxyn.invalid; do
+          for m in OXYN_DEV_GOOGLE_STUB OXYN_DEV_GITHUB_STUB fake-google.oxyn.invalid fake-github.oxyn.invalid; do
             if grep -rq "$m" "$RUNNER_TEMP/worker-dry"; then
               echo "::error::dev stub marker $m (worker/dev.ts) is in the deploy bundle"; exit 1
             fi
           done
           npx --yes wrangler@4 deploy --dry-run worker/dev.ts --outdir "$RUNNER_TEMP/worker-dev"
-          for m in OXYN_DEV_ACCESS_STUB OXYN_DEV_GITHUB_STUB fake-github.oxyn.invalid; do
+          for m in OXYN_DEV_GOOGLE_STUB OXYN_DEV_GITHUB_STUB fake-google.oxyn.invalid fake-github.oxyn.invalid; do
             grep -rq "$m" "$RUNNER_TEMP/worker-dev" || { echo "::error::marker check for $m is broken"; exit 1; }
           done
           echo "deploy bundle has no dev stubs"
