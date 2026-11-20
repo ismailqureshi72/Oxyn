@@ -16,7 +16,7 @@
   /** A same-site path to return to after signing in; never the sign-in pages or the API. */
   function nextPath() {
     const n = params.get('next') || '';
-    if (n.startsWith('/') && !n.startsWith('//') && !n.startsWith('/\\') && !/^\/(api|admin|login|signup)(\/|$)/.test(n) && n.length < 512) return n;
+    if (n.startsWith('/') && !n.startsWith('//') && !n.startsWith('/\\') && !/^\/(api|login|signup)(\/|$)/.test(n) && n.length < 512) return n;
     return '/account/';
   }
 
@@ -52,7 +52,7 @@
   const acct = $('[data-acct]');
   const btn = acct && $('[data-acct-btn]', acct);
   const menu = acct && $('[data-acct-menu]', acct);
-  const items = () => (menu ? $$('[role="menuitem"]', menu) : []);
+  const items = () => (menu ? $$('[role="menuitem"]', menu).filter((x) => !x.hidden) : []);
 
   function openMenu(focusFirst) {
     menu.hidden = false;
@@ -83,7 +83,10 @@
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !menu.hidden) { e.preventDefault(); closeMenu(true); } });
   }
 
-  function showSignedIn(u) {
+  function showSignedIn(u, me) {
+    // Admin: maintainers whose email Google or GitHub verified, plus admin emails that still need
+    // that check (the panel explains it). Everyone else never sees the link.
+    $$('[data-acct-admin]').forEach((a) => { a.hidden = !(me.is_admin || u.admin_needs_verification); });
     if (!acct) return;
     acct.dataset.state = 'in';
     $('[data-acct-signin]', acct).hidden = true;
@@ -120,6 +123,10 @@
 
   // ── Sign-in / sign-up card ───────────────────────────────────────────────────────────────────
   const GH_ERRORS = {
+    google_state: 'That Google sign-in expired or came from another tab. Please try again.',
+    google_denied: 'Google sign-in was cancelled.',
+    google_email: 'Google did not confirm an email address for that account. Use another account, or your email here.',
+    google_failed: 'Google sign-in did not work this time. Please try again.',
     github_state: 'That GitHub sign-in expired or came from another tab. Please try again.',
     github_denied: 'GitHub sign-in was cancelled.',
     github_email: 'Your GitHub account has no verified email address. Add one on GitHub, or use your email here.',
@@ -131,6 +138,7 @@
     const err = $('[data-auth-err]', authCard);
     const go = $('[data-auth-go]', authCard);
     const gh = $('[data-auth-gh]', authCard);
+    const gg = $('[data-auth-gg]', authCard);
     const ghNote = $('[data-auth-ghnote]', authCard);
     const mode = authCard.dataset.auth;
     const next = nextPath();
@@ -148,14 +156,20 @@
     const code = params.get('error');
     if (code && GH_ERRORS[code]) showErr(GH_ERRORS[code]);
 
-    if (me && me.github) {
-      gh.removeAttribute('aria-disabled');
-      gh.removeAttribute('tabindex');
-      gh.href = '/api/auth/github/start?next=' + encodeURIComponent(next);
-      ghNote.hidden = true;
-      gh.removeAttribute('aria-describedby');
-    }
-    gh.addEventListener('click', (e) => { if (gh.getAttribute('aria-disabled') === 'true') e.preventDefault(); });
+    // Turn on each provider the server reports as set up; the note names whatever is still off.
+    const enable = (btn, path) => {
+      btn.removeAttribute('aria-disabled');
+      btn.removeAttribute('tabindex');
+      btn.removeAttribute('aria-describedby');
+      btn.href = path + '?next=' + encodeURIComponent(next);
+    };
+    const ggOn = !!(me && me.google), ghOn = !!(me && me.github);
+    if (ggOn) enable(gg, '/api/auth/google/start');
+    if (ghOn) enable(gh, '/api/auth/github/start');
+    const off = [!ggOn && 'Google', !ghOn && 'GitHub'].filter(Boolean);
+    ghNote.textContent = off.length ? off.join(' and ') + ' sign-in coming soon' : '';
+    ghNote.hidden = !off.length;
+    [gg, gh].forEach((b) => b.addEventListener('click', (e) => { if (b.getAttribute('aria-disabled') === 'true') e.preventDefault(); }));
 
     const eye = $('[data-auth-eye]', authCard);
     eye.addEventListener('click', () => {
@@ -186,7 +200,7 @@
   }
 
   // ── Account page ─────────────────────────────────────────────────────────────────────────────
-  const NAMES = { password: 'Email and password', github: 'GitHub' };
+  const NAMES = { password: 'Email and password', github: 'GitHub', google: 'Google' };
   function fillAccount(me) {
     if (!account) return;
     account.removeAttribute('aria-busy');
@@ -215,7 +229,7 @@
       if (r.ok) me = r.data;
     }
     if (me && me.signed_in) {
-      showSignedIn(me.user);
+      showSignedIn(me.user, me);
       // Already signed in: the sign-in pages have nothing to do, so go on.
       if (authCard) { location.replace(nextPath()); return; }
     } else showSignedOut();
