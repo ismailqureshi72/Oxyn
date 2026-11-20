@@ -5,7 +5,7 @@
 // token, and redlined spacing. Layers (left) and Inspector (right) are real controls, so a visitor
 // can do all of it too. It shows no library components. Script: ./hero.js; styles: .dz* in site.css.
 import { counts, REPO } from '../../lib/data';
-const free = counts.components + counts.screens;
+const free = counts.components;
 const install = `cargo add oxyn-dioxus oxyn-core --git ${REPO}`;
 const repoName = REPO.split('/').pop();
 ---
@@ -28,7 +28,7 @@ const repoName = REPO.split('/').pop();
     </aside>
 
     <div class="dz-lock" data-dz-lock>
-      <a class="badge-pill" href="/components/" data-k="badge"><b>{free} free</b><span>Components, screens and variants</span><span class="bp-go" aria-hidden="true">→</span></a>
+      <a class="badge-pill" href="/components/" data-k="badge"><b>{free} free</b><span>Components, primitives and variants</span><span class="bp-go" aria-hidden="true">→</span></a>
       <h1 id="dz-h1" class="dz-h1" data-k="h1"><span class="dz-w">Agent</span> <span class="dz-w">UI,</span> <span class="dz-w dz-soft">beautifully</span> <span class="dz-w dz-soft">done.</span></h1>
       <p class="dz-sub" data-k="sub">Rust components for chat, tool calls, approvals and live runs. Dioxus on the web, GPUI on the desktop.</p>
       <div class="dz-cta" data-k="cta">

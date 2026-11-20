@@ -23,7 +23,7 @@ const libActive = !current.startsWith('/docs') && !current.startsWith('/pricing'
 const groupsList = [
   { label: 'Components', href: '/components/', n: counts.components, items: [], head: true },
   ...families,
-  { label: 'Screens', href: '/screens/', n: counts.screens - counts.agentApps - counts.arcScreens, items: [...composedScreens.map((c) => [c.name, c.href, false] as const), ...appScreens.map((d) => [d.name, demoUrl(d), isPro(d)] as const)] },
+  { label: 'Screens', href: '/screens/', n: counts.screens - counts.agentApps - counts.arcScreens, items: [...composedScreens.map((c) => [c.name, c.href, true] as const), ...appScreens.map((d) => [d.name, demoUrl(d), isPro(d)] as const)] },
   { label: 'Agent apps', href: '/screens/#agent-apps', n: counts.agentApps, items: agentApps.map((d) => [d.name, demoUrl(d), isPro(d)] as const) },
   { label: 'Arc screens', href: '/screens/#arc-screens', n: counts.arcScreens, items: arcScreens.map((d) => [d.name, demoUrl(d), isPro(d)] as const) },
   { label: 'Blocks', href: '/blocks/', n: 0, items: [] },
