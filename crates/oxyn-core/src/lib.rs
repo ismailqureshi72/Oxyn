@@ -25,6 +25,7 @@
 //! assert_eq!(oxyn_core::verbs::summary(m.state(), oxyn_core::verbs::VerbPack::neutral()).as_deref(), Some("Worked for 7s"));
 //! ```
 
+pub mod aikit;
 pub mod approval;
 pub mod brand;
 pub mod chat;
