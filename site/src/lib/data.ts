@@ -5,7 +5,7 @@ import specsJson from '../generated/specs.json';
 import parityJson from '../generated/parity.json';
 import wasmJson from '../generated/wasm.json';
 import motionJson from '../generated/motion.json';
-import { GROUPS, groupSlugOf, isScreen, isAgentApp, isArcScreen, ARC_SCREENS, pageUrl } from './taxonomy.mjs';
+import { GROUPS, groupSlugOf, isScreen, isAgentApp, isArcScreen, isProComponent, ARC_SCREENS, pageUrl } from './taxonomy.mjs';
 
 export type Control = {
   key: string;
@@ -205,6 +205,7 @@ export const motionDemos = ['text-shimmer', 'verb-cycler', 'text-reveal', 'numbe
 export const composedScreens = [{ name: 'Agent workspace', href: '/screens/agent-workspace/', summary: 'A complete AI agent app: threads, the agent thread and the work pane.' }];
 export const counts = {
   components: components.length,
+  proComponents: components.filter((d) => isProComponent(d)).length,
   screens: screens.length + composedScreens.length,
   agentApps: agentApps.length,
   arcScreens: arcScreens.length,
@@ -213,10 +214,10 @@ export const counts = {
   motion: motionDemos.length,
   variants: demos.reduce((n, d) => n + d.variants.length, 0),
 };
-/** Oxyn Pro (docs/pricing.md): every screen and agent-app template (and blocks and kits as they
- *  ship) is Pro: the bolt badge, and a locked code panel for accounts without Pro. Previews stay
- *  open to everyone. Every component and primitive stays free. */
-export const isPro = (d: Demo) => isScreen(d);
+/** Oxyn Pro (docs/pricing.md): every screen and agent-app template, the AI special components
+ *  (and blocks and kits as they ship) are Pro: the bolt badge, and a locked code panel for accounts
+ *  without Pro. Previews stay open to everyone. Every other component and primitive stays free. */
+export const isPro = (d: Demo) => isScreen(d) || isProComponent(d);
 // Pro code never reaches a static page: some server-rendered previews carry the playground's code
 // panel, so it is cut from every Pro demo's markup here (Pro accounts get the code from the Worker).
 const stripCode = (h: string) => h.replace(/<div class="oxd-code">[\s\S]*?<\/pre><\/div>/g, '');

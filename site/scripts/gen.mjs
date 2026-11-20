@@ -15,7 +15,7 @@ import fs from 'node:fs';
 import { gzipSync } from 'node:zlib';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { SCREENS } from '../src/lib/taxonomy.mjs';
+import { SCREENS, PRO_COMPONENTS } from '../src/lib/taxonomy.mjs';
 
 const site = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const root = path.resolve(site, '..');
@@ -145,14 +145,15 @@ fs.writeFileSync(path.join(gen, 'parity.json'), JSON.stringify(rows));
 // 5. Motion tokens.
 fs.copyFileSync(path.join(root, 'tokens/oxyn.motion.json'), path.join(gen, 'motion.json'));
 
-// 6. Pro usage code (docs/pricing.md): the code of every Pro item (screens, agent-app templates)
+// 6. Pro usage code (docs/pricing.md): the code of every Pro item (screens, agent-app templates,
+// the AI special components)
 // goes to the Worker bundle, which hands it out only to Pro accounts (GET /api/pro/source/<slug>).
 // The static pages carry the preview and a locked code panel, never this code.
 {
   const { demos } = JSON.parse(fs.readFileSync(path.join(gen, 'demos.json'), 'utf8'));
   const pro = {};
   for (const d of demos) {
-    if (!SCREENS.includes(d.slug)) continue;
+    if (!SCREENS.includes(d.slug) && !PRO_COMPONENTS.includes(d.slug)) continue;
     pro[d.slug] = { name: d.name, code: d.code, variants: d.variants.map((v) => ({ name: v.name, code: v.code })) };
   }
   fs.writeFileSync(path.join(site, 'worker/pro-src.json'), JSON.stringify(pro));
