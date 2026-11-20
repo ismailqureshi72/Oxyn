@@ -283,7 +283,7 @@ authoritative** and may rename or recount.
 | Component | Spec | F | P | Free names | Pro names |
 |---|---|---|---|---|---|
 | `snapshot-banner` | this file | 3 | 5 | bar, pill, terminal | sepia, drift-counter, compare-toggle, edge-frame, step-arrows |
-| `checkpoint-timeline` | checkpoint-timeline.md | 4 | 14 | inline-marker, hover-revert, side-list, terminal | scrubber, tree, filmstrip, diff-peek, bookmarks, milestone-cards, ghost-rewind, branch-rail, cost-delta, summarize-from-here, composer-dock, day-heat, compare-pair, tape-rewind |
+| `checkpoint-timeline` | checkpoint-timeline.md | 4 | 15 | inline-marker, hover-revert, side-list, terminal | scrubber, tree (built C1a), filmstrip (built C1a), undo-ladder (built C1a), diff-peek, bookmarks, milestone-cards, ghost-rewind, branch-rail, cost-delta, summarize-from-here, composer-dock, day-heat, compare-pair, tape-rewind |
 | `rollback-impact` | rollback-impact.md | 3 | 9 | sheet, inline, terminal | severity-meter, effects-timeline, outcome-tree, two-column, hold-to-confirm, file-diffs, compensations, receipt, blast-radius |
 | `diff-viewer` | diff-viewer.md | 4 | 16 | unified, split, stacked, terminal | review-pane, inline-editor, minimap-heat, follow-agent, redline, image-compare, table-cells, json-tree, moved-blocks, semantic-fold, commit-filter, walkthrough, bar-style, hunk-cards, focus-dim, origin-lanes |
 | `merge-conflict` | [merge-conflict.md](merge-conflict.md) | 3 | 20 | three-pane, inline-stacked, card | result-center, two-way, base-overlay, radar, commit-rail, review-queue, rationale-thread, confidence-gutter, word-merge, semantic-blocks, ghost-hover, binary-compare, rename-map, rebase-stepper, test-gated, lockfile-regen, minimap-heat, multiplayer, tui, focus-mode |

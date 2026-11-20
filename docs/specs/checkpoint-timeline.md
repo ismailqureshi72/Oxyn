@@ -327,8 +327,55 @@ back a branch over changed files).
 
 
 ## Implementation (v0.2, plan #21)
-`oxyn-core::checkpoint` (lanes, head path, restore labels, `RestoreFlow` with 10 s undo window); Dioxus `CheckpointLanes`, `CheckpointMarker` (inline-marker, hover-revert), `CheckpointList` (side-list, terminal), `RestoreToast`; GPUI `CheckpointLanesEl`. Not built yet: preview popover and snapshot banner, impact sheet (rollback-impact.md), scrubber, Pro variants.
+`oxyn-core::checkpoint` (lanes, head path, restore labels, `RestoreFlow` with 10 s undo window); Dioxus `CheckpointLanes`, `CheckpointMarker` (inline-marker, hover-revert), `CheckpointList` (side-list, terminal), `RestoreToast`; GPUI `CheckpointLanesEl`. Not built yet: preview popover and snapshot banner, impact sheet (rollback-impact.md), scrubber, Pro variants.  (C1a below adds the tree, film strip, undo ladder and restore preview sheet.)
 
 ## Plan #28 parity (2026-11-14)
 
 Agent Checkpoints (affectUI) gaps reviewed: the head path, cost total and stopped status are covered by the existing `CheckpointLanes` model (`checkpoint.rs`); new run views ([agent-trail](agent-trail.md), [activity-feed](activity-feed.md)) cover the trail and day-grouped timeline gaps. Remaining: per-checkpoint tool icon and a `format_cost` hook (listed in the PR).
+
+## C1a: Checkpoints family upgrade (2026-11-20)
+
+Behaviour parity with affectUI Agent Checkpoints (behaviour only; no code, copy or styling taken),
+plus four new members. All of it runs on `oxyn-core::checkpoint`, so Dioxus and GPUI share one
+model and one key map (`CpKey`: ↑ ↓ ← → Home End Enter/Space Esc, ⌘Z / Ctrl+Z, ⇧⌘Z / Ctrl+Y).
+
+**Shared model additions**
+- `CheckpointRun`: checkpoints, head and a roving focus. `rewind(i)` marks whatever is running
+  `Stopped`, appends a running "Retry from …" checkpoint whose parent is `i`, moves the head to it
+  and focuses it; the head and running checkpoints can't be rewound to. `key()` maps arrows,
+  Home / End and Enter.
+- `iso_at(day, start, at)`: absolute ISO timestamps (`2026-11-14 15:31:04`), rolling over midnight.
+  Every surface now shows absolute ISO dates and times rather than "Today" or "3:42 PM".
+- `branch_tree(cps, head, folded)`: forks as an indented tree (first child continues the line,
+  later children open a fork one level deeper and are listed first), with `below` counts for
+  folded forks and `hidden` rows.
+- `FilmStrip` (frame, `scrub(frac)`, `playhead()`, keys) and `thumb_bars()` (a deterministic
+  miniature per checkpoint, changed lines highlighted, no images).
+- `UndoLadder` / `UndoStep`: `applied` steps in effect, `floor()` after the newest step that can't
+  be undone, `undo` / `redo` / `jump(i)`, rung states `applied` / `undone` / `locked`, summary
+  "4 of 6 applied · 2 undone".
+- `RestorePreview` / `PreviewFile` / `FileChange` (`M` / `A` / `D`): summary
+  "5 files · +53 −212 · 3 turns", phases Review → Confirm → Done, Esc steps back then cancels.
+
+**Upgraded**
+| Component | What changed |
+|---|---|
+| `CheckpointLanes` | One tab stop with roving focus (↑ ↓ Home End), Enter / Space rewinds the focused row, Rewind buttons are pointer-only shortcuts, `title`, `times` (ISO), `max_rows` (scrolls inside the card past 14 rows with a thin pill scrollbar), Head badge, container-query narrowing (task, files, cost, then time give way) |
+| `CheckpointList` | Side list grouped under ISO dates with `<time>` elements, keyboard selection, Restore on hover / Enter, `on_select` / `on_restore`; terminal picker is a listbox with `aria-activedescendant`, Enter shows the action line, 1–4 pick, Esc steps back |
+| `CheckpointMarker` | Real menu: Restore toggles it, R / C / B / F pick, ↑ ↓ move, Esc closes, focus and hover reveal the action; ISO time label; monochrome glyphs |
+| `RestoreToast` | Adds the `failed` flow to the demo (nothing changed + Retry) |
+
+**New**
+| Component | Variant | Behaviour |
+|---|---|---|
+| `CheckpointTree` | `checkpoint-timeline/tree` | role=tree, aria-level / aria-expanded; ← folds and → unfolds forks (fold button shows `+N`), Enter rewinds; path to the head solid, the rest faded |
+| `CheckpointFilmStrip` | `checkpoint-timeline/filmstrip` | Frames are a horizontal listbox (← → Home End), the scrubber is a native range input with `aria-valuetext`, playhead and ticks on a 2 px rail, polite caption with Restore |
+| `UndoLadder` | `checkpoint-timeline/undo-ladder` (new) | Vertical stepper, one tab stop, Enter jumps to a rung, ⌘Z / ⇧⌘Z step, a step that can't be undone shows "Can't undo" and locks the rungs under it |
+| `RestorePreviewSheet` | `rollback-impact/sheet` (checkpoint scope) | Modal dialog, focus starts on the primary, Tab stays inside, Restore → "Yes, restore" confirm (danger only on the confirm step) → done line with Preview again; Esc backs out |
+
+GPUI: `CheckpointsView` (focusable entity, `CpVariant` for all eight members, light / dark) on a
+pure `CpState` with the same keys and presses; tested without a window.
+
+Colour: chrome stays neutral (fg / border / surface tokens); colour only for status (failed,
+warning) and diff (`+` / `−`, `M` / `A` / `D`). Not built: host-provided screenshot thumbnails
+(film strip draws a miniature), compare-pair, diff-peek.
