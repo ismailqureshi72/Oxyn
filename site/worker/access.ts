@@ -263,8 +263,10 @@ async function checkSet(env: Env, entries: Entry[]): Promise<LineReport[]> {
     const x = info.get(r.email);
     if (!x) continue;
     r.account = x.verified == null ? 'none' : x.verified ? 'verified' : 'unverified';
-    if (r.account === 'none') r.warnings.push('No account yet: the grant waits and turns on when they sign in with Google or GitHub on this email.');
-    if (r.account === 'unverified') r.warnings.push('Password-only account: the grant turns on once they sign in with Google or GitHub on this email.');
+    if (!x.grant) {
+      if (r.account === 'none') r.warnings.push('No account yet: the grant waits and turns on when they sign in with Google or GitHub on this email.');
+      if (r.account === 'unverified') r.warnings.push('Password-only account: the grant turns on once they sign in with Google or GitHub on this email.');
+    }
     if (x.grant) { r.status = 'duplicate'; r.message = `Already has an active grant (${x.grant === 'team' ? 'Team owner' : x.grant === 'team member' ? 'Team member' : 'Pro'}). Revoke it first or change the plan from Users.`; continue; }
     if (x.paid && r.status === 'valid') { r.status = 'paid'; r.message = `Already has ${x.paid}. A grant on top is usually not needed.`; }
   }
