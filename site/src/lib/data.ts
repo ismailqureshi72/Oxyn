@@ -51,17 +51,14 @@ export const props = propsJson as Record<string, { file: string; doc: string; pr
 export const specs = specsJson as Record<string, { title: string; sections: Record<string, string> }>;
 export const parity = parityJson as Record<string, string>[];
 // Parity names: a demo that rebuilds an affectUI item takes affectUI's own name ("Chat Composer",
-// "Comment Thread") and its tier, so the sidebar and pages read like the reference (Pro items carry
-// the bolt badge; everything stays free and MIT here).
+// "Comment Thread"), so the sidebar and pages read like the reference. Its tier there does not
+// matter here: Oxyn's own split is below (isPro).
 const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
 const affect = new Map<string, Record<string, string>>();
 for (const r of parity) if (r.source === 'affectUI' && !affect.has(norm(r.item))) affect.set(norm(r.item), r);
-const proSlugs = new Set<string>();
 for (const d of demos) {
   const r = affect.get(norm(d.name));
-  if (!r) continue;
-  d.name = r.item;
-  if (r.tier === 'Pro') proSlugs.add(d.slug);
+  if (r) d.name = r.item;
 }
 export const wasm = wasmJson as { js: string | null; wasm: string | null; bytes: number };
 export const motion = motionJson as Record<string, any>;
@@ -216,8 +213,25 @@ export const counts = {
   motion: motionDemos.length,
   variants: demos.reduce((n, d) => n + d.variants.length, 0),
 };
-/** Pro markers: nothing is Pro yet (everything here is free and MIT). */
-export const isPro = (d: Demo) => proSlugs.has(d.slug);
+/** Oxyn Pro (docs/pricing.md): every screen and agent-app template (and blocks and kits as they
+ *  ship) is Pro: the bolt badge, and a locked code panel for accounts without Pro. Previews stay
+ *  open to everyone. Every component and primitive stays free. */
+export const isPro = (d: Demo) => isScreen(d);
+// Pro code never reaches a static page: some server-rendered previews carry the playground's code
+// panel, so it is cut from every Pro demo's markup here (Pro accounts get the code from the Worker).
+const stripCode = (h: string) => h.replace(/<div class="oxd-code">[\s\S]*?<\/pre><\/div>/g, '');
+for (const d of demos) {
+  if (!isPro(d)) continue;
+  d.html = stripCode(d.html);
+  for (const v of d.variants) v.html = stripCode(v.html);
+}
+/** Plan prices shown on the site, in US dollars before tax (Polar adds tax at checkout). Keep in
+ *  step with PLANS in worker/billing.ts. */
+export const PRICES = {
+  pro: { month: 19.99, year: 199.99 },
+  founder: { month: 12.99, year: 124.45, cap: 100 },
+  team: { month: 44.99, year: 449, people: 4, seats: 3 }, // up to 4 people: the owner plus 3 teammates
+};
 
 const firstPara = (s: string | null) => {
   if (!s) return '';
