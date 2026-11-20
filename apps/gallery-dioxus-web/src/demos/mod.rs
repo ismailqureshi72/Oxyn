@@ -5,6 +5,7 @@ use oxyn_core::ClockMs;
 
 use crate::{Align, Control, Demo, Kind, Vals, Variant};
 
+mod ai_special;
 mod approvals;
 mod buttons;
 mod chat;
@@ -57,7 +58,7 @@ pub struct Category {
 }
 
 /// Categories in nav order.
-pub const CATEGORIES: [Category; 27] = [
+pub const CATEGORIES: [Category; 28] = [
     Category {
         slug: "composer",
         name: "Composer",
@@ -87,6 +88,11 @@ pub const CATEGORIES: [Category; 27] = [
         slug: "checkpoints-git",
         name: "Checkpoints",
         blurb: "Rewind a run to any point; new attempts branch out of it.",
+    },
+    Category {
+        slug: "ai-special",
+        name: "AI components",
+        blurb: "Pro: agent timeline, model card, AI workflow, image generation, speech, meetings, replies, handoff, redaction, costs, keys, stats, translate, TL;DR, connectors, enrichment and routing.",
     },
     Category {
         slug: "buttons",
@@ -224,6 +230,7 @@ pub fn catalog() -> Vec<Demo> {
     v.extend(parity_merge::demos());
     v.extend(parity_text::demos());
     v.extend(checkpoints::demos());
+    v.extend(ai_special::demos());
     v.extend(buttons::demos());
     v.extend(inputs::demos());
     v.extend(parity_input::demos());
