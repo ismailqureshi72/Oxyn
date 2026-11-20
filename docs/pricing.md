@@ -16,9 +16,11 @@ card details.
 
 Prices are US dollars before tax. There is no lifetime plan.
 
-**Pro includes** every screen, agent-app template, block and kit (with their code), weekly drops,
-Studio extras and the Pro CLI and MCP. **Free stays fully usable**: components and primitives never
-move to Pro, and every Pro preview stays open to everyone.
+**Pro includes** every screen, agent-app template, block and kit, and the AI components (agent
+timeline, model card, AI workflow and the rest of `PRO_COMPONENTS` in `site/src/lib/taxonomy.mjs`),
+with their code, weekly drops, Studio extras and the Pro CLI and MCP. **Free stays fully usable**:
+free components and primitives never move to Pro (new Pro components ship as Pro from day one), and
+every Pro preview stays open to everyone.
 
 **Founder rate.** The first 100 founder subscriptions that become active are counted in D1
 (`founder_claims`). From the 100th on, `/api/billing/plans` reports the founder rate as closed, the
