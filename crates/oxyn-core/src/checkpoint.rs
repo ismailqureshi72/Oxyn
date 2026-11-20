@@ -98,6 +98,14 @@ impl Checkpoint {
             .map(|t| crate::parity::tools::ToolKindMap::standard().kind(t).icon())
     }
 
+    /// The app behind the tool, when it is one Oxyn has a logo for (`slack`, `github`,
+    /// `notion`, `figma`, `stripe`, `linear`, `vercel`): matched in the tool's name, so
+    /// `mcp__github__create_pull_request` is `github`.
+    pub fn tool_brand(&self) -> Option<&'static str> {
+        let t = self.tool.as_deref()?.to_ascii_lowercase();
+        BRANDS.iter().copied().find(|b| t.contains(b))
+    }
+
     /// Builder: status.
     pub fn with(mut self, s: CheckpointStatus) -> Self {
         self.status = s;
@@ -111,6 +119,11 @@ impl Checkpoint {
         self
     }
 }
+
+/// Apps with a logo for the tool tile ([`Checkpoint::tool_brand`]).
+pub const BRANDS: [&str; 7] = [
+    "slack", "github", "notion", "figma", "stripe", "linear", "vercel",
+];
 
 /// One drawn row of the lane graph.
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -154,8 +167,9 @@ pub fn format_at(d: Duration) -> String {
     }
 }
 
-/// Lays checkpoints out in lanes. A checkpoint whose parent already has an earlier child starts
-/// a new lane (a new attempt); everything off the head's ancestry is faded.
+/// Lays checkpoints out in lanes, git-graph style. A checkpoint starts a new lane (a new attempt)
+/// when its parent already has an earlier child, or when other checkpoints came between it and
+/// its parent (a rewind, even to a leaf); everything off the head's ancestry is faded.
 pub fn lanes(cps: &[Checkpoint], head: Option<&str>) -> Vec<CheckpointRow> {
     let head = head
         .map(str::to_string)
@@ -178,6 +192,9 @@ pub fn lanes(cps: &[Checkpoint], head: Option<&str>) -> Vec<CheckpointRow> {
             .as_ref()
             .and_then(|p| lane_of.iter().find(|(id, _)| id == p).map(|(_, l)| *l));
         let sibling_before = c.parent.is_some() && cps[..i].iter().any(|o| o.parent == c.parent);
+        // A rewind: the parent is not the checkpoint just before this one.
+        let rewound = i > 0 && c.parent.as_ref().is_some_and(|p| &cps[i - 1].id != p);
+        let sibling_before = sibling_before || rewound;
         let lane = match parent_lane {
             Some(l) if !sibling_before => l,
             _ if i == 0 => {
@@ -533,6 +550,17 @@ impl CheckpointRun {
     /// `i` and becomes the head. Returns the new checkpoint's id, or `None` when `i` can't be
     /// rewound to.
     pub fn rewind(&mut self, i: usize) -> Option<String> {
+        let t = self
+            .checkpoints
+            .get(i)
+            .map(|c| format!("Retry from {}", c.title))
+            .unwrap_or_default();
+        self.rewind_with(i, &t)
+    }
+
+    /// [`Self::rewind`] with the new attempt's first step titled `title` (what the agent does
+    /// next, `Switched to Stripe Elements`).
+    pub fn rewind_with(&mut self, i: usize, title: &str) -> Option<String> {
         if !self.can_rewind(i) {
             return None;
         }
@@ -551,13 +579,7 @@ impl CheckpointRun {
             .unwrap_or_default()
             + Duration::from_secs(14);
         let id = format!("r{}", self.rewinds);
-        let mut n = Checkpoint::new(
-            &id,
-            Some(&from.id),
-            &format!("Retry from {}", from.title),
-            0,
-        )
-        .with(CheckpointStatus::Running);
+        let mut n = Checkpoint::new(&id, Some(&from.id), title, 0).with(CheckpointStatus::Running);
         n.at = at;
         n.tool = Some("Edit".into());
         n.cost_cents = from.cost_cents;
@@ -1000,14 +1022,29 @@ impl RestorePreview {
     }
 }
 
-// ── Lane rail geometry (C1b): one drawing for the whole list, shared by both renderers ──
+// ── Lane rail geometry (C1b, measured against affectUI in C1c): one drawing for the whole
+// list, shared by both renderers ──
 
 /// Height of a lane row, in px.
-pub const RAIL_ROW_H: f32 = 32.0;
-/// X of the first lane's centre, in px.
-pub const RAIL_X0: f32 = 16.0;
+pub const RAIL_ROW_H: f32 = 30.0;
+/// X of the first lane's centre, in px (inside the card's border).
+pub const RAIL_X0: f32 = 21.0;
 /// Distance between two lanes, in px.
 pub const RAIL_LANE_W: f32 = 14.0;
+/// Height of a fork's bend: the new lane is vertical again this far below the parent dot.
+pub const RAIL_BEND_H: f32 = 22.0;
+/// Space between the last lane and the row content, in px.
+pub const RAIL_GAP: f32 = 15.0;
+/// Radius of a dot on the way to the head.
+pub const RAIL_DOT_R: f32 = 3.0;
+/// Radius of the head's dot.
+pub const RAIL_HEAD_R: f32 = 4.0;
+/// Outer radius of a left-behind ring (stroke included).
+pub const RAIL_RING_R: f32 = 4.25;
+/// Width of a rail line and of a ring's stroke.
+pub const RAIL_LINE_W: f32 = 1.5;
+/// Gap in the card colour around every dot, so no line touches a dot.
+pub const RAIL_KNOCKOUT: f32 = 1.3;
 
 /// One stroke of the rail: a straight run in one lane, or a fork that bends out of the parent's
 /// dot into a new lane and then runs straight down to the attempt's first checkpoint.
@@ -1026,9 +1063,38 @@ pub struct RailEdge {
 }
 
 impl RailEdge {
-    /// The bend ends one row below the parent (or at the child, when sooner).
+    /// The bend ends [`RAIL_BEND_H`] below the parent (or at the child, when sooner).
     pub fn bend_end(&self) -> f32 {
-        (self.from.1 + RAIL_ROW_H).min(self.to.1)
+        (self.from.1 + RAIL_BEND_H).min(self.to.1)
+    }
+
+    /// Length of the stroke in px (the bend is measured as a polyline), for a draw that runs at
+    /// a constant speed.
+    pub fn len(&self) -> f32 {
+        let (x1, y1) = self.from;
+        let (x2, y2) = self.to;
+        if !self.fork {
+            return ((x2 - x1).powi(2) + (y2 - y1).powi(2)).sqrt();
+        }
+        let e = self.bend_end();
+        let h = e - y1;
+        let p = |t: f32| {
+            let u = 1.0 - t;
+            let x = u * u * u * x1 + 3.0 * u * u * t * x1 + 3.0 * u * t * t * x2 + t * t * t * x2;
+            let y = u * u * u * y1
+                + 3.0 * u * u * t * (y1 + h * 12.0 / 22.0)
+                + 3.0 * u * t * t * (y1 + h * 10.0 / 22.0)
+                + t * t * t * e;
+            (x, y)
+        };
+        let mut l = 0.0;
+        let mut a = p(0.0);
+        for k in 1..=16 {
+            let b = p(k as f32 / 16.0);
+            l += ((b.0 - a.0).powi(2) + (b.1 - a.1).powi(2)).sqrt();
+            a = b;
+        }
+        l + (y2 - e).max(0.0)
     }
 
     /// SVG path data: `M x y L x y` or the fork curve plus its straight tail.
@@ -1040,10 +1106,11 @@ impl RailEdge {
         }
         let e = self.bend_end();
         let h = e - y1;
+        // A symmetric S, traced from affectUI: controls at 12/22 and 10/22 of the bend.
         let mut d = format!(
             "M{x1} {y1} C{x1} {} {x2} {} {x2} {e}",
-            y1 + h * 0.62,
-            y1 + h * 0.38
+            y1 + h * 12.0 / 22.0,
+            y1 + h * 10.0 / 22.0
         );
         if y2 > e {
             d.push_str(&format!(" L{x2} {y2}"));
@@ -1059,7 +1126,8 @@ pub struct RailDot {
     pub index: usize,
     /// Centre.
     pub at: (f32, f32),
-    /// Radius: 3.5, the head 5.
+    /// Radius: [`RAIL_DOT_R`], the head [`RAIL_HEAD_R`], a left-behind ring [`RAIL_RING_R`]
+    /// (outer edge, stroke included).
     pub r: f32,
     /// On the way to the head (filled), else a hollow ring.
     pub on_path: bool,
@@ -1120,7 +1188,13 @@ pub fn rail(cps: &[Checkpoint], rows: &[CheckpointRow]) -> Rail {
         .map(|r| RailDot {
             index: r.index,
             at: rail_point(r.lane, r.index),
-            r: if r.current { 5.0 } else { 3.5 },
+            r: if r.current {
+                RAIL_HEAD_R
+            } else if r.on_path {
+                RAIL_DOT_R
+            } else {
+                RAIL_RING_R
+            },
             on_path: r.on_path,
             current: r.current,
             status: cps
@@ -1129,7 +1203,7 @@ pub fn rail(cps: &[Checkpoint], rows: &[CheckpointRow]) -> Rail {
         })
         .collect();
     Rail {
-        width: RAIL_X0 + RAIL_LANE_W * (n_lanes - 1) as f32 + 16.0,
+        width: RAIL_X0 + RAIL_LANE_W * (n_lanes - 1) as f32 + RAIL_GAP,
         height: RAIL_ROW_H * rows.len() as f32,
         edges,
         dots,
@@ -1160,6 +1234,16 @@ mod tests {
 
     #[test]
     fn tool_icons_and_costs() {
+        assert_eq!(
+            Checkpoint::new("g", None, "PR", 1)
+                .tool("mcp__github__create_pull_request")
+                .tool_brand(),
+            Some("github")
+        );
+        assert_eq!(
+            Checkpoint::new("r", None, "R", 1).tool("Read").tool_brand(),
+            None
+        );
         let a = Checkpoint::new("a", None, "Read", 1).tool("Read").cost(12);
         let b = Checkpoint::new("b", Some("a"), "Edit", 2)
             .tool("apply_patch")
@@ -1315,6 +1399,55 @@ mod tests {
     }
 
     #[test]
+    fn c1c_fork_and_lane_rule() {
+        // Rewinding to a leaf (the failed last step of attempt 1) opens attempt 2's lane too.
+        let mut run = CheckpointRun::new(
+            vec![
+                Checkpoint::new("a", None, "A", 1),
+                Checkpoint::new("b", Some("a"), "B", 2),
+                Checkpoint::new("c", Some("b"), "C", 3).with(CheckpointStatus::Failed),
+                Checkpoint::new("d", Some("b"), "D", 4),
+            ],
+            None,
+        );
+        let id = run.rewind_with(2, "Fixed the test").unwrap();
+        let rows = run.rows();
+        assert_eq!(
+            rows.iter().map(|r| r.lane).collect::<Vec<_>>(),
+            vec![0, 0, 0, 1, 2]
+        );
+        assert_eq!(rows[4].branch_from, Some(0));
+        assert!(rows[4].current && rows[4].aria.contains("attempt 3"));
+        assert_eq!(run.checkpoints[4].title, "Fixed the test");
+        assert_eq!(run.checkpoints[4].id, id);
+        assert_eq!(header(&run.checkpoints), "5 checkpoints · 3 attempts");
+        // A step straight after its parent stays in the parent's lane.
+        let rows = lanes(
+            &[
+                Checkpoint::new("a", None, "A", 1),
+                Checkpoint::new("b", Some("a"), "B", 2),
+            ],
+            None,
+        );
+        assert_eq!(rows[1].lane, 0);
+        // The fork bends in 22 px whatever the distance, then runs straight down.
+        let e = RailEdge {
+            child: 6,
+            from: rail_point(0, 3),
+            to: rail_point(1, 6),
+            fork: true,
+            on_path: true,
+        };
+        assert_eq!(e.bend_end(), e.from.1 + RAIL_BEND_H);
+        assert_eq!(e.svg_d(), "M21 105 C21 117 35 115 35 127 L35 195");
+        let mut r = CheckpointRun::new(vec![Checkpoint::new("a", None, "A", 1)], None);
+        assert_eq!(r.rewind(0), None);
+        r.checkpoints.push(Checkpoint::new("b", Some("a"), "B", 2));
+        r.rewind(0);
+        assert_eq!(r.checkpoints[2].title, "Retry from A");
+    }
+
+    #[test]
     fn c1b_rail_geometry() {
         let cps = vec![
             Checkpoint::new("a", None, "A", 1),
@@ -1325,7 +1458,8 @@ mod tests {
         let rows = lanes(&cps, None);
         let r = rail(&cps, &rows);
         assert_eq!(r.height, 4.0 * RAIL_ROW_H);
-        assert_eq!(r.width, RAIL_X0 + RAIL_LANE_W + 16.0);
+        assert_eq!(r.width, RAIL_X0 + RAIL_LANE_W + RAIL_GAP);
+        assert_eq!(r.width, 50.0);
         assert_eq!(r.edges.len(), 3);
         // left-behind first, so the live path paints over it
         assert!(!r.edges[0].on_path && r.edges[0].child == 2);
@@ -1333,9 +1467,11 @@ mod tests {
         assert!(fork.fork && fork.on_path);
         assert_eq!(fork.from, rail_point(0, 1));
         assert_eq!(fork.to, rail_point(1, 3));
-        assert!(fork.svg_d().starts_with("M16 48 C16 "));
-        assert!(fork.svg_d().ends_with(" L30 112"));
-        assert_eq!(r.dots[3].r, 5.0);
+        assert_eq!(fork.svg_d(), "M21 45 C21 57 35 55 35 67 L35 105");
+        assert!((fork.len() - 64.0).abs() < 2.0, "{}", fork.len());
+        assert_eq!(r.dots[3].r, RAIL_HEAD_R);
+        assert_eq!(r.dots[2].r, RAIL_RING_R);
+        assert_eq!(r.dots[1].r, RAIL_DOT_R);
         assert!(!r.dots[2].on_path);
         assert_eq!(
             split_day("2026-11-14 15:31:09"),
