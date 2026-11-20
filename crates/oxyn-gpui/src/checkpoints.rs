@@ -8,12 +8,12 @@
 use gpui::{
     App, BorderStyle, Bounds, ClickEvent, Context, Div, FocusHandle, Focusable, FontWeight, Hsla,
     IntoElement, KeyDownEvent, ParentElement, PathBuilder, Pixels, Point, Render, SharedString,
-    Styled, Window, canvas, div, point, prelude::*, px, quad, size,
+    Styled, Window, canvas, div, point, prelude::*, px, quad, rgb, size,
 };
 use oxyn_core::checkpoint::{
     Checkpoint, CheckpointRun, CheckpointStatus, CpKey, FileChange, FilmStrip, PreviewFile,
-    PreviewPhase, RAIL_ROW_H, Rail, RestoreAction, RestorePreview, UndoLadder, UndoStep,
-    branch_tree, format_at, iso_at, rail, roving, split_day, thumb_bars,
+    PreviewPhase, RAIL_BEND_H, RAIL_KNOCKOUT, RAIL_LINE_W, RAIL_ROW_H, Rail, RestoreAction,
+    RestorePreview, UndoLadder, UndoStep, branch_tree, format_at, iso_at, rail, roving, thumb_bars,
 };
 use oxyn_tokens::{ColorRole, Theme};
 
@@ -417,7 +417,8 @@ fn attempt_label(lane: usize) -> SharedString {
     format!("Attempt {}", lane + 1).into()
 }
 
-/// First letter of the tool that made the checkpoint (the web build draws its icon).
+/// First letter of the tool that made the checkpoint, when it is not an app with a mark (the web
+/// build draws the tool-kind icon).
 fn tool_letter(cp: &Checkpoint) -> SharedString {
     cp.tool
         .as_deref()
@@ -427,27 +428,52 @@ fn tool_letter(cp: &Checkpoint) -> SharedString {
         .into()
 }
 
-/// Paints the lane rail: left-behind edges first, then the live path, then the dots (the head
-/// with a halo). Same geometry as the web build (`oxyn_core::checkpoint::rail`).
-fn paint_rail(
-    window: &mut Window,
-    o: Point<Pixels>,
-    rl: &Rail,
+/// Rail colours per theme, measured from affectUI (C1c): the live path, the head and its
+/// glint, and the quiet left-behind grey.
+struct RailInk {
     live: Hsla,
+    head: Hsla,
+    glint: Hsla,
     dim: Hsla,
-    raised: Hsla,
-) {
+    card: Hsla,
+}
+
+fn rail_ink(t: &Theme, dark: bool) -> RailInk {
+    let (live, head, glint) = if dark {
+        (rgb(0x0C96F6), rgb(0x54B4F6), rgb(0x54B4F6))
+    } else {
+        (rgb(0x83C7FE), rgb(0x0070D6), rgb(0x75B2E9))
+    };
+    RailInk {
+        live: live.into(),
+        head: head.into(),
+        glint: glint.into(),
+        dim: c(t, ColorRole::BorderDefault),
+        card: c(t, ColorRole::SurfaceRaised),
+    }
+}
+
+/// Paints the lane rail: edges (1.5 px; forks bend out of the parent dot in 22 px), then every
+/// dot on a knockout disc in the card colour: live dots r 3, the head r 4 in a lighter tint with
+/// a glint, left-behind dots as hollow rings. Same geometry as the web build
+/// (`oxyn_core::checkpoint::rail`); GPUI does not animate it.
+fn paint_rail(window: &mut Window, o: Point<Pixels>, rl: &Rail, ink: &RailInk) {
     let at = |x: f32, y: f32| point(o.x + px(x), o.y + px(y));
-    for e in &rl.edges {
-        let mut b = PathBuilder::stroke(px(if e.on_path { 2.0 } else { 1.5 }));
+    for e in rl
+        .edges
+        .iter()
+        .filter(|e| !e.on_path)
+        .chain(rl.edges.iter().filter(|e| e.on_path))
+    {
+        let mut b = PathBuilder::stroke(px(RAIL_LINE_W));
         b.move_to(at(e.from.0, e.from.1));
         if e.fork {
             let end = e.bend_end();
             let h = end - e.from.1;
             b.cubic_bezier_to(
                 at(e.to.0, end),
-                at(e.from.0, e.from.1 + h * 0.62),
-                at(e.to.0, e.from.1 + h * 0.38),
+                at(e.from.0, e.from.1 + h * 12.0 / RAIL_BEND_H),
+                at(e.to.0, e.from.1 + h * 10.0 / RAIL_BEND_H),
             );
             if e.to.1 > end {
                 b.line_to(at(e.to.0, e.to.1));
@@ -456,40 +482,39 @@ fn paint_rail(
             b.line_to(at(e.to.0, e.to.1));
         }
         if let Ok(p) = b.build() {
-            window.paint_path(p, if e.on_path { live } else { dim });
+            window.paint_path(p, if e.on_path { ink.live } else { ink.dim });
         }
     }
     let disc =
         |x: f32, y: f32, r: f32| Bounds::new(at(x - r, y - r), size(px(2.0 * r), px(2.0 * r)));
+    let fill = |window: &mut Window, x: f32, y: f32, r: f32, bg: Hsla| {
+        window.paint_quad(quad(
+            disc(x, y, r),
+            px(r),
+            bg,
+            px(0.),
+            bg,
+            BorderStyle::default(),
+        ));
+    };
     for d in &rl.dots {
         let (x, y) = d.at;
+        fill(window, x, y, d.r + RAIL_KNOCKOUT, ink.card);
         if d.current {
+            fill(window, x, y, d.r, ink.head);
+            fill(window, x - 0.9, y - 1.0, d.r * 0.45, ink.glint);
+        } else if d.on_path {
+            fill(window, x, y, d.r, ink.live);
+        } else {
             window.paint_quad(quad(
-                disc(x, y, 9.0),
-                px(9.0),
-                live.opacity(0.16),
-                px(0.),
-                live,
+                disc(x, y, d.r),
+                px(d.r),
+                ink.card,
+                px(1.3),
+                ink.dim,
                 BorderStyle::default(),
             ));
         }
-        let (bg, border, w) = if d.on_path {
-            (
-                live,
-                if d.current { raised } else { live },
-                if d.current { 2.0 } else { 1.5 },
-            )
-        } else {
-            (raised, dim, 1.5)
-        };
-        window.paint_quad(quad(
-            disc(x, y, d.r),
-            px(d.r),
-            bg,
-            px(w),
-            border,
-            BorderStyle::default(),
-        ));
     }
 }
 
@@ -505,8 +530,7 @@ impl Render for CheckpointsView {
             CpVariant::Lanes => {
                 let rows = s.run.rows();
                 let rl = rail(&s.run.checkpoints, &rows);
-                let live = c(t, ColorRole::StatusInfoFg);
-                let dim = c(t, ColorRole::BorderStrong);
+                let ink = rail_ink(t, self.dark);
                 let raised = c(t, ColorRole::SurfaceRaised);
                 let muted = c(t, ColorRole::FgMuted);
                 let subtle = c(t, ColorRole::FgSubtle);
@@ -515,7 +539,7 @@ impl Render for CheckpointsView {
                 let geo = rl.clone();
                 let rail_el = canvas(
                     |_, _, _| {},
-                    move |b, _, window, _| paint_rail(window, b.origin, &geo, live, dim, raised),
+                    move |b, _, window, _| paint_rail(window, b.origin, &geo, &ink),
                 )
                 .absolute()
                 .top_0()
@@ -530,18 +554,17 @@ impl Render for CheckpointsView {
                     let can = s.run.can_rewind(i);
                     let focused = i == s.run.focus;
                     let fade = if r.on_path { 1.0 } else { 0.5 };
-                    let full = iso(cp);
-                    let tod = split_day(&full).1.to_string();
+                    let tod = format_at(cp.at);
                     let mut row = div()
                         .id(("cp-lane", i))
                         .group(grp.clone())
                         .relative()
                         .flex()
                         .items_center()
-                        .gap(px(8.))
+                        .gap(px(6.))
                         .h(px(RAIL_ROW_H))
                         .pl(px(g))
-                        .pr(px(12.))
+                        .pr(px(15.))
                         .mx(px(0.))
                         .rounded(px(8.))
                         .hover(|d| d.bg(hover))
@@ -559,7 +582,15 @@ impl Render for CheckpointsView {
                                 .opacity(fade)
                                 .text_size(px(10.))
                                 .text_color(muted)
-                                .child(tool_letter(cp)),
+                                .map(|d| {
+                                    match cp
+                                        .tool_brand()
+                                        .and_then(|b| crate::brand::brand_mark(b, 13., fg))
+                                    {
+                                        Some(m) => d.child(m),
+                                        None => d.child(tool_letter(cp)),
+                                    }
+                                }),
                         )
                         .child(
                             div()
@@ -574,7 +605,6 @@ impl Render for CheckpointsView {
                                 } else {
                                     fg
                                 })
-                                .when(r.current, |d| d.font_weight(FontWeight::MEDIUM))
                                 .child(cp.title.clone()),
                         )
                         .when(cp.status == CheckpointStatus::Failed, |d| {
@@ -585,11 +615,7 @@ impl Render for CheckpointsView {
                                     ColorRole::StatusDangerFg,
                                     ColorRole::StatusDangerBg,
                                 )
-                                .opacity(if r.on_path {
-                                    1.0
-                                } else {
-                                    0.7
-                                }),
+                                .opacity(fade),
                             )
                         })
                         .when(cp.status == CheckpointStatus::Stopped, |d| {
@@ -603,7 +629,7 @@ impl Render for CheckpointsView {
                                 pill(
                                     t,
                                     attempt_label(r.lane),
-                                    ColorRole::FgDefault,
+                                    ColorRole::FgMuted,
                                     ColorRole::SurfaceSunken,
                                 )
                                 .opacity(fade),
@@ -614,7 +640,7 @@ impl Render for CheckpointsView {
                             div()
                                 .flex()
                                 .gap(px(14.))
-                                .text_size(px(12.))
+                                .text_size(px(13.))
                                 .text_color(subtle)
                                 .opacity(fade)
                                 .when(focused && can, |d| d.opacity(0.))
@@ -632,17 +658,17 @@ impl Render for CheckpointsView {
                         row = row.child(
                             div()
                                 .absolute()
-                                .right(px(8.))
-                                .top(px(5.))
-                                .h(px(22.))
+                                .right(px(9.))
+                                .top(px(3.5))
+                                .h(px(23.))
                                 .px(px(8.))
                                 .flex()
                                 .items_center()
-                                .rounded(px(6.))
+                                .rounded(px(7.))
                                 .border_1()
-                                .border_color(c(t, ColorRole::BorderDefault))
+                                .border_color(c(t, ColorRole::BorderSubtle))
                                 .bg(raised)
-                                .text_size(px(12.))
+                                .text_size(px(13.))
                                 .text_color(fg)
                                 .opacity(if focused { 1. } else { 0. })
                                 .group_hover(grp, |d| d.opacity(1.))
@@ -658,15 +684,15 @@ impl Render for CheckpointsView {
                 }
                 let sum = oxyn_core::checkpoint::header(&s.run.checkpoints);
                 card(t)
-                    .pb(px(8.))
+                    .pb(px(10.))
                     .child(
                         div()
                             .flex()
                             .items_center()
                             .gap(px(8.))
-                            .h(px(44.))
-                            .pl(px(12.))
-                            .pr(px(14.))
+                            .h(px(38.))
+                            .pl(px(15.))
+                            .pr(px(18.))
                             .child(div().text_color(muted).child("\u{2442}"))
                             .child(
                                 div()
@@ -676,12 +702,7 @@ impl Render for CheckpointsView {
                             )
                             .child(div().text_color(muted).child("Add Stripe checkout"))
                             .child(div().flex_1())
-                            .child(
-                                div()
-                                    .text_size(px(12.))
-                                    .text_color(muted)
-                                    .child(format!("{DAY} · {sum}")),
-                            ),
+                            .child(div().text_size(px(13.)).text_color(muted).child(sum)),
                     )
                     .child(list)
             }
