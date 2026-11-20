@@ -1,0 +1,8 @@
+---
+// "Back" at the top of detail pages. A plain link to the logical parent route (works without
+// JavaScript); public/site.js turns it into history.back() when the previous page was on this site.
+import { icon } from './icons';
+interface Props { fallback: string; label?: string }
+const { fallback, label = 'Back' } = Astro.props;
+---
+<a class="x-back" href={fallback} data-x-back aria-label="Go back" data-pagefind-ignore><Fragment set:html={icon.back} /><span>{label}</span></a>

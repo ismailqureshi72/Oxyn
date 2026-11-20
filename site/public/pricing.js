@@ -81,6 +81,11 @@
       e.preventDefault(); const o = all[1 - i]; o.focus(); o.click();
     });
   });
+  // Activity: a pricing view (with the Pro item it came from) and each checkout click.
+  try { window.oxynTrack?.('pricing_view', from || null); } catch { /* never block */ }
+  $$('[data-pr-buy]').forEach((a) => a.addEventListener('click', () => {
+    try { if (/^\/api\/billing\/checkout/.test(a.getAttribute('href') || '')) window.oxynTrack?.('checkout_click', a.dataset.key, null, true); } catch { /* never block */ }
+  }));
   // Remember where to lead back to after checkout.
   $$('[data-pr-buy]').forEach((a) => a.addEventListener('click', () => {
     if (!from) return;
