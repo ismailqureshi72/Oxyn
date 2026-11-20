@@ -4,6 +4,7 @@
 //! include that stylesheet once (and set `data-oxyn-theme` for light or high contrast). Each
 //! component also ships its own small stylesheet as a constant (`STATUS_INDICATOR_CSS`).
 
+mod aikit;
 mod approval;
 mod brand;
 mod chat;
@@ -17,6 +18,11 @@ mod shell;
 mod status_indicator;
 mod status_text;
 
+pub use aikit::{
+    AgentTimeline, AiTranslate, AiWorkflow, ConnectorSetup, EnrichColumn, GenerationStats,
+    HumanHandoff, ImageGeneration, LlmCostCalculator, MeetingSummary, ModelCard, PiiRedaction,
+    ProviderKeys, ReplyDraft, SpeechPlayer, TicketRouter, TldrToggle,
+};
 pub use approval::{ApprovalCard, ApprovalCardProps, ApprovalPager, ApprovalPagerProps};
 pub use brand::{BrandIcon, BrandIconProps, has_brand};
 pub use chat::{
