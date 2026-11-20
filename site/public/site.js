@@ -1,4 +1,4 @@
-// Site behaviour: theme toggle, ⌘K search (Pagefind), copy buttons, menus, announcement, TOC.
+// Site behaviour: theme toggle, ⌘K search palette, copy buttons, menus, announcement, TOC.
 (function () {
   const d = document.documentElement;
   const isMac = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
@@ -112,117 +112,248 @@
     map.forEach((_, id) => { const el = document.getElementById(id); if (el) io.observe(el); });
   }
 
-  // ⌘K search.
+  // ⌘K search: a palette over /search-index.json (every component, screen, agent app, docs page),
+  // written at build time. Matching is client-side: exact > prefix > word start > substring >
+  // typo-tolerant, so "appr", "lanes" and "chekpoint" all find their part.
   const dlg = document.getElementById('search');
   if (!dlg) return;
   const input = dlg.querySelector('input');
   const res = dlg.querySelector('.search-res');
-  let pf = null;
-  let type = '';
+  const count = dlg.querySelector('[data-search-count]');
+  const GROUPS = { c: 'Components', s: 'Screens', a: 'Agent apps', d: 'Docs', p: 'Pages' };
+  const BOOST = { c: 40, s: 25, a: 20, d: 0, p: -15 };
+  const CAP = { c: 8, s: 5, a: 5, d: 5, p: 4 };
+  const SUGGEST = ['Approval Card', 'Checkpoint lanes', 'Chat Composer', 'Agent Trail', 'Agent workspace', 'Installation'];
+  const RKEY = 'oxyn-recent-search';
+  let items = null;
+  let loading = null;
+  let flat = [];
   let sel = 0;
   let lastFocus = null;
-  const loadPf = async () => {
-    if (pf) return pf;
-    try {
-      pf = await import('/pagefind/pagefind.js');
-      await pf.init();
-    } catch {
-      pf = false;
+  const norm = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+  const load = () =>
+    (loading ??= fetch('/search-index.json')
+      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+      .then((j) => {
+        items = j.items.map((it) => {
+          const t = norm(it.t);
+          return { ...it, n: t, tw: t.split(' '), kw: norm(it.k + ' ' + it.w).split(' '), dn: norm(it.d) };
+        });
+        if (count) count.textContent = `${items.length} items`;
+        return items;
+      })
+      .catch(() => { loading = null; items = null; return null; }));
+  // Damerau-Levenshtein, stopped early past `max`.
+  const dist = (a, b, max) => {
+    if (Math.abs(a.length - b.length) > max) return max + 1;
+    let p2 = null, p = [...Array(b.length + 1).keys()];
+    for (let i = 1; i <= a.length; i++) {
+      const c = [i];
+      let lo = i;
+      for (let j = 1; j <= b.length; j++) {
+        let v = Math.min(p[j] + 1, c[j - 1] + 1, p[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+        if (p2 && i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) v = Math.min(v, p2[j - 2] + 1);
+        c[j] = v;
+        if (v < lo) lo = v;
+      }
+      if (lo > max) return max + 1;
+      p2 = p; p = c;
     }
-    return pf;
+    return p[b.length];
+  };
+  const allow = (t) => (t.length >= 8 ? 2 : t.length >= 4 ? 1 : 0);
+  // How well one query token matches a list of words: 4 exact, 3 prefix, 2 inside a word, 1 typo
+  // (a typo match needs a word at least as long as the token, so "appr" never lands on "app").
+  const tokenHit = (t, ws) => {
+    let best = 0, at = -1, fz = 9;
+    ws.forEach((w, i) => {
+      let s = 0;
+      if (w === t) s = 4;
+      else if (w.startsWith(t)) s = 3;
+      else if (t.length >= 3 && w.includes(t)) s = 2;
+      else if (allow(t) && w.length >= t.length) {
+        const d = Math.min(dist(t, w, allow(t)), t.length < w.length ? dist(t, w.slice(0, t.length), allow(t)) : 9);
+        if (d <= allow(t)) { s = 1; if (d < fz) fz = d; }
+      }
+      if (s > best) { best = s; at = i; }
+    });
+    return [best, at, fz];
+  };
+  const score = (it, q, qt) => {
+    let s = 0;
+    const hits = [];
+    if (it.n === q) s = 1000;
+    else if (it.n.startsWith(q)) s = 850;
+    else if (q.length >= 2 && it.tw.some((w, i) => i && (it.tw.slice(i).join(' ')).startsWith(q))) s = 700;
+    else if (q.length >= 3 && it.n.includes(q)) s = 560;
+    if (s) {
+      for (const t of qt) hits.push(t);
+    } else {
+      // Every token must land in the name or the keywords (typos allowed); names weigh more.
+      let sum = 0;
+      for (const t of qt) {
+        const [a, at] = tokenHit(t, it.tw);
+        const [b] = a >= 3 ? [0] : tokenHit(t, it.kw);
+        if (!a && !b) {
+          if (t.length >= 4 && it.dn.includes(t)) { sum += 40; continue; }
+          return null;
+        }
+        if (a >= b) { sum += [0, 230, 330, 420, 480][a]; hits.push(a === 1 ? it.tw[at] : t); }
+        else sum += [0, 120, 170, 260, 300][b];
+      }
+      s = sum / qt.length;
+    }
+    return { it, s: s + BOOST[it.g] - Math.min(it.t.length, 40) * 0.6, hits };
+  };
+  const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+  // Bold the matched characters of the name: each query token (or the word it fuzzily matched).
+  const mark = (title, hits) => {
+    const lo = title.toLowerCase();
+    const on = new Array(title.length).fill(false);
+    for (const h of hits) {
+      if (!h) continue;
+      let i = -1;
+      const re = new RegExp(`(^|[^a-z0-9])${h.replace(/[^a-z0-9]/g, '')}`, 'g');
+      const m = re.exec(lo);
+      if (m) i = m.index + m[1].length;
+      else i = lo.indexOf(h);
+      if (i >= 0) for (let k = i; k < i + h.length && k < on.length; k++) on[k] = true;
+    }
+    let out = '', open = false;
+    for (let k = 0; k < title.length; k++) {
+      if (on[k] && !open) { out += '<mark>'; open = true; }
+      if (!on[k] && open) { out += '</mark>'; open = false; }
+      out += esc(title[k]);
+    }
+    return out + (open ? '</mark>' : '');
+  };
+  const ICON = {
+    c: '<path d="M4 5h7v7H4zM13 5h7v4h-7zM13 11h7v8h-7zM4 14h7v5H4z"/>',
+    s: '<path d="M3 5h18v13H3zM3 9h18M7 7h.01"/>',
+    a: '<path d="M4 5h16v12H4zM9 21h6M12 17v4M8 10l2 2-2 2M13 14h3"/>',
+    d: '<path d="M6 3h9l4 4v14H6zM14 3v5h5M9 13h7M9 17h5"/>',
+    p: '<path d="M4 4h16v16H4zM4 9h16"/>',
+    r: '<path d="M12 7v5l3 2M21 12a9 9 0 1 1-3-6.7M21 4v5h-5"/>',
+  };
+  const icon = (g) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[g]}</svg>`;
+  const recent = () => { try { return JSON.parse(localStorage.getItem(RKEY) || '[]'); } catch { return []; } };
+  const remember = (it, q) => {
+    const r = recent().filter((x) => x.u !== it.u);
+    r.unshift({ t: it.t, u: it.u, g: it.g, k: it.k, q });
+    try { localStorage.setItem(RKEY, JSON.stringify(r.slice(0, 5))); } catch {}
+  };
+  const row = (it, i, title, ic = it.g) =>
+    `<a href="${esc(it.u)}" role="option" id="sr-${i}" data-i="${i}" aria-selected="false" tabindex="-1"><span class="sr-ic">${icon(ic)}</span><span class="sr-tx"><b>${title}</b>${it.d ? `<small>${esc(it.d)}</small>` : ''}</span><span class="sr-k">${esc(it.k || GROUPS[it.g] || '')}</span></a>`;
+  const section = (label, id, html) => `<div role="group" aria-labelledby="${id}"><div class="grp" id="${id}" role="presentation">${label}</div>${html}</div>`;
+  const select = (i) => {
+    const opts = res.querySelectorAll('[role=option]');
+    if (!opts.length) { input.removeAttribute('aria-activedescendant'); return; }
+    sel = (i + opts.length) % opts.length;
+    opts.forEach((o, k) => o.setAttribute('aria-selected', String(k === sel)));
+    input.setAttribute('aria-activedescendant', opts[sel].id);
+    opts[sel].scrollIntoView({ block: 'nearest' });
+  };
+  const suggestChips = () =>
+    `<div class="sr-chips">${SUGGEST.map((s) => `<button type="button" data-q="${esc(s)}">${esc(s)}</button>`).join('')}</div>`;
+  const render = () => {
+    const raw = input.value.trim();
+    const q = norm(raw);
+    flat = [];
+    let html = '';
+    if (!q) {
+      const r = recent();
+      if (r.length) {
+        html += section('Recent', 'sg-r', r.map((it, i) => (flat.push({ it, q: it.q }), row(it, i, esc(it.t), 'r'))).join(''));
+      }
+      if (items) {
+        const pick = SUGGEST.map((s) => items.find((it) => it.t === s)).filter(Boolean).filter((it) => !r.some((x) => x.u === it.u));
+        html += section('Suggestions', 'sg-s', pick.map((it) => { const i = flat.length; flat.push({ it, q: '' }); return row(it, i, esc(it.t)); }).join(''));
+      } else html += `<div class="search-empty">Loading the index…</div>`;
+    } else if (!items) {
+      html = `<div class="search-empty">${loading ? 'Loading the index…' : 'Search could not load. Check your connection and try again.'}</div>`;
+    } else {
+      const qt = q.split(' ');
+      const found = [];
+      for (const it of items) { const m = score(it, q, qt); if (m) found.push(m); }
+      found.sort((a, b) => b.s - a.s);
+      const by = {};
+      for (const m of found) { const l = (by[m.it.g] ??= []); if (l.length < CAP[m.it.g]) l.push(m); }
+      const order = Object.keys(by).sort((a, b) => by[b][0].s - by[a][0].s);
+      if (!order.length) {
+        html = `<div class="search-empty"><p>No results for “${esc(raw)}”.</p><p class="sr-try">Try one of these</p>${suggestChips()}</div>`;
+      } else {
+        html = order
+          .map((g) => section(GROUPS[g], `sg-${g}`, by[g].map((m) => { const i = flat.length; flat.push({ it: m.it, q: raw }); return row(m.it, i, mark(m.it.t, m.hits)); }).join('')))
+          .join('');
+      }
+    }
+    res.innerHTML = html;
+    dlg.querySelector('.sr-live').textContent = q ? (flat.length ? `${flat.length} results` : 'No results') : '';
+    input.setAttribute('aria-expanded', String(flat.length > 0));
+    select(0);
+  };
+  const go = (i, newTab) => {
+    const f = flat[i];
+    if (!f) return;
+    remember(f.it, f.q);
+    if (newTab) window.open(f.it.u, '_blank');
+    else { close(); location.href = f.it.u; }
   };
   const open = () => {
     lastFocus = document.activeElement;
     dlg.hidden = false;
     dlg.classList.add('open');
+    document.documentElement.classList.add('search-on');
     input.focus();
     input.select();
-    loadPf();
-    if (!input.value) render([]);
+    render();
+    load().then(render);
   };
   const close = () => {
     dlg.classList.remove('open');
     dlg.hidden = true;
+    document.documentElement.classList.remove('search-on');
+    input.setAttribute('aria-expanded', 'false');
     lastFocus?.focus?.();
   };
-  const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-  const render = (items, q) => {
-    sel = 0;
-    if (!items.length) {
-      res.innerHTML = `<div class="search-empty">${
-        q ? `No results for “${esc(q)}”.` : 'Type to search components, agent states, props and docs.'
-      }${pf === false ? '<br>The search index is built with the site (npm run build).' : ''}</div>`;
-      return;
-    }
-    const groups = {};
-    for (const it of items) (groups[it.meta?.type || 'Page'] ??= []).push(it);
-    const order = ['Component', 'Category', 'Docs', 'Page'];
-    const label = { Component: 'Components', Category: 'Categories', Docs: 'Docs & guides', Page: 'Pages' };
-    let i = 0;
-    res.innerHTML = order
-      .filter((g) => groups[g])
-      .map(
-        (g) =>
-          `<div class="grp">${label[g]}</div>` +
-          groups[g]
-            .map(
-              (it) =>
-                `<a href="${it.url}" role="option" id="sr-${i}" aria-selected="${i++ === 0}"><b>${esc(
-                  it.meta?.title || it.url,
-                )}<span>${esc(it.meta?.category || '')}</span></b><small>${it.excerpt || ''}</small></a>`,
-            )
-            .join(''),
-      )
-      .join('');
-  };
-  let timer;
-  const search = async () => {
-    const q = input.value.trim();
-    const p = await loadPf();
-    if (!q || !p) return render([], q);
-    const r = await p.search(q, type ? { filters: { type } } : {});
-    const data = await Promise.all(r.results.slice(0, 12).map((x) => x.data()));
-    render(data, q);
-  };
-  input.addEventListener('input', () => {
-    clearTimeout(timer);
-    timer = setTimeout(search, 120);
+  input.addEventListener('input', render);
+  res.addEventListener('click', (e) => {
+    const a = e.target.closest('[role=option]');
+    if (a && !e.metaKey && !e.ctrlKey && !e.shiftKey) { e.preventDefault(); go(+a.dataset.i); }
+    else if (a) remember(flat[+a.dataset.i].it, input.value.trim());
+    const c = e.target.closest('[data-q]');
+    if (c) { input.value = c.dataset.q; input.focus(); render(); }
   });
-  dlg.querySelectorAll('.search-filters button').forEach((b) =>
-    b.addEventListener('click', () => {
-      dlg.querySelectorAll('.search-filters button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
-      type = b.dataset.type;
-      search();
-      input.focus();
-    }),
-  );
-  const move = (dir) => {
-    const opts = [...res.querySelectorAll('a')];
-    if (!opts.length) return;
-    sel = (sel + dir + opts.length) % opts.length;
-    opts.forEach((o, i) => o.setAttribute('aria-selected', String(i === sel)));
-    opts[sel].scrollIntoView({ block: 'nearest' });
-  };
+  res.addEventListener('mousemove', (e) => {
+    const a = e.target.closest('[role=option]');
+    if (a && +a.dataset.i !== sel) select(+a.dataset.i);
+  });
   dlg.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') { e.preventDefault(); close(); }
-    else if (e.key === 'ArrowDown') { e.preventDefault(); move(1); }
-    else if (e.key === 'ArrowUp') { e.preventDefault(); move(-1); }
-    else if (e.key === 'Enter') {
-      const a = res.querySelectorAll('a')[sel];
-      if (a) { e.preventDefault(); location.href = a.href; }
-    }
+    else if (e.key === 'ArrowDown') { e.preventDefault(); select(sel + 1); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); select(sel - 1); }
+    else if (e.key === 'Home' && e.ctrlKey) { e.preventDefault(); select(0); }
+    else if (e.key === 'End' && e.ctrlKey) { e.preventDefault(); select(-1); }
+    else if (e.key === 'Enter' && flat.length) { e.preventDefault(); go(sel, e.metaKey || e.ctrlKey); }
+    else if (e.key === 'Tab') { e.preventDefault(); input.focus(); }
   });
-  dlg.addEventListener('click', (e) => { if (e.target === dlg) close(); });
+  dlg.addEventListener('click', (e) => { if (e.target === dlg || e.target.closest('[data-search-close]')) close(); });
   document.addEventListener('click', (e) => { if (e.target.closest('[data-open-search]')) open(); });
-  document.addEventListener('keydown', (e) => {
+  // Warm the index once the page is idle, so the first keystroke already has it.
+  if ('requestIdleCallback' in window) requestIdleCallback(() => load(), { timeout: 4000 });
+  else setTimeout(load, 1500);
+  // Capture phase on window: a live demo that also binds ⌘K (a command menu) cannot swallow it.
+  window.addEventListener('keydown', (e) => {
     const a = document.activeElement;
     // Custom editors (role=textbox, e.g. the rich-text editor) take '/' as text too.
     const typing = /INPUT|TEXTAREA|SELECT/.test(a?.tagName) || a?.isContentEditable || a?.getAttribute('role') === 'textbox';
-    if ((e.key === 'k' && (e.metaKey || e.ctrlKey)) || (e.key === '/' && !typing)) {
+    if ((e.key.toLowerCase() === 'k' && (e.metaKey || e.ctrlKey)) || (e.key === '/' && !typing)) {
+      if (e.key === '/' && dlg.classList.contains('open')) return;
       e.preventDefault();
+      e.stopPropagation();
       dlg.classList.contains('open') ? close() : open();
     }
-  });
+  }, true);
 })();
 document.addEventListener('oxyn-demo-live', (e) => {
   if (e.target.dataset.controls !== 'true') return;
