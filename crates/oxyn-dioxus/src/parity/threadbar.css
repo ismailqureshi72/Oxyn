@@ -1,0 +1,64 @@
+/* Screens S16 (Agent apps IV): Threadbar, prefix oxs16t-, on the S10 app frame (oxs10-*).
+   Threads by project, tool calls with an edit to keep or reject, a Project pane (Files, Git). */
+.oxs16t-pj{display:flex;align-items:center;gap:6px;min-width:0}
+.oxs16t-row{padding-left:10px}
+.oxs16t-k{display:inline-flex;flex:none;color:var(--oxth-mute)}
+.oxs16t-at{flex:none;font-variant-numeric:tabular-nums;font-size:11px}
+.oxs16t-sug{border:1px solid var(--oxth-line);background:var(--oxth-card);cursor:pointer;max-width:260px;font:inherit;font-size:12px}
+.oxs16t-sug:hover{background:var(--oxth-hov)}
+.oxs16t-v{flex:none;color:var(--oxth-fg);font-weight:550}
+.oxs16t-o{font:12px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--oxth-fg2)}
+.oxs16t-add{flex:none;color:var(--ox-ic-done,#30A46C);font:12px/1 ui-monospace,SFMono-Regular,Menlo,monospace}
+.oxs16t-del{flex:none;color:var(--ox-ic-failed,#E5484D);font:12px/1 ui-monospace,SFMono-Regular,Menlo,monospace}
+/* The edit card */
+.oxs16t-edit{border:1px solid var(--oxth-line);border-radius:12px;background:var(--oxth-card);overflow:clip;min-width:0}
+.oxs16t-eh{display:flex;align-items:center;gap:8px;height:38px;padding:0 12px;border-bottom:1px solid var(--oxth-line);min-width:0}
+.oxs16t-diff{margin:0;padding:6px 0;overflow-x:auto;font:12px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--oxth-inset)}
+.oxs16t-dl{display:block;padding:0 12px 0 0;white-space:pre;color:var(--oxth-fg2)}
+.oxs16t-dl[data-s="+"]{background:color-mix(in srgb,var(--ox-ic-done,#30A46C) 13%,transparent);color:var(--oxth-fg)}
+.oxs16t-dl[data-s="-"]{background:color-mix(in srgb,var(--ox-ic-failed,#E5484D) 13%,transparent);color:var(--oxth-fg)}
+.oxs16t-sg{display:inline-block;width:26px;text-align:center;color:var(--oxth-mute);user-select:none}
+.oxs16t-eb{display:flex;justify-content:flex-end;align-items:center;gap:8px;padding:8px 12px;border-top:1px solid var(--oxth-line)}
+.oxs16t-ok,.oxs16t-rej{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--oxth-fg2);min-width:0}
+.oxs16t-ok .oxscn-ico{color:var(--ox-ic-done,#30A46C)}
+/* Terminal thread */
+.oxs16t-tfeed{display:flex;flex-direction:column}
+.oxs16t-term{flex:1 1 auto;margin:0;padding:16px 20px;font:12.5px/1.65 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--oxth-fg2);white-space:pre-wrap;overflow-wrap:anywhere}
+.oxs16t-tl{display:block}
+.oxs16t-tl[data-cmd="true"]{color:var(--oxth-fg);font-weight:600;margin-top:6px}
+.oxs16t-ps{color:var(--oxth-mute);font-weight:400}
+.oxs16t-cmd{display:flex;align-items:center;gap:8px;height:42px;padding:0 12px;border:1px solid var(--oxth-line);border-radius:12px;background:var(--oxth-card);font:13px ui-monospace,SFMono-Regular,Menlo,monospace}
+.oxs16t-ci{flex:1 1 auto;min-width:0;border:0;outline:0;background:transparent;color:var(--oxth-fg);font:inherit}
+/* Project pane */
+.oxs16t-ph{display:flex;align-items:center;gap:8px;flex:none;height:44px;padding:0 12px;border-bottom:1px solid var(--oxth-line);min-width:0}
+.oxs16t-ph b{font-weight:600}
+.oxs16t-br{display:inline-flex;align-items:center;gap:5px;margin-left:auto;min-width:0;color:var(--oxth-fg2);font:12px ui-monospace,SFMono-Regular,Menlo,monospace}
+.oxs16t-tabs{display:flex;gap:2px;flex:none;padding:6px 8px;border-bottom:1px solid var(--oxth-line)}
+.oxs16t-tab{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 10px;border:0;border-radius:7px;background:transparent;color:var(--oxth-fg2);font:inherit;font-size:12.5px;cursor:pointer}
+.oxs16t-tab:hover{background:var(--oxth-hov)}
+.oxs16t-tab[aria-selected="true"]{background:var(--oxth-sel);color:var(--oxth-fg);font-weight:550}
+.oxs16t-cnt{min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--oxth-inset);color:var(--oxth-fg2);font-size:11px;line-height:18px;text-align:center}
+.oxs16t-body{display:flex;flex-direction:column;flex:1 1 auto;min-height:0;overflow:auto}
+.oxs16t-tree{margin:0;padding:6px;list-style:none}
+.oxs16t-fi{display:flex;align-items:center;gap:6px;height:28px;padding-right:8px;border-radius:7px;color:var(--oxth-fg2);font:12.5px/1 ui-monospace,SFMono-Regular,Menlo,monospace;min-width:0}
+.oxs16t-fi:hover{background:var(--oxth-hov)}
+.oxs16t-fi[data-g="M"]{color:var(--oxth-fg)}
+.oxs16t-g{flex:none;margin-left:auto;font-weight:600}
+.oxs16t-fi[data-g="M"] .oxs16t-g{color:var(--ox-ic-approval,#D97706)}
+.oxs16t-fi[data-g="A"] .oxs16t-g{color:var(--ox-ic-done,#30A46C)}
+.oxs16t-git{display:flex;flex-direction:column;gap:8px;padding:10px 12px}
+.oxs16t-chs{margin:0;padding:0;list-style:none}
+.oxs16t-ch{display:flex;align-items:center;gap:8px;min-height:32px;padding:0 4px;border-radius:7px;cursor:pointer;min-width:0}
+.oxs16t-ch:hover{background:var(--oxth-hov)}
+.oxs16t-ch input{flex:none;margin:0;accent-color:var(--oxth-fg)}
+.oxs16t-path{font:12px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--oxth-fg2)}
+.oxs16t-sum{margin:0;color:var(--oxth-mute);font-size:12px}
+.oxs16t-msg{width:100%;box-sizing:border-box;resize:vertical;min-height:56px;padding:8px 10px;border:1px solid var(--oxth-line);border-radius:10px;background:var(--oxth-card);color:var(--oxth-fg);font:12.5px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace}
+.oxs16t-msg:focus{outline:2px solid var(--oxth-line2);outline-offset:0}
+.oxs16t-msg[aria-invalid="true"]{border-color:var(--ox-ic-failed,#E5484D)}
+.oxs16t-commit{align-self:flex-start}
+@media (max-width:620px){
+  .oxs10[data-app="tb"] .oxs10-cbar .oxs10-pk .oxs10-chip{max-width:100%;min-width:0;overflow:hidden}
+  .oxs10[data-app="tb"] .oxs10-cbar>.oxs10-pk:nth-child(2) .oxs10-ell,.oxs10[data-app="tb"] .oxs10-cbar>.oxs10-pk:nth-child(3) .oxs10-ell{display:none}
+  .oxs16t-at{display:none}
+}

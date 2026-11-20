@@ -743,3 +743,7 @@ Arc UI,Screens · API keys and webhooks,https://uiarc.dev/demo,Arc screens,Free,
 Arc UI,Screens · Members,https://uiarc.dev/demo,Arc screens,Free,members-roles,S15,S15,built
 Arc UI,Screens · Billing,https://uiarc.dev/demo,Arc screens,Free,billing-usage,S15,S15,built
 affectUI,Agent / Tool Calls,https://www.affectui.com/screens/agent-tool-calls,App screens,Pro,agent-tool-calls,S15,S15,built
+Oxyn,Agent apps · Threadbar (editor + agent panel pattern),https://zed.dev/docs/ai/agent-panel,Agent apps,Free,threadbar,S16,S16a,built (GPUI interactive)
+Oxyn,Agent apps · Tabstack (agent terminal blocks pattern),https://docs.warp.dev/agents,Agent apps,Free,tabstack,S16,S16a,built (GPUI interactive)
+Oxyn,Agent apps · Repo Desk (chat-first code-host agent pattern),https://github.blog/changelog/2026-06-17-github-copilot-app-generally-available,Agent apps,Free,repo-desk,S16,S16a,built (GPUI interactive)
+Oxyn,Agent apps · Preview Desk (agent previews + design mode pattern),https://docs.factory.com/factory-app/overview,Agent apps,Free,preview-desk,S16,S16a,built (GPUI interactive)
