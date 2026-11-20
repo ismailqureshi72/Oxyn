@@ -38,3 +38,4 @@ site/public/wasm/
 site/dist/
 site/node_modules/
 site/.astro/
+site/worker/pro-src.json

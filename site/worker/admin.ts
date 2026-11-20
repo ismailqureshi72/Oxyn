@@ -13,6 +13,7 @@
 
 import { EMAIL_RE, HttpError, KINDS, fail, json, openIssue, sha256Hex, type Ctx, type Env, type Kind } from './shared';
 import { adminStanding, currentUser } from './auth';
+import { adminBilling } from './billing';
 import PAGE from './admin-ui/index.html';
 import CSS from './admin-ui/app.css';
 import JS from './admin-ui/app.js';
@@ -227,6 +228,9 @@ async function api(req: Request, env: Env, ctx: Ctx, url: URL, email: string, na
     await audit(env, email, 'admin.remove', target);
     return json({ ok: true, self: target === email });
   }
+
+  // Billing: subscribers and recurring revenue (Polar webhook copy in D1, see billing.ts)
+  if (route === '/billing' && m === 'GET') return adminBilling(env);
 
   // Settings: content flags
   if (route === '/flags' && m === 'GET') return json({ ok: true, flags: await readFlags(env) });
