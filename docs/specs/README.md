@@ -265,4 +265,21 @@ specified just as deeply. When we point at one component as an example, the stan
 | [settings.md](settings.md) | built v0.1 (screens 1, Screens) |
 | [agent-orchestration.md](agent-orchestration.md) | built v0.1 (screens 2, Screens) |
 | [agent-thread.md](agent-thread.md) | built v0.1 (screens 2, Screens) |
+| [agent-timeline.md](agent-timeline.md) | v0.1 — built (C1d, AI Components, Pro) |
+| [model-card.md](model-card.md) | v0.1 — built (C1d, AI Components, Pro) |
+| [ai-workflow.md](ai-workflow.md) | v0.1 — built (C1d, AI Components, Pro) |
+| [image-generation.md](image-generation.md) | v0.1 — built (C1d, AI Components, Pro) |
+| [speech-player.md](speech-player.md) | v0.1 — built (C1d, AI Components, Pro) |
+| [meeting-summary.md](meeting-summary.md) | v0.1 — built (C1d, AI Components, Pro) |
+| [reply-draft.md](reply-draft.md) | v0.1 — built (C1d, AI Components, Pro) |
+| [human-handoff.md](human-handoff.md) | v0.1 — built (C1d, AI Components, Pro) |
+| [pii-redaction.md](pii-redaction.md) | v0.1 — built (C1d, AI Components, Pro) |
+| [llm-cost-calculator.md](llm-cost-calculator.md) | v0.1 — built (C1d, AI Components, Pro) |
+| [provider-keys.md](provider-keys.md) | v0.1 — built (C1d, AI Components, Pro) |
+| [generation-stats.md](generation-stats.md) | v0.1 — built (C1d, AI Components, Pro) |
+| [ai-translate.md](ai-translate.md) | v0.1 — built (C1d, AI Components, Pro) |
+| [tldr-toggle.md](tldr-toggle.md) | v0.1 — built (C1d, AI Components, Pro) |
+| [connector-setup.md](connector-setup.md) | v0.1 — built (C1d, AI Components, Pro) |
+| [enrich-column.md](enrich-column.md) | v0.1 — built (C1d, AI Components, Pro) |
+| [ticket-router.md](ticket-router.md) | v0.1 — built (C1d, AI Components, Pro) |
 | Every other component in [../component-taxonomy.md](../component-taxonomy.md) | to write in V2.2 |

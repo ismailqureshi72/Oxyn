@@ -527,31 +527,31 @@ Arc UI,Cursor trail draw,https://uiarc.dev/components/cursor-trail-draw,Special 
 Arc UI,Agent status,https://uiarc.dev/components/agent-status,Special components · AI,Pro,"status-indicator.md, acting-indicator.md",,#28,built
 Arc UI,Tool call,https://uiarc.dev/components/tool-call,Special components · AI,Pro,tool-call.md,,#28,built
 Arc UI,Agent plan,https://uiarc.dev/components/agent-plan,Special components · AI,Pro,"plan-todo.md, plan-approval.md",,#28,built
-Arc UI,Agent timeline,https://uiarc.dev/components/agent-timeline,Special components · AI,Pro,trace-view.md,,#34,planned
+Arc UI,Agent timeline,https://uiarc.dev/components/agent-timeline,Special components · AI,Pro,agent-timeline,C1,C1d,"built (C1d: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/agent-timeline/, Pro)"
 Arc UI,Context window,https://uiarc.dev/components/context-window,Special components · AI,Pro,composer-context-meter.md,,#28,built
 Arc UI,Reasoning block,https://uiarc.dev/components/reasoning-block,Special components · AI,Pro,reasoning-block,,#27,built
 Arc UI,Source cards,https://uiarc.dev/components/source-cards,Special components · AI,Pro,citations-sources,,#27,built
-Arc UI,Model card,https://uiarc.dev/components/model-card,Special components · AI,Pro,NEW,N7,#35,planned
-Arc UI,AI workflow,https://uiarc.dev/components/ai-workflow,Special components · AI,Pro,NEW (workflow builder),N10,#35,planned
+Arc UI,Model card,https://uiarc.dev/components/model-card,Special components · AI,Pro,model-card,C1,C1d,"built (C1d: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/model-card/, Pro)"
+Arc UI,AI workflow,https://uiarc.dev/components/ai-workflow,Special components · AI,Pro,ai-workflow,C1,C1d,"built (C1d: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/ai-workflow/, Pro)"
 Arc UI,Code suggestion,https://uiarc.dev/components/code-suggestion,Special components · AI,Pro,"code-suggestion, diff-viewer",,#30,built
 Arc UI,Ghost text,https://uiarc.dev/components/ghost-text,Special components · AI,Pro,composer-input-shell.md (partial),,#28,built
-Arc UI,Image generation,https://uiarc.dev/components/image-generation,Special components · AI,Pro,media-generation-placeholder.md,,#38,planned
+Arc UI,Image generation,https://uiarc.dev/components/image-generation,Special components · AI,Pro,image-generation,C1,C1d,"built (C1d: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/image-generation/, Pro)"
 Arc UI,Dictation button,https://uiarc.dev/components/dictation-button,Special components · AI,Pro,composer-voice-input,,#27,built
-Arc UI,Speech player,https://uiarc.dev/components/speech-player,Special components · AI,Pro,voice-control-bar.md (partial),,#38,planned
-Arc UI,Meeting summary,https://uiarc.dev/components/meeting-summary,Special components · AI,Pro,NEW,N9,#35,planned
-Arc UI,Reply draft,https://uiarc.dev/components/reply-draft,Special components · AI,Pro,NEW,N9,#35,planned
-Arc UI,Agent handoff,https://uiarc.dev/components/agent-handoff,Special components · AI,Pro,takeover-banner.md,,#34,planned
-Arc UI,PII redaction,https://uiarc.dev/components/pii-redaction,Special components · AI,Pro,NEW (guardrails),N8,#35,planned
+Arc UI,Speech player,https://uiarc.dev/components/speech-player,Special components · AI,Pro,speech-player,C1,C1d,"built (C1d: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/speech-player/, Pro)"
+Arc UI,Meeting summary,https://uiarc.dev/components/meeting-summary,Special components · AI,Pro,meeting-summary,C1,C1d,"built (C1d: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/meeting-summary/, Pro)"
+Arc UI,Reply draft,https://uiarc.dev/components/reply-draft,Special components · AI,Pro,reply-draft,C1,C1d,"built (C1d: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/reply-draft/, Pro)"
+Arc UI,Agent handoff,https://uiarc.dev/components/agent-handoff,Special components · AI,Pro,"human-handoff (Arc ""Agent handoff""; agent-handoff slug is the affectUI agent-to-agent component)",C1,C1d,"built (C1d: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/human-handoff/, Pro)"
+Arc UI,PII redaction,https://uiarc.dev/components/pii-redaction,Special components · AI,Pro,pii-redaction,C1,C1d,"built (C1d: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/pii-redaction/, Pro)"
 Arc UI,Response feedback,https://uiarc.dev/components/response-feedback,Special components · AI,Pro,message-bubble,,#27,built
-Arc UI,LLM cost calculator,https://uiarc.dev/components/llm-cost-calculator,Special components · AI,Pro,run-meter.md (partial),,#35,planned
-Arc UI,Provider keys,https://uiarc.dev/components/provider-keys,Special components · AI,Pro,NEW,N8,#35,planned
-Arc UI,Generation stats,https://uiarc.dev/components/generation-stats,Special components · AI,Pro,run-meter.md,,#35,planned
-Arc UI,AI translate,https://uiarc.dev/components/ai-translate,Special components · AI,Pro,NEW,N9,#35,planned
-Arc UI,TL;DR toggle,https://uiarc.dev/components/tldr-toggle,Special components · AI,Pro,NEW,N9,#35,planned
-Arc UI,Connector setup,https://uiarc.dev/components/connector-setup,Special components · AI,Pro,mcp-plugin-list.md (partial),,#35,planned
+Arc UI,LLM cost calculator,https://uiarc.dev/components/llm-cost-calculator,Special components · AI,Pro,llm-cost-calculator,C1,C1d,"built (C1d: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/llm-cost-calculator/, Pro)"
+Arc UI,Provider keys,https://uiarc.dev/components/provider-keys,Special components · AI,Pro,provider-keys,C1,C1d,"built (C1d: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/provider-keys/, Pro)"
+Arc UI,Generation stats,https://uiarc.dev/components/generation-stats,Special components · AI,Pro,generation-stats,C1,C1d,"built (C1d: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/generation-stats/, Pro)"
+Arc UI,AI translate,https://uiarc.dev/components/ai-translate,Special components · AI,Pro,ai-translate,C1,C1d,"built (C1d: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/ai-translate/, Pro)"
+Arc UI,TL;DR toggle,https://uiarc.dev/components/tldr-toggle,Special components · AI,Pro,tldr-toggle,C1,C1d,"built (C1d: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/tldr-toggle/, Pro)"
+Arc UI,Connector setup,https://uiarc.dev/components/connector-setup,Special components · AI,Pro,connector-setup,C1,C1d,"built (C1d: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/connector-setup/, Pro)"
 Arc UI,Smart form fill,https://uiarc.dev/components/smart-form-fill,Special components · AI,Pro,smart-form-fill,,#25,built
-Arc UI,Enrich column,https://uiarc.dev/components/enrich-column,Special components · AI,Pro,fanout-grid.md (partial),,#34,planned
-Arc UI,Ticket router,https://uiarc.dev/components/ticket-router,Special components · AI,Pro,NEW,N10,#35,planned
+Arc UI,Enrich column,https://uiarc.dev/components/enrich-column,Special components · AI,Pro,enrich-column,C1,C1d,"built (C1d: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/enrich-column/, Pro)"
+Arc UI,Ticket router,https://uiarc.dev/components/ticket-router,Special components · AI,Pro,ticket-router,C1,C1d,"built (C1d: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/ticket-router/, Pro)"
 Arc UI,Ask your data,https://uiarc.dev/components/ask-your-data,Special components · AI,Pro,genui-blocks.md (partial),,#36,planned
 Arc UI,Agent cursor,https://uiarc.dev/components/agent-cursor,Special components · AI,Pro,acting-indicator.md,,#34,planned
 Arc UI,Provider status,https://uiarc.dev/components/provider-status,Special components · AI,Pro,NEW,N8,#35,planned
