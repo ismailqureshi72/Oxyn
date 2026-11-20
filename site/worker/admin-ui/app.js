@@ -50,6 +50,8 @@
   function toast(msg) {
     const t = $('#toast');
     t.textContent = msg; t.classList.add('on');
+    // Above the Undo toast when one is open, never on top of it.
+    t.classList.toggle('up', !!document.querySelector('#undo.on'));
     clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('on'), 3200);
   }
   function confirmDlg(title, msg, okLabel) {
@@ -569,6 +571,7 @@
     btn.addEventListener('click', async () => { setBusy(btn, true, 'Undoing…'); try { await onUndo(); hide(); } catch (e) { setBusy(btn, false); toast(e.message); } });
     close.addEventListener('click', hide);
     box.replaceChildren(h('span', { class: 'undo-m' }, msg), btn, close);
+    $('#toast').classList.remove('on');
     box.classList.add('on');
     undoTick = setInterval(() => { left--; if (left > 0) btn.textContent = `Undo (${left}s)`; }, 1000);
     undoT = setTimeout(hide, secs * 1000);
