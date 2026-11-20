@@ -27,6 +27,14 @@ const NEXT_STEPS: [&str; 4] = [
     "Tried a smaller change",
 ];
 
+/// The app each of [`NEXT_STEPS`] is done through.
+const NEXT_TOOLS: [&str; 4] = [
+    "mcp__stripe__create_intent",
+    "mcp__stripe__update_session",
+    "mcp__github__push_files",
+    "mcp__github__push_files",
+];
+
 /// Lanes on a live run: Rewind (button, Enter or Space) adds an attempt in a new lane and moves
 /// the head. With `autoplay` the run plays itself as in the affectUI reference: checkpoints
 /// arrive one by one, the tests fail, the agent rewinds to the pricing table and attempt two
@@ -119,7 +127,12 @@ fn LanesLive(
                 if let Some(i) = i {
                     let n = *rewinds.peek();
                     rewinds.set(n + 1);
-                    run.write().rewind_with(i, NEXT_STEPS[n % NEXT_STEPS.len()]);
+                    let mut w = run.write();
+                    w.rewind_with(i, NEXT_STEPS[n % NEXT_STEPS.len()]);
+                    // The demo's next step is done through an app, so its tile shows the mark.
+                    if let Some(c) = w.checkpoints.last_mut() {
+                        c.tool = Some(NEXT_TOOLS[n % NEXT_TOOLS.len()].to_string());
+                    }
                 }
             },
         }
