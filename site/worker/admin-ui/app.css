@@ -320,7 +320,7 @@ a.btn{text-decoration:none}
 .undo .undo-b{background:var(--on-ink);color:var(--ink);border-color:var(--on-ink);box-shadow:none;flex:none}
 .undo .undo-b:hover:not(:disabled){background:var(--on-ink);opacity:.9}
 .undo .undo-x{color:var(--on-ink);opacity:.75;width:28px;height:28px;font-size:13px}
-.undo.on ~ .toast.on,.undo.on + .toast.on{bottom:76px}
+.toast.up{bottom:76px}
 /* Activity */
 .chart-h{display:flex;align-items:baseline;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:10px}
 .chart h3,.hb h3,.section>h3{margin:0;font-size:14px;letter-spacing:-.01em}
