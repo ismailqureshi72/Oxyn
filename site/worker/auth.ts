@@ -21,6 +21,7 @@
 // unknown email still runs PBKDF2, so responses do not tell which emails have accounts.
 
 import { EMAIL_RE, HttpError, fail, json, sameOrigin, sha256Hex, type Ctx, type Env } from './shared';
+import { recordSignin } from './events';
 
 export const AUTH = {
   cookie: 'oxyn_session',
@@ -134,6 +135,8 @@ async function startSession(env: Env, userId: string, provider: string) {
       .bind(await sha256Hex(token), userId, provider, new Date().toISOString(), now + maxAge()),
     env.DB.prepare('UPDATE users SET last_login_at = ?1 WHERE id = ?2').bind(new Date().toISOString(), userId),
   ]);
+  // Sign-ins by provider for the admin Activity tab (never fails the sign-in).
+  await recordSignin(env, userId, provider);
   // Housekeeping: expired sessions go now and then.
   if (Math.random() < 0.05) await env.DB.prepare('DELETE FROM sessions WHERE expires_at < ?1').bind(now).run();
   return token;

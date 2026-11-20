@@ -6,6 +6,7 @@
 //   GET  /api/health    liveness + a D1 round trip
 //   POST /api/feedback  multipart/form-data or JSON from the site's Feedback panel
 //   GET  /api/flags     enabled content flags (edited in the admin panel)
+//   POST /api/events    privacy-friendly page events for the admin Activity tab, see events.ts
 //   /admin, /api/admin/* the maintainers' panel (site sign-in + admin list), see admin.ts, docs/admin.md
 //   /api/auth/*         site accounts: Google, GitHub or email, see auth.ts and docs/auth.md
 //   /api/billing/*, /api/pro/*, /api/polar/webhook   Pro and Team through Polar, see billing.ts
@@ -22,6 +23,7 @@ import { EMAIL_RE, HttpError, KINDS, fail, json, openIssue, sameOrigin, sha256He
 import { handleAdmin, isAdminPath, publicFlags } from './admin';
 import { handleAuth } from './auth';
 import { handleBilling, isBillingPath } from './billing';
+import { postEvents } from './events';
 
 export type { Env } from './shared';
 
@@ -59,6 +61,7 @@ export default {
         if (req.method !== 'GET' && req.method !== 'HEAD') throw new HttpError(405, 'method_not_allowed', 'Use GET.');
         return await publicFlags(env);
       }
+      if (route === '/api/events') return await postEvents(req, env, ctx, url);
       if (route === '/api/feedback') {
         if (req.method !== 'POST') throw new HttpError(405, 'method_not_allowed', 'Use POST.');
         return await feedback(req, env, ctx, url);
