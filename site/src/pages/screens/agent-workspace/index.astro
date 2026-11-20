@@ -3,12 +3,13 @@ import Library from '../../../layouts/Library.astro';
 import AgentWorkspace from '../../../components/v2/AgentWorkspace.astro';
 import CompCard from '../../../components/v2/CompCard.astro';
 import { icon } from '../../../components/v2/icons';
+import BackButton from '../../../components/v2/BackButton.astro';
 import { demos } from '../../../lib/data';
 const parts = ['thread-list', 'ai-chat', 'agent-trail', 'checkpoint-list'].map((s) => demos.find((d) => d.slug === s)!);
 ---
 <Library title="Agent workspace — Screens" description="A complete AI agent app: threads, the agent thread and the run's work pane, composed from Oxyn components." type="Component" meta="category:Screens">
   <article class="x-art">
-    <nav class="x-crumbs" aria-label="Breadcrumb" data-pagefind-ignore><a href="/screens/">Screens</a><span aria-hidden="true">›</span><span aria-current="page">Agent workspace</span></nav>
+    <div class="x-backrow" data-pagefind-ignore><BackButton fallback="/screens/" /><nav class="x-crumbs" aria-label="Breadcrumb"><a href="/screens/">Screens</a><span aria-hidden="true">›</span><span aria-current="page">Agent workspace</span></nav></div>
     <h1 class="art-title" data-pagefind-meta="title">Agent workspace<a class="x-chip pro-chip" href="/pricing/" title="Part of Oxyn Pro: the preview is free, the code needs Pro"><Fragment set:html={icon.bolt} />Pro</a></h1>
     <p class="art-lede">A complete AI agent app for desktop and web: threads grouped by what needs you, the agent thread with thinking, sources and the composer, and a work pane with the run's steps and checkpoints. Every pane is a live Oxyn component.</p>
     <div class="pvwrap" id="preview">

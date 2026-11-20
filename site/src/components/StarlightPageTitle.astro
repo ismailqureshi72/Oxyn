@@ -1,5 +1,11 @@
 ---
 import Default from '@astrojs/starlight/components/PageTitle.astro';
+import BackButton from './v2/BackButton.astro';
+// Docs and guide pages (not the docs home) get a Back button above the title.
+const path = Astro.url.pathname.replace(/\/+$/, '/') ;
+const isHome = path === '/docs/' || path === '/';
+const parent = path.startsWith('/docs/') || path.startsWith('/guides/') ? '/docs/' : '/';
 ---
+{!isHome && <div class="x-backbar sl-back"><BackButton fallback={parent} /></div>}
 <Default />
 <span hidden data-pagefind-filter="type:Docs" data-pagefind-meta="type:Docs"></span>

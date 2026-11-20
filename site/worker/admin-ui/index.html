@@ -6,14 +6,14 @@
 <meta name="robots" content="noindex, nofollow, noarchive">
 <meta name="referrer" content="no-referrer">
 <title>Oxyn admin</title>
-<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<!--ICONS-->
 <link rel="stylesheet" href="/admin/app.css">
 <script src="/admin/app.js"></script>
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
 <header class="bar">
-  <a class="brand" href="/" title="Back to the Oxyn site"><span class="mark" aria-hidden="true">O</span><span class="name">Oxyn</span><span class="tag">Admin</span></a>
+  <a class="brand" href="/" title="Back to the Oxyn site" aria-label="Oxyn admin, back to the site"><!--BRAND--></a>
   <div class="bar-r">
     <span class="who" id="who"></span>
     <button class="ib" id="theme" type="button" aria-label="Switch to dark theme" title="Theme">
@@ -24,6 +24,9 @@
   </div>
 </header>
 <nav class="tabs" id="tabs" role="tablist" aria-label="Admin sections" hidden>
+  <button role="tab" id="tab-activity" aria-controls="main" data-tab="activity">Activity</button>
+  <button role="tab" id="tab-users" aria-controls="main" data-tab="users">Users</button>
+  <button role="tab" id="tab-grants" aria-controls="main" data-tab="grants">Grants</button>
   <button role="tab" id="tab-inbox" aria-controls="main" data-tab="inbox">Inbox <span class="count" id="newcount"></span></button>
   <button role="tab" id="tab-billing" aria-controls="main" data-tab="billing">Billing</button>
   <button role="tab" id="tab-admins" aria-controls="main" data-tab="admins">Admins</button>
@@ -32,6 +35,7 @@
 </nav>
 <main id="main" tabindex="-1"><p class="muted pad">Loading…</p></main>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="undo" id="undo" role="status" aria-live="polite"></div>
 <dialog class="dlg" id="confirm" aria-labelledby="confirm-t">
   <div class="dlg-in">
     <h2 id="confirm-t"></h2>

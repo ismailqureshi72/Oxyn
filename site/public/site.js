@@ -818,3 +818,69 @@ document.querySelector('.fs-back')?.addEventListener('click', (e) => {
     }
   } catch {}
 });
+
+// Back buttons (a[data-x-back], components/v2/BackButton.astro): go back when the previous history entry
+// is a page of this site, else follow the link (the logical parent route). With the Navigation API
+// (Chromium) the same-site entries are known exactly and in-page #hash entries are skipped; elsewhere
+// a same-origin referrer stands in for it.
+(function () {
+  const strip = (u) => String(u).split('#')[0];
+  let refSame = false;
+  try { refSame = !!document.referrer && new URL(document.referrer).origin === location.origin && strip(document.referrer) !== strip(location.href); } catch {}
+  function goBack() {
+    const nav = window.navigation;
+    if (nav && typeof nav.entries === 'function' && nav.currentEntry) {
+      const list = nav.entries();
+      const here = strip(location.href);
+      for (let i = nav.currentEntry.index - 1; i >= 0; i--) {
+        const u = list[i] && list[i].url;
+        if (!u) break;
+        if (new URL(u).origin !== location.origin) break;
+        if (strip(u) !== here) { nav.traverseTo(list[i].key); return true; }
+      }
+      return false;
+    }
+    if (refSame && history.length > 1) { history.back(); return true; }
+    return false;
+  }
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest && e.target.closest('a[data-x-back]');
+    if (!a || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    try { if (goBack()) e.preventDefault(); } catch { /* follow the link */ }
+  });
+})();
+
+// Privacy-friendly events for the admin Activity tab (POST /api/events, site/worker/events.ts):
+// page views, Pro copy attempts, pricing views and checkout clicks. No cookies are set, nothing
+// is sent with Do Not Track or Global Privacy Control on, and events go in small batches.
+(function () {
+  const off = navigator.doNotTrack === '1' || window.doNotTrack === '1' || navigator.globalPrivacyControl === true;
+  const q = [];
+  let timer = 0;
+  function flush(beacon) {
+    clearTimeout(timer);
+    while (q.length) {
+      const body = JSON.stringify({ events: q.splice(0, 20) });
+      let sent = false;
+      if (beacon && navigator.sendBeacon) {
+        try { sent = navigator.sendBeacon('/api/events', new Blob([body], { type: 'text/plain;charset=UTF-8' })); } catch { sent = false; }
+      }
+      if (!sent) {
+        try { fetch('/api/events', { method: 'POST', body, headers: { 'content-type': 'application/json' }, credentials: 'same-origin', keepalive: true }).catch(() => {}); } catch { /* offline */ }
+      }
+    }
+  }
+  /** oxynTrack(type, item?, detail?, now?): now = send at once (the page is about to change). */
+  window.oxynTrack = function (type, item, detail, now) {
+    if (off) return;
+    const e = { type, path: location.pathname };
+    if (item) e.item = String(item);
+    if (detail) e.detail = String(detail);
+    q.push(e);
+    if (now || q.length >= 10) flush(true);
+    else { clearTimeout(timer); timer = setTimeout(() => flush(false), 1000); }
+  };
+  addEventListener('pagehide', () => flush(true));
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flush(true); });
+  if (!/^\/(admin|api)(\/|$)/.test(location.pathname)) window.oxynTrack('view');
+})();
