@@ -6,6 +6,7 @@ import OxynDemo from '../OxynDemo.astro';
 import ThemeRadios from './ThemeRadios.astro';
 import CompCard from './CompCard.astro';
 import ProLock from './ProLock.astro';
+import BackButton from './BackButton.astro';
 import { icon } from './icons';
 import { mark } from './brands';
 import {
@@ -46,13 +47,16 @@ const kind = screen ? 'screen' : 'component';
 ---
 <Library title={`${demo.name} — ${screen ? 'Screens' : g!.name}`} description={demo.summary} type="Component" meta={`category:${screen ? 'Screens' : g!.name}`}>
   <article class="x-art">
-    <nav class="x-crumbs" aria-label="Breadcrumb" data-pagefind-ignore>
+    <div class="x-backrow" data-pagefind-ignore>
+    <BackButton fallback={screen ? '/screens/' : `/components/${g!.slug}/`} />
+    <nav class="x-crumbs" aria-label="Breadcrumb">
       {screen ? (
         <><a href="/screens/">Screens</a><span aria-hidden="true">›</span><span aria-current="page">{demo.name}</span></>
       ) : (
         <><a href="/components/">Components</a><span aria-hidden="true">›</span><a href={`/components/${g!.slug}/`}>{g!.name}</a><span aria-hidden="true">›</span><span aria-current="page">{demo.name}</span></>
       )}
     </nav>
+    </div>
     <h1 class="art-title" data-pagefind-meta="title">{demo.name}{pro && <a class="x-chip pro-chip" href={`/pricing/?from=${demo.slug}`} title="Part of Oxyn Pro: the preview is free, the code needs Pro"><Fragment set:html={icon.bolt} />Pro</a>}</h1>
     <p class="art-lede">{demo.summary}</p>
     <div class="install-pill copyable"><code>{install}</code><button class="pill-copy" type="button" data-copy={install} data-pro-cli={pro ? 'true' : undefined} aria-label="Copy install command"><Fragment set:html={icon.copy} /></button></div>

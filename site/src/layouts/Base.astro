@@ -10,6 +10,7 @@ import TopBar from '../components/v2/TopBar.astro';
 import Footer from '../components/v2/Footer.astro';
 import SearchModal from '../components/SearchModal.astro';
 import Feedback from '../components/Feedback.astro';
+import BackButton from '../components/v2/BackButton.astro';
 import { newDemos } from '../lib/data';
 
 interface Props {
@@ -20,8 +21,10 @@ interface Props {
   promo?: boolean;
   /** false: kept out of search engines and the site search (sign-in and account pages). */
   index?: boolean;
+  /** Shows a Back button above the content; the value is where it goes without a same-site history entry. */
+  back?: string;
 }
-const { title, description, type = 'Page', promo = false, index = true } = Astro.props;
+const { title, description, type = 'Page', promo = false, index = true, back } = Astro.props;
 const path = Astro.url.pathname;
 const fullTitle = path === '/' ? title : `${title} · Oxyn`;
 // Promo strip: the newest components by name, then how many more (never "0 more").
@@ -43,9 +46,9 @@ const promoText = promoNames.length === 0 ? 'New components, all free →'
     )}
     <header class="x-tb" data-pagefind-ignore><TopBar current={path} /></header>
     {index ? (
-      <main id="main" data-pagefind-body data-pagefind-filter={`type:${type}`} data-pagefind-meta={`type:${type}`}><slot /></main>
+      <main id="main" data-pagefind-body data-pagefind-filter={`type:${type}`} data-pagefind-meta={`type:${type}`}>{back && <div class="x-backbar"><BackButton fallback={back} /></div>}<slot /></main>
     ) : (
-      <main id="main" data-pagefind-ignore="all"><slot /></main>
+      <main id="main" data-pagefind-ignore="all">{back && <div class="x-backbar"><BackButton fallback={back} /></div>}<slot /></main>
     )}
     <Footer />
     <SearchModal />
