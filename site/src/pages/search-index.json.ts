@@ -74,7 +74,7 @@ export const GET: APIRoute = async () => {
     ['Blocks', '/blocks/', 'Larger sections you drop into a page.'],
     ['Illustrations', '/illustrations/', 'Animated spot illustrations for empty states and onboarding.'],
     ['Motion', '/motion/', 'Durations, easings and springs as tokens.'],
-    ['Pricing', '/pricing/', 'The core is free and MIT licensed.'],
+    ['Pricing', '/pricing/', 'Components are free and MIT licensed. Pro: screens, templates, blocks and kits.'],
   ];
   for (const [t, u, d] of pages) rows.push({ t, u, g: 'p', k: 'Page', d, w: words(u) });
   const docs = await getCollection('docs');

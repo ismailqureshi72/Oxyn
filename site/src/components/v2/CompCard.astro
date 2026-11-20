@@ -3,7 +3,7 @@
 // one-line description and a copy button (copies the install line).
 import OxynDemo from '../OxynDemo.astro';
 import { icon } from './icons';
-import { demoUrl, groupOf, isScreen, installLine, type Demo } from '../../lib/data';
+import { demoUrl, groupOf, isScreen, isPro, installLine, type Demo } from '../../lib/data';
 interface Props { demo: Demo; headingLevel?: 2 | 3 }
 const { demo, headingLevel = 3 } = Astro.props;
 const v = demo.variants[0];
@@ -15,6 +15,7 @@ const install = installLine(demo);
   <div class="cc-top">
     {g.slug ? <a class="x-chip" href={`/components/${g.slug}/`}>{g.name}</a> : <a class="x-chip" href="/screens/">{g.name}</a>}
     <span class="x-chip soft">{demo.variants.length} {demo.variants.length === 1 ? 'variant' : 'variants'}</span>
+    {isPro(demo) && <span class="x-chip pro-chip" title="Oxyn Pro: the preview is free, the code needs Pro"><Fragment set:html={icon.bolt} />Pro</span>}
   </div>
   <div class="cc-prev" aria-hidden="true" inert>
     <OxynDemo slug={demo.slug} html={v.html} variant={0} />

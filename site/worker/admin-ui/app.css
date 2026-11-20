@@ -215,3 +215,15 @@ a.btn{text-decoration:none}
 .auth .row{margin-top:18px}
 .auth .small + .row{margin-top:14px}
 .chip.ok{background:var(--chip)}
+
+/* Billing */
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.stat{padding:14px 16px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.stat .k{font-size:12px;color:var(--fg2);font-weight:550}
+.stat b{font-size:22px;letter-spacing:-.02em;font-weight:650}
+.stat small{font-size:12px;color:var(--fg2)}
+.twrap{overflow-x:auto}
+.subs td{white-space:nowrap}
+.subs td.u{display:flex;align-items:center;gap:6px}
+@media (max-width:760px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.nline{margin:0 0 4px}
