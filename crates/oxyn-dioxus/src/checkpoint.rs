@@ -310,7 +310,7 @@ pub fn CheckpointLanes(
                                         onmounted: move |e| keep(els, i, e), onfocus: move |_| focus.set(i),
                                         if tool_icons {
                                             if let Some(b) = c.tool_brand().filter(|_| tool_logos) {
-                                                span { class: "ti logo {b}", title: "{c.tool.clone().unwrap_or_default()}", "aria-hidden": "true", BrandIcon { name: b.to_string(), size: 13.0 } }
+                                                span { class: "ti logo {b}", title: "{c.tool.clone().unwrap_or_default()}", "aria-hidden": "true", BrandIcon { name: b.to_string(), size: if b == "stripe" { 12.0 } else { 13.0 }, coloured: b != "stripe" } }
                                             } else if let Some(ic) = c.tool_icon() {
                                                 span { class: "ti", title: "{c.tool.clone().unwrap_or_default()}", "aria-hidden": "true", Icon { name: ic, size: 12.0 } }
                                             } else {
