@@ -6,7 +6,7 @@
 //                                        account's email and id (reference_id) filled in
 //   GET    /api/billing/me               signed in: plan, status, renewal, Team seats
 //   GET    /api/billing/portal           signed in: Polar customer portal (manage, cancel, invoices)
-//   POST   /api/billing/seats            Team owner: {email} takes one of the four seats
+//   POST   /api/billing/seats            Team owner: {email} takes one of the 3 teammate seats (4 people with the owner)
 //   DELETE /api/billing/seats/<email>    Team owner: frees a seat
 //   GET    /api/pro/source/<slug>        Pro: the usage code of a Pro screen, template or block
 //   POST   /api/polar/webhook            Polar events, signed (Standard Webhooks)
@@ -26,7 +26,8 @@ export const POLAR = {
   api: 'https://api.polar.sh/v1',
   portal: 'https://polar.sh/oxyn/portal',
   founderCap: 100,
-  seats: 4,
+  people: 4, // a Team is up to 4 people in total: the owner plus 3 teammates
+  seats: 3, // teammate emails the owner can add (people - 1)
   tolerance: 300, // webhook timestamp, seconds
   maxBody: 1_000_000,
 };
@@ -64,25 +65,55 @@ interface SubRow {
 interface Who { id: string; email: string; email_verified: number }
 const live = (s: SubRow) => ACTIVE.includes(s.status) && !s.ended_at;
 
-/** What this account may use: its own licence (Pro, or Team owner) or a Team seat. The email only
- *  counts when Google or GitHub verified it, so nobody can claim a licence by signing up with an
- *  address that is not theirs. */
-export async function entitlement(env: Env, u: Who) {
+interface GrantRow { id: number; email: string; plan: 'pro' | 'team'; seats: number; expires_at: string | null; reason: string | null; created_at: string }
+export type Tier = 'free' | 'pro' | 'team';
+export interface PlanFor {
+  tier: Tier;
+  pro: boolean;
+  via: 'subscription' | 'seat' | 'grant' | null;
+  mine: SubRow | null; // the account's own live subscription (Pro, or Team owner)
+  latest: SubRow | null; // its newest subscription, live or not
+  seat: (SubRow & { owner_email: string }) | null; // a live Team it holds a seat on
+  grant: GrantRow | null; // a live manual grant
+  customer: string | null; // Polar customer id, for the portal
+}
+const rank = (t: Tier) => (t === 'team' ? 2 : t === 'pro' ? 1 : 0);
+
+/** The one licence check: what this account may use right now. Reads, in one place,
+ *  1. its own Polar subscriptions (licences: Pro for one developer, or the Team owner),
+ *  2. a seat on someone's live Team subscription,
+ *  3. a manual grant (D1 `grants`, written by the admin panel from G2): unrevoked and not expired
+ *     counts exactly like an active subscription.
+ *  An email only counts when Google or GitHub verified it, so nobody can claim a licence, a seat or
+ *  a grant by signing up with an address that is not theirs. The highest tier wins. */
+export async function plan_for(env: Env, u: Who): Promise<PlanFor> {
   const v = u.email_verified ? 1 : 0;
-  const own = (await env.DB.prepare(
-    'SELECT s.* FROM licences l JOIN subscriptions s ON s.id = l.subscription_id ' +
-      'WHERE l.user_id = ?1 OR (?3 = 1 AND l.email = ?2) ORDER BY s.created_at DESC LIMIT 20',
-  ).bind(u.id, u.email, v).all<SubRow>()).results ?? [];
-  const seat = v
-    ? await env.DB.prepare(
+  const now = iso();
+  const [ownR, seatR, grantR] = await env.DB.batch([
+    env.DB.prepare(
+      'SELECT s.* FROM licences l JOIN subscriptions s ON s.id = l.subscription_id ' +
+        'WHERE l.user_id = ?1 OR (?3 = 1 AND l.email = ?2) ORDER BY s.created_at DESC LIMIT 20',
+    ).bind(u.id, u.email, v),
+    env.DB.prepare(
       `SELECT s.*, (SELECT email FROM licences WHERE subscription_id = s.id) AS owner_email FROM team_seats t JOIN subscriptions s ON s.id = t.subscription_id ` +
-        `WHERE t.email = ?1 AND t.removed_at IS NULL AND s.plan = 'team' AND s.status IN (${ACTIVE_SQL}) AND s.ended_at IS NULL ORDER BY s.created_at DESC LIMIT 1`,
-    ).bind(u.email).first<SubRow & { owner_email: string }>()
-    : null;
+        `WHERE ?2 = 1 AND t.email = ?1 AND t.removed_at IS NULL AND s.plan = 'team' AND s.status IN (${ACTIVE_SQL}) AND s.ended_at IS NULL ORDER BY s.created_at DESC LIMIT 1`,
+    ).bind(u.email, v),
+    env.DB.prepare(
+      "SELECT id, email, plan, seats, expires_at, reason, created_at FROM grants WHERE ?2 = 1 AND email = ?1 AND revoked_at IS NULL " +
+        "AND (expires_at IS NULL OR expires_at > ?3) ORDER BY (plan = 'team') DESC, created_at DESC LIMIT 1",
+    ).bind(u.email, v, now),
+  ]);
+  const own = (ownR.results ?? []) as SubRow[];
+  const seat = ((seatR.results ?? [])[0] as (SubRow & { owner_email: string }) | undefined) ?? null;
+  const grant = ((grantR.results ?? [])[0] as GrantRow | undefined) ?? null;
   const mine = own.find(live) ?? null;
-  const latest = mine ?? own[0] ?? null;
-  const tier: 'free' | 'pro' | 'team' = mine ? mine.plan : seat ? 'team' : 'free';
-  return { tier, pro: tier !== 'free', via: mine ? 'own' : seat ? 'seat' : null, mine, latest, seat, customer: own[0]?.customer_id ?? null };
+  const options: [Tier, PlanFor['via']][] = [];
+  if (mine) options.push([mine.plan, 'subscription']);
+  if (seat) options.push(['team', 'seat']);
+  if (grant) options.push([grant.plan, 'grant']);
+  options.sort((a, b) => rank(b[0]) - rank(a[0]));
+  const [tier, via] = options[0] ?? ['free', null];
+  return { tier, pro: tier !== 'free', via, mine, latest: mine ?? own[0] ?? null, seat, grant, customer: own[0]?.customer_id ?? null };
 }
 
 const pub = (s: SubRow | null) => s && {
@@ -127,7 +158,7 @@ export async function handleBilling(req: Request, env: Env, ctx: Ctx, url: URL):
     if (src && m === 'GET') {
       const item = (PRO_SOURCE as Record<string, unknown>)[src[1]];
       if (!item) throw new HttpError(404, 'not_found', 'There is no Pro item with that name.');
-      if (!(await entitlement(env, u)).pro) throw new HttpError(403, 'pro_required', 'This code is part of Oxyn Pro.');
+      if (!(await plan_for(env, u)).pro) throw new HttpError(403, 'pro_required', 'This code is part of Oxyn Pro.');
       return json({ ok: true, slug: src[1], ...(item as object) });
     }
     if (route === '/api/billing/seats' && m === 'POST') return await addSeat(req, env, url, u);
@@ -145,10 +176,13 @@ export async function handleBilling(req: Request, env: Env, ctx: Ctx, url: URL):
 async function checkout(req: Request, env: Env, url: URL) {
   const plan = byKey.get((url.searchParams.get('plan') || '') as PlanKey);
   if (!plan) return redirect(`${url.origin}/pricing/`);
+  // ?from=<slug>: the Pro item the buyer came from, so pricing can name it and lead back to it.
+  const fromRaw = url.searchParams.get('from') || '';
+  const from = /^[a-z0-9-]{1,80}$/.test(fromRaw) ? `&from=${fromRaw}` : '';
   const u = await currentUser(req, env);
-  if (!u) return redirect(`${url.origin}/login/?next=${encodeURIComponent(`/pricing/?buy=${plan.key}`)}`);
-  if (plan.founder && !(await founderState(env)).open) return redirect(`${url.origin}/pricing/?founder=closed`);
-  const ent = await entitlement(env, u);
+  if (!u) return redirect(`${url.origin}/login/?next=${encodeURIComponent(`/pricing/?buy=${plan.key}${from}`)}`);
+  if (plan.founder && !(await founderState(env)).open) return redirect(`${url.origin}/pricing/?founder=closed${from}`);
+  const ent = await plan_for(env, u);
   if (ent.mine) return redirect(`${url.origin}/account/?billing=active#plan`);
   const to = new URL(plan.link);
   to.searchParams.set('customer_email', u.email);
@@ -159,7 +193,7 @@ async function checkout(req: Request, env: Env, url: URL) {
 }
 
 async function billingMe(env: Env, u: Who) {
-  const e = await entitlement(env, u);
+  const e = await plan_for(env, u);
   let seats: { email: string; created_at: string }[] | null = null;
   if (e.mine && e.mine.plan === 'team') {
     seats = (await env.DB.prepare('SELECT email, created_at FROM team_seats WHERE subscription_id = ?1 AND removed_at IS NULL ORDER BY created_at')
@@ -172,8 +206,10 @@ async function billingMe(env: Env, u: Who) {
     via: e.via,
     subscription: pub(e.latest),
     seat: e.seat ? { owner_email: e.seat.owner_email, plan: 'team' } : null,
+    grant: e.grant ? { plan: e.grant.plan, expires_at: e.grant.expires_at } : null,
     seats,
     seat_limit: POLAR.seats,
+    people_limit: POLAR.people,
     has_billing: !!e.customer,
     email_verified: !!u.email_verified,
   });
@@ -182,7 +218,7 @@ async function billingMe(env: Env, u: Who) {
 /** Polar's customer portal: a pre-signed session when POLAR_ACCESS_TOKEN is set, else the portal's
  *  own sign-in (Polar emails a code to the address the subscription was bought with). */
 async function portal(env: Env, url: URL, u: Who) {
-  const e = await entitlement(env, u);
+  const e = await plan_for(env, u);
   if (env.POLAR_ACCESS_TOKEN && e.customer) {
     try {
       const r = await fetch(`${POLAR.api}/customer-sessions/`, {
@@ -206,7 +242,7 @@ async function body(req: Request): Promise<Record<string, unknown>> {
 }
 
 async function teamOf(env: Env, u: Who) {
-  const e = await entitlement(env, u);
+  const e = await plan_for(env, u);
   if (!e.mine || e.mine.plan !== 'team') throw new HttpError(403, 'not_team_owner', 'Only the owner of an active Team plan can change its seats.');
   return e.mine;
 }
@@ -220,7 +256,7 @@ async function addSeat(req: Request, env: Env, url: URL, u: Who) {
   const n = await env.DB.prepare('SELECT COUNT(*) AS n FROM team_seats WHERE subscription_id = ?1 AND removed_at IS NULL').bind(sub.id).first<{ n: number }>();
   const ex = await env.DB.prepare('SELECT removed_at FROM team_seats WHERE subscription_id = ?1 AND email = ?2').bind(sub.id, email).first<{ removed_at: string | null }>();
   if (ex && !ex.removed_at) throw new HttpError(409, 'already_seated', 'That email already has a seat.', 'email');
-  if (Number(n?.n ?? 0) >= POLAR.seats) throw new HttpError(409, 'seats_full', `All ${POLAR.seats} seats are taken. Free one first.`, 'email');
+  if (Number(n?.n ?? 0) >= POLAR.seats) throw new HttpError(409, 'seats_full', `A Team is up to ${POLAR.people} people: you and ${POLAR.seats} teammates. Remove one first.`, 'email');
   await env.DB.prepare(
     'INSERT INTO team_seats (subscription_id, email, invited_by, created_at) VALUES (?1, ?2, ?3, ?4) ' +
       'ON CONFLICT (subscription_id, email) DO UPDATE SET removed_at = NULL, invited_by = ?3, created_at = ?4',
