@@ -1,4 +1,4 @@
-// Oxyn admin panel UI. Served by the Worker only after the Access + admin-list checks.
+// Oxyn admin panel UI. Served by the Worker only to a signed-in, provider-verified admin (admin.ts).
 // No framework, no innerHTML for data: every value from the API goes in as text.
 (() => {
   'use strict';
@@ -33,12 +33,13 @@
     if (opts.body !== undefined) { init.headers['content-type'] = 'application/json'; init.body = JSON.stringify(opts.body); }
     let r;
     try { r = await fetch('/api/admin' + path, init); }
-    catch { throw new ApiError(0, 'network', 'Could not reach the server. Your Cloudflare Access sign-in may have expired: reload the page.'); }
+    catch { throw new ApiError(0, 'network', 'Could not reach the server. Check your connection and reload the page.'); }
     let data = null;
     try { data = await r.json(); } catch { /* not JSON */ }
     if (!r.ok || !data || data.ok === false) {
       const e = (data && data.error) || {};
-      if (e.code === 'session_required') { setTimeout(start, 0); }
+      // Signed out or no longer an admin: the page itself shows why (sign-in or refusal).
+      if (['signed_out', 'not_an_admin', 'verify_email'].includes(e.code)) { location.reload(); }
       throw new ApiError(r.status, e.code || 'http_' + r.status, e.message || `Request failed (${r.status}).`, e.field);
     }
     return data;
@@ -116,53 +117,10 @@
     $('#tabs').hidden = true; $('#logout').hidden = true;
     try { me = await api('/me'); }
     catch (e) { main().replaceChildren(h('div', { class: 'auth' }, h('div', { class: 'card' }, h('h1', {}, 'Admin unavailable'), h('p', {}, e.message)))); return; }
+    me.signed_in = true;
     $('#who').textContent = me.email;
-    if (!me.password_set) return renderSetup();
-    if (!me.signed_in) return renderLogin();
     $('#tabs').hidden = false; $('#logout').hidden = false;
     route();
-  }
-
-  // ── Setup + sign-in ────────────────────────────────────────────────────────────────
-  function authCard(title, text, form, foot) {
-    main().replaceChildren(h('div', { class: 'auth' }, h('div', { class: 'card' }, h('h1', { id: 'auth-t' }, title), h('p', {}, text), form, foot || null)));
-    document.title = title + ' · Oxyn admin';
-    const first = form.querySelector('input'); if (first) first.focus();
-  }
-  function renderSetup() {
-    const form = h('form', { novalidate: true, 'aria-labelledby': 'auth-t' },
-      field('password', 'Shared password', { type: 'password', autocomplete: 'new-password', required: true, minlength: 12 }, 'At least 12 characters. Every admin uses this password.'),
-      field('confirm', 'Confirm password', { type: 'password', autocomplete: 'new-password', required: true }),
-      h('span', { class: 'err form', role: 'alert' }),
-      h('button', { class: 'btn primary', type: 'submit' }, 'Set password and continue'));
-    form.addEventListener('submit', async (ev) => {
-      ev.preventDefault();
-      const btn = form.querySelector('button[type=submit]');
-      const pw = form.password.value, cf = form.confirm.value;
-      if (pw.length < 12) return showErr(form, { field: 'password', message: 'Use at least 12 characters.' });
-      if (pw !== cf) return showErr(form, { field: 'confirm', message: 'The two passwords do not match.' });
-      setBusy(btn, true, 'Saving…');
-      try { await api('/setup', { method: 'POST', body: { password: pw, confirm: cf } }); toast('Password set. Welcome.'); start(); }
-      catch (e) { setBusy(btn, false); showErr(form, e); if (e.code === 'already_set') setTimeout(start, 1200); }
-    });
-    authCard('Set the shared password', 'No admin password exists yet. Choose one now and share it with the other maintainers privately. It is stored only as a salted hash.', form,
-      h('p', { class: 'small' }, `Signed in to Cloudflare Access as ${me.email}.`));
-  }
-  function renderLogin() {
-    const form = h('form', { novalidate: true, 'aria-labelledby': 'auth-t' },
-      field('password', 'Shared password', { type: 'password', autocomplete: 'current-password', required: true }),
-      h('span', { class: 'err form', role: 'alert' }),
-      h('button', { class: 'btn primary', type: 'submit' }, 'Sign in'));
-    form.addEventListener('submit', async (ev) => {
-      ev.preventDefault();
-      const btn = form.querySelector('button[type=submit]');
-      if (!form.password.value) return showErr(form, { field: 'password', message: 'Enter the shared password.' });
-      setBusy(btn, true, 'Checking…');
-      try { await api('/login', { method: 'POST', body: { password: form.password.value } }); start(); }
-      catch (e) { setBusy(btn, false); form.password.value = ''; showErr(form, e); }
-    });
-    authCard('Admin sign-in', 'Enter the shared admin password. Sessions last 12 hours.', form,
-      h('p', { class: 'small' }, `Signed in to Cloudflare Access as ${me.email}.`));
   }
 
   // ── Tabs + routing ─────────────────────────────────────────────────────────────────
@@ -312,18 +270,6 @@
     let r;
     try { r = await api('/admins'); } catch (e) { pageEl.lastChild.textContent = e.message; return; }
     const active = r.items.filter((a) => !a.removed_at);
-    const pending = r.items.some((a) => !a.access_synced);
-    const syncBtn = h('button', { class: 'btn sm', type: 'button', onclick: async (e) => {
-      const b = e.currentTarget; setBusy(b, true, 'Syncing…');
-      try { const s = (await api('/admins/sync', { method: 'POST', body: {} })).sync; toast(s.ok ? 'Access group updated.' : 'Sync failed. See the note.'); renderAdmins(); }
-      catch (er) { setBusy(b, false); toast(er.message); }
-    } }, 'Sync to Access now');
-    const notes = [];
-    if (!r.access_sync) notes.push(h('div', { class: 'note', role: 'note' }, h('span', {},
-      h('b', {}, 'Access sync is off. '), 'The CF_ADMIN_TOKEN Worker secret is not set, so changes here are saved and enforced by the site at once, but the Cloudflare Access group “oxyn-admins” is not updated. ',
-      'A new admin cannot get past Access until the group lists them; a removed admin is refused by the site even while Access still lets them through. See docs/admin.md.')));
-    else if (r.sync_error) notes.push(h('div', { class: 'note', role: 'note' }, h('span', {}, h('b', {}, 'Last Access sync failed: '), r.sync_error)), h('div', { class: 'row' }, syncBtn));
-    else if (pending) notes.push(h('div', { class: 'row' }, syncBtn));
     const form = h('form', { class: 'addrow', novalidate: true },
       field('add-email', 'Add an admin', { type: 'email', name: 'email', autocomplete: 'off', placeholder: 'name@example.com', required: true }),
       h('button', { class: 'btn primary', type: 'submit' }, 'Add admin'),
@@ -333,18 +279,17 @@
       const btn = form.querySelector('button[type=submit]'); const v = form.email.value.trim();
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)) return showErr(form, { field: 'email', message: 'That email address does not look right.' });
       setBusy(btn, true, 'Adding…');
-      try { const x = await api('/admins', { method: 'POST', body: { email: v } }); toast(x.sync.ok ? `${v} added.` : `${v} added. Access sync pending.`); renderAdmins(); }
+      try { await api('/admins', { method: 'POST', body: { email: v } }); toast(`${v} added.`); renderAdmins(); }
       catch (e) { setBusy(btn, false); showErr(form, e); }
     });
     const lis = r.items.map((a) => {
       const self = a.email.toLowerCase() === r.me.toLowerCase();
-      const removed = !!a.removed_at;
-      const state = removed ? h('span', { class: 'chip outline' }, 'Removed · Access sync pending') : !a.access_synced ? h('span', { class: 'chip outline' }, 'Pending Access sync') : h('span', { class: 'chip' }, 'Active');
+      const state = a.verified ? h('span', { class: 'chip' }, 'Verified') : h('span', { class: 'chip outline', title: 'Signs in with Google or GitHub on this email to open the panel' }, 'Not verified yet');
       const last = active.length <= 1;
-      const rm = removed ? null : h('button', { class: 'btn sm danger', type: 'button', disabled: last, title: last ? 'Keep at least one admin' : null, 'aria-label': `Remove ${a.email}`, onclick: async () => {
+      const rm = h('button', { class: 'btn sm danger', type: 'button', disabled: last, title: last ? 'Keep at least one admin' : null, 'aria-label': `Remove ${a.email}`, onclick: async () => {
         const msg = self ? 'You are removing yourself. You will lose access to the admin panel right away.' : `${a.email} will no longer be able to use the admin panel.`;
         if (!(await confirmDlg(`Remove ${a.email}?`, msg, 'Remove'))) return;
-        try { const x = await api('/admins/' + encodeURIComponent(a.email), { method: 'DELETE' }); toast(x.sync.ok ? 'Removed.' : 'Removed. Access sync pending.'); if (x.self) start(); else renderAdmins(); }
+        try { const x = await api('/admins/' + encodeURIComponent(a.email), { method: 'DELETE' }); toast('Removed.'); if (x.self) location.reload(); else renderAdmins(); }
         catch (e) { toast(e.message); }
       } }, 'Remove');
       return h('li', {}, h('span', { class: 'em' }, a.email), self ? h('span', { class: 'chip solid' }, 'You') : null, state, h('span', { class: 'r' }, rm),
@@ -352,32 +297,15 @@
     });
     fill(pageEl,
       h('div', { class: 'head' }, h('h1', {}, 'Admins'), h('span', { class: 'muted' }, `${active.length} active`)),
-      h('div', { class: 'stack' }, ...notes,
+      h('div', { class: 'stack' },
         h('div', { class: 'card' }, h('ul', { class: 'alist', 'aria-label': 'Admins' }, lis)),
         h('div', { class: 'card section' }, form,
-          h('p', { class: 'hint muted addhint' }, 'They sign in to Cloudflare Access with a one-time PIN sent to this address, then use the shared password.'))));
+          h('p', { class: 'hint muted addhint' }, 'They open the panel by signing in to Oxyn with Google or GitHub on this email. An email and password account on it is not enough until Google or GitHub has verified the address.'))));
   }
 
   // ── Settings ───────────────────────────────────────────────────────────────────────
   async function renderSettings() {
     document.title = 'Settings · Oxyn admin';
-    const pw = h('form', { novalidate: true, 'aria-labelledby': 'pw-t' },
-      h('div', { class: 'pwgrid' },
-        field('current', 'Current password', { type: 'password', autocomplete: 'current-password', required: true }),
-        field('password', 'New password', { type: 'password', autocomplete: 'new-password', required: true }, 'At least 12 characters.'),
-        field('confirm', 'Confirm new password', { type: 'password', autocomplete: 'new-password', required: true })),
-      h('div', { class: 'row' }, h('button', { class: 'btn primary', type: 'submit' }, 'Change password'), h('span', { class: 'err form', role: 'alert' })));
-    pw.addEventListener('submit', async (ev) => {
-      ev.preventDefault();
-      const btn = pw.querySelector('button[type=submit]');
-      if (!pw.current.value) return showErr(pw, { field: 'current', message: 'Enter the current password.' });
-      if (pw.password.value.length < 12) return showErr(pw, { field: 'password', message: 'Use at least 12 characters.' });
-      if (pw.password.value !== pw.confirm.value) return showErr(pw, { field: 'confirm', message: 'The two passwords do not match.' });
-      setBusy(btn, true, 'Saving…');
-      try { await api('/password', { method: 'POST', body: { current: pw.current.value, password: pw.password.value, confirm: pw.confirm.value } }); pw.reset(); showErr(pw, null); toast('Password changed. Other sessions were signed out.'); }
-      catch (e) { showErr(pw, e); }
-      setBusy(btn, false);
-    });
     const flagsBox = h('div', { class: 'flags', id: 'flags' }, h('p', { class: 'empty' }, 'Loading…'));
     const add = h('form', { class: 'addrow', novalidate: true },
       field('flag-key', 'New flag', { name: 'key', autocomplete: 'off', placeholder: 'promo_strip', required: true }),
@@ -393,8 +321,6 @@
     });
     main().replaceChildren(h('div', { class: 'page' }, h('div', { class: 'head' }, h('h1', {}, 'Settings')),
       h('div', { class: 'stack' },
-        h('section', { class: 'card section', 'aria-labelledby': 'pw-t' }, h('h2', { id: 'pw-t' }, 'Shared password'),
-          h('p', {}, 'Changing it signs every admin out, including other devices of yours.'), pw),
         h('section', { class: 'card', 'aria-labelledby': 'fl-t' },
           h('div', { class: 'section fhead' }, h('h2', { id: 'fl-t' }, 'Content and flags'),
             h('p', {}, 'Simple switches and texts the site can read from /api/flags (only flags that are on are public).')),
@@ -429,7 +355,7 @@
   // ── Audit log ──────────────────────────────────────────────────────────────────────
   const ACTIONS = {
     'password.setup': 'Set the shared password', 'password.change': 'Changed the password', 'password.change_fail': 'Wrong current password',
-    login: 'Signed in', 'login.fail': 'Wrong password', logout: 'Logged out',
+    login: 'Signed in (old admin password)', 'login.fail': 'Wrong password (old admin password)', logout: 'Logged out',
     'feedback.status': 'Changed status', 'feedback.delete': 'Deleted feedback', 'feedback.github': 'Sent to GitHub',
     'admin.add': 'Added admin', 'admin.remove': 'Removed admin', 'access.sync': 'Synced Access group',
     'flag.set': 'Saved flag', 'flag.delete': 'Deleted flag',
@@ -458,7 +384,10 @@
       const t = root.dataset.theme === 'dark' ? 'light' : 'dark';
       root.dataset.theme = t; localStorage.setItem('starlight-theme', t); syncThemeBtn();
     });
-    $('#logout').addEventListener('click', async () => { try { await api('/logout', { method: 'POST', body: {} }); } catch { /* ignore */ } start(); });
+    $('#logout').addEventListener('click', async () => {
+      try { await fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin', headers: { 'content-type': 'application/json' }, body: '{}' }); } catch { /* ignore */ }
+      location.assign('/login/');
+    });
     const tabs = [...document.querySelectorAll('#tabs [role=tab]')];
     tabs.forEach((b) => b.addEventListener('click', () => go(b.dataset.tab)));
     $('#tabs').addEventListener('keydown', (e) => {
