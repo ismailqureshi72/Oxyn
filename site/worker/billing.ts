@@ -430,6 +430,11 @@ export async function archiveFounder(env: Env) {
 // ── Admin ────────────────────────────────────────────────────────────────────────────────────
 /** GET /api/admin/billing: subscribers and the recurring revenue they add up to. */
 export async function adminBilling(env: Env) {
+  return json(await billingSummary(env));
+}
+
+/** Subscribers, counts and MRR (also used by the admin Activity tab). */
+export async function billingSummary(env: Env) {
   const rows = (await env.DB.prepare(
     'SELECT s.id, s.customer_email, s.plan, s.interval, s.founder, s.status, s.amount, s.currency, s.cancel_at_period_end, ' +
       's.current_period_end, s.started_at, s.ended_at, s.created_at, s.user_id IS NOT NULL AS linked, ' +
@@ -449,7 +454,7 @@ export async function adminBilling(env: Env) {
   }
   const founder = await founderState(env);
   const st = await env.DB.prepare("SELECT value FROM settings WHERE key = 'founder_archive'").first<{ value: string }>();
-  return json({
+  return {
     ok: true,
     mrr_cents: Math.round(mrr),
     arr_cents: Math.round(mrr * 12),
@@ -458,5 +463,5 @@ export async function adminBilling(env: Env) {
     webhook_ready: !!env.POLAR_WEBHOOK_SECRET,
     api_token: !!env.POLAR_ACCESS_TOKEN,
     items: rows.map((s) => ({ ...s, active: live(s) })),
-  });
+  };
 }
