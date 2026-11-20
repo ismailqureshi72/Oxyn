@@ -1,7 +1,7 @@
 //! Every Oxyn screen set as interactive GPUI views in one native window. The strip at the top
 //! picks a screen set (S0 app shells … S8 onboarding, S12 to S15 Arc screens) or one of the agent
 //! apps (Taskdeck, Command Center, Session Studio, Fleet Window, Workspace Coder, Command Board,
-//! Threadbar, Tabstack, Repo Desk, Preview Desk).
+//! Threadbar, Tabstack, Repo Desk, Preview Desk, Hangar, Halo Chat, Pilot Panel, Courier).
 //!
 //! Screen sets: press the sidebar, buttons and the account row as in any app; the bar above the
 //! screen has the set's screens, the state bar and a command bar (type a screen or a state, then
