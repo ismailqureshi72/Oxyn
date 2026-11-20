@@ -379,3 +379,48 @@ pure `CpState` with the same keys and presses; tested without a window.
 Colour: chrome stays neutral (fg / border / surface tokens); colour only for status (failed,
 warning) and diff (`+` / `−`, `M` / `A` / `D`). Not built: host-provided screenshot thumbnails
 (film strip draws a miniature), compare-pair, diff-peek.
+
+## C1b: Checkpoint lanes rebuild (2026-11-20)
+
+A critical pass on `CheckpointLanes` against affectUI's Agent Checkpoints (behaviour and visual
+parity; no code, copy, styling or brand logos taken). The C1a lanes drew one small SVG per row,
+so forks crossed their dots and joins showed seams, the path to the head was not told apart, the
+header summary wrapped at 390 px and every row repeated the full ISO date.
+
+**Shared geometry** (`oxyn-core::checkpoint`, used by Dioxus and GPUI): `rail(cps, rows)` returns
+the gutter width, the height and every edge and dot in px (`RAIL_ROW_H` 32, `RAIL_X0` 16,
+`RAIL_LANE_W` 14). Edges are ordered left-behind first so the live path paints on top; a fork
+(`RailEdge::fork`) bends out of the parent dot within one row (`bend_end`, `svg_d`) and then runs
+straight down to the attempt's first checkpoint. `split_day` / `shared_day` split absolute labels.
+
+**Look**
+- Bar 44 px, no divider: branch mark, title (600, ellipsis) and task (muted, ellipsis), then a
+  one-line tabular summary `2026-11-14 · 6 checkpoints · 2 attempts · $0.42`. The ISO day shows
+  once when every label shares it; rows then show the time of day in `<time datetime>` with the
+  full ISO label as tooltip and in the accessible name.
+- Rows: fixed 32 px, padded by the rail gutter; 20 px bordered tool tile, title, soft pills
+  (`Failed` danger, `Stopped`, `Attempt N` on an attempt's first checkpoint), then files (folder
+  glyph), optional step cost and the time.
+- Rail: the way to the head in `status-info` (`tone: RailTone::Live`, default) or the foreground
+  colour (`RailTone::Neutral`); left-behind edges `border-strong`, left-behind dots hollow rings,
+  rows at 50 %. Head: r 5 dot with a halo that pulses while running. No Head badge.
+- Hover or keyboard focus: soft row background (focus adds an inset 1.5 px ring in the live
+  colour); a `Rewind` pill swaps in where files and time sit.
+
+**Motion**: rows rise in, dots pop, each edge draws itself down (edges keyed by the checkpoint they
+lead to, so after a rewind only the new edge draws and the old attempt recolours), the list height
+animates as rows arrive. `prefers-reduced-motion`: no animation, final state at once.
+
+**Scroll**: past `max_rows` (14) the list scrolls in the card with a thin pill scrollbar and
+smooth-scrolls the head into view after a rewind.
+
+**Narrow** (container < 460 px): task, day, file counts and costs give way; the title ellipses;
+time and the Attempt pill stay; the summary never wraps.
+
+**New props**: `tone: RailTone`, `empty` (shown with no checkpoints). Demo controls add Rail colour,
+Play the run (the run plays itself on a loop until a Rewind press takes over) and No checkpoints
+yet; variants `playing` and `neutral` join `rewound`, `single`, `credits`, `scrolling`.
+
+GPUI `CheckpointsView` lanes: same geometry painted on a canvas (edges via `PathBuilder`, dots
+and halo as quads), same bar and pills, Rewind on hover / focus. Gaps: GPUI shows the tool's
+initial rather than its icon, and is not animated.

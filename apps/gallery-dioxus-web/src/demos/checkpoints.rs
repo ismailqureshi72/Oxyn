@@ -9,7 +9,7 @@ use oxyn_core::{
 };
 use oxyn_dioxus::{
     CheckpointFilmStrip, CheckpointLanes, CheckpointList, CheckpointMarker, CheckpointTree,
-    RestorePreviewSheet, RestoreToast, UndoLadder,
+    RailTone, RestorePreviewSheet, RestoreToast, UndoLadder,
 };
 
 use super::{Code, q, rng, sel, tog, var};
@@ -20,6 +20,8 @@ fn iso_all(cps: &[Checkpoint]) -> Vec<String> {
 }
 
 /// Lanes on a live run: Rewind (button, Enter or Space) adds an attempt and moves the head.
+/// With `autoplay` the run plays itself: checkpoints arrive one by one, the tests fail, the agent
+/// rewinds and the second attempt bends out; any Rewind press takes over.
 #[component]
 fn LanesLive(
     cps: Vec<Checkpoint>,
@@ -29,15 +31,52 @@ fn LanesLive(
     costs: bool,
     credits: bool,
     max_rows: usize,
+    neutral: bool,
+    autoplay: bool,
+    empty: bool,
 ) -> Element {
+    let full = cps.clone();
     let mut run = use_signal(move || CheckpointRun::new(cps, head));
+    let mut playing = use_signal(move || autoplay);
+    #[cfg(not(target_arch = "wasm32"))]
+    let _ = (&full, autoplay);
+    #[cfg(target_arch = "wasm32")]
+    use_future(move || {
+        let full = full.clone();
+        async move {
+            use oxyn_core::checkpoint::CheckpointStatus;
+            if !autoplay {
+                return;
+            }
+            let mut k = 1usize;
+            loop {
+                if !*playing.peek() {
+                    return;
+                }
+                let mut v: Vec<Checkpoint> = full.iter().take(k).cloned().collect();
+                if let Some(last) = v.last_mut()
+                    && last.status != CheckpointStatus::Failed
+                    && k < full.len()
+                {
+                    last.status = CheckpointStatus::Running;
+                }
+                run.set(CheckpointRun::new(v, None));
+                let wait = if k >= full.len() { 3600 } else { 1150 };
+                gloo_timers::future::TimeoutFuture::new(wait).await;
+                k = if k >= full.len() { 1 } else { k + 1 };
+            }
+        }
+    });
     let r = run.read().clone();
-    let times = if iso { iso_all(&r.checkpoints) } else { vec![] };
+    let cps_now = if empty { vec![] } else { r.checkpoints.clone() };
+    let times = if iso { iso_all(&cps_now) } else { vec![] };
     rsx! {
-        CheckpointLanes { checkpoints: r.checkpoints.clone(), head: r.head.clone(), times, max_rows,
+        CheckpointLanes { checkpoints: cps_now, head: r.head.clone(), times, max_rows,
             task: Some("Add Stripe checkout".to_string()), tool_icons: tools, step_costs: costs,
+            tone: if neutral { RailTone::Neutral } else { RailTone::Live },
             format: if credits { Some(Callback::new(|c: u32| format!("{} cr", c * 10))) } else { None },
             on_rewind: move |id: String| {
+                playing.set(false);
                 let i = run.peek().checkpoints.iter().position(|c| c.id == id);
                 if let Some(i) = i { run.write().rewind(i); }
             },
@@ -51,9 +90,11 @@ fn lanes(v: &Vals, _: ClockMs) -> Element {
         cps.truncate(4);
     }
     let head = v.opt("head").filter(|h| cps.iter().any(|c| &c.id == h));
+    // The stage remounts on every control change, so autoplay restarts from the first checkpoint.
+    let auto = v.b("autoplay");
     rsx! {
         div { class: "oxd-w560",
-            LanesLive { cps, head, iso: v.s("time") == "iso", tools: v.b("tools"), costs: v.b("costs"), credits: v.s("currency") == "credits", max_rows: v.u("rows") }
+            LanesLive { cps, head, iso: v.s("time") == "iso", tools: v.b("tools"), costs: v.b("costs"), credits: v.s("currency") == "credits", max_rows: v.u("rows"), neutral: v.s("rail") == "neutral", autoplay: auto, empty: v.b("empty") }
         }
     }
 }
@@ -84,6 +125,12 @@ fn lanes_code(v: &Vals) -> String {
     }
     if v.s("rows") != "14" {
         c = c.raw("max_rows", v.s("rows"));
+    }
+    if v.s("rail") == "neutral" {
+        c = c.raw("tone", "RailTone::Neutral");
+    }
+    if v.b("empty") {
+        c = c.raw("checkpoints", "vec![]");
     }
     if v.s("currency") == "credits" {
         c = c.raw(
@@ -369,6 +416,9 @@ pub(crate) fn demos() -> Vec<Demo> {
                 sel("time", "Time", &["iso", "run time"], "iso"),
                 tog("tools", "Tool icon per checkpoint", true),
                 tog("costs", "Step cost", true),
+                sel("rail", "Rail colour", &["live", "neutral"], "live"),
+                tog("autoplay", "Play the run", false),
+                tog("empty", "No checkpoints yet", false),
                 sel(
                     "currency",
                     "Cost format",
@@ -391,8 +441,18 @@ pub(crate) fn demos() -> Vec<Demo> {
                 ),
                 var(
                     "scrolling",
-                    "Four rows tall: the list scrolls inside the card.",
+                    "Four rows tall: overflow scrolls in place, and the head is scrolled into sight.",
                     &[("rows", "4")],
+                ),
+                var(
+                    "playing",
+                    "The run plays itself: checkpoints arrive, tests fail, attempt two bends out.",
+                    &[("autoplay", "true")],
+                ),
+                var(
+                    "neutral",
+                    "Monochrome rail, run-time clock instead of ISO times.",
+                    &[("rail", "neutral"), ("time", "run time")],
                 ),
             ],
             render: lanes,
@@ -410,12 +470,14 @@ pub(crate) fn demos() -> Vec<Demo> {
                 "An ordered list with a roving tab stop; each row is named by its title, attempt, status, place on the path and ISO time, and the head has aria-current=step.",
                 "Rewind buttons are pointer shortcuts (hidden from assistive tech); Enter on the row does the same.",
                 "A new attempt updates the run total in the bar, which screen readers hear politely.",
-                "Status is never colour alone: Failed, Stopped, Attempt and Head are written badges.",
+                "Status is never colour alone: Failed, Stopped and Attempt are written badges; the head is announced as current and drawn as the larger dot with a halo.",
+                "Motion: rows lift in, dots scale up, edges stroke downward; after a rewind the new lane curves away from its source checkpoint and the abandoned attempt goes grey. With reduced motion nothing animates.",
             ],
             responsive: vec![
-                "Rows keep a fixed 36 px height; Rewind replaces files and time on hover.",
+                "Rows hold a fixed 32 px height under one rail, so status changes never shift the layout; on hover or focus a Rewind pill swaps in where files and time sit.",
                 "Beyond max_rows, rows scroll within the card (thin pill scrollbar).",
-                "Under 460 px the task, file counts and costs give way; under 340 px the time does too.",
+                "Under 460 px the task, the day, file counts and costs give way; the title ellipses before the totals do; the time of day always stays.",
+                "When every ISO time shares a day, the day shows once in the bar and rows show the time of day (full ISO in the tooltip and the accessible name).",
             ],
             height: 340,
             align: Align::Start,

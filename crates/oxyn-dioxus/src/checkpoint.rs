@@ -7,13 +7,15 @@
 
 use std::rc::Rc;
 
+use dioxus::html::geometry::PixelsVector2D;
 use dioxus::prelude::*;
 use oxyn_core::{
     ClockMs,
     checkpoint::{
         Checkpoint, CheckpointKind, CheckpointStatus, CpKey, FilmStrip, PreviewFile, PreviewPhase,
-        RestoreAction, RestoreFlow, RestorePreview, UndoLadder as LadderModel, UndoStep,
-        branch_tree, format_at, format_cost, header, lanes, roving, step_cost, thumb_bars,
+        RAIL_ROW_H, Rail, RestoreAction, RestoreFlow, RestorePreview, UndoLadder as LadderModel,
+        UndoStep, branch_tree, format_at, format_cost, header, lanes, rail, roving, shared_day,
+        split_day, step_cost, thumb_bars,
     },
 };
 
@@ -64,7 +66,76 @@ fn status_cls(s: CheckpointStatus) -> &'static str {
     }
 }
 
-/// Run checkpoints as lanes: rewinding branches a new attempt; the old one fades but stays.
+/// The colour of the way to the head on a [`CheckpointLanes`] rail.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub enum RailTone {
+    /// The live path in the status-info colour (default).
+    #[default]
+    Live,
+    /// Monochrome: the live path in the foreground colour.
+    Neutral,
+}
+
+/// The rail of [`CheckpointLanes`]: one SVG under all rows, edges keyed by the checkpoint they
+/// lead to, so a new edge draws itself in and a left-behind one only loses its live layer.
+#[component]
+fn LaneRail(rail: Rail) -> Element {
+    let w = rail.width;
+    let h = rail.height;
+    // Stable order (by the checkpoint each edge leads to) so no edge moves in the DOM and
+    // replays its draw; the live path is a second layer on top that draws in when it lights up.
+    let mut base = rail.edges.clone();
+    base.sort_by_key(|e| e.child);
+    rsx! {
+        svg { class: "rail", width: "{w}", height: "{h}", view_box: "0 0 {w} {h}", "aria-hidden": "true",
+            g { class: "base",
+                for e in base.iter() {
+                    path { key: "e{e.child}", d: "{e.svg_d()}", "pathLength": "1", fill: "none", class: "ed", style: "--d:{e.child * 55}ms" }
+                }
+            }
+            g { class: "live",
+                for e in base.iter().filter(|e| e.on_path) {
+                    path { key: "l{e.child}", d: "{e.svg_d()}", "pathLength": "1", fill: "none", class: "ed on", style: "--d:{e.child * 55}ms" }
+                }
+            }
+            for d in rail.dots.iter() {
+                {
+                    let st = status_cls(d.status);
+                    let cls = format!("dt {st}{}{}", if d.on_path { " on" } else { "" }, if d.current { " cur" } else { "" });
+                    let (x, y) = d.at;
+                    rsx! {
+                        g { key: "d{d.index}", class: "{cls}", style: "--d:{d.index * 55}ms",
+                            if d.current { circle { class: "halo", cx: "{x}", cy: "{y}", r: "9" } }
+                            circle { class: "core", cx: "{x}", cy: "{y}", r: "{d.r}" }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+fn folder_glyph() -> Element {
+    rsx! {
+        svg { class: "fg", width: "12", height: "12", view_box: "0 0 12 12", "aria-hidden": "true",
+            path { d: "M1.5 3.2c0-.6.5-1.1 1.1-1.1h2l1 1.1h3.8c.6 0 1.1.5 1.1 1.1v4.5c0 .6-.5 1.1-1.1 1.1H2.6c-.6 0-1.1-.5-1.1-1.1z", fill: "currentColor" }
+        }
+    }
+}
+
+fn branch_mark() -> Element {
+    rsx! {
+        svg { class: "mk", width: "16", height: "16", view_box: "0 0 16 16", fill: "none", "aria-hidden": "true",
+            path { d: "M4.5 3v10M4.5 6.5c0 2.6 2 3.5 4.6 3.6", stroke: "currentColor", stroke_width: "1.5", stroke_linecap: "round" }
+            circle { cx: "4.5", cy: "3.5", r: "2", fill: "currentColor" }
+            circle { cx: "11.2", cy: "10.2", r: "2", fill: "currentColor" }
+        }
+    }
+}
+
+/// Run checkpoints as lanes: rewinding branches a new attempt that bends out of the checkpoint
+/// it starts from; the abandoned attempt stays listed, greyed. One SVG rail runs under fixed
+/// 32 px rows; the way to the head is drawn in the live colour.
 /// One tab stop: ↑ / ↓ / Home / End move between rows, Enter or Space rewinds to the focused row.
 #[component]
 pub fn CheckpointLanes(
@@ -80,10 +151,11 @@ pub fn CheckpointLanes(
     #[props(default = "Checkpoints".to_string())]
     title: String,
     /// Time labels, same order (absolute ISO, `2026-11-14 15:31:09`); default the run time
-    /// (`1:05`).
+    /// (`1:05`). When every label shares one day, the day shows once in the bar and rows show
+    /// the time of day (the full label stays in the tooltip and the accessible name).
     #[props(default)]
     times: Vec<String>,
-    /// How many rows show before the rows scroll within the card.
+    /// How many rows show before the rows scroll within the card (the head is kept in view).
     #[props(default = 14)]
     max_rows: usize,
     /// Rewind pressed (button, Enter or Space): the checkpoint id.
@@ -98,17 +170,25 @@ pub fn CheckpointLanes(
     /// Cost formatter, cents in (default `format_cost`: `$0.42`, `$1.2k`).
     #[props(default)]
     format: Option<Callback<u32, String>>,
+    /// Colour of the way to the head.
+    #[props(default)]
+    tone: RailTone,
+    /// Shown when there are no checkpoints yet.
+    #[props(default = "No checkpoints yet. The agent saves one after each step.".to_string())]
+    empty: String,
 ) -> Element {
     let rows = lanes(&checkpoints, head.as_deref());
+    let rl = rail(&checkpoints, &rows);
     let head_i = rows.iter().position(|r| r.current).unwrap_or(0);
     let mut focus = use_signal(|| head_i);
     let els: Els = use_signal(Vec::new);
+    let mut scroller: Signal<Option<Rc<MountedData>>> = use_signal(|| None);
     let n = checkpoints.len();
     let fmt = move |c: u32| match format {
         Some(f) => f.call(c),
         None => format_cost(c),
     };
-    let head_txt = match checkpoints.iter().filter_map(|c| c.cost_cents).max() {
+    let sum = match checkpoints.iter().filter_map(|c| c.cost_cents).max() {
         Some(c) => {
             let base = header(&checkpoints);
             let cut = base.rfind(" · ").unwrap_or(base.len());
@@ -116,13 +196,26 @@ pub fn CheckpointLanes(
         }
         None => header(&checkpoints),
     };
-    let n_lanes = rows.iter().map(|r| r.lane).max().unwrap_or(0) + 1;
-    let gutter = 18 * n_lanes + 8;
-    let scroll = if n > max_rows {
-        format!("max-height:{}px;overflow-y:auto", max_rows * 36 + 12)
-    } else {
-        String::new()
-    };
+    let day = shared_day(&times).map(str::to_string);
+    let scrolls = n > max_rows;
+    let view_h = rl.height.min(max_rows.max(1) as f32 * RAIL_ROW_H);
+    // Keep the head in view when it moves (a rewind adds a row at the bottom).
+    let head_id = rows.get(head_i).map(|r| checkpoints[r.index].id.clone());
+    let mut seen = use_signal(|| head_id.clone());
+    if *seen.peek() != head_id {
+        seen.set(head_id.clone());
+        if scrolls && let Some(d) = scroller.peek().clone() {
+            let top = (head_i as f32 + 1.0) * RAIL_ROW_H - view_h;
+            spawn(async move {
+                let _ = d
+                    .scroll(
+                        PixelsVector2D::new(0.0, f64::from(top.max(0.0))),
+                        ScrollBehavior::Smooth,
+                    )
+                    .await;
+            });
+        }
+    }
     let f = focus().min(n.saturating_sub(1));
     let ids: Vec<(String, bool)> = rows
         .iter()
@@ -134,75 +227,88 @@ pub fn CheckpointLanes(
             )
         })
         .collect();
+    let tone_cls = match tone {
+        RailTone::Live => "live",
+        RailTone::Neutral => "mono",
+    };
+    let view_style = format!(
+        "--g:{}px;height:{view_h}px;{}",
+        rl.width,
+        if scrolls { "overflow-y:auto" } else { "" }
+    );
     rsx! {
-        div { class: "oxyn-cp lanes",
+        div { class: "oxyn-cp lanes {tone_cls}",
             div { class: "bar",
-                span { class: "t", "{title}" }
-                if let Some(t) = task { span { class: "task", "· {t}" } }
+                {branch_mark()}
+                span { class: "t", title: "{title}", "{title}" }
+                if let Some(t) = task { span { class: "task", dir: "auto", title: "{t}", "{t}" } }
                 span { class: "sp" }
-                span { class: "n", "aria-live": "polite", "{head_txt}" }
+                span { class: "n", "aria-live": "polite",
+                    if let Some(d) = day.as_ref() { span { class: "day", "{d} · " } }
+                    "{sum}"
+                }
             }
-            ol { class: "rows oxyn-cp-scroll", style: "--g:{gutter}px;{scroll}", "aria-label": "{title}",
-                onkeydown: move |e: KeyboardEvent| {
-                    let Some(k) = cp_key(&e) else { return };
-                    e.prevent_default();
-                    if k == CpKey::Enter {
-                        if let Some((id, ok)) = ids.get(f) && *ok { on_rewind.call(id.clone()) }
-                        return;
-                    }
-                    let to = roving(n, f, k);
-                    focus.set(to);
-                    focus_at(els, to);
-                },
-                for r in rows {
-                    {
-                        let c = checkpoints[r.index].clone();
-                        let id = c.id.clone();
-                        let i = r.index;
-                        let st = status_cls(c.status);
-                        let cls = format!("row {st}{}{}{}", if r.on_path { " path" } else { " off" }, if r.current { " cur" } else { "" }, if i == f { " foc" } else { "" });
-                        let time = label_at(&times, &c, i);
-                        let label = format!("{}, {time}", r.aria);
-                        rsx! {
-                            li { class: "{cls}", "aria-current": if r.current { "step" } else { "false" }, "aria-label": "{label}", tabindex: if i == f { "0" } else { "-1" },
-                                onmounted: move |e| keep(els, i, e), onfocus: move |_| focus.set(i),
-                                svg { class: "lane", width: "{gutter}", height: "36", view_box: "0 0 {gutter} 36", style: "--d:{r.index * 70}ms", "aria-hidden": "true",
-                                    for (l, on) in r.through.iter().copied() {
-                                        line { x1: "{9 + l * 18}", y1: "0", x2: "{9 + l * 18}", y2: "36", "pathLength": "1", class: if on { "ln dr on" } else { "ln dr" } }
+            if n == 0 {
+                p { class: "empty", "{empty}" }
+            } else {
+                div { class: "view oxyn-cp-scroll", style: "{view_style}",
+                    onmounted: move |e: MountedEvent| scroller.set(Some(e.data())),
+                    LaneRail { rail: rl.clone() }
+                    ol { class: "rows", "aria-label": "{title}",
+                        onkeydown: move |e: KeyboardEvent| {
+                            let Some(k) = cp_key(&e) else { return };
+                            e.prevent_default();
+                            if k == CpKey::Enter {
+                                if let Some((id, ok)) = ids.get(f) && *ok { on_rewind.call(id.clone()) }
+                                return;
+                            }
+                            let to = roving(n, f, k);
+                            focus.set(to);
+                            focus_at(els, to);
+                        },
+                        for r in rows {
+                            {
+                                let c = checkpoints[r.index].clone();
+                                let id = c.id.clone();
+                                let i = r.index;
+                                let st = status_cls(c.status);
+                                let can = !r.current && c.status != CheckpointStatus::Running;
+                                let cls = format!("row {st}{}{}{}", if r.on_path { " path" } else { " off" }, if r.current { " cur" } else { "" }, if i == f { " foc" } else { "" });
+                                let full = label_at(&times, &c, i);
+                                let (d_of, tod) = split_day(&full);
+                                let shown = if day.is_some() { tod.to_string() } else { full.clone() };
+                                let dt = match d_of { Some(d) => format!("{d}T{tod}"), None => String::new() };
+                                let label = format!("{}, {full}{}", r.aria, if can { " – press Enter to rewind here" } else { "" });
+                                let att = r.branch_from.is_some();
+                                rsx! {
+                                    li { key: "{id}", class: "{cls}", "aria-current": if r.current { "step" } else { "false" }, "aria-label": "{label}", tabindex: if i == f { "0" } else { "-1" },
+                                        style: "--d:{i * 55}ms",
+                                        onmounted: move |e| keep(els, i, e), onfocus: move |_| focus.set(i),
+                                        if tool_icons {
+                                            if let Some(ic) = c.tool_icon() {
+                                                span { class: "ti", title: "{c.tool.clone().unwrap_or_default()}", "aria-hidden": "true", Icon { name: ic, size: 12.0 } }
+                                            } else {
+                                                span { class: "ti none", "aria-hidden": "true" }
+                                            }
+                                        }
+                                        span { class: if c.status == CheckpointStatus::Running { "tt shim" } else { "tt" }, dir: "auto", title: "{c.title}", "{c.title}" }
+                                        if c.status == CheckpointStatus::Failed { span { class: "badge failed", "Failed" } }
+                                        if c.status == CheckpointStatus::Stopped { span { class: "badge stopped", "Stopped" } }
+                                        if att { span { class: "badge att", "Attempt {r.lane + 1}" } }
+                                        span { class: "sp" }
+                                        span { class: "meta", "aria-hidden": "true",
+                                            if c.files > 0 {
+                                                span { class: "files", {folder_glyph()} if c.files == 1 { "1 file" } else { "{c.files} files" } }
+                                            }
+                                            if step_costs {
+                                                if let Some(sc) = step_cost(&checkpoints, r.index).filter(|c| *c > 0) { span { class: "cost", "+{fmt(sc)}" } }
+                                            }
+                                            time { class: "du", datetime: "{dt}", title: "{full}", "{shown}" }
+                                        }
+                                        if can {
+                                            button { class: "rw", r#type: "button", tabindex: "-1", "aria-hidden": "true", onclick: move |_| on_rewind.call(id.clone()), Icon { name: "retry", size: 12.0 } "Rewind" }
+                                        }
                                     }
-                                    if let Some(on) = r.up {
-                                        line { x1: "{9 + r.lane * 18}", y1: "0", x2: "{9 + r.lane * 18}", y2: "18", "pathLength": "1", class: if on { "ln dr on" } else { "ln dr" } }
-                                    }
-                                    if let Some(on) = r.down {
-                                        line { x1: "{9 + r.lane * 18}", y1: "18", x2: "{9 + r.lane * 18}", y2: "36", "pathLength": "1", class: if on { "ln dr on" } else { "ln dr" } }
-                                    }
-                                    for (l, on) in r.forks.iter().copied() {
-                                        path { d: "M{9 + r.lane * 18} 18 C {9 + r.lane * 18} 31, {9 + l * 18} 23, {9 + l * 18} 36", "pathLength": "1", class: if on { "ln dr on" } else { "ln dr" }, fill: "none" }
-                                    }
-                                    circle { cx: "{9 + r.lane * 18}", cy: "18", r: if r.current { "5" } else { "4" }, class: "dot {st}" }
-                                }
-                                if tool_icons {
-                                    if let Some(ic) = c.tool_icon() {
-                                        span { class: "ti", title: "{c.tool.clone().unwrap_or_default()}", "aria-hidden": "true", Icon { name: ic, size: 12.0 } }
-                                    } else {
-                                        span { class: "ti none", "aria-hidden": "true" }
-                                    }
-                                }
-                                span { class: if c.status == CheckpointStatus::Running { "tt shim" } else { "tt" }, "{c.title}" }
-                                if c.status == CheckpointStatus::Failed { span { class: "badge failed", "Failed" } }
-                                if c.status == CheckpointStatus::Stopped { span { class: "badge", "Stopped" } }
-                                if r.lane > 0 && r.branch_from.is_some() { span { class: "badge att", "Attempt {r.lane + 1}" } }
-                                if r.current { span { class: "badge here", "Head" } }
-                                span { class: "sp" }
-                                span { class: "meta",
-                                    if c.files == 1 { span { class: "files", "1 file" } } else if c.files > 1 { span { class: "files", "{c.files} files" } }
-                                    if step_costs {
-                                        if let Some(sc) = step_cost(&checkpoints, r.index) { span { class: "cost", "+{fmt(sc)}" } }
-                                    }
-                                    span { class: "du", "{time}" }
-                                }
-                                if !r.current && c.status != CheckpointStatus::Running {
-                                    button { class: "rw", r#type: "button", tabindex: "-1", "aria-hidden": "true", onclick: move |_| on_rewind.call(id.clone()), Icon { name: "retry", size: 12.0 } "Rewind" }
                                 }
                             }
                         }

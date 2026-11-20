@@ -6,13 +6,14 @@
 //! ⌘Z / Ctrl+Z undo and ⇧⌘Z / Ctrl+Y redo on the ladder.
 
 use gpui::{
-    App, ClickEvent, Context, Div, FocusHandle, Focusable, FontWeight, Hsla, IntoElement,
-    KeyDownEvent, ParentElement, Render, Styled, Window, div, prelude::*, px,
+    App, BorderStyle, Bounds, ClickEvent, Context, Div, FocusHandle, Focusable, FontWeight, Hsla,
+    IntoElement, KeyDownEvent, ParentElement, PathBuilder, Pixels, Point, Render, SharedString,
+    Styled, Window, canvas, div, point, prelude::*, px, quad, size,
 };
 use oxyn_core::checkpoint::{
     Checkpoint, CheckpointRun, CheckpointStatus, CpKey, FileChange, FilmStrip, PreviewFile,
-    PreviewPhase, RestoreAction, RestorePreview, UndoLadder, UndoStep, branch_tree, format_at,
-    iso_at, roving, thumb_bars,
+    PreviewPhase, RAIL_ROW_H, Rail, RestoreAction, RestorePreview, UndoLadder, UndoStep,
+    branch_tree, format_at, iso_at, rail, roving, split_day, thumb_bars,
 };
 use oxyn_tokens::{ColorRole, Theme};
 
@@ -399,6 +400,99 @@ fn status_dot(t: &Theme, s: CheckpointStatus, on: bool) -> Div {
     div().size(px(8.)).rounded(px(4.)).bg(col)
 }
 
+fn pill(t: &Theme, s: impl Into<SharedString>, fg: ColorRole, bg: ColorRole) -> Div {
+    div()
+        .h(px(20.))
+        .px(px(7.))
+        .flex()
+        .items_center()
+        .rounded(px(6.))
+        .bg(c(t, bg))
+        .text_size(px(11.5))
+        .text_color(c(t, fg))
+        .child(s.into())
+}
+
+fn attempt_label(lane: usize) -> SharedString {
+    format!("Attempt {}", lane + 1).into()
+}
+
+/// First letter of the tool that made the checkpoint (the web build draws its icon).
+fn tool_letter(cp: &Checkpoint) -> SharedString {
+    cp.tool
+        .as_deref()
+        .and_then(|t| t.trim_start_matches("mcp__").chars().next())
+        .map(|ch| ch.to_ascii_uppercase().to_string())
+        .unwrap_or_default()
+        .into()
+}
+
+/// Paints the lane rail: left-behind edges first, then the live path, then the dots (the head
+/// with a halo). Same geometry as the web build (`oxyn_core::checkpoint::rail`).
+fn paint_rail(
+    window: &mut Window,
+    o: Point<Pixels>,
+    rl: &Rail,
+    live: Hsla,
+    dim: Hsla,
+    raised: Hsla,
+) {
+    let at = |x: f32, y: f32| point(o.x + px(x), o.y + px(y));
+    for e in &rl.edges {
+        let mut b = PathBuilder::stroke(px(if e.on_path { 2.0 } else { 1.5 }));
+        b.move_to(at(e.from.0, e.from.1));
+        if e.fork {
+            let end = e.bend_end();
+            let h = end - e.from.1;
+            b.cubic_bezier_to(
+                at(e.to.0, end),
+                at(e.from.0, e.from.1 + h * 0.62),
+                at(e.to.0, e.from.1 + h * 0.38),
+            );
+            if e.to.1 > end {
+                b.line_to(at(e.to.0, e.to.1));
+            }
+        } else {
+            b.line_to(at(e.to.0, e.to.1));
+        }
+        if let Ok(p) = b.build() {
+            window.paint_path(p, if e.on_path { live } else { dim });
+        }
+    }
+    let disc =
+        |x: f32, y: f32, r: f32| Bounds::new(at(x - r, y - r), size(px(2.0 * r), px(2.0 * r)));
+    for d in &rl.dots {
+        let (x, y) = d.at;
+        if d.current {
+            window.paint_quad(quad(
+                disc(x, y, 9.0),
+                px(9.0),
+                live.opacity(0.16),
+                px(0.),
+                live,
+                BorderStyle::default(),
+            ));
+        }
+        let (bg, border, w) = if d.on_path {
+            (
+                live,
+                if d.current { raised } else { live },
+                if d.current { 2.0 } else { 1.5 },
+            )
+        } else {
+            (raised, dim, 1.5)
+        };
+        window.paint_quad(quad(
+            disc(x, y, d.r),
+            px(d.r),
+            bg,
+            px(w),
+            border,
+            BorderStyle::default(),
+        ));
+    }
+}
+
 impl Render for CheckpointsView {
     fn render(&mut self, _: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         let t = self.theme();
@@ -410,47 +504,185 @@ impl Render for CheckpointsView {
         let body: Div = match v {
             CpVariant::Lanes => {
                 let rows = s.run.rows();
-                let mut list = div().flex().flex_col().p(px(6.));
+                let rl = rail(&s.run.checkpoints, &rows);
+                let live = c(t, ColorRole::StatusInfoFg);
+                let dim = c(t, ColorRole::BorderStrong);
+                let raised = c(t, ColorRole::SurfaceRaised);
+                let muted = c(t, ColorRole::FgMuted);
+                let subtle = c(t, ColorRole::FgSubtle);
+                let g = rl.width;
+                let h = rl.height;
+                let geo = rl.clone();
+                let rail_el = canvas(
+                    |_, _, _| {},
+                    move |b, _, window, _| paint_rail(window, b.origin, &geo, live, dim, raised),
+                )
+                .absolute()
+                .top_0()
+                .left_0()
+                .w(px(g))
+                .h(px(h));
+                let mut list = div().relative().flex().flex_col().child(rail_el);
                 for r in rows {
                     let cp = &s.run.checkpoints[r.index];
                     let i = r.index;
-                    list = list.child(
+                    let grp: SharedString = format!("cp-lane-{i}").into();
+                    let can = s.run.can_rewind(i);
+                    let focused = i == s.run.focus;
+                    let fade = if r.on_path { 1.0 } else { 0.5 };
+                    let full = iso(cp);
+                    let tod = split_day(&full).1.to_string();
+                    let mut row = div()
+                        .id(("cp-lane", i))
+                        .group(grp.clone())
+                        .relative()
+                        .flex()
+                        .items_center()
+                        .gap(px(8.))
+                        .h(px(RAIL_ROW_H))
+                        .pl(px(g))
+                        .pr(px(12.))
+                        .mx(px(0.))
+                        .rounded(px(8.))
+                        .hover(|d| d.bg(hover))
+                        .when(focused, |d| d.bg(hover))
+                        .child(
+                            div()
+                                .size(px(20.))
+                                .flex()
+                                .items_center()
+                                .justify_center()
+                                .rounded(px(6.))
+                                .border_1()
+                                .border_color(c(t, ColorRole::BorderSubtle))
+                                .bg(raised)
+                                .opacity(fade)
+                                .text_size(px(10.))
+                                .text_color(muted)
+                                .child(tool_letter(cp)),
+                        )
+                        .child(
+                            div()
+                                .min_w(px(0.))
+                                .overflow_hidden()
+                                .whitespace_nowrap()
+                                .text_ellipsis()
+                                .text_size(px(13.))
+                                .opacity(fade)
+                                .text_color(if cp.status == CheckpointStatus::Running {
+                                    muted
+                                } else {
+                                    fg
+                                })
+                                .when(r.current, |d| d.font_weight(FontWeight::MEDIUM))
+                                .child(cp.title.clone()),
+                        )
+                        .when(cp.status == CheckpointStatus::Failed, |d| {
+                            d.child(
+                                pill(
+                                    t,
+                                    "Failed",
+                                    ColorRole::StatusDangerFg,
+                                    ColorRole::StatusDangerBg,
+                                )
+                                .opacity(if r.on_path {
+                                    1.0
+                                } else {
+                                    0.7
+                                }),
+                            )
+                        })
+                        .when(cp.status == CheckpointStatus::Stopped, |d| {
+                            d.child(
+                                pill(t, "Stopped", ColorRole::FgMuted, ColorRole::SurfaceSunken)
+                                    .opacity(fade),
+                            )
+                        })
+                        .when(r.branch_from.is_some(), |d| {
+                            d.child(
+                                pill(
+                                    t,
+                                    attempt_label(r.lane),
+                                    ColorRole::FgDefault,
+                                    ColorRole::SurfaceSunken,
+                                )
+                                .opacity(fade),
+                            )
+                        })
+                        .child(div().flex_1())
+                        .child(
+                            div()
+                                .flex()
+                                .gap(px(14.))
+                                .text_size(px(12.))
+                                .text_color(subtle)
+                                .opacity(fade)
+                                .when(focused && can, |d| d.opacity(0.))
+                                .group_hover(grp.clone(), |d| d.opacity(if can { 0. } else { 1. }))
+                                .when(cp.files > 0, |d| {
+                                    d.child(if cp.files == 1 {
+                                        "1 file".to_string()
+                                    } else {
+                                        format!("{} files", cp.files)
+                                    })
+                                })
+                                .child(div().text_color(muted).child(tod)),
+                        );
+                    if can {
+                        row = row.child(
+                            div()
+                                .absolute()
+                                .right(px(8.))
+                                .top(px(5.))
+                                .h(px(22.))
+                                .px(px(8.))
+                                .flex()
+                                .items_center()
+                                .rounded(px(6.))
+                                .border_1()
+                                .border_color(c(t, ColorRole::BorderDefault))
+                                .bg(raised)
+                                .text_size(px(12.))
+                                .text_color(fg)
+                                .opacity(if focused { 1. } else { 0. })
+                                .group_hover(grp, |d| d.opacity(1.))
+                                .child("\u{21BA} Rewind"),
+                        );
+                    }
+                    list = list.child(row.on_click(cx.listener(
+                        move |this, _: &ClickEvent, _, cx| {
+                            this.state.press(CpVariant::Lanes, i);
+                            cx.notify();
+                        },
+                    )));
+                }
+                let sum = oxyn_core::checkpoint::header(&s.run.checkpoints);
+                card(t)
+                    .pb(px(8.))
+                    .child(
                         div()
-                            .id(("cp-lane", i))
                             .flex()
                             .items_center()
                             .gap(px(8.))
-                            .h(px(36.))
-                            .px(px(6.))
-                            .rounded(px(8.))
-                            .when(i == s.run.focus, |d| d.bg(hover))
-                            .when(!r.on_path, |d| d.opacity(0.5))
-                            .child(div().w(px(18. * r.lane as f32 + 2.)))
-                            .child(status_dot(t, cp.status, r.on_path))
-                            .child(div().text_color(fg).child(cp.title.clone()))
-                            .when(cp.status == CheckpointStatus::Failed, |d| {
-                                d.child(badge(t, "Failed", ColorRole::StatusDangerFg))
-                            })
-                            .when(cp.status == CheckpointStatus::Stopped, |d| {
-                                d.child(badge(t, "Stopped", ColorRole::FgMuted))
-                            })
-                            .when(r.current, |d| {
-                                d.child(badge(t, "Head", ColorRole::FgDefault))
-                            })
+                            .h(px(44.))
+                            .pl(px(12.))
+                            .pr(px(14.))
+                            .child(div().text_color(muted).child("\u{2442}"))
+                            .child(
+                                div()
+                                    .font_weight(FontWeight::SEMIBOLD)
+                                    .text_color(fg)
+                                    .child("Checkpoints"),
+                            )
+                            .child(div().text_color(muted).child("Add Stripe checkout"))
                             .child(div().flex_1())
-                            .child(mono(t, iso(cp)))
-                            .on_click(cx.listener(move |this, _: &ClickEvent, _, cx| {
-                                this.state.press(CpVariant::Lanes, i);
-                                cx.notify();
-                            })),
-                    );
-                }
-                card(t)
-                    .child(bar(
-                        t,
-                        "Checkpoints",
-                        oxyn_core::checkpoint::header(&s.run.checkpoints),
-                    ))
+                            .child(
+                                div()
+                                    .text_size(px(12.))
+                                    .text_color(muted)
+                                    .child(format!("{DAY} · {sum}")),
+                            ),
+                    )
                     .child(list)
             }
             CpVariant::List => {
