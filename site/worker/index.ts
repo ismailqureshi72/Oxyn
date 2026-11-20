@@ -6,15 +6,16 @@
 //   GET  /api/health    liveness + a D1 round trip
 //   POST /api/feedback  multipart/form-data or JSON from the site's Feedback panel
 //   GET  /api/flags     enabled content flags (edited in the admin panel)
-//   /admin, /api/admin/* the maintainers' panel, see admin.ts and docs/admin.md
-//   /api/auth/*         site accounts: sign in with GitHub or email, see auth.ts and docs/auth.md
+//   /admin, /api/admin/* the maintainers' panel (site sign-in + admin list), see admin.ts, docs/admin.md
+//   /api/auth/*         site accounts: Google, GitHub or email, see auth.ts and docs/auth.md
 //
 // Bindings (wrangler.jsonc): DB (D1 "oxyn"), UPLOADS (R2 "oxyn-uploads"), ASSETS.
 // Secrets (optional): GITHUB_TOKEN opens a GitHub issue per feedback; RATE_SALT salts IP hashes;
-// GITHUB_OAUTH_CLIENT_ID / GITHUB_OAUTH_CLIENT_SECRET turn on "Continue with GitHub".
+// GITHUB_OAUTH_CLIENT_ID / GITHUB_OAUTH_CLIENT_SECRET turn on "Continue with GitHub";
+// GOOGLE_OAUTH_CLIENT_ID / GOOGLE_OAUTH_CLIENT_SECRET turn on "Continue with Google".
 
 import { EMAIL_RE, HttpError, KINDS, fail, json, openIssue, sameOrigin, sha256Hex, type Ctx, type Env, type Kind } from './shared';
-import { handleAdmin, publicFlags } from './admin';
+import { handleAdmin, isAdminPath, publicFlags } from './admin';
 import { handleAuth } from './auth';
 
 export type { Env } from './shared';
@@ -37,11 +38,10 @@ const IMAGE_TYPES: Record<string, string> = { 'image/png': 'png', 'image/jpeg': 
 export default {
   async fetch(req: Request, env: Env, ctx: Ctx): Promise<Response> {
     const url = new URL(req.url);
-    // /admin* and /api/admin/*: Cloudflare Access + the Worker's own JWT check + shared password.
-    if (url.pathname === '/admin' || url.pathname.startsWith('/admin/') || url.pathname === '/api/admin' || url.pathname.startsWith('/api/admin/'))
-      return handleAdmin(req, env, ctx, url);
+    // /admin* and /api/admin/*: the site session of a provider-verified email on the admin list.
+    if (isAdminPath(url.pathname)) return handleAdmin(req, env, ctx, url);
+    // /api/auth/*: site accounts (Google, GitHub or email + password), see auth.ts and docs/auth.md.
     if (!url.pathname.startsWith('/api/')) return env.ASSETS.fetch(req);
-    // /api/auth/*: site accounts (GitHub or email + password), see auth.ts and docs/auth.md.
     if (url.pathname.startsWith('/api/auth/')) return handleAuth(req, env, ctx, url);
     try {
       const route = url.pathname.replace(/\/+$/, '');
