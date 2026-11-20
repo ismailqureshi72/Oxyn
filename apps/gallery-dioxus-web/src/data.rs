@@ -832,6 +832,116 @@ pub fn checkpoints() -> Vec<Checkpoint> {
     v
 }
 
+/// One step of [`lane_script`]: id, parent, title, seconds into the run, files, tool, total cents.
+type LaneStep = (
+    &'static str,
+    Option<&'static str>,
+    &'static str,
+    u64,
+    u32,
+    &'static str,
+    u32,
+);
+
+/// The checkpoint-lanes run (as in the affectUI reference): six steps, the tests fail, the agent
+/// rewinds to the pricing table and attempt two runs to the pull request.
+pub fn lane_script() -> Vec<Checkpoint> {
+    let steps: [LaneStep; 9] = [
+        (
+            "c1",
+            None,
+            "Read the brief",
+            9,
+            0,
+            "mcp__slack__read_thread",
+            4,
+        ),
+        (
+            "c2",
+            Some("c1"),
+            "Scaffolded the pricing page",
+            30,
+            4,
+            "mcp__github__push_files",
+            9,
+        ),
+        (
+            "c3",
+            Some("c2"),
+            "Wrote the plan copy",
+            47,
+            1,
+            "mcp__notion__update_page",
+            14,
+        ),
+        (
+            "c4",
+            Some("c3"),
+            "Built the pricing table",
+            81,
+            3,
+            "mcp__figma__get_design",
+            22,
+        ),
+        (
+            "c5",
+            Some("c4"),
+            "Added Stripe checkout",
+            122,
+            5,
+            "mcp__stripe__create_session",
+            31,
+        ),
+        (
+            "c6",
+            Some("c5"),
+            "Tests failing – 4 of 12",
+            148,
+            0,
+            "mcp__github__run_checks",
+            38,
+        ),
+        (
+            "c7",
+            Some("c4"),
+            "Switched to Stripe Elements",
+            186,
+            3,
+            "mcp__stripe__create_intent",
+            54,
+        ),
+        (
+            "c8",
+            Some("c7"),
+            "Tests pass – 12 of 12",
+            210,
+            0,
+            "mcp__github__run_checks",
+            58,
+        ),
+        (
+            "c9",
+            Some("c8"),
+            "Opened the pull request",
+            221,
+            1,
+            "mcp__github__create_pull_request",
+            61,
+        ),
+    ];
+    steps
+        .iter()
+        .map(|&(id, parent, title, at, files, tool, cost)| {
+            let mut c = Checkpoint::new(id, parent, title, at).tool(tool).cost(cost);
+            c.files = files;
+            if id == "c6" {
+                c.status = CheckpointStatus::Failed;
+            }
+            c
+        })
+        .collect()
+}
+
 /// Day and start time of the sample run (times are shown as absolute ISO timestamps).
 pub const RUN_DAY: &str = "2026-11-14";
 /// Start of the sample run, `(hour, minute)`.
