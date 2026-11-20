@@ -63,6 +63,10 @@ served before the checks, for the refusal pages.
   the status, **Delete** (removes the D1 row and the R2 screenshot), **Send to GitHub** (opens an
   issue labelled `feedback` the same way as the automatic path; needs the `GITHUB_TOKEN` secret,
   otherwise the button is off with a note). The tab shows the number of New items.
+- **Billing**: subscribers from Polar (email, plan, monthly or yearly, amount, status, renewal),
+  monthly recurring revenue (yearly plans count a twelfth, live subscriptions only, before tax),
+  founder spots used, and warnings when a Polar secret is missing or the founder products still need
+  archiving. Read-only; refunds and plan changes happen in Polar. See [pricing.md](pricing.md).
 - **Admins**: the D1 `admins` list, with whether each email is verified yet. **Add admin** takes an
   email; **Remove** asks first. The last active admin cannot be removed; removing yourself closes
   the panel for you at once.
