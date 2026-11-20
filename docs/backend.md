@@ -37,6 +37,11 @@ Unknown `/api/*` routes return 404 `not_found`; wrong methods 405 `method_not_al
 `200 {"ok": true, "service": "oxyn-site", "db": "ok", "time": "<ISO>"}`; `503` with `"db": "error"`
 when D1 does not answer.
 
+### Billing: `/api/billing/*`, `/api/pro/source/<slug>`, `/api/polar/webhook`
+
+Plans, checkout redirects, the signed-in plan, Team seats, Pro code and the Polar webhook. See
+[pricing.md](pricing.md) and `site/worker/billing.ts`.
+
 ### `GET /api/flags`
 
 `200 {"ok": true, "flags": {"<name>": "<value>"}}`: the content flags that are switched on in the admin
@@ -92,6 +97,13 @@ Migrations live in `site/migrations/` (`migrations_dir` in `wrangler.jsonc`).
 | `users` | site accounts: email, `email_verified` (1 after a Google or GitHub sign-in), name and avatar, PBKDF2 password record or NULL (0003, [auth.md](auth.md)) |
 | `oauth_accounts` | linked Google and GitHub accounts: provider, provider id, user, login (0003) |
 | `sessions` | site sessions: SHA-256 of the cookie token, user, provider, expiry (0003) |
+| `subscriptions` | Polar subscriptions, latest state per id: account, customer, plan, interval, founder, status, amount, period end (0005, [pricing.md](pricing.md)) |
+| `licences` | the licence each subscription grants its buyer (account id or email) (0005) |
+| `team_seats` | emails a Team owner gave a seat (3 per Team: up to 4 people with the owner) (0005) |
+| `founder_claims` | one row per founder subscription that became active; 100 closes the founder rate (0005) |
+| `checkout_refs` | finished Polar checkouts and the account that started them (0005) |
+| `webhook_events` | Polar webhook ids already handled (replays are no-ops) (0005) |
+| `grants` | manual Pro/Team grants (email, plan, seats, expiry, reason); read by `plan_for`, admin UI in G2 (0005) |
 
 Apply new migrations from `site/` (CI does not apply them):
 
@@ -110,6 +122,8 @@ Add a migration with `npx wrangler d1 migrations create oxyn <name>`; never edit
 | `GITHUB_OAUTH_CLIENT_ID`, `GITHUB_OAUTH_CLIENT_SECRET` | Worker secrets, optional | "Continue with GitHub" on `/login/`. Until set, the button reads "coming soon" and the GitHub routes answer 503. Setup in [auth.md](auth.md). |
 | `RATE_SALT` | Worker secret, optional | Salt for IP hashes (a fixed default is used when unset). |
 | `GOOGLE_OAUTH_CLIENT_ID`, `GOOGLE_OAUTH_CLIENT_SECRET` | Worker secrets, optional | "Continue with Google" on `/login/`. Until set, the button reads "coming soon" and the Google routes answer 503. Setup in [auth.md](auth.md). Google or GitHub sign-in is also what opens the admin panel ([admin.md](admin.md)). |
+| `POLAR_WEBHOOK_SECRET` | Worker secret | Verifying Polar webhooks (set). Unset: the webhook answers 503. [pricing.md](pricing.md) |
+| `POLAR_ACCESS_TOKEN` | Worker secret, optional | Pre-signed customer portal sessions and archiving the founder products at 100. [pricing.md](pricing.md) |
 | `GITHUB_REPO` | var in `wrangler.jsonc` | Repository for feedback issues. |
 | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` | GitHub Actions secrets | The deploy step on `main`. The token needs Workers Scripts Edit; D1 and R2 Edit are needed for the bindings and for applying migrations from a machine. |
 
