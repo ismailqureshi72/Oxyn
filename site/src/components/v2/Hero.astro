@@ -1,0 +1,76 @@
+---
+// Landing hero, "Live edit": the headline lockup on a dot canvas, edited live by two fictional
+// collaborators (Mira and Teo) with design-tool chrome: a selection frame with handles and a live
+// W x H tag, a weight change, a frame resize that reflows the headline, auto-layout gaps, a radius
+// token, and redlined spacing. Layers (left) and Inspector (right) are real controls, so a visitor
+// can do all of it too. It shows no library components. Script: ./hero.js; styles: .dz* in site.css.
+import { counts, REPO } from '../../lib/data';
+const free = counts.components + counts.screens;
+const install = `cargo add oxyn-dioxus oxyn-core --git ${REPO}`;
+const repoName = REPO.split('/').pop();
+---
+<link rel="preload" href="/fonts/inter-var-hero.woff2" as="font" type="font/woff2" crossorigin />
+<section class="dz" data-dz aria-labelledby="dz-h1">
+  <div class="dz-bg" aria-hidden="true"></div>
+  <div class="dz-stage" data-dz-stage>
+    <aside class="dz-pan dz-lay" aria-label="Hero layers">
+      <p class="dz-ph">Layers <small>Hero</small></p>
+      <ul>
+        <li><button type="button" data-k="hero" aria-pressed="false" style="--d:0"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 1v10M9 1v10M1 3h10M1 9h10" fill="none" stroke="currentColor" stroke-width="1.1"/></svg>Hero</button></li>
+        <li><button type="button" data-k="badge" aria-pressed="false" style="--d:1"><svg viewBox="0 0 12 12" aria-hidden="true"><rect x="1" y="3.5" width="10" height="5" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.1"/></svg>Badge</button></li>
+        <li><button type="button" data-k="h1" aria-pressed="false" style="--d:1"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 2.5h8M6 2.5v8" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>Headline</button></li>
+        <li><button type="button" data-k="sub" aria-pressed="false" style="--d:1"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 2.5h8M6 2.5v8" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>Subhead</button></li>
+        <li><button type="button" data-k="cta" aria-pressed="false" style="--d:1"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M1.5 3.5h3v5h-3zM7.5 3.5h3v5h-3z" fill="none" stroke="currentColor" stroke-width="1.1"/></svg>Actions</button></li>
+        <li><button type="button" data-k="b1" aria-pressed="false" style="--d:2"><svg viewBox="0 0 12 12" aria-hidden="true"><rect x="1" y="3.5" width="10" height="5" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.1"/></svg>Browse library</button></li>
+        <li><button type="button" data-k="b2" aria-pressed="false" style="--d:2"><svg viewBox="0 0 12 12" aria-hidden="true"><rect x="1" y="3.5" width="10" height="5" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.1"/></svg>Get started</button></li>
+        <li><button type="button" data-k="b3" aria-pressed="false" style="--d:2"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 3l2.5 3L2 9M6 9h4" fill="none" stroke="currentColor" stroke-width="1.1"/></svg>Install</button></li>
+      </ul>
+    </aside>
+
+    <div class="dz-lock" data-dz-lock>
+      <a class="badge-pill" href="/components/" data-k="badge"><b>{free} free</b><span>Components, screens and variants</span><span class="bp-go" aria-hidden="true">→</span></a>
+      <h1 id="dz-h1" class="dz-h1" data-k="h1"><span class="dz-w">Agent</span> <span class="dz-w">UI,</span> <span class="dz-w dz-soft">beautifully</span> <span class="dz-w dz-soft">done.</span></h1>
+      <p class="dz-sub" data-k="sub">Rust components for chat, tool calls, approvals and live runs. Dioxus on the web, GPUI on the desktop.</p>
+      <div class="dz-cta" data-k="cta">
+        <a class="x-pill pill-black pill-lg" href="/components/" data-k="b1">Browse library<svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M4 10h11m-4.5-4.5L15 10l-4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        <a class="x-pill pill-grey pill-lg" href="/docs/installation/" data-k="b2">Get started</a>
+        <div class="dz-inst" data-k="b3"><code title={install}><i>$</i> cargo add oxyn-dioxus --git …/{repoName}</code><button type="button" data-copy={install} aria-label="Copy install command"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><rect x="5" y="5" width="8.5" height="8.5" rx="2" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M10.5 3.2A1.8 1.8 0 0 0 8.8 2H4a2 2 0 0 0-2 2v4.8c0 .8.5 1.5 1.2 1.7" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></button></div>
+      </div>
+      <span class="sr-only" role="status" aria-live="polite" data-dz-live></span>
+    </div>
+
+    <aside class="dz-pan dz-ins" aria-label="Inspector">
+      <p class="dz-ph"><span data-ins-title>Headline</span> <small data-ins-kind>Text</small></p>
+      <section><p class="dz-pt">Frame</p><div class="dz-row"><div class="dz-f"><b>W</b><span data-ins-w>760</span></div><div class="dz-f"><b>H</b><span data-ins-h>172</span></div></div></section>
+      <section data-ins-text><p class="dz-pt">Typography</p>
+        <div class="dz-row"><div class="dz-f"><b>Size</b><span data-ins-size>84</span></div><div class="dz-f" data-ins-trf><b>Track</b><span data-ins-tr>−4.8%</span></div></div>
+        <div class="dz-seg" role="group" aria-label="Headline weight"><button type="button" data-wt="400" aria-pressed="false">Regular</button><button type="button" data-wt="500" aria-pressed="false">Medium</button><button type="button" data-wt="620" aria-pressed="true">Semibold</button></div>
+      </section>
+      <section data-ins-auto hidden><p class="dz-pt">Auto layout</p>
+        <div class="dz-row"><div class="dz-f"><b>Gap</b>10</div><div class="dz-f"><b>Size</b>Hug</div></div>
+        <div class="dz-tok" role="group" aria-label="Button radius token"><button type="button" data-r="999px" aria-pressed="true" style="--r:999px"><i></i>radius.full</button><button type="button" data-r="10px" aria-pressed="false" style="--r:3px"><i></i>radius.md</button></div>
+      </section>
+    </aside>
+
+    <div class="dz-ov" data-dz-ov>
+      <div data-o class="dz-hov" aria-hidden="true"></div>
+      <div data-o class="dz-sel">
+        <span class="dz-name" aria-hidden="true"><svg viewBox="0 0 12 12"><path d="M2 2.5h8M6 2.5v8" fill="none" stroke="currentColor" stroke-width="1.4"/></svg><span data-sel-name>Headline</span></span>
+        <span class="dz-dim" aria-hidden="true" data-sel-dim>760 × 172</span>
+        <i class="dz-h" data-h="nw" aria-hidden="true"></i><i class="dz-h" data-h="ne" aria-hidden="true"></i><i class="dz-h" data-h="sw" aria-hidden="true"></i><i class="dz-h" data-h="se" aria-hidden="true"></i>
+        <i class="dz-h" data-h="w" aria-hidden="true"></i>
+        <i class="dz-h" data-h="e" role="slider" tabindex="-1" aria-label="Headline width" aria-valuemin="280" aria-valuemax="1000" aria-valuenow="760"></i>
+      </div>
+      <div data-o class="dz-gap" aria-hidden="true"></div><div data-o class="dz-gap" aria-hidden="true"></div>
+      <div data-o class="dz-bdg" aria-hidden="true">10</div><div data-o class="dz-bdg" aria-hidden="true">10</div>
+      <div data-o class="dz-gl" aria-hidden="true"></div><div data-o class="dz-gl" aria-hidden="true"></div>
+      <div data-o class="dz-bdg dz-red" aria-hidden="true">30</div><div data-o class="dz-bdg dz-red" aria-hidden="true">36</div>
+      <div data-o class="dz-cur a" aria-hidden="true"><svg viewBox="0 0 16 18"><path d="M1.5 1.5l12 6.2-5.3 1.4-2.6 5.2z" stroke-width="1.2" stroke-linejoin="round"/></svg><span>Mira</span></div>
+      <div data-o class="dz-cur b" aria-hidden="true"><svg viewBox="0 0 16 18"><path d="M1.5 1.5l12 6.2-5.3 1.4-2.6 5.2z" stroke-width="1.2" stroke-linejoin="round"/></svg><span>Teo</span></div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import "./hero.js";
+</script>
