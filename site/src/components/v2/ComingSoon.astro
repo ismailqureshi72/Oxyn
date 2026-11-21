@@ -1,0 +1,16 @@
+---
+// A section that is not out yet: what it is and what it will hold, with no dates. Used by
+// /illustrations/ (inside the library) and /studio/ (a full page).
+interface Props { title: string; lede: string; items: [string, string][]; note?: string }
+const { title, lede, items, note } = Astro.props;
+---
+<section class="x-soon" aria-labelledby="x-soon-h">
+  <span class="x-chip x-soon-chip">Coming soon</span>
+  <h2 id="x-soon-h">{title}</h2>
+  <p class="x-soon-lede">{lede}</p>
+  <ul class="x-soon-grid">
+    {items.map(([name, text]) => <li><b>{name}</b><span>{text}</span></li>)}
+  </ul>
+  {note && <p class="x-soon-note">{note}</p>}
+  <div class="x-soon-cta"><a class="x-pill pill-black" href="/components/">Browse components</a><a class="x-pill pill-grey" href="/docs/">Read the docs</a></div>
+</section>

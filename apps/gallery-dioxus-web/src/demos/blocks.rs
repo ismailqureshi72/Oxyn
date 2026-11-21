@@ -1022,7 +1022,7 @@ pub(crate) fn demos() -> Vec<Demo> {
             "Assistant memory",
             CAT_AI,
             "AssistantMemory",
-            "A card listing the facts an assistant keeps about its user, one short line each: filter by group or search, edit or forget a memory in place with Undo, file the memory this chat just made, add your own and switch saved memories or chat history off. (Arc's Agent memory; ours is assistant-memory because agent-memory is a screen.)",
+            "A card listing the facts an assistant keeps about its user, one short line each: filter by group or search, edit or forget a memory in place with Undo, file the memory this chat just made, add your own and switch saved memories or chat history off.",
             vec![
                 tog("full", "Nearly full", false),
                 tog("paused", "Saved memories off", false),

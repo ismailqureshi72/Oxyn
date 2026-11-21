@@ -547,7 +547,7 @@ pub(crate) fn demos() -> Vec<Demo> {
             variants: vec![
                 var(
                     "default",
-                    "As affectUI ships it: a lead and three sub-agents with their helpers; handoffs run along the connectors and light up the card they reach, contexts fill, and the lead ends up asking you to merge.",
+                    "A lead and three sub-agents with their helpers; handoffs run along the connectors and light up the card they reach, contexts fill, and the lead ends up asking you to merge.",
                     &[],
                 ),
                 var(
@@ -630,7 +630,7 @@ pub(crate) fn demos() -> Vec<Demo> {
             variants: vec![
                 var(
                     "default",
-                    "As affectUI ships it: four agents arrive in the doc, read, select, type suggestions letter by letter, resize the hero image, fix the code and leave comment pins; the costs and the count in the header follow along.",
+                    "Four agents arrive in the doc, read, select, type suggestions letter by letter, resize the hero image, fix the code and leave comment pins; the costs and the count in the header follow along.",
                     &[],
                 ),
                 var(
@@ -705,7 +705,7 @@ pub(crate) fn demos() -> Vec<Demo> {
             variants: vec![
                 var(
                     "default",
-                    "As affectUI ships it: four agents check in parallel, the bars fill and findings slide into the feed.",
+                    "Four agents check in parallel, the bars fill and findings slide into the feed.",
                     &[],
                 ),
                 var(
@@ -764,7 +764,7 @@ pub(crate) fn demos() -> Vec<Demo> {
             variants: vec![
                 var(
                     "default",
-                    "As affectUI ships it: the lead in the middle, four agents around it and seven tools plus you on the outer orbit; every call runs a pulse out and its answer back, agents breathe, finish, fail and wait for you.",
+                    "The lead in the middle, four agents around it and seven tools plus you on the outer orbit; every call runs a pulse out and its answer back, agents breathe, finish, fail and wait for you.",
                     &[],
                 ),
                 var(
@@ -832,7 +832,7 @@ pub(crate) fn demos() -> Vec<Demo> {
             variants: vec![
                 var(
                     "default",
-                    "As affectUI ships it: the Researcher picks up the next task, hands it to the Writer and on to the Reviewer – a light runs along the lines, the card drops into its column and the costs tick up.",
+                    "The Researcher picks up the next task, hands it to the Writer and on to the Reviewer – a light runs along the lines, the card drops into its column and the costs tick up.",
                     &[],
                 ),
                 var(
@@ -906,7 +906,7 @@ pub(crate) fn demos() -> Vec<Demo> {
             variants: vec![
                 var(
                     "default",
-                    "As affectUI ships it: the board, with the waiting migration open on Reject / Approve; clocks tick and the release notes finish by themselves.",
+                    "The board, with the waiting migration open on Reject / Approve; clocks tick and the release notes finish by themselves.",
                     &[],
                 ),
                 var(
@@ -959,7 +959,7 @@ pub(crate) fn demos() -> Vec<Demo> {
             variants: vec![
                 var(
                     "default",
-                    "As affectUI ships it: four agents over the last half hour on a fast clock – running blocks grow into now, a draft hands over to the Reviewer along a dashed curve, the window slides and old blocks fade out at the left.",
+                    "Four agents over the last half hour on a fast clock – running blocks grow into now, a draft hands over to the Reviewer along a dashed curve, the window slides and old blocks fade out at the left.",
                     &[],
                 ),
                 var(
@@ -1029,7 +1029,7 @@ pub(crate) fn demos() -> Vec<Demo> {
             variants: vec![
                 var(
                     "default",
-                    "As affectUI ships it: changes land at the top one by one, then the price change's Undo is pointed at and taken – the coupon and the deals go with it, the sent email can't.",
+                    "Changes land at the top one by one, then the price change's Undo is pointed at and taken – the coupon and the deals go with it, the sent email can't.",
                     &[],
                 ),
                 var(
@@ -1100,7 +1100,7 @@ pub(crate) fn demos() -> Vec<Demo> {
             variants: vec![
                 var(
                     "default",
-                    "As affectUI ships it: steps roll through the well with a clock and the bill so far, finished ones drop into the list, the card stops to ask before publishing (Enter allows, Esc declines), then finishes green.",
+                    "Steps roll through the well with a clock and the bill so far, finished ones drop into the list, the card stops to ask before publishing (Enter allows, Esc declines), then finishes green.",
                     &[],
                 ),
                 var(
@@ -1181,7 +1181,7 @@ pub(crate) fn demos() -> Vec<Demo> {
             variants: vec![
                 var(
                     "default",
-                    "As affectUI ships it: jobs drop into the queue, glide onto free workers as growing bars and land in Done or Failed; every pass a rate limit stops the workers, the backlog climbs past the backpressure line and drains after.",
+                    "Jobs drop into the queue, glide onto free workers as growing bars and land in Done or Failed; every pass a rate limit stops the workers, the backlog climbs past the backpressure line and drains after.",
                     &[],
                 ),
                 var(
@@ -1261,7 +1261,7 @@ pub(crate) fn demos() -> Vec<Demo> {
             variants: vec![
                 var(
                     "default",
-                    "As affectUI ships it: the night replays – the line draws itself, a dot pops onto each peak and its card fades in as the line passes; Approve, Merge and Retry work for a moment, then settle with Undo.",
+                    "The night replays – the line draws itself, a dot pops onto each peak and its card fades in as the line passes; Approve, Merge and Retry work for a moment, then settle with Undo.",
                     &[],
                 ),
                 var(
@@ -1330,7 +1330,7 @@ pub(crate) fn demos() -> Vec<Demo> {
             variants: vec![
                 var(
                     "live",
-                    "As affectUI ships it: the run plays out message by message – each arrow draws across with its tag, bars grow on the lifelines while participants work, the parallel and retried messages gather in labelled frames, then it loops.",
+                    "The run plays out message by message – each arrow draws across with its tag, bars grow on the lifelines while participants work, the parallel and retried messages gather in labelled frames, then it loops.",
                     &[],
                 ),
                 var(

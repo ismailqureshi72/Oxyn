@@ -44,7 +44,6 @@ const rel = related(demo, 4);
 const notRel = whenNotToUse(demo);
 const guides = guidesFor(demo);
 const sourceUrl = `${REPO}/blob/main/crates/oxyn-dioxus/src/${demo.source}`;
-const specUrl = `${REPO}/blob/main/docs/specs/${demo.spec}.md`;
 const kind = screen ? 'screen' : bg ? 'block' : 'component';
 ---
 <Library title={`${demo.name} — ${screen ? 'Screens' : g!.name}`} description={demo.summary} type="Component" meta={`category:${screen ? 'Screens' : g!.name}`}>
@@ -84,7 +83,7 @@ const kind = screen ? 'screen' : bg ? 'block' : 'component';
           {screen && <a class="iconbtn" href={`${url}full/`} target="_self" aria-label="Open full screen" title="Open full screen (this tab)"><Fragment set:html={icon.expand} /></a>}
           <span class="pv-div" aria-hidden="true"></span>
           {ai.map(([l, id, h]) => <a class="aibtn x-aibtn-logo" href={h} target="_blank" rel="noopener" title={`Open in ${l}`} aria-label={`Open in ${l}`}><Fragment set:html={mark(id)} /></a>)}
-          <a class="aibtn x-aibtn-mcp" href="/docs/installation/" title="MCP server (planned; the oxyn CLI is out)"><Fragment set:html={mark('mcp')} />MCP</a>
+          <a class="aibtn x-aibtn-mcp" href="/docs/mcp/" title="Add it from your coding agent with the Oxyn MCP server"><Fragment set:html={mark('mcp')} />MCP</a>
           <button class="x-pill pill-black pill-sm x-copy" type="button" data-copy-from="pv"><Fragment set:html={icon.copy} />Copy</button>
           {pro && <a class="x-gopro x-getpro" href={`/pricing/?from=${demo.slug}`}><i class="x-bolt" aria-hidden="true"></i>Get Pro</a>}
         </div>
@@ -176,7 +175,7 @@ const kind = screen ? 'screen' : bg ? 'block' : 'component';
           </div>
         </>
       ))}
-      <p class="x-muted small">Read from the Rust signature and doc comments in <a href={sourceUrl}><code>{demo.source}</code></a>.</p>
+      <p class="x-muted small">Read from the Rust signature and doc comments{!pro && <> of <a href={sourceUrl}>its source</a></>}.</p>
     </section>
 
     {demo.keyboard.length > 0 && (
@@ -218,7 +217,7 @@ const kind = screen ? 'screen' : bg ? 'block' : 'component';
     <section class="sec" id="notes-for-ai">
       <h2>Notes for AI</h2>
       <ul class="bul" set:html={notesForAi(demo, propNames).map((n) => `<li>${md(n).replace(/^<p>|<\/p>$/g, '')}</li>`).join('')} />
-      <p class="x-muted small">Source: <a href={sourceUrl}>crates/oxyn-dioxus/src/{demo.source}</a> · Spec: <a href={specUrl}>docs/specs/{demo.spec}.md</a></p>
+      {!pro && <p class="x-muted small"><a href={sourceUrl}>View the source on GitHub</a></p>}
     </section>
 
     {rel.length > 0 && (
