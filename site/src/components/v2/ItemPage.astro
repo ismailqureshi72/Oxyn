@@ -43,7 +43,6 @@ const propNames = tables.flatMap((t) => t.info.props.filter((p) => p.required).m
 const rel = related(demo, 4);
 const notRel = whenNotToUse(demo);
 const guides = guidesFor(demo);
-const sourceUrl = `${REPO}/blob/main/crates/oxyn-dioxus/src/${demo.source}`;
 const kind = screen ? 'screen' : bg ? 'block' : 'component';
 ---
 <Library title={`${demo.name} — ${screen ? 'Screens' : g!.name}`} description={demo.summary} type="Component" meta={`category:${screen ? 'Screens' : g!.name}`}>
@@ -175,7 +174,7 @@ const kind = screen ? 'screen' : bg ? 'block' : 'component';
           </div>
         </>
       ))}
-      <p class="x-muted small">Read from the Rust signature and doc comments{!pro && <> of <a href={sourceUrl}>its source</a></>}.</p>
+      <p class="x-muted small">Read from the Rust signature and doc comments.</p>
     </section>
 
     {demo.keyboard.length > 0 && (
@@ -217,7 +216,6 @@ const kind = screen ? 'screen' : bg ? 'block' : 'component';
     <section class="sec" id="notes-for-ai">
       <h2>Notes for AI</h2>
       <ul class="bul" set:html={notesForAi(demo, propNames).map((n) => `<li>${md(n).replace(/^<p>|<\/p>$/g, '')}</li>`).join('')} />
-      {!pro && <p class="x-muted small"><a href={sourceUrl}>View the source on GitHub</a></p>}
     </section>
 
     {rel.length > 0 && (

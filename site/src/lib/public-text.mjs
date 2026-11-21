@@ -3,7 +3,7 @@
 // (demo summaries, variant notes, spec sections, prop docs). The Rust sources and specs keep their
 // own notes; this runs on what the site prints. Used by src/lib/data.ts and scripts/gen.mjs.
 
-const REF = String.raw`(?:affect ?UI|ui ?arc|bencho|kshv|Beautiful ?UI|Arc UI|Arc(?=['’]s\b)|Arc(?= (?:screens?|demo app|frame|gaps?|parity|reference|version|style|spec|ships|has|does|uses|draws|shows|keeps|puts|look)\b)|[Pp]lan #\d+|parity (?:plan|tracker|item|row|section)s?)`;
+const REF = String.raw`(?:affect ?UI|ui ?arc|bencho|kshv|Beautiful ?UI|Arc UI|Arc(?=['’]s\b)|Arc(?= (?:screens?|demo app|frame|gaps?|parity|reference|version|style|spec|ships|has|does|uses|draws|shows|keeps|puts|look)\b)|[Pp]lan #\d+|parity (?:plan|tracker|item|row|section)s?|\bparity\b)`;
 const REF_RE = new RegExp(REF, 'i');
 
 /** Exact rewrites first, so a breadcrumb or a lead-in keeps reading well. */
@@ -24,11 +24,22 @@ const REWRITES = [
   [/\b(?:the )?plan #\d+ /gi, 'the '],
 ];
 
+/** Internal module paths: the Rust sources keep their `parity` module, the pages name the crate. */
+const PATHS = [
+  [/`?\boxyn_(\w+)::parity(?:::[\w{}]+)*`?/g, '`oxyn_$1`'],
+  [/`?\boxyn-(\w+)::parity(?:::[\w{}]+)*`?/g, '`oxyn-$1`'],
+  [/,\s*`parity::[\w:{}]+`\)/g, ')'],
+  [/`?\bparity::([\w:{}]+)`?/g, (_, p) => '`' + p.split('::').pop() + '`'],
+  [/(?:crates\/[\w-]+\/src\/)?\bparity\/([\w/.-]+)/g, (_, p) => p.split('/').pop()],
+];
+const paths = (s) => (/parity/i.test(s) ? PATHS.reduce((t, [re, to]) => t.replace(re, to), s) : s);
+
 const cap = (s) => s.replace(/^(\s*)([a-z])/, (_, w, c) => w + c.toUpperCase());
 
 /** One line or paragraph of public copy. */
 export function publicText(s) {
   if (typeof s !== 'string' || !s) return s;
+  s = paths(s);
   if (!REF_RE.test(s) && !/affect ?UI|Arc screens|plan #\d/i.test(s)) return s;
   let t = s;
   for (const [re, to] of REWRITES) t = t.replace(re, to);
@@ -52,6 +63,7 @@ export function publicMarkdown(md) {
   return md
     .split('\n')
     .map((line) => {
+      line = paths(line);
       if (!REF_RE.test(line) && !/affect ?UI|Arc screens|plan #\d/i.test(line)) return line;
       const m = line.match(/^(\s*(?:[-*+]|\d+\.|>|\|)?\s*)(.*)$/);
       const body = publicText(m[2]);
