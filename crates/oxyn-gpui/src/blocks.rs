@@ -1,6 +1,6 @@
-//! Blocks (Oxyn Pro) in GPUI as one live view: Live session, Mission control, Mission
+//! Blocks (Oxyn Pro) in GPUI as one live view: Live session, Fleet overview, Mission
 //! timeline, Run inspector, Background agents, Agent routines, MCP servers, Knowledge base, Eval
-//! suite, Agent builder, Agent gallery, AI insight card, Model arena, Prompt studio, Assistant
+//! suite, Agent builder, Agent gallery, AI insight card, Blind compare, Prompt bench, Assistant
 //! memory, Catch up, AI feature launch, AI setup wizard, Call insights and Lead scoring (drawn in
 //! [`ai`]). Every variant runs on the same
 //! `oxyn_core::blocks` models as the Dioxus blocks, so presses and keys behave the same in both
@@ -49,10 +49,10 @@ mod ai;
 pub enum BlockVariant {
     /// Live session.
     LiveSession,
-    /// Mission control.
-    MissionControl,
-    /// Mission timeline.
-    MissionTimeline,
+    /// Fleet overview.
+    FleetOverview,
+    /// Fleet timeline.
+    FleetTimeline,
     /// Run inspector.
     RunInspector,
     /// Background agents.
@@ -71,9 +71,9 @@ pub enum BlockVariant {
     Gallery,
     /// AI insight card.
     Insight,
-    /// Model arena.
+    /// Blind compare.
     Arena,
-    /// Prompt studio.
+    /// Prompt bench.
     Prompt,
     /// Assistant memory.
     Memory,
@@ -93,8 +93,8 @@ impl BlockVariant {
     /// Every variant, in gallery order.
     pub const ALL: [BlockVariant; 20] = [
         Self::LiveSession,
-        Self::MissionControl,
-        Self::MissionTimeline,
+        Self::FleetOverview,
+        Self::FleetTimeline,
         Self::RunInspector,
         Self::BackgroundAgents,
         Self::Routines,
@@ -128,9 +128,9 @@ pub struct BlocksState {
     pub now: u64,
     /// Live session.
     pub session: Session,
-    /// Mission control.
+    /// Fleet overview.
     pub control: Mission,
-    /// Mission timeline.
+    /// Fleet timeline.
     pub timeline: Mission,
     /// Run inspector.
     pub inspector: Inspector,
@@ -150,9 +150,9 @@ pub struct BlocksState {
     pub gallery: Gallery,
     /// AI insight card.
     pub insight: Insight,
-    /// Model arena.
+    /// Blind compare.
     pub arena: Arena,
-    /// Prompt studio.
+    /// Prompt bench.
     pub prompt: Studio,
     /// Assistant memory.
     pub memory: Memory,
@@ -210,8 +210,8 @@ impl BlocksState {
                 self.session.send("@Writer keep the copy under 40 words", n)
             }
             BlockVariant::LiveSession => self.session.press(id, n),
-            BlockVariant::MissionControl => self.control.press(id, n),
-            BlockVariant::MissionTimeline => self.timeline.press(id, n),
+            BlockVariant::FleetOverview => self.control.press(id, n),
+            BlockVariant::FleetTimeline => self.timeline.press(id, n),
             BlockVariant::RunInspector => self.inspector.press(id, n),
             BlockVariant::BackgroundAgents if id == "ba-start" => {
                 self.bg.start("Add request ids to every log line", n)
@@ -253,8 +253,8 @@ impl BlocksState {
                     self.session.key("tabs", k, n)
                 }
             }
-            BlockVariant::MissionControl => self.control.key(k, n),
-            BlockVariant::MissionTimeline => self.timeline.key(k, n),
+            BlockVariant::FleetOverview => self.control.key(k, n),
+            BlockVariant::FleetTimeline => self.timeline.key(k, n),
             BlockVariant::RunInspector => self.inspector.key(k, n),
             BlockVariant::BackgroundAgents => self.bg.key(k, n),
             BlockVariant::Routines => self.routines.key(k, n),
@@ -917,9 +917,9 @@ impl BlocksView {
                     .child(title(
                         t,
                         if lanes {
-                            "Mission timeline"
+                            "Fleet timeline"
                         } else {
-                            "Mission control"
+                            "Fleet overview"
                         },
                         m.summary(n),
                     ))
@@ -2162,8 +2162,8 @@ impl Render for BlocksView {
         let fg = c(t, ColorRole::FgDefault);
         let body: Div = match self.variant {
             BlockVariant::LiveSession => self.session(cx),
-            BlockVariant::MissionControl => self.mission(cx, false),
-            BlockVariant::MissionTimeline => self.mission(cx, true),
+            BlockVariant::FleetOverview => self.mission(cx, false),
+            BlockVariant::FleetTimeline => self.mission(cx, true),
             BlockVariant::RunInspector => self.inspector(cx),
             BlockVariant::BackgroundAgents => self.bg_agents(cx),
             BlockVariant::Routines => self.routines(cx),
@@ -2226,9 +2226,9 @@ mod tests {
         assert_eq!(s.session.focus, Some(2));
         s.key(BlockVariant::LiveSession, "escape", false);
         assert_eq!(s.session.focus, None);
-        s.press(BlockVariant::MissionControl, "mi-ok-3");
+        s.press(BlockVariant::FleetOverview, "mi-ok-3");
         assert_eq!(s.control.st(3, s.now), St::Running);
-        s.key(BlockVariant::MissionTimeline, "right", false);
+        s.key(BlockVariant::FleetTimeline, "right", false);
         assert_eq!(s.timeline.filter, 1);
         s.press(BlockVariant::RunInspector, "ri-agent-6");
         assert_eq!(s.inspector.selected, Some(6));

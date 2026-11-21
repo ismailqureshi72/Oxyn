@@ -1,6 +1,6 @@
 //! Blocks (Oxyn Pro): larger compositions for AI and agent products. Live session, Mission
-//! control, Mission timeline, Run inspector, Background agents, Agent routines, MCP servers,
-//! Knowledge base, Eval suite, Agent builder, Agent gallery, AI insight card, Model arena, Prompt
+//! control, Fleet timeline, Run inspector, Background agents, Agent routines, MCP servers,
+//! Knowledge base, Eval suite, Agent builder, Agent gallery, AI insight card, Blind compare, Prompt
 //! studio, Assistant memory, Catch up, AI feature launch, AI setup wizard, Call insights and Lead
 //! scoring. Rules live in
 //! `oxyn_core::blocks` (shared with the GPUI view); styles in `blocks.css` (prefix `oxbk-`) on top
@@ -32,7 +32,7 @@ mod routines;
 mod session;
 mod wizard;
 
-pub use arena::ModelArena;
+pub use arena::BlindCompare;
 pub use bgagents::BackgroundAgents;
 pub use builder::AgentBuilder;
 pub use call::CallInsights;
@@ -46,8 +46,8 @@ pub use launch::AiFeatureLaunch;
 pub use leads::LeadScoring;
 pub use mcp::McpServers;
 pub use memory::AssistantMemory;
-pub use mission::{MissionControl, MissionTimeline};
-pub use prompt::PromptStudio;
+pub use mission::{FleetOverview, FleetTimeline};
+pub use prompt::PromptBench;
 pub use routines::AgentRoutines;
 pub use session::LiveSession;
 pub use wizard::AiSetupWizard;

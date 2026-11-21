@@ -113,7 +113,7 @@ fn storage_meter_demo() -> Demo {
             "StorageMeter",
             "StorageMeterEl",
             "storage-meter",
-            "parity/storagefid.rs",
+            "kit/storagefid.rs",
         )
     }
 }
@@ -189,7 +189,7 @@ fn storage_cleanup_demo() -> Demo {
             "StorageCleanup",
             "StorageCleanupEl",
             "storage-cleanup",
-            "parity/storagefid.rs",
+            "kit/storagefid.rs",
         )
     }
 }
@@ -259,7 +259,7 @@ fn storage_waffle_demo() -> Demo {
             "StorageWaffle",
             "StorageWaffleEl",
             "storage-waffle",
-            "parity/storagefid.rs",
+            "kit/storagefid.rs",
         )
     }
 }
@@ -330,7 +330,7 @@ fn storage_forecast_demo() -> Demo {
             "StorageForecast",
             "StorageForecastEl",
             "storage-forecast",
-            "parity/storagefid.rs",
+            "kit/storagefid.rs",
         )
     }
 }

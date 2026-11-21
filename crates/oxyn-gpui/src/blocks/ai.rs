@@ -1,4 +1,4 @@
-//! The AI blocks of [`BlocksView`]: Model arena, Prompt studio, Assistant memory, Catch up, AI
+//! The AI blocks of [`BlocksView`]: Blind compare, Prompt bench, Assistant memory, Catch up, AI
 //! feature launch, AI setup wizard, Call insights and Lead scoring. Same models and press ids as
 //! the Dioxus blocks.
 
@@ -88,7 +88,7 @@ impl BlocksView {
                     .justify_between()
                     .child(title(
                         t,
-                        "Model arena",
+                        "Blind compare",
                         format!("Round {} · two models, one prompt", a.round + 1),
                     ))
                     .child(

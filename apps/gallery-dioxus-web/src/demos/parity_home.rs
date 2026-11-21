@@ -4,9 +4,7 @@
 use dioxus::prelude::*;
 use oxyn_core::{
     ClockMs,
-    parity::home::{
-        Doc, Thread, ThreadState, demo_counts, demo_experiments, demo_usage, year_days,
-    },
+    kit::home::{Doc, Thread, ThreadState, demo_counts, demo_experiments, demo_usage, year_days},
 };
 use oxyn_dioxus::{
     ActivityHeatmap, ActivityHome, AttachmentStrip, DocGrid, ExperimentGrid, PollingCost,
@@ -529,7 +527,7 @@ pub(crate) fn demos() -> Vec<Demo> {
                 "ThreadList",
                 "ThreadListEl",
                 "thread-list",
-                "parity/home.rs",
+                "kit/home.rs",
             )
         },
         Demo {
@@ -570,7 +568,7 @@ pub(crate) fn demos() -> Vec<Demo> {
                 "ActivityHeatmap",
                 "ActivityHeatmapEl",
                 "activity-heatmap",
-                "parity/home.rs",
+                "kit/home.rs",
             )
         },
         Demo {
@@ -619,7 +617,7 @@ pub(crate) fn demos() -> Vec<Demo> {
                 "ActivityHome",
                 "ActivityHomeEl",
                 "activity-home",
-                "parity/home.rs",
+                "kit/home.rs",
             )
         },
         Demo {
@@ -653,7 +651,7 @@ pub(crate) fn demos() -> Vec<Demo> {
                 "TokenUsageChart",
                 "TokenUsageChartEl",
                 "token-usage-chart",
-                "parity/home.rs",
+                "kit/home.rs",
             )
         },
         Demo {
@@ -694,7 +692,7 @@ pub(crate) fn demos() -> Vec<Demo> {
                 "AttachmentStrip",
                 "AttachmentStripEl",
                 "attachment-strip",
-                "parity/home.rs",
+                "kit/home.rs",
             )
         },
         Demo {
@@ -733,7 +731,7 @@ pub(crate) fn demos() -> Vec<Demo> {
                 "RunModeMenu",
                 "RunModeMenuEl",
                 "run-mode-menu",
-                "parity/home.rs",
+                "kit/home.rs",
             )
         },
         Demo {
@@ -780,7 +778,7 @@ pub(crate) fn demos() -> Vec<Demo> {
                 "ExperimentGrid",
                 "ExperimentGridEl",
                 "experiment-grid",
-                "parity/home.rs",
+                "kit/home.rs",
             )
         },
         Demo {
@@ -819,7 +817,7 @@ pub(crate) fn demos() -> Vec<Demo> {
                 "DocGrid",
                 "DocGridEl",
                 "doc-grid",
-                "parity/home.rs",
+                "kit/home.rs",
             )
         },
         Demo {
@@ -851,7 +849,7 @@ pub(crate) fn demos() -> Vec<Demo> {
                 "PollingCost",
                 "PollingCostEl",
                 "polling-cost",
-                "parity/home.rs",
+                "kit/home.rs",
             )
         },
     ]

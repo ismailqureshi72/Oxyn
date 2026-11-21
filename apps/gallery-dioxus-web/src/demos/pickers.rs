@@ -1,8 +1,8 @@
-//! Pickers (plan #25): calendar, date picker, date range picker, time picker, time dial, date reel.
+//! Pickers (plan #25): calendar, date picker, date range picker, time picker, time dial, date wheel.
 
 use dioxus::prelude::*;
 use oxyn_core::{ClockMs, primitives::dial::City};
-use oxyn_dioxus::{Calendar, DatePicker, DateRangePicker, DateReel, TimeDial, TimePicker};
+use oxyn_dioxus::{Calendar, DatePicker, DateRangePicker, DateWheel, TimeDial, TimePicker};
 
 use super::{Code, q, rng, sel, tog, var};
 use crate::{Align, Demo, Vals};
@@ -179,7 +179,7 @@ fn time_dial_code(v: &Vals) -> String {
 
 fn date_reel(v: &Vals, _: ClockMs) -> Element {
     rsx! {
-        DateReel {
+        DateWheel {
             mode: v.string("mode"),
             date: "2026-09-24",
             time: "09:30",
@@ -197,7 +197,7 @@ fn date_reel(v: &Vals, _: ClockMs) -> Element {
 }
 
 fn date_reel_code(v: &Vals) -> String {
-    Code::new("DateReel")
+    Code::new("DateWheel")
         .s("mode", v.s("mode"), "datetime")
         .raw("minute_step", v.s("minute_step").to_string())
         .s("hour_cycle", v.s("hour_cycle"), "12")
@@ -520,12 +520,12 @@ pub fn demos() -> Vec<Demo> {
             live: false,
         },
         Demo {
-            slug: "date-reel",
-            name: "Date reel",
+            slug: "date-wheel",
+            name: "Date wheel",
             category: "pickers",
             summary: "iOS-style wheels for day and time: drag, flick or scroll and it glides onto an entry; quick picks spin every reel.",
-            dioxus: "DateReel",
-            gpui: "DateReelEl",
+            dioxus: "DateWheel",
+            gpui: "DateWheelEl",
             spec: "date-reel",
             source: "primitives/pickers.rs",
             controls: vec![

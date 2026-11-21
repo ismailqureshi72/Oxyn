@@ -1,4 +1,4 @@
-//! Prompt studio (Dioxus).
+//! Prompt bench (Dioxus).
 
 use dioxus::prelude::*;
 use oxyn_core::ClockMs;
@@ -8,14 +8,14 @@ use oxyn_core::blocks::prompt::{
 
 use crate::aikit::{cls, cmd, dots, ico, key_of, live, mark};
 
-/// Prompt studio: one card to edit, test and ship a prompt template. A version chip (a menu of
+/// Prompt bench: one card to edit, test and ship a prompt template. A version chip (a menu of
 /// versions with production marked, promote and undo) and a model chip (model and effort) sit in
 /// the header; System and User tabs show the template with `{{variable}}` placeholders as chips
 /// in each variable's series colour; a coloured field per variable fills them from saved test
 /// cases; Run streams the reply with latency, tokens and cost; Compare shows a word diff against
 /// production.
 #[component]
-pub fn PromptStudio(
+pub fn PromptBench(
     /// Host clock.
     now: ClockMs,
     /// Run the first test case at once.
@@ -56,7 +56,7 @@ pub fn PromptStudio(
     let latest = s.version == VERSIONS.len() - 1;
     let tpl = s.template(s.version);
     rsx! {
-        section { class: "oxaik oxbk oxbk-ps", "aria-label": "Prompt studio",
+        section { class: "oxaik oxbk oxbk-ps", "aria-label": "Prompt bench",
             onkeydown: move |e: KeyboardEvent| if cmd(&e) && key_of(&e) == "Enter" { e.prevent_default(); keyed("run".into()) },
             header { class: "oxaik-hd",
                 div { class: "oxaik-hl",

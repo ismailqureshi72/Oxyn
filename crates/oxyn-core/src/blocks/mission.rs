@@ -1,4 +1,4 @@
-//! Mission control and Mission timeline: every agent at a glance. On top, what happened since you
+//! Fleet overview and Fleet timeline: every agent at a glance. On top, what happened since you
 //! last looked (a curve of done, needs-you and failed events); in the middle the fleet (leads with
 //! their sub-agents) or one lane per agent on a shared clock; on the side an inbox of what needs
 //! you. One filter (all, running, waiting, failed) applies to all three. Answers, retries and
@@ -242,7 +242,7 @@ pub enum Act {
     Dismiss,
 }
 
-/// The live state of Mission control or Mission timeline.
+/// The live state of Fleet overview or Fleet timeline.
 #[derive(Clone, Debug, PartialEq)]
 pub struct Mission {
     /// Clock start, ms.

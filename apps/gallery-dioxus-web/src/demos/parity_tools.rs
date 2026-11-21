@@ -4,9 +4,7 @@
 use dioxus::prelude::*;
 use oxyn_core::{
     ClockMs,
-    parity::tools::{
-        CallCard, CallStatus, Json, JsonTree, Preview, Unfurl, UnfurlState, find_urls,
-    },
+    kit::tools::{CallCard, CallStatus, Json, JsonTree, Preview, Unfurl, UnfurlState, find_urls},
 };
 use oxyn_dioxus::{
     ChipStep, DiffChip, ExpandableCard, JsonViewer, LinkUnfurl, RowOutput, ToolCall, ToolCallCard,
@@ -874,7 +872,7 @@ pub fn demos() -> Vec<Demo> {
                 "ToolCallCard, ToolCallGroup",
                 "ToolCallCardEl",
                 "tool-call-card",
-                "parity/tools.rs",
+                "kit/tools.rs",
             )
         },
         Demo {
@@ -952,7 +950,7 @@ pub fn demos() -> Vec<Demo> {
                 "ToolCallList, ToolCall",
                 "ToolCallEl",
                 "tool-call-transcript",
-                "parity/tools.rs",
+                "kit/tools.rs",
             )
         },
         Demo {
@@ -993,7 +991,7 @@ pub fn demos() -> Vec<Demo> {
                 "ToolChips",
                 "ToolChipsEl",
                 "tool-chips",
-                "parity/tools.rs",
+                "kit/tools.rs",
             )
         },
         Demo {
@@ -1057,7 +1055,7 @@ pub fn demos() -> Vec<Demo> {
                 "JsonViewer",
                 "JsonViewerEl",
                 "json-viewer",
-                "parity/tools.rs",
+                "kit/tools.rs",
             )
         },
         Demo {
@@ -1109,7 +1107,7 @@ pub fn demos() -> Vec<Demo> {
                 "ExpandableCard",
                 "ExpandableCardEl",
                 "expandable-card",
-                "parity/tools.rs",
+                "kit/tools.rs",
             )
         },
         Demo {
@@ -1169,7 +1167,7 @@ pub fn demos() -> Vec<Demo> {
                 "LinkUnfurl",
                 "LinkUnfurlEl",
                 "link-unfurl",
-                "parity/tools.rs",
+                "kit/tools.rs",
             )
         },
         Demo {
@@ -1207,7 +1205,7 @@ pub fn demos() -> Vec<Demo> {
                 "ToolKindLegend",
                 "",
                 "tool-kind-map",
-                "parity/tools.rs",
+                "kit/tools.rs",
             )
         },
     ]

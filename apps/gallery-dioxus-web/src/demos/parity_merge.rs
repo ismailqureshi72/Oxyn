@@ -4,7 +4,7 @@
 use dioxus::prelude::*;
 use oxyn_core::{
     ClockMs,
-    parity::merge::{MergeFile, Pick, RadarAgent, RadarEdit, RadarFile, Seg, Suggestion},
+    kit::merge::{MergeFile, Pick, RadarAgent, RadarEdit, RadarFile, Seg, Suggestion},
 };
 use oxyn_dioxus::{ConflictRadar, MergeConflict};
 
@@ -395,7 +395,7 @@ pub(crate) fn demos() -> Vec<Demo> {
                 "MergeConflict",
                 "MergeConflictEl",
                 "merge-conflict",
-                "parity/merge.rs",
+                "kit/merge.rs",
             )
         },
         Demo {
@@ -482,7 +482,7 @@ pub(crate) fn demos() -> Vec<Demo> {
                 "ConflictRadar",
                 "ConflictRadarEl",
                 "conflict-radar",
-                "parity/merge.rs",
+                "kit/merge.rs",
             )
         },
     ]

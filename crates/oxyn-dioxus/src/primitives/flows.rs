@@ -1,5 +1,5 @@
 //! Flows (plan #25): `FilterMenu`, `StepperForm`, `DecisionCard`, `ApprovalQuestions`,
-//! `SmartFormFill`.
+//! `FormAutofill`.
 //!
 //! `ApprovalQuestions` ports Beautiful UI's Approval Card (MIT, © 2026 Shane Levine): paged
 //! questions with an odometer counter, auto-advance on single choice, a custom answer row, Skip,
@@ -790,7 +790,7 @@ pub fn ApprovalQuestions(
 }
 
 // ---------------------------------------------------------------------------------------------
-// Smart form fill
+// Form autofill
 
 const SAMPLES: [(&str, &str); 2] = [
     (
@@ -803,13 +803,13 @@ const SAMPLES: [(&str, &str); 2] = [
     ),
 ];
 
-/// Smart form fill: paste an email signature or messy notes and the agent fills a contact form
+/// Form autofill: paste an email signature or messy notes and the agent fills a contact form
 /// field by field. Values fade in 140 ms apart with a confidence dot, the source lights up in the
 /// pasted text, low-confidence fields ask for review and block Save until checked or edited, Undo
 /// restores the values from before the fill, Esc stops a read. Oxyn plus: undo per field, a
 /// confidence gate you can move, and a provenance line per field.
 #[component]
-pub fn SmartFormFill(
+pub fn FormAutofill(
     /// Fields (default: name, title, company, email, phone, address).
     #[props(default)]
     fields: Vec<FillField>,

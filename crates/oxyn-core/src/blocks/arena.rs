@@ -1,4 +1,4 @@
-//! Model arena: one prompt to two models, both answers stream side by side at their own pace,
+//! Blind compare: one prompt to two models, both answers stream side by side at their own pace,
 //! a vote picks the better one and only then are the models revealed. A leaderboard keeps win
 //! rates across rounds; a Blind switch can reveal names early; a pane that fails offers Retry.
 
