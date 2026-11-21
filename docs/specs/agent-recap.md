@@ -1,10 +1,10 @@
 **Status:** built v0.1 (2026-11-16, plan #32 affectUI fidelity pass, overnight batch, family B part 4).
 
-# Spec: Agent Recap (`agent-recap`)
+# Spec: Overnight recap (`agent-recap`)
 
 Family: Agents. Closes the parity row: affectUI · Agent Recap (Pro). Behaviour-only rebuild; nothing is copied (the
 demo night's events, names, counts and times are our own).
-Components: `AgentRecap` (Dioxus) · `AgentRecapEl` (GPUI), model in `oxyn_core::parity::recapfid`.
+Components: `AgentRecap` (Dioxus) · `AgentRecapEl` (GPUI), model in `oxyn_core::kit::recapfid`.
 
 ## 1. Purpose
 A catch-up card for when you come back: a tiny timeline of the night with a spike per event, then grouped items –

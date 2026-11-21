@@ -3,7 +3,7 @@
 # Spec: Theme split (`theme-split`)
 
 Family: Theme Selector. Reference: none (an Oxyn original).
-Components: `ThemeSplit` (Dioxus) · `ThemeSplitEl` (GPUI), models in `oxyn_core::parity::themefid`.
+Components: `ThemeSplit` (Dioxus) · `ThemeSplitEl` (GPUI), models in `oxyn_core::kit::themefid`.
 
 ## 1. Purpose
 Compare the theme in use with a candidate on the same window, side by side, before switching.

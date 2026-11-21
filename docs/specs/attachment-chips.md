@@ -3,7 +3,7 @@
 # Spec: Attachment chips (`attachment-chips`)
 
 Family: Attachments. Reference: common composer attachment trays (chips with type icons, progress, errors). Our own layout and wording.
-Components: `AttachmentChips` (Dioxus) · `AttachmentChipsEl` (GPUI), models in `oxyn_core::parity::attachfid`.
+Components: `AttachmentChips` (Dioxus) · `AttachmentChipsEl` (GPUI), models in `oxyn_core::kit::attachfid`.
 
 ## 1. Purpose
 Show each file's progress and problems where the user is about to send, without a separate upload panel.

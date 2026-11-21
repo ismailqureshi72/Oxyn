@@ -1,9 +1,9 @@
 **Status:** built v0.1 (2026-11-16, plan #32 affectUI fidelity pass, overnight batch, family A).
 
-# Spec: Thinking State (`thinking-state`)
+# Spec: Thinking panel (`thinking-state`)
 
 Family: Chat. Closes the parity row: affectUI · Thinking State. Behaviour-only rebuild; nothing is copied.
-Components: `ThinkingPanel` (Dioxus) · `ThinkingPanelEl` (GPUI), models in `oxyn_core::parity::answers`.
+Components: `ThinkingPanel` (Dioxus) · `ThinkingPanelEl` (GPUI), models in `oxyn_core::kit::answers`.
 Oxyn extras on the same page: the plan #27 `ReasoningBlock` (variant `oxyn-reasoning-block`; also its own page).
 
 ## 1. Purpose

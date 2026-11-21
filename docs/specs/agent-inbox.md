@@ -1,9 +1,9 @@
 **Status:** built v0.1 (2026-11-16, plan #32 affectUI fidelity pass, overnight batch, family B).
 
-# Spec: Agent Inbox (`agent-inbox`)
+# Spec: Task inbox (`agent-inbox`)
 
 Family: Agents. Closes the parity row: affectUI · Agent Inbox. Behaviour-only rebuild; nothing is copied.
-Components: `AgentInbox` (Dioxus) · `AgentInboxEl` (GPUI), models in `oxyn_core::parity::agentsfid`.
+Components: `AgentInbox` (Dioxus) · `AgentInboxEl` (GPUI), models in `oxyn_core::kit::agentsfid`.
 
 ## 1. Purpose
 Collect every background agent task in one calm board – what waits for you, what runs and what finished – with the last steps and the decision one click away.

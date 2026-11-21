@@ -3,7 +3,7 @@
 # Spec: Courier (`courier`)
 
 Family: Agent apps (pages at `/screens/courier/` and `/full`). Reference: the thread-first coding-agent pattern (the Amp app: a sidebar of all active threads, suggested replies, model and effort, a cloud sandbox per thread with Desktop / Portals / Changes, see the agent-apps research), behaviour and layout only, under our own name and design; no source, artwork or copy taken. Brand marks appear only where a real model is named (Lobe Icons, credited in `THIRD_PARTY_NOTICES.md`), never as this app's logo, which is our own drawn mark.
-Components: `CourierScreen` (Dioxus) · `CourierEl` (GPUI), rules in `oxyn_core::parity::courier`.
+Components: `CourierScreen` (Dioxus) · `CourierEl` (GPUI), rules in `oxyn_core::kit::courier`.
 
 ## 1. Purpose
 Run several coding agents as threads, see which ones need you, review each turn's edits in one card, reply with a suggestion, and look into the thread's own cloud machine (its desktop, ports and changes).
@@ -30,10 +30,10 @@ Sidebar is a nav landmark; filters are a radiogroup; the open thread has aria-cu
 1440 × 900 stage; `/full` at the real viewport. Under 960 px the sidebar is a drawer and the pane opens over the conversation from the top bar. Under 620 px chip labels shorten and dates hide in rows. scripts/ovl.py finds no text overlap at 1440, 768 and 390 in light and dark.
 
 ## 7. Data
-`CourierScreen` takes `data: Option<CourierData>` (`oxyn_core::parity::courier`): `threads: Vec<CrThread>` (id, title, status, repo, at) and `files: Vec<CrFile>` (path, add, del, diff). Start from `CourierData::default()`.
+`CourierScreen` takes `data: Option<CourierData>` (`oxyn_core::kit::courier`): `threads: Vec<CrThread>` (id, title, status, repo, at) and `files: Vec<CrFile>` (path, add, del, diff). Start from `CourierData::default()`.
 
 ## 8. Known gaps
 No backend: threads, edits, ports and the desktop are fixed fictional data; the desktop is drawn, not streamed. The GPUI view's pod opens on Ports, draws Revert as a press (`revert`) and fills the composer from a suggestion (`suggest-N`).
 
 ## 9. GPUI
-`AgentAppView::new(AgentApp::Courier, window, cx)` (oxyn-gpui, `parity::apps`) is a real GPUI view (`Entity` + `Render`) of the whole Courier app, drawn from the same screen code as the snapshot element `CourierEl` and driven by `oxyn_core::parity::appui::AppUi`, the rules the Dioxus app follows. Sidebar rows open on press; the logo toggles the icon rail; the account row opens a menu (Switch to light / dark, Sign out). The composer is a real `ImeInput`: Enter or the send button sends and the sent prompts show above it. With focus on the app, Up / Down move the open row, Left / Right step through the views (the thread with Ports, Changes, Desktop) and Escape closes the menu, then the rail. App presses: Ports, Changes and Desktop switch the pane (`view:`, `view:changes`, `view:desktop`); Review fires `view:changes`; a suggested reply fills the composer (`suggest-N`); Revert fires `revert`. Call `bind_ime_keys(cx)` once at start; `cargo run --manifest-path examples/gpui-agent-apps/Cargo.toml` (from the repo root) opens every agent app in one window.
+`AgentAppView::new(AgentApp::Courier, window, cx)` (oxyn-gpui, `kit::apps`) is a real GPUI view (`Entity` + `Render`) of the whole Courier app, drawn from the same screen code as the snapshot element `CourierEl` and driven by `oxyn_core::kit::appui::AppUi`, the rules the Dioxus app follows. Sidebar rows open on press; the logo toggles the icon rail; the account row opens a menu (Switch to light / dark, Sign out). The composer is a real `ImeInput`: Enter or the send button sends and the sent prompts show above it. With focus on the app, Up / Down move the open row, Left / Right step through the views (the thread with Ports, Changes, Desktop) and Escape closes the menu, then the rail. App presses: Ports, Changes and Desktop switch the pane (`view:`, `view:changes`, `view:desktop`); Review fires `view:changes`; a suggested reply fills the composer (`suggest-N`); Revert fires `revert`. Call `bind_ime_keys(cx)` once at start; `cargo run --manifest-path examples/gpui-agent-apps/Cargo.toml` (from the repo root) opens every agent app in one window.

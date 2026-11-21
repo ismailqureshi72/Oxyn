@@ -49,7 +49,7 @@ Live agent task status as compact rows, capsules or a hairline list: a ring with
 
 ## 10. Implementation
 - Core: `TaskRow` (`oxyn_core::parity`), with tests.
-- Dioxus: `TaskRows` (parity/run.rs, run.css).
+- Dioxus: `TaskRows` (kit/run.rs, run.css).
 - GPUI: `TaskRowsEl`.
 
 ## 11. References

@@ -3,7 +3,7 @@
 # Spec: Nozzle line (`nozzle-slider`)
 
 Family: Thinking Selector. Reference: the user's own design (an Oxyn original): a row of even, thin vertical lines in a colour gradient with a selector sliding along them. The reference's stamp is replaced by a nozzle; names, wording and the nozzle are our own.
-Components: `NozzleSlider` (Dioxus) · `NozzleSliderEl` (GPUI), models in `oxyn_core::parity::{nozzlefid, thinkfid}`.
+Components: `NozzleSlider` (Dioxus) · `NozzleSliderEl` (GPUI), models in `oxyn_core::kit::{nozzlefid, thinkfid}`.
 
 ## 1. Purpose
 A playful, minimal effort control: a calm line of evenly spaced coloured lines and a solid nozzle that slides along and lands on a level.

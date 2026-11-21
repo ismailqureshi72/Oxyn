@@ -3,7 +3,7 @@
 # Spec: Theme schedule (`theme-schedule`)
 
 Family: Theme Selector. Reference: none (an Oxyn original).
-Components: `ThemeSchedule` (Dioxus) · `ThemeScheduleEl` (GPUI), models in `oxyn_core::parity::themefid`.
+Components: `ThemeSchedule` (Dioxus) · `ThemeScheduleEl` (GPUI), models in `oxyn_core::kit::themefid`.
 
 ## 1. Purpose
 Let the app go light and dark by the clock – always, with the sun, or on your own hours – and show what any time of day will look like.

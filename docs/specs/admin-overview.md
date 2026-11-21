@@ -3,7 +3,7 @@
 # Spec: Overview (`admin-overview`)
 
 Family: Arc screens (pages at `/screens/admin-overview/` and `/full`). Reference: the Arc demo app's overview (uiarc.dev/demo), behaviour and layout only, under our own design; no source, artwork or copy taken. Every company, person, key, endpoint and amount is fictional; dates are absolute ISO dates and times are 24-hour UTC.
-Components: `AdminOverviewScreen` (Dioxus) · `AdminOverviewEl` (GPUI), rules in `oxyn_core::parity::arcscr4`.
+Components: `AdminOverviewScreen` (Dioxus) · `AdminOverviewEl` (GPUI), rules in `oxyn_core::kit::arcscr4`.
 
 ## 1. Purpose
 See at a glance whether the product is healthy and busy, then jump to what needs a look.
@@ -20,7 +20,7 @@ The Arc frame (shared with the S12–S14 screens): a 248 px sidebar (Corvel Labs
 | Recent activity | The six newest audit events with the actor's avatar and the time |
 
 ## 3. Behaviour
-`Overview` in `oxyn_core::parity::arcscr4`: `ov_series(kpi, range)` is deterministic; `ov_value`, `ov_delta` (lower is better for errors and latency), `read(i)` says the point back. The incident banner (Webhooks degraded) dismisses.
+`Overview` in `oxyn_core::kit::arcscr4`: `ov_series(kpi, range)` is deterministic; `ov_value`, `ov_delta` (lower is better for errors and latency), `read(i)` says the point back. The incident banner (Webhooks degraded) dismisses.
 
 ## 4. Variants
 States: Data · Loading · Empty (No traffic yet, Create an API key) · **Last 7 days** · **Incident** (banner up) · **Error rate** (the error chart over 30 days). Frame: Inset · Flat.
@@ -32,7 +32,7 @@ KPIs are tabs (aria-selected); the readout is a status region; every bar is a bu
 Authored on the 1440 × 900 stage and scaled to its column; `/full` renders at the real viewport. Under 960 px the sidebar is a drawer from the header's menu button and the right card hides; under 640 px header actions become icon buttons. scripts/ovl.py checks text overlap at 1440, 768 and 390 in light and dark.
 
 ## 7. Data
-`AdminOverviewScreen` takes `layout` and `state`; sample data comes from `oxyn_core::parity::arcscr4`.
+`AdminOverviewScreen` takes `layout` and `state`; sample data comes from `oxyn_core::kit::arcscr4`.
 
 ## 8. Known gaps
 Export says back a file name; nothing downloads.

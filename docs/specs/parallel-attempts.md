@@ -1,11 +1,11 @@
 **Status:** built v0.1 (2026-11-16, plan #32 affectUI fidelity pass, family B part 9 – against the ref-1 capture notes).
 
-# Spec: Parallel Attempts (`parallel-attempts`)
+# Spec: Attempt race (`parallel-attempts`)
 
 Family: Agents. Closes the parity row: affectUI · Parallel Attempts (Pro). Behaviour-only rebuild; layout, sizes,
 colours, states, motion and keyboard follow the ref-1 capture notes (approximate); models, approaches, scores and copy
 are our own. Related Oxyn components: fanout-grid, decision-tree.
-Components: `ParallelAttempts` (Dioxus) · `ParallelAttemptsEl` (GPUI), model in `oxyn_core::parity::parallelfid`.
+Components: `ParallelAttempts` (Dioxus) · `ParallelAttemptsEl` (GPUI), model in `oxyn_core::kit::parallelfid`.
 
 ## 1. Purpose
 One task tried several ways at once. Every attempt races as a row; when they finish, the highest score is marked

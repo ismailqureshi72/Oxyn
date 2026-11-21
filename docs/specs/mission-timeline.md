@@ -1,15 +1,15 @@
 **Status:** built v0.1 (2026-11-21, C1f: AI & Agent blocks). Pro.
 
-# Spec: Mission timeline (`mission-timeline`)
+# Spec: Fleet timeline (`mission-timeline`)
 
-Section: Blocks · Agents (page `/blocks/agents/mission-timeline/`, Pro). Reference: affectUI "Blocks · Agents" ("Mission Timeline"), behaviour only, under our own design; no source, artwork or copy taken. Every company, person and amount is fictional; companies and models that are named carry their official coloured marks.
+Section: Blocks · Agents (page `/blocks/agents/fleet-timeline/`, Pro). Reference: affectUI "Blocks · Agents" ("Mission Timeline"), behaviour only, under our own design; no source, artwork or copy taken. Every company, person and amount is fictional; companies and models that are named carry their official coloured marks.
 Components: `MissionTimeline` (Dioxus, `oxyn_dioxus::blocks`, styles `blocks.css`, prefix `oxbk-`) · `BlocksView` with `BlockVariant::MissionTimeline` (GPUI), rules in `oxyn_core::blocks::mission`.
 
 ## 1. Purpose
-Mission control on one clock: every agent on its own lane over the last 30 minutes, so you see what happened when as well as what needs you.
+Fleet overview on one clock: every agent on its own lane over the last 30 minutes, so you see what happened when as well as what needs you.
 
 ## 2. States
-Same filter, inbox and answers as Mission control · Running blocks grow toward now · Finished blocks stop where they ended · Waiting and failed blocks carry their colour and word and open their inbox card.
+Same filter, inbox and answers as Fleet overview · Running blocks grow toward now · Finished blocks stop where they ended · Waiting and failed blocks carry their colour and word and open their inbox card.
 
 ## 3. Micro-interactions
 Lanes share one time axis ending now; a running block has a soft leading edge. Leads come first with their sub-agents indented beneath.

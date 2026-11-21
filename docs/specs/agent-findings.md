@@ -1,9 +1,9 @@
 **Status:** built v0.1 (2026-11-16, plan #32 affectUI fidelity pass, overnight batch, family B).
 
-# Spec: Agent Findings (`agent-findings`)
+# Spec: Findings feed (`agent-findings`)
 
 Family: Agents. Closes the parity row: affectUI · Agent Findings. Behaviour-only rebuild; nothing is copied.
-Components: `AgentFindings` (Dioxus) · `AgentFindingsEl` (GPUI), models in `oxyn_core::parity::agentsfid`.
+Components: `AgentFindings` (Dioxus) · `AgentFindingsEl` (GPUI), models in `oxyn_core::kit::agentsfid`.
 
 ## 1. Purpose
 Follow a swarm of agents that check, audit or verify something in parallel, without drowning in detail: one row per agent and a short feed of what they found.

@@ -1,0 +1,169 @@
+{
+ "$comment": "Renamed items (naming pass, docs/renames.md): old slug -> new slug. Old URLs 301 to the new page; the registry lists the old slug in `aliases` so `oxyn add <old>` still works.",
+ "renames": [
+  {
+   "from": "agent-crew",
+   "to": "crew-tree"
+  },
+  {
+   "from": "agent-cursors",
+   "to": "presence-cursors"
+  },
+  {
+   "from": "agent-findings",
+   "to": "findings-feed"
+  },
+  {
+   "from": "agent-graph",
+   "to": "tool-network"
+  },
+  {
+   "from": "agent-handoff",
+   "to": "relay-trail"
+  },
+  {
+   "from": "agent-inbox",
+   "to": "task-inbox"
+  },
+  {
+   "from": "agent-lanes",
+   "to": "live-lanes"
+  },
+  {
+   "from": "agent-ledger",
+   "to": "change-ledger"
+  },
+  {
+   "from": "agent-monitor",
+   "to": "run-monitor"
+  },
+  {
+   "from": "agent-queue",
+   "to": "job-queue"
+  },
+  {
+   "from": "agent-recap",
+   "to": "overnight-recap"
+  },
+  {
+   "from": "agent-sequence",
+   "to": "sequence-diagram"
+  },
+  {
+   "from": "autonomy-dial",
+   "to": "autonomy-levels"
+  },
+  {
+   "from": "away-summary",
+   "to": "return-brief"
+  },
+  {
+   "from": "collaboration-stream",
+   "to": "crew-chat"
+  },
+  {
+   "from": "context-map",
+   "to": "context-treemap"
+  },
+  {
+   "from": "cost-waterfall",
+   "to": "spend-breakdown"
+  },
+  {
+   "from": "parallel-attempts",
+   "to": "attempt-race"
+  },
+  {
+   "from": "judge-bracket",
+   "to": "model-knockout"
+  },
+  {
+   "from": "running-now",
+   "to": "activity-pill"
+  },
+  {
+   "from": "tool-access-map",
+   "to": "tool-reach"
+  },
+  {
+   "from": "rate-limit-planner",
+   "to": "load-planner"
+  },
+  {
+   "from": "fanout-grid",
+   "to": "task-grid"
+  },
+  {
+   "from": "delegate-board",
+   "to": "assign-board"
+  },
+  {
+   "from": "thinking-loader",
+   "to": "thinking-pill"
+  },
+  {
+   "from": "thinking-state",
+   "to": "thinking-panel"
+  },
+  {
+   "from": "mission-control",
+   "to": "fleet-overview"
+  },
+  {
+   "from": "mission-timeline",
+   "to": "fleet-timeline"
+  },
+  {
+   "from": "elastic-slider",
+   "to": "rubber-slider"
+  },
+  {
+   "from": "morph-select",
+   "to": "unfold-select"
+  },
+  {
+   "from": "confirm-morph",
+   "to": "inline-confirm"
+  },
+  {
+   "from": "skeleton-morph",
+   "to": "skeleton-reveal"
+  },
+  {
+   "from": "action-swap",
+   "to": "action-states"
+  },
+  {
+   "from": "smart-form-fill",
+   "to": "form-autofill"
+  },
+  {
+   "from": "date-reel",
+   "to": "date-wheel"
+  },
+  {
+   "from": "in-view-title",
+   "to": "scroll-title"
+  },
+  {
+   "from": "market-terminal",
+   "to": "trading-desk"
+  },
+  {
+   "from": "invoice-studio",
+   "to": "invoice-desk"
+  },
+  {
+   "from": "release-readiness",
+   "to": "launch-checklist"
+  },
+  {
+   "from": "model-arena",
+   "to": "blind-compare"
+  },
+  {
+   "from": "prompt-studio",
+   "to": "prompt-bench"
+  }
+ ]
+}

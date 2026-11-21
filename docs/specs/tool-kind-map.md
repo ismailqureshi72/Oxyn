@@ -42,8 +42,8 @@ One map from raw tool names of any agent (Claude Code `MultiEdit`, Codex `apply_
 - Names are matched case-insensitively; unknown names fall back to `ToolKind::from_name` and then Tool.
 
 ## 10. Implementation
-- Core: `ToolKindMap`, `ToolInfo` (`oxyn_core::parity::tools`), with tests.
-- Dioxus: `ToolKindLegend` (parity/tools.rs, tools.css).
+- Core: `ToolKindMap`, `ToolInfo` (`oxyn_core::kit::tools`), with tests.
+- Dioxus: `ToolKindLegend` (kit/tools.rs, tools.css).
 - GPUI: Uses the same core map; no separate element.
 
 ## 11. References

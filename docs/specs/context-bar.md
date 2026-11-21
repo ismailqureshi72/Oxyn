@@ -3,7 +3,7 @@
 # Spec: Context bar (`context-bar`)
 
 Family: Context Visualizer. Reference: a user screenshot of a context card (stacked segment bar, kind chips, Compact) and the behaviour of a public context-meter block (bar or field of dots, colour or mono, legend cross-highlight, Compact / Undo). Behaviour only; layout, names, wording and colours are our own.
-Components: `ContextBar` (Dioxus) · `ContextBarEl` (GPUI), models in `oxyn_core::parity::ctxvisfid`.
+Components: `ContextBar` (Dioxus) · `ContextBarEl` (GPUI), models in `oxyn_core::kit::ctxvisfid`.
 
 ## 1. Purpose
 Say in one glance how full the window is and which kind fills it, with one action that gives room back.

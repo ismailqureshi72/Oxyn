@@ -1,10 +1,10 @@
 **Status:** built v0.1 (2026-11-16, plan #32 affectUI fidelity pass, overnight batch, family B part 6).
 
-# Spec: Away Summary (`away-summary`)
+# Spec: Return brief (`away-summary`)
 
 Family: Agents. Closes the parity row: affectUI · Away Summary (Pro). Behaviour-only rebuild; nothing is copied (the
-thread, tasks, details and counts in the demo are our own). The full overnight view is Agent Recap.
-Components: `AwaySummary` (Dioxus) · `AwaySummaryEl` (GPUI), model in `oxyn_core::parity::awayfid`.
+thread, tasks, details and counts in the demo are our own). The full overnight view is Overnight recap.
+Components: `AwaySummary` (Dioxus) · `AwaySummaryEl` (GPUI), model in `oxyn_core::kit::awayfid`.
 
 ## 1. Purpose
 The "While you were away" card for a chat thread, right where the person left off: how long they were gone, what needs

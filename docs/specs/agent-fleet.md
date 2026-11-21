@@ -48,7 +48,7 @@ Several main agents side by side: each card sums up its sub-agents (running, nee
 
 ## 10. Implementation
 - Core: `CrewAgent::tally`, `branch_cost` (`oxyn_core::parity`), with tests.
-- Dioxus: `AgentFleet` (parity/run.rs, run.css).
+- Dioxus: `AgentFleet` (kit/run.rs, run.css).
 - GPUI: `FleetEl` (summary cards; the tree is `AgentTreeEl`).
 
 ## 11. References

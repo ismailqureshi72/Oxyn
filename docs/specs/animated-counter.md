@@ -50,7 +50,7 @@ A changing total with a clear sense of movement: a small label, prefix and suffi
 
 ## 10. Implementation
 - Core: `digits_roll`, `group` (`oxyn_core::parity`), with tests.
-- Dioxus: `AnimatedCounter` (parity/run.rs, run.css).
+- Dioxus: `AnimatedCounter` (kit/run.rs, run.css).
 - GPUI: `CounterEl`.
 
 ## 11. References

@@ -3,7 +3,7 @@
 # Spec: Gooey model menu (`gooey-model-menu`)
 
 Family: Menu Motion. Reference: the model menu of a public chat-composer component. Behaviour only; names are the makers' product families with their vetted marks, hints are our own.
-Components: `GooeyModelMenu` (Dioxus) · `GooeyModelMenuEl` (GPUI), models in `oxyn_core::parity::gooeyfid`.
+Components: `GooeyModelMenu` (Dioxus) · `GooeyModelMenuEl` (GPUI), models in `oxyn_core::kit::gooeyfid`.
 
 ## 1. Purpose
 A model picker with the same liquid motion, anchored to the chip's right edge.

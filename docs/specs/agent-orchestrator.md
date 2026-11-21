@@ -48,7 +48,7 @@ A lead agent splits a goal into a plan, fans the subtasks out to parallel worker
 
 ## 10. Implementation
 - Core: `Orchestration`, `Lane`, `OrchPhase` (`oxyn_core::parity`), with tests.
-- Dioxus: `AgentOrchestrator` (parity/run.rs, run.css).
+- Dioxus: `AgentOrchestrator` (kit/run.rs, run.css).
 - GPUI: `OrchestratorEl`.
 
 ## 11. References

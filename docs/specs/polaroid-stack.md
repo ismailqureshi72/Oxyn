@@ -3,7 +3,7 @@
 # Spec: Polaroid stack (`polaroid-stack`)
 
 Family: Attachments. Reference: none (an Oxyn original).
-Components: `PolaroidStack` (Dioxus) · `PolaroidStackEl` (GPUI), models in `oxyn_core::parity::attachfid`.
+Components: `PolaroidStack` (Dioxus) · `PolaroidStackEl` (GPUI), models in `oxyn_core::kit::attachfid`.
 
 ## 1. Purpose
 Image attachments that stay small in the composer but are easy to check and prune.

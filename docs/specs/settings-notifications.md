@@ -3,7 +3,7 @@
 # Spec: Settings · Notifications (`settings-notifications`)
 
 Family: Screens. Reference: affectUI Settings / Notifications (`/screens/settings-notifications`), layout and behaviour only; no source or assets copied.
-Components: `NotificationsSettingsScreen` (Dioxus) · `NotificationsSettingsEl` (GPUI), models in `oxyn_core::parity::setscr`.
+Components: `NotificationsSettingsScreen` (Dioxus) · `NotificationsSettingsEl` (GPUI), models in `oxyn_core::kit::setscr`.
 
 ## 1. Purpose
 What reaches you, where, and when it stays quiet.
@@ -34,8 +34,8 @@ The sidebar is a labelled nav with aria-current on this page. Every field has a 
 Authored on the 1440 × 900 stage (rule R1) and scaled to its column; the full view (`/screens/settings-notifications/full`) renders at the real viewport with the state bar under it (R2). Under 640 px the settings sidebar slides in from a menu button. Under 560 px rows put their control under the label and tiles go one per row. Every label ellipsises in a flex child with min-width 0 (R5); scripts/ovl.py finds no text overlap at 1440, 768 and 390 in light and dark.
 
 ## 7. Data
-Every settings screen takes `data: Option<Prefs>` (`oxyn_core::parity::setscr::Prefs`: profile, preferences, notifications, privacy and general fields, and `ws: Ws` for members, models and keys, security, billing and the checklist). `None` shows the sample for the state; to show your own, start from `Prefs::default()` (the sample) and replace what you have. The save bar compares edits against this data.
+Every settings screen takes `data: Option<Prefs>` (`oxyn_core::kit::setscr::Prefs`: profile, preferences, notifications, privacy and general fields, and `ws: Ws` for members, models and keys, security, billing and the checklist). `None` shows the sample for the state; to show your own, start from `Prefs::default()` (the sample) and replace what you have. The save bar compares edits against this data.
 
 ## 8. Known gaps
 GPUI is a static snapshot: `.extra(...)` draws the screen's own state or `compact`; typing, menus and timers belong to the host. Sample people, places and the workspace are fictional; model versions are fictional, marks are the providers' official ones.
-In a window, `ScreenView` (oxyn-gpui, `parity::screenview`) runs this screen live from `oxyn_core::parity::screenui`: the sidebar and page links open their screens (across sets), buttons open their state, the bar above it switches the set's screens and the state bar, a command bar (a real text field) jumps to any screen or state, the account row opens its menu, and Left / Right, Up / Down and Escape step states and screens. Editing the page's own fields in place is still the host's.
+In a window, `ScreenView` (oxyn-gpui, `kit::screenview`) runs this screen live from `oxyn_core::kit::screenui`: the sidebar and page links open their screens (across sets), buttons open their state, the bar above it switches the set's screens and the state bar, a command bar (a real text field) jumps to any screen or state, the account row opens its menu, and Left / Right, Up / Down and Escape step states and screens. Editing the page's own fields in place is still the host's.

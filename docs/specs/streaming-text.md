@@ -50,8 +50,8 @@ A streamed answer: words fade in at a pace with a caret, `[n]` markers become ci
 - An unknown citation index shows the number.
 
 ## 10. Implementation
-- Core: `Stream`, `Piece` (`oxyn_core::parity::text`), with tests.
-- Dioxus: `StreamingText` (parity/text.rs, text.css).
+- Core: `Stream`, `Piece` (`oxyn_core::kit::text`), with tests.
+- Dioxus: `StreamingText` (kit/text.rs, text.css).
 - GPUI: not yet (plan #28 follow-up; the core models are shared).
 
 ## 11. References

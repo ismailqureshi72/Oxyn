@@ -49,9 +49,9 @@ A single-line field with a label, a helper row linked through aria-describedby a
 - `word_changes` / `digit_changes` describe the same diff for hosts without keyed rendering (GPUI).
 
 ## 10. Implementation
-- Core: `word_changes`, `digit_changes` (`oxyn_core::parity::input`), with tests.
-- Dioxus: `LabeledInput` (parity/input.rs, input.css).
-- GPUI: `ImeInput` (parity/ime.rs) is the GPUI text entry: IME composition with an underline, selection (shift-arrows, drag, select all), clipboard, word moves, Enter / Shift+Enter events. A wrapped multi-line layout is a follow-up: a line break draws as a space.
+- Core: `word_changes`, `digit_changes` (`oxyn_core::kit::input`), with tests.
+- Dioxus: `LabeledInput` (kit/input.rs, input.css).
+- GPUI: `ImeInput` (kit/ime.rs) is the GPUI text entry: IME composition with an underline, selection (shift-arrows, drag, select all), clipboard, word moves, Enter / Shift+Enter events. A wrapped multi-line layout is a follow-up: a line break draws as a space.
 
 ## 11. References
 - Arc UI Input (https://uiarc.dev/components/input) — behaviour-only rebuild, no source copied.

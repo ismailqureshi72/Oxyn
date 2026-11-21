@@ -3,7 +3,7 @@
 # Spec: Month calendar (`month-calendar`)
 
 Family: Arc screens (pages at `/screens/month-calendar/` and `/full`). Reference: the month calendar screen of Arc UI (uiarc.dev), behaviour and layout only, under our own design; no source, artwork or copy taken. Every person, customer, workspace and article is fictional; dates are absolute ISO dates and times are 24-hour.
-Components: `MonthCalendarScreen` (Dioxus) · `MonthCalendarEl` (GPUI), rules in `oxyn_core::parity::arcscr2`.
+Components: `MonthCalendarScreen` (Dioxus) · `MonthCalendarEl` (GPUI), rules in `oxyn_core::kit::arcscr2`.
 
 ## 1. Purpose
 See a month at a glance, find free time on a day and protect it.
@@ -20,7 +20,7 @@ The Arc frame (shared with the S12 screens): a 248 px sidebar (workspace mark an
 | Day panel | The picked day (`Thursday 2026-11-12`, Week 46), a busy strip for 09:00–18:00 in calendar hues with the busy and free time, the schedule, free gaps of 30 minutes or more, **Block focus time** and **New event on 2026-11-12** |
 
 ## 3. Behaviour
-Events, lanes, moves, gaps and focus blocks come from `oxyn_core::parity::arcscr2` (`events`, `day_events`, `lanes`, `move_event`, `nudge_event`, `resize_event`, `free_gaps`, `block_focus`). Drag an event to move it (whole days across columns, 15-minute steps up and down), drag its bottom edge to resize; drag on an empty slot to draw a new event (a click makes 30 minutes) and name it in the foot form (Enter saves to the chosen calendar). Hidden calendars leave the grid, the counts stay. Today returns to 2026-11-12; ‹ › page by a day, week or month. Every action reports in a polite live region. Block focus time adds up to two hours of Focus time in the day's first gap of an hour or more.
+Events, lanes, moves, gaps and focus blocks come from `oxyn_core::kit::arcscr2` (`events`, `day_events`, `lanes`, `move_event`, `nudge_event`, `resize_event`, `free_gaps`, `block_focus`). Drag an event to move it (whole days across columns, 15-minute steps up and down), drag its bottom edge to resize; drag on an empty slot to draw a new event (a click makes 30 minutes) and name it in the foot form (Enter saves to the chosen calendar). Hidden calendars leave the grid, the counts stay. Today returns to 2026-11-12; ‹ › page by a day, week or month. Every action reports in a polite live region. Block focus time adds up to two hours of Focus time in the day's first gap of an hour or more.
 
 ## 4. Variants
 States: Data · Loading · Empty · **More events** (the +N more popover on 2026-11-18) · **Calendars off** (Personal and Travel hidden) · **Focus blocked** (09:30–11:30 Focus time on 2026-11-12). Frame: Inset · Flat.

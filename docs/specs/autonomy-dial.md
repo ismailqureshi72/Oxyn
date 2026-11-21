@@ -1,11 +1,11 @@
 **Status:** built v0.1 (2026-11-16, plan #32 affectUI fidelity pass, overnight batch, family B part 6).
 
-# Spec: Autonomy Dial (`autonomy-dial`)
+# Spec: Autonomy levels (`autonomy-dial`)
 
 Family: Agents. Closes the parity row: affectUI · Autonomy Dial (Pro). Behaviour-only rebuild; nothing is copied (the
 demo agent, its actions and wording are our own). Related Oxyn components: composer-permission-selector and
 permission-rules (per-tool rules; this one is the level view).
-Components: `AutonomyDial` (Dioxus) · `AutonomyDialEl` (GPUI), model in `oxyn_core::parity::autonomyfid`.
+Components: `AutonomyDial` (Dioxus) · `AutonomyDialEl` (GPUI), model in `oxyn_core::kit::autonomyfid`.
 
 ## 1. Purpose
 How much an agent may do on its own: three levels, and the agent's real actions split between "Runs on its own" and

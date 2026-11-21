@@ -3,7 +3,7 @@
 # Spec: Onboarding · Brand (`onboarding-brand`)
 
 Family: Screens. Reference: affectUI Onboarding / Brand (`/screens/onboarding-brand`), layout and behaviour only; no source or assets copied.
-Components: `OnboardingBrandScreen` (Dioxus) · `OnboardingBrandEl` (GPUI), rules in `oxyn_core::parity::onbscr`.
+Components: `OnboardingBrandScreen` (Dioxus) · `OnboardingBrandEl` (GPUI), rules in `oxyn_core::kit::onbscr`.
 
 ## 1. Purpose
 Step 2 of 4: the company's name (how the assistant introduces itself), short forms it should also answer to, and the brand colour and mark the chat uses.
@@ -39,4 +39,4 @@ Authored on the 1440 × 900 stage (rule R1) and scaled to its column; the full v
 
 ## 7. Known gaps
 GPUI is a static snapshot: `.extra(...)` draws the own state, `named` or `form-only`; typing and ticks belong to the host. There is no backend: reading sites, uploading a logo and publishing are simulated with fictional page counts. The company, people and addresses are fictional (`kestrel.example`).
-In a window, `ScreenView` (oxyn-gpui, `parity::screenview`) runs this screen live from `oxyn_core::parity::screenui`: the sidebar and page links open their screens (across sets), buttons open their state, the bar above it switches the set's screens and the state bar, a command bar (a real text field) jumps to any screen or state, the account row opens its menu, and Left / Right, Up / Down and Escape step states and screens. Editing the page's own fields in place is still the host's.
+In a window, `ScreenView` (oxyn-gpui, `kit::screenview`) runs this screen live from `oxyn_core::kit::screenui`: the sidebar and page links open their screens (across sets), buttons open their state, the bar above it switches the set's screens and the state bar, a command bar (a real text field) jumps to any screen or state, the account row opens its menu, and Left / Right, Up / Down and Escape step states and screens. Editing the page's own fields in place is still the host's.

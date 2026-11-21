@@ -3,7 +3,7 @@
 # Spec: Product list (`product-list`)
 
 Family: Arc screens (pages at `/screens/product-list/` and `/full`). Reference: the product list screen of Arc UI (uiarc.dev), behaviour and layout only, under our own design; no source, artwork or copy taken. Every company, ticker, product, client and person is fictional; dates are absolute ISO dates and times are 24-hour.
-Components: `ProductListScreen` (Dioxus) · `ProductListEl` (GPUI), rules in `oxyn_core::parity::arcscr3`.
+Components: `ProductListScreen` (Dioxus) · `ProductListEl` (GPUI), rules in `oxyn_core::kit::arcscr3`.
 
 ## 1. Purpose
 Find a product in a shop catalogue by collection, colour and price, and open it.
@@ -20,7 +20,7 @@ The Arc frame (shared with the S12 and S13 screens): a 248 px sidebar (workspace
 | List | A table: product, collection, stock, price |
 
 ## 3. Behaviour
-`Catalog` in `oxyn_core::parity::arcscr3`: collection, colour, price cap and search narrow the catalogue together; the sort is stable by id. Opening a product shows its page (see Product detail) with All products to come back.
+`Catalog` in `oxyn_core::kit::arcscr3`: collection, colour, price cap and search narrow the catalogue together; the sort is stable by id. Opening a product shows its page (see Product detail) with All products to come back.
 
 ## 4. Variants
 States: Data · Loading · Empty ("No products yet" with Add product) · **Filtered** (Outerwear under $200, Clear filters) · **List view** · **No matches** ("linen", Clear filters). Frame: Inset · Flat.

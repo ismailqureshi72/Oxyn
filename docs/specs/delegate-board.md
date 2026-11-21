@@ -1,11 +1,11 @@
 **Status:** built v0.2 (2026-11-16, plan #32 affectUI fidelity pass, family B part 8 – exact pass against the ref-1 capture notes).
 
-# Spec: Delegate Board (`delegate-board`)
+# Spec: Assign board (`delegate-board`)
 
 Family: Agents. Closes the parity row: affectUI · Delegate Board (Pro). Behaviour-only rebuild; layout, sizes, colours,
 states, motion and keyboard follow the ref-1 capture notes (approximate); agents, tasks, rates and copy are our own.
 Related Oxyn component: background-jobs.
-Components: `DelegateBoard` (Dioxus) · `DelegateBoardEl` (GPUI), model in `oxyn_core::parity::delegatefid`.
+Components: `DelegateBoard` (Dioxus) · `DelegateBoardEl` (GPUI), model in `oxyn_core::kit::delegatefid`.
 
 ## 1. Purpose
 Hand tasks to agents yourself – or let Auto do it: a pile of unassigned work beside each agent's model, rate,

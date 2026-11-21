@@ -1,6 +1,6 @@
 **Status:** built v0.1 (2026-11-15, plan #28).
 
-# Spec: Morph select (`morph-select`)
+# Spec: Unfold select (`morph-select`)
 
 Family: Composer & inputs ([composer-model-picker.md](composer-model-picker.md)). Closes the parity row(s): Arc UI · Morph select. Behaviour-only rebuild; nothing is copied.
 
@@ -61,4 +61,4 @@ A select whose trigger surface grows into the list. The open surface starts clip
 - The chosen label does not fly out of the list into the trigger; it rolls in place in the trigger instead.
 
 ## 10. GPUI
-MorphSelectEl renders the trigger and open list (with highlight) from `parity::fields::MorphSelect`; the clip-path morph is web-only.
+MorphSelectEl renders the trigger and open list (with highlight) from `kit::fields::MorphSelect`; the clip-path morph is web-only.

@@ -50,7 +50,7 @@ Guide a new workspace through setup: a progress ring and “n of m done”, one 
 
 ## 10. Implementation
 - Core: `Checklist`, `CheckItem` (`oxyn_core::parity`), with tests.
-- Dioxus: `OnboardingChecklist` (parity/run.rs, run.css).
+- Dioxus: `OnboardingChecklist` (kit/run.rs, run.css).
 - GPUI: `ChecklistEl`.
 
 ## 11. References

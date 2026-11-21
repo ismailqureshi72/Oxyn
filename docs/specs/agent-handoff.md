@@ -1,10 +1,10 @@
 **Status:** built v0.1 (2026-11-16, plan #32 affectUI fidelity pass, overnight batch, family B part 3).
 
-# Spec: Agent Handoff (`agent-handoff`)
+# Spec: Relay trail (`agent-handoff`)
 
 Family: Agents. Closes the parity row: affectUI · Agent Handoff (Pro). Behaviour-only rebuild; nothing is copied (the
 demo agents' descriptions, tasks and items are our own).
-Components: `AgentHandoff` (Dioxus) · `AgentHandoffEl` (GPUI), model in `oxyn_core::parity::handofffid`.
+Components: `AgentHandoff` (Dioxus) · `AgentHandoffEl` (GPUI), model in `oxyn_core::kit::handofffid`.
 
 ## 1. Purpose
 A task passed from agent to agent like a relay: at every handoff, what went along to the next agent and what got lost

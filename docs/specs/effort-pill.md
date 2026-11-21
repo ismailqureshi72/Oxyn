@@ -4,7 +4,7 @@
 
 Family: Thinking Selector. Reference: a user-supplied screenshot of a "Select effort" pill with a popover slider
 (layout idea only; colours are monochrome here, wording and the model are our own). Components: `EffortPill` (Dioxus)
-· `EffortPillEl` (GPUI), model in `oxyn_core::parity::thinkfid`.
+· `EffortPillEl` (GPUI), model in `oxyn_core::kit::thinkfid`.
 
 ## 1. Purpose
 An effort control for a composer that starts unset: the pill reads "Select effort" until the user picks a level in a

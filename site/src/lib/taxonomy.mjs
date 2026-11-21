@@ -79,12 +79,12 @@ export const MOVED = [
   ['/components/chat/model-menu/', '/components/chat/model-picker/'],
   ['/components/composer/model-menu/', '/components/chat/model-picker/'],
   ['/components/chat/run-controls/', '/components/agents/run-controls/'],
-  ['/components/feedback/thinking-loader/', '/components/chat/thinking-loader/'],
-  ['/components/loaders/thinking-loader/', '/components/chat/thinking-loader/'],
+  ['/components/feedback/thinking-loader/', '/components/chat/thinking-pill/'],
+  ['/components/loaders/thinking-loader/', '/components/chat/thinking-pill/'],
 ];
 
 /** Whole app frames: these get screen pages (/screens/<slug>/) and a full-viewport view. */
-export const SCREENS = ['shell-inset', 'shell-flat', 'shell-three-pane', 'chat-start', 'chat-overview', 'chat-agents', 'chat-double-sidebar', 'chat-progress', 'chat-run', 'folders-overview', 'folders-detail', 'integrations', 'kanban', 'crm', 'analytics', 'workflow', 'settings', 'settings-profile', 'settings-preferences', 'settings-notifications', 'settings-privacy', 'settings-general', 'settings-members', 'settings-models', 'settings-security', 'settings-billing', 'settings-onboarding', 'onboarding-website', 'onboarding-brand', 'onboarding-tone', 'onboarding-ready', 'taskdeck-start', 'taskdeck-task', 'taskdeck-board', 'taskdeck-plugins', 'taskdeck-scheduled', 'taskdeck-sites', 'command-center', 'session-studio', 'fleet-window', 'workspace-coder', 'command-board', 'threadbar', 'tabstack', 'repo-desk', 'preview-desk', 'hangar', 'halo-chat', 'pilot-panel', 'courier', 'metrics-dashboard', 'kanban-board', 'project-board', 'gantt-timeline', 'team-directory', 'week-calendar', 'month-calendar', 'inbox-triage', 'support-conversation', 'help-center', 'market-terminal', 'product-list', 'product-detail', 'invoice-studio', 'sign-in-split', 'admin-overview', 'audit-log', 'status-board', 'api-keys-webhooks', 'members-roles', 'billing-usage', 'agent-tool-calls', 'agent-orchestration', 'agent-thread', 'inbox', 'agent-inbox-board', 'agent-tasks', 'agent-activity', 'agent-memory', 'agent-agents', 'agent-skills', 'agent-schedules', 'agent-usage', 'agent-permissions', 'agent-run-detail', 'evals', 'app-shell', 'ai-chat-screens', 'activity-home', 'harness', 'thread-list', 'inbox-sidebar', 'ai-side-panel', 'doc-grid'];
+export const SCREENS = ['shell-inset', 'shell-flat', 'shell-three-pane', 'chat-start', 'chat-overview', 'chat-agents', 'chat-double-sidebar', 'chat-progress', 'chat-run', 'folders-overview', 'folders-detail', 'integrations', 'kanban', 'crm', 'analytics', 'workflow', 'settings', 'settings-profile', 'settings-preferences', 'settings-notifications', 'settings-privacy', 'settings-general', 'settings-members', 'settings-models', 'settings-security', 'settings-billing', 'settings-onboarding', 'onboarding-website', 'onboarding-brand', 'onboarding-tone', 'onboarding-ready', 'taskdeck-start', 'taskdeck-task', 'taskdeck-board', 'taskdeck-plugins', 'taskdeck-scheduled', 'taskdeck-sites', 'command-center', 'session-studio', 'fleet-window', 'workspace-coder', 'command-board', 'threadbar', 'tabstack', 'repo-desk', 'preview-desk', 'hangar', 'halo-chat', 'pilot-panel', 'courier', 'metrics-dashboard', 'kanban-board', 'project-board', 'gantt-timeline', 'team-directory', 'week-calendar', 'month-calendar', 'inbox-triage', 'support-conversation', 'help-center', 'trading-desk', 'product-list', 'product-detail', 'invoice-desk', 'sign-in-split', 'admin-overview', 'audit-log', 'status-board', 'api-keys-webhooks', 'members-roles', 'billing-usage', 'agent-tool-calls', 'agent-orchestration', 'agent-thread', 'inbox', 'agent-inbox-board', 'agent-tasks', 'agent-activity', 'agent-memory', 'agent-agents', 'agent-skills', 'agent-schedules', 'agent-usage', 'agent-permissions', 'agent-run-detail', 'evals', 'app-shell', 'ai-chat-screens', 'activity-home', 'harness', 'thread-list', 'inbox-sidebar', 'ai-side-panel', 'doc-grid'];
 
 export const groupSlugOf = (d) => ITEM_GROUP[d.slug] ?? OLD_TO_GROUP[d.category] ?? 'navigation';
 /** True for a demo that belongs to a multi-variant family. */
@@ -100,7 +100,7 @@ export const AGENT_APPS = [{ slug: 'taskdeck', name: 'Taskdeck', blurb: 'A task-
 export const isAgentApp = (d) => AGENT_APPS.some((a) => a.screens.includes(d.slug));
 /** Arc screens: work-app screens on the Arc frame (248 px sidebar with a context card, an account row
  * with the email, an inset page and a right card). Screens too, listed in their own category. */
-export const ARC_SCREENS = ['metrics-dashboard', 'kanban-board', 'project-board', 'gantt-timeline', 'team-directory', 'week-calendar', 'month-calendar', 'inbox-triage', 'support-conversation', 'help-center', 'market-terminal', 'product-list', 'product-detail', 'invoice-studio', 'sign-in-split', 'admin-overview', 'audit-log', 'status-board', 'api-keys-webhooks', 'members-roles', 'billing-usage'];
+export const ARC_SCREENS = ['metrics-dashboard', 'kanban-board', 'project-board', 'gantt-timeline', 'team-directory', 'week-calendar', 'month-calendar', 'inbox-triage', 'support-conversation', 'help-center', 'trading-desk', 'product-list', 'product-detail', 'invoice-desk', 'sign-in-split', 'admin-overview', 'audit-log', 'status-board', 'api-keys-webhooks', 'members-roles', 'billing-usage'];
 export const isArcScreen = (d) => ARC_SCREENS.includes(d.slug);
 /** Blocks (docs/pricing.md: Pro): larger compositions with their own section, /blocks/<group>/<slug>/.
  * A block's demo category is `blocks-<group>`. */
@@ -113,13 +113,20 @@ export const blockGroupOf = (d) => BLOCK_GROUPS.find((g) => g.cat === d.category
 export const pageUrl = (d) => (isScreen(d) ? `/screens/${d.slug}/` : isBlock(d) ? `/blocks/${blockGroupOf(d).slug}/${d.slug}/` : `/components/${groupSlugOf(d)}/${d.slug}/`);
 export const legacyUrl = (d) => `/components/${d.category}/${d.slug}/`;
 
-/** [from, to] pairs for every URL that moved. */
-export function redirects(demos, oldCategories) {
+/** [from, to] pairs for every URL that moved. `renames` (src/lib/renames.json) lists items whose
+ *  slug changed: their old page (and old legacy URL) goes to the new page. */
+export function redirects(demos, oldCategories, renames = []) {
   const out = [];
   for (const d of demos) {
     const from = legacyUrl(d);
     const to = pageUrl(d);
     if (from !== to) out.push([from, to]);
+  }
+  for (const r of renames) {
+    const d = demos.find((x) => x.slug === r.to);
+    if (!d) continue;
+    const old = { ...d, slug: r.from };
+    for (const from of new Set([pageUrl(old), legacyUrl(old)])) out.push([from, pageUrl(d)]);
   }
   const groupSlugs = new Set(GROUPS.map((g) => g.slug));
   for (const c of oldCategories) {

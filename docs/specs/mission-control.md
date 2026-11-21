@@ -1,8 +1,8 @@
 **Status:** built v0.1 (2026-11-21, C1f: AI & Agent blocks). Pro.
 
-# Spec: Mission control (`mission-control`)
+# Spec: Fleet overview (`mission-control`)
 
-Section: Blocks · Agents (page `/blocks/agents/mission-control/`, Pro). Reference: affectUI "Blocks · Agents" ("Mission Control"), behaviour only, under our own design; no source, artwork or copy taken. Every company, person and amount is fictional; companies and models that are named carry their official coloured marks.
+Section: Blocks · Agents (page `/blocks/agents/fleet-overview/`, Pro). Reference: affectUI "Blocks · Agents" ("Mission Control"), behaviour only, under our own design; no source, artwork or copy taken. Every company, person and amount is fictional; companies and models that are named carry their official coloured marks.
 Components: `MissionControl` (Dioxus, `oxyn_dioxus::blocks`, styles `blocks.css`, prefix `oxbk-`) · `BlocksView` with `BlockVariant::MissionControl` (GPUI), rules in `oxyn_core::blocks::mission`.
 
 ## 1. Purpose

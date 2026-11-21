@@ -7,7 +7,7 @@ Generated 2026-11-16 for PR #39 (variants 1); PR #40 (variants 2) added the Stor
 ## Composer (`composer`)
 The prompt box itself, the field and what sits in it.
 
-**Existing:** Composer (`composer`), Chat composer (`chat-composer`), AI composer (`ai-composer`), Rich text editor (`rich-text-editor`), Mention input (`mention-input`), Mode switch (`mode-switch`), Run mode menu (`run-mode-menu`), Tools menu (`tools-menu`), Queue stack (`queue-stack`), Agent steering (`agent-steering`), Starter prompts (`starter-prompts`), Writing Assistant (`writing-assistant`), Ghost text (`ghost-text`), Model arena (`model-arena`), Prompt studio (`prompt-studio`), Assistant memory (`assistant-memory`), Catch up (`catch-up`), AI feature launch (`ai-feature-launch`), AI setup wizard (`ai-setup-wizard`), Call insights (`call-insights`), Lead scoring (`lead-scoring`)
+**Existing:** Composer (`composer`), Chat composer (`chat-composer`), AI composer (`ai-composer`), Rich text editor (`rich-text-editor`), Mention input (`mention-input`), Mode switch (`mode-switch`), Run mode menu (`run-mode-menu`), Tools menu (`tools-menu`), Queue stack (`queue-stack`), Agent steering (`agent-steering`), Starter prompts (`starter-prompts`), Writing assistant (`writing-assistant`), Ghost text (`ghost-text`), Blind compare (`blind-compare`), Prompt bench (`prompt-bench`), Assistant memory (`assistant-memory`), Catch up (`catch-up`), AI feature launch (`ai-feature-launch`), AI setup wizard (`ai-setup-wizard`), Call insights (`call-insights`), Lead scoring (`lead-scoring`)
 
 **New variants to build:**
 - Split-intent composer: one field, a hairline divides "what" from "constraints"; Tab jumps across
@@ -19,7 +19,7 @@ The prompt box itself, the field and what sits in it.
 ## Send & Run Controls (`send-run`)
 Send, stop, queue and steer: the button that changes with the run.
 
-**Existing:** Send control (`send-control`), Run controls (`run-controls`), Action swap (`action-swap`)
+**Existing:** Send control (`send-control`), Run controls (`run-controls`), Action states (`action-states`)
 
 **New variants to build:**
 - Breath button: send arrow that slowly inhales while the agent is busy, stop on press
@@ -58,7 +58,7 @@ How hard the model thinks: rulers, sliders, menus and pickers.
 ## Context Visualizer (`context-visualizer`)
 How full the context window is and what fills it.
 
-**Existing:** Context meter (`context-meter`), Context window (cells) (`context-field`), Context window (grid) (`context-grid`), Context Map (`context-map`), Context cards (`context-cards`)
+**Existing:** Context meter (`context-meter`), Context window (cells) (`context-field`), Context window (grid) (`context-grid`), Context treemap (`context-treemap`), Context cards (`context-cards`)
 
 **Built in #40 (variants 2):** Context bar (`context-bar`), Context breakdown (`context-breakdown`), Context stack (`context-stack`), Context tide (`context-tide`)
 
@@ -120,7 +120,7 @@ Speaking to the agent: record, dictate, listen.
 ## Approval & Permissions (`approval`)
 The agent asks before it acts; how much it may do alone.
 
-**Existing:** Approval card (`approval-card`), Approval pager (`approval-pager`), Decision card (`decision-card`), Approval questions (`approval-questions`), Hold to confirm (`hold-to-confirm`), Confirm morph (`confirm-morph`), Confirm popover (`confirm-popover`), Approval gates (`approval-gates`), Permission request (`permission-request`), Agent approvals (`agent-approvals`), Permission selector (`permission-selector`), Autonomy Dial (`autonomy-dial`), Tool Access Map (`tool-access-map`), Secret card (`secret-card`)
+**Existing:** Approval card (`approval-card`), Approval pager (`approval-pager`), Decision card (`decision-card`), Approval questions (`approval-questions`), Hold to confirm (`hold-to-confirm`), Inline confirm (`inline-confirm`), Confirm popover (`confirm-popover`), Approval gates (`approval-gates`), Permission request (`permission-request`), Agent approvals (`agent-approvals`), Permission selector (`permission-selector`), Autonomy levels (`autonomy-levels`), Tool reach (`tool-reach`), Secret card (`secret-card`)
 
 **New variants to build:**
 - Gate turnstile: approvals stack like turnstile arms that rotate away
@@ -132,7 +132,7 @@ The agent asks before it acts; how much it may do alone.
 ## Messages & Answers (`messages`)
 The conversation: bubbles, answers, streaming text and actions.
 
-**Existing:** Message bubble (`message-bubble`), Chat thread (`chat-thread`), AI chat (`ai-chat`), AI Answer (`ai-answer`), Cited Answer (`cited-answer`), Message Actions (`message-actions`), Response feedback (`response-feedback`), Streaming markdown (`streaming-markdown`), Streaming text (`streaming-text`), Support conversation (`support-conversation`), Recommendation card (`recommendation-card`)
+**Existing:** Message bubble (`message-bubble`), Chat thread (`chat-thread`), AI chat (`ai-chat`), AI answer (`ai-answer`), Cited answer (`cited-answer`), Message actions (`message-actions`), Response feedback (`response-feedback`), Streaming markdown (`streaming-markdown`), Streaming text (`streaming-text`), Support conversation (`support-conversation`), Recommendation card (`recommendation-card`)
 
 **New variants to build:**
 - Margin-annotated answer: claims get side notes
@@ -144,7 +144,7 @@ The conversation: bubbles, answers, streaming text and actions.
 ## Reasoning (`reasoning`)
 What the model thought: blocks, traces and live thinking states.
 
-**Existing:** Reasoning block (`reasoning-block`), Thinking (`thinking-traces`), Thinking State (`thinking-state`), Thinking Loader (`thinking-loader`)
+**Existing:** Reasoning block (`reasoning-block`), Thinking (`thinking-traces`), Thinking panel (`thinking-panel`), Thinking pill (`thinking-pill`)
 
 **New variants to build:**
 - Thought river: steps flow as stones across a stream
@@ -166,7 +166,7 @@ Citations, source cards and research runs.
 ## Loaders (`loaders`)
 One busy signal per region: glyphs, spinners and skeletons.
 
-**Existing:** Glyph loader (`glyph-loader`), Spinner (`spinner`), Loading state (`loading-state`), Status indicator (`status-indicator`), Skeleton (`skeleton`), Skeleton morph (`skeleton-morph`)
+**Existing:** Glyph loader (`glyph-loader`), Spinner (`spinner`), Loading state (`loading-state`), Status indicator (`status-indicator`), Skeleton (`skeleton`), Skeleton reveal (`skeleton-reveal`)
 
 **New variants to build:**
 - Moth flap loader (brand)
@@ -177,7 +177,7 @@ One busy signal per region: glyphs, spinners and skeletons.
 ## Text Motion (`text-motion`)
 Shimmering, cycling, revealing and counting text.
 
-**Existing:** Text shimmer (`text-shimmer`), Text shimmer (`shimmer-label`), Verb cycler (`verb-cycler`), Text reveal (`text-reveal`), Text reveal (`word-reveal`), Text morph (`text-morph`), Slot text (`slot-text`), In-view title (`in-view-title`), Elapsed timer (`elapsed-timer`), Number ticker (`number-ticker`), Animated counter (`animated-counter`), Countdown (`countdown`), Write sweep (`write-sweep`)
+**Existing:** Text shimmer (`text-shimmer`), Text shimmer (`shimmer-label`), Verb cycler (`verb-cycler`), Text reveal (`text-reveal`), Text reveal (`word-reveal`), Text morph (`text-morph`), Slot text (`slot-text`), Scroll title (`scroll-title`), Elapsed timer (`elapsed-timer`), Number ticker (`number-ticker`), Animated counter (`animated-counter`), Countdown (`countdown`), Write sweep (`write-sweep`)
 
 **New variants to build:**
 - Ink bleed reveal
@@ -199,7 +199,7 @@ What the agent called and what came back.
 ## Plans & Tasks (`plans`)
 Plans, to-dos and checklists, and how the run kept to them.
 
-**Existing:** Todo list (`todo-list`), Plan card (`plan-card`), Agent plan (`agent-plan`), Task rows (`task-rows`), Task breakdown (`task-breakdown`), Stepper (`stepper`), Step timeline (`step-timeline`), Onboarding checklist (`onboarding-checklist`), Release readiness (`release-readiness`), Plan vs Actual (`plan-vs-actual`), Decision Tree (`decision-tree`), Loop pipeline (`loop-pipeline`)
+**Existing:** Todo list (`todo-list`), Plan card (`plan-card`), Agent plan (`agent-plan`), Task rows (`task-rows`), Task breakdown (`task-breakdown`), Stepper (`stepper`), Step timeline (`step-timeline`), Onboarding checklist (`onboarding-checklist`), Launch checklist (`launch-checklist`), Plan vs actual (`plan-vs-actual`), Decision tree (`decision-tree`), Loop pipeline (`loop-pipeline`)
 
 **New variants to build:**
 - Kanban plan with live progress
@@ -210,7 +210,7 @@ Plans, to-dos and checklists, and how the run kept to them.
 ## Run & Trace (`run-trace`)
 One run end to end: status, trail, waterfall and root cause.
 
-**Existing:** Agent run (`agent-run`), Agent trail (`agent-trail`), Trace Waterfall (`trace-waterfall`), Activity feed & timeline (`activity-feed`), Agent Sequence (`agent-sequence`), Root Cause Tree (`root-cause-tree`), Running Now (`running-now`), Agent status (`agent-status`), Agent Monitor (`agent-monitor`), Test ticks (`test-ticks`), Triage metro (`triage-metro`)
+**Existing:** Agent run (`agent-run`), Agent trail (`agent-trail`), Trace waterfall (`trace-waterfall`), Activity feed & timeline (`activity-feed`), Sequence diagram (`sequence-diagram`), Root cause tree (`root-cause-tree`), Activity pill (`activity-pill`), Agent status (`agent-status`), Run monitor (`run-monitor`), Test ticks (`test-ticks`), Triage metro (`triage-metro`)
 
 **New variants to build:**
 - Flame graph of a run
@@ -221,7 +221,7 @@ One run end to end: status, trail, waterfall and root cause.
 ## Multi-agent (`multi-agent`)
 Many agents at once: trees, crews, lanes, fan-outs and judges.
 
-**Existing:** Sub-agent tree (`subagent-tree`), Agent tree (`agent-tree`), Agent fleet (`agent-fleet`), Agent orchestrator (`agent-orchestrator`), Agent Crew (`agent-crew`), Agent Cursors (`agent-cursors`), Agent Graph (`agent-graph`), Agent Handoff (`agent-handoff`), Agent Lanes (`agent-lanes`), Delegate Board (`delegate-board`), Fan-out Grid (`fanout-grid`), Parallel Attempts (`parallel-attempts`), Judge Bracket (`judge-bracket`), Fallback Chain (`fallback-chain`), Collaboration Stream (`collaboration-stream`)
+**Existing:** Sub-agent tree (`subagent-tree`), Agent tree (`agent-tree`), Agent fleet (`agent-fleet`), Agent orchestrator (`agent-orchestrator`), Crew tree (`crew-tree`), Presence cursors (`presence-cursors`), Tool network (`tool-network`), Relay trail (`relay-trail`), Live lanes (`live-lanes`), Assign board (`assign-board`), Task grid (`task-grid`), Attempt race (`attempt-race`), Model knockout (`model-knockout`), Fallback chain (`fallback-chain`), Crew chat (`crew-chat`)
 
 **New variants to build:**
 - Air traffic board
@@ -233,7 +233,7 @@ Many agents at once: trees, crews, lanes, fan-outs and judges.
 ## Inbox & Recap (`inbox`)
 What happened while you were away and what needs you now.
 
-**Existing:** Agent Inbox (`agent-inbox`), Agent Queue (`agent-queue`), Agent Recap (`agent-recap`), Away Summary (`away-summary`), Agent Findings (`agent-findings`), Notification center (`notification-center`), Notification stack (`notification-stack`), Thread list (`thread-list`), Activity home (`activity-home`), Proactive card (`proactive-card`)
+**Existing:** Task inbox (`task-inbox`), Job queue (`job-queue`), Overnight recap (`overnight-recap`), Return brief (`return-brief`), Findings feed (`findings-feed`), Notification center (`notification-center`), Notification stack (`notification-stack`), Thread list (`thread-list`), Activity home (`activity-home`), Proactive card (`proactive-card`)
 
 **New variants to build:**
 - Morning brief card stack
@@ -244,7 +244,7 @@ What happened while you were away and what needs you now.
 ## Usage & Cost (`usage-cost`)
 Tokens, money and limits: meters, charts and planners.
 
-**Existing:** Usage meter (`usage-meter`), Token usage chart (`token-usage-chart`), Polling cost (`polling-cost`), Cost Waterfall (`cost-waterfall`), Agent Ledger (`agent-ledger`), Rate Limit Planner (`rate-limit-planner`), Gauge (`gauge`), Activity heat map (`activity-heatmap`), Split bar (`split-bar`)
+**Existing:** Usage meter (`usage-meter`), Token usage chart (`token-usage-chart`), Polling cost (`polling-cost`), Spend breakdown (`spend-breakdown`), Change ledger (`change-ledger`), Load planner (`load-planner`), Gauge (`gauge`), Activity heat map (`activity-heatmap`), Split bar (`split-bar`)
 
 **New variants to build:**
 - Fuel gauge for monthly budget
@@ -256,7 +256,7 @@ Tokens, money and limits: meters, charts and planners.
 ## Memory (`memory`)
 What the agent remembers about you and the work.
 
-**Existing:** Memory Panel (`memory-panel`)
+**Existing:** Memory panel (`memory-panel`)
 
 **New variants to build:**
 - Memory garden: facts as plants that wither when stale
@@ -299,12 +299,12 @@ Pro: the Arc "Special components · AI" set, each a self-contained card with its
 
 **Existing:** Agent timeline (`agent-timeline`), Model card (`model-card`), AI workflow (`ai-workflow`), Image generation (`image-generation`), Speech player (`speech-player`), Meeting summary (`meeting-summary`), Reply draft (`reply-draft`), Human handoff (`human-handoff`), PII redaction (`pii-redaction`), LLM cost calculator (`llm-cost-calculator`), Provider keys (`provider-keys`), Generation stats (`generation-stats`), AI translate (`ai-translate`), TL;DR toggle (`tldr-toggle`), Connector setup (`connector-setup`), Enrich column (`enrich-column`), Ticket router (`ticket-router`), Ask your data (`ask-your-data`), Agent doc cursor (`agent-doc-cursor`), Provider status (`provider-status`), Training run (`training-run`), Tone tuner (`tone-tuner`), AI mascot (`ai-mascot`), Image reveal (`image-reveal`), AI spark (`ai-spark`), Pixel mascot (`pixel-mascot`), Ghost mascot (`ghost-mascot`), Cube mascot (`cube-mascot`), Upgrade prompt (`upgrade-prompt`), Referral card (`referral-card`), Trial banner (`trial-banner`), Live visitors (`live-visitors`), Social proof toast (`social-proof-toast`)
 
-**Built in C1d (2026-11-21):** all 17, three or four variants each (Oxyn extras marked in the demos). Arc "Agent handoff" ships as `human-handoff` because `agent-handoff` is the agent-to-agent component in Multi-agent.
+**Built in C1d (2026-11-21):** all 17, three or four variants each (Oxyn extras marked in the demos). Arc "Agent handoff" ships as `human-handoff` because `relay-trail` is the agent-to-agent component in Multi-agent.
 
 ## Blocks (`blocks`)
 Pro: larger compositions built from the components, each a whole working surface with its own model in `oxyn_core::blocks`, Dioxus blocks in `oxyn_dioxus::blocks` (`blocks.css`, prefix `oxbk-`) and the GPUI `BlocksView`. Pages live at `/blocks/<group>/<slug>/` (groups: Agents, AI); the Blocks section lists them.
 
-**Existing:** Live session (`live-session`), Mission control (`mission-control`), Mission timeline (`mission-timeline`), Run inspector (`run-inspector`), Background agents (`background-agents`), Agent routines (`agent-routines`), MCP servers (`mcp-servers`), Knowledge base (`knowledge-base`), Eval suite (`eval-suite`), Agent builder (`agent-builder`), Agent gallery (`agent-gallery`), AI insight card (`ai-insight-card`)
+**Existing:** Live session (`live-session`), Fleet overview (`fleet-overview`), Fleet timeline (`fleet-timeline`), Run inspector (`run-inspector`), Background agents (`background-agents`), Agent routines (`agent-routines`), MCP servers (`mcp-servers`), Knowledge base (`knowledge-base`), Eval suite (`eval-suite`), Agent builder (`agent-builder`), Agent gallery (`agent-gallery`), AI insight card (`ai-insight-card`)
 
 **Built in C1f (2026-11-21):** the four affectUI "Blocks · Agents" (Live Session, Mission Control, Mission Timeline, Run Inspector), seven Arc "Blocks · Agents" and Arc "AI insight card", three variants each (Oxyn extras marked in the demos). Arc "Agent tasks" ships as `background-agents` because `agent-tasks` is a screen. 
 
@@ -324,7 +324,7 @@ Talking about the work: threads, panels, reactions.
 ## Schedule & Time (`schedule`)
 Dates, times and when agents run.
 
-**Existing:** Scheduled Runs (`scheduled-runs`), Calendar (`calendar`), Date picker (`date-picker`), Date range picker (`date-range-picker`), Time picker (`time-picker`), Time dial (`time-dial`), Date reel (`date-reel`)
+**Existing:** Scheduled runs (`scheduled-runs`), Calendar (`calendar`), Date picker (`date-picker`), Date range picker (`date-range-picker`), Time picker (`time-picker`), Time dial (`time-dial`), Date wheel (`date-wheel`)
 
 **New variants to build:**
 - Week board of scheduled runs
@@ -357,7 +357,7 @@ Buttons, icon buttons, split buttons and the groups they sit in.
 ## Fields (`fields`)
 Typing things in: text, numbers, codes, passwords, tags.
 
-**Existing:** Text field (`text-field`), Text area (`text-area`), Input (`labeled-input`), Textarea (`labeled-textarea`), Number field (`number-field`), Scrub input (`scrub-input`), Password field (`password-field`), Password strength (`password-strength`), OTP input (`otp-input`), Phone input (`phone-input`), Inline edit (`inline-edit`), Tag input (`tag-input`), Smart form fill (`smart-form-fill`), Stepper form (`stepper-form`), Multi-step form (`multi-step-form`)
+**Existing:** Text field (`text-field`), Text area (`text-area`), Input (`labeled-input`), Textarea (`labeled-textarea`), Number field (`number-field`), Scrub input (`scrub-input`), Password field (`password-field`), Password strength (`password-strength`), OTP input (`otp-input`), Phone input (`phone-input`), Inline edit (`inline-edit`), Tag input (`tag-input`), Form autofill (`form-autofill`), Stepper form (`stepper-form`), Multi-step form (`multi-step-form`)
 
 **New variants to build:**
 - Ghost-completion field
@@ -368,7 +368,7 @@ Typing things in: text, numbers, codes, passwords, tags.
 ## Choice (`choice`)
 Picking one or many: switches, radios, selects, chips and ratings.
 
-**Existing:** Switch (`switch`), Checkbox (`checkbox`), Radio group (`radio-group`), Radio cards (`radio-cards`), Segmented control (`segmented-control`), Toggle group (`toggle-group`), Chip group (`chip-group`), Rating (`rating`), Select (`select`), Morph select (`morph-select`), Combobox (`combobox`), Multi-select (`multi-select`), Filter menu (`filter-menu`), Reorderable list (`reorderable-list`)
+**Existing:** Switch (`switch`), Checkbox (`checkbox`), Radio group (`radio-group`), Radio cards (`radio-cards`), Segmented control (`segmented-control`), Toggle group (`toggle-group`), Chip group (`chip-group`), Rating (`rating`), Select (`select`), Unfold select (`unfold-select`), Combobox (`combobox`), Multi-select (`multi-select`), Filter menu (`filter-menu`), Reorderable list (`reorderable-list`)
 
 **New variants to build:**
 - Segmented control with sliding pill and counts
@@ -379,12 +379,12 @@ Picking one or many: switches, radios, selects, chips and ratings.
 ## Sliders (`sliders`)
 Dragging a value: plain, elastic and scrubbed.
 
-**Existing:** Slider (`slider`), Elastic slider (`elastic-slider`)
+**Existing:** Slider (`slider`), Rubber slider (`rubber-slider`)
 
 **New variants to build:**
 - Range slider with histogram
 - Snap slider with haptic ticks
-- Elastic slider with overshoot
+- Rubber slider with overshoot
 - Dual-thumb budget slider
 
 ## Data Display (`display`)

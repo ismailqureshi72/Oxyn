@@ -3,7 +3,7 @@
 # Spec: Pilot Panel (`pilot-panel`)
 
 Family: Agent apps (pages at `/screens/pilot-panel/` and `/full`). Reference: the editor agent-panel pattern (Cline in VS Code: Plan / Act, tool approvals, auto-approve, checkpoints, context and cost, see the agent-apps research), behaviour and layout only, under our own name and design; no source, artwork or copy taken. Brand marks appear only where a real model is named (Lobe Icons, credited in `THIRD_PARTY_NOTICES.md`), never as this app's logo, which is our own drawn mark.
-Components: `PilotPanelScreen` (Dioxus) · `PilotPanelEl` (GPUI), rules in `oxyn_core::parity::pilotpanel`.
+Components: `PilotPanelScreen` (Dioxus) · `PilotPanelEl` (GPUI), rules in `oxyn_core::kit::pilotpanel`.
 
 ## 1. Purpose
 Give an agent a coding task, let it plan first or act, approve the tool calls auto-approve does not cover, and step back to any checkpoint if a change goes wrong, while watching context and cost.
@@ -32,10 +32,10 @@ Sidebar is a nav landmark; the open task has aria-current=page. Plan / Act are a
 1440 × 900 stage; `/full` at the real viewport. Under 960 px the sidebar is a drawer and the pane opens over the conversation from the top bar. Under 620 px chip labels shorten and dates hide in rows. scripts/ovl.py finds no text overlap at 1440, 768 and 390 in light and dark.
 
 ## 7. Data
-`PilotPanelScreen` takes `data: Option<PilotPanelData>` (`oxyn_core::parity::pilotpanel`): `tasks: Vec<PkTask>` (id, title, cents, running, at) and `steps: Vec<PkStep>` (kind, title, detail). Start from `PilotPanelData::default()`.
+`PilotPanelScreen` takes `data: Option<PilotPanelData>` (`oxyn_core::kit::pilotpanel`): `tasks: Vec<PkTask>` (id, title, cents, running, at) and `steps: Vec<PkStep>` (kind, title, detail). Start from `PilotPanelData::default()`.
 
 ## 8. Known gaps
 No backend: steps, diff, costs and tokens are fixed fictional data; Compare opens the Checkpoints tab rather than a side-by-side diff. The GPUI view draws Restore, Approve and Reject as presses (`restore`, `approve`, `reject`) for the host.
 
 ## 9. GPUI
-`AgentAppView::new(AgentApp::PilotPanel, window, cx)` (oxyn-gpui, `parity::apps`) is a real GPUI view (`Entity` + `Render`) of the whole Pilot Panel app, drawn from the same screen code as the snapshot element `PilotPanelEl` and driven by `oxyn_core::parity::appui::AppUi`, the rules the Dioxus app follows. Sidebar rows open on press; the logo toggles the icon rail; the account row opens a menu (Switch to light / dark, Sign out). The composer is a real `ImeInput`: Enter or the send button sends and the sent prompts show above it. With focus on the app, Up / Down move the open row, Left / Right step through the views (Act, Plan mode, the pending approval) and Escape closes the menu, then the rail. App presses: Switch to Act fires `act` and leaves Plan mode; Approve, Reject and Restore fire `approve`, `reject`, `restore`. Call `bind_ime_keys(cx)` once at start; `cargo run --manifest-path examples/gpui-agent-apps/Cargo.toml` (from the repo root) opens every agent app in one window.
+`AgentAppView::new(AgentApp::PilotPanel, window, cx)` (oxyn-gpui, `kit::apps`) is a real GPUI view (`Entity` + `Render`) of the whole Pilot Panel app, drawn from the same screen code as the snapshot element `PilotPanelEl` and driven by `oxyn_core::kit::appui::AppUi`, the rules the Dioxus app follows. Sidebar rows open on press; the logo toggles the icon rail; the account row opens a menu (Switch to light / dark, Sign out). The composer is a real `ImeInput`: Enter or the send button sends and the sent prompts show above it. With focus on the app, Up / Down move the open row, Left / Right step through the views (Act, Plan mode, the pending approval) and Escape closes the menu, then the rail. App presses: Switch to Act fires `act` and leaves Plan mode; Approve, Reject and Restore fire `approve`, `reject`, `restore`. Call `bind_ime_keys(cx)` once at start; `cargo run --manifest-path examples/gpui-agent-apps/Cargo.toml` (from the repo root) opens every agent app in one window.

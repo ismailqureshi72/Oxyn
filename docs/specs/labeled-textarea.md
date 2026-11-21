@@ -46,9 +46,9 @@ The multi-line `Input`: the same helper and error rows, plus an optional count (
 - The count follows characters, not bytes.
 
 ## 10. Implementation
-- Core: `digit_changes` (`oxyn_core::parity::input`), with tests.
-- Dioxus: `LabeledTextarea` (parity/input.rs, input.css).
-- GPUI: `ImeInput` (parity/ime.rs) is the GPUI text entry: IME composition with an underline, selection (shift-arrows, drag, select all), clipboard, word moves, Enter / Shift+Enter events. A wrapped multi-line layout is a follow-up: a line break draws as a space.
+- Core: `digit_changes` (`oxyn_core::kit::input`), with tests.
+- Dioxus: `LabeledTextarea` (kit/input.rs, input.css).
+- GPUI: `ImeInput` (kit/ime.rs) is the GPUI text entry: IME composition with an underline, selection (shift-arrows, drag, select all), clipboard, word moves, Enter / Shift+Enter events. A wrapped multi-line layout is a follow-up: a line break draws as a space.
 
 ## 11. References
 - Arc UI Textarea (https://uiarc.dev/components/textarea) — behaviour-only rebuild, no source copied.

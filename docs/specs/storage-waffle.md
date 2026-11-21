@@ -3,7 +3,7 @@
 # Spec: Storage waffle (`storage-waffle`)
 
 Family: Storage. Reference: none (an Oxyn original).
-Components: `StorageWaffle` (Dioxus) · `StorageWaffleEl` (GPUI), models in `oxyn_core::parity::storagefid`.
+Components: `StorageWaffle` (Dioxus) · `StorageWaffleEl` (GPUI), models in `oxyn_core::kit::storagefid`.
 
 ## 1. Purpose
 A whole disk at a glance where one dot is a fixed amount, and a lens that answers "how much could I get back".

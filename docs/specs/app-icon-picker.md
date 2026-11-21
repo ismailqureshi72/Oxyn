@@ -3,7 +3,7 @@
 # Spec: App icon (`app-icon-picker`)
 
 Family: Theme Selector. Reference: none (an Oxyn original; icons drawn by us).
-Components: `AppIconPicker` (Dioxus) · `AppIconPickerEl` (GPUI), models in `oxyn_core::parity::themefid`.
+Components: `AppIconPicker` (Dioxus) · `AppIconPickerEl` (GPUI), models in `oxyn_core::kit::themefid`.
 
 ## 1. Purpose
 Let someone choose how the app's icon looks – one of six we draw, in colour, dark or a single tint – and see it among other apps.

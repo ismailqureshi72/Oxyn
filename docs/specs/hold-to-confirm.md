@@ -67,8 +67,8 @@ Anatomy:
 - Hold longer than duration completes on the frame the fill reaches 1 (`tick`).
 
 ## 10. Implementation
-- Core: `oxyn_core::parity::confirm::HoldConfirm` (press, release, tick, fill, hint, reset) with tests.
-- Dioxus: `HoldToConfirm` (parity/approvals.rs, approvals.css).
+- Core: `oxyn_core::kit::confirm::HoldConfirm` (press, release, tick, fill, hint, reset) with tests.
+- Dioxus: `HoldToConfirm` (kit/approvals.rs, approvals.css).
 - GPUI: `HoldConfirmEl` reports `down` / `up`. GPUI reports button presses through one `Act` callback with an action id; the host routes them to the model.
 
 ## 11. References

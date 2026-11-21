@@ -3,7 +3,7 @@
 # Spec: Preview Desk (`preview-desk`)
 
 Family: Agent apps (pages at `/screens/preview-desk/` and `/full`). Reference: the agent-previews pattern (Factory's desktop app: sessions, preview tabs, Design mode and inline diff comments, see the agent-apps research), behaviour and layout only, under our own name and design; no source, artwork or copy taken. Brand marks appear only where a real model, agent or code host is named (Lobe Icons / Simple Icons, credited in `THIRD_PARTY_NOTICES.md`), never as this app's logo.
-Components: `PreviewDeskScreen` (Dioxus) · `PreviewDeskEl` (GPUI), rules in `oxyn_core::parity::previewdesk`.
+Components: `PreviewDeskScreen` (Dioxus) · `PreviewDeskEl` (GPUI), rules in `oxyn_core::kit::previewdesk`.
 
 ## 1. Purpose
 See what a coding agent made as a running preview, point at an element or a line and tell the agent what to change, then approve.
@@ -30,10 +30,10 @@ Sidebar is a nav landmark; the open session has aria-current=page. Preview tabs 
 1440 × 900 stage; `/full` at the real viewport. Under 960 px the sidebar is a drawer and the pane opens over the conversation from the top bar. Under 620 px chip labels shorten and rows stack. scripts/ovl.py finds no text overlap at 1440, 768 and 390 in light and dark.
 
 ## 7. Data
-`PreviewDeskScreen` takes `data: Option<PreviewDeskData>` (`oxyn_core::parity::previewdesk`): `sessions: Vec<PdSession>` (id, title, machine, running, notes), `folder: String`. Start from `PreviewDeskData::default()`.
+`PreviewDeskScreen` takes `data: Option<PreviewDeskData>` (`oxyn_core::kit::previewdesk`): `sessions: Vec<PdSession>` (id, title, machine, running, notes), `folder: String`. Start from `PreviewDeskData::default()`.
 
 ## 8. Known gaps
 No real browser or machine: the site, doc and diff are fixed fictional data drawn by Oxyn. In the GPUI view Design mode shows the picked card and its comment; picking other elements and typing comments are Dioxus-only for now.
 
 ## 9. GPUI
-`AgentAppView::new(AgentApp::PreviewDesk, window, cx)` (oxyn-gpui, `parity::apps`) is a real GPUI view (`Entity` + `Render`) of the whole Preview Desk app, drawn from the same screen code as the snapshot element `PreviewDeskEl` and driven by `oxyn_core::parity::appui::AppUi`, the rules the Dioxus app follows. Sidebar rows open on press; the logo toggles the icon rail; the account row opens a menu (Switch to light / dark, Sign out). The composer is a real `ImeInput`: Enter or the send button sends and the sent prompts show above it. With focus on the app, Up / Down move the open row, Left / Right step through the views (the session, Design mode, the diff) and Escape closes the menu, then the rail. App presses: the Site / Diff tabs and Design mode (`view:`, `view:design`, `view:diff`); a row returns to the session. Call `bind_ime_keys(cx)` once at start; `cargo run --manifest-path examples/gpui-agent-apps/Cargo.toml` (from the repo root) opens every agent app in one window.
+`AgentAppView::new(AgentApp::PreviewDesk, window, cx)` (oxyn-gpui, `kit::apps`) is a real GPUI view (`Entity` + `Render`) of the whole Preview Desk app, drawn from the same screen code as the snapshot element `PreviewDeskEl` and driven by `oxyn_core::kit::appui::AppUi`, the rules the Dioxus app follows. Sidebar rows open on press; the logo toggles the icon rail; the account row opens a menu (Switch to light / dark, Sign out). The composer is a real `ImeInput`: Enter or the send button sends and the sent prompts show above it. With focus on the app, Up / Down move the open row, Left / Right step through the views (the session, Design mode, the diff) and Escape closes the menu, then the rail. App presses: the Site / Diff tabs and Design mode (`view:`, `view:design`, `view:diff`); a row returns to the session. Call `bind_ime_keys(cx)` once at start; `cargo run --manifest-path examples/gpui-agent-apps/Cargo.toml` (from the repo root) opens every agent app in one window.

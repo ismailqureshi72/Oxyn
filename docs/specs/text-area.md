@@ -63,9 +63,9 @@ The multi-line twin of the text field. It grows with its text from `min_rows` (3
 - maxlength is only set while the text is within it, so a prefilled overflow stays visible and red.
 
 ## 10. Implementation
-- Core: `grow_rows`, `counter` (`oxyn_core::parity::input`), with tests.
-- Dioxus: `TextArea` (parity/input.rs, input.css).
-- GPUI: `ImeInput` (parity/ime.rs) is the GPUI text entry: IME composition with an underline, selection (shift-arrows, drag, select all), clipboard, word moves, Enter / Shift+Enter events. A wrapped multi-line layout is a follow-up: a line break draws as a space.
+- Core: `grow_rows`, `counter` (`oxyn_core::kit::input`), with tests.
+- Dioxus: `TextArea` (kit/input.rs, input.css).
+- GPUI: `ImeInput` (kit/ime.rs) is the GPUI text entry: IME composition with an underline, selection (shift-arrows, drag, select all), clipboard, word moves, Enter / Shift+Enter events. A wrapped multi-line layout is a follow-up: a line break draws as a space.
 
 ## 11. References
 - affectUI Text Area (https://www.affectui.com/components/text-area) — behaviour-only rebuild, no source copied.

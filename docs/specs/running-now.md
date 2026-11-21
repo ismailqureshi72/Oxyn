@@ -1,11 +1,11 @@
 **Status:** built v0.1 (2026-11-16, plan #32 affectUI fidelity pass, family B part 9 – against the ref-2 capture notes).
 
-# Spec: Running Now (`running-now`)
+# Spec: Activity pill (`running-now`)
 
 Family: Agents. Closes the parity row: affectUI · Running Now (Pro). Behaviour-only rebuild; layout, sizes, colours,
 states, motion and keyboard follow the ref-2 capture notes (approximate); the tasks and copy are our own.
 Related Oxyn components: background-jobs, desktop-overlays.
-Components: `RunningNow` (Dioxus) · `RunningNowEl` (GPUI), model in `oxyn_core::parity::runningfid`.
+Components: `RunningNow` (Dioxus) · `RunningNowEl` (GPUI), model in `oxyn_core::kit::runningfid`.
 
 ## 1. Purpose
 A quiet live status of background agent tasks for an app bar or sidebar: one pill with the counts that matter, opening

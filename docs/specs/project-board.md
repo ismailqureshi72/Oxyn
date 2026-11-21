@@ -3,7 +3,7 @@
 # Spec: Project board (`project-board`)
 
 Family: Arc screens (pages at `/screens/project-board/` and `/full`). Reference: the project board screen of Arc UI (uiarc.dev), behaviour and layout only, under our own design; no source, artwork or copy taken. Every person, workspace and project is fictional; dates are absolute ISO dates.
-Components: `ProjectBoardScreen` (Dioxus) · `ProjectBoardEl` (GPUI), rules in `oxyn_core::parity::arcscr`.
+Components: `ProjectBoardScreen` (Dioxus) · `ProjectBoardEl` (GPUI), rules in `oxyn_core::kit::arcscr`.
 
 ## 1. Purpose
 Run one project: status, numbers, milestones and the tasks under them, with the team and links beside.
@@ -41,4 +41,4 @@ Authored on the 1440 × 900 stage and scaled to its column; `/full` renders at t
 No backend; Share and Copy only report. In GPUI Share, New task and Copy are said back and the Tasks tab shows the open milestone's list.
 
 ## 9. GPUI
-`ProjectBoardEl` draws one state (`.state()`, `.extra()`). `ScreenView` (oxyn-gpui, `parity::screenview`) runs it live as part of the **Arc screens I** set, driven by `oxyn_core::parity::screenui::ScreenUi` and its `ArcUi`: `ArcUi` keeps the tasks, milestone, tab, status and panel: `pb-task-<n>` completes or reopens, `pb-ms-<n>`, `pb-tab-<n>`, `pb-health-<n>`, `pb-panel`. The set's tabs, state bar, command bar and account menu work as for the other sets; `cargo run --manifest-path examples/gpui-agent-apps/Cargo.toml` opens it from the strip (S12 Arc I).
+`ProjectBoardEl` draws one state (`.state()`, `.extra()`). `ScreenView` (oxyn-gpui, `kit::screenview`) runs it live as part of the **Arc screens I** set, driven by `oxyn_core::kit::screenui::ScreenUi` and its `ArcUi`: `ArcUi` keeps the tasks, milestone, tab, status and panel: `pb-task-<n>` completes or reopens, `pb-ms-<n>`, `pb-tab-<n>`, `pb-health-<n>`, `pb-panel`. The set's tabs, state bar, command bar and account menu work as for the other sets; `cargo run --manifest-path examples/gpui-agent-apps/Cargo.toml` opens it from the strip (S12 Arc I).

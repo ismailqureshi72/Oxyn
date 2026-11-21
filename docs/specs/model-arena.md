@@ -1,8 +1,8 @@
 **Status:** built v0.1 (2026-11-21, C1g: AI blocks II). Pro.
 
-# Spec: Model arena (`model-arena`)
+# Spec: Blind compare (`model-arena`)
 
-Section: Blocks · AI (page `/blocks/ai/model-arena/`, Pro). Reference: uiarc "Blocks · AI" ("Model arena"), behaviour only, under our own design; no source, artwork or copy taken. Every company, person and amount is fictional; companies and models that are named carry their official coloured marks.
+Section: Blocks · AI (page `/blocks/ai/blind-compare/`, Pro). Reference: uiarc "Blocks · AI" ("Model arena"), behaviour only, under our own design; no source, artwork or copy taken. Every company, person and amount is fictional; companies and models that are named carry their official coloured marks.
 Components: `ModelArena` (Dioxus, `oxyn_dioxus::blocks`, styles `blocks.css`, prefix `oxbk-`) · `BlocksView` with `BlockVariant::Arena` (GPUI), rules in `oxyn_core::blocks::arena`.
 
 ## 1. Purpose

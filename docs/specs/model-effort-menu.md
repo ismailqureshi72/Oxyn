@@ -3,7 +3,7 @@
 # Spec: Model effort menu (`model-effort-menu`)
 
 Family: Thinking Selector. Reference: a user-supplied screenshot of a model list with an effort suffix per model and a cascading effort submenu (layout idea only; names, wording and colours are our own).
-Components: `ModelEffortMenu` (Dioxus) · `ModelEffortMenuEl` (GPUI), model in `oxyn_core::parity::effmenufid`.
+Components: `ModelEffortMenu` (Dioxus) · `ModelEffortMenuEl` (GPUI), model in `oxyn_core::kit::effmenufid`.
 
 ## 1. Purpose
 Pick a model and its effort in one gesture: every model shows its effort as a suffix, and its submenu changes it.

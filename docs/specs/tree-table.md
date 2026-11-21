@@ -52,7 +52,7 @@ A table with nested rows: expand and collapse, tri-state selection where checkin
 
 ## 10. Implementation
 - Core: `TreeTable`, `TRow`, `Tri` (`oxyn_core::parity`), with tests.
-- Dioxus: `TreeTable` (parity/run.rs, run.css).
+- Dioxus: `TreeTable` (kit/run.rs, run.css).
 - GPUI: `TreeTableEl`.
 
 ## 11. References

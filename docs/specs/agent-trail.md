@@ -80,8 +80,8 @@ Rows are fixed, so a changing status, timer or detail never moves another row; l
 - No steps; an untitled step; a sub-step list of 12 around the 9th.
 
 ## 10. Implementation
-- Core (`oxyn_core::parity::plan`): `Trail::{count, count_label, current, step_label, approve, decline}`, `TrailStep::{detail, current_sub, badge}`, `fold`, `keep_end`, `trail_time`, with tests.
-- Dioxus: `AgentTrail` (parity/run.rs, `oxt-` styles in run.css).
+- Core (`oxyn_core::kit::plan`): `Trail::{count, count_label, current, step_label, approve, decline}`, `TrailStep::{detail, current_sub, badge}`, `fold`, `keep_end`, `trail_time`, with tests.
+- Dioxus: `AgentTrail` (kit/run.rs, `oxt-` styles in run.css).
 - GPUI: `AgentTrailEl` — header with the agent's mark, dashed gate ring, coloured tool logos, struck-through declined steps, the folded sub-steps and an Approve / Decline panel under a waiting step that reports `trail-approve` / `trail-decline` through `on_act`. GPUI has no RTL and no moving light yet.
 
 ## 11. References

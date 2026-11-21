@@ -3,7 +3,7 @@
 # Spec: Liquid tabs (`liquid-tabs`)
 
 Family: Menu Motion. Reference: none (an Oxyn original).
-Components: `LiquidTabs` (Dioxus) · `LiquidTabsEl` (GPUI), models in `oxyn_core::parity::gooeyfid`.
+Components: `LiquidTabs` (Dioxus) · `LiquidTabsEl` (GPUI), models in `oxyn_core::kit::gooeyfid`.
 
 ## 1. Purpose
 A mode switch whose selection feels physical without being loud.
