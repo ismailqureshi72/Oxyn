@@ -687,12 +687,36 @@
             h('p', { class: 'nline' }, p.source === 'seat' ? `Pro comes from a seat on ${p.owner || 'a paid Team'}. The Team owner manages seats in their account.` : 'Pro comes from a paid Polar subscription. Cancel, refund or change it in Polar; it cannot be removed here.'),
             h('a', { class: 'btn sm', href: r.polar_dashboard, target: '_blank', rel: 'noopener noreferrer' }, 'Manage in Polar ↗'))) : null),
         planForm(u, r),
+        usageCard(u, r.usage),
         h('section', { class: 'card', 'aria-labelledby': 'ug-t' }, h('div', { class: 'section fhead' }, h('h2', { id: 'ug-t' }, 'Grants for this email')),
           grants.length ? h('div', { class: 'twrap' }, h('table', { class: 'audit gtab' }, h('thead', {}, h('tr', {}, ['Plan', 'Status', 'Ends', 'Reason', 'By', ''].map((t) => h('th', { scope: 'col' }, t)))), h('tbody', {}, grants)))
             : h('p', { class: 'empty' }, 'No grants yet.')),
         subs.length ? h('section', { class: 'card', 'aria-labelledby': 'us-t' }, h('div', { class: 'section fhead' }, h('h2', { id: 'us-t' }, 'Polar subscriptions')),
           h('div', { class: 'twrap' }, h('table', { class: 'audit' }, h('thead', {}, h('tr', {}, ['Plan', 'Billing', 'Status', 'Renews / ends', 'Since'].map((t) => h('th', { scope: 'col' }, t)))), h('tbody', {}, subs)))) : null));
     pageEl.querySelector('.subback').focus();
+  }
+
+  /** This billing month's Pro items (P3 caps) of the account's pool, with a reset. */
+  function usageCard(u, us) {
+    if (!us) return null;
+    const lim = (x) => (x.limit == null ? `${x.used} (no limit)` : `${x.used} of ${x.limit}`);
+    const rows = (us.items || []).map((it) => h('tr', {}, h('td', { class: 'mono' }, it.slug), h('td', {}, it.kind), h('td', {}, it.via), h('td', { class: 't' }, fmtDate(it.created_at))));
+    const btn = h('button', { class: 'btn sm danger', type: 'button', disabled: !(us.components.used + us.screens.used), onclick: async (e) => {
+      const b = e.currentTarget;
+      if (!confirm(`Reset this month's Pro items for ${us.pooled ? 'the whole Team of ' : ''}${u.email}? They can open ${us.components.limit ?? 'unlimited'} components and ${us.screens.limit ?? 'unlimited'} screens again before ${fmtDay(us.resets_at)}.`)) return;
+      setBusy(b, true, 'Resetting…');
+      try { const x = await api(`/users/${u.id}/usage/reset`, { method: 'POST', body: {} }); toast(`Reset: ${x.cleared} items freed.`); renderUser(u.id); }
+      catch (er) { setBusy(b, false); toast(er.message); }
+    } }, 'Reset this month');
+    return h('section', { class: 'card', 'aria-labelledby': 'uu-t' },
+      h('div', { class: 'section fhead' }, h('h2', { id: 'uu-t' }, 'Pro items this month'), btn),
+      h('div', { class: 'section' }, h('dl', { class: 'kv' },
+        h('dt', {}, 'Components'), h('dd', {}, lim(us.components)),
+        h('dt', {}, 'Screens and blocks'), h('dd', {}, lim(us.screens)),
+        h('dt', {}, 'Counted for'), h('dd', {}, us.pooled ? 'The whole Team (shared)' : us.plan === 'free' ? 'Free plan: no Pro items' : 'This account'),
+        h('dt', {}, 'Month'), h('dd', {}, `${fmtDay(us.period_start)} to ${fmtDay(us.resets_at)}`))),
+      rows.length ? h('div', { class: 'twrap' }, h('table', { class: 'audit' }, h('thead', {}, h('tr', {}, ['Item', 'Kind', 'From', 'Opened'].map((t) => h('th', { scope: 'col' }, t)))), h('tbody', {}, rows)))
+        : h('p', { class: 'empty' }, 'Nothing opened this month.'));
   }
 
   /** Change one account's plan: Free (removes its grant), Pro (optionally with the founder flag) or Team. */

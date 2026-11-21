@@ -73,7 +73,7 @@ pub fn list() -> Vec<Value> {
             "inputSchema": schema(json!({
                 "slug": { "type": "string", "description": "The component, e.g. composer." },
                 "framework": { "type": "string", "enum": ["dioxus", "gpui"], "description": "Which build's files to include (default dioxus when it has one)." },
-                "include_code": { "type": "boolean", "description": "Include file contents (default true; about 40 KB at most, the rest listed by path)." },
+                "include_code": { "type": "boolean", "description": "Include file contents (default true; about 40 KB at most, the rest listed by path). Pro items: only when true is passed, since fetching a Pro item counts toward the month's Pro items (re-downloads are free)." },
                 "file": { "type": "string", "description": "Return only this file's contents (a path from an earlier result, e.g. src/oxyn/composer/mod.rs)." }
             }), &["slug"]),
             "annotations": annotations("Get an Oxyn component", true)
@@ -375,21 +375,45 @@ fn get_component(server: &Server, args: &Value) -> Result<Value, Error> {
         "frameworks": e.frameworks,
     });
     let item = if e.tier == Tier::Pro {
-        // The Pro registry seam (OXYN_TOKEN): today it always answers "needs Pro".
-        match server.client.fetch_pro(slug) {
-            Ok(it) => Some(it),
-            Err(_) => {
-                out["pro"] = json!(format!(
-                    "Part of Oxyn Pro: the live preview is free at the docs URL, the code needs Pro ({PRICING_URL})."
-                ));
-                let deps: Map<String, Value> = e
-                    .oxyn_deps
-                    .iter()
-                    .filter(|(_, d)| !d.is_empty())
-                    .map(|(f, d)| (f.to_string(), json!(d)))
-                    .collect();
-                if !deps.is_empty() {
-                    out["needs"] = Value::Object(deps);
+        // The authenticated Pro registry: each new Pro item counts toward the month's, so the
+        // code is fetched only when it is asked for (include_code: true).
+        let needs = || -> Option<Value> {
+            let deps: Map<String, Value> = e
+                .oxyn_deps
+                .iter()
+                .filter(|(_, d)| !d.is_empty())
+                .map(|(f, d)| (f.to_string(), json!(d)))
+                .collect();
+            (!deps.is_empty()).then_some(Value::Object(deps))
+        };
+        let wants_code = args.get("include_code").and_then(Value::as_bool) == Some(true);
+        if !e.installable || !wants_code {
+            out["pro"] = json!(if e.installable {
+                format!(
+                    "Part of Oxyn Pro ({PRICING_URL}). Call again with include_code: true (or add_component) to get the code: with a signed-in plan (`oxyn login` or OXYN_TOKEN) each new Pro item counts toward this month's, re-downloads are free."
+                )
+            } else {
+                format!(
+                    "Part of Oxyn Pro, with no CLI build yet: the code is on its page ({}).",
+                    e.url
+                )
+            });
+            if let Some(n) = needs() {
+                out["needs"] = n;
+            }
+            return Ok(out);
+        }
+        match server.client.fetch_pro(slug, None) {
+            Ok(it) => {
+                if let Some(u) = server.client.last_usage() {
+                    out["pro_usage"] = json!(u);
+                }
+                Some(it)
+            }
+            Err(err) => {
+                out["pro"] = json!(err.to_string());
+                if let Some(n) = needs() {
+                    out["needs"] = n;
                 }
                 return Ok(out);
             }
@@ -472,13 +496,13 @@ fn add_component(server: &Server, args: &Value) -> Result<Value, Error> {
     let fw = arg_framework(args)?;
     let path = arg_str(args, "path");
     let idx = server.client.index()?;
-    // Say "needs Pro" before touching the project.
+    // Say "needs Pro" / "sign in" / "monthly limit" before touching the project.
     for s in &slugs {
         if let Some(e) = idx.get(s)
             && e.tier == Tier::Pro
-            && server.client.fetch_pro(s).is_err()
+            && e.installable
         {
-            return Err(Error::ProRequired(s.clone()));
+            server.client.fetch_pro(s, None)?;
         }
     }
     let project = project_dir(server, args)?;
@@ -528,6 +552,9 @@ fn add_component(server: &Server, args: &Value) -> Result<Value, Error> {
     }
     if !rep.next.is_empty() {
         out["next"] = json!(rep.next);
+    }
+    if let Some(u) = server.client.last_usage() {
+        out["pro_usage"] = json!(u);
     }
     Ok(out)
 }

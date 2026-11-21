@@ -1122,3 +1122,24 @@ html[data-oxyn-reduced] .x-lap-scene{--x-lap-p:1!important}
 @media (max-width:640px){.acct-seat-form{flex-direction:column;align-items:stretch}}
 .acct-actions [hidden],.acct-plan [hidden]{display:none!important}
 html[data-pro="1"] .lbar .x-gopro{display:none}
+/* Account: this month's Pro items, CLI tokens (P3) */
+.x-usage{margin-top:22px}
+.x-usage h3{margin:0 0 6px;font-size:15px;font-weight:600}
+.x-usage-row{display:flex;justify-content:space-between;gap:12px;margin-top:10px;font-size:14px;color:var(--fg)}
+.x-usage-n{color:var(--fg2);font-variant-numeric:tabular-nums;white-space:nowrap}
+.x-meter{height:6px;margin-top:6px;border-radius:999px;background:var(--chip);overflow:hidden}
+.x-meter i{display:block;height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,var(--getpro-a),var(--getpro-b))}
+.x-meter i[data-full]{background:var(--ink)}
+.x-cli code,.x-usage code{font:12.5px var(--oxyn-font-mono);background:var(--chip);padding:1px 5px;border-radius:5px;overflow-wrap:anywhere}
+.x-tok-list:empty{display:none}
+.x-tok-list .x-tok-meta{display:flex;flex-direction:column;gap:2px;min-width:0}
+.x-tok-list .x-tok-meta small{color:var(--fg3);font-size:12.5px}
+.x-tok-new{margin-top:14px;padding:12px 14px;border-radius:12px;background:var(--chip)}
+.x-tok-new .acct-plan-line{margin:0 0 8px}
+.x-tok-row{display:flex;align-items:center;gap:10px}
+.x-tok-val{flex:1;min-width:0;font:12.5px var(--oxyn-font-mono);overflow-wrap:anywhere;user-select:all}
+.x-cli .auth-err{margin-top:10px}
+@media (max-width:640px){.x-tok-row{flex-direction:column;align-items:stretch}}
+/* /cli/auth/: the oxyn login code */
+.x-cliauth-code{margin-top:16px;padding:14px 16px;border-radius:12px;background:var(--chip);font:600 26px/1.2 var(--oxyn-font-mono);letter-spacing:.12em;text-align:center;color:var(--fg)}
+[data-cliauth] [hidden]{display:none!important}
