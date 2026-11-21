@@ -1,5 +1,5 @@
 //! Pickers (plan #25): `Calendar`, `DatePicker`, `DateRangePicker`, `TimePicker`, `TimeDial`,
-//! `DateReel`.
+//! `DateWheel`.
 //!
 //! Logic lives in `oxyn_core::primitives::{date, dial}`. Dates cross the prop boundary as ISO
 //! strings (`2026-11-13`) and times as `HH:mm`, so usage reads like the sources. The month grid is
@@ -14,7 +14,7 @@ use oxyn_core::{
             DatePicker as DpModel, DateRange, DayCell, HourCycle, RangePicker, TimeOfDay, Travel,
             nearest_option, parse_natural, time_options,
         },
-        dial::{City, DateReel as ReelModel, ReelKey, ReelMode, TimeDial as DialModel},
+        dial::{City, DateWheel as ReelModel, ReelKey, ReelMode, TimeDial as DialModel},
     },
 };
 
@@ -886,13 +886,13 @@ pub fn TimeDial(
     }
 }
 
-/// Date reel: iOS-style wheels for day, hour, minute and AM / PM (or month, day, year). Each reel is
+/// Date wheel: iOS-style wheels for day, hour, minute and AM / PM (or month, day, year). Each reel is
 /// a 3D cylinder; drag, flick or scroll it and it glides onto an entry; drags past the ends
 /// stretch; Tab moves between reels, arrows turn, Page keys turn by a large step, typing jumps
 /// (`4`, `45`, `p`, `ma`); quick picks spin every reel; a confirm button shows pending and success
 /// in place. Oxyn plus: a natural-language field and a routine preset.
 #[component]
-pub fn DateReel(
+pub fn DateWheel(
     /// `datetime` · `date` · `time`.
     #[props(default = "datetime".to_string())]
     mode: String,

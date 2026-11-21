@@ -1,4 +1,4 @@
-//! Prompt studio: edit, test and ship a prompt template. System and User tabs show the template
+//! Prompt bench: edit, test and ship a prompt template. System and User tabs show the template
 //! with `{{variable}}` placeholders as chips, a field per variable fills them from saved test
 //! cases, Run streams a reply with latency, tokens and cost, versions can be compared (a word
 //! diff against production) and promoted, with Undo.

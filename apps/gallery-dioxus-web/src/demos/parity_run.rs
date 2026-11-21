@@ -1,11 +1,11 @@
 //! Plan #28 parity demos, plans and runs: agent plan, trail, task rows, stepper, onboarding
-//! checklist, release readiness, task breakdown, agent tree, fleet, orchestrator, tree table,
+//! checklist, launch checklist, task breakdown, agent tree, fleet, orchestrator, tree table,
 //! activity feed and timeline, countdown, animated counter, agent status and agent run.
 
 use dioxus::prelude::*;
 use oxyn_core::{
     ClockMs,
-    parity::{
+    kit::{
         fleet::{
             Countdown as CountdownModel, CrewAgent, EventKind, Feed, FeedEvent, Lane, OrchPhase,
             Orchestration, Prereq, Readiness, Resolve, TRow, TreeTable as TreeModel,
@@ -18,7 +18,7 @@ use oxyn_core::{
 };
 use oxyn_dioxus::{
     ActivityFeed, AgentFleet, AgentOrchestrator, AgentPlan, AgentRun, AgentStatus, AgentTrail,
-    AgentTree, AnimatedCounter, Countdown, FlowStepper, OnboardingChecklist, ReleaseReadiness,
+    AgentTree, AnimatedCounter, Countdown, FlowStepper, LaunchChecklist, OnboardingChecklist,
     TaskBreakdown, TaskRows, TreeTable,
 };
 
@@ -500,7 +500,7 @@ fn check_code(_: &Vals) -> String {
         .done()
 }
 
-// ---------- release readiness ----------
+// ---------- launch checklist ----------
 
 fn sample_ready(done: bool, fail: bool) -> Readiness {
     let p = |g: &str, t: &str, o: &str, d: bool, b: bool| Prereq {
@@ -548,7 +548,7 @@ fn LiveReady(done: bool, fail: bool, now: ClockMs) -> Element {
     }
     rsx! {
         div { class: "oxd-w520",
-            ReleaseReadiness {
+            LaunchChecklist {
                 model: shown,
                 on_toggle: move |i: usize| { let mut w = r.write(); w.items[i].done ^= true; },
                 on_release: move |_| at.set(Some(now.0)),
@@ -558,7 +558,7 @@ fn LiveReady(done: bool, fail: bool, now: ClockMs) -> Element {
 }
 
 fn ready_code(_: &Vals) -> String {
-    Code::new("ReleaseReadiness")
+    Code::new("LaunchChecklist")
         .raw("model", "readiness()")
         .raw("on_release", "move |_| spawn(release())")
         .done()
@@ -1341,7 +1341,7 @@ pub fn demos() -> Vec<Demo> {
                 "AgentPlan",
                 "AgentPlanEl",
                 "agent-plan",
-                "parity/run.rs",
+                "kit/run.rs",
             )
         },
         Demo {
@@ -1436,7 +1436,7 @@ pub fn demos() -> Vec<Demo> {
                 "AgentTrail",
                 "AgentTrailEl",
                 "agent-trail",
-                "parity/run.rs",
+                "kit/run.rs",
             )
         },
         Demo {
@@ -1467,7 +1467,7 @@ pub fn demos() -> Vec<Demo> {
                 "TaskRows",
                 "TaskRowsEl",
                 "task-rows",
-                "parity/run.rs",
+                "kit/run.rs",
             )
         },
         Demo {
@@ -1519,7 +1519,7 @@ pub fn demos() -> Vec<Demo> {
                 "FlowStepper",
                 "FlowStepperEl",
                 "stepper",
-                "parity/run.rs",
+                "kit/run.rs",
             )
         },
         Demo {
@@ -1554,7 +1554,7 @@ pub fn demos() -> Vec<Demo> {
                 "OnboardingChecklist",
                 "ChecklistEl",
                 "onboarding-checklist",
-                "parity/run.rs",
+                "kit/run.rs",
             )
         },
         Demo {
@@ -1583,14 +1583,14 @@ pub fn demos() -> Vec<Demo> {
             align: Align::Start,
             live: true,
             ..mk(
-                "release-readiness",
-                "Release readiness",
+                "launch-checklist",
+                "Launch checklist",
                 "tools",
                 "A launch checklist that keeps prerequisites, progress and the final action together: grouped items with owners, blockers called out, a release button that waits for them, a spinner while it runs and an inline alert if it fails.",
-                "ReleaseReadiness",
+                "LaunchChecklist",
                 "ReadinessEl",
                 "release-readiness",
-                "parity/run.rs",
+                "kit/run.rs",
             )
         },
         Demo {
@@ -1619,7 +1619,7 @@ pub fn demos() -> Vec<Demo> {
                 "TaskBreakdown",
                 "BreakdownEl",
                 "task-breakdown",
-                "parity/run.rs",
+                "kit/run.rs",
             )
         },
         Demo {
@@ -1655,7 +1655,7 @@ pub fn demos() -> Vec<Demo> {
                 "AgentTree",
                 "AgentTreeEl",
                 "agent-tree",
-                "parity/run.rs",
+                "kit/run.rs",
             )
         },
         Demo {
@@ -1681,7 +1681,7 @@ pub fn demos() -> Vec<Demo> {
                 "AgentFleet",
                 "FleetEl",
                 "agent-fleet",
-                "parity/run.rs",
+                "kit/run.rs",
             )
         },
         Demo {
@@ -1715,7 +1715,7 @@ pub fn demos() -> Vec<Demo> {
                 "AgentOrchestrator",
                 "OrchestratorEl",
                 "agent-orchestrator",
-                "parity/run.rs",
+                "kit/run.rs",
             )
         },
         Demo {
@@ -1749,7 +1749,7 @@ pub fn demos() -> Vec<Demo> {
                 "TreeTable",
                 "TreeTableEl",
                 "tree-table",
-                "parity/run.rs",
+                "kit/run.rs",
             )
         },
         Demo {
@@ -1788,7 +1788,7 @@ pub fn demos() -> Vec<Demo> {
                 "ActivityFeed",
                 "ActivityFeedEl",
                 "activity-feed",
-                "parity/run.rs",
+                "kit/run.rs",
             )
         },
         Demo {
@@ -1818,7 +1818,7 @@ pub fn demos() -> Vec<Demo> {
                 "Countdown",
                 "CountdownEl",
                 "countdown",
-                "parity/run.rs",
+                "kit/run.rs",
             )
         },
         Demo {
@@ -1857,7 +1857,7 @@ pub fn demos() -> Vec<Demo> {
                 "AnimatedCounter",
                 "CounterEl",
                 "animated-counter",
-                "parity/run.rs",
+                "kit/run.rs",
             )
         },
         Demo {
@@ -1895,7 +1895,7 @@ pub fn demos() -> Vec<Demo> {
                 "AgentStatus",
                 "AgentStatusEl",
                 "agent-status",
-                "parity/run.rs",
+                "kit/run.rs",
             )
         },
         Demo {
@@ -1930,7 +1930,7 @@ pub fn demos() -> Vec<Demo> {
                 "AgentRun",
                 "AgentRunEl",
                 "agent-run",
-                "parity/run.rs",
+                "kit/run.rs",
             )
         },
     ]
