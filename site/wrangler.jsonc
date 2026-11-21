@@ -14,7 +14,9 @@
     "html_handling": "auto-trailing-slash",
     // Assets answer first; only the API and the admin panel run the Worker. /admin is not in
     // dist/: the Worker serves it (site/worker/admin-ui/) to signed-in, verified admins only.
-    "run_worker_first": ["/api/*", "/admin", "/admin/*"]
+    // /_pro/* holds the Pro registry JSON (site/public/_pro/r, written by scripts/gen.mjs): the
+    // Worker runs first there and answers 404, so only worker/pro.ts reads it (ASSETS binding).
+    "run_worker_first": ["/api/*", "/admin", "/admin/*", "/_pro", "/_pro/*"]
   },
   "d1_databases": [
     {
