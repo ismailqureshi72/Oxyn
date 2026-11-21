@@ -120,7 +120,7 @@ Speaking to the agent: record, dictate, listen.
 ## Approval & Permissions (`approval`)
 The agent asks before it acts; how much it may do alone.
 
-**Existing:** Approval card (`approval-card`), Approval pager (`approval-pager`), Decision card (`decision-card`), Approval questions (`approval-questions`), Hold to confirm (`hold-to-confirm`), Confirm morph (`confirm-morph`), Confirm popover (`confirm-popover`), Approval gates (`approval-gates`), Permission request (`permission-request`), Agent approvals (`agent-approvals`), Permission selector (`permission-selector`), Autonomy Dial (`autonomy-dial`), Tool Access Map (`tool-access-map`)
+**Existing:** Approval card (`approval-card`), Approval pager (`approval-pager`), Decision card (`decision-card`), Approval questions (`approval-questions`), Hold to confirm (`hold-to-confirm`), Confirm morph (`confirm-morph`), Confirm popover (`confirm-popover`), Approval gates (`approval-gates`), Permission request (`permission-request`), Agent approvals (`agent-approvals`), Permission selector (`permission-selector`), Autonomy Dial (`autonomy-dial`), Tool Access Map (`tool-access-map`), Secret card (`secret-card`)
 
 **New variants to build:**
 - Gate turnstile: approvals stack like turnstile arms that rotate away
@@ -177,7 +177,7 @@ One busy signal per region: glyphs, spinners and skeletons.
 ## Text Motion (`text-motion`)
 Shimmering, cycling, revealing and counting text.
 
-**Existing:** Text shimmer (`text-shimmer`), Text shimmer (`shimmer-label`), Verb cycler (`verb-cycler`), Text reveal (`text-reveal`), Text reveal (`word-reveal`), Text morph (`text-morph`), Slot text (`slot-text`), In-view title (`in-view-title`), Elapsed timer (`elapsed-timer`), Number ticker (`number-ticker`), Animated counter (`animated-counter`), Countdown (`countdown`)
+**Existing:** Text shimmer (`text-shimmer`), Text shimmer (`shimmer-label`), Verb cycler (`verb-cycler`), Text reveal (`text-reveal`), Text reveal (`word-reveal`), Text morph (`text-morph`), Slot text (`slot-text`), In-view title (`in-view-title`), Elapsed timer (`elapsed-timer`), Number ticker (`number-ticker`), Animated counter (`animated-counter`), Countdown (`countdown`), Write sweep (`write-sweep`)
 
 **New variants to build:**
 - Ink bleed reveal
@@ -199,7 +199,7 @@ What the agent called and what came back.
 ## Plans & Tasks (`plans`)
 Plans, to-dos and checklists, and how the run kept to them.
 
-**Existing:** Todo list (`todo-list`), Plan card (`plan-card`), Agent plan (`agent-plan`), Task rows (`task-rows`), Task breakdown (`task-breakdown`), Stepper (`stepper`), Step timeline (`step-timeline`), Onboarding checklist (`onboarding-checklist`), Release readiness (`release-readiness`), Plan vs Actual (`plan-vs-actual`), Decision Tree (`decision-tree`)
+**Existing:** Todo list (`todo-list`), Plan card (`plan-card`), Agent plan (`agent-plan`), Task rows (`task-rows`), Task breakdown (`task-breakdown`), Stepper (`stepper`), Step timeline (`step-timeline`), Onboarding checklist (`onboarding-checklist`), Release readiness (`release-readiness`), Plan vs Actual (`plan-vs-actual`), Decision Tree (`decision-tree`), Loop pipeline (`loop-pipeline`)
 
 **New variants to build:**
 - Kanban plan with live progress
@@ -210,7 +210,7 @@ Plans, to-dos and checklists, and how the run kept to them.
 ## Run & Trace (`run-trace`)
 One run end to end: status, trail, waterfall and root cause.
 
-**Existing:** Agent run (`agent-run`), Agent trail (`agent-trail`), Trace Waterfall (`trace-waterfall`), Activity feed & timeline (`activity-feed`), Agent Sequence (`agent-sequence`), Root Cause Tree (`root-cause-tree`), Running Now (`running-now`), Agent status (`agent-status`), Agent Monitor (`agent-monitor`)
+**Existing:** Agent run (`agent-run`), Agent trail (`agent-trail`), Trace Waterfall (`trace-waterfall`), Activity feed & timeline (`activity-feed`), Agent Sequence (`agent-sequence`), Root Cause Tree (`root-cause-tree`), Running Now (`running-now`), Agent status (`agent-status`), Agent Monitor (`agent-monitor`), Test ticks (`test-ticks`), Triage metro (`triage-metro`)
 
 **New variants to build:**
 - Flame graph of a run
@@ -233,7 +233,7 @@ Many agents at once: trees, crews, lanes, fan-outs and judges.
 ## Inbox & Recap (`inbox`)
 What happened while you were away and what needs you now.
 
-**Existing:** Agent Inbox (`agent-inbox`), Agent Queue (`agent-queue`), Agent Recap (`agent-recap`), Away Summary (`away-summary`), Agent Findings (`agent-findings`), Notification center (`notification-center`), Notification stack (`notification-stack`), Thread list (`thread-list`), Activity home (`activity-home`)
+**Existing:** Agent Inbox (`agent-inbox`), Agent Queue (`agent-queue`), Agent Recap (`agent-recap`), Away Summary (`away-summary`), Agent Findings (`agent-findings`), Notification center (`notification-center`), Notification stack (`notification-stack`), Thread list (`thread-list`), Activity home (`activity-home`), Proactive card (`proactive-card`)
 
 **New variants to build:**
 - Morning brief card stack
@@ -346,7 +346,7 @@ Background pictures and texture, theme swatches with font size, and originals: s
 ## Buttons (`buttons`)
 Buttons, icon buttons, split buttons and the groups they sit in.
 
-**Existing:** Button (`button`), Icon button (`icon-button`), Action button (`action-button`), Split button (`split-button`), Button group (`button-group`), Floating button group (`floating-button-group`), Expanding button group (`expanding-button-group`), Copy button (`copy-button`)
+**Existing:** Button (`button`), Icon button (`icon-button`), Action button (`action-button`), Split button (`split-button`), Button group (`button-group`), Floating button group (`floating-button-group`), Expanding button group (`expanding-button-group`), Copy button (`copy-button`), Split confirm (`split-confirm`), Agent prompt copy (`agent-prompt-copy`)
 
 **New variants to build:**
 - Magnetic button
@@ -401,7 +401,7 @@ Badges, chips, avatars, keys, code and empty states.
 ## Overlays (`overlays`)
 Tooltips, popovers, menus, dialogs, sheets and drawers.
 
-**Existing:** Tooltip (`tooltip`), Popover (`popover`), Dropdown menu (`dropdown-menu`), Hover card (`hover-card`), Dialog (`dialog`), Sheet (`sheet`), Sheet stack (`sheet-stack`), Bottom sheet (`bottom-sheet`), Drawer (`drawer`), Control center (`control-center`)
+**Existing:** Tooltip (`tooltip`), Popover (`popover`), Dropdown menu (`dropdown-menu`), Hover card (`hover-card`), Dialog (`dialog`), Sheet (`sheet`), Sheet stack (`sheet-stack`), Bottom sheet (`bottom-sheet`), Drawer (`drawer`), Control center (`control-center`), Publish popover (`publish-popover`)
 
 **New variants to build:**
 - Peek sheet
@@ -412,7 +412,7 @@ Tooltips, popovers, menus, dialogs, sheets and drawers.
 ## Toasts & Alerts (`feedback`)
 Telling you something happened.
 
-**Existing:** Toaster (`toaster`), Alert (`alert`)
+**Existing:** Toaster (`toaster`), Alert (`alert`), Done shockwave (`done-shockwave`)
 
 **New variants to build:**
 - Toast with undo countdown
@@ -463,3 +463,6 @@ Sidebars, rails, side panels and account chrome.
 - Qwen/Z.ai code screens
 - Agent workspace with three panes
 - Storage scanner screen (sunburst)
+
+## C2a: X-post components I (2026-11-21)
+Ten agent micro-interactions from posts the founders saved, rebuilt in our own design (free, `oxyn_core::xpost`, `oxyn_dioxus::xpost`, GPUI `XPostView`): Test ticks (`test-ticks`, Run & Trace), Triage metro (`triage-metro`, Run & Trace), Loop pipeline (`loop-pipeline`, Plans & Tasks), Secret card (`secret-card`, Approval & Permissions), Split confirm (`split-confirm`, Buttons), Agent prompt copy (`agent-prompt-copy`, Buttons), Proactive card (`proactive-card`, Inbox & Recap), Write sweep (`write-sweep`, Text Motion), Done shockwave (`done-shockwave`, Toasts & Alerts), Publish popover (`publish-popover`, Overlays). The remaining post ideas are listed for C2b/C2c in the PR notes.
