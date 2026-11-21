@@ -58,8 +58,11 @@ oxyn init
 oxyn add composer approval-card   # copies the code into src/oxyn/
 ```
 
-74 components are free (MIT); `oxyn list` shows everything, Pro included. Commands, flags and the
-registry: [ui.oxyn.workers.dev/docs/cli](https://ui.oxyn.workers.dev/docs/cli/).
+74 components are free (MIT); `oxyn list` shows everything, Pro included. With a
+[Pro or Team plan](https://ui.oxyn.workers.dev/pricing/), `oxyn login` signs the CLI (and the MCP
+server) in and `oxyn add` installs Pro items too: 20 Pro components and 8 screens or blocks a month
+on Pro, 75 and 22 shared on Team, each item counted once a month (`oxyn whoami` shows the count).
+Commands, flags and the registry: [ui.oxyn.workers.dev/docs/cli](https://ui.oxyn.workers.dev/docs/cli/).
 
 ## Let your coding agent add them (MCP)
 
@@ -81,7 +84,7 @@ Setup for each agent: [ui.oxyn.workers.dev/docs/mcp](https://ui.oxyn.workers.dev
 | `oxyn-gpui` | Components for GPUI desktop apps (primary target) |
 | `oxyn-dioxus` | Components for Dioxus (web demos, web apps) |
 | `oxyn-codegen` | Shared code generator used by the CLI and the Studio |
-| `oxyn-cli` | `oxyn add <component>` — shadcn-style copy-paste installer (free registry today, Pro next) |
+| `oxyn-cli` | `oxyn add <component>` — shadcn-style copy-paste installer (free registry, Pro with `oxyn login`) |
 | `oxyn-mcp` | MCP server (stdio) so coding agents can list, read and add components |
 | `site/` | Docs, gallery and Studio (Astro + Starlight + Rust→WASM demos) |
 
