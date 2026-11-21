@@ -1,11 +1,11 @@
 **Status:** built v0.1 (2026-11-16, plan #32 affectUI fidelity pass, family B part 9 – against the ref-3 capture notes).
 
-# Spec: Trace Waterfall (`trace-waterfall`)
+# Spec: Trace waterfall (`trace-waterfall`)
 
 Family: Agents. Closes the parity row: affectUI · Trace Waterfall (Pro). Behaviour-only rebuild; layout, sizes,
 colours, states, motion and keyboard follow the ref-3 capture notes (approximate); the trace, names and copy are our
 own. Related Oxyn components: trace-view.
-Components: `TraceWaterfall` (Dioxus) · `TraceWaterfallEl` (GPUI), model in `oxyn_core::parity::tracefid`.
+Components: `TraceWaterfall` (Dioxus) · `TraceWaterfallEl` (GPUI), model in `oxyn_core::kit::tracefid`.
 
 ## 1. Purpose
 Show where an agent run spent its time and money: every agent, model call and tool call as a bar on one time axis,

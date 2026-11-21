@@ -10,7 +10,7 @@ import { demos, counts, screens, blocks, demoUrl, REPO, CLI_INSTALL } from '../l
 
 const find = (s: string) => demos.find((d) => d.slug === s)!;
 const tabSets: [string, string, string[] | null][] = [
-  ['components', 'Components', ['approval-card', 'tool-call', 'agent-plan', 'model-picker', 'thinking-loader', 'context-meter']],
+  ['components', 'Components', ['approval-card', 'tool-call', 'agent-plan', 'model-picker', 'thinking-pill', 'context-meter']],
   ['screens', 'Screens', screens.slice(0, 6).map((d) => d.slug)],
   ['blocks', 'Blocks', blocks.slice(0, 6).map((d) => d.slug)],
   ['illustrations', 'Illustrations', null],
@@ -115,7 +115,7 @@ const faq: [string, string, keyof typeof icon][] = [
         <p>Plain Rust and CSS variables: rename it, restyle it, or change its states. Nothing hides behind a package.</p>
       </div>
       <div class="trio-c">
-        <div class="trio-p dark" data-theme="dark" data-oxyn-theme="dark" aria-hidden="true" inert><OxynDemo slug="thinking-loader" html={find('thinking-loader').variants[0].html} variant={0} /></div>
+        <div class="trio-p dark" data-theme="dark" data-oxyn-theme="dark" aria-hidden="true" inert><OxynDemo slug="thinking-pill" html={find('thinking-pill').variants[0].html} variant={0} /></div>
         <h3>Light and dark, built in</h3>
         <p>Every component reads the same tokens: light, dark and high contrast, with reduced motion respected.</p>
       </div>

@@ -7,7 +7,7 @@ overview in [tools.md](tools.md)). Same depth as [composer-send-control.md](comp
 Target **4 free + 14 Pro = 18 variants**. Reads the shared `RunGraph` from
 [subagent-tree.md](subagent-tree.md) §9.
 
-## 0. Built: the task grid (`FanoutGrid` · `FanoutGridEl`, model `oxyn_core::parity::fanfid`)
+## 0. Built: the task grid (`FanoutGrid` · `FanoutGridEl`, model `oxyn_core::kit::fanfid`)
 Closes the parity row affectUI · Fan-out Grid (Pro). Behaviour-only rebuild; the job, labels and copy are our own.
 
 | Part | Look (Clean, light / dark) |
@@ -43,7 +43,7 @@ Plus a **lanes inbox**: when many lanes run, the user only cares about the ones 
 What we saw: affectUI Agent Lanes — a lane per agent, tasks grow into "now", hand-offs drawn between
 agents, approvals sit on the block; affectUI Fan-out Grid — one cell per task coloured by its state,
 with counts, spend, an estimate and per-task details; affectUI also lists Parallel Attempts
-and Judge Bracket (names only) (research note 11, all Pro, study only). Flo Hoeller's lanes post: header
+and Model knockout (names only) (research note 11, all Pro, study only). Flo Hoeller's lanes post: header
 "2 running · 1 need you", lanes with model names, a lane marked "Idle", a red "Needs you" block
 [R061]; his inbox: columns NEEDS YOU / RUNNING / DONE with counts, live clocks, msgs/tools counts, cards
 glide between columns, Board↔List toggle [R062]. Vespin: an attention inbox with an unread dot per agent
