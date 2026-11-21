@@ -91,6 +91,7 @@ enum Cmd {
 }
 
 fn main() -> ExitCode {
+    quiet_broken_pipe();
     let cli = Cli::parse();
     match run(cli) {
         Ok(()) => ExitCode::SUCCESS,
@@ -99,6 +100,23 @@ fn main() -> ExitCode {
             ExitCode::from(e.exit_code() as u8)
         }
     }
+}
+
+/// `oxyn list | head` closes stdout early; end quietly instead of panicking in `println!`.
+fn quiet_broken_pipe() {
+    let default = std::panic::take_hook();
+    std::panic::set_hook(Box::new(move |info| {
+        let msg = info
+            .payload()
+            .downcast_ref::<String>()
+            .map(String::as_str)
+            .or_else(|| info.payload().downcast_ref::<&str>().copied())
+            .unwrap_or("");
+        if msg.contains("Broken pipe") {
+            std::process::exit(0);
+        }
+        default(info);
+    }));
 }
 
 fn project_dir(cwd: &Option<PathBuf>) -> Result<PathBuf, Error> {
