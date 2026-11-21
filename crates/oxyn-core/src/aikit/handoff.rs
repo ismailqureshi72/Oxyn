@@ -1,7 +1,7 @@
-//! Human handoff (Arc "Agent handoff"): a support chat where an AI assistant hands over to a
-//! person. Transferring shows the summary it passes to the team and the typical wait; the person
-//! joins and takes over; a thin timeline marks each stage. When nobody is available the card
-//! says so and offers to keep chatting or leave an email.
+//! Human handoff (Arc "Agent handoff"): a help chat in which the bot passes the conversation to a
+//! human. While the transfer runs, a card shows the brief the team will receive and how long people
+//! usually wait; then a teammate arrives and carries on, and a slim trail records each step. If
+//! nobody is free, it says so and offers to stay with the bot or leave an email.
 
 use super::{nth, words_at};
 

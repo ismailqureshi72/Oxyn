@@ -16,7 +16,7 @@ pub const MODELS: [(&str, &str); 3] = [
 pub const ASPECTS: [(&str, u32, u32); 3] =
     [("1:1", 1024, 1024), ("4:5", 896, 1120), ("16:9", 1344, 768)];
 
-/// Prompts offered on the empty canvas.
+/// Starter prompts for a blank canvas.
 pub const SUGGESTIONS: [&str; 3] = [
     "A lighthouse on black rocks at golden hour, long exposure sea",
     "A quiet reading nook with plants and morning light",
