@@ -8,6 +8,7 @@ use crate::{Align, Control, Demo, Kind, Vals, Variant};
 mod ai_special;
 mod ai_special_2;
 mod approvals;
+mod blocks;
 mod buttons;
 mod chat;
 mod checkpoints;
@@ -94,6 +95,16 @@ pub const CATEGORIES: [Category; 28] = [
         slug: "ai-special",
         name: "AI components",
         blurb: "Pro: agent timeline, model card, AI workflow, image generation, speech, meetings, replies, handoff, redaction, costs, keys, stats, translate, TL;DR, connectors, enrichment and routing.",
+    },
+    Category {
+        slug: "blocks-agents",
+        name: "Blocks · Agents",
+        blurb: "Pro: whole agent surfaces: live session, mission control and timeline, run inspector, background agents, routines, MCP servers, knowledge base, eval suite, agent builder and gallery.",
+    },
+    Category {
+        slug: "blocks-ai",
+        name: "Blocks · AI",
+        blurb: "Pro: AI surfaces for products: the AI insight card.",
     },
     Category {
         slug: "buttons",
@@ -233,6 +244,7 @@ pub fn catalog() -> Vec<Demo> {
     v.extend(checkpoints::demos());
     v.extend(ai_special::demos());
     v.extend(ai_special_2::demos());
+    v.extend(blocks::demos());
     v.extend(buttons::demos());
     v.extend(inputs::demos());
     v.extend(parity_input::demos());
