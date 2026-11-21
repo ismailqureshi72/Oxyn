@@ -5,7 +5,9 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::fs;
 use std::path::{Path, PathBuf};
 
-use oxyn_registry_schema::{CargoDep, Chunk, FileKind, Framework, RegistryIndex, RegistryItem};
+use oxyn_registry_schema::{
+    CargoDep, Chunk, FileKind, Framework, RegistryIndex, RegistryItem, Tier,
+};
 use toml_edit::{DocumentMut, InlineTable, Item, Value};
 
 use crate::Error;
@@ -443,6 +445,13 @@ pub fn add(
 ) -> Result<AddReport, Error> {
     let fw = cfg.framework;
     let new = crate::resolve::resolve(client, index, slugs, fw)?;
+    let others: Vec<String> = cfg
+        .installed
+        .iter()
+        .filter(|s| !new.iter().any(|i| &i.slug == *s))
+        .cloned()
+        .collect();
+    prime_pro(project, client, index, &others);
     let mut all: Vec<RegistryItem> = Vec::new();
     for s in &cfg.installed {
         if new.iter().any(|i| &i.slug == s) {
@@ -474,6 +483,7 @@ pub fn add(
     for it in &new {
         cfg.mark_installed(&it.slug);
     }
+    save_pro(project, &new)?;
     cfg.save(project)?;
     lock.save(project)?;
     let next = next_steps(&new, slugs, fw, cfg, &module);
@@ -483,6 +493,32 @@ pub fn add(
         cargo,
         next,
     })
+}
+
+/// Where the registry JSON of installed Pro items is kept, inside the project. It holds the same
+/// code `oxyn add` wrote into `src/`, so later adds and diffs need not download them again (a new
+/// download would count toward the month's Pro items).
+pub const PRO_CACHE: &str = ".oxyn/pro";
+
+fn prime_pro(project: &Path, client: &Client, index: &RegistryIndex, slugs: &[String]) {
+    for s in slugs {
+        if index.get(s).is_some_and(|e| e.tier == Tier::Pro)
+            && let Ok(t) = fs::read_to_string(project.join(PRO_CACHE).join(format!("{s}.json")))
+        {
+            client.prime(s, t);
+        }
+    }
+}
+
+fn save_pro(project: &Path, items: &[RegistryItem]) -> Result<(), Error> {
+    let dir = project.join(PRO_CACHE);
+    for it in items.iter().filter(|i| i.tier == Tier::Pro) {
+        fs::create_dir_all(&dir).map_err(|e| Error::Io(dir.clone(), e))?;
+        let p = dir.join(format!("{}.json", it.slug));
+        let s = serde_json::to_string(it).map_err(|e| Error::Invalid(e.to_string()))?;
+        fs::write(&p, s).map_err(|e| Error::Io(p, e))?;
+    }
+    Ok(())
 }
 
 /// Usage hints for the items the user asked for.
@@ -545,6 +581,9 @@ pub fn diff(
     slug: &str,
 ) -> Result<Vec<FileDiff>, Error> {
     let fw = cfg.framework;
+    // Pro items compare with the version that was installed (kept in .oxyn/pro/), so a diff never
+    // counts toward the month's Pro items.
+    prime_pro(project, client, index, &cfg.installed);
     let wanted = crate::resolve::resolve(client, index, &[slug.to_string()], fw)?;
     let mut all = wanted.clone();
     for s in &cfg.installed {
