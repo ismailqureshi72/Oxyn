@@ -94,7 +94,15 @@ export const isAgentApp = (d) => AGENT_APPS.some((a) => a.screens.includes(d.slu
  * with the email, an inset page and a right card). Screens too, listed in their own category. */
 export const ARC_SCREENS = ['metrics-dashboard', 'kanban-board', 'project-board', 'gantt-timeline', 'team-directory', 'week-calendar', 'month-calendar', 'inbox-triage', 'support-conversation', 'help-center', 'market-terminal', 'product-list', 'product-detail', 'invoice-studio', 'sign-in-split', 'admin-overview', 'audit-log', 'status-board', 'api-keys-webhooks', 'members-roles', 'billing-usage'];
 export const isArcScreen = (d) => ARC_SCREENS.includes(d.slug);
-export const pageUrl = (d) => (isScreen(d) ? `/screens/${d.slug}/` : `/components/${groupSlugOf(d)}/${d.slug}/`);
+/** Blocks (docs/pricing.md: Pro): larger compositions with their own section, /blocks/<group>/<slug>/.
+ * A block's demo category is `blocks-<group>`. */
+export const BLOCK_GROUPS = [
+  { slug: 'agents', cat: 'blocks-agents', name: 'Agents', blurb: 'Whole agent surfaces: a live session with a team of agents, mission control and its timeline, a run inspector, background coding agents, routines, MCP servers, a knowledge base, an eval suite, an agent builder and an agent gallery.' },
+  { slug: 'ai', cat: 'blocks-ai', name: 'AI', blurb: 'AI surfaces for products: a KPI card that explains its own change.' },
+];
+export const isBlock = (d) => BLOCK_GROUPS.some((g) => g.cat === d.category);
+export const blockGroupOf = (d) => BLOCK_GROUPS.find((g) => g.cat === d.category) ?? null;
+export const pageUrl = (d) => (isScreen(d) ? `/screens/${d.slug}/` : isBlock(d) ? `/blocks/${blockGroupOf(d).slug}/${d.slug}/` : `/components/${groupSlugOf(d)}/${d.slug}/`);
 export const legacyUrl = (d) => `/components/${d.category}/${d.slug}/`;
 
 /** [from, to] pairs for every URL that moved. */
@@ -107,7 +115,7 @@ export function redirects(demos, oldCategories) {
   }
   const groupSlugs = new Set(GROUPS.map((g) => g.slug));
   for (const c of oldCategories) {
-    if (!groupSlugs.has(c.slug)) out.push([`/components/${c.slug}/`, c.slug === 'shells' || c.slug === 'screens' ? '/screens/' : `/components/${OLD_TO_GROUP[c.slug]}/`]);
+    if (!groupSlugs.has(c.slug)) out.push([`/components/${c.slug}/`, c.slug === 'shells' || c.slug === 'screens' ? '/screens/' : c.slug.startsWith('blocks-') ? '/blocks/' : `/components/${OLD_TO_GROUP[c.slug]}/`]);
   }
   for (const m of MOVED) out.push(m);
   return out;
