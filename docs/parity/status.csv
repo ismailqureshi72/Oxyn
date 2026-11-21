@@ -240,7 +240,7 @@ Arc UI,Checkbox,https://uiarc.dev/components/checkbox,Components · Toggles,Free
 Arc UI,Radio group,https://uiarc.dev/components/radio-group,Components · Toggles,Free,,toggles,N2,#25,built
 Arc UI,Switch,https://uiarc.dev/components/switch,Components · Toggles,Free,,toggles,N2,#25,built
 Arc UI,Segmented control,https://uiarc.dev/components/segmented-control,Components · Toggles,Free,Free,segmented-control,,#27,built
-Arc UI,Rating,https://uiarc.dev/components/rating,Components · Toggles,Free,Free,rating,,#27,built
+Arc UI,Rating,https://uiarc.dev/components/rating,Components · Toggles,Free,Pro,rating,,#27,built
 Arc UI,Toggle group,https://uiarc.dev/components/toggle-group,Components · Toggles,Free,Pro,toggle-group,,#27,built
 Arc UI,Slider,https://uiarc.dev/components/slider,Components · Sliders,Free,,composer-effort-control.md (partial),,#28,built
 Arc UI,Elastic slider,https://uiarc.dev/components/elastic-slider,Components · Sliders,Free,,composer-effort-control.md (partial),,#28,built

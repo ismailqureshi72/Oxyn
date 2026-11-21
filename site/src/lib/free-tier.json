@@ -46,11 +46,11 @@
     "judge-bracket",
     "message-bubble",
     "model-picker",
+    "model-switcher",
     "otp-input",
     "password-strength",
     "phone-input",
     "queue-stack",
-    "rating",
     "reasoning-block",
     "response-feedback",
     "run-controls",
@@ -139,7 +139,6 @@
     "password-strength": 59.4,
     "scheduled-runs": 59.1,
     "agent-crew": 59,
-    "rating": 59,
     "effort-control": 58,
     "elapsed-timer": 57,
     "chip": 56.2,
@@ -151,6 +150,7 @@
     "glyph-loader": 52.5,
     "response-feedback": 52.5,
     "copy-button": 50.9,
-    "spinner": 45.3
+    "spinner": 45.3,
+    "model-switcher": 33.5
   }
 }
