@@ -81,7 +81,10 @@ and the day buckets of the charts follow it too.
   (Revoke / Restore), its Polar subscriptions and **Change plan**: Free (removes the grant), Pro
   (optionally showing the founder rate; display only, nothing is charged) or Team (the account as
   owner plus up to 3 teammate emails, 4 people in all). A plan paid through Polar cannot be removed
-  here: the panel says so and links **Manage in Polar**.
+  here: the panel says so and links **Manage in Polar**. **Pro items this month** shows the
+  account's count against its plan's caps (20 components + 8 screens for Pro, 75 + 22 shared for a
+  Team; see [pricing.md](pricing.md#monthly-caps-decided-2026-11-21)), what was opened and from where
+  (site, CLI, MCP), and **Reset this month** frees the count (for a Team member: the whole Team's).
 - **Grants**: give Pro or Team without payment, to one email, a Team (owner + up to 3) or a bulk
   paste (up to 200, one per line or separated by commas). The grant can be given **before or after
   someone signs up**: it turns on when the person signs in with Google or GitHub on that exact
@@ -156,7 +159,8 @@ Every route needs a verified admin (above).
 | `GET /flags`, `PUT /flags/:key` `{enabled, value}`, `DELETE /flags/:key` | flags |
 | `GET /audit?before=` | last 100 actions |
 | `GET /users?q=&plan=&sort=&dir=&page=&size=&tz=&format=csv` | accounts with plan and source, summary counts, CSV |
-| `GET /users/:id`, `POST /users/:id/plan` | one account; change its plan (`409 paid_subscription` for a Polar plan) |
+| `GET /users/:id`, `POST /users/:id/plan` | one account (with `usage`: this month's Pro items of its pool); change its plan (`409 paid_subscription` for a Polar plan) |
+| `POST /users/:id/usage/reset` | frees this month's Pro items of the account's pool (a Team's for a member), audited `usage.reset` |
 | `GET /grants?status=active\|pending\|revoked\|expired\|all&q=` | grants, Team members nested under the owner |
 | `POST /grants/check` | per-line report, writes nothing |
 | `POST /grants` | adds (`409 duplicate` / `typo_suspected` / `paid_subscription`, `400 confirm_mismatch` / `reason_required` / `expiry_in_past` / `bulk_ack_required`) |
@@ -192,7 +196,7 @@ migration adds the two maintainers), for example
 ## Migrations
 
 ```sh
-npx wrangler d1 migrations apply oxyn --remote    # from site/; 0002, 0004 and 0006 are additive
+npx wrangler d1 migrations apply oxyn --remote    # from site/; 0002, 0004, 0006 and 0007 are additive
 ```
 
 `0004_unified_admin.sql` deletes the old shared-password hash, the admin-session HMAC key and all

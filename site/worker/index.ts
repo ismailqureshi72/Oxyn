@@ -11,6 +11,7 @@
 //   /api/auth/*         site accounts: Google, GitHub or email, see auth.ts and docs/auth.md
 //   /api/billing/*, /api/pro/*, /api/polar/webhook   Pro and Team through Polar, see billing.ts
 //                       and docs/pricing.md
+//   /api/r/*, /api/cli/* the Pro registry for the CLI and MCP server, tokens, monthly caps: pro.ts
 //
 // Bindings (wrangler.jsonc): DB (D1 "oxyn"), UPLOADS (R2 "oxyn-uploads"), ASSETS.
 // Secrets (optional): GITHUB_TOKEN opens a GitHub issue per feedback; RATE_SALT salts IP hashes;
@@ -24,6 +25,7 @@ import { handleAdmin, isAdminPath, publicFlags } from './admin';
 import { handleAuth } from './auth';
 import { handleBilling, isBillingPath } from './billing';
 import { postEvents } from './events';
+import { handlePro, isProPath } from './pro';
 
 export type { Env } from './shared';
 
@@ -48,9 +50,14 @@ export default {
     // /admin* and /api/admin/*: the site session of a provider-verified email on the admin list.
     if (isAdminPath(url.pathname)) return handleAdmin(req, env, ctx, url);
     // /api/auth/*: site accounts (Google, GitHub or email + password), see auth.ts and docs/auth.md.
+    // /_pro/*: the Pro registry JSON. A Worker-only asset (wrangler.jsonc run_worker_first); never
+    // served to a request, read only by pro.ts through the ASSETS binding.
+    if (url.pathname.startsWith('/_pro/') || url.pathname === '/_pro') return fail(new HttpError(404, 'not_found', 'Not found.'));
     if (!url.pathname.startsWith('/api/')) return env.ASSETS.fetch(req);
     if (url.pathname.startsWith('/api/auth/')) return handleAuth(req, env, ctx, url);
     if (isBillingPath(url.pathname)) return handleBilling(req, env, ctx, url);
+    // /api/r/*, /api/cli/*: the Pro registry, CLI tokens and `oxyn login`, see pro.ts and docs/cli.md.
+    if (isProPath(url.pathname)) return handlePro(req, env, ctx, url);
     try {
       const route = url.pathname.replace(/\/+$/, '');
       if (route === '/api/health') {

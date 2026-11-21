@@ -138,8 +138,58 @@ Ctrl/Cmd+C inside the locked code, and copying the Pro CLI command (`oxyn add pr
 `/pricing/?from=<slug>`, which names the item and offers the way back after checkout
 (`public/pro.js`, `public/pricing.js`).
 
+A Pro account opens an item's code with **Open code** (or a Copy button) on its page; that is one
+of the month's Pro items (below), and the code then shows on every visit that month.
+
 The repository itself is public and MIT licensed, so the gate is about the site, the Pro registry
 and the Pro CLI, not about hiding source on GitHub.
+
+## Monthly caps (decided 2026-11-21)
+
+| Plan | Pro components | Screens (incl. blocks and agent apps) |
+|---|---|---|
+| Free | 0 | 0 |
+| Pro, founder rate | 20 | 8 |
+| Team | 75, shared by its people | 22, shared |
+| Admins | no limit | no limit |
+
+- **What counts:** each distinct Pro item once per billing month per pool, the first time its code
+  is handed out: `GET /api/r/<slug>.json` (CLI, MCP) or `POST /api/pro/source/<slug>` (the site's
+  Open code / Copy). One function does it, `unlock()` in `site/worker/pro.ts`, so the site, the
+  CLI and the MCP server share one count. Re-downloads, updates and diffs of an item already opened
+  that month are free; so are Pro dependencies fetched with `?for=<item>` for an item the pool
+  already opened (the Worker checks the dependency closure from the registry index).
+- **Kind** comes from the registry index (`site/public/r/index.json`): `component` counts as a
+  component; `screen`, `block` and `app` count as screens. Tiers still come only from
+  `site/src/lib/free-tier.json`.
+- **Pool:** one account for Pro and Founder (and admins, uncapped); one Team for everyone on it
+  (`team:<subscription>` for a paid Team and its seats, `grant:<owner grant>` for a granted Team).
+- **Billing month:** monthly steps from the Polar subscription's `current_period_start` (stored by
+  the webhook from 0007; `current_period_end` is used as the anchor for older rows), so yearly
+  plans also get monthly caps on their billing day. Grants use the calendar month (UTC).
+- **At the limit** the API answers `403 quota_exceeded` with the count and the reset date; the
+  CLI exits 3. Admins can reset an account's month on its admin page (audited `usage.reset`).
+- **Tables (0007):** `pro_unlocks` (one row per pool, month and item; a reset stamps `reset_at`),
+  `cli_tokens` (SHA-256 only, shown once), `cli_auth_requests` (`oxyn login`, 10 minutes).
+
+## Pro registry
+
+`gen.mjs` runs `oxyn-registry --pro-out site/public/_pro/r`, so each installable Pro item's JSON
+(same schema as the free ones) ends up in `dist/_pro/r/` as a Worker static asset. `wrangler.jsonc`
+runs the Worker first for `/_pro` and `/_pro/*`, and the Worker answers 404 to every request there;
+only `pro.ts` reads those files, through the `ASSETS` binding, after checking the token and the
+cap. This was chosen over R2 because it ships atomically with the `index.json` that names the
+items (one `wrangler deploy`), needs no upload step or R2 write permission in CI, and costs nothing
+per request. Cloudflare redirects non-canonical paths (`/%5Fpro/…`, `//_pro/…`) to the canonical
+one before the asset lookup, so the route cannot be bypassed by encoding.
+
+| Route | Who | Does |
+|---|---|---|
+| `GET /api/r/<slug>.json[?for=<item>]` | Bearer token | Pro item JSON (free items too, no token) |
+| `GET /api/cli/whoami` | Bearer token | email, tier, admin, `usage` |
+| `GET/POST /api/cli/tokens`, `DELETE /api/cli/tokens/<id>` | site session | list, create (shown once), revoke |
+| `POST /api/cli/auth/start`, `POST /api/cli/auth/poll` | the CLI | `oxyn login` device flow |
+| `GET /api/cli/auth/request?code=`, `POST /api/cli/auth/approve` | site session | `/cli/auth/` page |
 
 ## Admin
 

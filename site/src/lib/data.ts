@@ -249,6 +249,12 @@ export const PRICES = {
   founder: { month: 12.99, year: 124.45, cap: 100 },
   team: { month: 44.99, year: 449, people: 4, seats: 3 }, // up to 4 people: the owner plus 3 teammates
 };
+/** Pro items a plan opens per billing month (each distinct item once; downloading it again is free).
+ *  Screens include blocks and agent-app templates. Keep in step with CAPS in worker/pro.ts. */
+export const CAPS = {
+  pro: { components: 20, screens: 8 }, // Pro and Founder
+  team: { components: 75, screens: 22 }, // shared by the team
+};
 
 const firstPara = (s: string | null) => {
   if (!s) return '';

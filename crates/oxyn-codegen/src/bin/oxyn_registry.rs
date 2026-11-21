@@ -2,18 +2,20 @@
 //!
 //! ```text
 //! oxyn-registry --input site/src/generated/registry-input.json --out site/public/r \
-//!     [--root .] [--rev <commit>] [--homepage https://ui.oxyn.workers.dev]
+//!     [--pro-out site/public/_pro/r] [--root .] [--rev <commit>] [--homepage https://ui.oxyn.workers.dev]
 //! ```
 //!
 //! Writes `index.json` (every item, free and Pro, without file contents) and `<slug>.json` for
-//! each installable free item. Run by `site/scripts/gen.mjs` before the site build.
+//! each installable free item. With `--pro-out`, also `<slug>.json` for each installable Pro item
+//! there: the Worker-only Pro registry (served by `GET /api/r/<slug>.json` to a signed-in plan, see
+//! site/worker/pro.ts). Run by `site/scripts/gen.mjs` before the site build.
 
 use std::path::PathBuf;
 use std::process::{Command, ExitCode};
 
 use oxyn_codegen::registry::{self, BuildConfig, MetaItem};
 
-const USAGE: &str = "usage: oxyn-registry --input <registry-input.json> --out <dir> [--root <repo>] [--rev <commit>] [--homepage <url>] [--git <url>] [--quiet]";
+const USAGE: &str = "usage: oxyn-registry --input <registry-input.json> --out <dir> [--pro-out <dir>] [--root <repo>] [--rev <commit>] [--homepage <url>] [--git <url>] [--quiet]";
 
 fn main() -> ExitCode {
     match run() {
@@ -28,6 +30,7 @@ fn main() -> ExitCode {
 fn run() -> Result<(), String> {
     let mut input = None;
     let mut out = None;
+    let mut pro_out: Option<PathBuf> = None;
     let mut root = PathBuf::from(".");
     let mut rev = std::env::var("GITHUB_SHA").ok();
     let mut homepage = "https://ui.oxyn.workers.dev".to_string();
@@ -42,6 +45,7 @@ fn run() -> Result<(), String> {
         match a.as_str() {
             "--input" => input = Some(PathBuf::from(val()?)),
             "--out" => out = Some(PathBuf::from(val()?)),
+            "--pro-out" => pro_out = Some(PathBuf::from(val()?)),
             "--root" => root = PathBuf::from(val()?),
             "--rev" => rev = Some(val()?),
             "--homepage" => homepage = val()?.trim_end_matches('/').to_string(),
@@ -81,6 +85,10 @@ fn run() -> Result<(), String> {
     };
     let reg = registry::build(&meta, &cfg)?;
     let (n, bytes) = registry::write(&reg, &out)?;
+    let pro_written = match &pro_out {
+        Some(p) => Some(registry::write_pro(&reg, p, &out)?),
+        None => None,
+    };
     let total = reg.index.items.len();
     let pro = reg
         .index
@@ -95,10 +103,17 @@ fn run() -> Result<(), String> {
         .filter(|e| e.tier == oxyn_registry_schema::Tier::Free && !e.installable)
         .count();
     println!(
-        "registry: {total} items ({pro} pro, listed only), {n} free item JSONs ({:.1} MiB), {blocked} free items not installable -> {}",
+        "registry: {total} items ({pro} pro), {n} free item JSONs ({:.1} MiB), {blocked} free items not installable -> {}",
         bytes as f64 / 1048576.0,
         out.display()
     );
+    if let (Some((np, pb)), Some(p)) = (pro_written, &pro_out) {
+        println!(
+            "registry: {np} Pro item JSONs ({:.1} MiB, Worker-only) -> {}",
+            pb as f64 / 1048576.0,
+            p.display()
+        );
+    }
     if !quiet {
         for line in &reg.report {
             println!("  note: {line}");
