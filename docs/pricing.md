@@ -76,12 +76,13 @@ Pro CLI. A cancellation at the end of the period keeps Pro open until that date.
 | `team-year` | `c9ad78fa-8fd7-4f81-a19a-af4c6472f000` | https://buy.polar.sh/polar_cl_tGlTFd4OLxE5lYiu8NWR2eDjPRkrJGfUUcEwd1eo3vC |
 
 Every checkout link has the success URL
-`https://ui.oxyn.workers.dev/pricing/success?checkout_id={CHECKOUT_ID}` and the return URL
-`https://ui.oxyn.workers.dev/pricing/`. The ids and links live in `PLANS` in
+`https://oxynui.com/pricing/success?checkout_id={CHECKOUT_ID}` and the return URL
+`https://oxynui.com/pricing/` (set on Polar; moved from `ui.oxyn.workers.dev` with the domain). The ids and links live in `PLANS` in
 `site/worker/billing.ts`; prices shown on the site are `PRICES` in `site/src/lib/data.ts`. Change
 both together, and never create a second product for an existing plan.
 
-Webhook endpoint `3e81f336-ecd1-4446-aaa0-7598e1a055da`: `https://ui.oxyn.workers.dev/api/polar/webhook`,
+Webhook endpoint `3e81f336-ecd1-4446-aaa0-7598e1a055da`: `https://oxynui.com/api/polar/webhook`
+(`https://ui.oxyn.workers.dev/api/polar/webhook` still answers: `/api/*` is not redirected),
 format raw, API version 2026-10, events `subscription.created`, `subscription.updated`,
 `subscription.active`, `subscription.canceled`, `subscription.revoked`, `order.paid`,
 `checkout.updated`.
