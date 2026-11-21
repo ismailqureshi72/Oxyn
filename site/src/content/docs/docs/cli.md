@@ -86,3 +86,30 @@ An item counts once, the first time its code is opened in a billing month, wheth
 ## Registry
 
 The CLI reads a static registry: `https://ui.oxyn.workers.dev/r/index.json` lists every item, and `https://ui.oxyn.workers.dev/r/<slug>.json` holds the files of each free item. Pro items come from `https://ui.oxyn.workers.dev/api/r/<slug>.json` with your token (`OXYN_API` overrides the API base). Point it elsewhere with `--registry <url-or-directory>` or the `OXYN_REGISTRY` environment variable, for example a registry built from a checkout with `npm run gen` in `site/` (`site/public/r`).
+
+## Prompt for your agent
+
+Paste this into Claude Code, Codex, Cursor or any other coding agent to set Oxyn up in your project. The copy button is in the corner of the block.
+
+```text title="Prompt"
+Set up Oxyn (Rust UI components for agent apps,
+https://ui.oxyn.workers.dev) in this project.
+
+1. If the `oxyn` command is missing, install it:
+   cargo install --git https://github.com/ismailqureshi72/Oxyn oxyn-cli
+   If the oxyn MCP server (oxyn-mcp) is connected, you can use its tools
+   (search_components, get_component, add_component) instead of the CLI.
+2. In the root of this Dioxus or GPUI project, run `oxyn init` once.
+3. Find components with `oxyn search <words>` or `oxyn list` (add --json to
+   read the output) and check one with `oxyn view <slug>`.
+4. Add what you need with `oxyn add <slug>`. Use the `use crate::oxyn::...`
+   lines and the stylesheet it prints, keep the src/oxyn/ module layout, and
+   theme through data-oxyn-theme and the Oxyn token CSS variables instead of
+   hard-coded colours.
+5. Treat the files in src/oxyn/ as generated: build on them from my code and
+   do not edit them unless I ask (`oxyn diff <slug>` shows local changes).
+6. Pro items need an Oxyn Pro plan. If `oxyn add` says an item is Pro, stop
+   and ask me to run `oxyn login`; do not work around it.
+
+When you are done, tell me what you installed and where.
+```

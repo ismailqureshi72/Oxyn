@@ -18,14 +18,15 @@ const nav = [
   ['Docs', '/docs/', icon.docs],
   ['Design System', '/docs/theming/', icon.design],
   ['Pricing', '/pricing/', icon.pricing],
+  ['Studio', '/studio/', icon.sparkle],
 ];
-const libActive = !current.startsWith('/docs') && !current.startsWith('/pricing');
+const libActive = !current.startsWith('/docs') && !current.startsWith('/pricing') && !current.startsWith('/studio');
 const groupsList = [
   { label: 'Components', href: '/components/', n: counts.components, items: [], head: true },
   ...families,
   { label: 'Screens', href: '/screens/', n: counts.screens - counts.agentApps - counts.arcScreens, items: [...composedScreens.map((c) => [c.name, c.href, true] as const), ...appScreens.map((d) => [d.name, demoUrl(d), isPro(d)] as const)] },
   { label: 'Agent apps', href: '/screens/#agent-apps', n: counts.agentApps, items: agentApps.map((d) => [d.name, demoUrl(d), isPro(d)] as const) },
-  { label: 'Arc screens', href: '/screens/#arc-screens', n: counts.arcScreens, items: arcScreens.map((d) => [d.name, demoUrl(d), isPro(d)] as const) },
+  { label: 'Work screens', href: '/screens/#work-screens', n: counts.arcScreens, items: arcScreens.map((d) => [d.name, demoUrl(d), isPro(d)] as const) },
   { label: 'Blocks', href: '/blocks/', n: counts.blocks, items: blocks.map((d) => [d.name, demoUrl(d), true] as const) },
   { label: 'Illustrations', href: '/illustrations/', n: 0, items: [] },
   { label: 'Motion', href: '/motion/', n: counts.motion, items: [...motionDemos.map((d) => [d.name, demoUrl(d), isPro(d)] as const), ['Motion tokens', '/motion/', false] as const] },
@@ -42,7 +43,7 @@ const groupsList = [
   </div>
   <nav class="lsb-nav" aria-label="Site">
     {nav.map(([l, h, i]) => (
-      <a href={h} aria-current={(l === 'Library' ? libActive : current.startsWith(h)) ? 'page' : undefined}><Fragment set:html={i} />{l}</a>
+      <a href={h} aria-current={(l === 'Library' ? libActive : current.startsWith(h)) ? 'page' : undefined}><Fragment set:html={i} />{l}{l === 'Studio' && <span class="x-soon-badge">Soon</span>}</a>
     ))}
   </nav>
   <div class="lsb-style">
@@ -62,7 +63,7 @@ const groupsList = [
             ))}
           </ul>
         ) : (
-          <p class="lsb-empty">Planned – <a href={g.href}>see what is coming</a></p>
+          <p class="lsb-empty"><a href={g.href}>Coming soon</a></p>
         )}
       </details>
     ))}

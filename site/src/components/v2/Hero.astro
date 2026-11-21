@@ -1,12 +1,12 @@
 ---
 // Landing hero, "Live edit": the headline lockup on a dot canvas, edited live by two fictional
-// collaborators (Mira and Teo) with design-tool chrome: a selection frame with handles and a live
+// collaborators (Mira and Teo, with Ana, Sam and Lia browsing around them) with design-tool chrome: a selection frame with handles and a live
 // W x H tag, a weight change, a frame resize that reflows the headline, auto-layout gaps, a radius
 // token, and redlined spacing. Layers (left) and Inspector (right) are real controls, so a visitor
 // can do all of it too. It shows no library components. Script: ./hero.js; styles: .dz* in site.css.
-import { counts, REPO } from '../../lib/data';
-const free = counts.components;
-const install = `cargo add oxyn-dioxus oxyn-core --git ${REPO}`;
+import { counts, REPO, CLI_INSTALL } from '../../lib/data';
+const free = counts.free;
+const install = CLI_INSTALL;
 const repoName = REPO.split('/').pop();
 ---
 <link rel="preload" href="/fonts/inter-var-hero.woff2" as="font" type="font/woff2" crossorigin />
@@ -28,13 +28,13 @@ const repoName = REPO.split('/').pop();
     </aside>
 
     <div class="dz-lock" data-dz-lock>
-      <a class="badge-pill" href="/components/" data-k="badge"><b>{free} free</b><span>Components, primitives and variants</span><span class="bp-go" aria-hidden="true">→</span></a>
+      <a class="badge-pill" href="/components/" data-k="badge"><b>{free} free</b><span>Components, MIT licensed</span><span class="bp-go" aria-hidden="true">→</span></a>
       <h1 id="dz-h1" class="dz-h1" data-k="h1"><span class="dz-w">Agent</span> <span class="dz-w">UI,</span> <span class="dz-w dz-soft">beautifully</span> <span class="dz-w dz-soft">done.</span></h1>
       <p class="dz-sub" data-k="sub">Rust components for chat, tool calls, approvals and live runs. Dioxus on the web, GPUI on the desktop.</p>
       <div class="dz-cta" data-k="cta">
         <a class="x-pill pill-black pill-lg" href="/components/" data-k="b1">Browse library<svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M4 10h11m-4.5-4.5L15 10l-4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
         <a class="x-pill pill-grey pill-lg" href="/docs/installation/" data-k="b2">Get started</a>
-        <div class="dz-inst" data-k="b3"><code title={install}><i>$</i> cargo add oxyn-dioxus --git …/{repoName}</code><button type="button" data-copy={install} aria-label="Copy install command"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><rect x="5" y="5" width="8.5" height="8.5" rx="2" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M10.5 3.2A1.8 1.8 0 0 0 8.8 2H4a2 2 0 0 0-2 2v4.8c0 .8.5 1.5 1.2 1.7" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></button></div>
+        <div class="dz-inst" data-k="b3"><code title={install}><i>$</i> cargo install --git …/{repoName} oxyn-cli</code><button type="button" data-copy={install} aria-label="Copy install command"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><rect x="5" y="5" width="8.5" height="8.5" rx="2" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M10.5 3.2A1.8 1.8 0 0 0 8.8 2H4a2 2 0 0 0-2 2v4.8c0 .8.5 1.5 1.2 1.7" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></button></div>
       </div>
       <span class="sr-only" role="status" aria-live="polite" data-dz-live></span>
     </div>
@@ -67,6 +67,10 @@ const repoName = REPO.split('/').pop();
       <div data-o class="dz-bdg dz-red" aria-hidden="true">30</div><div data-o class="dz-bdg dz-red" aria-hidden="true">36</div>
       <div data-o class="dz-cur a" aria-hidden="true"><svg viewBox="0 0 16 18"><path d="M1.5 1.5l12 6.2-5.3 1.4-2.6 5.2z" stroke-width="1.2" stroke-linejoin="round"/></svg><span>Mira</span></div>
       <div data-o class="dz-cur b" aria-hidden="true"><svg viewBox="0 0 16 18"><path d="M1.5 1.5l12 6.2-5.3 1.4-2.6 5.2z" stroke-width="1.2" stroke-linejoin="round"/></svg><span>Teo</span></div>
+      <div data-o class="dz-ghost c" aria-hidden="true"></div><div data-o class="dz-ghost d" aria-hidden="true"></div><div data-o class="dz-ghost e" aria-hidden="true"></div>
+      <div data-o class="dz-cur c amb" aria-hidden="true"><svg viewBox="0 0 16 18"><path d="M1.5 1.5l12 6.2-5.3 1.4-2.6 5.2z" stroke-width="1.2" stroke-linejoin="round"/></svg><span>Ana</span></div>
+      <div data-o class="dz-cur d amb" aria-hidden="true"><svg viewBox="0 0 16 18"><path d="M1.5 1.5l12 6.2-5.3 1.4-2.6 5.2z" stroke-width="1.2" stroke-linejoin="round"/></svg><span>Sam</span></div>
+      <div data-o class="dz-cur e amb" aria-hidden="true"><svg viewBox="0 0 16 18"><path d="M1.5 1.5l12 6.2-5.3 1.4-2.6 5.2z" stroke-width="1.2" stroke-linejoin="round"/></svg><span>Lia</span></div>
     </div>
   </div>
 </section>

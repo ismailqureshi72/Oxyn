@@ -772,7 +772,7 @@ pub(crate) fn demos() -> Vec<Demo> {
                 rng("size", "Size", 12.0, 96.0, 4.0, "48"),
                 sel(
                     "preset",
-                    "Arc size",
+                    "Size preset",
                     &["custom", "sm", "md", "lg", "xl"],
                     "custom",
                 ),

@@ -6,13 +6,13 @@ import Laptop from '../components/v2/Laptop.astro';
 import Hero from '../components/v2/Hero.astro';
 import { icon } from '../components/v2/icons';
 import { mark, brands } from '../components/v2/brands';
-import { demos, counts, screens, inGroup, demoUrl, REPO } from '../lib/data';
+import { demos, counts, screens, blocks, demoUrl, REPO, CLI_INSTALL } from '../lib/data';
 
 const find = (s: string) => demos.find((d) => d.slug === s)!;
 const tabSets: [string, string, string[] | null][] = [
   ['components', 'Components', ['approval-card', 'tool-call', 'agent-plan', 'model-picker', 'thinking-loader', 'context-meter']],
   ['screens', 'Screens', screens.slice(0, 6).map((d) => d.slug)],
-  ['blocks', 'Blocks', null],
+  ['blocks', 'Blocks', blocks.slice(0, 6).map((d) => d.slug)],
   ['illustrations', 'Illustrations', null],
   ['motion', 'Motion', ['text-shimmer', 'verb-cycler', 'text-reveal', 'elapsed-timer', 'text-morph', 'slot-text']],
 ];
@@ -28,7 +28,9 @@ const wave = `M24 0 ${Array.from({ length: 16 }, (_, i) => (i === 0 ? 'q12 30 0 
 // Glitter: four-point stars of a few sizes along the wave, each twinkling on its own beat.
 const sparks: [number, number, number, number][] = [[31, 20, 0, 3.2], [17, 80, 5, 2], [32, 150, 2, 2.6], [16, 205, 7, 3.4], [30, 270, 1, 1.8], [18, 330, 4, 2.8], [33, 395, 6, 2.2], [15, 450, 3, 3], [29, 515, 8, 2.4], [19, 575, 2, 1.8]];
 const star = (x: number, y: number, r: number) => `M${x} ${y - r}Q${x} ${y} ${x + r} ${y}Q${x} ${y} ${x} ${y + r}Q${x} ${y} ${x - r} ${y}Q${x} ${y} ${x} ${y - r}Z`;
-const agents = ['claude-code', 'cursor', 'codex', 'windsurf', 'github-copilot', 'gemini-cli', 'zed', 'cline', 'opencode', 'amp'];
+const agents = ['claude-code', 'codex', 'cursor', 'windsurf', 'github-copilot', 'zed', 'antigravity', 'gemini-cli', 'kimi', 'minimax', 'cline', 'opencode'];
+const MCP_INSTALL = `cargo install --git ${REPO} oxyn-mcp`;
+const moreHref: Record<string, [string, string]> = { components: ['/components/', 'Explore all components'], screens: ['/screens/', 'Explore all screens'], blocks: ['/blocks/', 'Explore all blocks'], illustrations: ['/illustrations/', 'About illustrations'], motion: ['/motion/', 'Explore motion'] };
 // Brand names in running text get their mark in front (the name stays as text).
 const named = (s: string) =>
   s
@@ -39,8 +41,9 @@ const faq: [string, string, keyof typeof icon][] = [
   ['Which frameworks does it support?', 'Dioxus (web, and anything Dioxus renders to) and GPUI (desktop). Both read the same models and state machines from oxyn-core, so a component behaves the same in each.', 'layers'],
   ['Is it free?', `The core is. ${counts.free} components (the most complete ones), the docs and the CLI are free and MIT licensed. Pro adds the other ${counts.proComponents} components and every screen, agent-app template, block and kit for $19.99 a month (less for the first 100 founders); the previews stay free to open.`, 'pricing'],
   ['Are the previews real?', 'Yes. Every preview is the Rust component itself: rendered to HTML when the site is built, then mounted live from one WebAssembly bundle when it scrolls into view.', 'eye'],
-  ['How do I install a component?', 'Today: add the oxyn-dioxus and oxyn-core crates from the repository and import the component and its stylesheet. The oxyn CLI, which copies one component file into your project, is planned.', 'terminal'],
-  ['Can my coding agent use it?', 'Each page has a Notes for AI section and Open in Claude, ChatGPT and Cursor links. An MCP server through the oxyn CLI (oxyn mcp) is planned.', 'plug'],
+  ['How do I install a component?', `Install the oxyn CLI with ${CLI_INSTALL}, run oxyn init in your Dioxus or GPUI project, then oxyn add and a component's name: its source lands in src/oxyn/, yours to change.`, 'terminal'],
+  ['Can my coding agent use it?', 'Yes. Connect the oxyn-mcp server to Claude Code, Codex, Cursor or any MCP client and it searches the library and adds components for you. Every page also has Notes for AI and Open in Claude, ChatGPT and Cursor links.', 'plug'],
+  ['What is Studio?', 'A visual editor for Oxyn components: change tokens, states and variants on a live preview, then copy or install the result. It is coming soon.', 'design'],
   ['What about light, dark and accessibility?', 'Every component ships light, dark and high-contrast themes from one token set, follows the WAI-ARIA patterns for its role, and respects reduced motion.', 'design'],
 ];
 ---
@@ -58,11 +61,11 @@ const faq: [string, string, keyof typeof icon][] = [
           {slugs ? (
             <div class="cgrid">{slugs.map((s) => <CompCard demo={find(s)} />)}</div>
           ) : (
-            <div class="lp-soon"><b>{l} are on the way.</b><span>They are planned in the parity tracker and land one plan PR at a time.</span><a class="x-pill pill-grey" href={`/${k}/`}>See what is planned</a></div>
+            <div class="lp-soon"><b>{l} are coming soon.</b><span>Animated spot art for empty states, onboarding and errors, drawn from the same tokens.</span><a class="x-pill pill-grey" href={`/${k}/`}>Learn more</a></div>
           )}
+          <div class="lp-more"><a class="x-pill pill-grey" href={moreHref[k][0]}>{moreHref[k][1]}</a></div>
         </div>
       ))}
-      <div class="lp-more"><a class="x-pill pill-grey" href="/components/">Explore all components</a></div>
     </div>
   </section>
 
@@ -74,26 +77,26 @@ const faq: [string, string, keyof typeof icon][] = [
 
   <section class="lp-sec" aria-labelledby="h-built">
     <h2 id="h-built">Built for agents,<br />not just for copy and paste</h2>
-    <p class="lp-sub">Connect once – your agent finds and adds the right piece. <span class="x-muted">(The oxyn CLI and its MCP server are planned.)</span></p>
+    <p class="lp-sub">Set it up once, then ask for a screen or a component and your agent pulls it into your app.</p>
     <div class="x-mcp">
       <div class="mcp-l" aria-label="Example agent session">
         <div class="mcp-ask">Add an approval step before the agent sends email</div>
         <ul class="mcp-steps">
           <li><span class="ok"><Fragment set:html={icon.check} /></span><code>search_components</code><span class="x-muted">"approval"</span></li>
           <li><span class="ok"><Fragment set:html={icon.check} /></span><code>get_component</code><span class="x-muted">approval-card</span></li>
-          <li><span class="ok"><Fragment set:html={icon.check} /></span><code>oxyn add approval-card</code></li>
+          <li><span class="ok"><Fragment set:html={icon.check} /></span><code>add_component</code><span class="x-muted">approval-card</span></li>
         </ul>
-        <p class="mcp-done">Added <code>src/components/approval_card.rs</code> and wired it to the send step.</p>
+        <p class="mcp-done">Added <code>src/oxyn/approval_card.rs</code> and wired it to the send step.</p>
       </div>
       <div class="mcp-r">
-        <span class="mcp-lbl">Connect in one line</span>
-        <div class="codeblk copyable"><div class="codeblk-h"><span>Terminal</span><button class="pill-copy" type="button" data-copy="oxyn mcp install" aria-label="Copy"><Fragment set:html={icon.copy} /></button></div><pre><code>oxyn mcp install</code></pre></div>
+        <span class="mcp-lbl">Install the MCP server</span>
+        <div class="codeblk copyable"><div class="codeblk-h"><span>Terminal</span><button class="pill-copy" type="button" data-copy={MCP_INSTALL} aria-label="Copy"><Fragment set:html={icon.copy} /></button></div><pre><code>{MCP_INSTALL}</code></pre></div>
         <span class="mcp-lbl">Works with your agent</span>
         <ul class="x-agents" aria-label="Agents that can use Oxyn">
           {agents.map((id) => <li title={brands[id].title}><Fragment set:html={mark(id)} /><span>{brands[id].title}</span></li>)}
         </ul>
-        <p class="x-muted" set:html={named('Until the CLI ships, point your agent at a component page: each one ends with Notes for AI, and the toolbar opens it in Claude, ChatGPT or Cursor.')}></p>
-        <a class="x-pill pill-grey" href="/docs/installation/">Set up your editor</a>
+        <p class="x-muted" set:html={named('Then add it to your agent with one command or a few lines of config. Every component page also ends with Notes for AI, and its toolbar opens it in Claude, ChatGPT or Cursor.')}></p>
+        <a class="x-pill pill-grey" href="/docs/mcp/">Set up your agent</a>
       </div>
     </div>
   </section>
@@ -102,9 +105,9 @@ const faq: [string, string, keyof typeof icon][] = [
     <h2 id="h-file">One file per piece,<br />code you own</h2>
     <div class="trio">
       <div class="trio-c">
-        <div class="trio-p term" aria-hidden="true"><pre><span class="x-muted">$</span> oxyn add approval-card{'\n'}<span class="x-muted">✓ src/components/approval_card.rs</span>{'\n'}<span class="x-muted">✓ styles added to oxyn.css</span></pre></div>
+        <div class="trio-p term" aria-hidden="true"><pre><span class="x-muted">$</span> oxyn add approval-card{'\n'}<span class="x-muted">✓ src/oxyn/approval_card.rs</span>{'\n'}<span class="x-muted">✓ use crate::oxyn::ApprovalCard</span></pre></div>
         <h3>One command, one file</h3>
-        <p>The planned <code>oxyn add</code> copies a component's source into your project. Today, add the crate and import it.</p>
+        <p><code>oxyn add</code> copies a component's source, and what it needs, into <code>src/oxyn/</code> in your project.</p>
       </div>
       <div class="trio-c">
         <div class="trio-p" aria-hidden="true" inert><OxynDemo slug="segmented-control" html={find('segmented-control').variants[0].html} variant={0} /></div>
@@ -118,6 +121,17 @@ const faq: [string, string, keyof typeof icon][] = [
       </div>
     </div>
     <div class="lp-more"><a class="x-pill pill-grey" href="/docs/">Learn more</a></div>
+  </section>
+
+  <section class="lp-sec" aria-labelledby="h-studio">
+    <h2 id="h-studio">Studio,<br />edit it visually <span class="x-chip x-soon-chip x-studio-chip">Soon</span></h2>
+    <p class="lp-sub x-muted">Pick a component, change its tokens, states and variants on a live preview, then copy the code or install it with the CLI.</p>
+    <div class="x-studio-tease" aria-hidden="true">
+      <div class="xs-pane xs-l"><b>Layers</b><i></i><i></i><i class="on"></i><i></i></div>
+      <div class="xs-stage"><div class="xs-card"><span class="xs-t"></span><span class="xs-s"></span><span class="xs-b"></span></div></div>
+      <div class="xs-pane xs-r"><b>Tokens</b><span><em>radius</em><u>12</u></span><span><em>accent</em><u class="xs-sw"></u></span><span><em>density</em><u>Cozy</u></span></div>
+    </div>
+    <div class="lp-more"><a class="x-pill pill-grey" href="/studio/">About Studio</a></div>
   </section>
 
   <section class="lp-sec" aria-labelledby="h-same">

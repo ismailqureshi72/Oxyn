@@ -530,7 +530,7 @@ pub(crate) fn demos() -> Vec<Demo> {
                 ),
                 var(
                     "wave",
-                    "Arc's staggered pulse.",
+                    "A staggered pulse.",
                     &[("shape", "text"), ("sweep", "wave"), ("lines", "5")],
                 ),
                 var(
@@ -573,7 +573,7 @@ pub(crate) fn demos() -> Vec<Demo> {
                 var("loading", "Size-matched skeletons.", &[("loading", "true")]),
                 var(
                     "fast",
-                    "Arc's 40 ms stagger, no chart.",
+                    "A 40 ms stagger, no chart.",
                     &[("stagger", "40"), ("chart", "false")],
                 ),
             ],

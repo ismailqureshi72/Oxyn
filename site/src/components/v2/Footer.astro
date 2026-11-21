@@ -7,7 +7,7 @@ import { icon } from './icons';
 import { lockup, wordmark } from './logo';
 import { mark, brands } from './brands';
 import { starCount } from './meta';
-import { REPO, counts } from '../../lib/data';
+import { REPO, countsText } from '../../lib/data';
 const stars = await starCount();
 const cols: [string, [string, string][]][] = [
   ['Library', [['Components', '/components/'], ['Screens', '/screens/'], ['Motion', '/motion/'], ['Compare', '/compare/'], ['Pricing', '/pricing/']]],
@@ -23,8 +23,8 @@ const social = {
   X: '<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></svg>',
 };
 const founders: [string, [keyof typeof social, string][]][] = [
-  ['Ismail Qureshi', [['GitHub', 'https://github.com/ismailqureshi72'], ['LinkedIn', 'https://www.linkedin.com/in/ismail-qureshi72'], ['X', 'https://x.com/IsmailQureshi39']]],
   ['Khubaib Nazeer', [['GitHub', 'https://github.com/Khubaib7-del'], ['LinkedIn', 'https://www.linkedin.com/in/khubaib-nazeer-039b47384/'], ['X', 'https://x.com/KhubaibNazeer_']]],
+  ['Ismail Qureshi', [['GitHub', 'https://github.com/ismailqureshi72'], ['LinkedIn', 'https://www.linkedin.com/in/ismail-qureshi72'], ['X', 'https://x.com/IsmailQureshi39']]],
 ];
 ---
 <footer class="x-ft x-foot" data-pagefind-ignore>
@@ -32,7 +32,7 @@ const founders: [string, [keyof typeof social, string][]][] = [
     <div class="x-foot-cta">
       <div class="x-foot-pitch">
         <h2 class="x-foot-h">Agent UI that feels finished.</h2>
-        <p>New screens and components land one plan PR at a time. Follow the releases or star the repository to keep up.</p>
+        <p>New screens, blocks and components keep landing. Follow the releases or star the repository to keep up.</p>
       </div>
       <div class="x-foot-btns">
         <a class="x-pill pill-black" href={REPO} aria-label={!stars ? 'Star Oxyn on GitHub' : `Star Oxyn on GitHub, ${stars} stars`}><Fragment set:html={icon.star} />Star on GitHub{!!stars && <span class="x-foot-n">{stars.toLocaleString('en-US')}</span>}</a>
@@ -42,7 +42,7 @@ const founders: [string, [keyof typeof social, string][]][] = [
     <div class="x-foot-grid">
       <div class="x-foot-about">
         <a class="wm x-foot-wm" href="/" aria-label="Oxyn home"><Fragment set:html={lockup} /></a>
-        <p>Agent-UI components for Rust: Dioxus on the web, GPUI on the desktop. {counts.components} components free, {counts.screens} screens in Pro.</p>
+        <p>Agent-UI components for Rust: Dioxus on the web, GPUI on the desktop. {countsText()}.</p>
         <span class="x-foot-lbl">Works with</span>
         <ul class="x-foot-agents" aria-label="Agents that can use Oxyn">
           {agents.map((id) => <li title={brands[id].title}><Fragment set:html={mark(id)} /><span class="sr-only">{brands[id].title}</span></li>)}
@@ -76,7 +76,7 @@ const founders: [string, [keyof typeof social, string][]][] = [
       </div>
     </div>
     <div class="x-foot-legal">
-      <span>© 2026 Oxyn · Components MIT licensed, free to use and change.</span>
+      <span>© 2026 Oxyn · Free components MIT licensed, free to use and change.</span>
       <span>Built with Rust, Dioxus, GPUI and Astro. Brand marks belong to their owners.</span>
     </div>
   </div>

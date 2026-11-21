@@ -1,0 +1,62 @@
+/* Coming-soon sections (Illustrations, Studio) and other late site polish. Monochrome chrome. */
+.x-soon{margin:28px 0 8px;padding:36px 32px;border:1px solid var(--ln);border-radius:20px;background:var(--pn);text-align:center}
+.x-soon-chip{background:var(--ink);color:var(--on-ink)}
+.x-soon h2{margin:14px auto 8px;max-width:620px;font-size:clamp(20px,2.4vw,26px);font-weight:600;letter-spacing:-.01em;line-height:1.25;color:var(--fg)}
+.x-soon-lede{margin:0 auto;max-width:620px;color:var(--fg2);font-size:15px;line-height:1.6}
+.x-soon-grid{list-style:none;margin:26px auto 0;padding:0;max-width:860px;display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;text-align:left}
+.x-soon-grid li{display:flex;flex-direction:column;gap:4px;padding:14px 16px;border:1px solid var(--ln);border-radius:14px;background:var(--pg)}
+.x-soon-grid b{font-size:14px;font-weight:600;color:var(--fg)}
+.x-soon-grid span{font-size:13px;line-height:1.5;color:var(--fg2)}
+.x-soon-note{margin:18px auto 0;max-width:620px;font-size:13px;color:var(--fg3)}
+.x-soon-cta{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:24px}
+@media (max-width:520px){.x-soon{padding:28px 18px;border-radius:16px}}
+
+/* Library header: the slim bar must keep its 46 px inside the scrolling panel (a flex item would
+   shrink and open a gap above the sticky tabs), and the tabs row is a solid band edge to edge, with
+   a lip above it, so no card shows above, beside or behind it. */
+.lbar{flex:none;min-height:46px;box-sizing:border-box}
+.ltabs{z-index:35;margin-left:-24px;margin-right:-24px;padding:0 24px;isolation:isolate}
+.ltabs::before{content:"";position:absolute;left:0;right:0;bottom:100%;height:12px;background:var(--pn);pointer-events:none}
+@media (max-width:900px){.ltabs{margin-left:-16px;margin-right:-16px;padding:0 16px}}
+
+/* Landing: Studio teaser (a quiet sketch of the editor, no product screenshot yet). */
+.x-studio-chip{vertical-align:middle;margin-left:6px;font-size:11px;height:20px}
+.x-studio-tease{text-align:left;display:grid;grid-template-columns:150px minmax(0,1fr) 180px;gap:12px;max-width:880px;margin:28px auto 0;padding:12px;border:1px solid var(--ln);border-radius:18px;background:var(--pg)}
+.xs-pane{display:flex;flex-direction:column;gap:8px;padding:12px;border-radius:12px;background:var(--pn);border:1px solid var(--ln);font-size:12px;color:var(--fg2)}
+.xs-pane b{font-size:12px;font-weight:600;color:var(--fg)}
+.xs-l i{display:block;height:8px;border-radius:4px;background:var(--ln)}
+.xs-l i.on{background:var(--fg3)}
+.xs-r span{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.xs-r em{font-style:normal}
+.xs-r u{text-decoration:none;font-variant-numeric:tabular-nums;color:var(--fg)}
+.xs-sw{width:14px;height:14px;border-radius:4px;background:var(--oxyn-color-status-info-fg)}
+.xs-stage{display:grid;place-items:center;min-height:180px;border-radius:12px;background:var(--pn);border:1px dashed var(--ln);background-image:radial-gradient(var(--ln) 1px,transparent 1px);background-size:14px 14px}
+.xs-card{display:flex;flex-direction:column;gap:8px;width:min(260px,80%);padding:16px;border-radius:12px;background:var(--pn);border:1px solid var(--ln);box-shadow:0 0 0 2px var(--oxyn-color-status-info-fg)}
+.xs-t{height:10px;width:60%;border-radius:5px;background:var(--fg3)}
+.xs-s{height:8px;width:85%;border-radius:4px;background:var(--ln)}
+.xs-b{height:22px;width:84px;border-radius:999px;background:var(--ink)}
+@media (max-width:720px){.x-studio-tease{grid-template-columns:minmax(0,1fr)}.xs-pane{flex-direction:row;flex-wrap:wrap;align-items:center}.xs-l i{width:28px}.xs-r span{gap:6px}}
+
+/* "Soon" badge in the navigation, and the Studio page. */
+.x-soon-badge{display:inline-flex;align-items:center;height:17px;padding:0 6px;margin-left:6px;border-radius:999px;background:var(--chip,var(--ln2));color:var(--fg2);font-size:10.5px;font-weight:600;letter-spacing:.01em;line-height:1;vertical-align:middle}
+.x-nav-studio{display:inline-flex;align-items:center}
+.x-studio{max-width:1040px;margin:0 auto;padding:72px 24px 56px;text-align:center}
+.x-studio-k{display:inline-flex;align-items:center;gap:8px;margin:0 0 14px;font-size:13px;font-weight:600;color:var(--fg2)}
+.x-studio-k .x-soon-badge{margin-left:0;background:var(--ink);color:var(--on-ink)}
+.x-studio h1{margin:0 auto;max-width:720px;font-size:clamp(32px,5vw,56px);line-height:1.08;letter-spacing:-.03em;font-weight:620;color:var(--fg)}
+.x-studio-lede{margin:18px auto 0;max-width:640px;font-size:17px;line-height:1.6;color:var(--fg2)}
+.x-studio .x-soon{margin-top:40px}
+@media (max-width:640px){.x-studio{padding:44px 16px 40px}.x-studio-lede{font-size:15.5px}}
+
+/* Landing hero: five collaborators, each with a colour; a selection frame takes the colour of the
+   cursor that made it. Light text on the light-theme colours, dark text on the dark-theme ones. */
+.dz{--dz-c-a:#6D4AFF;--dz-c-b:#0B7F73;--dz-c-c:#D9480F;--dz-c-d:#C2255C;--dz-c-e:#1C6FD6;--dz-on:#FFFFFF}
+[data-theme="dark"] .dz{--dz-c-a:#A594FF;--dz-c-b:#3CCFB8;--dz-c-c:#FF9466;--dz-c-d:#FF7EB3;--dz-c-e:#74B0FF;--dz-on:#0D0D0E}
+.dz-cur.a{--cc:var(--dz-c-a)}.dz-cur.b{--cc:var(--dz-c-b)}.dz-cur.c,.dz-ghost.c{--cc:var(--dz-c-c)}.dz-cur.d,.dz-ghost.d{--cc:var(--dz-c-d)}.dz-cur.e,.dz-ghost.e{--cc:var(--dz-c-e)}
+.dz-cur.a path,.dz-cur.b path,.dz-cur.amb path{fill:var(--cc);stroke:var(--dz-on)}
+.dz-cur.a span,.dz-cur.b span,.dz-cur.amb span{background:var(--cc);color:var(--dz-on);box-shadow:0 2px 6px rgb(0 0 0 / .12)}
+.dz-cur.amb{transition:opacity .3s,transform .7s var(--dz-ease)!important}
+.dz-ghost{border:1.5px solid var(--cc);border-radius:3px;background:color-mix(in srgb,var(--cc) 9%,transparent);box-sizing:border-box}
+.dz.dz-tint .dz-name,.dz.dz-tint .dz-dim,.dz.dz-tint .dz-bdg:not(.dz-red){color:var(--dz-on)}
+.dz.dz-tint .dz-sel{border-width:1.5px}
+@media (max-width:760px){.dz-cur{display:block}.dz-cur span{font-size:10px;height:17px;line-height:17px;padding:0 6px}}

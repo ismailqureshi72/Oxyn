@@ -1,0 +1,27 @@
+---
+import Base from '../layouts/Base.astro';
+import ComingSoon from '../components/v2/ComingSoon.astro';
+const lede = 'Studio is a visual editor for Oxyn components: pick one, change how it looks and behaves on a live preview, then copy the code or install it.';
+---
+<Base title="Studio" description={lede}>
+  <div class="x-studio">
+    <p class="x-studio-k"><span class="x-soon-badge">Soon</span>Oxyn Studio</p>
+    <h1>Edit Oxyn components visually</h1>
+    <p class="x-studio-lede">{lede}</p>
+    <div class="x-studio-tease" aria-hidden="true">
+      <div class="xs-pane xs-l"><b>Layers</b><i></i><i></i><i class="on"></i><i></i></div>
+      <div class="xs-stage"><div class="xs-card"><span class="xs-t"></span><span class="xs-s"></span><span class="xs-b"></span></div></div>
+      <div class="xs-pane xs-r"><b>Tokens</b><span><em>radius</em><u>12</u></span><span><em>accent</em><u class="xs-sw"></u></span><span><em>density</em><u>Cozy</u></span></div>
+    </div>
+    <ComingSoon
+      title="What you will do in Studio"
+      lede="Everything you change stays plain Rust and CSS variables, so the result is code you own, the same as a component you add with the CLI."
+      items={[
+        ['Pick a component', 'Start from any component, block or screen in the library.'],
+        ['Change it live', 'Tokens, colours, radius, density, type, states and variants, on a live preview in light and dark.'],
+        ['Check every state', 'Step through loading, streaming, error and empty states before you ship.'],
+        ['Copy or install', 'Copy the Rust and CSS, or install your version into your project with the oxyn CLI.'],
+      ]}
+    />
+  </div>
+</Base>
