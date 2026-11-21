@@ -319,3 +319,13 @@ specified just as deeply. When we point at one component as an example, the stan
 | [call-insights.md](call-insights.md) | v0.1 — built (C1g, Blocks, Pro) |
 | [lead-scoring.md](lead-scoring.md) | v0.1 — built (C1g, Blocks, Pro) |
 | Every other component in [../component-taxonomy.md](../component-taxonomy.md) | to write in V2.2 |
+| [test-ticks.md](test-ticks.md) | v0.1 — built (C2a, X-post components, free) |
+| [triage-metro.md](triage-metro.md) | v0.1 — built (C2a, X-post components, free) |
+| [loop-pipeline.md](loop-pipeline.md) | v0.1 — built (C2a, X-post components, free) |
+| [secret-card.md](secret-card.md) | v0.1 — built (C2a, X-post components, free) |
+| [split-confirm.md](split-confirm.md) | v0.1 — built (C2a, X-post components, free) |
+| [agent-prompt-copy.md](agent-prompt-copy.md) | v0.1 — built (C2a, X-post components, free) |
+| [proactive-card.md](proactive-card.md) | v0.1 — built (C2a, X-post components, free) |
+| [write-sweep.md](write-sweep.md) | v0.1 — built (C2a, X-post components, free) |
+| [done-shockwave.md](done-shockwave.md) | v0.1 — built (C2a, X-post components, free) |
+| [publish-popover.md](publish-popover.md) | v0.1 — built (C2a, X-post components, free) |

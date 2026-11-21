@@ -606,11 +606,11 @@ Beautiful UI,Sidebar Nav,https://www.beautifului.dev/#sidebar-nav,Components,Fre
 Beautiful UI,Search,https://www.beautifului.dev/#search,Components,Free (MIT),search-field,,#26,built
 Beautiful UI,Agent Screen,https://www.beautifului.dev/#agent-screen,Components,Free (MIT),"takeover-banner, acting-indicator, run-replay",,#39,planned
 X post,"#1 @pontusab ""first impressions matter""",https://x.com/pontusab/status/2119865335990141433,X videos,reference,NEW,,#40,planned
-X post,#2 @fayazara Lotion,https://x.com/fayazara/status/2119742543357444272,X videos,reference,NEW,,#36,planned
+X post,#2 @fayazara Lotion,https://x.com/fayazara/status/2119742543357444272,X videos,Free,publish-popover,C2,C2a,"built (C2a: Dioxus + GPUI interactive, oxyn_core::xpost, /components/navigation/publish-popover/, free)"
 X post,#3 @aryagm01 local T3 Code (2 photos),https://x.com/aryagm01/status/2119611853244645763,X videos,reference,thread-list,,#28,built
 X post,"#4 @FinnoTaylor ""Literal file tree 🌳""",https://x.com/FinnoTaylor/status/2112286571999428676,X videos,reference,NEW,,#37,planned
 X post,#5 @Jakubantalik Generative effect skill,https://x.com/Jakubantalik/status/2113656694303551906,X videos,reference,NEW,,#37,planned
-X post,#6 @kushsolitary (no text),https://x.com/kushsolitary/status/2113644365142958213,X videos,reference,NEW,,#37,planned
+X post,#6 @kushsolitary (no text),https://x.com/kushsolitary/status/2113644365142958213,X videos,Free,split-confirm,C2,C2a,"built (C2a: Dioxus + GPUI interactive, oxyn_core::xpost, /components/buttons/split-confirm/, free)"
 X post,#7 @naklecha Cloudy,https://x.com/naklecha/status/2113728791294226729,X videos,reference,"run-mode-menu, experiment-grid",,#28,built
 X post,#8 @miu21590 Octopus OS,https://x.com/miu21590/status/2114095879632375944,X videos,reference,NEW,,#42,planned
 X post,#9 @60fpsdesign for @twelvelabs,https://x.com/60fpsdesign/status/2114031823831650451,X videos,reference,NEW,,#42,planned
@@ -619,7 +619,7 @@ X post,#11 @praveenisomer ASCII Web Section,https://x.com/praveenisomer/status/2
 X post,#12 @zahragr8r Calendar dashboard,https://x.com/zahragr8r/status/2114320013956141086,X videos,reference,NEW,,#41,planned
 X post,"#13 @seanaiux clean dashboard, 3 videos",https://x.com/seanaiux/status/2115462341261402428,X videos,reference,NEW,,#37,planned
 X post,#14 @seanaiux clean dashboard,https://x.com/seanaiux/status/2115162868039442861,X videos,reference,NEW,,#41,planned
-X post,#15 @nutlope fontzz,https://x.com/nutlope/status/2116207994832838818,X videos,reference,NEW,,#41,planned
+X post,#15 @nutlope fontzz,https://x.com/nutlope/status/2116207994832838818,X videos,Free,agent-prompt-copy,C2,C2a,"built (C2a: Dioxus + GPUI interactive, oxyn_core::xpost, /components/buttons/agent-prompt-copy/, free)"
 X post,#16 @keviduk sidebar polish,https://x.com/keviduk/status/2116168166673924226,X videos,reference,workspace-chrome,,#27,built
 X post,#17 @driceroland blueprint.page,https://x.com/driceroland/status/2116116058549481657,X videos,reference,NEW,,#37,planned
 X post,#18 @seanaiux minimalist cards,https://x.com/seanaiux/status/2116240216751247393,X videos,reference,NEW,,#43,planned
@@ -627,7 +627,7 @@ X post,#19 @david_visuals_ AI Chat Assistant (light),https://x.com/david_visuals
 X post,#20 @DopeOblivion Hero (Framer MCP + Claude),https://x.com/DopeOblivion/status/2116120076583633153,X videos,reference,NEW,,#43,planned
 X post,#21 @pitus_ 100% AI-generated designs (thread),https://x.com/pitus_/status/2110059026818212244,X videos,reference,token-usage-chart,,#28,built
 X post,#22 @ceefryingpan Vespin,https://x.com/ceefryingpan/status/2117705368474358071,X videos,reference,NEW,,#39,planned
-X post,#23 @dannyinsf_ agent-todos,https://x.com/dannyinsf_/status/2117714570164732328,X videos,reference,NEW,,#38,planned
+X post,#23 @dannyinsf_ agent-todos,https://x.com/dannyinsf_/status/2117714570164732328,X videos,Free,loop-pipeline,C2,C2a,"built (C2a: Dioxus + GPUI interactive, oxyn_core::xpost, /components/agents/loop-pipeline/, free)"
 X post,#24 @TekonBurns (text only),https://x.com/TekonBurns/status/2118064914028019978,X videos,reference,polling-cost,,#28,built
 X post,"#25 @augustasdesign ""this looks insane""",https://x.com/augustasdesign/status/2117859582546526215,X videos,reference,NEW,,#41,planned
 X post,#26 @twentycrm Twenty UI,https://x.com/twentycrm/status/2118056653861896668,X videos,reference,NEW,,#41,planned
@@ -637,21 +637,21 @@ X post,#29 @Alok619308 Cue,https://x.com/Alok619308/status/2118262179745161617,X
 X post,#30 @flohoeller Cost Waterfall,https://x.com/flohoeller/status/2117957229227786507,X videos,reference,NEW,,#36,planned
 X post,#31 @eliakuratli AI mascot,https://x.com/eliakuratli/status/2118271867706618291,X videos,reference,NEW,,#38,planned
 X post,#33 @jkelleyrtp Devin redesign? (3 photos),https://x.com/jkelleyrtp/status/2118843865415463348,X videos,reference,NEW,,#37,planned
-X post,#34 @jbedln glimm trick,https://x.com/jbedln/status/2118439042845114706,X videos,reference,NEW,,#37,planned
+X post,#34 @jbedln glimm trick,https://x.com/jbedln/status/2118439042845114706,X videos,Free,write-sweep,C2,C2a,"built (C2a: Dioxus + GPUI interactive, oxyn_core::xpost, /components/agents/write-sweep/, free)"
 X post,"#35 @MSchwaibold ""This looks awesome""",https://x.com/MSchwaibold/status/2119156591404687608,X videos,reference,NEW,,#45,planned
 X post,#36 @componest ai composer upload by @sitenley,https://x.com/componest/status/2119304640323793268,X videos,reference,attachment-strip,,#28,built
-X post,#37 @zzzzshawn tests visualised,https://x.com/zzzzshawn/status/2119398278337073555,X videos,reference,NEW,,#38,planned
-X post,#38 @HacktronAI website,https://x.com/HacktronAI/status/2119252317241303221,X videos,reference,NEW,,#42,planned
-X post,#39 @Kubai087 shockwave,https://x.com/Kubai087/status/2119359092334743735,X videos,reference,NEW,,#37,planned
+X post,#37 @zzzzshawn tests visualised,https://x.com/zzzzshawn/status/2119398278337073555,X videos,Free,test-ticks,C2,C2a,"built (C2a: Dioxus + GPUI interactive, oxyn_core::xpost, /components/agents/test-ticks/, free)"
+X post,#38 @HacktronAI website,https://x.com/HacktronAI/status/2119252317241303221,X videos,Free,triage-metro,C2,C2a,"built (C2a: Dioxus + GPUI interactive, oxyn_core::xpost, /components/agents/triage-metro/, free)"
+X post,#39 @Kubai087 shockwave,https://x.com/Kubai087/status/2119359092334743735,X videos,Free,done-shockwave,C2,C2a,"built (C2a: Dioxus + GPUI interactive, oxyn_core::xpost, /components/feedback/done-shockwave/, free)"
 X post,"#40 @a1x45h ""As smooth as it gets!""",https://x.com/a1x45h/status/2119443557119615337,X videos,reference,NEW,,#41,planned
-X post,#41 @codycollier debloated X,https://x.com/codycollier/status/2119780776095121848,X videos,reference,NEW,,#33,planned
+X post,#41 @codycollier debloated X,https://x.com/codycollier/status/2119780776095121848,X videos,Free,proactive-card,C2,C2a,"built (C2a: Dioxus + GPUI interactive, oxyn_core::xpost, /components/chat/proactive-card/, free)"
 X post,#42 @componest workflow builder by @flohoeller,https://x.com/componest/status/2119811032340390130,X videos,reference,NEW,,#41,planned
 X post,#44 @flohoeller AI chat composer & overview,https://x.com/flohoeller/status/2119480887297638894,X videos,reference,"activity-home, activity-heatmap",,#28,built
 X post,#45 @benchodev Genie menu by @imharshin,https://x.com/benchodev/status/2119527879960650057,X videos,reference,NEW,,#37,planned
 X post,#46 @_adamboyle sidebar transitions,https://x.com/_adamboyle/status/2119679881784991750,X videos,reference,workspace-chrome,,#27,built
 X post,"#47 @desdivj ""Someone just booked a call""",https://x.com/desdivj/status/2119738295039250507,X videos,reference,NEW,,#41,planned
 X post,#48 @seanaiux dark/light switch,https://x.com/seanaiux/status/2119830876703879366,X videos,reference,NEW,,#37,planned
-X post,#49 @n___vc animated bento,https://x.com/n___vc/status/2119815118032871499,X videos,reference,NEW,,#33,planned
+X post,#49 @n___vc animated bento,https://x.com/n___vc/status/2119815118032871499,X videos,Free,secret-card,C2,C2a,"built (C2a: Dioxus + GPUI interactive, oxyn_core::xpost, /components/agents/secret-card/, free)"
 X post,#50 @micka_design Fluid Functionalism sharp,https://x.com/micka_design/status/2119814240760660411,X videos,reference,NEW,,#45,planned
 X post,#51 @AdiKodez footer,https://x.com/AdiKodez/status/2119362052993306706,X videos,reference,NEW,,#43,planned
 X post,#52 @omarships agently,https://x.com/omarships/status/2119588761608827253,X videos,reference,NEW,,#39,planned
