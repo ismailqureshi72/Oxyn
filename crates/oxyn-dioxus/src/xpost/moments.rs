@@ -321,7 +321,7 @@ pub fn PublishPopover(
         section { class: "oxxp oxxp-pp", "aria-label": "Document",
             onkeydown: move |e: KeyboardEvent| {
                 let k = key_of(&e);
-                if k == "Escape" { if let Some(x) = st.write().key("", &k, n) { said.set(x); } }
+                if k == "Escape" && let Some(x) = st.write().key("", &k, n) { said.set(x); }
             },
             div { class: "oxxp-pp-bar",
                 div { class: "oxxp-hl", b { "{DOC.0}" } span { class: "oxxp-mute", "{DOC.1}" } }

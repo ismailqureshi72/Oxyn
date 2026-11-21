@@ -186,7 +186,7 @@ pub fn SplitConfirm(
                         "aria-label": if ph == SpPhase::Failed { "Failed" } else if s.can_undo(n) { "Undo" } else { "Done" },
                         disabled: !s.can_undo(n),
                         onclick: move |_| act("sp-undo".into()),
-                        {ico(if ph == SpPhase::Failed { "x" } else if s.can_undo(n) && matches!(ph, SpPhase::Done) { "check" } else { "check" }, 14.0)}
+                        {ico(if ph == SpPhase::Failed { "x" } else { "check" }, 14.0)}
                     }
                 }
             }
