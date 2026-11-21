@@ -18,6 +18,7 @@ mod run;
 mod shell;
 mod status_indicator;
 mod status_text;
+mod xpost;
 
 pub use aikit::{
     AgentDocCursor, AgentTimeline, AiMascot, AiSpark, AiTranslate, AiWorkflow, AskYourData,
@@ -59,6 +60,10 @@ pub use composer::{
     ModelPicker, ModelPickerProps, SendButton, SendButtonProps, Submission,
 };
 pub use glyph_loader::{GLYPH_LOADER_CSS, GlyphLoader, GlyphLoaderProps};
+pub use xpost::{
+    AgentPromptCopy, DoneShockwave, LoopPipeline, ProactiveCard, PublishPopover, SecretCard,
+    SplitConfirm, TestTicks, TriageMetro, WriteSweep,
+};
 /// Stylesheet for approvals and checkpoints.
 pub const HITL_CSS: &str = include_str!("hitl.css");
 pub use parity::AccentDensity;
