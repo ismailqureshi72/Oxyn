@@ -8,7 +8,9 @@
 //   GET    /api/billing/portal           signed in: Polar customer portal (manage, cancel, invoices)
 //   POST   /api/billing/seats            Team owner: {email} takes one of the 3 teammate seats (4 people with the owner)
 //   DELETE /api/billing/seats/<email>    Team owner: frees a seat
-//   GET    /api/pro/source/<slug>        Pro: the usage code of a Pro screen, template or block
+//   GET    /api/pro/source/<slug>        Pro: the usage code of a Pro item this account's pool already
+//                                        opened this month (else 403 unlock_required + usage)
+//   POST   /api/pro/source/<slug>        Pro, from the site: opens it (one of the month's caps, pro.ts)
 //   POST   /api/polar/webhook            Polar events, signed (Standard Webhooks)
 //
 // The Worker never needs the Polar API for a sale: checkout links are public URLs, and the signed
@@ -22,6 +24,7 @@ import { EMAIL_RE, HttpError, fail, json, sameOrigin, type Ctx, type Env } from 
 import { currentUser } from './auth';
 import PRO_SOURCE from './pro-src.json';
 import { isAdminRow } from './entitle';
+import { QuotaError, bucketOf, failQuota, quotaFor, registryIndex, unlock, usageFor } from './pro';
 export { OWNERS, isAdminRow } from './entitle';
 
 export const POLAR = {
@@ -62,12 +65,12 @@ const isPrefetch = (req: Request) => /prefetch|prerender/i.test(`${req.headers.g
 interface SubRow {
   id: string; user_id: string | null; customer_id: string; customer_email: string; product_id: string; plan: 'pro' | 'team';
   interval: 'month' | 'year'; founder: number; status: string; amount: number; currency: string; cancel_at_period_end: number;
-  current_period_end: string | null; started_at: string | null; ended_at: string | null; created_at: string;
+  current_period_start?: string | null; current_period_end: string | null; started_at: string | null; ended_at: string | null; created_at: string;
 }
-interface Who { id: string; email: string; email_verified: number }
+export interface Who { id: string; email: string; email_verified: number }
 const live = (s: SubRow) => ACTIVE.includes(s.status) && !s.ended_at;
 
-interface GrantRow { id: number; email: string; plan: 'pro' | 'team'; seats: number; expires_at: string | null; reason: string | null; created_at: string }
+interface GrantRow { id: number; parent_id: number | null; email: string; plan: 'pro' | 'team'; seats: number; expires_at: string | null; reason: string | null; created_at: string }
 export type Tier = 'free' | 'pro' | 'team';
 export interface PlanFor {
   tier: Tier;
@@ -107,7 +110,7 @@ export async function plan_for(env: Env, u: Who): Promise<PlanFor> {
         `WHERE ?2 = 1 AND t.email = ?1 AND t.removed_at IS NULL AND s.plan = 'team' AND s.status IN (${ACTIVE_SQL}) AND s.ended_at IS NULL ORDER BY s.created_at DESC LIMIT 1`,
     ).bind(u.email, v),
     env.DB.prepare(
-      "SELECT id, email, plan, seats, expires_at, reason, created_at FROM grants WHERE ?2 = 1 AND email = ?1 AND revoked_at IS NULL " +
+      "SELECT id, parent_id, email, plan, seats, expires_at, reason, created_at FROM grants WHERE ?2 = 1 AND email = ?1 AND revoked_at IS NULL " +
         "AND (expires_at IS NULL OR expires_at > ?3) ORDER BY (plan = 'team') DESC, created_at DESC LIMIT 1",
     ).bind(u.email, v, now),
     env.DB.prepare(
@@ -168,21 +171,39 @@ export async function handleBilling(req: Request, env: Env, ctx: Ctx, url: URL):
     if (!u) throw new HttpError(401, 'signed_out', 'Sign in to Oxyn first.');
     if (route === '/api/billing/me' && m === 'GET') return await billingMe(env, u);
     const src = route.match(/^\/api\/pro\/source\/([a-z0-9-]{1,80})$/);
-    if (src && m === 'GET') {
-      const item = (PRO_SOURCE as Record<string, unknown>)[src[1]];
-      if (!item) throw new HttpError(404, 'not_found', 'There is no Pro item with that name.');
-      if (!(await plan_for(env, u)).pro) throw new HttpError(403, 'pro_required', 'This code is part of Oxyn Pro.');
-      return json({ ok: true, slug: src[1], ...(item as object) });
-    }
+    if (src && (m === 'GET' || m === 'POST')) return await proSource(req, env, url, u, src[1]);
     if (route === '/api/billing/seats' && m === 'POST') return await addSeat(req, env, url, u);
     const sm = route.match(/^\/api\/billing\/seats\/([^/]+)$/);
     if (sm && m === 'DELETE') return await removeSeat(req, env, url, u, sm[1]);
     throw new HttpError(404, 'not_found', 'No such API route.');
   } catch (err) {
+    if (err instanceof QuotaError) return failQuota(err);
     if (err instanceof HttpError) return fail(err);
     console.error('billing error', err);
     return fail(new HttpError(500, 'internal', 'Something went wrong on our side. Please try again.'));
   }
+}
+
+/** The site's Pro code: shown once the account's pool opened the item this month (an admin's
+ *  always); opening it (POST, the Unlock / Copy buttons) counts like a CLI download, see pro.ts. */
+async function proSource(req: Request, env: Env, url: URL, u: Who, slug: string) {
+  const item = (PRO_SOURCE as Record<string, unknown>)[slug];
+  if (!item) throw new HttpError(404, 'not_found', 'There is no Pro item with that name.');
+  const e = await plan_for(env, u);
+  let usage;
+  if (req.method === 'POST') {
+    if (!sameOrigin(req, url)) throw new HttpError(403, 'forbidden_origin', 'Requests must come from the Oxyn site.');
+    let kind: string | undefined;
+    try { kind = (await registryIndex(env, url.origin)).get(slug)?.kind; } catch { kind = undefined; }
+    ({ usage } = await unlock(env, u, slug, bucketOf(kind ?? 'screen'), 'site', e));
+  } else {
+    usage = await usageFor(env, u, e);
+    if (!e.pro) throw new QuotaError('pro_required', 'This code is part of Oxyn Pro.', usage);
+    const q = quotaFor(e, u.id);
+    const open = q.unlimited || !!(await env.DB.prepare('SELECT 1 AS one FROM pro_unlocks WHERE pool = ?1 AND period_start = ?2 AND slug = ?3 AND reset_at IS NULL').bind(q.pool, q.period.start, slug).first());
+    if (!open) throw new QuotaError('unlock_required', 'Open this item to see its code. It counts toward this month\'s Pro items.', usage);
+  }
+  return json({ ok: true, slug, ...(item as object), usage });
 }
 
 /** Sends a signed-in buyer to Polar with their email and account id prefilled. */
@@ -226,6 +247,7 @@ async function billingMe(env: Env, u: Who) {
     people_limit: POLAR.people,
     has_billing: !!e.customer,
     email_verified: !!u.email_verified,
+    usage: await usageFor(env, u, e),
   });
 }
 
@@ -395,18 +417,18 @@ async function upsertSubscription(env: Env, ctx: Ctx, d: Record<string, any>, ty
   await env.DB.batch([
     env.DB.prepare(
       'INSERT INTO subscriptions (id, user_id, customer_id, customer_email, product_id, plan, interval, founder, status, amount, currency, ' +
-        'cancel_at_period_end, current_period_end, started_at, ended_at, checkout_id, polar_modified_at, created_at, updated_at) ' +
-        'VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?18) ' +
+        'cancel_at_period_end, current_period_end, started_at, ended_at, checkout_id, polar_modified_at, created_at, updated_at, current_period_start) ' +
+        'VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?18, ?19) ' +
         'ON CONFLICT (id) DO UPDATE SET user_id = COALESCE(excluded.user_id, subscriptions.user_id), customer_id = excluded.customer_id, ' +
         'customer_email = excluded.customer_email, product_id = excluded.product_id, plan = excluded.plan, interval = excluded.interval, ' +
         'founder = excluded.founder, status = excluded.status, amount = excluded.amount, currency = excluded.currency, ' +
         'cancel_at_period_end = excluded.cancel_at_period_end, current_period_end = excluded.current_period_end, started_at = excluded.started_at, ' +
         'ended_at = excluded.ended_at, checkout_id = COALESCE(excluded.checkout_id, subscriptions.checkout_id), ' +
-        'polar_modified_at = excluded.polar_modified_at, updated_at = excluded.updated_at',
+        'polar_modified_at = excluded.polar_modified_at, updated_at = excluded.updated_at, current_period_start = excluded.current_period_start',
     ).bind(
       String(d.id), userId, String(d.customer_id || d.customer?.id || ''), email, plan.product, plan.plan, plan.interval, plan.founder ? 1 : 0, status,
       Number.isFinite(d.amount) ? d.amount : plan.cents, String(d.currency || 'usd'), d.cancel_at_period_end ? 1 : 0,
-      d.current_period_end ?? null, d.started_at ?? null, ended, d.checkout_id ?? null, mod || null, now,
+      d.current_period_end ?? null, d.started_at ?? null, ended, d.checkout_id ?? null, mod || null, now, d.current_period_start ?? null,
     ),
     env.DB.prepare(
       'INSERT INTO licences (id, subscription_id, user_id, email, plan, created_at, revoked_at) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7) ' +
