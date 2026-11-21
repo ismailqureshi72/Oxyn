@@ -267,7 +267,7 @@ fn run(cli: Cli) -> Result<(), Error> {
                 .get(&slug)
                 .ok_or_else(|| Error::UnknownItem(slug.clone(), resolve::suggest(&idx, &slug)))?;
             let item = if e.installable {
-                client.item(&slug)?
+                client.item(&e.slug)?
             } else {
                 None
             };

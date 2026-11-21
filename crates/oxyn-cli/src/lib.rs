@@ -196,6 +196,11 @@ pub(crate) mod tests {
             url: format!("https://x.test/{slug}/"),
             dioxus: Some(entry.into()),
             gpui: None,
+            aliases: if slug == "fancy-screen" {
+                vec!["old-fancy".into()]
+            } else {
+                vec![]
+            },
         };
         let meta = vec![
             m("send-button", Tier::Free, Kind::Component, "SendButton"),
@@ -367,6 +372,27 @@ pub(crate) mod tests {
         assert!(log.iter().any(|l| l == "GET /r/theme.json"), "{log:?}");
         // Cached: item() returns the Pro item without another request.
         assert!(client.item("fancy-screen").unwrap().is_some());
+    }
+
+    #[test]
+    fn an_older_slug_installs_the_renamed_item() {
+        let (r, _) = fake_registry();
+        let (base, log) = mock_server(r.path().to_path_buf());
+        let client = Client::new(&format!("{base}/r")).with_token(Some("oxyn_good".into()));
+        let idx = client.index().unwrap();
+        assert_eq!(idx.get("old-fancy").unwrap().slug, "fancy-screen");
+        assert_eq!(crate::install::canonical(&idx, "old-fancy"), "fancy-screen");
+        assert_eq!(crate::install::canonical(&idx, "nope"), "nope");
+        let items =
+            crate::resolve::resolve(&client, &idx, &["old-fancy".into()], Framework::Dioxus)
+                .unwrap();
+        assert_eq!(items.last().map(|i| i.slug.as_str()), Some("fancy-screen"));
+        let log = log.lock().unwrap().clone();
+        assert!(
+            log.iter()
+                .any(|l| l == "GET /api/r/fancy-screen.json Bearer oxyn_good"),
+            "{log:?}"
+        );
     }
 
     #[test]

@@ -443,6 +443,9 @@ pub fn add(
     slugs: &[String],
     overwrite: bool,
 ) -> Result<AddReport, Error> {
+    // An older slug of a renamed item installs the item under its current name.
+    let slugs: Vec<String> = slugs.iter().map(|s| canonical(index, s)).collect();
+    let slugs = slugs.as_slice();
     let fw = cfg.framework;
     let new = crate::resolve::resolve(client, index, slugs, fw)?;
     let others: Vec<String> = cfg
@@ -493,6 +496,13 @@ pub fn add(
         cargo,
         next,
     })
+}
+
+/// The current slug for `s`: itself, or the item it is an older name of (see `IndexEntry::aliases`).
+pub fn canonical(index: &RegistryIndex, s: &str) -> String {
+    index
+        .get(s)
+        .map_or_else(|| s.to_string(), |e| e.slug.clone())
 }
 
 /// Where the registry JSON of installed Pro items is kept, inside the project. It holds the same

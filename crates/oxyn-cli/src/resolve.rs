@@ -19,6 +19,8 @@ pub fn resolve(
     let mut done: BTreeSet<String> = BTreeSet::new();
     let mut visiting: Vec<String> = Vec::new();
     for s in slugs {
+        // An older slug of a renamed item resolves to the item under its current name.
+        let s = &crate::install::canonical(index, s);
         visit(
             client,
             index,
