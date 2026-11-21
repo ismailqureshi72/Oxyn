@@ -124,6 +124,15 @@ impl Client {
         }
     }
 
+    /// Puts a registry item's JSON in the cache (installed Pro items, kept in the project, so a
+    /// later `add` or `diff` does not download them again).
+    pub fn prime(&self, slug: &str, json: String) {
+        self.cache
+            .borrow_mut()
+            .entry(format!("{slug}.json"))
+            .or_insert(json);
+    }
+
     /// Who is asking, for the server's records: `cli` (default) or `mcp`.
     pub fn with_via(mut self, via: &'static str) -> Client {
         self.via = via;

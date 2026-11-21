@@ -77,7 +77,7 @@ A plan opens a set number of distinct Pro items each billing month:
 | Pro, founder rate | 20 | 8 |
 | Team (shared by everyone on it) | 75 | 22 |
 
-An item counts once, the first time its code is opened in a billing month, whether that is `oxyn add`, the MCP server or Open code / Copy on the site. Installing, updating or diffing it again that month is free, and Pro items that come in as dependencies of an item you add do not count. The month starts on your plan's renewal day. `oxyn whoami` and your account page show the count and when it resets; at the limit, `oxyn add` says so with the reset date.
+An item counts once, the first time its code is opened in a billing month, whether that is `oxyn add`, the MCP server or Open code / Copy on the site. Installing, updating or diffing it again that month is free, and Pro items that come in as dependencies of an item you add do not count. The month starts on your plan's renewal day. `oxyn add` keeps each installed Pro item's registry entry in `.oxyn/pro/` in your project, so later adds and `oxyn diff` work from it instead of downloading it again (`oxyn diff` compares a Pro item with the version you installed; `oxyn add <item>` fetches the latest). `oxyn whoami` and your account page show the count and when it resets; at the limit, `oxyn add` says so with the reset date.
 
 ### Exit codes
 
