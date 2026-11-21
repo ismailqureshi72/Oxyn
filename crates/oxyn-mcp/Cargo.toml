@@ -1,0 +1,28 @@
+[package]
+name = "oxyn-mcp"
+description = "Oxyn's MCP server: lets AI coding agents (Claude Code, Cursor, Codex, Zed) browse the Oxyn registry and add components to a Dioxus or GPUI project, over stdio."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish = false
+
+[dependencies]
+oxyn-cli = { path = "../oxyn-cli" }
+oxyn-registry-schema.workspace = true
+serde_json = "1"
+
+[dev-dependencies]
+oxyn-codegen.workspace = true
+tempfile = "3"
+
+[lints]
+workspace = true
+
+[lib]
+path = "src/lib.rs"
+
+[[bin]]
+name = "oxyn-mcp"
+path = "src/main.rs"

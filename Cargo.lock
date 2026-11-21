@@ -2282,6 +2282,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "oxyn-mcp"
+version = "0.0.0"
+dependencies = [
+ "oxyn-cli",
+ "oxyn-codegen",
+ "oxyn-registry-schema",
+ "serde_json",
+ "tempfile",
+]
+
+[[package]]
 name = "oxyn-registry-schema"
 version = "0.0.0"
 dependencies = [
