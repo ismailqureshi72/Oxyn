@@ -111,10 +111,11 @@ pub fn LlmCostCalculator(
                                         li { key: "{i}", class: cls("oxaik-lc-row", sel), role: "option", "aria-selected": "{sel}", style: "transform:translateY({rank * 38}px)",
                                             onclick: move |_| act(format!("lc-sel-{i}")),
                                             span { class: "oxaik-num oxaik-mute oxaik-lc-rk", "{rank + 1}" }
-                                            span { class: "oxaik-row oxaik-lc-nm", {mark(m.1, 14.0)} span { "{m.0}" } }
+                                            span { class: "oxaik-row oxaik-lc-nm", {mark(m.1, 14.0)} span { class: "oxaik-lc-n", "{m.0}" }
+                                                if rank == 0 { span { class: "oxaik-pill oxaik-lc-tag", "data-hue": "green", "Cheapest" } }
+                                            }
                                             div { class: "oxaik-bar", "aria-hidden": "true", span { style: "width:{share * 100.0}%" } }
                                             b { class: "oxaik-num oxaik-lc-v", "{usd(c.monthly(i))}" }
-                                            if rank == 0 { span { class: "oxaik-pill oxaik-lc-tag", "data-hue": "green", "Cheapest" } }
                                         }
                                     }
                                 }
