@@ -7,7 +7,7 @@ Generated 2026-11-16 for PR #39 (variants 1); PR #40 (variants 2) added the Stor
 ## Composer (`composer`)
 The prompt box itself, the field and what sits in it.
 
-**Existing:** Composer (`composer`), Chat composer (`chat-composer`), AI composer (`ai-composer`), Rich text editor (`rich-text-editor`), Mention input (`mention-input`), Mode switch (`mode-switch`), Run mode menu (`run-mode-menu`), Tools menu (`tools-menu`), Queue stack (`queue-stack`), Agent steering (`agent-steering`), Starter prompts (`starter-prompts`), Writing Assistant (`writing-assistant`), Ghost text (`ghost-text`)
+**Existing:** Composer (`composer`), Chat composer (`chat-composer`), AI composer (`ai-composer`), Rich text editor (`rich-text-editor`), Mention input (`mention-input`), Mode switch (`mode-switch`), Run mode menu (`run-mode-menu`), Tools menu (`tools-menu`), Queue stack (`queue-stack`), Agent steering (`agent-steering`), Starter prompts (`starter-prompts`), Writing Assistant (`writing-assistant`), Ghost text (`ghost-text`), Model arena (`model-arena`), Prompt studio (`prompt-studio`), Assistant memory (`assistant-memory`), Catch up (`catch-up`), AI feature launch (`ai-feature-launch`), AI setup wizard (`ai-setup-wizard`), Call insights (`call-insights`), Lead scoring (`lead-scoring`)
 
 **New variants to build:**
 - Split-intent composer: one field, a hairline divides "what" from "constraints"; Tab jumps across
@@ -306,7 +306,9 @@ Pro: larger compositions built from the components, each a whole working surface
 
 **Existing:** Live session (`live-session`), Mission control (`mission-control`), Mission timeline (`mission-timeline`), Run inspector (`run-inspector`), Background agents (`background-agents`), Agent routines (`agent-routines`), MCP servers (`mcp-servers`), Knowledge base (`knowledge-base`), Eval suite (`eval-suite`), Agent builder (`agent-builder`), Agent gallery (`agent-gallery`), AI insight card (`ai-insight-card`)
 
-**Built in C1f (2026-11-21):** the four affectUI "Blocks · Agents" (Live Session, Mission Control, Mission Timeline, Run Inspector), seven Arc "Blocks · Agents" and Arc "AI insight card", three variants each (Oxyn extras marked in the demos). Arc "Agent tasks" ships as `background-agents` because `agent-tasks` is a screen. Next: model arena, prompt studio, agent memory, catch up, AI feature launch, AI setup wizard, call insights, lead scoring.
+**Built in C1f (2026-11-21):** the four affectUI "Blocks · Agents" (Live Session, Mission Control, Mission Timeline, Run Inspector), seven Arc "Blocks · Agents" and Arc "AI insight card", three variants each (Oxyn extras marked in the demos). Arc "Agent tasks" ships as `background-agents` because `agent-tasks` is a screen. 
+
+**Built in C1g (2026-11-21):** the remaining eight Arc "Blocks · AI": Model arena, Prompt studio, Agent memory (ships as `assistant-memory` because `agent-memory` is a screen), Catch up, AI feature launch, AI setup wizard, Call insights and Lead scoring, three or four variants each (Oxyn extras marked in the demos). Fixed in the same PR: MCP server marks sit on a light tile in dark themes so Sentry and PostgreSQL stay visible; Live session agent tabs wrap on narrow cards.
 
 ## Comments & Reactions (`comments`)
 Talking about the work: threads, panels, reactions.
