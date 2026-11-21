@@ -46,23 +46,28 @@ const on = (p: string) => (current.startsWith(p) ? 'page' : undefined);
     <FeedbackButton />
     <ThemeRadios />
     <GitHubStars />
+    <a class="x-gopro tb-gopro" href="/pricing/"><i class="x-bolt" aria-hidden="true"></i>Get Pro</a>
     <AccountMenu />
     <a class="x-pill pill-black x-nav-go" href="/components/">Browse library</a>
     <button class="iconbtn tb-menubtn x-nav-menu" type="button" data-menu-toggle aria-expanded="false" aria-controls="mobilemenu" aria-label="Menu"><span class="x-nav-burger" aria-hidden="true"><i></i><i></i></span></button>
   </div>
 </div>
 <nav class="mobilemenu x-mm" id="mobilemenu" aria-label="Site menu" data-pagefind-ignore>
-  <div class="x-mm-grid">
-    {lib.map(([l, h, n]) => <a href={h}><span>{l}</span><small>{n}</small></a>)}
-  </div>
-  <div class="x-mm-list">
-    <a href="/docs/">Docs</a>
-    <a href="/guides/">Guides</a>
-    <a href="/pricing/">Pricing</a>
-    <button type="button" class="mm-search" data-open-search>Search…</button>
-  </div>
-  <div class="x-mm-foot">
-    <ThemeRadios />
-    <a class="x-pill pill-black" href="/components/">Browse library</a>
+  <div class="x-mm-sheet">
+    <div class="x-mm-grid">
+      {lib.map(([l, h, n]) => <a href={h}><span>{l}</span><small>{n}</small></a>)}
+    </div>
+    <div class="x-mm-list">
+      <a href="/docs/">Docs</a>
+      <a href="/docs/cli/">CLI</a>
+      <a href="/guides/">Guides</a>
+      <a href="/pricing/">Pricing</a>
+      <button type="button" class="mm-search" data-open-search>Search…</button>
+    </div>
+    <div class="x-mm-foot">
+      <ThemeRadios />
+      <span class="x-mm-icons"><FeedbackButton /><GitHubStars /></span>
+      <a class="x-pill pill-black" href="/components/">Browse library</a>
+    </div>
   </div>
 </nav>

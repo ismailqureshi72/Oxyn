@@ -59,15 +59,44 @@
     });
   });
 
-  // Mobile menu.
+  // Mobile menu: an opaque sheet under the sticky header. Opening it locks the page behind, puts
+  // focus in it and keeps Tab inside the sheet and the menu button; Escape, a tap outside the sheet
+  // (the scrim or the header), or following a link closes it and returns focus to the button.
+  const mmEl = document.getElementById('mobilemenu');
+  const mmBtn = () => document.querySelector('[data-menu-toggle]');
+  const mmFocusables = () => [mmBtn(), ...mmEl.querySelectorAll('.x-mm-sheet a[href], .x-mm-sheet button:not([disabled])')].filter((el) => el && el.offsetParent !== null);
+  const setMm = (open, refocus) => {
+    if (!mmEl) return;
+    const b = mmBtn();
+    if (open) {
+      const head = b?.closest('.x-tb, header') || b?.closest('.tb-in');
+      const bottom = head ? Math.max(0, Math.round(head.getBoundingClientRect().bottom)) : 60;
+      mmEl.style.setProperty('--mm-top', bottom + 'px');
+    }
+    mmEl.classList.toggle('open', open);
+    d.classList.toggle('mm-open', open);
+    b?.setAttribute('aria-expanded', String(open));
+    if (open) mmEl.querySelector('.x-mm-sheet a[href]')?.focus({ preventScroll: true });
+    else if (refocus) b?.focus({ preventScroll: true });
+  };
+  window.__oxynCloseMenu = (refocus) => { if (mmEl?.classList.contains('open')) setMm(false, refocus); };
   document.addEventListener('click', (e) => {
     const b = e.target.closest('[data-menu-toggle]');
-    if (!b) return;
-    const m = document.getElementById('mobilemenu');
-    const open = !m.classList.contains('open');
-    m.classList.toggle('open', open);
-    b.setAttribute('aria-expanded', String(open));
+    if (b) { setMm(!mmEl.classList.contains('open'), true); return; }
+    if (!mmEl?.classList.contains('open')) return;
+    const sheet = mmEl.querySelector('.x-mm-sheet');
+    if (sheet && !sheet.contains(e.target)) setMm(false, false);
   });
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Tab' || !mmEl?.classList.contains('open')) return;
+    const f = mmFocusables();
+    if (!f.length) return;
+    const i = f.indexOf(document.activeElement);
+    if (e.shiftKey && (i <= 0)) { e.preventDefault(); f[f.length - 1].focus(); }
+    else if (!e.shiftKey && (i === -1 || i === f.length - 1)) { e.preventDefault(); f[0].focus(); }
+  });
+  // Back to a desktop width with the sheet open: close it so the page is not left locked.
+  matchMedia('(min-width: 901px)').addEventListener?.('change', (q) => { if (q.matches) window.__oxynCloseMenu(false); });
 
   // Copy buttons: [data-copy="text"] or [data-copy-from="next"] (the following <pre>).
   document.addEventListener('click', async (e) => {
@@ -771,8 +800,11 @@ document.addEventListener('oxyn-demo-live', (e) => {
       // the section's end has scrolled the stuck bar out of the top of the viewport.
       band = [lr.top + y - navH - 96, lr.bottom + y + 8];
     };
+    // Phones and tablets: the header stays put (no slide, no glass fade); CSS pins its look too.
+    const phoneBar = matchMedia('(max-width: 900px)');
     const set = () => {
       q = 0;
+      if (phoneBar.matches) { apply(false); tb.removeAttribute('data-solid'); return; }
       const y = Math.max(0, scrollY);
       const dy = y - lastY;
       let h = hidden;
@@ -798,15 +830,8 @@ document.addEventListener('oxyn-demo-live', (e) => {
   if (d.hasAttribute('data-intro')) setTimeout(() => d.removeAttribute('data-intro'), 1300);
   // Close the phone menu when one of its links is followed or Escape is pressed.
   const mm = document.getElementById('mobilemenu');
-  const closeMm = () => {
-    if (!mm?.classList.contains('open')) return;
-    mm.classList.remove('open');
-    const b = document.querySelector('[data-menu-toggle]');
-    b?.setAttribute('aria-expanded', 'false');
-    b?.focus();
-  };
-  mm?.addEventListener('click', (e) => { if (e.target.closest('a,[data-open-search]')) closeMm(); });
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMm(); });
+  mm?.addEventListener('click', (e) => { if (e.target.closest('a,[data-open-search],[data-open-feedback]')) window.__oxynCloseMenu?.(false); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') window.__oxynCloseMenu?.(true); });
 })();
 
 // Full-screen view: "Back" returns to the page that opened it (same tab), else to the screen page.
