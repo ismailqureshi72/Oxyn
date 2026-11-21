@@ -166,7 +166,7 @@ html[data-oxyn-reduced] .page-white .x-tb{transition:none}
   .x-mm .x-mm-icons{display:inline-flex;align-items:center;gap:6px}
   .x-mm .x-mm-icons a,.x-mm .x-mm-icons button{padding:0;border:0}
   .x-mm a:focus-visible,.x-mm button:focus-visible{outline:2px solid var(--oxyn-color-focus);outline-offset:2px}
-  html.mm-open,html.mm-open body{overflow:hidden}
+  html.mm-open{overflow:hidden;overscroll-behavior:none}
 }
 @media (min-width:641px){.x-mm .x-mm-icons{display:none}}
 /* At phone widths the bar keeps search, account and the menu; feedback and GitHub move into it. */
