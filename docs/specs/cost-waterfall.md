@@ -1,10 +1,10 @@
 **Status:** built v0.1 (2026-11-16, plan #32 affectUI fidelity pass, overnight batch, family B part 6).
 
-# Spec: Cost Waterfall (`cost-waterfall`)
+# Spec: Spend breakdown (`cost-waterfall`)
 
 Family: Agents. Closes the parity row: affectUI · Cost Waterfall (Pro). Behaviour-only rebuild; nothing is copied (the
 run, its steps, models' numbers and copy in the demo are our own). Related Oxyn components: trace-view and run-meter.
-Components: `CostWaterfall` (Dioxus) · `CostWaterfallEl` (GPUI), model in `oxyn_core::parity::costfid`.
+Components: `CostWaterfall` (Dioxus) · `CostWaterfallEl` (GPUI), model in `oxyn_core::kit::costfid`.
 
 ## 1. Purpose
 A run's spend, step by step: model calls, tools and sub-agents stack across to the total, each with its model, tokens

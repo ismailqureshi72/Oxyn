@@ -1,11 +1,11 @@
 **Status:** built v0.1 (2026-11-16, plan #32 affectUI fidelity pass, overnight batch, family B part 6).
 
-# Spec: Collaboration Stream (`collaboration-stream`)
+# Spec: Crew chat (`collaboration-stream`)
 
 Family: Agents. Closes the parity row: affectUI · Collaboration Stream (Pro). Behaviour-only rebuild; nothing is copied
 (the run, agent names, messages and files in the demo are our own). Related Oxyn components: subagent-tree (who started
 whom) and messages.
-Components: `CollabStream` (Dioxus) · `CollabStreamEl` (GPUI), model in `oxyn_core::parity::collabfid`.
+Components: `CollabStream` (Dioxus) · `CollabStreamEl` (GPUI), model in `oxyn_core::kit::collabfid`.
 
 ## 1. Purpose
 What agents say to each other: a quiet chat where every message shows who it is from and who it is for, handoffs and

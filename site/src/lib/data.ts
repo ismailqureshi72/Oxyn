@@ -327,6 +327,23 @@ export function guidesFor(d: Demo) {
   return hits.length ? hits : DOC_CARDS;
 }
 
+/** Everything in the library (components, screens and blocks) rounded down to a round 50, for
+ *  "450+" style lines that stay true as items are added. */
+export const libraryTotal = counts.components + counts.screens + counts.blocks;
+export const libraryRounded = () => `${Math.floor(libraryTotal / 50) * 50}+`;
+/** The announcement strip on the landing (Base.astro `promo`). Says what is new and whether it is
+ *  Free or Pro: the CLI and MCP launch while it is the news, else the newest components with their tier. */
+export const ANNOUNCE: { text: string; short: string; href: string } = (() => {
+  const LAUNCH: { text: string; short: string; href: string } | null = { text: 'The oxyn CLI and MCP server are live: add components from your terminal or your agent', short: 'The oxyn CLI and MCP server are live', href: '/docs/cli/' };
+  if (LAUNCH) return LAUNCH;
+  const names = newDemos.slice(0, 2).map((d) => d.name);
+  const more = newDemos.length - names.length;
+  const free = newDemos.filter((d) => isFree(d)).length;
+  const tier = free === newDemos.length ? 'all free' : free === 0 ? 'in Oxyn Pro' : `${free} free`;
+  const text = `${names.join(', ')}${more > 0 ? ` and ${more} more` : ''} new, ${tier}`;
+  return { text, short: text, href: '/components/new/' };
+})();
+
 /** The library in one line, from the data (never hand-written numbers). */
 export const countsText = () =>
   `${counts.free} free components, ${counts.proComponents} Pro components, ${counts.screens} screens and ${counts.blocks} blocks`;

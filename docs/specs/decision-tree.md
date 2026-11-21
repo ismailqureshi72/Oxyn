@@ -1,11 +1,11 @@
 **Status:** built v0.2 (2026-11-16, plan #32 affectUI fidelity pass, family B part 8 – exact pass against the ref-1 capture notes).
 
-# Spec: Decision Tree (`decision-tree`)
+# Spec: Decision tree (`decision-tree`)
 
 Family: Agents. Closes the parity row: affectUI · Decision Tree (Pro). Behaviour-only rebuild; nothing is copied (the
 decisions, agents, numbers, notes and every line of demo copy are our own). Related Oxyn components: plan-approval,
 decision-card, approval questions.
-Components: `DecisionTree` (Dioxus) · `DecisionTreeEl` (GPUI), model in `oxyn_core::parity::dtreefid`.
+Components: `DecisionTree` (Dioxus) · `DecisionTreeEl` (GPUI), model in `oxyn_core::kit::dtreefid`.
 
 ## 1. Purpose
 An agent at a fork it should not take alone shows each way forward as a branch – what it changes, which consequence

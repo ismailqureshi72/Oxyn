@@ -4,7 +4,7 @@
 
 Family: Diff & review. Plan #30 "diff timeline"; Conductor filter-by-commit idea (diff-viewer.md `commit-filter`). Behaviour-only rebuild; nothing is copied.
 
-## 0. Built: the run view (`DiffTimelineRun` · `DiffTimelineRunEl`, model `oxyn_core::parity::difftlfid`)
+## 0. Built: the run view (`DiffTimelineRun` · `DiffTimelineRunEl`, model `oxyn_core::kit::difftlfid`)
 Closes the parity row affectUI · Diff Timeline (Pro). Behaviour-only rebuild; the run, file names, labels and copy are our own. The revision rail (sections 1–11) stays as the `view = revisions` form of the same page.
 
 | Part | Look (Clean, light / dark) |

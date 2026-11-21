@@ -303,7 +303,7 @@ mod tests {
 
     #[test]
     fn css_defines_every_tone_for_both_themes() {
-        let css = include_str!("../../oxyn-dioxus/src/parity/icontone.css");
+        let css = include_str!("../../oxyn-dioxus/src/kit/icontone.css");
         for t in IconTone::ALL {
             let l = format!("--ox-ic-{}:#{}", t.key(), t.light());
             let d = format!("--ox-ic-{}:#{}", t.key(), t.dark());

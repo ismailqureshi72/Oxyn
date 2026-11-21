@@ -100,12 +100,12 @@ pub const CATEGORIES: [Category; 30] = [
     Category {
         slug: "blocks-agents",
         name: "Blocks · Agents",
-        blurb: "Pro: whole agent surfaces: live session, mission control and timeline, run inspector, background agents, routines, MCP servers, knowledge base, eval suite, agent builder and gallery.",
+        blurb: "Pro: whole agent surfaces: live session, fleet overview and timeline, run inspector, background agents, routines, MCP servers, knowledge base, eval suite, agent builder and gallery.",
     },
     Category {
         slug: "blocks-ai",
         name: "Blocks · AI",
-        blurb: "Pro: AI surfaces for products: AI insight card, model arena, prompt studio, assistant memory, catch up, AI feature launch, AI setup wizard, call insights and lead scoring.",
+        blurb: "Pro: AI surfaces for products: AI insight card, blind compare, prompt bench, assistant memory, catch up, AI feature launch, AI setup wizard, call insights and lead scoring.",
     },
     Category {
         slug: "buttons",

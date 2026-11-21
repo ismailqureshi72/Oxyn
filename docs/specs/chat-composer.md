@@ -76,7 +76,7 @@ Chrome is monochrome (exact affectUI greys per theme, `--oxf-*`). Colour only wh
 - `container-type: inline-size` on a 540 px root (`max-width: 100%`); the approval menu is `min(352px, 100cqi - 40px)`; labels ellipsize before the row wraps.
 
 ## 10. API
-Dioxus `ChatComposer` / GPUI `ChatComposerEl`; models in `oxyn_core::parity::fidelity` (`Approval`, `FileKind`, `attach`, `meter_levels`). Props: placeholder, text, models, dictation, approval, folders, folder, apps, connected, tray, style, attachments, recording, open, clock, on_send, on_model, on_attach, on_approval, on_folder, on_apps.
+Dioxus `ChatComposer` / GPUI `ChatComposerEl`; models in `oxyn_core::kit::fidelity` (`Approval`, `FileKind`, `attach`, `meter_levels`). Props: placeholder, text, models, dictation, approval, folders, folder, apps, connected, tray, style, attachments, recording, open, clock, on_send, on_model, on_attach, on_approval, on_folder, on_apps.
 
 
 ## Sizes (chunk 2 of the fidelity pass, measured against affectUI at 1920 px)

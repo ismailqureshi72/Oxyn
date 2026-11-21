@@ -1,10 +1,10 @@
 //! Feedback (plan #26): toaster, notification stack, alert, skeleton (+ shimmer loader),
-//! skeleton morph.
+//! skeleton reveal.
 
 use dioxus::prelude::*;
 use oxyn_core::{ClockMs, primitives::toast::Notice};
 use oxyn_dioxus::{
-    Alert, MorphBlock, NotificationStack, SeedToast, ShimmerLabel, Skeleton, SkeletonMorph,
+    Alert, MorphBlock, NotificationStack, SeedToast, ShimmerLabel, Skeleton, SkeletonReveal,
     Toaster, use_toasts,
 };
 
@@ -258,7 +258,7 @@ fn skeleton_morph(v: &Vals, _: ClockMs) -> Element {
     let s = v.u("stagger") as u32;
     rsx! {
         div { style: "display:flex;flex-direction:column;gap:12px;align-items:center",
-            SkeletonMorph { loading, stagger: s, width: 360.0,
+            SkeletonReveal { loading, stagger: s, width: 360.0,
                 div { class: "mrow",
                     MorphBlock { index: 0, width: "36px", height: 36.0, radius: "circle", span { class: "oxd-av lg", "AT" } }
                     div { style: "flex:1;display:flex;flex-direction:column;gap:4px;min-width:0",
@@ -285,7 +285,7 @@ fn skeleton_morph(v: &Vals, _: ClockMs) -> Element {
 }
 
 fn skeleton_morph_code(v: &Vals) -> String {
-    let mut s = String::from("rsx! {\n    SkeletonMorph {\n        loading: loading(),\n");
+    let mut s = String::from("rsx! {\n    SkeletonReveal {\n        loading: loading(),\n");
     if v.s("stagger") != "40" {
         s.push_str(&format!("        stagger: {},\n", v.s("stagger")));
     }
@@ -554,12 +554,12 @@ pub(crate) fn demos() -> Vec<Demo> {
             live: false,
         },
         Demo {
-            slug: "skeleton-morph",
-            name: "Skeleton morph",
+            slug: "skeleton-reveal",
+            name: "Skeleton reveal",
             category: "feedback",
             summary: "Loading skeletons that grow into the real content block by block: each placeholder stretches to the content's box while it fades and the content sharpens out of a blur.",
-            dioxus: "SkeletonMorph, MorphBlock",
-            gpui: "SkeletonMorphEl",
+            dioxus: "SkeletonReveal, MorphBlock",
+            gpui: "SkeletonRevealEl",
             spec: "skeleton-morph",
             source: "primitives/surfaces.rs",
             controls: vec![

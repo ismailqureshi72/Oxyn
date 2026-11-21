@@ -1,10 +1,10 @@
 **Status:** built v0.1 (2026-11-16, plan #32 affectUI fidelity pass, overnight batch, family B part 3).
 
-# Spec: Agent Cursors (`agent-cursors`)
+# Spec: Presence cursors (`agent-cursors`)
 
 Family: Agents. Closes the parity row: affectUI · Agent Cursors (Pro). Behaviour-only rebuild; nothing is copied (the
 demo document, agent activities and comments are our own text).
-Components: `AgentCursors` (Dioxus) · `AgentCursorsEl` (GPUI), model in `oxyn_core::parity::cursorsfid`.
+Components: `AgentCursors` (Dioxus) · `AgentCursorsEl` (GPUI), model in `oxyn_core::kit::cursorsfid`.
 
 ## 1. Purpose
 Agents working in a document like teammates in a multiplayer editor: live pointers with a flag (name, cost, what it is

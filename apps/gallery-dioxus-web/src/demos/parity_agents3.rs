@@ -4,7 +4,7 @@
 use dioxus::prelude::*;
 use oxyn_core::{
     ClockMs,
-    parity::{
+    kit::{
         delegatefid::{db_agents, db_auto_plan, db_tasks},
         dtreefid::{dt_demo, dt_extra},
         fallbackfid::{FbOutcome, fb_demo, fb_demo_all_fail},
@@ -21,9 +21,8 @@ use oxyn_core::{
     },
 };
 use oxyn_dioxus::{
-    DecisionTree, DelegateBoard, FallbackChain, FanoutGrid, JudgeBracket, MemoryPanel,
-    ParallelAttempts, PlanVsActual, RateLimitPlanner, RootCauseTree, RunningNow, ScheduledRuns,
-    ToolAccessMap, TraceWaterfall,
+    ActivityPill, AssignBoard, AttemptRace, DecisionTree, FallbackChain, LoadPlanner, MemoryPanel,
+    ModelKnockout, PlanVsActual, RootCauseTree, ScheduledRuns, TaskGrid, ToolReach, TraceWaterfall,
 };
 
 use super::{Code, mk, sel, var};
@@ -169,7 +168,7 @@ fn fallback_chain_code(_: &Vals) -> String {
         .done()
 }
 
-// ---------- Delegate Board ----------
+// ---------- Assign board ----------
 
 fn delegate_board(v: &Vals, now: ClockMs) -> Element {
     let mut msg = use_signal(String::new);
@@ -193,7 +192,7 @@ fn delegate_board(v: &Vals, now: ClockMs) -> Element {
     };
     rsx! {
         div { "data-k": "{key}", key: "{key}", "data-state": "{state}", style: "width:{w};max-width:100%;display:flex;flex-direction:column;gap:8px",
-            DelegateBoard { now, assigned, auto, suggestion, style: cstyle(v),
+            AssignBoard { now, assigned, auto, suggestion, style: cstyle(v),
                 on_assign: move |(t, a): (String, Option<String>)| msg.set(format!("onAssign({t:?}, {a:?})")),
                 on_mode_change: move |m: bool| msg.set(format!("onModeChange({:?})", if m { "auto" } else { "manual" })) }
             {status(msg)}
@@ -202,7 +201,7 @@ fn delegate_board(v: &Vals, now: ClockMs) -> Element {
 }
 
 fn delegate_board_code(_: &Vals) -> String {
-    Code::new("DelegateBoard")
+    Code::new("AssignBoard")
         .raw("agents", "Some(team.agents())")
         .raw("tasks", "Some(backlog.tasks())")
         .raw("now", "clock.now()")
@@ -211,9 +210,9 @@ fn delegate_board_code(_: &Vals) -> String {
         .done()
 }
 
-// ---------- Parallel Attempts ----------
+// ---------- Attempt race ----------
 
-fn five() -> Vec<oxyn_core::parity::parallelfid::PaScript> {
+fn five() -> Vec<oxyn_core::kit::parallelfid::PaScript> {
     let mut d = pa_demo();
     let mut x = d[0].clone();
     x.end.id = "d".into();
@@ -265,7 +264,7 @@ fn parallel_attempts(v: &Vals, now: ClockMs) -> Element {
     let _ = PaStatus::Done;
     rsx! {
         div { "data-k": "{key}", key: "{key}", "data-state": "{state}", style: "width:{w};max-width:100%;display:flex;flex-direction:column;gap:8px",
-            ParallelAttempts { now, live, attempts, scripts: Some(scripts), picked, style: cstyle(v),
+            AttemptRace { now, live, attempts, scripts: Some(scripts), picked, style: cstyle(v),
                 on_pick: move |id: String| msg.set(format!("onPick({id:?})")) }
             {status(msg)}
         }
@@ -273,7 +272,7 @@ fn parallel_attempts(v: &Vals, now: ClockMs) -> Element {
 }
 
 fn parallel_attempts_code(_: &Vals) -> String {
-    Code::new("ParallelAttempts")
+    Code::new("AttemptRace")
         .raw("attempts", "Some(race.attempts())")
         .raw("task", "\"Steady the flaky payment test\"")
         .raw("now", "clock.now()")
@@ -355,19 +354,19 @@ fn parallel_attempts_demo(style: crate::Control) -> Demo {
         live: true,
         align: Align::Start,
         ..mk(
-            "parallel-attempts",
-            "Parallel Attempts",
+            "attempt-race",
+            "Attempt race",
             "tools",
             "One task tried several ways at once: every attempt races as a row with its model, approach and a live bar, finishes with a score, and the best one is marked and used – switch to another if you prefer.",
-            "ParallelAttempts",
-            "ParallelAttemptsEl",
+            "AttemptRace",
+            "AttemptRaceEl",
             "parallel-attempts",
-            "parity/parallelfid.rs",
+            "kit/parallelfid.rs",
         )
     }
 }
 
-// ---------- Judge Bracket ----------
+// ---------- Model knockout ----------
 
 fn judge_bracket(v: &Vals, now: ClockMs) -> Element {
     let mut msg = use_signal(String::new);
@@ -422,7 +421,7 @@ fn judge_bracket(v: &Vals, now: ClockMs) -> Element {
     };
     rsx! {
         div { "data-k": "{key}", key: "{key}", "data-state": "{state}", style: "width:{w};max-width:100%;display:flex;flex-direction:column;gap:8px",
-            JudgeBracket { now, live, contenders, verdicts: if live { None } else { verdicts }, open, style: cstyle(v),
+            ModelKnockout { now, live, contenders, verdicts: if live { None } else { verdicts }, open, style: cstyle(v),
                 on_pick: move |id: String| msg.set(format!("onPick({id:?})")) }
             {status(msg)}
         }
@@ -430,7 +429,7 @@ fn judge_bracket(v: &Vals, now: ClockMs) -> Element {
 }
 
 fn judge_bracket_code(_: &Vals) -> String {
-    Code::new("JudgeBracket")
+    Code::new("ModelKnockout")
         .raw("contenders", "Some(answers.seeded())")
         .raw("verdicts", "Some(judge.verdicts())")
         .raw("judge", "\"Opus 4.1\"")
@@ -519,14 +518,14 @@ fn judge_bracket_demo(style: crate::Control) -> Demo {
         live: true,
         align: Align::Start,
         ..mk(
-            "judge-bracket",
-            "Judge Bracket",
+            "model-knockout",
+            "Model knockout",
             "tools",
             "Answers from several models in a knockout bracket judged by another model: open any match to compare both answers, their scores and why one won; once the final is settled the champion's route turns blue.",
-            "JudgeBracket",
-            "JudgeBracketEl",
+            "ModelKnockout",
+            "ModelKnockoutEl",
             "judge-bracket",
-            "parity/judgefid.rs",
+            "kit/judgefid.rs",
         )
     }
 }
@@ -545,7 +544,7 @@ fn memory_panel(v: &Vals, now: ClockMs) -> Element {
         div { "data-k": "{key}", key: "{key}", "data-state": "{state}", style: "display:flex;flex-direction:column;gap:8px;max-width:100%",
             MemoryPanel { now, filter, search, pointed, forgotten, undo_ms: if state == "forgot" { 600_000 } else { 5000 },
                 enabled: state != "off", adding: state == "new", style: cstyle(v),
-                on_change: move |m: Vec<oxyn_core::parity::memoryfid::MpMemory>| msg.set(format!("onChange({} memories)", m.len())),
+                on_change: move |m: Vec<oxyn_core::kit::memoryfid::MpMemory>| msg.set(format!("onChange({} memories)", m.len())),
                 on_enabled_change: move |b: bool| msg.set(format!("onEnabledChange({b})")) }
             {status(msg)}
         }
@@ -642,18 +641,18 @@ fn memory_panel_demo(style: crate::Control) -> Demo {
         align: Align::Start,
         ..mk(
             "memory-panel",
-            "Memory Panel",
+            "Memory panel",
             "tools",
             "What the assistant remembers about you, by category: filter or search it, pause a memory, edit or forget it with a short undo, add your own, or switch memory off without losing anything.",
             "MemoryPanel",
             "MemoryPanelEl",
             "memory-panel",
-            "parity/memoryfid.rs",
+            "kit/memoryfid.rs",
         )
     }
 }
 
-// ---------- Running Now ----------
+// ---------- Activity pill ----------
 
 fn running_now(v: &Vals, now: ClockMs) -> Element {
     let mut msg = use_signal(String::new);
@@ -681,7 +680,7 @@ fn running_now(v: &Vals, now: ClockMs) -> Element {
         "Background tasks".to_string()
     };
     let rn = rsx! {
-        RunningNow { now, tasks: Some(tasks), default_open, title, placement: if side { "right" } else { "below-end" }, style: cstyle(v),
+        ActivityPill { now, tasks: Some(tasks), default_open, title, placement: if side { "right" } else { "below-end" }, style: cstyle(v),
             on_open: move |id: String| msg.set(format!("onOpen({id:?})")),
             on_pause: move |(id, p): (String, bool)| msg.set(format!("{}({id:?})", if p { "onPause" } else { "onResume" })),
             on_open_all: move |_| msg.set("onOpenAll()".into()) }
@@ -709,7 +708,7 @@ fn running_now(v: &Vals, now: ClockMs) -> Element {
 }
 
 fn running_now_code(_: &Vals) -> String {
-    Code::new("RunningNow")
+    Code::new("ActivityPill")
         .raw("tasks", "Some(jobs.background())")
         .raw("now", "clock.now()")
         .raw("on_open", "move |id| nav.open_task(id)")
@@ -792,14 +791,14 @@ fn running_now_demo(style: crate::Control) -> Demo {
         live: true,
         align: Align::Start,
         ..mk(
-            "running-now",
-            "Running Now",
+            "activity-pill",
+            "Activity pill",
             "tools",
             "A compact pill for an app bar or side rail counting background agent work – how much is running, how much waits on you – that opens to each task's ring, current step, Pause / Resume and Open.",
-            "RunningNow",
-            "RunningNowEl",
+            "ActivityPill",
+            "ActivityPillEl",
             "running-now",
-            "parity/runningfid.rs",
+            "kit/runningfid.rs",
         )
     }
 }
@@ -921,13 +920,13 @@ fn plan_vs_actual_demo(style: crate::Control) -> Demo {
         align: Align::Start,
         ..mk(
             "plan-vs-actual",
-            "Plan vs Actual",
+            "Plan vs actual",
             "tools",
             "How an agent's run is going against its plan: each step's real bar over a dashed planned one, overruns in amber, later steps pushed right and the expected finish drifting from the planned finish.",
             "PlanVsActual",
             "PlanVsActualEl",
             "plan-vs-actual",
-            "parity/planfid.rs",
+            "kit/planfid.rs",
         )
     }
 }
@@ -1055,18 +1054,18 @@ fn root_cause_tree_demo(style: crate::Control) -> Demo {
         align: Align::Start,
         ..mk(
             "root-cause-tree",
-            "Root Cause Tree",
+            "Root cause tree",
             "tools",
             "Why a run failed, drawn as a fault tree: guesses under OR and AND gates are checked one at a time and ruled out or confirmed, the confirmed route to the failure is highlighted, and any node opens its verdict and evidence.",
             "RootCauseTree",
             "RootCauseTreeEl",
             "root-cause-tree",
-            "parity/rootfid.rs",
+            "kit/rootfid.rs",
         )
     }
 }
 
-// ---------- Tool Access Map ----------
+// ---------- Tool reach ----------
 
 fn tool_access_map(v: &Vals, now: ClockMs) -> Element {
     let mut msg = use_signal(String::new);
@@ -1100,7 +1099,7 @@ fn tool_access_map(v: &Vals, now: ClockMs) -> Element {
     };
     rsx! {
         div { "data-k": "{key}", key: "{key}", "data-state": "{state}", style: "width:{w};max-width:100%;display:flex;flex-direction:column;gap:8px",
-            ToolAccessMap { now, agents: Some(agents), agent, open, call, editing, style: cstyle(v),
+            ToolReach { now, agents: Some(agents), agent, open, call, editing, style: cstyle(v),
                 on_agent_change: move |id: String| msg.set(format!("onAgentChange({id:?})")),
                 on_replay: move |(a, t, _): (String, String, String)| msg.set(format!("onReplay({a:?}, {t:?}, …)")) }
             {status(msg)}
@@ -1109,7 +1108,7 @@ fn tool_access_map(v: &Vals, now: ClockMs) -> Element {
 }
 
 fn tool_access_map_code(_: &Vals) -> String {
-    Code::new("ToolAccessMap")
+    Code::new("ToolReach")
         .raw("tools", "Some(run.tools())")
         .raw("agents", "Some(run.agents())")
         .raw("now", "clock.now()")
@@ -1215,14 +1214,14 @@ fn tool_access_map_demo(style: crate::Control) -> Demo {
         live: true,
         align: Align::Start,
         ..mk(
-            "tool-access-map",
-            "Tool Access Map",
+            "tool-reach",
+            "Tool reach",
             "tools",
             "Which tools an agent can reach and what it did with them: the agent in the middle, every tool of the run around it with a wire where access exists, cards for used, busy, failed or unused, and each tool's calls one click away with a replay.",
-            "ToolAccessMap",
-            "ToolAccessMapEl",
+            "ToolReach",
+            "ToolReachEl",
             "tool-access-map",
-            "parity/toolmapfid.rs",
+            "kit/toolmapfid.rs",
         )
     }
 }
@@ -1361,18 +1360,18 @@ fn scheduled_runs_demo(style: crate::Control) -> Demo {
         align: Align::Start,
         ..mk(
             "scheduled-runs",
-            "Scheduled Runs",
+            "Scheduled runs",
             "tools",
             "Agent tasks booked into a week of sessions that each have a usage limit: auto booking fills the gaps with small tasks and cuts big ones across sessions, manual keeps what you booked by hand, and one agent can be picked out.",
             "ScheduledRuns",
             "ScheduledRunsEl",
             "scheduled-runs",
-            "parity/schedfid.rs",
+            "kit/schedfid.rs",
         )
     }
 }
 
-// ---------- Rate Limit Planner ----------
+// ---------- Load planner ----------
 
 fn rate_limit_planner(v: &Vals, _now: ClockMs) -> Element {
     let mut msg = use_signal(String::new);
@@ -1394,7 +1393,7 @@ fn rate_limit_planner(v: &Vals, _now: ClockMs) -> Element {
     };
     rsx! {
         div { "data-k": "{key}", key: "{key}", "data-state": "{state}", style: "width:{w};max-width:100%;display:flex;flex-direction:column;gap:8px;padding-bottom:150px",
-            RateLimitPlanner { runs: Some(runs), selected, editing, style: cstyle(v),
+            LoadPlanner { runs: Some(runs), selected, editing, style: cstyle(v),
                 on_runs_change: move |r: Vec<RlRun>| msg.set(format!("onRunsChange({} runs)", r.len())) }
             {status(msg)}
         }
@@ -1402,7 +1401,7 @@ fn rate_limit_planner(v: &Vals, _now: ClockMs) -> Element {
 }
 
 fn rate_limit_planner_code(_: &Vals) -> String {
-    Code::new("RateLimitPlanner")
+    Code::new("LoadPlanner")
         .raw("runs", "Some(planner.runs())")
         .raw("limit", "120.0")
         .raw("on_runs_change", "move |runs| planner.save(runs)")
@@ -1482,14 +1481,14 @@ fn rate_limit_planner_demo(style: crate::Control) -> Demo {
         live: false,
         align: Align::Start,
         ..mk(
-            "rate-limit-planner",
-            "Rate Limit Planner",
+            "load-planner",
+            "Load planner",
             "tools",
             "When agent runs happen across a day, drawn as the token load against an API's per-minute limit: drag a run's bar to move it, spread the runs out to lower the peak, and get the nearest start that keeps a run under the limit.",
-            "RateLimitPlanner",
-            "RateLimitPlannerEl",
+            "LoadPlanner",
+            "LoadPlannerEl",
             "rate-limit-planner",
-            "parity/ratefid.rs",
+            "kit/ratefid.rs",
         )
     }
 }
@@ -1623,18 +1622,18 @@ fn trace_waterfall_demo(style: crate::Control) -> Demo {
         align: Align::Start,
         ..mk(
             "trace-waterfall",
-            "Trace Waterfall",
+            "Trace waterfall",
             "tools",
             "An agent run as a tree of spans on a time axis: agents, model calls and tool calls as tinted bars that grow while the run goes, the run's totals on top, finished branches folded into marks, and every span's details one click away.",
             "TraceWaterfall",
             "TraceWaterfallEl",
             "trace-waterfall",
-            "parity/tracefid.rs",
+            "kit/tracefid.rs",
         )
     }
 }
 
-// ---------- Fan-out Grid ----------
+// ---------- Task grid ----------
 
 fn fanout_grid(v: &Vals, now: ClockMs) -> Element {
     let mut msg = use_signal(String::new);
@@ -1655,7 +1654,7 @@ fn fanout_grid(v: &Vals, now: ClockMs) -> Element {
     };
     rsx! {
         div { "data-k": "{key}", key: "{key}", "data-state": "{state}", style: "width:{w};max-width:100%;display:flex;flex-direction:column;gap:8px",
-            FanoutGrid { now, at, filter, pinned, style: cstyle(v),
+            TaskGrid { now, at, filter, pinned, style: cstyle(v),
                 on_retry: move |ids: Vec<String>| msg.set(format!("onRetry({} tasks)", ids.len())),
                 on_select: move |i: Option<usize>| msg.set(format!("onSelect({i:?})")) }
             {status(msg)}
@@ -1664,7 +1663,7 @@ fn fanout_grid(v: &Vals, now: ClockMs) -> Element {
 }
 
 fn fanout_grid_code(_: &Vals) -> String {
-    Code::new("FanoutGrid")
+    Code::new("TaskGrid")
         .raw("tasks", "Some(job.tasks())")
         .raw("at", "Some(job.elapsed_ms())")
         .raw("workers", "12")
@@ -1753,14 +1752,14 @@ fn fanout_grid_demo(style: crate::Control) -> Demo {
         live: true,
         align: Align::Start,
         ..mk(
-            "fanout-grid",
-            "Fan-out Grid",
+            "task-grid",
+            "Task grid",
             "tools",
             "One job split into hundreds of small tasks across a pool of workers: a cell per task tinted by status, counts that filter the grid, the cost and time left, each task's card one hover away and Retry failed.",
-            "FanoutGrid",
-            "FanoutGridEl",
+            "TaskGrid",
+            "TaskGridEl",
             "fanout-grid",
-            "parity/fanfid.rs",
+            "kit/fanfid.rs",
         )
     }
 }
@@ -1853,14 +1852,14 @@ pub(crate) fn demos() -> Vec<Demo> {
             live: true,
             align: Align::Start,
             ..mk(
-                "delegate-board",
-                "Delegate Board",
+                "assign-board",
+                "Assign board",
                 "tools",
                 "Hand tasks to agents yourself: a pile of unassigned work beside each agent's model, rate, busy-until time and queue, with the money waiting in queues – or switch on Auto and let whoever frees up first take the next one.",
-                "DelegateBoard",
-                "DelegateBoardEl",
+                "AssignBoard",
+                "AssignBoardEl",
                 "delegate-board",
-                "parity/delegatefid.rs",
+                "kit/delegatefid.rs",
             )
         },
         Demo {
@@ -1950,13 +1949,13 @@ pub(crate) fn demos() -> Vec<Demo> {
             align: Align::Start,
             ..mk(
                 "fallback-chain",
-                "Fallback Chain",
+                "Fallback chain",
                 "tools",
                 "Which model actually served a request: the fallback order drawn as a small flow with a running clock and cost, each failed try broken red with its reason, the one that answered carried through to the response.",
                 "FallbackChain",
                 "FallbackChainEl",
                 "fallback-chain",
-                "parity/fallbackfid.rs",
+                "kit/fallbackfid.rs",
             )
         },
     ]
@@ -2077,13 +2076,13 @@ fn decision_tree_demo(style: crate::Control) -> Demo {
         align: Align::Start,
         ..mk(
             "decision-tree",
-            "Decision Tree",
+            "Decision tree",
             "tools",
             "An agent at a fork shows each way forward as a branch – what it changes, which parts worry it, which one it would take – and waits for you to pick a path or tell it something else.",
             "DecisionTree",
             "DecisionTreeEl",
             "decision-tree",
-            "parity/dtreefid.rs",
+            "kit/dtreefid.rs",
         )
     }
 }

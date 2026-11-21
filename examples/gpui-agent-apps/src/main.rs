@@ -38,7 +38,7 @@ use gpui::{
 use gpui_platform::application;
 use oxyn_gpui::{AgentApp, AgentAppView, ScreenView, bind_ime_keys};
 
-/// Strip labels for the screen sets, in `oxyn_core::parity::screenui::SETS` order.
+/// Strip labels for the screen sets, in `oxyn_core::kit::screenui::SETS` order.
 const SETS: [&str; 13] = [
     "S0 Shells",
     "S1 Chat",

@@ -1,9 +1,9 @@
 **Status:** built v0.1 (2026-11-16, plan #32 affectUI fidelity pass, overnight batch, family B part 2).
 
-# Spec: Agent Crew (`agent-crew`)
+# Spec: Crew tree (`agent-crew`)
 
 Family: Agents. Closes the parity row: affectUI · Agent Crew (Pro). Behaviour-only rebuild; nothing is copied.
-Components: `AgentCrew` (Dioxus) · `AgentCrewEl` (GPUI), model in `oxyn_core::parity::crewfid`.
+Components: `AgentCrew` (Dioxus) · `AgentCrewEl` (GPUI), model in `oxyn_core::kit::crewfid`.
 
 ## 1. Purpose
 A lead and its sub-agents as one live tree of cards: every agent stays on screen, each card says what it does right

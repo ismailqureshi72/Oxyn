@@ -59,7 +59,7 @@ Where a person is in a multi-step flow and what is done. Horizontal or vertical;
 
 ## 10. Implementation
 - Core: `Stepper`, `FlowStep` (`oxyn_core::parity`), with tests.
-- Dioxus: `FlowStepper` (parity/run.rs, run.css).
+- Dioxus: `FlowStepper` (kit/run.rs, run.css).
 - GPUI: `FlowStepperEl`.
 
 ## 11. References

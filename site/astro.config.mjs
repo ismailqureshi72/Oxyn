@@ -15,7 +15,8 @@ const movedUrls = {
       const gen = path.resolve(path.dirname(fileURLToPath(import.meta.url)), 'src/generated/demos.json');
       if (!fs.existsSync(gen)) return;
       const { demos, categories } = JSON.parse(fs.readFileSync(gen, 'utf8'));
-      const lines = redirects(demos, categories).map(([from, to]) => `${from} ${to} 301`);
+      const renames = JSON.parse(fs.readFileSync(path.resolve(path.dirname(gen), '../lib/renames.json'), 'utf8')).renames;
+      const lines = redirects(demos, categories, renames).map(([from, to]) => `${from} ${to} 301`);
       fs.writeFileSync(new URL('_redirects', dir), lines.join('\n') + '\n');
     },
   },

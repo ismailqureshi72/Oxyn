@@ -95,7 +95,7 @@ impl Checkpoint {
     pub fn tool_icon(&self) -> Option<&'static str> {
         self.tool
             .as_deref()
-            .map(|t| crate::parity::tools::ToolKindMap::standard().kind(t).icon())
+            .map(|t| crate::kit::tools::ToolKindMap::standard().kind(t).icon())
     }
 
     /// The app behind the tool, when it is one Oxyn has a logo for (`slack`, `github`,

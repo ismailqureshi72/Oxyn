@@ -1456,7 +1456,7 @@ impl RenderOnce for SkeletonEl {
 
 /// `skeleton-morph`: blocks fade from placeholder to content in reading order.
 #[derive(IntoElement)]
-pub struct SkeletonMorphEl {
+pub struct SkeletonRevealEl {
     morph: Morph,
     blocks: Vec<(f32, f32, SharedString)>,
     now: ClockMs,
@@ -1464,7 +1464,7 @@ pub struct SkeletonMorphEl {
     theme: &'static Theme,
 }
 
-impl SkeletonMorphEl {
+impl SkeletonRevealEl {
     /// Blocks: (skeleton width, height, loaded text).
     pub fn new(morph: Morph, blocks: Vec<(f32, f32, SharedString)>, now: ClockMs) -> Self {
         Self {
@@ -1483,7 +1483,7 @@ impl SkeletonMorphEl {
     themed!();
 }
 
-impl RenderOnce for SkeletonMorphEl {
+impl RenderOnce for SkeletonRevealEl {
     fn render(self, _: &mut Window, _: &mut App) -> impl IntoElement {
         let t = self.theme;
         let n = self.blocks.len();

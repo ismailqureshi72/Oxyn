@@ -3,10 +3,11 @@ import ItemPage from '../../../components/v2/ItemPage.astro';
 import Redirect from '../../../components/v2/Redirect.astro';
 import { demos, components, categories, type Demo } from '../../../lib/data';
 import { groupSlugOf, redirects } from '../../../lib/taxonomy.mjs';
+import renamesJson from '../../../lib/renames.json';
 
 export function getStaticPaths() {
   const real = components.map((d) => ({ params: { category: groupSlugOf(d), slug: d.slug }, props: { demo: d, to: null } }));
-  const moved = (redirects(demos, categories) as [string, string][])
+  const moved = (redirects(demos, categories, renamesJson.renames) as [string, string][])
     .filter(([from]) => from.split('/').length === 5)
     .map(([from, to]) => ({ params: { category: from.split('/')[2], slug: from.split('/')[3] }, props: { demo: null, to } }));
   return [...real, ...moved];

@@ -4,8 +4,8 @@
 use dioxus::prelude::*;
 use oxyn_core::ClockMs;
 use oxyn_dioxus::{
-    AgentCrew, AgentCursors, AgentFindings, AgentGraph, AgentHandoff, AgentInbox, AgentLanes,
-    AgentLedger, AgentMonitor, AgentQueue, AgentRecap, AgentSequence,
+    ChangeLedger, CrewTree, FindingsFeed, JobQueue, LiveLanes, OvernightRecap, PresenceCursors,
+    RelayTrail, RunMonitor, SequenceDiagram, TaskInbox, ToolNetwork,
 };
 
 use super::{Code, mk, sel, tog, var};
@@ -23,7 +23,7 @@ fn cstyle(v: &Vals) -> String {
     }
 }
 
-// ---------- Agent Findings ----------
+// ---------- Findings feed ----------
 
 fn agent_findings(v: &Vals, now: ClockMs) -> Element {
     let mut msg = use_signal(String::new);
@@ -35,7 +35,7 @@ fn agent_findings(v: &Vals, now: ClockMs) -> Element {
     };
     rsx! {
         div { "data-k": "{key}", key: "{key}", style: "width:480px;max-width:100%;display:flex;flex-direction:column;gap:8px",
-            AgentFindings { now, finished: v.s("run") == "finished", filter, style: cstyle(v),
+            FindingsFeed { now, finished: v.s("run") == "finished", filter, style: cstyle(v),
                 on_open: move |id: String| msg.set(format!("onOpen({id:?})")) }
             {status(msg)}
         }
@@ -43,7 +43,7 @@ fn agent_findings(v: &Vals, now: ClockMs) -> Element {
 }
 
 fn agent_findings_code(_: &Vals) -> String {
-    Code::new("AgentFindings")
+    Code::new("FindingsFeed")
         .raw("agents", "agents()")
         .raw("findings", "findings()")
         .raw("title", "\"Verification\".into()")
@@ -52,14 +52,14 @@ fn agent_findings_code(_: &Vals) -> String {
         .done()
 }
 
-// ---------- Agent Inbox ----------
+// ---------- Task inbox ----------
 
 fn agent_inbox(v: &Vals, now: ClockMs) -> Element {
     let mut msg = use_signal(String::new);
     let key = format!("{}{}{}", v.s("style"), v.s("view"), v.b("open"));
     rsx! {
         div { "data-k": "{key}", key: "{key}", style: "width:740px;max-width:100%;display:flex;flex-direction:column;gap:8px",
-            AgentInbox { now, view: v.string("view"), open: if v.b("open") { "t1".to_string() } else { String::new() }, style: cstyle(v),
+            TaskInbox { now, view: v.string("view"), open: if v.b("open") { "t1".to_string() } else { String::new() }, style: cstyle(v),
                 on_action: move |(a, t): (String, String)| msg.set(format!("on{}({t:?})", a[..1].to_uppercase() + &a[1..])) }
             {status(msg)}
         }
@@ -67,7 +67,7 @@ fn agent_inbox(v: &Vals, now: ClockMs) -> Element {
 }
 
 fn agent_inbox_code(v: &Vals) -> String {
-    let mut c = Code::new("AgentInbox").raw("tasks", "tasks()");
+    let mut c = Code::new("TaskInbox").raw("tasks", "tasks()");
     if v.s("view") == "list" {
         c = c.raw("view", "\"list\".into()");
     }
@@ -76,7 +76,7 @@ fn agent_inbox_code(v: &Vals) -> String {
         .done()
 }
 
-// ---------- Agent Crew ----------
+// ---------- Crew tree ----------
 
 fn agent_crew(v: &Vals, now: ClockMs) -> Element {
     let mut msg = use_signal(String::new);
@@ -105,7 +105,7 @@ fn agent_crew(v: &Vals, now: ClockMs) -> Element {
     };
     rsx! {
         div { "data-k": "{key}", key: "{key}", style: "width:{width};max-width:100%;display:flex;flex-direction:column;gap:8px",
-            AgentCrew { now, project: v.string("project"), at, open: open.to_string(), style: cstyle(v),
+            CrewTree { now, project: v.string("project"), at, open: open.to_string(), style: cstyle(v),
                 on_steer: move |(id, a, m): (String, String, String)| msg.set(if m.is_empty() { format!("onSteer({id:?}, {a:?})") } else { format!("onSteer({id:?}, {a:?}, {m:?})") }),
                 on_project: move |id: String| msg.set(format!("onProjectChange({id:?})")) }
             {status(msg)}
@@ -114,7 +114,7 @@ fn agent_crew(v: &Vals, now: ClockMs) -> Element {
 }
 
 fn agent_crew_code(_: &Vals) -> String {
-    Code::new("AgentCrew")
+    Code::new("CrewTree")
         .raw("root", "Some(crew())")
         .raw("handoffs", "handoffs()")
         .raw("projects", "projects()")
@@ -127,7 +127,7 @@ fn agent_crew_code(_: &Vals) -> String {
         .done()
 }
 
-// ---------- Agent Cursors ----------
+// ---------- Presence cursors ----------
 
 fn agent_cursors(v: &Vals, now: ClockMs) -> Element {
     let mut msg = use_signal(String::new);
@@ -160,13 +160,13 @@ fn agent_cursors(v: &Vals, now: ClockMs) -> Element {
     };
     rsx! {
         div { "data-k": "{key}", key: "{key}", style: "width:700px;max-width:100%;display:flex;flex-direction:column;gap:8px",
-            AgentCursors { now, tab: v.string("tab"), at, following: following.to_string(), open: open.to_string(), style: cstyle(v),
-                on_accept: move |s: oxyn_core::parity::cursorsfid::DocSuggestion| msg.set(format!("onAccept({:?})", s.id)),
-                on_reject: move |s: oxyn_core::parity::cursorsfid::DocSuggestion| msg.set(format!("onReject({:?})", s.id)),
+            PresenceCursors { now, tab: v.string("tab"), at, following: following.to_string(), open: open.to_string(), style: cstyle(v),
+                on_accept: move |s: oxyn_core::kit::cursorsfid::DocSuggestion| msg.set(format!("onAccept({:?})", s.id)),
+                on_reject: move |s: oxyn_core::kit::cursorsfid::DocSuggestion| msg.set(format!("onReject({:?})", s.id)),
                 on_accept_all: move |_| msg.set("onAcceptAll()".into()),
                 on_following: move |id: String| msg.set(if id.is_empty() { "onFollowingChange(null)".into() } else { format!("onFollowingChange({id:?})") }),
-                on_resolve: move |c: oxyn_core::parity::cursorsfid::DocComment| msg.set(format!("onResolveComment({:?})", c.id)),
-                on_reply: move |(c, t): (oxyn_core::parity::cursorsfid::DocComment, String)| msg.set(format!("onReply({:?}, {t:?})", c.id)),
+                on_resolve: move |c: oxyn_core::kit::cursorsfid::DocComment| msg.set(format!("onResolveComment({:?})", c.id)),
+                on_reply: move |(c, t): (oxyn_core::kit::cursorsfid::DocComment, String)| msg.set(format!("onReply({:?}, {t:?})", c.id)),
                 on_tab: move |id: String| msg.set(format!("onTabChange({id:?})")) }
             {status(msg)}
         }
@@ -174,7 +174,7 @@ fn agent_cursors(v: &Vals, now: ClockMs) -> Element {
 }
 
 fn agent_cursors_code(v: &Vals) -> String {
-    let mut c = Code::new("AgentCursors")
+    let mut c = Code::new("PresenceCursors")
         .raw("scene", "Some(scene())")
         .raw("tabs", "tabs()")
         .raw("tab", format!("{:?}.into()", v.s("tab")).as_str());
@@ -190,7 +190,7 @@ fn agent_cursors_code(v: &Vals) -> String {
         .done()
 }
 
-// ---------- Agent Graph ----------
+// ---------- Tool network ----------
 
 fn agent_graph(v: &Vals, now: ClockMs) -> Element {
     let mut msg = use_signal(String::new);
@@ -218,7 +218,7 @@ fn agent_graph(v: &Vals, now: ClockMs) -> Element {
     };
     rsx! {
         div { "data-k": "{key}", key: "{key}", style: "width:{width};max-width:100%;display:flex;flex-direction:column;gap:8px",
-            AgentGraph { now, at, open: open.to_string(), style: cstyle(v),
+            ToolNetwork { now, at, open: open.to_string(), style: cstyle(v),
                 on_select: move |id: String| msg.set(if id.is_empty() { "onSelect(null)".into() } else { format!("onSelect({id:?})") }) }
             {status(msg)}
         }
@@ -226,7 +226,7 @@ fn agent_graph(v: &Vals, now: ClockMs) -> Element {
 }
 
 fn agent_graph_code(_: &Vals) -> String {
-    Code::new("AgentGraph")
+    Code::new("ToolNetwork")
         .raw(
             "scene",
             "Some(GraphScene { nodes: nodes(), edges: edges(), calls: recent_calls() })",
@@ -236,7 +236,7 @@ fn agent_graph_code(_: &Vals) -> String {
         .done()
 }
 
-// ---------- Agent Handoff ----------
+// ---------- Relay trail ----------
 
 fn agent_handoff(v: &Vals, now: ClockMs) -> Element {
     let mut msg = use_signal(String::new);
@@ -264,7 +264,7 @@ fn agent_handoff(v: &Vals, now: ClockMs) -> Element {
     };
     rsx! {
         div { "data-k": "{key}", key: "{key}", style: "width:{width};max-width:100%;display:flex;flex-direction:column;gap:8px",
-            AgentHandoff { now, at, open: open.to_string(), open_item: item.to_string(), style: cstyle(v),
+            RelayTrail { now, at, open: open.to_string(), open_item: item.to_string(), style: cstyle(v),
                 on_assign: move |(t, a): (String, String)| msg.set(format!("onAssign({t:?}, {a:?})")),
                 on_restore: move |(h, i): (String, String)| msg.set(format!("onRestore({h:?}, {i:?})")) }
             {status(msg)}
@@ -273,7 +273,7 @@ fn agent_handoff(v: &Vals, now: ClockMs) -> Element {
 }
 
 fn agent_handoff_code(_: &Vals) -> String {
-    Code::new("AgentHandoff")
+    Code::new("RelayTrail")
         .raw(
             "scene",
             "Some(HandoffScene { agents: agents(), handoffs: handoffs(), tasks: tasks() })",
@@ -287,7 +287,7 @@ fn agent_handoff_code(_: &Vals) -> String {
         .done()
 }
 
-// ---------- Agent Lanes ----------
+// ---------- Live lanes ----------
 
 fn agent_lanes(v: &Vals, now: ClockMs) -> Element {
     let mut msg = use_signal(String::new);
@@ -314,7 +314,7 @@ fn agent_lanes(v: &Vals, now: ClockMs) -> Element {
     };
     rsx! {
         div { "data-k": "{key}", key: "{key}", style: "width:{width};max-width:100%;display:flex;flex-direction:column;gap:8px",
-            AgentLanes { now, at, open: open.to_string(), style: cstyle(v),
+            LiveLanes { now, at, open: open.to_string(), style: cstyle(v),
                 on_approve: move |id: String| msg.set(format!("onApprove({id:?})")),
                 on_reject: move |id: String| msg.set(format!("onReject({id:?})")),
                 on_open: move |id: String| msg.set(format!("onOpen({id:?})")) }
@@ -324,7 +324,7 @@ fn agent_lanes(v: &Vals, now: ClockMs) -> Element {
 }
 
 fn agent_lanes_code(_: &Vals) -> String {
-    Code::new("AgentLanes")
+    Code::new("LiveLanes")
         .raw("scene", "Some(LaneScene { agents: agents(), tasks: tasks(), now: clock.ms(), span: 30 * 60_000 })")
         .raw("now", "clock.now()")
         .raw("on_approve", "move |id| approve(id)")
@@ -333,7 +333,7 @@ fn agent_lanes_code(_: &Vals) -> String {
         .done()
 }
 
-// ---------- Agent Ledger ----------
+// ---------- Change ledger ----------
 
 fn agent_ledger(v: &Vals, now: ClockMs) -> Element {
     let mut msg = use_signal(String::new);
@@ -351,7 +351,7 @@ fn agent_ledger(v: &Vals, now: ClockMs) -> Element {
     };
     rsx! {
         div { "data-k": "{key}", key: "{key}", style: "width:{width};max-width:100%;display:flex;flex-direction:column;gap:8px",
-            AgentLedger { now, at, point_at: point, style: cstyle(v),
+            ChangeLedger { now, at, point_at: point, style: cstyle(v),
                 on_undo: move |ids: Vec<String>| msg.set(format!("onUndo({ids:?})")),
                 on_redo: move |ids: Vec<String>| msg.set(format!("onRedo({ids:?})")) }
             {status(msg)}
@@ -360,7 +360,7 @@ fn agent_ledger(v: &Vals, now: ClockMs) -> Element {
 }
 
 fn agent_ledger_code(_: &Vals) -> String {
-    Code::new("AgentLedger")
+    Code::new("ChangeLedger")
         .raw("entries", "Some(changes())")
         .raw("undone", "undone()")
         .raw("agent", "\"Release agent\".into()")
@@ -371,7 +371,7 @@ fn agent_ledger_code(_: &Vals) -> String {
         .done()
 }
 
-// ---------- Agent Monitor ----------
+// ---------- Run monitor ----------
 
 fn agent_monitor(v: &Vals, now: ClockMs) -> Element {
     let mut msg = use_signal(String::new);
@@ -387,7 +387,7 @@ fn agent_monitor(v: &Vals, now: ClockMs) -> Element {
     };
     rsx! {
         div { "data-k": "{key}", key: "{key}", style: "width:340px;max-width:100%;display:flex;flex-direction:column;gap:8px",
-            AgentMonitor { now, at, failed, default_folded: folded, open: open.to_string(), style: cstyle(v),
+            RunMonitor { now, at, failed, default_folded: folded, open: open.to_string(), style: cstyle(v),
                 on_allow: move |_| msg.set("onAllow()".into()),
                 on_decline: move |_| msg.set("onDecline()".into()),
                 on_pause: move |p: bool| msg.set(if p { "onPause()".into() } else { "onResume()".into() }),
@@ -400,7 +400,7 @@ fn agent_monitor(v: &Vals, now: ClockMs) -> Element {
 }
 
 fn agent_monitor_code(_: &Vals) -> String {
-    Code::new("AgentMonitor")
+    Code::new("RunMonitor")
         .raw("scene", "Some(run.scene())")
         .raw("now", "clock.now()")
         .raw("on_allow", "move |_| run.allow()")
@@ -411,7 +411,7 @@ fn agent_monitor_code(_: &Vals) -> String {
         .done()
 }
 
-// ---------- Agent Queue ----------
+// ---------- Job queue ----------
 
 fn agent_queue(v: &Vals, now: ClockMs) -> Element {
     let mut msg = use_signal(String::new);
@@ -430,7 +430,7 @@ fn agent_queue(v: &Vals, now: ClockMs) -> Element {
     };
     rsx! {
         div { "data-k": "{key}", key: "{key}", style: "width:{width};max-width:100%;display:flex;flex-direction:column;gap:8px",
-            AgentQueue { now, at, paused, workers, open_at: open, style: cstyle(v),
+            JobQueue { now, at, paused, workers, open_at: open, style: cstyle(v),
                 on_paused_change: move |p: bool| msg.set(format!("onPausedChange({p})")),
                 on_concurrency_change: move |n: usize| msg.set(format!("onConcurrencyChange({n})")),
                 on_promote: move |id: String| msg.set(format!("onPromote({id:?})")),
@@ -441,7 +441,7 @@ fn agent_queue(v: &Vals, now: ClockMs) -> Element {
 }
 
 fn agent_queue_code(_: &Vals) -> String {
-    Code::new("AgentQueue")
+    Code::new("JobQueue")
         .raw("name", "\"agent-work\".into()")
         .raw("workers", "4")
         .raw("now", "clock.now()")
@@ -452,7 +452,7 @@ fn agent_queue_code(_: &Vals) -> String {
         .done()
 }
 
-// ---------- Agent Recap ----------
+// ---------- Overnight recap ----------
 
 fn agent_recap(v: &Vals, now: ClockMs) -> Element {
     let mut msg = use_signal(String::new);
@@ -470,7 +470,7 @@ fn agent_recap(v: &Vals, now: ClockMs) -> Element {
     };
     rsx! {
         div { "data-k": "{key}", key: "{key}", style: "width:{width};max-width:100%;display:flex;flex-direction:column;gap:8px",
-            AgentRecap { now, replay, acted, point: point.to_string(), style: cstyle(v),
+            OvernightRecap { now, replay, acted, point: point.to_string(), style: cstyle(v),
                 on_action: move |(id, a): (String, String)| msg.set(format!("onAction({id:?}, {a:?})")),
                 on_undo: move |id: String| msg.set(format!("onUndo({id:?})")),
                 on_redo: move |id: String| msg.set(format!("onRedo({id:?})")) }
@@ -480,7 +480,7 @@ fn agent_recap(v: &Vals, now: ClockMs) -> Element {
 }
 
 fn agent_recap_code(_: &Vals) -> String {
-    Code::new("AgentRecap")
+    Code::new("OvernightRecap")
         .raw("events", "Some(night())")
         .raw("since", "left_at_minutes")
         .raw("span", "away_minutes")
@@ -491,7 +491,7 @@ fn agent_recap_code(_: &Vals) -> String {
         .done()
 }
 
-// ---------- Agent Sequence ----------
+// ---------- Sequence diagram ----------
 
 fn agent_sequence(v: &Vals, now: ClockMs) -> Element {
     let mut msg = use_signal(String::new);
@@ -509,7 +509,7 @@ fn agent_sequence(v: &Vals, now: ClockMs) -> Element {
     };
     rsx! {
         div { "data-k": "{key}", key: "{key}", style: "width:{width};max-width:100%;margin:0 auto;display:flex;flex-direction:column;gap:8px",
-            AgentSequence { now, at, open: open.to_string(), open_participant: part.to_string(), style: cstyle(v),
+            SequenceDiagram { now, at, open: open.to_string(), open_participant: part.to_string(), style: cstyle(v),
                 on_select: move |id: Option<String>| msg.set(format!("onSelect({id:?})")) }
             {status(msg)}
         }
@@ -517,7 +517,7 @@ fn agent_sequence(v: &Vals, now: ClockMs) -> Element {
 }
 
 fn agent_sequence_code(_: &Vals) -> String {
-    Code::new("AgentSequence")
+    Code::new("SequenceDiagram")
         .raw("participants", "Some(run.participants())")
         .raw("messages", "Some(run.messages())")
         .raw("title", "run.title()")
@@ -609,14 +609,14 @@ pub(crate) fn demos() -> Vec<Demo> {
             height: 600,
             live: true,
             ..mk(
-                "agent-crew",
-                "Agent Crew",
+                "crew-tree",
+                "Crew tree",
                 "tools",
                 "A lead and its sub-agents as one live tree of cards – what each does now, how full its context is, its tools and the last thing it was handed; handoffs run as a light along the connectors, a click opens the details with steering, and a switcher swaps projects.",
-                "AgentCrew",
-                "AgentCrewEl",
+                "CrewTree",
+                "CrewTreeEl",
                 "agent-crew",
-                "parity/crewfid.rs",
+                "kit/crewfid.rs",
             )
         },
         Demo {
@@ -686,14 +686,14 @@ pub(crate) fn demos() -> Vec<Demo> {
             height: 600,
             live: true,
             ..mk(
-                "agent-cursors",
-                "Agent Cursors",
+                "presence-cursors",
+                "Presence cursors",
                 "tools",
                 "Agents in a document like teammates in a multiplayer editor – live pointers with names and costs, suggestions typed letter by letter, an image they resize, code they fix and comment pins beside the page.",
-                "AgentCursors",
-                "AgentCursorsEl",
+                "PresenceCursors",
+                "PresenceCursorsEl",
                 "agent-cursors",
-                "parity/cursorsfid.rs",
+                "kit/cursorsfid.rs",
             )
         },
         Demo {
@@ -744,14 +744,14 @@ pub(crate) fn demos() -> Vec<Demo> {
             height: 470,
             live: true,
             ..mk(
-                "agent-findings",
-                "Agent Findings",
+                "findings-feed",
+                "Findings feed",
                 "tools",
                 "A swarm of agents checking something – one calm row per agent with its progress, and their findings sliding into a short feed as they're found.",
-                "AgentFindings",
-                "AgentFindingsEl",
+                "FindingsFeed",
+                "FindingsFeedEl",
                 "agent-findings",
-                "parity/agentsfid.rs",
+                "kit/agentsfid.rs",
             )
         },
         Demo {
@@ -812,14 +812,14 @@ pub(crate) fn demos() -> Vec<Demo> {
             height: 600,
             live: true,
             ..mk(
-                "agent-graph",
-                "Agent Graph",
+                "tool-network",
+                "Tool network",
                 "tools",
                 "Agents and the tools they call as a living network – a pulse along the link for every call and its answer, agents that breathe while they work and turn amber when they need you, and a card with each node's latest calls.",
-                "AgentGraph",
-                "AgentGraphEl",
+                "ToolNetwork",
+                "ToolNetworkEl",
                 "agent-graph",
-                "parity/graphfid.rs",
+                "kit/graphfid.rs",
             )
         },
         Demo {
@@ -887,14 +887,14 @@ pub(crate) fn demos() -> Vec<Demo> {
             height: 560,
             live: true,
             ..mk(
-                "agent-handoff",
-                "Agent Handoff",
+                "relay-trail",
+                "Relay trail",
                 "tools",
                 "A task passed from agent to agent like a relay – at every handoff what went along to the next one, what got lost on the way, and a light running down the line as the card drops in.",
-                "AgentHandoff",
-                "AgentHandoffEl",
+                "RelayTrail",
+                "RelayTrailEl",
                 "agent-handoff",
-                "parity/handofffid.rs",
+                "kit/handofffid.rs",
             )
         },
         Demo {
@@ -939,14 +939,14 @@ pub(crate) fn demos() -> Vec<Demo> {
             height: 620,
             live: true,
             ..mk(
-                "agent-inbox",
-                "Agent Inbox",
+                "task-inbox",
+                "Task inbox",
                 "tools",
                 "All your background agent tasks in one calm list – live clocks and status tags, filter tabs with rolling counts, rows that unfold to the last steps with Approve, Reject, Retry or Open, and glide to their new place.",
-                "AgentInbox",
-                "AgentInboxEl",
+                "TaskInbox",
+                "TaskInboxEl",
                 "agent-inbox",
-                "parity/agentsfid.rs",
+                "kit/agentsfid.rs",
             )
         },
         Demo {
@@ -1005,14 +1005,14 @@ pub(crate) fn demos() -> Vec<Demo> {
             height: 420,
             live: true,
             ..mk(
-                "agent-lanes",
-                "Agent Lanes",
+                "live-lanes",
+                "Live lanes",
                 "tools",
                 "Where every agent is right now – a live timeline with a lane per agent, tasks growing into now, hand-offs drawn between agents and approvals right on the block.",
-                "AgentLanes",
-                "AgentLanesEl",
+                "LiveLanes",
+                "LiveLanesEl",
                 "agent-lanes",
-                "parity/lanesfid.rs",
+                "kit/lanesfid.rs",
             )
         },
         Demo {
@@ -1075,14 +1075,14 @@ pub(crate) fn demos() -> Vec<Demo> {
             height: 600,
             live: true,
             ..mk(
-                "agent-ledger",
-                "Agent Ledger",
+                "change-ledger",
+                "Change ledger",
                 "tools",
                 "Everything an agent changed in your systems, each change with an undo – before and after per row, and pointing at Undo shows what would go with it and what can't be taken back.",
-                "AgentLedger",
-                "AgentLedgerEl",
+                "ChangeLedger",
+                "ChangeLedgerEl",
                 "agent-ledger",
-                "parity/ledgerfid.rs",
+                "kit/ledgerfid.rs",
             )
         },
         Demo {
@@ -1157,14 +1157,14 @@ pub(crate) fn demos() -> Vec<Demo> {
             height: 480,
             live: true,
             ..mk(
-                "agent-monitor",
-                "Agent Monitor",
+                "run-monitor",
+                "Run monitor",
                 "tools",
                 "One agent at work as a card – the current step with a clock and the bill so far, a time strip, the finished steps with each tool's logo, the exact command when it needs an OK, and a fold into a small bar.",
-                "AgentMonitor",
-                "AgentMonitorEl",
+                "RunMonitor",
+                "RunMonitorEl",
                 "agent-monitor",
-                "parity/monitorfid.rs",
+                "kit/monitorfid.rs",
             )
         },
         Demo {
@@ -1237,14 +1237,14 @@ pub(crate) fn demos() -> Vec<Demo> {
             height: 640,
             live: true,
             ..mk(
-                "agent-queue",
-                "Agent Queue",
+                "job-queue",
+                "Job queue",
                 "tools",
                 "The work waiting for your agents and how fast it moves – a live queue, workers running jobs as growing bars, Done and Failed, and a depth chart that shows the backlog build up under a rate limit and drain after.",
-                "AgentQueue",
-                "AgentQueueEl",
+                "JobQueue",
+                "JobQueueEl",
                 "agent-queue",
-                "parity/queuefid.rs",
+                "kit/queuefid.rs",
             )
         },
         Demo {
@@ -1306,14 +1306,14 @@ pub(crate) fn demos() -> Vec<Demo> {
             height: 560,
             live: true,
             ..mk(
-                "agent-recap",
-                "Agent Recap",
+                "overnight-recap",
+                "Overnight recap",
                 "tools",
                 "A catch-up card for when you come back: a tiny timeline of the night with a spike per event, then grouped items – waiting on you, broken, finished – each with its action in place.",
-                "AgentRecap",
-                "AgentRecapEl",
+                "OvernightRecap",
+                "OvernightRecapEl",
                 "agent-recap",
-                "parity/recapfid.rs",
+                "kit/recapfid.rs",
             )
         },
         Demo {
@@ -1385,14 +1385,14 @@ pub(crate) fn demos() -> Vec<Demo> {
             live: true,
             align: Align::Start,
             ..mk(
-                "agent-sequence",
-                "Agent Sequence",
+                "sequence-diagram",
+                "Sequence diagram",
                 "tools",
                 "One agent run as a sequence diagram – a column for you, each agent and each tool, every message an arrow between lifelines, calls solid and replies dashed, bars while a participant works, and parallel or retried messages in labelled frames.",
-                "AgentSequence",
-                "AgentSequenceEl",
+                "SequenceDiagram",
+                "SequenceDiagramEl",
                 "agent-sequence",
-                "parity/seqfid.rs",
+                "kit/seqfid.rs",
             )
         },
     ]

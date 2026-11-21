@@ -49,6 +49,9 @@ pub struct MetaItem {
     /// GPUI entry (`ComposerEl`).
     #[serde(default)]
     pub gpui: Option<String>,
+    /// Older slugs of a renamed item, written to the index so `oxyn add <old>` still works.
+    #[serde(default)]
+    pub aliases: Vec<String>,
 }
 
 /// Where to read from and what to stamp.
@@ -110,6 +113,14 @@ pub fn build(meta: &[MetaItem], cfg: &BuildConfig) -> Result<Registry, String> {
     for m in meta {
         if !valid_slug(&m.slug) {
             return Err(format!("invalid slug `{}`", m.slug));
+        }
+        for a in &m.aliases {
+            if !valid_slug(a) || meta.iter().any(|o| &o.slug == a) {
+                return Err(format!(
+                    "alias `{a}` of `{}` is invalid or names an item",
+                    m.slug
+                ));
+            }
         }
     }
     let ws = read_workspace_deps(&cfg.repo_root)?;
@@ -291,6 +302,11 @@ pub fn build(meta: &[MetaItem], cfg: &BuildConfig) -> Result<Registry, String> {
             hash: it.hash.clone(),
             installable: installable.contains(&it.slug),
             note,
+            aliases: meta
+                .iter()
+                .find(|m| m.slug == it.slug)
+                .map(|m| m.aliases.clone())
+                .unwrap_or_default(),
         });
     }
     index_items.sort_by(|a, b| a.slug.cmp(&b.slug));
@@ -924,6 +940,7 @@ mod tests {
             url: String::new(),
             dioxus: Some(dioxus.into()),
             gpui: None,
+            aliases: vec![],
         }
     }
 

@@ -21,14 +21,14 @@
 //! - [`password`]: password reveal helpers and the strength meter. [`inline_edit`]: rename in
 //!   place. [`phone`]: phone input with a country picker and E.164.
 //! - [`date`]: dates, the calendar, date picker, range picker and time list. [`dial`]: the time
-//!   dial and the date reel.
+//!   dial and the date wheel.
 //! - [`filter_menu`]: grouped filters. [`stepper`]: stepper / multi-step form.
 //!   [`questions`]: the decision card and paged approval questions. [`smart_fill`]: paste to fill.
 //!
 //! Surfaces (plan #26):
 //! - [`modal`]: dialog, side sheet, sheet stack, bottom sheet. [`toast`]: toaster and
 //!   notification stack. [`scroll`]: scroll area with stick-to-bottom, pagination.
-//! - [`feedback`]: alert and card. [`skeleton`]: skeletons, shimmer loader, skeleton morph.
+//! - [`feedback`]: alert and card. [`skeleton`]: skeletons, shimmer loader, skeleton reveal.
 //! - [`command`]: command palette / menu, AI command, AI search bar, settings command.
 //!   [`search`]: search field, expanding search, shortcut recorder. [`control_center`]: quick
 //!   settings.

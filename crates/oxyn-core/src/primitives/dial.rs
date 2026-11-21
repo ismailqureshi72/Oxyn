@@ -1,4 +1,4 @@
-//! Time dial and date reel (`time-dial.md`, `date-reel.md`): the two physical pickers.
+//! Time dial and date wheel (`time-dial.md`, `date-reel.md`): the two physical pickers.
 //!
 //! - **Time dial** (Arc UI Time dial): a 24-hour rotary dial for choosing a time across time zones.
 //!   Every city rides the dial at its own local time, a band marks working hours, the home city
@@ -301,7 +301,7 @@ impl TimeDial {
 }
 
 // ---------------------------------------------------------------------------------------------
-// Date reel
+// Date wheel
 
 /// Which reels show.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
@@ -502,9 +502,9 @@ pub struct ReelPreset {
     pub value: (Date, TimeOfDay),
 }
 
-/// The date reel.
+/// The date wheel.
 #[derive(Clone, Debug, PartialEq)]
-pub struct DateReel {
+pub struct DateWheel {
     /// Mode.
     pub mode: ReelMode,
     /// Today.
@@ -532,7 +532,7 @@ pub struct DateReel {
     typed: (String, Option<ClockMs>),
 }
 
-impl DateReel {
+impl DateWheel {
     /// A reel at `value`; min / max default to 30 days before and a year after today (100 years
     /// back and 10 on in date mode).
     pub fn new(mode: ReelMode, value: (Date, TimeOfDay), today: Date) -> Self {
@@ -989,7 +989,7 @@ mod tests {
     #[test]
     fn date_reel_values_keys_typing() {
         let today = Date::new(2026, 9, 24).unwrap();
-        let mut r = DateReel::new(ReelMode::DateTime, (today, TimeOfDay::new(9, 30)), today);
+        let mut r = DateWheel::new(ReelMode::DateTime, (today, TimeOfDay::new(9, 30)), today);
         assert_eq!(r.reels.len(), 4);
         assert_eq!(r.summary(), "Today at 9:30 AM");
         r.key(0, ReelKey::Down);
@@ -1008,7 +1008,7 @@ mod tests {
         assert!(r.enter_text("in 12 days 6:15 pm"));
         assert_eq!(r.relative(), "In 12 days");
         assert_eq!(r.value().1, TimeOfDay::new(18, 15));
-        let mut dm = DateReel::new(
+        let mut dm = DateWheel::new(
             ReelMode::Date,
             (Date::new(2026, 1, 31).unwrap(), TimeOfDay::default()),
             today,
@@ -1025,7 +1025,7 @@ mod tests {
         assert_eq!(dm.value().0.m, 3);
         dm.typeahead(0, 'y', ClockMs(200));
         assert_eq!(dm.value().0.m, 5, "may");
-        let tm = DateReel::new(ReelMode::Time, (today, TimeOfDay::new(14, 5)), today);
+        let tm = DateWheel::new(ReelMode::Time, (today, TimeOfDay::new(14, 5)), today);
         assert_eq!(tm.summary(), "2:05 PM");
         assert_eq!(tm.valuetext(0), "2");
     }

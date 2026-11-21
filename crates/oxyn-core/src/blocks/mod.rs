@@ -6,7 +6,7 @@
 //!
 //! Agents:
 //! - [`session`]: Live session: a team of agents at work, their conversation, plan and context.
-//! - [`mission`]: Mission control and Mission timeline: every agent, what happened, what needs you.
+//! - [`mission`]: Fleet overview and Fleet timeline: every agent, what happened, what needs you.
 //! - [`inspector`]: Run inspector: one multi-agent run as a tree with call bars and numbers.
 //! - [`bgagents`]: Background agents: coding tasks from queued to ready for review and a PR.
 //! - [`routines`]: Agent routines: scheduled agents as sentences with a countdown and run ticks.
@@ -18,8 +18,8 @@
 //!
 //! AI:
 //! - [`insight`]: AI insight card: a KPI that explains its own change.
-//! - [`arena`]: Model arena: two models answer one prompt blind; vote, then reveal.
-//! - [`prompt`]: Prompt studio: a template with variables, test runs, versions and a diff.
+//! - [`arena`]: Blind compare: two models answer one prompt blind; vote, then reveal.
+//! - [`prompt`]: Prompt bench: a template with variables, test runs, versions and a diff.
 //! - [`memory`]: Assistant memory: what an assistant remembers, to edit, forget or add.
 //! - [`catchup`]: Catch up: a ranked digest of what happened in your tools.
 //! - [`launch`]: AI feature launch: a tour card with a mini demo and an admin switch.
@@ -52,8 +52,8 @@ pub use crate::aikit::{first_words, hash, norm_key, nth, rove, thousands, usd, w
 /// Page slugs of the blocks, in gallery order.
 pub const BLOCK_SLUGS: [&str; 20] = [
     "live-session",
-    "mission-control",
-    "mission-timeline",
+    "fleet-overview",
+    "fleet-timeline",
     "run-inspector",
     "background-agents",
     "agent-routines",
@@ -63,8 +63,8 @@ pub const BLOCK_SLUGS: [&str; 20] = [
     "agent-builder",
     "agent-gallery",
     "ai-insight-card",
-    "model-arena",
-    "prompt-studio",
+    "blind-compare",
+    "prompt-bench",
     "assistant-memory",
     "catch-up",
     "ai-feature-launch",
