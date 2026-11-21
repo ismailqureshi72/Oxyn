@@ -1,7 +1,9 @@
 //! AI special components (Oxyn Pro): Agent timeline, Model card, AI workflow, Image generation,
 //! Speech player, Meeting summary, Reply draft, Human handoff, PII redaction, LLM cost
 //! calculator, Provider keys, Generation stats, AI translate, TL;DR toggle, Connector setup,
-//! Enrich column and Ticket router. Rules live in `oxyn_core::aikit` (shared with the GPUI
+//! Enrich column, Ticket router, Ask your data, Agent doc cursor, Provider status, Training run,
+//! Tone tuner, AI mascot, Image reveal, AI spark, Pixel mascot, Ghost mascot, Cube mascot,
+//! Upgrade prompt, Referral card, Trial banner, Live visitors and Social proof toast. Rules live in `oxyn_core::aikit` (shared with the GPUI
 //! view); styles in `aikit.css` (prefix `oxaik-`). Chrome is neutral grey; colour is kept for
 //! status, data series and the official brand and model marks.
 //!
@@ -13,39 +15,55 @@ use dioxus::prelude::*;
 use crate::brand::BrandIcon;
 use crate::composer::icons::Icon;
 
+mod ask;
 mod connector;
 mod cost;
+mod doccursor;
 mod enrich;
 mod genstats;
+mod growth;
 mod handoff;
 mod imagegen;
 mod keys;
+mod mascots;
 mod meeting;
 mod model_card;
 mod pii;
+mod provstatus;
 mod reply;
+mod reveal;
 mod router;
 mod speech;
 mod timeline;
 mod tldr;
+mod tone;
+mod training;
 mod translate;
 mod workflow;
 
+pub use ask::AskYourData;
 pub use connector::ConnectorSetup;
 pub use cost::LlmCostCalculator;
+pub use doccursor::AgentDocCursor;
 pub use enrich::EnrichColumn;
 pub use genstats::GenerationStats;
+pub use growth::{LiveVisitors, ReferralCard, SocialProofToast, TrialBanner, UpgradePrompt};
 pub use handoff::HumanHandoff;
 pub use imagegen::ImageGeneration;
 pub use keys::ProviderKeys;
+pub use mascots::{AiMascot, AiSpark, CubeMascot, GhostMascot, PixelMascot};
 pub use meeting::MeetingSummary;
 pub use model_card::ModelCard;
 pub use pii::PiiRedaction;
+pub use provstatus::ProviderStatus;
 pub use reply::ReplyDraft;
+pub use reveal::ImageReveal;
 pub use router::TicketRouter;
 pub use speech::SpeechPlayer;
 pub use timeline::AgentTimeline;
 pub use tldr::TldrToggle;
+pub use tone::ToneTuner;
+pub use training::TrainingRun;
 pub use translate::AiTranslate;
 pub use workflow::AiWorkflow;
 
