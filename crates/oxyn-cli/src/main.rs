@@ -6,7 +6,7 @@ use std::process::ExitCode;
 
 use clap::{Parser, Subcommand};
 use oxyn_cli::install::{self, FileDiff};
-use oxyn_cli::{Client, Config, Error, PRICING_URL, Source, registry_base, resolve};
+use oxyn_cli::{Client, Config, Error, PRICING_URL, Source, auth, registry_base, resolve};
 use oxyn_registry_schema::{Framework, IndexEntry, Tier};
 
 #[derive(Parser)]
@@ -87,6 +87,24 @@ enum Cmd {
     Diff {
         /// The item.
         slug: String,
+    },
+    /// Sign in for Pro items: approve this computer in the browser, or save a token.
+    Login {
+        /// A token from your account page (https://ui.oxyn.workers.dev/account/#cli) instead of
+        /// the browser.
+        #[arg(long, value_name = "TOKEN")]
+        token: Option<String>,
+        /// Print the sign-in link instead of opening the browser.
+        #[arg(long)]
+        no_browser: bool,
+    },
+    /// Forget the saved token on this computer (revoke it on your account page).
+    Logout,
+    /// Show the signed-in account, its plan and this month's Pro items.
+    Whoami {
+        /// JSON output.
+        #[arg(long)]
+        json: bool,
     },
 }
 
@@ -319,8 +337,12 @@ fn run(cli: Cli) -> Result<(), Error> {
                     }
                     println!("\n  oxyn add {slug}");
                 }
+                None if e.tier == Tier::Pro && e.installable => println!(
+                    "\n  Part of Oxyn Pro ({PRICING_URL}/). With a plan: oxyn login, then oxyn add {slug}\n  (each new Pro item counts toward this month's; `oxyn whoami` shows the count)."
+                ),
                 None if e.tier == Tier::Pro => println!(
-                    "\n  Part of Oxyn Pro: the preview is free on the site, the code needs Pro ({PRICING_URL}/)."
+                    "\n  Part of Oxyn Pro, with no CLI build yet: the code is on its page ({}).",
+                    e.url
                 ),
                 None => println!(
                     "\n  Not installable: {}",
@@ -345,6 +367,17 @@ fn run(cli: Cli) -> Result<(), Error> {
             let idx = client.index()?;
             let rep = install::add(&p, &mut cfg, &client, &idx, &slugs, overwrite)?;
             println!("added {}", rep.items.join(", "));
+            if let Some(u) = client.last_usage() {
+                let n = client.counted().len();
+                println!(
+                    "  Pro this month: {u}{}",
+                    if n > 0 {
+                        format!(" ({n} new)")
+                    } else {
+                        String::new()
+                    }
+                );
+            }
             for f in &rep.files.written {
                 println!("  wrote {f}");
             }
@@ -389,6 +422,94 @@ fn run(cli: Cli) -> Result<(), Error> {
                 println!("{slug} matches the registry");
             }
         }
+        Cmd::Login { token, no_browser } => login(&client, token, no_browser)?,
+        Cmd::Logout => {
+            if auth::remove()? {
+                println!(
+                    "Signed out on this computer. The token still works until you revoke it on your account page (https://ui.oxyn.workers.dev/account/#cli)."
+                );
+            } else {
+                println!("No saved token on this computer.");
+            }
+            if auth::token_source() == "OXYN_TOKEN" {
+                println!("OXYN_TOKEN is still set in this shell.");
+            }
+        }
+        Cmd::Whoami { json } => {
+            let v = auth::whoami(&client)?;
+            if json {
+                return json_out(&v);
+            }
+            let plan = if v["admin"].as_bool() == Some(true) {
+                "Admin (everything, no limits)".to_string()
+            } else {
+                match v["tier"].as_str().unwrap_or("free") {
+                    "team" => "Team".to_string(),
+                    "pro" => "Pro".to_string(),
+                    _ => "Free".to_string(),
+                }
+            };
+            println!("{}", v["email"].as_str().unwrap_or("?"));
+            println!("  plan   {plan}");
+            if let Some(u) = auth::usage_line(&v) {
+                println!("  usage  {u}");
+            }
+            println!("  token  from {}", auth::token_source());
+            if v["pro"].as_bool() != Some(true) {
+                println!("\nPro items need a plan: {PRICING_URL}/");
+            }
+        }
+    }
+    Ok(())
+}
+
+fn login(client: &Client, token: Option<String>, no_browser: bool) -> Result<(), Error> {
+    let (token, email) = match token {
+        Some(t) => {
+            let t = t.trim().to_string();
+            if !t.starts_with("oxyn_") {
+                return Err(Error::Invalid(
+                    "that is not an Oxyn token (they start with oxyn_): make one on your account page".into(),
+                ));
+            }
+            let check = Client::new(&client.describe())
+                .with_api(client.api().map(String::from))
+                .with_token(Some(t.clone()));
+            let v = auth::whoami(&check)?;
+            (t, v["email"].as_str().map(String::from))
+        }
+        None => {
+            let d = auth::start_login(client, &auth::host_name())?;
+            println!(
+                "Sign in to Oxyn in your browser and approve this code: {}",
+                d.user_code
+            );
+            if no_browser || !auth::open_browser(&d.url) {
+                println!("Open: {}", d.url);
+            } else {
+                println!("Opened {} (if nothing opened, visit it yourself)", d.url);
+            }
+            println!("Waiting for approval…");
+            auth::wait_login(client, &d)?
+        }
+    };
+    let path = auth::save(&auth::Credentials {
+        token: token.clone(),
+        email: email.clone(),
+        api: client.api().map(String::from),
+    })?;
+    println!(
+        "Signed in{}. Token saved to {}",
+        email.map(|e| format!(" as {e}")).unwrap_or_default(),
+        path.display()
+    );
+    let after = Client::new(&client.describe())
+        .with_api(client.api().map(String::from))
+        .with_token(Some(token));
+    if let Ok(v) = auth::whoami(&after)
+        && let Some(u) = auth::usage_line(&v)
+    {
+        println!("  {u}");
     }
     Ok(())
 }
