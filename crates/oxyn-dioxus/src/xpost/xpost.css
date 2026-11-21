@@ -80,18 +80,17 @@
 .oxxp-tick[data-st="fail"]{background:var(--h-red);transform:scaleY(1.12)}
 .oxxp-tick.on{outline:2px solid var(--xp-fg);outline-offset:1px}
 @keyframes oxxp-tk{50%{opacity:.45}}
-.oxxp-tt-fix{position:absolute;z-index:3;right:10px;top:calc(10px + var(--row) * 23px + 26px);display:flex;flex-direction:column;gap:8px;width:min(360px,calc(100% - 20px));padding:10px;border:1px solid var(--xp-line2);border-radius:10px;background:var(--xp-bg);box-shadow:0 12px 30px rgba(0,0,0,.16);animation:oxxp-pop .22s cubic-bezier(.2,.9,.3,1.2) both}
+.oxxp-tt-fix{display:flex;flex-direction:column;gap:8px;padding:10px;border:1px solid var(--xp-line2);border-radius:10px;background:var(--xp-bg);box-shadow:0 12px 30px rgba(0,0,0,.16);animation:oxxp-pop .22s cubic-bezier(.2,.9,.3,1.2) both}
 @keyframes oxxp-pop{from{opacity:0;transform:translateY(6px) scale(.97)}to{opacity:1;transform:none}}
 .oxxp-tt-sel{margin:0;overflow-wrap:anywhere}
 
 /* Triage metro */
 .oxxp-tm-map{position:relative;border:1px solid var(--xp-line);border-radius:10px;background:var(--xp-card);padding:6px 8px}
 .oxxp-tm-map svg{display:block;width:100%;height:auto;overflow:visible}
-.oxxp-tm-line{fill:none;stroke:color-mix(in srgb,var(--h) 55%,var(--xp-line2));stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
-.oxxp-tm-line[data-hue="neutral"]{stroke:var(--xp-line2)}
+.oxxp-tm-line{fill:none;stroke:color-mix(in srgb,var(--h) 70%,transparent);stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
+.oxxp-tm-line[data-hue="neutral"],.oxxp-tm-trunk{stroke:var(--xp-line2)}
 .oxxp-tm-stn{fill:var(--xp-bg);stroke:var(--xp-fg2);stroke-width:2.5}
 .oxxp-tm-term{fill:var(--xp-bg);stroke:var(--h);stroke-width:3}
-.oxxp-tm-lab{fill:var(--xp-fg2);font-size:12px;font-family:inherit}
 .oxxp-tm-dot{fill:var(--h,var(--xp-fg));stroke:var(--xp-bg);stroke-width:2;transition:r .15s}
 .oxxp-tm-dot[data-hue="ride"]{fill:var(--xp-fg)}
 .oxxp-tm-dot.on{stroke:var(--xp-fg);stroke-width:2.5}
@@ -100,6 +99,7 @@
 .oxxp-tm-terms{position:absolute;inset:6px 8px;pointer-events:none}
 .oxxp-tm-terms span{position:absolute;right:10%;transform:translate(0,-160%);color:var(--h);font-size:11.5px;font-weight:500;white-space:nowrap}
 .oxxp-tm-terms span[data-hue="neutral"]{color:var(--xp-fg2)}
+.oxxp-tm-terms b.oxxp-tm-stl{position:absolute;top:63%;transform:translateX(-50%);color:var(--xp-fg2);font-size:11.5px;font-weight:500;white-space:nowrap}
 .oxxp-tm-counts{display:flex;flex-wrap:wrap;gap:6px 22px}
 .oxxp-tm-card{display:flex;flex-direction:column;gap:8px;padding:10px 12px;border:1px solid var(--xp-line2);border-radius:10px;background:var(--xp-bg)}
 .oxxp-tm-card p{margin:0}
@@ -165,6 +165,8 @@
 
 /* Agent prompt copy */
 .oxxp-ga .oxxp-row.oxxp-between{flex-wrap:wrap;gap:10px}
+.oxxp-ga{min-height:370px}
+.oxxp-ga .oxxp-menu{max-height:250px;overflow-y:auto;scrollbar-width:thin}
 .oxxp-ga-split{position:relative;display:inline-flex;align-items:stretch;height:32px;border:1px solid var(--xp-fg);border-radius:9px;background:var(--xp-fg);color:var(--xp-bg);flex:none}
 .oxxp-ga-split[data-copied="true"]{background:var(--xp-bg);color:var(--xp-fg)}
 .oxxp-ga-split[data-fail="true"]{border-color:var(--h-red);color:var(--h-red)}
@@ -176,10 +178,10 @@
 
 /* Proactive card */
 .oxxp-pc{gap:10px}
-.oxxp-pc-post{display:flex;gap:10px;padding:4px 2px;opacity:.85}
+.oxxp-pc-post{display:flex;gap:10px;padding:4px 2px}
 .oxxp-pc-post p{margin:2px 0 0;color:var(--xp-fg2);overflow-wrap:anywhere}
 .oxxp-pc-ava{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--xp-sel);color:var(--xp-fg2);font-size:12px;font-weight:600;flex:none}
-.oxxp-pc-card{display:flex;flex-direction:column;gap:8px;padding:12px 14px;border:1px solid var(--xp-line2);border-radius:12px;background:var(--xp-card);box-shadow:0 1px 0 var(--xp-line)}
+.oxxp-pc-card{position:relative;z-index:2;display:flex;flex-direction:column;gap:8px;padding:12px 14px;border:1px solid var(--xp-line2);border-radius:12px;background:var(--xp-card);box-shadow:0 1px 0 var(--xp-line)}
 .oxxp-pc-spark{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:5px;background:var(--xp-fg);color:var(--xp-bg)}
 .oxxp-pc-t{margin:0;font-size:14.5px;font-weight:600;line-height:1.3}
 .oxxp-pc-b{margin:0;color:var(--xp-fg2);overflow-wrap:anywhere}
@@ -265,6 +267,7 @@
   .oxxp-ws-day{width:72px}
   .oxxp-lp-body{justify-content:center}
   .oxxp-pp-pop{right:-4px;width:300px}
+  .oxxp-pc-later .oxxp-menu{left:auto;right:0}
   .oxxp-tm-terms span{font-size:10.5px}
 }
 @media (prefers-reduced-motion:reduce){

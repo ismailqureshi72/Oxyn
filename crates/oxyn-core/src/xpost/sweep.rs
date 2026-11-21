@@ -97,7 +97,7 @@ impl Sweep {
             return format!("Writing… {n} of {} changes", changed().len());
         }
         if self.done(now) {
-            return format!("{} changes · tap a row to compare", changed().len());
+            return format!("{} changes · Undo restores the old plan", changed().len());
         }
         "Ready to update the plan".into()
     }
