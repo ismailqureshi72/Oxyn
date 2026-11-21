@@ -244,7 +244,7 @@ pub(crate) fn demos() -> Vec<Demo> {
     vec![
         Demo {
             controls: vec![
-                sel("kind", "Component", &["affectui", "oxyn"], "affectui"),
+                sel("kind", "Component", &["standard", "oxyn"], "standard"),
                 style(),
                 sel("start", "Start", &["stream", "done"], "stream"),
                 sel("vote", "Feedback", &["none", "up", "down"], "none"),
@@ -252,7 +252,7 @@ pub(crate) fn demos() -> Vec<Demo> {
             variants: vec![
                 var(
                     "default",
-                    "As affectUI ships it: the sources pop in (\"Reading 8 sources\"), the answer streams with a Stop button, then RELATED and the footer arrive.",
+                    "The sources pop in (\"Reading 8 sources\"), the answer streams with a Stop button, then RELATED and the footer arrive.",
                     &[],
                 ),
                 var(
@@ -272,7 +272,7 @@ pub(crate) fn demos() -> Vec<Demo> {
                 ),
                 var(
                     "oxyn-ai-answer",
-                    "Oxyn extra (beyond affectUI): the plan #27 answer with search, provenance and cited cards.",
+                    "Extended: the answer with search, provenance and cited cards.",
                     &[("kind", "oxyn")],
                 ),
             ],
@@ -316,7 +316,7 @@ pub(crate) fn demos() -> Vec<Demo> {
             variants: vec![
                 var(
                     "default",
-                    "As affectUI ships it: the second source is lit – its sentence tinted, the rest faded. Point at a marker or a chip to light another.",
+                    "The second source is lit – its sentence tinted, the rest faded. Point at a marker or a chip to light another.",
                     &[],
                 ),
                 var(
@@ -366,7 +366,7 @@ pub(crate) fn demos() -> Vec<Demo> {
         },
         Demo {
             controls: vec![
-                sel("kind", "Component", &["affectui", "oxyn"], "affectui"),
+                sel("kind", "Component", &["standard", "oxyn"], "standard"),
                 style(),
                 tog("feedback", "Reasons open", false),
                 tog("reading", "Reading aloud", false),
@@ -374,7 +374,7 @@ pub(crate) fn demos() -> Vec<Demo> {
             variants: vec![
                 var(
                     "default",
-                    "As affectUI ships it: copy turns into a check, regenerate spins and grows the 2 / 2 switcher, thumbs pop.",
+                    "Copy turns into a check, regenerate spins and grows the 2 / 2 switcher, thumbs pop.",
                     &[],
                 ),
                 var(
@@ -394,7 +394,7 @@ pub(crate) fn demos() -> Vec<Demo> {
                 ),
                 var(
                     "oxyn-response-feedback",
-                    "Oxyn extra (beyond affectUI): the plan #27 response feedback with a note field and a retry.",
+                    "Extended: the response feedback with a note field and a retry.",
                     &[("kind", "oxyn")],
                 ),
             ],
@@ -430,7 +430,7 @@ pub(crate) fn demos() -> Vec<Demo> {
         },
         Demo {
             controls: vec![
-                sel("kind", "Component", &["affectui", "oxyn"], "affectui"),
+                sel("kind", "Component", &["standard", "oxyn"], "standard"),
                 style(),
                 sel("state", "Run", &["loop", "settle", "done"], "loop"),
                 sel("size", "Size", &["md", "sm"], "md"),
@@ -439,7 +439,7 @@ pub(crate) fn demos() -> Vec<Demo> {
             variants: vec![
                 var(
                     "default",
-                    "As affectUI ships it: the rays turn without rotating, the label rolls through the phases.",
+                    "The rays turn without rotating, the label rolls through the phases.",
                     &[],
                 ),
                 var(
@@ -465,7 +465,7 @@ pub(crate) fn demos() -> Vec<Demo> {
                 ),
                 var(
                     "oxyn-thinking-loader",
-                    "Oxyn extra (beyond affectUI): the plan #28 loader with its own phases and timer.",
+                    "Extended: the loader with its own phases and timer.",
                     &[("kind", "oxyn")],
                 ),
             ],
@@ -493,7 +493,7 @@ pub(crate) fn demos() -> Vec<Demo> {
         },
         Demo {
             controls: vec![
-                sel("kind", "Component", &["affectui", "oxyn"], "affectui"),
+                sel("kind", "Component", &["standard", "oxyn"], "standard"),
                 style(),
                 sel(
                     "state",
@@ -506,7 +506,7 @@ pub(crate) fn demos() -> Vec<Demo> {
             variants: vec![
                 var(
                     "default",
-                    "As affectUI ships it: the timer ticks, steps fade up along the dashed line, then \"Worked for 7s\" and a blue check.",
+                    "The timer ticks, steps fade up along the dashed line, then \"Worked for 7s\" and a blue check.",
                     &[],
                 ),
                 var("finished", "Finished.", &[("state", "done")]),
@@ -527,7 +527,7 @@ pub(crate) fn demos() -> Vec<Demo> {
                 ),
                 var(
                     "oxyn-reasoning-block",
-                    "Oxyn extra (beyond affectUI): the plan #27 reasoning block with summaries and levels.",
+                    "Extended: the reasoning block with summaries and levels.",
                     &[("kind", "oxyn")],
                 ),
             ],
@@ -572,7 +572,7 @@ pub(crate) fn demos() -> Vec<Demo> {
             variants: vec![
                 var(
                     "default",
-                    "As affectUI ships it: the glow drifts behind the welcome line; a chip sends itself and the reply streams.",
+                    "The glow drifts behind the welcome line; a chip sends itself and the reply streams.",
                     &[],
                 ),
                 var(

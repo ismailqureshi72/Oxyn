@@ -198,7 +198,7 @@ pub(crate) fn demos1() -> Vec<Demo> {
     vec![
         Demo {
             controls: vec![
-                sel("kind", "Component", &["affectui", "oxyn"], "affectui"),
+                sel("kind", "Component", &["standard", "oxyn"], "standard"),
                 sel("style", "Style", &["clean", "classic"], "clean"),
                 sel("approval", "Approval", &["ask", "auto", "full"], "ask"),
                 tog("tray", "Folder and apps tray", true),
@@ -214,7 +214,7 @@ pub(crate) fn demos1() -> Vec<Demo> {
             variants: vec![
                 var(
                     "default",
-                    "Clean, as affectUI ships it: one continuous container with the tray under a hairline; type, pick approval and model, dictate, connect apps.",
+                    "Clean: one continuous container with the tray under a hairline; type, pick approval and model, dictate, connect apps.",
                     &[],
                 ),
                 var(
@@ -259,7 +259,7 @@ pub(crate) fn demos1() -> Vec<Demo> {
                 ),
                 var(
                     "oxyn-ai-composer",
-                    "Oxyn extra (beyond affectUI): the AI composer with / commands and @ mentions.",
+                    "Extended: the AI composer with / commands and @ mentions.",
                     &[("kind", "oxyn")],
                 ),
             ],
@@ -601,7 +601,7 @@ pub(crate) fn demos2() -> Vec<Demo> {
     vec![
         Demo {
             controls: vec![
-                sel("kind", "Component", &["affectui", "oxyn"], "affectui"),
+                sel("kind", "Component", &["standard", "oxyn"], "standard"),
                 sel("style", "Style", &["clean", "classic"], "clean"),
                 sel("marks", "Model marks", &["letters", "brands"], "letters"),
                 tog("open", "Menu open", true),
@@ -611,7 +611,7 @@ pub(crate) fn demos2() -> Vec<Demo> {
             variants: vec![
                 var(
                     "default",
-                    "Clean, as affectUI ships it: point at a model and its dashes fill blue while the tray rolls its first-token time and price.",
+                    "Clean: point at a model and its dashes fill blue while the tray rolls its first-token time and price.",
                     &[],
                 ),
                 var(
@@ -641,7 +641,7 @@ pub(crate) fn demos2() -> Vec<Demo> {
                 ),
                 var(
                     "oxyn-model-menu",
-                    "Oxyn extra (beyond affectUI): the compact model menu whose stats unfold under the pointed row.",
+                    "Extended: the compact model menu whose stats unfold under the pointed row.",
                     &[("kind", "oxyn")],
                 ),
             ],
@@ -677,7 +677,7 @@ pub(crate) fn demos2() -> Vec<Demo> {
         },
         Demo {
             controls: vec![
-                sel("kind", "Component", &["affectui", "oxyn"], "affectui"),
+                sel("kind", "Component", &["standard", "oxyn"], "standard"),
                 sel("style", "Style", &["clean", "classic"], "clean"),
                 sel(
                     "status",
@@ -693,7 +693,7 @@ pub(crate) fn demos2() -> Vec<Demo> {
             variants: vec![
                 var(
                     "running",
-                    "Streaming, as affectUI ships it: a steer lands mid-sentence as a blue pill, the queued message waits as Next and runs when the turn is done.",
+                    "Streaming: a steer lands mid-sentence as a blue pill, the queued message waits as Next and runs when the turn is done.",
                     &[],
                 ),
                 var(
@@ -723,7 +723,7 @@ pub(crate) fn demos2() -> Vec<Demo> {
                 ),
                 var(
                     "oxyn-run-controls",
-                    "Oxyn extra (beyond affectUI): the run composer with a send menu (Send now, Steer, Queue) and an error state.",
+                    "Extended: the run composer with a send menu (Send now, Steer, Queue) and an error state.",
                     &[("kind", "oxyn")],
                 ),
             ],

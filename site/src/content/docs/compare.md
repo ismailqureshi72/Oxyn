@@ -17,8 +17,4 @@ Most agent-UI kits are React. Oxyn exists for teams building agent products in *
 ## When to pick something else
 
 - Your app is React or Next.js: a React kit fits better than calling into WebAssembly.
-- You need hundreds of finished screens today: Oxyn is early, and its screens and blocks are still [planned](/screens/).
-
-## Design reference
-
-The layout of this site and the item-by-item parity plan follow [affectUI](https://www.affectui.com), studied from its public pages. No affectUI source or assets are used; every Oxyn component is written from Oxyn's own specs.
+- You need a design tool rather than code: Oxyn ships Rust components you own and edit. A visual editor, [Studio](/studio/), is coming soon.

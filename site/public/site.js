@@ -456,7 +456,8 @@ document.addEventListener('oxyn-demo-live', (e) => {
 // ── Plan #29: library shell, landing tabs, preview toolbar, compare ──────────────────────────
 (function () {
   const d = document.documentElement;
-  // Library dropdown in the top bar: click or keyboard opens, outside click and Escape close.
+  // Library dropdown in the top bar: click or keyboard opens; outside click, Escape, a second click
+  // or choosing an item closes.
   const dds = document.querySelectorAll('.tb-dd');
   // Keep the menu inside the viewport: shift it left when it would run past the right edge.
   const fit = (dd) => {
@@ -469,19 +470,37 @@ document.addEventListener('oxyn-demo-live', (e) => {
     if (r.left - Math.max(over, 0) < 12) m.style.left = `${parseFloat(getComputedStyle(m).left) + (12 - (r.left - Math.max(over, 0)))}px`;
   };
   const closeDd = (dd) => { dd.classList.remove('open'); dd.querySelector('[data-dd]')?.setAttribute('aria-expanded', 'false'); };
+  const items = (dd) => [...dd.querySelectorAll('.tb-menu a')];
+  const openDd = (dd, focus) => {
+    dds.forEach((o) => o !== dd && closeDd(o));
+    dd.classList.add('open');
+    dd.querySelector('[data-dd]')?.setAttribute('aria-expanded', 'true');
+    fit(dd);
+    if (focus) items(dd)[focus === 'last' ? items(dd).length - 1 : 0]?.focus();
+  };
+  // Click to toggle (no hover opening, so the menu never closes under the pointer on its way in):
+  // it closes on a second click, a click outside, Escape, choosing an item, or tabbing out.
   dds.forEach((dd) => {
     const btn = dd.querySelector('[data-dd]');
-    btn?.addEventListener('click', () => {
-      // A menu the pointer opened on hover stays open on the click that follows.
-      if (dd.dataset.hoverOpen) { delete dd.dataset.hoverOpen; return; }
-      const open = !dd.classList.contains('open');
-      dd.classList.toggle('open', open);
-      btn.setAttribute('aria-expanded', String(open));
-      if (open) fit(dd);
+    btn?.addEventListener('click', (e) => {
+      if (dd.classList.contains('open')) closeDd(dd);
+      else openDd(dd, e.detail === 0 ? 'first' : null); // keyboard (Enter / Space) moves focus in
     });
-    dd.addEventListener('mouseenter', () => { if (matchMedia('(hover:hover)').matches && !dd.classList.contains('open')) { dd.classList.add('open'); dd.dataset.hoverOpen = '1'; btn.setAttribute('aria-expanded', 'true'); fit(dd); } });
-    dd.addEventListener('mouseleave', () => { if (matchMedia('(hover:hover)').matches) { delete dd.dataset.hoverOpen; closeDd(dd); } });
-    dd.addEventListener('focusout', (e) => { if (!dd.contains(e.relatedTarget)) closeDd(dd); });
+    btn?.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); openDd(dd, e.key === 'ArrowUp' ? 'last' : 'first'); }
+    });
+    dd.querySelector('.tb-menu')?.addEventListener('keydown', (e) => {
+      const list = items(dd), i = list.indexOf(document.activeElement);
+      const go = (n) => { e.preventDefault(); list[(n + list.length) % list.length]?.focus(); };
+      if (e.key === 'ArrowDown') go(i + 1);
+      else if (e.key === 'ArrowUp') go(i - 1);
+      else if (e.key === 'Home') go(0);
+      else if (e.key === 'End') go(list.length - 1);
+    });
+    dd.querySelector('.tb-menu')?.addEventListener('click', (e) => { if (e.target.closest('a')) closeDd(dd); });
+    // Only a focus move to somewhere else on the page closes it (a click on the menu's own padding
+    // has no related target and keeps it open).
+    dd.addEventListener('focusout', (e) => { if (e.relatedTarget && !dd.contains(e.relatedTarget)) closeDd(dd); });
   });
   document.addEventListener('click', (e) => dds.forEach((dd) => { if (!dd.contains(e.target)) closeDd(dd); }));
   document.addEventListener('keydown', (e) => {

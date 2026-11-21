@@ -138,6 +138,7 @@ html[data-oxyn-reduced] .page-white .x-tb{transition:none}
 .x-logo-lockup{display:block;width:auto;height:19px}
 .x-nav-brand:focus-visible,.x-logo-link:focus-visible{outline:2px solid var(--oxyn-color-focus);outline-offset:4px;border-radius:4px}
 @media (max-width:1100px){.x-nav-search .x-nav-k{display:none}.x-nav-search{padding:0 9px}}
+@media (min-width:901px){.x-nav-act>.fb-btn span{display:none}.x-nav-act>.fb-btn{padding:0 7px}.x-nav .x-nav-pill .x-nav-a{padding:0 11px}.x-nav-search .x-nav-k{display:none}.x-nav-search{padding:0 9px}}
 @media (max-width:900px){
   .x-nav{grid-template-columns:1fr auto}
   .x-nav .x-nav-pill{display:none}

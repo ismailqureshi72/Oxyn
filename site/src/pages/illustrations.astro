@@ -1,10 +1,23 @@
 ---
-import Planned from '../components/Planned.astro';
+import Library from '../layouts/Library.astro';
+import LibTabs from '../components/v2/LibTabs.astro';
+import ComingSoon from '../components/v2/ComingSoon.astro';
+const lede = 'Animated spot illustrations for empty states, onboarding and errors in agent apps, drawn from the same tokens so they follow the theme.';
 ---
-<Planned tab="illustrations" title="Illustrations" section="Illustrations" lede="Animated spot illustrations for empty states, onboarding and errors in agent apps, drawn from the same tokens so they follow the theme."
-  groups={[
-    ['Empty states', 'Nothing here yet, no runs, no results.'],
-    ['Agent at work', 'Thinking, searching, building, waiting for you.'],
-    ['Outcomes', 'Done, failed, offline, rate limited.'],
-    ['Onboarding', 'Connect a model, add a key, first run.'],
-  ]} />
+<Library title="Illustrations" description={lede}>
+  <div class="lidx">
+    <h1 class="lidx-title">Illustrations</h1>
+    <p class="lede">{lede}</p>
+    <LibTabs active="illustrations" />
+    <ComingSoon
+      title="Spot art for the moments between runs"
+      lede="Small animated scenes you drop into an empty state or an error, in light and dark, with reduced motion respected. The components they sit in are already here."
+      items={[
+        ['Empty states', 'Nothing here yet, no runs, no results.'],
+        ['Agent at work', 'Thinking, searching, building, waiting for you.'],
+        ['Outcomes', 'Done, failed, offline, rate limited.'],
+        ['Onboarding', 'Connect a model, add a key, first run.'],
+      ]}
+    />
+  </div>
+</Library>

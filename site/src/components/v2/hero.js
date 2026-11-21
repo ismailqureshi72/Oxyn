@@ -6,7 +6,7 @@
   const $ = (s, el = root) => el.querySelector(s), $$ = (s, el = root) => [...el.querySelectorAll(s)];
   const stage = $('[data-dz-stage]'), lock = $('[data-dz-lock]'), h1 = $('.dz-h1'), cta = $('.dz-cta');
   const hov = $('.dz-hov'), sel = $('.dz-sel'), gaps = $$('.dz-gap'), gapB = $$('.dz-bdg:not(.dz-red)'), gls = $$('.dz-gl'), redB = $$('.dz-red');
-  const curA = $('.dz-cur.a'), curB = $('.dz-cur.b'), handleE = $('.dz-h[data-h="e"]'), live = $('[data-dz-live]');
+  const curA = $('.dz-cur.a'), curB = $('.dz-cur.b'), amb = $$('.dz-cur.amb'), ghosts = $$('.dz-ghost'), handleE = $('.dz-h[data-h="e"]'), live = $('[data-dz-live]');
   const NAMES = { hero: 'Hero', badge: 'Badge', h1: 'Headline', sub: 'Subhead', cta: 'Actions', b1: 'Browse library', b2: 'Get started', b3: 'Install' };
   const el = (k) => (k === 'hero' ? lock : $(`.dz-lock [data-k="${k}"]`));
   const reduced = () => document.documentElement.hasAttribute('data-oxyn-reduced') || matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -70,6 +70,8 @@
     if (!sel.classList.contains('on')) { sel.classList.add('drag'); frame(); sel.offsetWidth; requestAnimationFrame(() => sel.classList.remove('drag')); }
     show(sel, true); frame();
   }
+  // The selection frame takes the colour of whoever made it (a visitor's own edits: neutral).
+  const tint = (c) => { if (c) root.style.setProperty('--dz-sel', `var(--dz-c-${c})`); else root.style.removeProperty('--dz-sel'); root.classList.toggle('dz-tint', !!c); };
   function clear() { cur = word = null; show(sel, false); geometry(); $$('.dz-lay [data-k]').forEach((b) => b.setAttribute('aria-pressed', 'false')); }
 
   // Design state the inspector edits.
@@ -95,9 +97,10 @@
     timers.forEach(clearTimeout); timers = []; clearTimeout(stopT);
     playing = true; reset(); clear();
     const s = rel(stage), words = $$('.dz-w');
-    at(curA, s.w * 0.78, s.h * 0.9); at(curB, s.w * 0.2, s.h * 0.95); show(curA, true); show(curB, !small());
+    at(curA, s.w * 0.78, s.h * 0.9); at(curB, s.w * 0.2, s.h * 0.95); show(curA, true); show(curB, true);
+    amb.forEach((c, i) => { at(c, s.w * (0.12 + 0.3 * i), s.h * (0.08 + 0.05 * i)); show(c, true); wander(i, 300 + i * 450); });
     later(250, () => move(curA, words[2], 0.3, 0.32));
-    later(1250, () => { press(curA); select('h1'); });
+    later(1250, () => { press(curA); tint('a'); select('h1'); });
     later(2200, () => { if (insVisible()) move(curB, $('.dz-seg [data-wt="500"]'), 0.5, 0.6); });
     later(2950, () => { press(curB); setWt(500); setTr(-0.03); flash($('[data-ins-trf]')); });
     later(4100, () => { if (insVisible()) move(curB, $('.dz-seg [data-wt="620"]'), 0.5, 0.6); });
@@ -110,19 +113,31 @@
       tween(w0, w1, 1200, (w) => { setW(w); follow(); }, () => later(700, () => tween(w1, w0, 900, (w) => { setW(w); follow(); }, () => { sel.classList.remove('drag'); curA.classList.remove('drag'); })));
     });
     later(8300, () => move(curB, cta, 0.5, 0.5, 0, 34));
-    later(9000, () => { press(curB); select('cta'); });
+    later(9000, () => { press(curB); tint('b'); select('cta'); });
     later(9800, () => { if (insVisible()) move(curB, $('.dz-tok [data-r="10px"]'), 0.5, 0.6); });
     later(10500, () => { press(curB); setR('10px'); setTimeout(frame, 460); });
     later(11800, () => { setR('999px'); setTimeout(frame, 460); if (insVisible()) move(curB, $('.dz-tok [data-r="999px"]'), 0.5, 0.6); });
     later(11200, () => move(curA, $('.dz-sub'), 0.7, 0.3));
-    later(12300, () => { press(curA); select('sub'); });
+    later(12300, () => { press(curA); tint('a'); select('sub'); });
     later(14000, () => { clear(); at(curA, s.w * 0.8, s.h * 0.92); at(curB, s.w * 0.18, s.h * 0.98); });
     later(15200, loop);
   }
-  function stop() { timers.forEach(clearTimeout); timers = []; playing = false; show(curA, false); show(curB, false); sel.classList.remove('drag'); curA.classList.remove('drag'); }
+  // Ana, Sam and Lia browse the lockup on their own beat: point at a word or a part, sometimes
+  // select it with a frame in their colour, then move on.
+  function wander(i, delay) {
+    later(delay, () => {
+      if (!playing) return;
+      const pool = [...$$('.dz-w'), $('.dz-sub'), ...cta.children, $('.dz-lock .badge-pill')].filter(Boolean);
+      const t = pool[Math.floor(Math.random() * pool.length)], r = rel(t), g = ghosts[i];
+      at(amb[i], r.x + r.w * (0.25 + Math.random() * 0.5), r.y + r.h * (0.3 + Math.random() * 0.5));
+      if (g && Math.random() < 0.55) later(520, () => { place(g, { x: r.x - 3, y: r.y - 2, w: r.w + 6, h: r.h + 4 }); show(g, true); press(amb[i]); later(1300 + Math.random() * 700, () => show(g, false)); });
+      wander(i, 1100 + Math.random() * 900);
+    });
+  }
+  function stop() { timers.forEach(clearTimeout); timers = []; playing = false; show(curA, false); show(curB, false); amb.forEach((c) => show(c, false)); ghosts.forEach((g) => show(g, false)); tint(null); sel.classList.remove('drag'); curA.classList.remove('drag'); }
   function idle() { clearTimeout(stopT); if (reduce) return; stopT = setTimeout(loop, 7000); }
-  const takeOver = () => { touched = Date.now(); if (playing) { stop(); reset(); } idle(); };
-  function staticState() { reset(); select('h1'); const r = rel(handleE); at(curA, r.x + 4, r.y + 6); show(curA, true); }
+  const takeOver = () => { touched = Date.now(); if (playing) { stop(); reset(); } tint(null); idle(); };
+  function staticState() { reset(); tint('a'); select('h1'); const r = rel(handleE); at(curA, r.x + 4, r.y + 6); show(curA, true); }
 
   // ── Interaction ──
   const targetOf = (t) => { const w = t.closest('.dz-w'); if (w) return ['h1', w]; const k = t.closest('.dz-lock [data-k]'); return k ? [k.dataset.k, null] : [null, null]; };

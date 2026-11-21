@@ -989,7 +989,7 @@ pub fn demos() -> Vec<Demo> {
                 "tool-chips",
                 "Tool chips",
                 "tools",
-                "Code edits and tool calls as compact chips: “4 tool calls, 2 messages”, a live state per chip, then file-diff chips whose diff opens on hover or focus. Beautiful UI (MIT © 2026 Shane Levine), behaviour rebuilt.",
+                "Code edits and tool calls as compact chips: “4 tool calls, 2 messages”, a live state per chip, then file-diff chips whose diff opens on hover or focus.",
                 "ToolChips",
                 "ToolChipsEl",
                 "tool-chips",

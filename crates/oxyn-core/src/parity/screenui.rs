@@ -422,7 +422,7 @@ pub const SETS: &[SetDef] = &[
     },
     SetDef {
         id: "s12",
-        name: "Arc screens I",
+        name: "Work screens I",
         wizard: false,
         screens: &[
             sc(
@@ -464,7 +464,7 @@ pub const SETS: &[SetDef] = &[
     },
     SetDef {
         id: "s13",
-        name: "Arc screens II",
+        name: "Work screens II",
         wizard: false,
         screens: &[
             sc(
@@ -506,7 +506,7 @@ pub const SETS: &[SetDef] = &[
     },
     SetDef {
         id: "s14",
-        name: "Arc screens III",
+        name: "Work screens III",
         wizard: false,
         screens: &[
             sc(
@@ -548,7 +548,7 @@ pub const SETS: &[SetDef] = &[
     },
     SetDef {
         id: "s15",
-        name: "Arc screens IV",
+        name: "Work screens IV",
         wizard: false,
         screens: &[
             sc(

@@ -59,7 +59,7 @@ export const GET: APIRoute = async () => {
       t: d.name,
       u: demoUrl(d),
       g: apps.has(d.slug) ? 'a' : 's',
-      k: app ? app.name : arc.has(d.slug) ? 'Arc screen' : 'Screen',
+      k: app ? app.name : arc.has(d.slug) ? 'Work screen' : 'Screen',
       d: clip(lede(d.summary)),
       w: words(d.slug, app?.name, app ? 'agent app' : 'screen', ALIASES[d.slug]),
     });
@@ -71,9 +71,10 @@ export const GET: APIRoute = async () => {
     ['New components', '/components/new/', 'The latest additions to the library.'],
     ['Screens', '/screens/', 'Whole app frames built from Oxyn components.'],
     ['Agent apps', '/screens/#agent-apps', 'Whole desktop agent apps, in the patterns those apps share.'],
-    ['Arc screens', '/screens/#arc-screens', 'Work-app screens on the Arc frame.'],
+    ['Work screens', '/screens/#work-screens', 'Work-app screens: dashboards, boards, calendars, inboxes, shop and admin.'],
     ['Blocks', '/blocks/', 'Whole agent and AI surfaces built from the components (Pro).'],
-    ['Illustrations', '/illustrations/', 'Animated spot illustrations for empty states and onboarding.'],
+    ['Illustrations', '/illustrations/', 'Animated spot illustrations for empty states and onboarding (coming soon).'],
+    ['Studio', '/studio/', 'Visually edit and customise Oxyn components (coming soon).'],
     ['Motion', '/motion/', 'Durations, easings and springs as tokens.'],
     ['Pricing', '/pricing/', 'Components are free and MIT licensed. Pro: screens, templates, blocks and kits.'],
   ];

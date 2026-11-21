@@ -307,7 +307,7 @@ fn shell_three_pane_demo() -> Demo {
             "shell-three-pane",
             "Three-pane shell (Oxyn extra)",
             CAT,
-            "Oxyn-only extra, with no affectUI counterpart: an icon rail, a chats column with a project switcher, the page and a work area. Kept as our own frame beside the affectUI-matched shells.",
+            "An icon rail, a chats column with a project switcher, the page and a work area.",
             "RailShellScreen",
             "ScreenRailEl",
             "shell-three-pane",
@@ -5371,7 +5371,7 @@ fn mx_demo() -> Demo {
     arc_demo(
         "metrics-dashboard",
         "Metrics dashboard",
-        "Arc screens / Metrics dashboard: a web analytics overview. A date range (7 days to 12 months) and Export, five KPI tabs (visitors, page views, signups, bounce rate, visit duration) over one chart with hover readouts, drag across to zoom and a Compare switch for the period before, then pages, sources and places with inline bars. Saved views in the sidebar set the range; an Online now card sits above the account.",
+        "Work screens / Metrics dashboard: a web analytics overview. A date range (7 days to 12 months) and Export, five KPI tabs (visitors, page views, signups, bounce rate, visit duration) over one chart with hover readouts, drag across to zoom and a Compare switch for the period before, then pages, sources and places with inline bars. Saved views in the sidebar set the range; an Online now card sits above the account.",
         "MetricsDashboardScreen",
         "MetricsDashboardEl",
         mx_screen,
@@ -5412,7 +5412,7 @@ fn kb2_demo() -> Demo {
     arc_demo(
         "kanban-board",
         "Kanban board",
-        "Arc screens / Kanban board: a cycle board for a product team. Issues in Backlog, Todo, In progress and In review (with work-in-progress limits) and Done; cards with key, linked pull request, label, priority, sub-issues, comments, due date and assignee. Drag a card, or pick it with Space and move it with the arrow keys; filter by text, label or priority; group by status or assignee; add issues per column. The cycle card counts done points as cards reach Done.",
+        "Work screens / Kanban board: a cycle board for a product team. Issues in Backlog, Todo, In progress and In review (with work-in-progress limits) and Done; cards with key, linked pull request, label, priority, sub-issues, comments, due date and assignee. Drag a card, or pick it with Space and move it with the arrow keys; filter by text, label or priority; group by status or assignee; add issues per column. The cycle card counts done points as cards reach Done.",
         "KanbanBoardScreen",
         "KanbanBoardEl",
         kb2_screen,
@@ -5457,7 +5457,7 @@ fn pb_demo() -> Demo {
     arc_demo(
         "project-board",
         "Project board",
-        "Arc screens / Project board: one project's home. Status (On track, At risk, Off track), lead, dates and people; four stat tiles (complete, open, due this week, until launch); a milestone track that picks the task list; tasks to complete or reopen that move the numbers; Tasks and Activity tabs; and a right card with the team's open load and the project's links to copy.",
+        "Work screens / Project board: one project's home. Status (On track, At risk, Off track), lead, dates and people; four stat tiles (complete, open, due this week, until launch); a milestone track that picks the task list; tasks to complete or reopen that move the numbers; Tasks and Activity tabs; and a right card with the team's open load and the project's links to copy.",
         "ProjectBoardScreen",
         "ProjectBoardEl",
         pb_screen,
@@ -5490,7 +5490,7 @@ fn gt_demo() -> Demo {
     arc_demo(
         "gantt-timeline",
         "Gantt timeline",
-        "Arc screens / Gantt timeline: a release plan by phase. Bars with progress, milestones as diamonds and dependency arrows that turn red when a task starts before the one it waits on ends; drag a bar to move it or its edges to change dates (or focus it and use the arrow keys), Day / Week / Month zoom, Today, collapsible phases, a filter and an owner menu, Undo and Reset.",
+        "Work screens / Gantt timeline: a release plan by phase. Bars with progress, milestones as diamonds and dependency arrows that turn red when a task starts before the one it waits on ends; drag a bar to move it or its edges to change dates (or focus it and use the arrow keys), Day / Week / Month zoom, Today, collapsible phases, a filter and an owner menu, Undo and Reset.",
         "GanttTimelineScreen",
         "GanttTimelineEl",
         gt_screen,
@@ -5523,7 +5523,7 @@ fn dir_demo() -> Demo {
     arc_demo(
         "team-directory",
         "Team directory",
-        "Arc screens / Team directory: people by team with their office's local time and availability (available, busy until, out until, starts on, online at). Search names, roles and skills (/ focuses), filter by team, status or office (the sidebar's offices show who is working now), star favourites, switch Grid and List, and invite by email with validation.",
+        "Work screens / Team directory: people by team with their office's local time and availability (available, busy until, out until, starts on, online at). Search names, roles and skills (/ focuses), filter by team, status or office (the sidebar's offices show who is working now), star favourites, switch Grid and List, and invite by email with validation.",
         "TeamDirectoryScreen",
         "TeamDirectoryEl",
         dir_screen,
@@ -5738,7 +5738,7 @@ fn wk_demo() -> Demo {
     arc2_demo(
         "week-calendar",
         "Week calendar",
-        "Arc screens / Week calendar: a team calendar on a time grid. Events tinted by calendar with places, Zoom calls and guests; overlapping events sit side by side; all-day events in their own row and a line for now. Drag an event to move it (its bottom edge to resize) or drag on an empty slot to create one; focus an event and use the arrows (Shift + ↑ ↓ resizes). Day / Week / Month, Today and the arrows to page, a mini month to jump to a date, calendars to show or hide (or Only), a filter field and a Next up card with Join.",
+        "Work screens / Week calendar: a team calendar on a time grid. Events tinted by calendar with places, Zoom calls and guests; overlapping events sit side by side; all-day events in their own row and a line for now. Drag an event to move it (its bottom edge to resize) or drag on an empty slot to create one; focus an event and use the arrows (Shift + ↑ ↓ resizes). Day / Week / Month, Today and the arrows to page, a mini month to jump to a date, calendars to show or hide (or Only), a filter field and a Next up card with Join.",
         "WeekCalendarScreen",
         "WeekCalendarEl",
         wk_screen,
@@ -5775,7 +5775,7 @@ fn mo_demo() -> Demo {
     arc2_demo(
         "month-calendar",
         "Month calendar",
-        "Arc screens / Month calendar: the month at a glance. Chips per event (time and title, all-day ones filled) with +N more, today marked and the selected day outlined; a day panel with a busy strip for working hours, the schedule, free gaps, Block focus time and New event on that day. Calendars with counts and Only, team calendars; Week and Day a press away.",
+        "Work screens / Month calendar: the month at a glance. Chips per event (time and title, all-day ones filled) with +N more, today marked and the selected day outlined; a day panel with a busy strip for working hours, the schedule, free gaps, Block focus time and New event on that day. Calendars with counts and Only, team calendars; Week and Day a press away.",
         "MonthCalendarScreen",
         "MonthCalendarEl",
         mo_screen,
@@ -5817,7 +5817,7 @@ fn ib2_demo() -> Demo {
     arc2_demo(
         "inbox-triage",
         "Inbox triage",
-        "Arc screens / Inbox triage: a support inbox built for keyboard triage. Folders (Inbox, Assigned to me, Unassigned, Snoozed, Resolved) with live counts, All / Unread / Due soon, newest or oldest first; rows with channel marks (Gmail, Slack, X, site chat), labels, Urgent and SLA timers that turn amber then rose. J / K walk the list, E resolves, H snoozes, X selects, A assigns to you and U undoes; bulk actions on a selection; the thread with a quick reply and the customer card.",
+        "Work screens / Inbox triage: a support inbox built for keyboard triage. Folders (Inbox, Assigned to me, Unassigned, Snoozed, Resolved) with live counts, All / Unread / Due soon, newest or oldest first; rows with channel marks (Gmail, Slack, X, site chat), labels, Urgent and SLA timers that turn amber then rose. J / K walk the list, E resolves, H snoozes, X selects, A assigns to you and U undoes; bulk actions on a selection; the thread with a quick reply and the customer card.",
         "InboxTriageScreen",
         "InboxTriageEl",
         ib2_screen,
@@ -5859,7 +5859,7 @@ fn sp2_demo() -> Demo {
     arc2_demo(
         "support-conversation",
         "Support conversation",
-        "Arc screens / Support conversation: a help desk ticket. Views with counts, Waiting on you with SLAs, the ticket list, and the thread: customer messages with attachments, replies with a help article card, internal notes in amber with mentions and system lines. The composer switches Reply / Note, inserts saved replies, attaches files and an article, and sends with Ctrl + Enter (the ticket turns Waiting on customer). Snooze and Close in the header; the customer card with profile, activity, apps (Google Calendar, Stripe), the linked issue and earlier conversations.",
+        "Work screens / Support conversation: a help desk ticket. Views with counts, Waiting on you with SLAs, the ticket list, and the thread: customer messages with attachments, replies with a help article card, internal notes in amber with mentions and system lines. The composer switches Reply / Note, inserts saved replies, attaches files and an article, and sends with Ctrl + Enter (the ticket turns Waiting on customer). Snooze and Close in the header; the customer card with profile, activity, apps (Google Calendar, Stripe), the linked issue and earlier conversations.",
         "SupportConversationScreen",
         "SupportConversationEl",
         sp2_screen,
@@ -5896,7 +5896,7 @@ fn hc_demo() -> Demo {
     arc2_demo(
         "help-center",
         "Help center",
-        "Arc screens / Help center: a help site's back office. Articles by status (All, Published, Drafts, In review) and collection, search over titles and bodies with highlighted snippets (/ focuses), the reader with related articles and Publish for drafts, Was this helpful? (a No asks for a reason and sends it to the article's owner), and insights: views, helpful share and top searches, the ones with no results flagged. A quarterly review card counts the articles to check.",
+        "Work screens / Help center: a help site's back office. Articles by status (All, Published, Drafts, In review) and collection, search over titles and bodies with highlighted snippets (/ focuses), the reader with related articles and Publish for drafts, Was this helpful? (a No asks for a reason and sends it to the article's owner), and insights: views, helpful share and top searches, the ones with no results flagged. A quarterly review card counts the articles to check.",
         "HelpCenterScreen",
         "HelpCenterEl",
         hc_screen,
@@ -6026,7 +6026,7 @@ fn mt_demo() -> Demo {
     arc3_demo(
         "market-terminal",
         "Market terminal",
-        "Arc screens / Market terminal: a brokerage trade screen with fictional symbols. A watchlist with prices, day change and the account value; the open symbol's live price, ticking with the clock (Pause holds it), and its chart over 1D, 1W, 1M, 3M or 1Y; positions with return, open orders with Cancel and today's fills. The order ticket switches Buy / Sell and Market / Limit, steps shares and the limit price, shows the estimate and refuses an order the cash or the shares cannot cover.",
+        "Work screens / Market terminal: a brokerage trade screen with fictional symbols. A watchlist with prices, day change and the account value; the open symbol's live price, ticking with the clock (Pause holds it), and its chart over 1D, 1W, 1M, 3M or 1Y; positions with return, open orders with Cancel and today's fills. The order ticket switches Buy / Sell and Market / Limit, steps shares and the limit price, shows the estimate and refuses an order the cash or the shares cannot cover.",
         "MarketTerminalScreen",
         "MarketTerminalEl",
         mt_screen,
@@ -6066,7 +6066,7 @@ fn pl_demo() -> Demo {
     arc3_demo(
         "product-list",
         "Product list",
-        "Arc screens / Product list: a shop's catalogue. Collections with counts, a search, colour swatches, an Under $150 filter, a sort (Featured, price either way, Newest) and Grid / List. Cards show the price (sale prices struck through), rating, colours and stock in words and colour; open one for its product page.",
+        "Work screens / Product list: a shop's catalogue. Collections with counts, a search, colour swatches, an Under $150 filter, a sort (Featured, price either way, Newest) and Grid / List. Cards show the price (sale prices struck through), rating, colours and stock in words and colour; open one for its product page.",
         "ProductListScreen",
         "ProductListEl",
         pl_screen,
@@ -6102,7 +6102,7 @@ fn pd_demo() -> Demo {
     arc3_demo(
         "product-detail",
         "Product detail",
-        "Arc screens / Product detail: a product page. A gallery that follows the colour, the price and rating, colour swatches, sizes with stock (sold-out sizes refuse and say so), a quantity stepper capped by stock, Add to cart with the line total, and the cart with its subtotal and Check out.",
+        "Work screens / Product detail: a product page. A gallery that follows the colour, the price and rating, colour swatches, sizes with stock (sold-out sizes refuse and say so), a quantity stepper capped by stock, Add to cart with the line total, and the cart with its subtotal and Check out.",
         "ProductDetailScreen",
         "ProductDetailEl",
         pd_screen,
@@ -6136,7 +6136,7 @@ fn iv_demo() -> Demo {
     arc3_demo(
         "invoice-studio",
         "Invoice studio",
-        "Arc screens / Invoice studio: invoices grouped Overdue, Open, Drafts and Paid, and the open invoice as paper edited in place: line items to add, describe, step and remove (with Undo), live subtotal, tax and total, the client, payment terms with an absolute due date, sales tax and reminders. Preview shows what the client sees; Send checks the email, the lines and the total first.",
+        "Work screens / Invoice studio: invoices grouped Overdue, Open, Drafts and Paid, and the open invoice as paper edited in place: line items to add, describe, step and remove (with Undo), live subtotal, tax and total, the client, payment terms with an absolute due date, sales tax and reminders. Preview shows what the client sees; Send checks the email, the lines and the total first.",
         "InvoiceStudioScreen",
         "InvoiceStudioEl",
         iv_screen,
@@ -6172,7 +6172,7 @@ fn si_demo() -> Demo {
     arc3_demo(
         "sign-in-split",
         "Sign-in split",
-        "Arc screens / Sign-in split: a split sign-in page. The form on the left: Continue with Google or GitHub (official marks), or email and password with checks on submit, Show password, Forgot password, a wrong-password count and a lock after three tries, and a demo account to fill in. The art panel on the right with a customer quote steps aside on narrow widths.",
+        "Work screens / Sign-in split: a split sign-in page. The form on the left: Continue with Google or GitHub (official marks), or email and password with checks on submit, Show password, Forgot password, a wrong-password count and a lock after three tries, and a demo account to fill in. The art panel on the right with a customer quote steps aside on narrow widths.",
         "SignInSplitScreen",
         "SignInSplitEl",
         si_screen,
@@ -6277,7 +6277,7 @@ fn s15_demo(slug: &'static str) -> Demo {
     ) = match slug {
         "audit-log" => (
             "Audit log",
-            "Arc demo app / Audit log: every action in the workspace with its time in UTC as an absolute ISO date, the actor, the action, the target, the IP address and the result. Filter by type (Sign-in, API keys, Members, Billing) or failures only, search actor, action or IP, open an event for its details and its before and after, show more and export as CSV.",
+            "Admin app / Audit log: every action in the workspace with its time in UTC as an absolute ISO date, the actor, the action, the target, the IP address and the result. Filter by type (Sign-in, API keys, Members, Billing) or failures only, search actor, action or IP, open an event for its details and its before and after, show more and export as CSV.",
             "AuditLogScreen",
             "AuditLogEl",
             au4_r,
@@ -6307,7 +6307,7 @@ fn s15_demo(slug: &'static str) -> Demo {
         ),
         "status-board" => (
             "Status",
-            "Arc demo app / Status: the overall state, six components with 90 days of uptime as day bars (press a day for its date and record), the open incident with its timed updates, past incidents that open, and Subscribe.",
+            "Admin app / Status: the overall state, six components with 90 days of uptime as day bars (press a day for its date and record), the open incident with its timed updates, past incidents that open, and Subscribe.",
             "StatusBoardScreen",
             "StatusBoardEl",
             st4_r,
@@ -6339,7 +6339,7 @@ fn s15_demo(slug: &'static str) -> Demo {
         ),
         "api-keys-webhooks" => (
             "API keys and webhooks",
-            "Arc demo app / API keys and webhooks: keys with their scope, who made them, created and last used; New key with a name and scope (checked), the secret shown once with Copy, Roll and Revoke (press twice). Webhooks: endpoints with events and delivery rate, recent deliveries with status codes, Send test, Retry a failed delivery and turn an endpoint off.",
+            "Admin app / API keys and webhooks: keys with their scope, who made them, created and last used; New key with a name and scope (checked), the secret shown once with Copy, Roll and Revoke (press twice). Webhooks: endpoints with events and delivery rate, recent deliveries with status codes, Send test, Retry a failed delivery and turn an endpoint off.",
             "ApiKeysWebhooksScreen",
             "ApiKeysWebhooksEl",
             ak4_r,
@@ -6368,7 +6368,7 @@ fn s15_demo(slug: &'static str) -> Demo {
         ),
         "members-roles" => (
             "Members",
-            "Arc demo app / Members: people with role, two-step sign-in and last active, seats used against the plan; Invite with an email and role (checked for format, duplicates and seats), pending invites with Resend and Revoke, change a role (the only owner keeps it), Remove (press twice) and filter by role.",
+            "Admin app / Members: people with role, two-step sign-in and last active, seats used against the plan; Invite with an email and role (checked for format, duplicates and seats), pending invites with Resend and Revoke, change a role (the only owner keeps it), Remove (press twice) and filter by role.",
             "MembersRolesScreen",
             "MembersRolesEl",
             mb4_r,
@@ -6404,7 +6404,7 @@ fn s15_demo(slug: &'static str) -> Demo {
         ),
         "billing-usage" => (
             "Billing",
-            "Arc demo app / Billing: three plans monthly or yearly, the prorated charge or credit for a change to confirm (refused when the seats do not fit), usage meters for seats, API calls and storage, the payment card with its official mark, and invoices with ISO dates, status and download; a past-due banner with Retry payment.",
+            "Admin app / Billing: three plans monthly or yearly, the prorated charge or credit for a change to confirm (refused when the seats do not fit), usage meters for seats, API calls and storage, the payment card with its official mark, and invoices with ISO dates, status and download; a past-due banner with Retry payment.",
             "BillingUsageScreen",
             "BillingUsageEl",
             bl4_r,
@@ -6469,7 +6469,7 @@ fn s15_demo(slug: &'static str) -> Demo {
         ),
         _ => (
             "Overview",
-            "Arc demo app / Overview: KPI cards for requests, error rate, p95 latency and active members over 24 hours, 7 or 30 days (each opens its chart, with the change against the first half of the range), a bar chart with a readout per bar, component health with 90-day uptime, recent activity from the audit log, and an incident banner to dismiss.",
+            "Admin app / Overview: KPI cards for requests, error rate, p95 latency and active members over 24 hours, 7 or 30 days (each opens its chart, with the change against the first half of the range), a bar chart with a readout per bar, component health with 90-day uptime, recent activity from the audit log, and an incident banner to dismiss.",
             "AdminOverviewScreen",
             "AdminOverviewEl",
             ov4_r,
