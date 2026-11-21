@@ -84,7 +84,7 @@ export const familyOf = (d) => FAMILIES.find((f) => f.slug === d.category) ?? nu
 export const isScreen = (d) => SCREENS.includes(d.slug);
 /** Pro components (docs/pricing.md): the AI special components (C1d). Like screens, the preview is
  * free and the code needs Pro. */
-export const PRO_COMPONENTS = ['agent-timeline', 'model-card', 'ai-workflow', 'image-generation', 'speech-player', 'meeting-summary', 'reply-draft', 'human-handoff', 'pii-redaction', 'llm-cost-calculator', 'provider-keys', 'generation-stats', 'ai-translate', 'tldr-toggle', 'connector-setup', 'enrich-column', 'ticket-router'];
+export const PRO_COMPONENTS = ['agent-timeline', 'model-card', 'ai-workflow', 'image-generation', 'speech-player', 'meeting-summary', 'reply-draft', 'human-handoff', 'pii-redaction', 'llm-cost-calculator', 'provider-keys', 'generation-stats', 'ai-translate', 'tldr-toggle', 'connector-setup', 'enrich-column', 'ticket-router', 'ask-your-data', 'agent-doc-cursor', 'provider-status', 'training-run', 'tone-tuner', 'ai-mascot', 'image-reveal', 'ai-spark', 'pixel-mascot', 'ghost-mascot', 'cube-mascot', 'upgrade-prompt', 'referral-card', 'trial-banner', 'live-visitors', 'social-proof-toast'];
 export const isProComponent = (d) => PRO_COMPONENTS.includes(d.slug);
 /** Agent apps: whole desktop agent apps (our own designs in the patterns those apps share). They are
  * screens too (pages at /screens/<slug>/), listed in their own category after Screens. */
