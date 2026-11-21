@@ -299,7 +299,7 @@ pub(crate) fn demos() -> Vec<Demo> {
             variants: vec![
                 var(
                     "if-risky",
-                    "As affectUI ships it: If risky – the two safe actions run on their own, the risky ones and the two locked destructive ones ask first.",
+                    "If risky – the two safe actions run on their own, the risky ones and the two locked destructive ones ask first.",
                     &[],
                 ),
                 var(
@@ -380,7 +380,7 @@ pub(crate) fn demos() -> Vec<Demo> {
             variants: vec![
                 var(
                     "default",
-                    "As affectUI ships it: two need you, one failed, five done – five rows, Show 3 more and Got it, in the thread where you left off.",
+                    "Two need you, one failed, five done – five rows, Show 3 more and Got it, in the thread where you left off.",
                     &[],
                 ),
                 var(
@@ -460,7 +460,7 @@ pub(crate) fn demos() -> Vec<Demo> {
             variants: vec![
                 var(
                     "live",
-                    "As affectUI ships it: the run comes in message by message – the sender's mark twinkles and Writing… shimmers first – with a Live dot.",
+                    "The run comes in message by message – the sender's mark twinkles and Writing… shimmers first – with a Live dot.",
                     &[],
                 ),
                 var(
@@ -563,7 +563,7 @@ pub(crate) fn demos() -> Vec<Demo> {
             variants: vec![
                 var(
                     "live",
-                    "As affectUI ships it: the session grows tile by tile, hits the limit, compacts – old turns squeeze into a summary – and Before | After appears.",
+                    "The session grows tile by tile, hits the limit, compacts – old turns squeeze into a summary – and Before | After appears.",
                     &[],
                 ),
                 var(
@@ -657,7 +657,7 @@ pub(crate) fn demos() -> Vec<Demo> {
             variants: vec![
                 var(
                     "live",
-                    "As affectUI ships it: the run plays out – rows slide in, the running bar shines, the totals climb, Live turns Done.",
+                    "The run plays out – rows slide in, the running bar shines, the totals climb, Live turns Done.",
                     &[],
                 ),
                 var(

@@ -1,0 +1,12 @@
+/* Coming-soon sections (Illustrations, Studio) and other late site polish. Monochrome chrome. */
+.x-soon{margin:28px 0 8px;padding:36px 32px;border:1px solid var(--ln);border-radius:20px;background:var(--pn);text-align:center}
+.x-soon-chip{background:var(--ink);color:var(--on-ink)}
+.x-soon h2{margin:14px auto 8px;max-width:620px;font-size:clamp(20px,2.4vw,26px);font-weight:600;letter-spacing:-.01em;line-height:1.25;color:var(--fg)}
+.x-soon-lede{margin:0 auto;max-width:620px;color:var(--fg2);font-size:15px;line-height:1.6}
+.x-soon-grid{list-style:none;margin:26px auto 0;padding:0;max-width:860px;display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;text-align:left}
+.x-soon-grid li{display:flex;flex-direction:column;gap:4px;padding:14px 16px;border:1px solid var(--ln);border-radius:14px;background:var(--pg)}
+.x-soon-grid b{font-size:14px;font-weight:600;color:var(--fg)}
+.x-soon-grid span{font-size:13px;line-height:1.5;color:var(--fg2)}
+.x-soon-note{margin:18px auto 0;max-width:620px;font-size:13px;color:var(--fg3)}
+.x-soon-cta{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:24px}
+@media (max-width:520px){.x-soon{padding:28px 18px;border-radius:16px}}

@@ -1981,7 +1981,7 @@ fn decision_tree_demo(style: crate::Control) -> Demo {
         variants: vec![
             var(
                 "auto",
-                "As affectUI ships it: the tree plays itself – the agent's pick lights up, gets picked, its follow-up answered, then the next decision grows in. Touch it to take over.",
+                "The tree plays itself – the agent's pick lights up, gets picked, its follow-up answered, then the next decision grows in. Touch it to take over.",
                 &[],
             ),
             var(

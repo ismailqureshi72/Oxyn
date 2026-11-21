@@ -609,10 +609,10 @@ pub(crate) fn demos() -> Vec<Demo> {
                 rng("max_height", "Max height", 200.0, 420.0, 20.0, "320"),
             ],
             variants: vec![
-                var("command-menu", "affectUI's menu: logos, ⌘1–⌘5, tray.", &[]),
+                var("command-menu", "Menu: logos, ⌘1–⌘5, tray.", &[]),
                 var(
                     "palette",
-                    "Arc's palette with matched letters.",
+                    "A palette with matched letters.",
                     &[("variant", "palette"), ("query", "sh pr")],
                 ),
                 var("files-scope", "@ narrows to files.", &[("query", "@a")]),
@@ -810,10 +810,10 @@ pub(crate) fn demos() -> Vec<Demo> {
                 tog("disabled", "Disabled", false),
             ],
             variants: vec![
-                var("filter", "Live filtering (Beautiful UI).", &[]),
+                var("filter", "Live filtering.", &[]),
                 var(
                     "plain",
-                    "Arc's field with the clear button.",
+                    "A field with the clear button.",
                     &[("list", "false")],
                 ),
                 var(
@@ -955,7 +955,7 @@ pub(crate) fn demos() -> Vec<Demo> {
                 tog("total", "Range + page size", false),
             ],
             variants: vec![
-                var("window", "Arc's five-page window.", &[]),
+                var("window", "A five-page window.", &[]),
                 var(
                     "ellipsis",
                     "First, last and neighbours.",

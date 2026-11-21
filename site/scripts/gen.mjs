@@ -15,6 +15,7 @@ import fs from 'node:fs';
 import { gzipSync } from 'node:zlib';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { publicText } from '../src/lib/public-text.mjs';
 import { isFree, isScreen, isAgentApp, isBlock, groupSlugOf, blockGroupOf, pageUrl } from '../src/lib/taxonomy.mjs';
 
 const site = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -174,7 +175,7 @@ fs.copyFileSync(path.join(root, 'tokens/oxyn.motion.json'), path.join(gen, 'moti
     kind: isScreen(d) ? (isAgentApp(d) ? 'app' : 'screen') : isBlock(d) ? 'block' : 'component',
     category: isScreen(d) ? 'screens' : isBlock(d) ? `blocks-${blockGroupOf(d).slug}` : groupSlugOf(d),
     tier: isFree(d) ? 'free' : 'pro',
-    description: d.summary || '',
+    description: publicText(d.summary || ''),
     url: origin + pageUrl(d),
     dioxus: d.dioxus || null,
     gpui: d.gpui || null,

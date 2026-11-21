@@ -3,6 +3,7 @@ import demosJson from '../generated/demos.json';
 import propsJson from '../generated/props.json';
 import specsJson from '../generated/specs.json';
 import parityJson from '../generated/parity.json';
+import { publicText, publicMarkdown } from './public-text.mjs';
 import wasmJson from '../generated/wasm.json';
 import motionJson from '../generated/motion.json';
 import { GROUPS, groupSlugOf, isScreen, isAgentApp, isArcScreen, isProComponent, isFree, isBlock, blockGroupOf, BLOCK_GROUPS, ARC_SCREENS, pageUrl } from './taxonomy.mjs';
@@ -59,7 +60,17 @@ for (const r of parity) if (r.source === 'affectUI' && !affect.has(norm(r.item))
 for (const d of demos) {
   const r = affect.get(norm(d.name));
   if (r) d.name = r.item;
+  // Public copy: no reference-library names or plan numbers on a page (src/lib/public-text.mjs).
+  d.summary = publicText(d.summary);
+  d.a11y = (d.a11y ?? []).map(publicText).filter(Boolean);
+  for (const v of d.variants) if (v.note) v.note = publicText(v.note);
 }
+for (const p of Object.values(propsJson as Record<string, { doc: string; props: { doc: string }[] }>)) {
+  p.doc = publicText(p.doc);
+  for (const x of p.props) x.doc = publicText(x.doc);
+}
+for (const s of Object.values(specsJson as Record<string, { sections: Record<string, string> }>))
+  for (const k of Object.keys(s.sections)) s.sections[k] = publicMarkdown(s.sections[k]);
 export const wasm = wasmJson as { js: string | null; wasm: string | null; bytes: number };
 export const motion = motionJson as Record<string, any>;
 
@@ -174,10 +185,6 @@ export function installLine(d: Demo): string {
 /** Installs the `oxyn` CLI from the repository (no crates.io release yet). */
 export const CLI_INSTALL = `cargo install --git ${REPO} oxyn-cli`;
 
-/** Items of a parity section from status.csv (affectUI rows by section prefix). */
-export function parityItems(section: string) {
-  return parity.filter((r) => r.source === 'affectUI' && r.section.startsWith(section));
-}
 
 // ── Library v2 (plan #29): eight categories + screens, affectUI-style pages ─────────────────
 export type Group = { slug: string; name: string; blurb: string; family?: boolean };
@@ -294,7 +301,7 @@ export function notesForAi(d: Demo, propNames: string[]): string[] {
   ];
   if (propNames.length) out.push(`Props to set first: ${propNames.slice(0, 6).map((p) => '`' + p + '`').join(', ')}.`);
   if (d.live) out.push('It reads a clock (`now`) for live timers; pass one clock for the whole page rather than one per component.');
-  out.push(`Behaviour is specified in docs/specs/${d.spec}.md; follow it rather than restyling states by hand.`);
+  out.push('Keep its states and timings as they ship; restyle it through the CSS variables rather than by hand.');
   return out;
 }
 

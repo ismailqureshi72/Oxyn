@@ -1192,7 +1192,7 @@ pub fn demos() -> Vec<Demo> {
                 ),
                 var(
                     "fan",
-                    "affectUI style: documents fan out, type badges.",
+                    "Documents fan out, type badges.",
                     &[("variant", "fan")],
                 ),
                 var(
