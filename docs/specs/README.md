@@ -282,4 +282,20 @@ specified just as deeply. When we point at one component as an example, the stan
 | [connector-setup.md](connector-setup.md) | v0.1 — built (C1d, AI Components, Pro) |
 | [enrich-column.md](enrich-column.md) | v0.1 — built (C1d, AI Components, Pro) |
 | [ticket-router.md](ticket-router.md) | v0.1 — built (C1d, AI Components, Pro) |
+| [ask-your-data.md](ask-your-data.md) | v0.1 — built (C1e, AI Components, Pro) |
+| [agent-doc-cursor.md](agent-doc-cursor.md) | v0.1 — built (C1e, AI Components, Pro) |
+| [provider-status.md](provider-status.md) | v0.1 — built (C1e, AI Components, Pro) |
+| [training-run.md](training-run.md) | v0.1 — built (C1e, AI Components, Pro) |
+| [tone-tuner.md](tone-tuner.md) | v0.1 — built (C1e, AI Components, Pro) |
+| [ai-mascot.md](ai-mascot.md) | v0.1 — built (C1e, AI Components, Pro) |
+| [image-reveal.md](image-reveal.md) | v0.1 — built (C1e, AI Components, Pro) |
+| [ai-spark.md](ai-spark.md) | v0.1 — built (C1e, AI Components, Pro) |
+| [pixel-mascot.md](pixel-mascot.md) | v0.1 — built (C1e, AI Components, Pro) |
+| [ghost-mascot.md](ghost-mascot.md) | v0.1 — built (C1e, AI Components, Pro) |
+| [cube-mascot.md](cube-mascot.md) | v0.1 — built (C1e, AI Components, Pro) |
+| [upgrade-prompt.md](upgrade-prompt.md) | v0.1 — built (C1e, AI Components, Pro) |
+| [referral-card.md](referral-card.md) | v0.1 — built (C1e, AI Components, Pro) |
+| [trial-banner.md](trial-banner.md) | v0.1 — built (C1e, AI Components, Pro) |
+| [live-visitors.md](live-visitors.md) | v0.1 — built (C1e, AI Components, Pro) |
+| [social-proof-toast.md](social-proof-toast.md) | v0.1 — built (C1e, AI Components, Pro) |
 | Every other component in [../component-taxonomy.md](../component-taxonomy.md) | to write in V2.2 |
