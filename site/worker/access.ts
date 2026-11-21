@@ -5,6 +5,7 @@
 //   GET    /api/admin/users                 ?q= &plan= &sort=created|active|email|plan &dir=asc|desc &page= &size= &tz= &format=csv
 //   GET    /api/admin/users/<id>            one account: plan and where it comes from, grants, subscriptions
 //   POST   /api/admin/users/<id>/plan       {plan: free|pro|team, founder, members[], reason, expires_at, confirm, acknowledge_paid}
+//   POST   /api/admin/users/<id>/usage/reset frees this month's Pro items (P3 caps) of the account's pool
 //   GET    /api/admin/grants                ?status=active|pending|revoked|expired|all &q=
 //   POST   /api/admin/grants/check          {plan, emails[] | owner + members[]}: per-line report, writes nothing
 //   POST   /api/admin/grants                {plan, founder, emails[] | owner + members[], reason, expires_at, confirm, ...}
@@ -21,6 +22,7 @@ import { ACTIVE, POLAR, billingSummary } from './billing';
 import { checkEmail, type EmailCheck } from './emailcheck';
 import { EVENTS, prune } from './events';
 import { audit } from './admin';
+import { adminResetUsage, adminUsage } from './pro';
 
 export const ACCESS = {
   bulkMax: 200, // emails in one bulk grant
@@ -208,7 +210,18 @@ export async function getUser(env: Env, id: string): Promise<Response> {
         'FROM licences l JOIN subscriptions s ON s.id = l.subscription_id WHERE l.user_id = ?1 OR (?3 = 1 AND l.email = ?2) ORDER BY s.created_at DESC LIMIT 20',
     ).bind(u.id, u.email, u.verified ? 1 : 0),
   ]);
-  return json({ ok: true, user: u, grants: g.results ?? [], subscriptions: s.results ?? [], polar_dashboard: ACCESS.polarDashboard, people_limit: POLAR.people });
+  let usage = null;
+  try { usage = await adminUsage(env, { id: u.id, email: u.email, email_verified: u.verified ? 1 : 0 }); } catch (e) { console.error('admin usage', e); }
+  return json({ ok: true, user: u, grants: g.results ?? [], subscriptions: s.results ?? [], usage, polar_dashboard: ACCESS.polarDashboard, people_limit: POLAR.people });
+}
+
+/** POST /api/admin/users/<id>/usage/reset: frees this month's Pro items of the account's pool (its
+ *  Team's for a Team member: everyone on it gets the count back). Audited. */
+export async function resetUsage(env: Env, admin: string, id: string): Promise<Response> {
+  const u = await oneUser(env, id);
+  const r = await adminResetUsage(env, admin, { id: u.id, email: u.email, email_verified: u.verified ? 1 : 0 });
+  await audit(env, admin, 'usage.reset', u.email, r);
+  return json({ ok: true, ...r });
 }
 
 // ── Grants: checks ─────────────────────────────────────────────────────────────────────────────
