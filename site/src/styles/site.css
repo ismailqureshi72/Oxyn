@@ -639,7 +639,7 @@ body.fullscreen{background:var(--oxyn-color-bg-base)}
   .cgrid,.cgrid.two{grid-template-columns:minmax(0,1fr)}
   .lp-sec{padding-top:64px}.lp-sec>h2{font-size:27px}
   .tb-r .theme-radios,.tb-r .pill-black{display:none}
-  .lbar .theme-radios{display:none}
+  .lbar .theme-radios,.lbar>.fb-btn{display:none}
   .lidx-title{font-size:25px}.art-title{font-size:31px}
   .pv .oxd-stage{padding:40px 12px;min-height:260px}
   .ex-prev .oxd-stage{padding:36px 12px}
