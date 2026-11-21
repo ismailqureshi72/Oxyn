@@ -221,10 +221,38 @@ pub fn build(meta: &[MetaItem], cfg: &BuildConfig) -> Result<Registry, String> {
             break;
         }
     }
+    // Pro items (served by the authenticated Pro registry): installable when they have a build and
+    // everything they need is installable, free or Pro.
+    let mut pro_ok: BTreeSet<String> = items
+        .iter()
+        .filter(|i| i.tier == Tier::Pro && !i.frameworks.is_empty())
+        .map(|i| i.slug.clone())
+        .collect();
+    loop {
+        let before = pro_ok.len();
+        let snapshot = pro_ok.clone();
+        pro_ok.retain(|s| {
+            let it = items.iter().find(|i| &i.slug == s).expect("item");
+            it.frameworks.iter().all(|b| {
+                b.oxyn_deps
+                    .iter()
+                    .all(|d| snapshot.contains(d) || installable.contains(d))
+            })
+        });
+        if pro_ok.len() == before {
+            break;
+        }
+    }
+    installable.extend(pro_ok);
     let mut index_items = Vec::new();
     for it in &items {
         let note = if it.tier == Tier::Pro {
-            Some("Part of Oxyn Pro.".to_string())
+            Some(if installable.contains(&it.slug) {
+                "Part of Oxyn Pro: `oxyn login`, then `oxyn add`.".to_string()
+            } else {
+                "Part of Oxyn Pro. Not installable with the CLI yet: use the code on its page."
+                    .to_string()
+            })
         } else if installable.contains(&it.slug) {
             None
         } else {
@@ -325,6 +353,50 @@ pub fn write(reg: &Registry, out: &Path) -> Result<(usize, usize), String> {
                 fs::create_dir_all(dst.parent().expect("has parent")).map_err(|e| e.to_string())?;
                 let content = fs::read(&src).map_err(|e| format!("{}: {e}", src.display()))?;
                 bytes += content.len();
+                fs::write(&dst, content).map_err(|e| e.to_string())?;
+            }
+        }
+        let s = serde_json::to_string(it).map_err(|e| e.to_string())?;
+        bytes += s.len();
+        fs::write(out.join(format!("{}.json", it.slug)), s).map_err(|e| e.to_string())?;
+        n += 1;
+    }
+    Ok((n, bytes))
+}
+
+/// Writes `<slug>.json` for every installable Pro item into `out` (the Worker-only Pro registry,
+/// never a public directory), removing JSON left from an earlier build first. Their stylesheets are
+/// public like every other component's: [`write`] copies shared assets of free items, and this
+/// copies the ones only Pro items use into `public_out` (the public registry's `files/`).
+pub fn write_pro(reg: &Registry, out: &Path, public_out: &Path) -> Result<(usize, usize), String> {
+    fs::create_dir_all(out).map_err(|e| format!("{}: {e}", out.display()))?;
+    for e in fs::read_dir(out).map_err(|e| e.to_string())?.flatten() {
+        if e.path().extension().is_some_and(|x| x == "json") {
+            fs::remove_file(e.path()).map_err(|e| e.to_string())?;
+        }
+    }
+    let mut n = 0;
+    let mut bytes = 0;
+    for it in &reg.items {
+        let entry = reg.index.get(&it.slug).expect("indexed");
+        if it.tier != Tier::Pro || !entry.installable {
+            continue;
+        }
+        for b in &it.frameworks {
+            for f in &b.files {
+                let Some(url) = &f.url else { continue };
+                let dst = public_out.join(url);
+                if dst.exists() {
+                    continue;
+                }
+                let crate_dir = if b.framework == Framework::Dioxus {
+                    "crates/oxyn-dioxus"
+                } else {
+                    "crates/oxyn-gpui"
+                };
+                let src = reg.root.join(crate_dir).join("src").join(&f.target);
+                fs::create_dir_all(dst.parent().expect("has parent")).map_err(|e| e.to_string())?;
+                let content = fs::read(&src).map_err(|e| format!("{}: {e}", src.display()))?;
                 fs::write(&dst, content).map_err(|e| e.to_string())?;
             }
         }
@@ -994,7 +1066,8 @@ mod tests {
         let reg = build(&meta, &cfg(d.path())).unwrap();
         assert_eq!(reg.index.items.len(), 4); // + theme
         let fancy = reg.index.get("fancy").unwrap();
-        assert!(!fancy.installable);
+        // Installable through the authenticated Pro registry, never written to the public one.
+        assert!(fancy.installable);
         assert_eq!(fancy.tier, Tier::Pro);
         let out = d.path().join("out");
         fs::create_dir_all(&out).unwrap();
@@ -1006,6 +1079,12 @@ mod tests {
         assert!(!out.join("fancy.json").exists());
         assert!(!out.join("stale.json").exists());
         assert!(out.join("files/dioxus/composer/composer.css").exists());
+        let pro = d.path().join("pro");
+        let (np, _) = write_pro(&reg, &pro, &out).unwrap();
+        assert_eq!(np, 1);
+        assert!(pro.join("fancy.json").exists());
+        assert!(!pro.join("send-button.json").exists());
+        assert!(!out.join("fancy.json").exists());
     }
 
     #[test]

@@ -50,7 +50,7 @@ impl Server {
     /// A server for a registry base (URL or directory).
     pub fn new(registry: &str, cwd: PathBuf) -> Server {
         Server {
-            client: Client::new(registry),
+            client: Client::new(registry).with_via("mcp"),
             cwd,
         }
     }

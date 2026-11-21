@@ -35,6 +35,7 @@ Thumbs.db
 # Site (Astro): generated data, built WASM, build output
 site/src/generated/
 site/public/wasm/
+site/public/_pro/
 site/dist/
 site/node_modules/
 site/.astro/
