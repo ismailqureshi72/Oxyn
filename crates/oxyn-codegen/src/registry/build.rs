@@ -228,7 +228,23 @@ pub fn build(meta: &[MetaItem], cfg: &BuildConfig) -> Result<Registry, String> {
         } else if installable.contains(&it.slug) {
             None
         } else {
-            Some("Shares source files with Oxyn Pro items; not installable from the free registry yet.".into())
+            let why: Vec<String> = Framework::ALL
+                .iter()
+                .filter_map(|fw| {
+                    per_fw[fw]
+                        .blocked
+                        .get(&it.slug)
+                        .map(|w| format!("{fw}: {w}"))
+                })
+                .collect();
+            Some(if why.is_empty() {
+                "Needs an item that is not installable.".into()
+            } else {
+                format!(
+                    "Not installable from the free registry: {}.",
+                    why.join("; ")
+                )
+            })
         };
         index_items.push(IndexEntry {
             slug: it.slug.clone(),
@@ -513,7 +529,15 @@ fn build_framework(
             .map(str::trim)
             .filter(|s| !s.is_empty())
             .collect();
-        let found: Vec<Option<Node>> = names.iter().map(|n| g.find_def(n)).collect();
+        // The gallery names some GPUI entries `<Name>El` where the type is `<Name>` or `<Name>View`.
+        let find = |n: &str| {
+            g.find_def(n).or_else(|| {
+                let base = n.strip_suffix("El")?;
+                g.find_def(base)
+                    .or_else(|| g.find_def(&format!("{base}View")))
+            })
+        };
+        let found: Vec<Option<Node>> = names.iter().map(|n| find(n)).collect();
         if found.iter().any(Option::is_none) {
             report.push(format!("{}: {fw} entry `{entry}` not found", m.slug));
             continue;
