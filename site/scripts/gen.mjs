@@ -16,6 +16,7 @@ import { gzipSync } from 'node:zlib';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { publicText } from '../src/lib/public-text.mjs';
+import { SITE } from '../src/lib/site.mjs';
 import { isFree, isScreen, isAgentApp, isBlock, groupSlugOf, blockGroupOf, pageUrl } from '../src/lib/taxonomy.mjs';
 
 const site = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -169,7 +170,7 @@ fs.copyFileSync(path.join(root, 'tokens/oxyn.motion.json'), path.join(gen, 'moti
 // below and walks the renderer crates for each item's files and dependencies.
 {
   const { demos } = JSON.parse(fs.readFileSync(path.join(gen, 'demos.json'), 'utf8'));
-  const origin = 'https://ui.oxyn.workers.dev';
+  const origin = SITE;
   // Renamed items keep their old slug as an alias (src/lib/renames.json, docs/renames.md).
   const { renames } = JSON.parse(fs.readFileSync(path.join(site, 'src/lib/renames.json'), 'utf8'));
   const aliasesOf = (slug) => renames.filter((r) => r.to === slug).map((r) => r.from);
@@ -191,7 +192,7 @@ fs.copyFileSync(path.join(root, 'tokens/oxyn.motion.json'), path.join(gen, 'moti
     const out = path.join(site, 'public/r');
     const proOut = path.join(site, 'public/_pro/r');
     const extra = process.env.OXYN_REGISTRY_REV ? ['--rev', process.env.OXYN_REGISTRY_REV] : [];
-    run('cargo', ['run', '--locked', '-q', '-p', 'oxyn-codegen', '--bin', 'oxyn-registry', '--', '--input', inputPath, '--out', out, '--pro-out', proOut, '--quiet', ...extra]);
+    run('cargo', ['run', '--locked', '-q', '-p', 'oxyn-codegen', '--bin', 'oxyn-registry', '--', '--input', inputPath, '--out', out, '--pro-out', proOut, '--homepage', origin, '--quiet', ...extra]);
   }
 }
 

@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { redirects } from './src/lib/taxonomy.mjs';
+import { SITE } from './src/lib/site.mjs';
 
 // Moved URLs (plan #29 regrouped 21 categories into 8 + Screens): the pages also ship as
 // meta-refresh stubs, and the Worker answers them with a 301 from dist/_redirects.
@@ -26,7 +27,7 @@ const movedUrls = {
 // Search is the site's own ⌘K palette over /search-index.json (src/pages/search-index.json.ts),
 // so Starlight's Pagefind run is off and its header is replaced by the site nav.
 export default defineConfig({
-  site: 'https://ui.oxyn.workers.dev',
+  site: SITE,
   output: 'static',
   trailingSlash: 'ignore',
   integrations: [
