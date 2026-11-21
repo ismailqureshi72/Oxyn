@@ -1,6 +1,6 @@
 # Admin panel
 
-`/admin` on https://ui.oxyn.workers.dev is the maintainers' panel: site activity, every account and
+`/admin` on https://oxynui.com is the maintainers' panel: site activity, every account and
 its plan, grants (Pro or Team without payment), the feedback inbox, billing, the list of admins,
 content flags and an audit log. Every response carries
 `X-Robots-Tag: noindex, nofollow, noarchive`, and none of it is in `site/dist`: the Worker serves the
@@ -55,7 +55,7 @@ served before the checks, for the refusal pages.
 1. Make sure Google or GitHub sign-in is turned on ([auth.md](auth.md): the
    `GOOGLE_OAUTH_CLIENT_*` or `GITHUB_OAUTH_CLIENT_*` Worker secrets). Until one of them is, nobody
    can verify an email and the panel stays closed to everyone.
-2. Open https://ui.oxyn.workers.dev/admin (or **Admin** in the account menu), sign in with Google or
+2. Open https://oxynui.com/admin (or **Admin** in the account menu), sign in with Google or
    GitHub on your admin email. That is all.
 
 ## What is in it

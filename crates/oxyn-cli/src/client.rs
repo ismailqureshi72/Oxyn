@@ -1,4 +1,4 @@
-//! Reads the registry: over HTTPS (the default, `https://ui.oxyn.workers.dev/r`), plain HTTP, or a
+//! Reads the registry: over HTTPS (the default, `https://oxynui.com/r`), plain HTTP, or a
 //! local directory (a registry built with `oxyn-registry`, handy offline and in CI).
 
 use std::cell::RefCell;
@@ -12,9 +12,9 @@ use oxyn_registry_schema::{RegistryIndex, RegistryItem, SCHEMA_VERSION, valid_sl
 use crate::Error;
 
 /// The public registry.
-pub const DEFAULT_REGISTRY: &str = "https://ui.oxyn.workers.dev/r";
+pub const DEFAULT_REGISTRY: &str = "https://oxynui.com/r";
 /// Where Oxyn Pro is sold.
-pub const PRICING_URL: &str = "https://ui.oxyn.workers.dev/pricing";
+pub const PRICING_URL: &str = "https://oxynui.com/pricing";
 /// Environment variable that overrides the registry base.
 pub const REGISTRY_ENV: &str = "OXYN_REGISTRY";
 /// Environment variable holding an Oxyn CLI token; wins over the one `oxyn login` saved.
@@ -405,8 +405,8 @@ mod tests {
             return;
         }
         assert_eq!(
-            api_base("https://ui.oxyn.workers.dev/r").as_deref(),
-            Some("https://ui.oxyn.workers.dev/api")
+            api_base("https://oxynui.com/r").as_deref(),
+            Some("https://oxynui.com/api")
         );
         assert_eq!(
             api_base("http://127.0.0.1:9/r/").as_deref(),

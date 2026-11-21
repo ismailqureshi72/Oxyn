@@ -215,7 +215,7 @@ Each distinct Pro item counts once per billing month toward your plan's Pro item
 
 ## Registry
 
-The server reads `https://ui.oxyn.workers.dev/r`, the same registry as the CLI. Point it elsewhere with `--registry <url-or-directory>` in the command, or the `OXYN_REGISTRY` environment variable, for example a registry built from a checkout (`site/public/r`).
+The server reads `https://oxynui.com/r`, the same registry as the CLI. Point it elsewhere with `--registry <url-or-directory>` in the command, or the `OXYN_REGISTRY` environment variable, for example a registry built from a checkout (`site/public/r`).
 
 ## Prompt for your agent
 
@@ -223,7 +223,7 @@ Paste this into Claude Code, Codex, Cursor or any other coding agent to set Oxyn
 
 ```text title="Prompt"
 Set up Oxyn (Rust UI components for agent apps,
-https://ui.oxyn.workers.dev) in this project.
+https://oxynui.com) in this project.
 
 1. If the `oxyn` command is missing, install it:
    cargo install --git https://github.com/ismailqureshi72/Oxyn oxyn-cli

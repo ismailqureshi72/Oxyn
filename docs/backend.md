@@ -1,6 +1,6 @@
 # Backend
 
-The Oxyn site runs as one Cloudflare Worker, `ui` (https://ui.oxyn.workers.dev). It serves the
+The Oxyn site runs as one Cloudflare Worker, `ui`, at https://oxynui.com (see [Domains](#domains)). It serves the
 static site from `site/dist`, a small API under `/api/*` (feedback, flags, site sign-in from
 [auth.md](auth.md)) and the maintainers' admin panel under `/admin` ([admin.md](admin.md)). Everything stays on Cloudflare:
 Workers, D1 (SQLite) and R2 (object storage). No other services.
@@ -8,16 +8,19 @@ Workers, D1 (SQLite) and R2 (object storage). No other services.
 ## Architecture
 
 ```
-browser ──► Cloudflare edge ──► static assets (site/dist)        every path except /api/* and /admin*
-                           └──► Worker  site/worker/index.ts      /api/*, /admin*
+browser ──► Cloudflare edge ──► static assets (site/dist)        /_astro/*, /wasm/gallery-dioxus.*, /fonts/*
+                           └──► Worker  site/worker/index.ts      every other path: host redirects,
+                                  │                               /api/*, /admin*, then ASSETS for pages
                                   ├─ D1  "oxyn"          (binding DB)       feedback, rate limits, admins, settings
                                   ├─ R2  "oxyn-uploads"  (binding UPLOADS)  feedback screenshots
                                   └─ GitHub REST API     (secret GITHUB_TOKEN, optional)
 ```
 
-- Config: `site/wrangler.jsonc`. `assets.run_worker_first: ["/api/*", "/admin", "/admin/*"]` makes
-  assets answer first for everything else, so the site never runs Worker code and a Worker bug
-  cannot take pages down.
+- Config: `site/wrangler.jsonc`. `assets.run_worker_first: ["/*", "!/_astro/*",
+  "!/wasm/gallery-dioxus.*", "!/fonts/*"]` runs the Worker first for pages too, so it can redirect
+  the non-canonical hosts (below). On https://oxynui.com it hands a page straight to the `ASSETS`
+  binding, which still applies `dist/_redirects` and `dist/_headers`. The fingerprinted bundles,
+  the gallery wasm and the fonts stay asset-first: no Worker invocation, no billing.
 - The Worker is plain TypeScript with no dependencies. `wrangler` bundles it with esbuild at deploy
   time, so CI needs nothing beyond the existing Node step. Rust (workers-rs) was not used: it would
   add a second wasm build and toolchain to the site job for two small endpoints.
@@ -159,3 +162,26 @@ npx wrangler d1 execute oxyn --local --command "SELECT id, kind, message, status
 
 `wrangler dev` uses local D1 and R2 simulations by default, so nothing touches production. Put
 local secrets in `site/.dev.vars` (ignored by git), e.g. `GITHUB_TOKEN=...` to test issue creation.
+
+## Domains
+
+| Host | What it does |
+| --- | --- |
+| `https://oxynui.com` | Canonical. Worker Custom Domain on the `oxynui.com` zone. |
+| `https://www.oxynui.com` | Worker Custom Domain; every path answers `301` to `https://oxynui.com` + the same path and query. |
+| `https://ui.oxyn.workers.dev` | The original address (`workers_dev: true`). Pages answer `301` to `https://oxynui.com`; `/api/*` is served as before. |
+
+- Both Custom Domains are declared in `site/wrangler.jsonc` (`routes` with `custom_domain: true`),
+  so a CI deploy keeps them attached.
+- `/api/*` is never redirected on any host: GitHub and Google send sign-ins back to the callback
+  registered for them, Polar posts its webhook to the URL saved on the endpoint, and an `oxyn` or
+  `oxyn-mcp` built before the move still calls `https://ui.oxyn.workers.dev/api/r/...`. Free
+  registry files (`/r/*`) redirect; the CLI and MCP server follow redirects.
+- The redirect lives in `canonicalRedirect` (`site/worker/shared.ts`); `SITE_URL` in
+  `wrangler.jsonc` (default `https://oxynui.com`) is the target. Other hosts (local dev, version
+  preview URLs) are left alone.
+- The site's own origin for canonical links, Open Graph, the sitemap and the registry index is
+  `SITE` in `site/src/lib/site.mjs`. The Rust defaults are `DEFAULT_REGISTRY` (oxyn-cli) and the
+  `--homepage` default (oxyn-registry); both are `https://oxynui.com`.
+- Sign-in cookies are per host: someone signed in on the old address signs in again on
+  https://oxynui.com.

@@ -1,5 +1,5 @@
 //! `oxyn`: add Oxyn components to a Dioxus or GPUI project, shadcn style. The code is copied into
-//! your project (`src/oxyn/`), so it is yours to change. See https://ui.oxyn.workers.dev/docs/cli/.
+//! your project (`src/oxyn/`), so it is yours to change. See https://oxynui.com/docs/cli/.
 
 use std::path::PathBuf;
 use std::process::ExitCode;
@@ -12,7 +12,7 @@ use oxyn_registry_schema::{Framework, IndexEntry, Tier};
 #[derive(Parser)]
 #[command(name = "oxyn", version, about = "Add Oxyn UI components (Dioxus, GPUI) to your Rust project.", long_about = None)]
 struct Cli {
-    /// Registry base URL or directory (default https://ui.oxyn.workers.dev/r; env OXYN_REGISTRY).
+    /// Registry base URL or directory (default https://oxynui.com/r; env OXYN_REGISTRY).
     #[arg(long, global = true, value_name = "URL")]
     registry: Option<String>,
     /// Project directory (default: the nearest Cargo.toml at or above the current directory).
@@ -90,7 +90,7 @@ enum Cmd {
     },
     /// Sign in for Pro items: approve this computer in the browser, or save a token.
     Login {
-        /// A token from your account page (https://ui.oxyn.workers.dev/account/#cli) instead of
+        /// A token from your account page (https://oxynui.com/account/#cli) instead of
         /// the browser.
         #[arg(long, value_name = "TOKEN")]
         token: Option<String>,
@@ -426,7 +426,7 @@ fn run(cli: Cli) -> Result<(), Error> {
         Cmd::Logout => {
             if auth::remove()? {
                 println!(
-                    "Signed out on this computer. The token still works until you revoke it on your account page (https://ui.oxyn.workers.dev/account/#cli)."
+                    "Signed out on this computer. The token still works until you revoke it on your account page (https://oxynui.com/account/#cli)."
                 );
             } else {
                 println!("No saved token on this computer.");
