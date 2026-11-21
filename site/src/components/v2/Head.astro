@@ -34,6 +34,11 @@ const path = Astro.url.pathname;
     if (localStorage.getItem('oxyn-announce') === 'closed') d.dataset.announce = 'hidden';
     if (localStorage.getItem('oxyn-reduce-motion') === '1') d.setAttribute('data-oxyn-reduced', '');
     if (localStorage.getItem('oxyn-sidebar') === 'hidden') d.dataset.sidebar = 'hidden';
+    // A member's plan from the last page (public/account.js), only while the sign-in hint cookie
+    // is there: Get Pro and the upgrade prompts stay hidden from the first paint.
+    var ph = /(?:^|;\s*)oxyn_signed_in=1/.test(document.cookie) ? localStorage.getItem('oxyn-plan-hint') : null;
+    if (ph === 'pro' || ph === 'admin') d.dataset.pro = '1';
+    if (ph === 'admin') d.dataset.admin = '1';
     // Brand intro: only on the first page of a fresh visit (one per tab session). A reload or any
     // later page skips it and shows the route at once. It never blocks: no pointer events, ~1 s.
     try {
