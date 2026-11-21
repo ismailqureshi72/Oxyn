@@ -47,7 +47,7 @@ Set `data-oxyn-theme="dark"`, `"light"` or `"hc-dark"` on any ancestor element t
 | `oxyn add <slug>... [--framework dioxus\|gpui] [--path <dir>] [--overwrite]` | Installs items and their dependencies, adds the crates they need to `Cargo.toml`. |
 | `oxyn diff <slug>` | Compares an installed item with the registry. |
 
-`list`, `search` and `view` take `--json` for scripts and agents.
+`list`, `search` and `view` take `--json` for scripts and agents. Coding agents can also use the [MCP server](/docs/mcp/), which offers the same registry as tools.
 
 ## Your changes are safe
 

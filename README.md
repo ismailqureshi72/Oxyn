@@ -61,6 +61,17 @@ oxyn add composer approval-card   # copies the code into src/oxyn/
 74 components are free (MIT); `oxyn list` shows everything, Pro included. Commands, flags and the
 registry: [ui.oxyn.workers.dev/docs/cli](https://ui.oxyn.workers.dev/docs/cli/).
 
+## Let your coding agent add them (MCP)
+
+```sh
+cargo install --git https://github.com/ismailqureshi72/Oxyn oxyn-mcp
+claude mcp add oxyn -- oxyn-mcp     # Cursor, Codex and Zed: see the docs
+```
+
+The `oxyn-mcp` server gives Claude Code, Cursor, Codex and Zed five tools: list, search and read
+components (props, dependencies, source), and add them to a project the way `oxyn add` does.
+Setup for each agent: [ui.oxyn.workers.dev/docs/mcp](https://ui.oxyn.workers.dev/docs/mcp/).
+
 ## Planned packages
 
 | Crate / app | Role |
@@ -71,6 +82,7 @@ registry: [ui.oxyn.workers.dev/docs/cli](https://ui.oxyn.workers.dev/docs/cli/).
 | `oxyn-dioxus` | Components for Dioxus (web demos, web apps) |
 | `oxyn-codegen` | Shared code generator used by the CLI and the Studio |
 | `oxyn-cli` | `oxyn add <component>` — shadcn-style copy-paste installer (free registry today, Pro next) |
+| `oxyn-mcp` | MCP server (stdio) so coding agents can list, read and add components |
 | `site/` | Docs, gallery and Studio (Astro + Starlight + Rust→WASM demos) |
 
 Details: [docs/architecture.md](docs/architecture.md) and [docs/website-stack.md](docs/website-stack.md).
