@@ -123,8 +123,8 @@ fn sp(
     }
 }
 
-/// The sample run: an investigation of a checkout conversion drop with five agents, a failed
-/// query and its retry.
+/// The sample run: five agents digging into a drop in checkout conversion, with one query that
+/// fails and is retried.
 pub fn sample() -> (Vec<Agent>, Vec<Span>, Vec<Handoff>) {
     use SpanKind::*;
     let agents = vec![
@@ -609,8 +609,8 @@ impl Timeline {
         }
     }
 
-    /// Keys on the spans: ←/→ previous or next in the row, ↑/↓ nearest span in the row above or
-    /// below, Home/End first or last in the row, Enter/Space pin, Escape unpin.
+    /// Keys on the spans: ←/→ previous or next in the row, ↑/↓ the closest span one row up or
+    /// down, Home/End first or last in the row, Enter/Space pin, Escape unpin.
     pub fn key_span(&mut self, key: &str, now: u64) -> Option<String> {
         let key = norm_key(key);
         let cur = &self.spans[self.focus.min(self.spans.len() - 1)];

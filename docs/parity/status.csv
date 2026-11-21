@@ -552,25 +552,25 @@ Arc UI,Connector setup,https://uiarc.dev/components/connector-setup,Special comp
 Arc UI,Smart form fill,https://uiarc.dev/components/smart-form-fill,Special components · AI,Pro,smart-form-fill,,#25,built
 Arc UI,Enrich column,https://uiarc.dev/components/enrich-column,Special components · AI,Pro,enrich-column,C1,C1d,"built (C1d: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/enrich-column/, Pro)"
 Arc UI,Ticket router,https://uiarc.dev/components/ticket-router,Special components · AI,Pro,ticket-router,C1,C1d,"built (C1d: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/ticket-router/, Pro)"
-Arc UI,Ask your data,https://uiarc.dev/components/ask-your-data,Special components · AI,Pro,genui-blocks.md (partial),,#36,planned
-Arc UI,Agent cursor,https://uiarc.dev/components/agent-cursor,Special components · AI,Pro,acting-indicator.md,,#34,planned
-Arc UI,Provider status,https://uiarc.dev/components/provider-status,Special components · AI,Pro,NEW,N8,#35,planned
-Arc UI,Training run,https://uiarc.dev/components/training-run,Special components · AI,Pro,NEW,N8,#35,planned
+Arc UI,Ask your data,https://uiarc.dev/components/ask-your-data,Special components · AI,Pro,ask-your-data,C1,C1e,"built (C1e: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/ask-your-data/, Pro)"
+Arc UI,Agent cursor,https://uiarc.dev/components/agent-cursor,Special components · AI,Pro,agent-doc-cursor,C1,C1e,"built (C1e: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/agent-doc-cursor/, Pro (slug agent-doc-cursor: agent-cursors already exists))"
+Arc UI,Provider status,https://uiarc.dev/components/provider-status,Special components · AI,Pro,provider-status,C1,C1e,"built (C1e: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/provider-status/, Pro)"
+Arc UI,Training run,https://uiarc.dev/components/training-run,Special components · AI,Pro,training-run,C1,C1e,"built (C1e: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/training-run/, Pro)"
 Arc UI,AI command,https://uiarc.dev/components/ai-command,Special components · AI,Pro,ai-command,,#26,built
 Arc UI,Starter prompts,https://uiarc.dev/components/starter-prompts,Special components · AI,Pro,messages,,#27,built
-Arc UI,AI mascot,https://uiarc.dev/components/ai-mascot,Special components · AI,Pro,loader-mascot.md,,#38,planned
-Arc UI,Image reveal,https://uiarc.dev/components/image-reveal,Special components · AI,Pro,media-generation-placeholder.md,,#38,planned
-Arc UI,AI spark,https://uiarc.dev/components/ai-spark,Special components · AI,Pro,animated-marks.md,,#38,planned
-Arc UI,Pixel mascot,https://uiarc.dev/components/pixel-mascot,Special components · AI,Pro,loader-mascot.md,,#38,planned
-Arc UI,Ghost mascot,https://uiarc.dev/components/ghost-mascot,Special components · AI,Pro,loader-mascot.md,,#38,planned
-Arc UI,Cube mascot,https://uiarc.dev/components/cube-mascot,Special components · AI,Pro,loader-mascot.md,,#38,planned
-Arc UI,Tone tuner,https://uiarc.dev/components/tone-tuner,Special components · AI,Pro,NEW,N9,#35,planned
-Arc UI,Upgrade prompt,https://uiarc.dev/components/upgrade-prompt,Special components · AI,Pro,NEW (growth),N14,#40,planned
-Arc UI,Referral card,https://uiarc.dev/components/referral-card,Special components · AI,Pro,NEW (growth),N14,#40,planned
-Arc UI,Trial banner,https://uiarc.dev/components/trial-banner,Special components · AI,Pro,NEW (growth),N14,#40,planned
+Arc UI,AI mascot,https://uiarc.dev/components/ai-mascot,Special components · AI,Pro,ai-mascot,C1,C1e,"built (C1e: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/ai-mascot/, Pro)"
+Arc UI,Image reveal,https://uiarc.dev/components/image-reveal,Special components · AI,Pro,image-reveal,C1,C1e,"built (C1e: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/image-reveal/, Pro)"
+Arc UI,AI spark,https://uiarc.dev/components/ai-spark,Special components · AI,Pro,ai-spark,C1,C1e,"built (C1e: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/ai-spark/, Pro)"
+Arc UI,Pixel mascot,https://uiarc.dev/components/pixel-mascot,Special components · AI,Pro,pixel-mascot,C1,C1e,"built (C1e: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/pixel-mascot/, Pro)"
+Arc UI,Ghost mascot,https://uiarc.dev/components/ghost-mascot,Special components · AI,Pro,ghost-mascot,C1,C1e,"built (C1e: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/ghost-mascot/, Pro)"
+Arc UI,Cube mascot,https://uiarc.dev/components/cube-mascot,Special components · AI,Pro,cube-mascot,C1,C1e,"built (C1e: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/cube-mascot/, Pro)"
+Arc UI,Tone tuner,https://uiarc.dev/components/tone-tuner,Special components · AI,Pro,tone-tuner,C1,C1e,"built (C1e: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/tone-tuner/, Pro)"
+Arc UI,Upgrade prompt,https://uiarc.dev/components/upgrade-prompt,Special components · AI,Pro,upgrade-prompt,C1,C1e,"built (C1e: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/upgrade-prompt/, Pro)"
+Arc UI,Referral card,https://uiarc.dev/components/referral-card,Special components · AI,Pro,referral-card,C1,C1e,"built (C1e: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/referral-card/, Pro)"
+Arc UI,Trial banner,https://uiarc.dev/components/trial-banner,Special components · AI,Pro,trial-banner,C1,C1e,"built (C1e: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/trial-banner/, Pro)"
 Arc UI,Team switcher,https://uiarc.dev/components/team-switcher,Special components · AI,Pro,team-switcher,,#27,built
-Arc UI,Live visitors,https://uiarc.dev/components/live-visitors,Special components · AI,Pro,NEW (growth),N25,#43,planned
-Arc UI,Social proof toast,https://uiarc.dev/components/social-proof-toast,Special components · AI,Pro,NEW (growth),N25,#43,planned
+Arc UI,Live visitors,https://uiarc.dev/components/live-visitors,Special components · AI,Pro,live-visitors,C1,C1e,"built (C1e: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/live-visitors/, Pro)"
+Arc UI,Social proof toast,https://uiarc.dev/components/social-proof-toast,Special components · AI,Pro,social-proof-toast,C1,C1e,"built (C1e: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/social-proof-toast/, Pro)"
 Arc UI,Install snippet,https://uiarc.dev/components/install-snippet,Special components · AI,Pro,NEW (docs),N24,#24,built
 Arc UI,Data flow,https://uiarc.dev/components/data-flow,Special components · Illustrations,Pro,NEW (illustration),N21,#42,planned
 Arc UI,Payment flow,https://uiarc.dev/components/payment-flow,Special components · Illustrations,Pro,NEW (illustration),N21,#42,planned

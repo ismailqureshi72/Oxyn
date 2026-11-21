@@ -27,11 +27,11 @@ fn spark(v: &[f64]) -> String {
         .join(" ")
 }
 
-/// Generation stats: a live strip for a streaming reply. Time to first token, speed with a
-/// sparkline, output tokens and cost count up in reserved tabular cells beside the model's mark;
-/// they settle when the reply ends and open into a latency breakdown. Stop freezes the counts and
-/// an error keeps what arrived with Retry. `inline` is a compact chip; session totals are an
-/// Oxyn extra.
+/// Generation stats: numbers for a reply while it streams. Delay to the first token, tokens per
+/// second with a tiny sparkline, tokens out and spend climb in fixed-width cells next to the
+/// model logo; when the reply ends they freeze and expand into where the time went. Stop holds the
+/// numbers, an error keeps what arrived and offers Retry. `inline` is a compact chip; session
+/// totals are an Oxyn extra.
 #[component]
 pub fn GenerationStats(
     /// Host clock.

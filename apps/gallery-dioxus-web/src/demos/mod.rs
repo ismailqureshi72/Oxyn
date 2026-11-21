@@ -6,6 +6,7 @@ use oxyn_core::ClockMs;
 use crate::{Align, Control, Demo, Kind, Vals, Variant};
 
 mod ai_special;
+mod ai_special_2;
 mod approvals;
 mod buttons;
 mod chat;
@@ -231,6 +232,7 @@ pub fn catalog() -> Vec<Demo> {
     v.extend(parity_text::demos());
     v.extend(checkpoints::demos());
     v.extend(ai_special::demos());
+    v.extend(ai_special_2::demos());
     v.extend(buttons::demos());
     v.extend(inputs::demos());
     v.extend(parity_input::demos());

@@ -19,7 +19,7 @@ use crate::{Align, Control, Demo, Vals, Variant};
 pub(crate) const CAT: &str = "ai-special";
 
 #[allow(clippy::too_many_arguments)]
-fn ai(
+pub(super) fn ai(
     slug: &'static str,
     name: &'static str,
     dioxus: &'static str,
@@ -49,11 +49,11 @@ fn ai(
     }
 }
 
-fn idx(v: &Vals, k: &str, opts: &[&str]) -> usize {
+pub(super) fn idx(v: &Vals, k: &str, opts: &[&str]) -> usize {
     opts.iter().position(|o| *o == v.s(k)).unwrap_or(0)
 }
 
-fn clock(name: &str) -> Code {
+pub(super) fn clock(name: &str) -> Code {
     Code::new(name)
         .pre("let clock = use_motion_clock(); // the host clock (ClockMs)")
         .raw("now", "clock.now()")
@@ -300,7 +300,7 @@ pub(crate) fn demos() -> Vec<Demo> {
             "Agent timeline",
             "AgentTimeline",
             "aikit/timeline.rs",
-            "One orchestrated agent run on a shared time axis: the orchestrator and its subagents in rows, handoffs drawn between them, and a playhead that replays thinking, tool calls and waiting while the header counts time, tokens and cost.",
+            "Replays a multi-agent run on one clock: a row per agent, links where work passes between them, and a playhead sweeping over thinking, tool and idle spans as the totals for time, tokens and spend tick up.",
             vec![
                 sel("view", "View", &["lanes", "waterfall"], "lanes"),
                 tog("autoplay", "Replay on load", true),
@@ -337,7 +337,7 @@ pub(crate) fn demos() -> Vec<Demo> {
                     "← / →",
                     "Previous or next span in the row; on the scrubber half a second (Shift: five)",
                 ),
-                ("↑ / ↓", "Nearest span in the row above or below"),
+                ("↑ / ↓", "Jump to the closest span one row up or down"),
                 (
                     "Home / End",
                     "First or last span in the row; on the scrubber the start or end",
@@ -351,15 +351,15 @@ pub(crate) fn demos() -> Vec<Demo> {
             ],
             vec![
                 "The root is a labelled section; spans are buttons named by agent, kind, tool, failure, what it did, time range and tokens; aria-pressed marks the pinned span.",
-                "Spans use a roving tab index, so the chart is one tab stop.",
-                "The scrubber is a slider with a value text like 12.4s of 26.4s.",
-                "Failure is a cross icon and the word Failed, never colour alone; the finished state shows a check with the summary.",
-                "Replay, pause and the summary are announced politely; the counting status line is not live.",
+                "One tab stop for the whole chart; arrows pick spans inside it.",
+                "The scrubber is a range input that reads out position and length (12.4s of 26.4s).",
+                "A failed span carries a cross and the word Failed as well as red; a finished run ends on a check next to its totals.",
+                "Replay, pause and the closing totals go to the polite region; the ticking header itself stays quiet.",
             ],
             vec![
-                "Labels take 180 px; under 560 px they narrow to dot and name and the model moves into the span card.",
+                "The label column is 180 px wide; below 560 px it keeps only the dot and agent name, and the model shows in the span card.",
                 "The plot keeps a 300 px minimum and scrolls inside its own frame (thin scrollbar) with labels pinned.",
-                "Counters use tabular numerals, so the header never shifts while it counts.",
+                "Tabular figures keep the totals the same width while they climb.",
             ],
             430,
         ),
@@ -368,7 +368,7 @@ pub(crate) fn demos() -> Vec<Demo> {
             "Model card",
             "ModelCard",
             "aikit/model_card.rs",
-            "What a model can do and what it costs: switching models swaps every value in place, a volume slider estimates the monthly cost, benchmark rows show score and rank, and Compare puts a rival side by side with the better value checked.",
+            "One model at a glance: inputs, outputs, context and prices swap in place when you change model, a volume slider turns prices into a monthly bill, benchmark rows rank it, and Compare sets a rival beside it and ticks the stronger figure.",
             vec![
                 sel("model", "Model", &MODELS, "Claude Sonnet 4.5"),
                 sel("view", "View", &["details", "compare"], "details"),
@@ -391,7 +391,7 @@ pub(crate) fn demos() -> Vec<Demo> {
                 ),
                 var(
                     "picker-pane",
-                    "The detail pane of a model picker with Use model (Oxyn extra).",
+                    "Shown as the side panel of a model chooser, with a Use model button (Oxyn extra).",
                     &[
                         ("select", "true"),
                         ("tabs", "false"),
@@ -427,14 +427,14 @@ pub(crate) fn demos() -> Vec<Demo> {
             ],
             vec![
                 "The card is an article labelled by the model; specs and prices are description lists.",
-                "The compare view is a table with row and column headers; the better value has a check and the words better by, so it never relies on colour.",
+                "Compare is a real table with headers on both axes; the stronger figure gets a tick plus the words better by, not just a colour.",
                 "Benchmark rows are focusable and read the full readout (score, rank, gap to the leader); the bars are decorative.",
-                "Unsupported modalities are dashed as well as muted and read not supported.",
+                "A modality the model lacks gets a dashed outline, a dimmer tone and the words not supported.",
                 "Loading sets aria-busy; errors use role alert; the polite region says what changed.",
             ],
             vec![
-                "Details, compare, loading and error share one grid cell, so the card never changes size.",
-                "Under 560 px specs become label and value rows, the cost moves under the slider and each bar moves under its name.",
+                "All four panels (details, compare, loading, error) stack in the same cell, so switching never resizes the card.",
+                "Below 560 px the spec tiles turn into rows, the monthly figure drops below the slider and benchmark bars sit beneath their names.",
                 "The compare table scrolls inside its own frame rather than the page.",
             ],
             560,
@@ -444,7 +444,7 @@ pub(crate) fn demos() -> Vec<Demo> {
             "AI workflow",
             "AiWorkflow",
             "aikit/workflow.rs",
-            "An automation card where a Gmail trigger, a Claude step, a branch and Slack and Linear actions sit on one hairline rail, and a test run glides down it, opening each step's output inline. Steps come from a compact command menu with app marks.",
+            "A small automation on a single rail: new mail in Gmail starts it, Claude decides, a branch splits it, and Slack or Linear act; Test run walks the rail and unfolds what each step produced. New steps are picked from a searchable menu of apps.",
             vec![
                 sel(
                     "scenario",
@@ -494,9 +494,9 @@ pub(crate) fn demos() -> Vec<Demo> {
             ],
             vec![
                 "A labelled section with aria-busy while running; steps are an ordered list and each branch path its own list.",
-                "Each step's name carries its app and status; status is an icon plus a word.",
-                "The add menu is a combobox with aria-activedescendant over a listbox; branch paths are a radio group.",
-                "Remove buttons are named per step and appear on hover or focus (always on touch).",
+                "Every step is named with its app and where it stands, shown as a glyph and a word.",
+                "Adding a step opens a combobox driving a listbox (aria-activedescendant); the two branch outcomes form a radio group.",
+                "Each step has its own named delete button, shown on hover or keyboard focus and always on touch screens.",
                 "Run start, results, failures and the outcome (simulated, nothing was sent) are announced politely.",
             ],
             vec![
@@ -511,7 +511,7 @@ pub(crate) fn demos() -> Vec<Demo> {
             "Image generation",
             "ImageGeneration",
             "aikit/imagegen.rs",
-            "An image studio where each image forms on a dot matrix: a soft wave, then the colours of the coming image as a halftone, then a blur into the sharp image. A filmstrip picks one of four, with Upscale, Vary and Download.",
+            "Four variations grow out of a grid of dots: first a ripple, then a halftone in the colours to come, then a soft focus that resolves. Pick one from the strip, then upscale it, vary it or save it.",
             vec![
                 tog("autoplay", "Generate on load", true),
                 sel("aspect", "Aspect", &["1:1", "4:5", "16:9"], "1:1"),
@@ -562,13 +562,13 @@ pub(crate) fn demos() -> Vec<Demo> {
             ],
             vec![
                 "Model and aspect chips and the filmstrip are radio groups with a roving tab stop.",
-                "The canvas is labelled with the image or the variation's state; thumbnails are named Variation 1 to 4.",
-                "Starts, finishes, failures, picks, upscales and downloads are announced; results say they are simulated.",
-                "Failures pair an alert icon with the word Failed; the chosen thumbnail has an outline as well as aria-checked.",
+                "The main canvas is named after its picture, or its progress while forming; strip items read Variation 1 to 4.",
+                "Each start, finish, failure, pick, upscale and save is spoken, and the demo says nothing real was generated.",
+                "A failed tile shows a warning glyph with the word Failed; the picked tile is outlined and marked aria-checked.",
             ],
             vec![
-                "Fills up to 600 px; the canvas keeps the batch's ratio and caps its height at 440 px.",
-                "Under 500 px the actions drop their labels to icons so four thumbnails always fit beside them.",
+                "Grows to 600 px; the canvas follows the chosen aspect and never gets taller than 440 px.",
+                "Below 500 px the action buttons go icon-only, leaving room for all four thumbnails on one line.",
                 "Under 440 px the chips wrap onto two rows and Generate follows them.",
             ],
             620,
@@ -578,7 +578,7 @@ pub(crate) fn demos() -> Vec<Demo> {
             "Speech player",
             "SpeechPlayer",
             "aikit/speech.rs",
-            "Read aloud for an AI reply: Read aloud turns the action row into a compact player with play, a scrubbable bar, speed and a voice picker, and a highlight follows the spoken word through the reply.",
+            "Listen to an AI answer: the reply's action row becomes a small player (play, a seek bar, speed, voice) while the word being spoken is lit up in the text.",
             vec![
                 tog("autoplay", "Read on load", true),
                 sel("variant", "Variant", &["card", "plain"], "card"),
@@ -622,15 +622,15 @@ pub(crate) fn demos() -> Vec<Demo> {
             ],
             vec![
                 "The player is a labelled group; the play button's name follows its state (Play, Pause, Play again, Retry, Preparing audio).",
-                "The bar is a slider with a value text like 0:04 of 0:22.",
+                "Seeking uses a range input that reads out time and length (0:04 of 0:22).",
                 "The polite region says what changed and that the sample is simulated.",
                 "Dimmed upcoming words keep enough contrast; the error pairs an icon with words.",
-                "The hidden layer of the dock is out of the tab order.",
+                "Whichever row is hidden (actions or player) cannot be reached by Tab.",
             ],
             vec![
                 "Read aloud and the player share one 32 px slot, so the card never changes height.",
-                "Under 440 px the total time steps aside so the bar keeps room.",
-                "On touch screens the row grows to 36 px.",
+                "Below 440 px the total length is hidden to give the seek bar space.",
+                "Touch screens get a taller 36 px row.",
             ],
             360,
         ),
@@ -639,7 +639,7 @@ pub(crate) fn demos() -> Vec<Demo> {
             "Meeting summary",
             "MeetingSummary",
             "aikit/meeting.rs",
-            "AI notes for one call: Summary, Decisions and Action items stream in after a short summarizing pass; each line opens its transcript quote and each action item can be checked off or sent to Linear or Notion.",
+            "Notes written from a call: after a brief pass the summary, the decisions and the to-dos arrive word by word; any line reveals the transcript it came from, and to-dos can be ticked or pushed to Linear or Notion.",
             vec![
                 sel(
                     "scenario",
@@ -686,13 +686,13 @@ pub(crate) fn demos() -> Vec<Demo> {
                 "An article named after the meeting with h2 and h3 headings.",
                 "Each time chip toggles its transcript quote (aria-expanded) and points to it with aria-describedby.",
                 "Checkboxes are role checkbox with aria-checked and the item text as the name; the hit area is 32 px.",
-                "A failed send shows an alert icon with Retry; a sent item shows the target mark and its reference.",
+                "If pushing a to-do fails it shows a warning glyph and Retry; once pushed it shows the app mark and the new ticket id.",
                 "Summarizing, the finished notes, checks and sends are announced.",
             ],
             vec![
                 "Holds from 360 px to 640 px; under 460 px the attendees move under the date.",
                 "Quotes open below their line inside the card.",
-                "Owner, date and send controls reserve their space, so lines never rewrap as they finish.",
+                "Owner, due date and push button have fixed slots, so a line keeps its wrapping as it completes.",
             ],
             560,
         ),
@@ -701,7 +701,7 @@ pub(crate) fn demos() -> Vec<Demo> {
             "Reply draft",
             "ReplyDraft",
             "aikit/reply.rs",
-            "An AI reply drafted under a received email: quick replies steer a fresh draft, tone and length rewrite it with one crossfade, and the finished draft can be edited before Insert.",
+            "Drafts an answer below an incoming email: a quick-reply chip sets the direction, tone and length controls redo it in one fade, and you can edit the result before inserting it.",
             vec![
                 tog("autostart", "Draft on load", true),
                 sel(
@@ -742,13 +742,13 @@ pub(crate) fn demos() -> Vec<Demo> {
             ],
             vec![
                 "An article labelled with the sender; the reply area is a labelled section with aria-busy while drafting.",
-                "Quick replies are toggle buttons; tone and length are radio groups with a roving tab stop.",
+                "Quick-reply chips report their pressed state; tone and length each take one tab stop and move by arrow keys.",
                 "The finished draft is an editable text box; Insert takes the edits.",
-                "Drafting, rewriting, ready and inserted are announced; simulated actions say nothing was sent.",
+                "Drafting, rewriting, ready and inserted are spoken, and the demo notes that no email left.",
             ],
             vec![
                 "Fills up to 600 px; under 480 px the padding drops and the body loses its avatar indent.",
-                "Quick replies and the tone and length groups wrap; under 460 px the divider hides.",
+                "Chips and both control groups wrap onto new lines; below 460 px the separator between them goes.",
                 "The draft box reserves its height, so a rewrite never jumps.",
             ],
             600,
@@ -758,7 +758,7 @@ pub(crate) fn demos() -> Vec<Demo> {
             "Human handoff",
             "HumanHandoff",
             "aikit/handoff.rs",
-            "A support chat where an AI assistant hands over to a person: a transfer card shows the summary it passes on and the typical wait, then the person joins and takes over, with a thin timeline of each stage.",
+            "A help chat where the bot steps aside for a human: a handover card lists what the agent will be told and how long people usually wait, then a teammate arrives and carries on, with a slim trail of each step.",
             vec![
                 sel(
                     "scenario",
@@ -819,7 +819,7 @@ pub(crate) fn demos() -> Vec<Demo> {
             "PII redaction",
             "PiiRedaction",
             "aikit/pii.rs",
-            "A guardrail card that redacts personal data before a prompt reaches the model: Scan marks each name, email, phone number and card, Redact swaps them for placeholders like [EMAIL_1], and the reply comes back restored.",
+            "Keeps private details out of a prompt: Scan highlights names, addresses, numbers and cards, Redact replaces them with tokens such as [EMAIL_1] before anything is sent, and the answer is filled back in on return.",
             vec![
                 tog("autoplay", "Scan on load", true),
                 tog("editable", "Editable message", true),
@@ -863,7 +863,7 @@ pub(crate) fn demos() -> Vec<Demo> {
             "LLM cost calculator",
             "LlmCostCalculator",
             "aikit/cost.rs",
-            "A pricing calculator for LLM workloads: set tokens per request, requests per day and prompt caching, and eight models re-rank by monthly cost while bars glide to their share of the most expensive.",
+            "Works out what a workload costs per month: change tokens in and out, daily volume and caching, and eight models reorder by price while their bars slide to match the priciest.",
             vec![
                 sel("preset", "Preset", &["support", "rag", "agent"], "support"),
                 tog("batch", "Batch pricing switch", false),
@@ -903,7 +903,7 @@ pub(crate) fn demos() -> Vec<Demo> {
             "Provider keys",
             "ProviderKeys",
             "aikit/keys.rs",
-            "A bring-your-own-key settings card: each provider row shows its mark, the masked key, a status and when it was last used; reveal for five seconds, copy, rotate or remove with Undo, and add a key that is tested first.",
+            "Settings for your own API keys: a row per provider with its logo, a masked key, health and last use; peek at a key briefly, copy it, rotate it, or delete it with Undo, and new keys are verified before saving.",
             vec![
                 tog("usage", "Spend and rate limits", true),
                 tog("adding", "Add form open", false),
@@ -949,7 +949,7 @@ pub(crate) fn demos() -> Vec<Demo> {
             "Generation stats",
             "GenerationStats",
             "aikit/genstats.rs",
-            "A live stats strip for a streaming reply: time to first token, speed with a sparkline, output tokens and cost count up beside the model's mark, then settle and open into a latency breakdown.",
+            "Numbers for a reply while it streams: first-token delay, tokens per second (with a tiny trend line), tokens out and spend climb next to the model logo, then freeze and expand into where the time went.",
             vec![
                 sel(
                     "scenario",
@@ -1010,7 +1010,7 @@ pub(crate) fn demos() -> Vec<Demo> {
             "AI translate",
             "AiTranslate",
             "aikit/translate.rs",
-            "A message card where picking a language streams the translation in place, sentence by sentence over the dimmed original, with a detected-language chip, Show original and a status line credited to the model.",
+            "Translate a chat message where it sits: choose a language and each sentence is replaced in turn over a faded original, with the detected language, a switch back to the source text and a note naming the model.",
             vec![
                 sel("lang", "Language", &LANGS, "German"),
                 tog("side", "Side by side", false),
@@ -1053,7 +1053,7 @@ pub(crate) fn demos() -> Vec<Demo> {
             "TL;DR toggle",
             "TldrToggle",
             "aikit/tldr.rs",
-            "An article card with a Full, Summary and Key points switch and a length control: switching streams an AI summary in place, and each key point jumps back to the paragraph it came from.",
+            "Read a post at three depths (whole text, a summary, or bullet points) with a length setting; the shorter views stream in where the text was, and every bullet links back to its source paragraph.",
             vec![
                 sel("mode", "View", &["full", "summary", "points"], "summary"),
                 sel("length", "Length", &["short", "medium", "long"], "medium"),
@@ -1085,7 +1085,7 @@ pub(crate) fn demos() -> Vec<Demo> {
                 ("Enter / Space", "Jump to a key point's paragraph"),
             ],
             vec![
-                "Both controls are radio groups with a roving tab stop.",
+                "View and length each take one tab stop; arrows move inside them.",
                 "The body has aria-busy while summarizing; the jumped-to paragraph is highlighted and announced.",
                 "Errors use role alert with Try again.",
             ],
@@ -1100,7 +1100,7 @@ pub(crate) fn demos() -> Vec<Demo> {
             "Connector setup",
             "ConnectorSetup",
             "aikit/connector.rs",
-            "A Connect your tools card for an AI assistant: each app connects inline, authorizes and runs a first sync with a progress hairline, then lists the scopes it was granted and offers Disconnect with an inline confirm.",
+            "Hook up the apps an assistant may use, right in the card: each one signs in, does an initial import with a thin progress line, shows the access it received, and can be removed after a second confirming press.",
             vec![
                 tog("autoplay", "Connect Notion on load", true),
                 tog("deny", "HubSpot grant denied", false),
@@ -1141,7 +1141,7 @@ pub(crate) fn demos() -> Vec<Demo> {
             "Enrich column",
             "EnrichColumn",
             "aikit/enrich.rs",
-            "An AI enrichment column for a data table: one prompt runs down every row, each cell shimmers while it works, then settles into a value with its source or a failure you can retry.",
+            "A table column filled in by AI: a single instruction is applied row by row, each cell glows while it is looked up, then shows the answer and where it came from, or a miss you can run again.",
             vec![
                 sel(
                     "column",
@@ -1188,7 +1188,7 @@ pub(crate) fn demos() -> Vec<Demo> {
             "Ticket router",
             "TicketRouter",
             "aikit/router.rs",
-            "A support ticket router: messages from Gmail, Intercom, Slack and GitHub come in one at a time, an AI classifier labels each with intent, sentiment and confidence, and the ticket moves into a team lane; low confidence waits for review.",
+            "Sorts support requests into teams: mail, chat widget, Slack and GitHub issues arrive one by one, a model tags what they want, how they feel and how sure it is, and each lands in a lane; unsure ones wait for a person.",
             vec![
                 rng("threshold", "Review below %", 40.0, 95.0, 5.0, "70"),
                 tog("paused", "Start paused", false),

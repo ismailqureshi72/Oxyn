@@ -1,7 +1,9 @@
 //! AI special components (Oxyn Pro) in GPUI as one live view: Agent timeline, Model card, AI
 //! workflow, Image generation, Speech player, Meeting summary, Reply draft, Human handoff, PII
 //! redaction, LLM cost calculator, Provider keys, Generation stats, AI translate, TL;DR toggle,
-//! Connector setup, Enrich column and Ticket router. Every variant runs on the same
+//! Connector setup, Enrich column, Ticket router and the second batch (Ask your data, Agent doc
+//! cursor, Provider status, Training run, Tone tuner, the mascots and spark, Image reveal,
+//! Upgrade prompt, Referral card, Trial banner, Live visitors, Social proof toast). Every variant runs on the same
 //! `oxyn_core::aikit` models as the Dioxus components, so presses and keys behave the same in
 //! both renderers. The view keeps its own clock (a tick every 100 ms while it lives); a host can
 //! also drive it with [`AiKitView::advance`]. Text fields are shown as text (no editing here).
@@ -10,36 +12,68 @@ use std::time::Duration;
 
 use gpui::{
     App, ClickEvent, Context, Div, FocusHandle, Focusable, FontWeight, Hsla, IntoElement,
-    KeyDownEvent, ParentElement, Render, SharedString, Stateful, Styled, Window, div, prelude::*,
-    px, relative, rgb,
+    KeyDownEvent, ParentElement, PathBuilder, Render, SharedString, Stateful, Styled, Window,
+    canvas, div, point, prelude::*, px, relative, rgb,
 };
 use oxyn_core::aikit::{
+    ask::{Ask, CHARTS as ASK_CHARTS, Phase as AskPhase, SUGGESTIONS as ASK_SUGS},
     connector::{APPS, ConnSt, Connectors},
     cost::{Cost, MODELS as COST_MODELS},
+    doccursor::{
+        AGENT as DOC_AGENT, BlockKind as DocKind, DocCursor, MATE as DOC_MATE, META as DOC_META,
+        Phase as DocPhase, TITLE as DOC_TITLE,
+    },
     enrich::{CellSt, Enrich, ROWS},
     first_words,
     genstats::{GenStats, MODELS as GS_MODELS},
     handoff::{Handoff, Stage, Who},
     imagegen::{ASPECTS, ImageGen, MODELS as IG_MODELS, SCENES, VarSt},
     keys::{KeySt, Keys, PROVIDERS},
+    mascot::{Ink, Kind as MKind, MOODS, Mascot, Mood, Shape as MShape, draw as mascot_draw},
     meeting::{LINES, MEETING, Meeting, SendSt, Status as MsStatus},
     model_card::{BENCHMARKS, MODALITIES, ModelCard, VOLUMES, View},
     pii::{Phase as PiiPhase, Pii, TYPES, placeholder},
+    pixel::{CYCLE as PX_CYCLE, cells as px_cells, runs as px_runs},
+    proof::Proof,
+    provstatus::{
+        DAYS as PS_DAYS, PROVIDERS as PS_PROVIDERS, ProvStatus, day as ps_day,
+        latency as ps_latency, story as ps_story, uptime as ps_uptime,
+    },
+    referral::{LINK as RF_LINK, MILESTONE, Referral},
     reply::{LENGTHS, MESSAGE, Phase as RdPhase, Reply, TONES},
+    reveal::{GRID as RV_GRID, Phase as RvPhase, Reveal, latent as rv_latent, scene as rv_scene},
     router::{LANES, Router, TICKETS},
     secs,
+    spark::{
+        CYCLE as SPARK_CYCLE, draw as spark_draw, label as spark_label, pose_at as spark_pose_at,
+    },
     speech::{Phase as SpPhase, Speech, VOICES},
     thousands,
     timeline::{SpanAt, SpanKind, Timeline},
     tldr::{MODES, PARAS, SUMMARIES, Tldr},
     tokens_short,
+    tone::{
+        DETAIL as TONE_D, FORMALITY as TONE_F, ORIGINAL as TONE_ORIGINAL, PRESETS as TONE_PRESETS,
+        ToneTuner, VOICES as TONE_VOICES, compose as tone_compose, diff as tone_diff,
+    },
+    training::{
+        DATASET as TR_DATASET, ENDPOINT as TR_ENDPOINT, JOB as TR_JOB, MODEL as TR_MODEL,
+        Status as TrStatus, TOTAL as TR_TOTAL, Training, dur as tr_dur, lr as tr_lr, sci as tr_sci,
+        train_smooth as tr_smooth, val_loss as tr_val,
+    },
     translate::{LANGS, TEXT, Translate},
+    trial::{SNOOZES as TB_SNOOZES, Tone as TbTone, Trial},
+    upgrade::{FEATURES as UP_FEATURES, Phase as UpPhase, Upgrade},
     usd,
+    visitors::{CITIES as LV_CITIES, Visitors},
     workflow::{StepSt, Workflow},
 };
 use oxyn_tokens::{ColorRole, Theme};
 
 use crate::hsla;
+
+/// Paid referrals for the referral milestone.
+const RF_GOAL: usize = MILESTONE.0;
 
 /// Which AI special component the view draws.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -78,11 +112,43 @@ pub enum AiVariant {
     Enrich,
     /// Ticket router.
     Router,
+    /// Ask your data.
+    Ask,
+    /// Agent doc cursor.
+    DocCursor,
+    /// Provider status.
+    ProviderStatus,
+    /// Training run.
+    Training,
+    /// Tone tuner.
+    Tone,
+    /// AI mascot.
+    Mascot,
+    /// Image reveal.
+    Reveal,
+    /// AI spark.
+    Spark,
+    /// Pixel mascot.
+    Pixel,
+    /// Ghost mascot.
+    Ghost,
+    /// Cube mascot.
+    Cube,
+    /// Upgrade prompt.
+    Upgrade,
+    /// Referral card.
+    Referral,
+    /// Trial banner.
+    Trial,
+    /// Live visitors.
+    Visitors,
+    /// Social proof toast.
+    Proof,
 }
 
 impl AiVariant {
     /// Every variant, in gallery order.
-    pub const ALL: [AiVariant; 17] = [
+    pub const ALL: [AiVariant; 33] = [
         Self::Timeline,
         Self::ModelCard,
         Self::Workflow,
@@ -100,6 +166,22 @@ impl AiVariant {
         Self::Connector,
         Self::Enrich,
         Self::Router,
+        Self::Ask,
+        Self::DocCursor,
+        Self::ProviderStatus,
+        Self::Training,
+        Self::Tone,
+        Self::Mascot,
+        Self::Reveal,
+        Self::Spark,
+        Self::Pixel,
+        Self::Ghost,
+        Self::Cube,
+        Self::Upgrade,
+        Self::Referral,
+        Self::Trial,
+        Self::Visitors,
+        Self::Proof,
     ];
 
     /// The page slug.
@@ -148,6 +230,38 @@ pub struct AiKitState {
     pub enrich: Enrich,
     /// Ticket router.
     pub router: Router,
+    /// Ask your data.
+    pub ask: Ask,
+    /// Agent doc cursor.
+    pub doc: DocCursor,
+    /// Provider status.
+    pub prov: ProvStatus,
+    /// Training run.
+    pub train: Training,
+    /// Tone tuner.
+    pub tone: ToneTuner,
+    /// AI mascot.
+    pub mascot: Mascot,
+    /// Ghost mascot.
+    pub ghost: Mascot,
+    /// Cube mascot.
+    pub cube: Mascot,
+    /// Pixel mascot.
+    pub pixel: Mascot,
+    /// AI spark.
+    pub spark: Mascot,
+    /// Image reveal.
+    pub reveal: Reveal,
+    /// Upgrade prompt.
+    pub upgrade: Upgrade,
+    /// Referral card.
+    pub referral: Referral,
+    /// Trial banner.
+    pub trial: Trial,
+    /// Live visitors.
+    pub visitors: Visitors,
+    /// Social proof toast.
+    pub proof: Proof,
     /// The last thing said (the live region of the web components).
     pub said: String,
 }
@@ -178,6 +292,32 @@ impl Default for AiKitState {
             connectors,
             enrich: Enrich::new(0, 3, true, now),
             router: Router::new(false, 70, now),
+            ask: Ask::new(ASK_SUGS[0], true, false, false, now),
+            doc: DocCursor::new(true, true, 100, false, true, now),
+            prov: ProvStatus::new(12_000, 0, Some(0), now),
+            train: Training::new(false, 150, now),
+            tone: ToneTuner::new(TONE_ORIGINAL, true, true, false, now),
+            mascot: Mascot::new(None, &MOODS, now),
+            ghost: Mascot::new(None, &MOODS, now),
+            cube: Mascot::new(
+                None,
+                &[
+                    Mood::Idle,
+                    Mood::Thinking,
+                    Mood::Writing,
+                    Mood::Done,
+                    Mood::Error,
+                ],
+                now,
+            ),
+            pixel: Mascot::new(None, &PX_CYCLE, now),
+            spark: Mascot::new(None, &SPARK_CYCLE, now),
+            reveal: Reveal::new(4_600, 30, 0, true, false, 0, now),
+            upgrade: Upgrade::new(50, 50, "AI credits", true, false),
+            referral: Referral::new(true, false, now),
+            trial: Trial::new(9, 3, false, false),
+            visitors: Visitors::new("live", false, now),
+            proof: Proof::new(3_500, 3, 1, true, None, now),
             said: String::new(),
         }
     }
@@ -205,6 +345,25 @@ impl AiKitState {
             AiVariant::Connector => self.connectors.press(id, n),
             AiVariant::Enrich => self.enrich.press(id, n),
             AiVariant::Router => self.router.press(id, n),
+            AiVariant::Ask => self.ask.press(id, n),
+            AiVariant::DocCursor => {
+                self.doc = self.doc.rolled(n);
+                self.doc.press(id, n)
+            }
+            AiVariant::ProviderStatus => self.prov.press(id, n),
+            AiVariant::Training => self.train.press(id, n),
+            AiVariant::Tone => self.tone.press(id, n),
+            AiVariant::Mascot => self.mascot.press(id, n),
+            AiVariant::Ghost => self.ghost.press(id, n),
+            AiVariant::Cube => self.cube.press(id, n),
+            AiVariant::Pixel => self.pixel.press(id, n),
+            AiVariant::Spark => self.spark.press(id, n),
+            AiVariant::Reveal => self.reveal.press(id, n),
+            AiVariant::Upgrade => self.upgrade.press(id, n),
+            AiVariant::Referral => self.referral.press(id, n),
+            AiVariant::Trial => self.trial.press(id, n),
+            AiVariant::Visitors => self.visitors.press(id, n),
+            AiVariant::Proof => self.proof.press(id, n),
         };
         if let Some(s) = out {
             self.said = s;
@@ -266,6 +425,32 @@ impl AiKitState {
             AiVariant::Connector => self.connectors.key(k, n),
             AiVariant::Enrich => self.enrich.key(k, cmd, n),
             AiVariant::Router => None,
+            AiVariant::Ask => {
+                if self.ask.phase(n) == AskPhase::Done && k != "Enter" {
+                    self.ask.key("chart", k, n)
+                } else {
+                    self.ask.key("field", k, n)
+                }
+            }
+            AiVariant::DocCursor => None,
+            AiVariant::ProviderStatus => self.prov.key(0, k, n),
+            AiVariant::Training => self.train.key(k, shift, n),
+            AiVariant::Tone => self.tone.key("f", k, n),
+            AiVariant::Mascot
+            | AiVariant::Ghost
+            | AiVariant::Cube
+            | AiVariant::Pixel
+            | AiVariant::Spark
+            | AiVariant::Reveal => None,
+            AiVariant::Upgrade => self.upgrade.key(k, n),
+            AiVariant::Referral => self.referral.key(k, "", n).0,
+            AiVariant::Trial => self.trial.key(k, n),
+            AiVariant::Visitors => (k == "Space")
+                .then(|| self.visitors.press("lv-pause", n))
+                .flatten(),
+            AiVariant::Proof => (k == "Escape")
+                .then(|| self.proof.press("sp-dismiss-front", n))
+                .flatten(),
         };
         if let Some(s) = out {
             self.said = s;
@@ -516,6 +701,61 @@ fn mark(name: &str, size: f32, fg: Hsla) -> Div {
 
 fn line(t: &Theme) -> Div {
     div().h(px(1.)).w_full().bg(c(t, ColorRole::BorderSubtle))
+}
+
+/// The colours a drawn character uses, by ink.
+#[derive(Clone, Copy)]
+struct Palette {
+    body: Hsla,
+    light: Hsla,
+    shade: Hsla,
+    face: Hsla,
+    mark: Hsla,
+    ground: Hsla,
+    danger: Hsla,
+    blush: Hsla,
+}
+
+impl Palette {
+    fn of(&self, k: Ink) -> Hsla {
+        match k {
+            Ink::Body => self.body,
+            Ink::Light => self.light,
+            Ink::Shade => self.shade,
+            Ink::Face => self.face,
+            Ink::Mark => self.mark,
+            Ink::Ground => self.ground,
+            Ink::Danger => self.danger,
+            Ink::Blush => self.blush,
+        }
+    }
+}
+
+/// Paints shapes of the 100 × 100 box into a `size` square.
+fn paint_shapes(shapes: Vec<MShape>, pal: Palette, size: f32) -> impl IntoElement {
+    canvas(
+        |_, _, _| {},
+        move |bounds, _, window, _| {
+            let s = f32::from(bounds.size.width) / 100.0;
+            let (ox, oy) = (bounds.origin.x, bounds.origin.y);
+            for sh in &shapes {
+                if sh.pts.len() < 3 {
+                    continue;
+                }
+                let mut b = PathBuilder::fill();
+                for (i, (x, y)) in sh.pts.iter().enumerate() {
+                    let p = point(ox + px(x * s), oy + px(y * s));
+                    if i == 0 { b.move_to(p) } else { b.line_to(p) }
+                }
+                b.close();
+                if let Ok(path) = b.build() {
+                    let col = pal.of(sh.ink);
+                    window.paint_path(path, col.opacity(col.a * sh.alpha));
+                }
+            }
+        },
+    )
+    .size(px(size))
 }
 
 impl Render for AiKitView {
@@ -1747,6 +1987,1178 @@ impl Render for AiKitView {
                     ))
                     .child(lanes)
             }
+            AiVariant::Ask => {
+                let a = self.state.ask.clone();
+                let ph = a.phase(n);
+                let mut sugs = row().flex_wrap();
+                for (i, s) in ASK_SUGS.iter().enumerate() {
+                    sugs = sugs.child(self.chip(cx, &format!("ay-sug-{i}"), *s, false));
+                }
+                let mut body = div().flex().flex_col().gap(px(8.));
+                if let Some(d) = a.data() {
+                    let sql = first_words(d.sql, a.sql_words(n));
+                    body = body.child(
+                        row()
+                            .child(text(t, "Generated SQL", ColorRole::FgDefault, 12.5))
+                            .child(text(t, a.meta(n), muted, 12.))
+                            .child(self.chip(
+                                cx,
+                                "ay-sql",
+                                if a.sql_shown(n) { "Hide" } else { "Show" },
+                                a.sql_shown(n),
+                            )),
+                    );
+                    if a.sql_shown(n) {
+                        body = body.child(
+                            div()
+                                .p(px(8.))
+                                .rounded(px(8.))
+                                .bg(c(t, ColorRole::SurfaceRaised))
+                                .font_family("monospace")
+                                .child(text(t, sql, ColorRole::FgDefault, 11.5)),
+                        );
+                    }
+                    match ph {
+                        AskPhase::Running => {
+                            body = body.child(text(
+                                t,
+                                format!("Running query · {} rows scanned", thousands(a.scanned(n))),
+                                muted,
+                                12.5,
+                            ))
+                        }
+                        AskPhase::Done => {
+                            let mx = d.max().max(1.0);
+                            let built = a.built(n);
+                            let mut bars = row().items_end().h(px(140.)).gap(px(3.));
+                            for ci in 0..d.cats.len() {
+                                let mut col =
+                                    div().flex().flex_col().justify_end().flex_1().h_full();
+                                for (s, (_, h)) in d.series.iter().enumerate().rev() {
+                                    let v = d.values[ci][s];
+                                    let frac = if d.stacked {
+                                        v / mx
+                                    } else {
+                                        v / mx / d.series.len() as f64
+                                    };
+                                    col = col.child(
+                                        div()
+                                            .h(px((frac * 140.0 * built) as f32))
+                                            .bg(hue(t, if *h == "neutral" { "neutral" } else { h }))
+                                            .when(a.cursor == Some(ci), |x| x.opacity(0.7)),
+                                    );
+                                }
+                                bars = bars.child(col);
+                            }
+                            let mut legend = row().flex_wrap();
+                            for (i, (s, h)) in d.series.iter().enumerate() {
+                                legend = legend.child(pill(
+                                    t,
+                                    format!("{s} {}", d.legend_value(i).unwrap_or_default()),
+                                    h,
+                                ));
+                            }
+                            body = body
+                                .child(legend)
+                                .child(bars)
+                                .child(text(
+                                    t,
+                                    a.cursor
+                                        .map(|c| d.readout(c))
+                                        .unwrap_or_else(|| "Use ← → to read values".into()),
+                                    muted,
+                                    12.,
+                                ))
+                                .child(text(
+                                    t,
+                                    first_words(d.insight, a.insight_words(n)),
+                                    ColorRole::FgDefault,
+                                    13.,
+                                ));
+                        }
+                        AskPhase::Error => {
+                            body = body.child(
+                                row()
+                                    .child(text(
+                                        t,
+                                        "The query timed out",
+                                        ColorRole::StatusDangerFg,
+                                        12.5,
+                                    ))
+                                    .child(self.btn(cx, "ay-retry", "Try again", false)),
+                            )
+                        }
+                        AskPhase::Stopped => {
+                            body = body.child(
+                                row()
+                                    .child(text(t, "Stopped. Nothing else ran.", muted, 12.5))
+                                    .child(self.btn(cx, "ay-ask", "Ask again", false)),
+                            )
+                        }
+                        _ => {
+                            body =
+                                body.child(text(t, "Writing SQL for your question…", muted, 12.5))
+                        }
+                    }
+                } else {
+                    body = body
+                        .child(text(
+                            t,
+                            if ph == AskPhase::NoMatch {
+                                "No table matches that question. Try one of these:"
+                            } else {
+                                "Ask about signups, revenue or churn."
+                            },
+                            muted,
+                            12.5,
+                        ))
+                        .child(sugs);
+                }
+                let mut views = row();
+                for (i, v) in ASK_CHARTS.iter().enumerate() {
+                    views = views.child(self.chip(cx, &format!("ay-chart-{i}"), *v, i == a.view()));
+                }
+                div()
+                    .flex()
+                    .flex_col()
+                    .gap(px(10.))
+                    .child(
+                        row()
+                            .justify_between()
+                            .child(title(
+                                t,
+                                a.data().map(|d| d.title).unwrap_or("Ask your data"),
+                                "analytics · PostgreSQL",
+                            ))
+                            .child(views),
+                    )
+                    .child(
+                        row()
+                            .p(px(6.))
+                            .rounded(px(10.))
+                            .border_1()
+                            .border_color(c(t, ColorRole::BorderDefault))
+                            .child(mark("postgresql", 15., fg))
+                            .child(div().flex_1().child(text(
+                                t,
+                                a.q.clone(),
+                                ColorRole::FgDefault,
+                                13.,
+                            )))
+                            .child(self.btn(
+                                cx,
+                                "ay-ask",
+                                if a.busy(n) { "Stop" } else { "Ask" },
+                                !a.busy(n),
+                            )),
+                    )
+                    .child(body)
+            }
+            AiVariant::DocCursor => {
+                let d = self.state.doc.rolled(n);
+                let ph = d.phase(n);
+                let mut doc = div()
+                    .flex()
+                    .flex_col()
+                    .gap(px(6.))
+                    .p(px(14.))
+                    .rounded(px(10.))
+                    .bg(c(t, ColorRole::SurfaceRaised))
+                    .child(
+                        div()
+                            .text_size(px(17.))
+                            .font_weight(FontWeight::SEMIBOLD)
+                            .child(DOC_TITLE),
+                    )
+                    .child(text(t, DOC_META, muted, 12.));
+                let agent: Hsla = rgb(0xd97757).into();
+                for b in d.blocks(n) {
+                    let mut line = row().flex_wrap().gap(px(0.));
+                    if b.mate {
+                        line = line.child(pill(t, DOC_MATE, "teal").mr(px(4.)));
+                    }
+                    line = line.child(text(
+                        t,
+                        b.text.clone(),
+                        if b.kind == DocKind::Heading {
+                            ColorRole::FgDefault
+                        } else {
+                            ColorRole::FgMuted
+                        },
+                        if b.kind == DocKind::Heading {
+                            13.5
+                        } else {
+                            12.5
+                        },
+                    ));
+                    if !b.tint.is_empty() {
+                        line = line.child(
+                            div()
+                                .px(px(2.))
+                                .rounded(px(3.))
+                                .bg(agent.opacity(if b.mark == "select" { 0.3 } else { 0.16 }))
+                                .text_size(px(12.5))
+                                .child(b.tint.clone()),
+                        );
+                    }
+                    if b.agent {
+                        line = line.child(
+                            div()
+                                .ml(px(4.))
+                                .px(px(6.))
+                                .rounded(px(5.))
+                                .bg(agent)
+                                .text_color(rgb(0xffffff))
+                                .text_size(px(10.5))
+                                .child(DOC_AGENT.0),
+                        );
+                    }
+                    line = line.child(text(t, b.tail.clone(), ColorRole::FgMuted, 12.5));
+                    doc = doc.child(line);
+                }
+                let review =
+                    d.edits_done(n) > 0 && matches!(ph, DocPhase::Review | DocPhase::Stopped);
+                let action = match ph {
+                    DocPhase::Thinking | DocPhase::Editing(_) => {
+                        self.btn(cx, "dc-stop", "Stop", false)
+                    }
+                    DocPhase::Idle => self.btn(cx, "dc-ask", "Ask Claude", true),
+                    DocPhase::Error => self.btn(cx, "dc-retry", "Try again", false),
+                    _ => self.btn(cx, "dc-ask", "Run again", false),
+                };
+                div()
+                    .flex()
+                    .flex_col()
+                    .gap(px(10.))
+                    .child(
+                        row()
+                            .justify_between()
+                            .child(row().child(mark(DOC_AGENT.1, 16., fg)).child(text(
+                                t,
+                                d.status(n),
+                                muted,
+                                12.5,
+                            )))
+                            .child(action),
+                    )
+                    .child(doc)
+                    .when(review, |x| {
+                        x.child(
+                            row()
+                                .justify_between()
+                                .child(text(
+                                    t,
+                                    format!("{} changes by {}", d.edits_done(n), DOC_AGENT.0),
+                                    ColorRole::FgDefault,
+                                    12.5,
+                                ))
+                                .child(
+                                    row()
+                                        .child(self.btn(cx, "dc-undo", "Undo", false))
+                                        .child(self.btn(cx, "dc-accept", "Accept changes", true)),
+                                ),
+                        )
+                    })
+            }
+            AiVariant::ProviderStatus => {
+                let s = self.state.prov.clone();
+                let (chk, failed) = s.check(n);
+                let mut list = div().flex().flex_col().gap(px(4.));
+                for (p, (name, mk, detail, _)) in PS_PROVIDERS.iter().enumerate() {
+                    let (h, inc) = ps_story(p, chk);
+                    let mut ticks = row().gap(px(2.)).w(px(200.)).h(px(18.));
+                    for dd in 0..PS_DAYS {
+                        let hh = ps_day(p, dd, chk);
+                        let col = if hh.hue() == "neutral" {
+                            c(t, ColorRole::BorderDefault)
+                        } else {
+                            hue(t, hh.hue())
+                        };
+                        ticks =
+                            ticks.child(div().flex_1().h_full().rounded(px(2.)).bg(
+                                col.opacity(if s.cursor == Some((p, dd)) { 1.0 } else { 0.7 }),
+                            ));
+                    }
+                    let mut r = row()
+                        .justify_between()
+                        .py(px(6.))
+                        .child(
+                            row()
+                                .w(px(220.))
+                                .child(mark(mk, 16., fg))
+                                .child(title(t, name, *detail)),
+                        )
+                        .child(pill(t, h.word(), h.hue()))
+                        .child(text(t, format!("{} ms", ps_latency(p, chk)), muted, 12.))
+                        .child(ticks)
+                        .child(text(t, format!("{:.2}%", ps_uptime(p, chk)), muted, 12.));
+                    if inc.is_some() {
+                        r = r.child(self.chip(
+                            cx,
+                            &format!("ps-row-{p}"),
+                            if s.open == Some(p) { "Hide" } else { "Updates" },
+                            s.open == Some(p),
+                        ));
+                    }
+                    list = list.child(r);
+                    if let (Some(inc), true) = (inc, s.open == Some(p)) {
+                        let mut ups = div().flex().flex_col().gap(px(4.)).pl(px(12.)).child(text(
+                            t,
+                            inc.title,
+                            ColorRole::FgDefault,
+                            12.5,
+                        ));
+                        for (st, tm, tx) in inc.updates {
+                            ups = ups.child(text(t, format!("{st} · {tm} · {tx}"), muted, 12.));
+                        }
+                        list = list.child(ups);
+                    }
+                }
+                let head = if s.checking(n) {
+                    "Checking…".to_string()
+                } else if failed {
+                    "Check failed · last results".to_string()
+                } else {
+                    format!("Next check in {}s", s.countdown(n))
+                };
+                div()
+                    .flex()
+                    .flex_col()
+                    .gap(px(10.))
+                    .child(
+                        row()
+                            .justify_between()
+                            .child(title(t, "AI providers", s.summary(n)))
+                            .child(row().child(text(t, head, muted, 12.)).child(self.btn(
+                                cx,
+                                "ps-refresh",
+                                "Check now",
+                                false,
+                            ))),
+                    )
+                    .child(list)
+                    .child(text(
+                        t,
+                        s.cursor
+                            .map(|(p, d)| s.day_readout(p, d, n))
+                            .unwrap_or_else(|| "← → read OpenAI's days".into()),
+                        muted,
+                        12.,
+                    ))
+            }
+            AiVariant::Training => {
+                let tr = self.state.train.clone();
+                let st = tr.status(n);
+                let step = tr.step(n);
+                let ss = tr.samples(n);
+                let pts: Vec<(f32, f32)> = ss
+                    .iter()
+                    .map(|s| {
+                        (
+                            *s as f32 / TR_TOTAL as f32,
+                            ((tr_smooth(*s) - 0.2) / 2.7) as f32,
+                        )
+                    })
+                    .collect();
+                let vals: Vec<(f32, f32)> = tr
+                    .vals(n)
+                    .iter()
+                    .map(|s| {
+                        (
+                            *s as f32 / TR_TOTAL as f32,
+                            ((tr_val(*s) - 0.2) / 2.7) as f32,
+                        )
+                    })
+                    .collect();
+                let ink = fg;
+                let violet: Hsla = rgb(0x8b7cf6).into();
+                let chart = canvas(
+                    |_, _, _| {},
+                    move |bounds, _, window, _| {
+                        let (w, h) = (f32::from(bounds.size.width), f32::from(bounds.size.height));
+                        for (line, col) in [(&pts, ink), (&vals, violet)] {
+                            if line.len() < 2 {
+                                continue;
+                            }
+                            let mut b = PathBuilder::stroke(px(2.));
+                            for (i, (x, y)) in line.iter().enumerate() {
+                                let p = point(
+                                    bounds.origin.x + px(x * w),
+                                    bounds.origin.y + px(h - y.clamp(0.0, 1.0) * h),
+                                );
+                                if i == 0 { b.move_to(p) } else { b.line_to(p) }
+                            }
+                            if let Ok(path) = b.build() {
+                                window.paint_path(path, col);
+                            }
+                        }
+                    },
+                )
+                .w_full()
+                .h(px(140.));
+                let mut acts = row();
+                match st {
+                    TrStatus::Running => {
+                        acts = acts
+                            .child(self.btn(cx, "tr-pause", "Pause", false))
+                            .child(self.btn(
+                                cx,
+                                "tr-cancel",
+                                if tr.confirming(n) {
+                                    "Confirm cancel"
+                                } else {
+                                    "Cancel"
+                                },
+                                false,
+                            ))
+                    }
+                    TrStatus::Paused => {
+                        acts = acts
+                            .child(self.btn(cx, "tr-resume", "Resume", false))
+                            .child(self.btn(
+                                cx,
+                                "tr-cancel",
+                                if tr.confirming(n) {
+                                    "Confirm cancel"
+                                } else {
+                                    "Cancel"
+                                },
+                                false,
+                            ))
+                    }
+                    TrStatus::Failed => {
+                        acts = acts.child(self.btn(cx, "tr-retry", "Retry from checkpoint", true))
+                    }
+                    TrStatus::Completed => {
+                        acts = acts.child(self.btn(
+                            cx,
+                            "tr-deploy",
+                            match tr.deploy_state(n) {
+                                "loading" => "Deploying…",
+                                "done" => "Deployed",
+                                _ => "Deploy",
+                            },
+                            true,
+                        ));
+                    }
+                    TrStatus::Cancelled => {
+                        acts = acts.child(self.btn(cx, "tr-restart", "Run again", false))
+                    }
+                    _ => {
+                        acts = acts.child(self.btn(
+                            cx,
+                            "tr-cancel",
+                            if tr.confirming(n) {
+                                "Confirm cancel"
+                            } else {
+                                "Cancel"
+                            },
+                            false,
+                        ))
+                    }
+                }
+                let mut evs = div().flex().flex_col().gap(px(2.));
+                for (_, s, tx) in tr.events(n).into_iter().rev().take(3) {
+                    evs = evs.child(text(t, format!("{tx} · step {s}"), muted, 12.));
+                }
+                div()
+                    .flex()
+                    .flex_col()
+                    .gap(px(10.))
+                    .child(
+                        row()
+                            .justify_between()
+                            .child(row().child(mark(TR_MODEL.1, 22., fg)).child(title(
+                                t,
+                                TR_JOB,
+                                format!("{} · {}", TR_MODEL.0, TR_MODEL.2),
+                            )))
+                            .child(pill(t, st.word(), st.hue())),
+                    )
+                    .child(
+                        div()
+                            .p(px(8.))
+                            .rounded(px(8.))
+                            .border_1()
+                            .border_color(c(t, ColorRole::BorderSubtle))
+                            .child(text(t, tr.readout(n), muted, 12.))
+                            .child(chart)
+                            .child(bar(t, step as f64 / TR_TOTAL as f64, fg)),
+                    )
+                    .child(
+                        row()
+                            .gap(px(16.))
+                            .child(text(t, format!("LR {}", tr_sci(tr_lr(step))), muted, 12.5))
+                            .child(text(
+                                t,
+                                format!("Elapsed {}", tr_dur(tr.elapsed(n))),
+                                muted,
+                                12.5,
+                            ))
+                            .child(text(t, format!("ETA {}", tr_dur(tr.eta(n))), muted, 12.5))
+                            .child(text(t, format!("Epoch {} of 3", tr.epoch(n)), muted, 12.5)),
+                    )
+                    .child(evs)
+                    .child(
+                        row()
+                            .justify_between()
+                            .child(text(
+                                t,
+                                if tr.deploy_state(n) == "done" {
+                                    TR_ENDPOINT.to_string()
+                                } else {
+                                    format!(
+                                        "{} · {} examples",
+                                        TR_DATASET.0,
+                                        thousands(u64::from(TR_DATASET.2))
+                                    )
+                                },
+                                muted,
+                                12.,
+                            ))
+                            .child(acts),
+                    )
+            }
+            AiVariant::Tone => {
+                let tt = self.state.tone.clone();
+                let cur = tt.controls(n);
+                let shown = tt.text_tone(n);
+                let mut voices = row();
+                for (i, (v, _, _)) in TONE_PRESETS.iter().enumerate() {
+                    voices = voices.child(self.chip(
+                        cx,
+                        &format!("tt-voice-{i}"),
+                        TONE_VOICES[*v],
+                        cur.voice == *v,
+                    ));
+                }
+                let mut sliders = row().gap(px(18.));
+                for (part, lab, levels, v) in [
+                    ("f", "Formality", TONE_F, cur.formality),
+                    ("d", "Detail", TONE_D, cur.detail),
+                ] {
+                    let mut steps = row();
+                    for (i, l) in levels.iter().enumerate() {
+                        steps = steps.child(self.chip(cx, &format!("tt-{part}-{i}"), *l, i == v));
+                    }
+                    sliders = sliders.child(
+                        div()
+                            .flex()
+                            .flex_col()
+                            .gap(px(4.))
+                            .child(text(t, lab, ColorRole::FgDefault, 12.5))
+                            .child(steps),
+                    );
+                }
+                let mut msg = div()
+                    .flex()
+                    .flex_col()
+                    .gap(px(8.))
+                    .p(px(12.))
+                    .rounded(px(10.))
+                    .bg(c(t, ColorRole::SurfaceRaised));
+                for p in tone_compose(shown) {
+                    let mut line = row().flex_wrap().gap(px(3.));
+                    for s in p {
+                        for (w, new) in tone_diff(s) {
+                            line = line.child(
+                                div()
+                                    .text_size(px(13.))
+                                    .when(new && tt.changes, |d| {
+                                        d.bg(Hsla::from(rgb(0x8b7cf6)).opacity(0.18))
+                                            .rounded(px(3.))
+                                    })
+                                    .child(w),
+                            );
+                        }
+                    }
+                    msg = msg.child(line);
+                }
+                div()
+                    .flex()
+                    .flex_col()
+                    .gap(px(10.))
+                    .child(title(t, "To Jonah Reyes", "Re: Charged twice in October"))
+                    .child(voices)
+                    .child(sliders)
+                    .child(msg)
+                    .child(
+                        row()
+                            .justify_between()
+                            .child(text(t, tt.status(n), muted, 12.))
+                            .child(
+                                row()
+                                    .child(self.chip(cx, "tt-changes", "Changes", tt.changes))
+                                    .child(self.btn(cx, "tt-copy", "Copy", false)),
+                            ),
+                    )
+            }
+            AiVariant::Mascot
+            | AiVariant::Ghost
+            | AiVariant::Cube
+            | AiVariant::Pixel
+            | AiVariant::Spark => {
+                let v = self.variant;
+                let m = match v {
+                    AiVariant::Mascot => self.state.mascot.clone(),
+                    AiVariant::Ghost => self.state.ghost.clone(),
+                    AiVariant::Cube => self.state.cube.clone(),
+                    AiVariant::Pixel => self.state.pixel.clone(),
+                    _ => self.state.spark.clone(),
+                };
+                let body_col = match v {
+                    AiVariant::Cube => rgb(0x8b7cf6).into(),
+                    AiVariant::Ghost => c(t, ColorRole::SurfaceSelected),
+                    _ => fg,
+                };
+                let face_col = match v {
+                    AiVariant::Cube => rgb(0x1b1530).into(),
+                    AiVariant::Ghost => fg,
+                    _ => c(t, ColorRole::BgBase),
+                };
+                let pal = Palette {
+                    body: body_col,
+                    light: body_col.blend(gpui::white().opacity(0.4)),
+                    shade: body_col.blend(gpui::black().opacity(0.35)),
+                    face: face_col,
+                    mark: rgb(0x8b7cf6).into(),
+                    ground: fg.opacity(0.14),
+                    danger: c(t, ColorRole::StatusDangerFg),
+                    blush: rgb(0xf08a9b).into(),
+                };
+                let shapes: Vec<MShape> = match v {
+                    AiVariant::Mascot => mascot_draw(MKind::Orb, &m.pose(n, 0), n, false, true),
+                    AiVariant::Ghost => mascot_draw(MKind::Ghost, &m.pose(n, 0), n, false, true),
+                    AiVariant::Cube => mascot_draw(MKind::Cube, &m.pose(n, 0), n, false, true),
+                    AiVariant::Pixel => px_runs(&px_cells(&m, n))
+                        .into_iter()
+                        .map(|(x, y, l, k)| {
+                            let s = 100.0 / 24.0;
+                            let (x0, y0, x1, y1) = (
+                                x as f32 * s,
+                                y as f32 * s,
+                                (x + l) as f32 * s,
+                                (y + 1) as f32 * s,
+                            );
+                            MShape {
+                                ink: k,
+                                alpha: 1.0,
+                                pts: vec![(x0, y0), (x1, y0), (x1, y1), (x0, y1)],
+                            }
+                        })
+                        .collect(),
+                    _ => {
+                        let p = spark_pose_at(&m, n, 1.0);
+                        spark_draw(&p, m.mood(n) == Mood::Error)
+                    }
+                };
+                let cycle: Vec<Mood> = m.cycle.clone();
+                let mut chips = row().flex_wrap().justify_center().child(self.chip(
+                    cx,
+                    "ms-auto",
+                    "Loop",
+                    m.fixed.is_none(),
+                ));
+                for md in cycle {
+                    chips = chips.child(self.chip(
+                        cx,
+                        &format!("ms-mood-{}", md.index()),
+                        md.name(),
+                        m.fixed == Some(md),
+                    ));
+                }
+                let label = if v == AiVariant::Spark {
+                    spark_label(m.mood(n)).to_string()
+                } else {
+                    m.label("Atlas", n)
+                };
+                div()
+                    .flex()
+                    .flex_col()
+                    .items_center()
+                    .gap(px(12.))
+                    .child(paint_shapes(
+                        shapes,
+                        pal,
+                        if v == AiVariant::Spark { 72. } else { 140. },
+                    ))
+                    .child(text(t, label, muted, 12.5))
+                    .child(chips)
+                    .child(self.btn(
+                        cx,
+                        "ms-pause",
+                        if m.paused.is_some() {
+                            "Resume"
+                        } else {
+                            "Pause"
+                        },
+                        false,
+                    ))
+            }
+            AiVariant::Reveal => {
+                let r = self.state.reveal.clone();
+                let (ph, _) = r.phase(n);
+                let sc = r.scene(n);
+                let lat = rv_latent(sc, r.seed, r.step(n), r.noise(n));
+                let mos = r.mosaic(n);
+                let dec = r.decoded(n);
+                let scene = rv_scene(sc);
+                let done = ph == RvPhase::Done || ph == RvPhase::Decoding;
+                let canvas_el = canvas(
+                    |_, _, _| {},
+                    move |bounds, _, window, _| {
+                        let w = f32::from(bounds.size.width) / 100.0;
+                        let (ox, oy) = (bounds.origin.x, bounds.origin.y);
+                        for (col, poly) in &scene {
+                            let mut b = PathBuilder::fill();
+                            for (i, (x, y)) in poly.iter().enumerate() {
+                                let p = point(ox + px(x * w), oy + px(y * w));
+                                if i == 0 { b.move_to(p) } else { b.line_to(p) }
+                            }
+                            b.close();
+                            if let Ok(path) = b.build() {
+                                window.paint_path(
+                                    path,
+                                    Hsla::from(rgb(*col)).opacity(if done { 1.0 } else { 0.5 }),
+                                );
+                            }
+                        }
+                        if mos > 0.0 {
+                            let cell = 100.0 / RV_GRID as f32;
+                            for (k, col) in lat.iter().enumerate() {
+                                let (x, y) =
+                                    ((k % RV_GRID) as f32 * cell, (k / RV_GRID) as f32 * cell);
+                                if y / 100.0 < dec {
+                                    continue;
+                                }
+                                let mut b = PathBuilder::fill();
+                                b.move_to(point(ox + px(x * w), oy + px(y * w)));
+                                b.line_to(point(ox + px((x + cell) * w), oy + px(y * w)));
+                                b.line_to(point(ox + px((x + cell) * w), oy + px((y + cell) * w)));
+                                b.line_to(point(ox + px(x * w), oy + px((y + cell) * w)));
+                                b.close();
+                                if let Ok(path) = b.build() {
+                                    window.paint_path(path, Hsla::from(rgb(*col)).opacity(mos));
+                                }
+                            }
+                        }
+                    },
+                )
+                .size(px(300.));
+                let status = match ph {
+                    RvPhase::Generating => format!("Generating · {} / {}", r.step(n), r.steps),
+                    RvPhase::Done => format!("Generated in {}", r.took()),
+                    _ => ph.word().to_string(),
+                };
+                div()
+                    .flex()
+                    .flex_col()
+                    .items_center()
+                    .gap(px(10.))
+                    .child(
+                        div()
+                            .rounded(px(14.))
+                            .overflow_hidden()
+                            .bg(c(t, ColorRole::SurfaceSelected))
+                            .child(canvas_el),
+                    )
+                    .child(text(t, status, muted, 12.5))
+                    .child(if ph == RvPhase::Error {
+                        self.btn(cx, "ir-retry", "Retry", true)
+                    } else {
+                        self.btn(cx, "ir-again", "Generate again", false)
+                    })
+            }
+            AiVariant::Upgrade => {
+                let u = self.state.upgrade.clone();
+                let ph = u.phase(n);
+                let (val, max, words) = u.meter(n);
+                let mut feats = div().flex().flex_col().gap(px(6.));
+                for (f, mks) in UP_FEATURES.iter() {
+                    let mut r = row().child(text(t, format!("✓ {f}"), ColorRole::FgDefault, 12.5));
+                    for m in mks.iter() {
+                        r = r.child(mark(m, 14., fg));
+                    }
+                    feats = feats.child(r);
+                }
+                let acts = match ph {
+                    UpPhase::Offer | UpPhase::Upgrading => row()
+                        .child(self.btn(cx, "up-later", "Maybe later", false))
+                        .child(self.btn(
+                            cx,
+                            "up-upgrade",
+                            if ph == UpPhase::Upgrading {
+                                "Upgrading…".to_string()
+                            } else {
+                                format!("Upgrade to Pro · ${}", u.due())
+                            },
+                            true,
+                        )),
+                    UpPhase::Error => row()
+                        .child(self.btn(cx, "up-later", "Maybe later", false))
+                        .child(self.btn(cx, "up-retry", "Try again", true)),
+                    UpPhase::Upgraded => row().child(self.btn(cx, "up-continue", "Continue", true)),
+                    UpPhase::Later => row().child(self.btn(cx, "up-again", "See Pro again", false)),
+                };
+                div()
+                    .flex()
+                    .flex_col()
+                    .gap(px(10.))
+                    .w(px(420.))
+                    .child(title(t, &u.title(n), u.description(n)))
+                    .child(
+                        row()
+                            .justify_between()
+                            .child(text(t, words, ColorRole::FgDefault, 12.5))
+                            .child(text(
+                                t,
+                                format!("{} / {}", thousands(val), thousands(max)),
+                                muted,
+                                12.,
+                            )),
+                    )
+                    .child(bar(
+                        t,
+                        val as f64 / max.max(1) as f64,
+                        if ph == UpPhase::Upgraded {
+                            hue(t, "green")
+                        } else {
+                            hue(t, "red")
+                        },
+                    ))
+                    .when(
+                        matches!(ph, UpPhase::Offer | UpPhase::Upgrading | UpPhase::Error),
+                        |d| {
+                            d.child(
+                                row()
+                                    .justify_between()
+                                    .child(text(
+                                        t,
+                                        format!("${} / month · {}", u.price(), u.billing()),
+                                        ColorRole::FgDefault,
+                                        14.,
+                                    ))
+                                    .child(
+                                        row()
+                                            .child(self.chip(cx, "up-int-0", "Monthly", !u.yearly))
+                                            .child(self.chip(cx, "up-int-1", "Yearly", u.yearly)),
+                                    ),
+                            )
+                            .child(feats)
+                        },
+                    )
+                    .child(acts)
+            }
+            AiVariant::Referral => {
+                let r = self.state.referral.clone();
+                let (inv, su, earned) = r.funnel(n);
+                let mut chips = row().flex_wrap();
+                for (i, ch) in r.chips.iter().enumerate() {
+                    chips = chips.child(self.chip(
+                        cx,
+                        &format!("rf-chip-{i}"),
+                        format!("{ch} ×"),
+                        true,
+                    ));
+                }
+                let mut list = div().flex().flex_col().gap(px(4.));
+                for rw in r.rows(n).into_iter().take(5) {
+                    list = list.child(
+                        row()
+                            .justify_between()
+                            .child(text(
+                                t,
+                                if rw.name.is_empty() {
+                                    rw.email.clone()
+                                } else {
+                                    rw.name.clone()
+                                },
+                                ColorRole::FgDefault,
+                                12.5,
+                            ))
+                            .child(text(
+                                t,
+                                format!("{} · {}", rw.stage.word(), rw.when),
+                                muted,
+                                12.,
+                            )),
+                    );
+                }
+                div()
+                    .flex()
+                    .flex_col()
+                    .gap(px(10.))
+                    .child(title(
+                        t,
+                        "Give $20, get $20",
+                        "Friends get $20 off; you get $20 in credit when they subscribe.",
+                    ))
+                    .child(
+                        row()
+                            .child(text(
+                                t,
+                                format!("{}{}", RF_LINK.0, RF_LINK.1),
+                                ColorRole::FgDefault,
+                                12.5,
+                            ))
+                            .child(self.btn(cx, "rf-copy", "Copy", false))
+                            .child(self.btn(cx, "rf-share-x", "X", false))
+                            .child(self.btn(cx, "rf-share-slack", "Slack", false))
+                            .child(self.btn(cx, "rf-share-email", "Email", false)),
+                    )
+                    .child(
+                        row()
+                            .child(chips)
+                            .child(self.btn(cx, "rf-sample", "Add two addresses", false))
+                            .child(self.btn(cx, "rf-send", "Send", true)),
+                    )
+                    .child(text(
+                        t,
+                        r.hint.0.clone(),
+                        if r.hint.1 {
+                            ColorRole::StatusDangerFg
+                        } else {
+                            muted
+                        },
+                        12.,
+                    ))
+                    .child(
+                        row()
+                            .gap(px(18.))
+                            .child(text(t, format!("Invited {inv}"), ColorRole::FgDefault, 13.))
+                            .child(text(
+                                t,
+                                format!("Signed up {su}"),
+                                ColorRole::FgDefault,
+                                13.,
+                            ))
+                            .child(text(
+                                t,
+                                format!("Earned ${earned}"),
+                                ColorRole::FgDefault,
+                                13.,
+                            )),
+                    )
+                    .child(bar(
+                        t,
+                        r.paid(n) as f64 / RF_GOAL as f64,
+                        if r.paid(n) >= RF_GOAL {
+                            hue(t, "green")
+                        } else {
+                            fg
+                        },
+                    ))
+                    .child(text(t, r.milestone(n), muted, 12.))
+                    .child(list)
+            }
+            AiVariant::Trial => {
+                let tb = self.state.trial.clone();
+                let (tt, sub) = tb.copy(n);
+                let tone = tb.tone(n);
+                let h = match tone {
+                    TbTone::Warning => "amber",
+                    TbTone::Expired => "red",
+                    TbTone::Upgraded => "green",
+                    TbTone::Active => "neutral",
+                };
+                let mut acts = row()
+                    .child(self.btn(cx, "tb-compare", "Compare plans", false))
+                    .child(self.btn(
+                        cx,
+                        "tb-pay",
+                        if tb.busy(n) {
+                            "Opening checkout…"
+                        } else {
+                            "Add payment method"
+                        },
+                        true,
+                    ));
+                if tb.menu.is_some() {
+                    for (i, s) in TB_SNOOZES.iter().enumerate() {
+                        acts = acts.child(self.chip(
+                            cx,
+                            &format!("tb-snooze-{i}"),
+                            *s,
+                            tb.menu == Some(i),
+                        ));
+                    }
+                } else {
+                    acts = acts.child(self.btn(cx, "tb-snooze", "Snooze", false));
+                }
+                acts = acts.child(self.btn(cx, "tb-dismiss", "Dismiss", false));
+                let card = div()
+                    .flex()
+                    .flex_col()
+                    .gap(px(8.))
+                    .child(
+                        row()
+                            .child(pill(t, tb.pill(n), h))
+                            .child(title(t, &tt, sub)),
+                    )
+                    .child(bar(t, tb.ring(n), hue(t, h)))
+                    .child(acts)
+                    .when_some(tb.note_at(n), |d, nt| d.child(text(t, nt, muted, 12.)));
+                if tb.folded && !tb.popover {
+                    div()
+                        .flex()
+                        .flex_col()
+                        .gap(px(8.))
+                        .child(
+                            row()
+                                .justify_between()
+                                .child(text(t, "Header", muted, 12.))
+                                .child(self.chip(cx, "tb-pill", tb.pill(n), false)),
+                        )
+                        .when_some(tb.note_at(n), |d, nt| d.child(text(t, nt, muted, 12.)))
+                } else {
+                    card
+                }
+            }
+            AiVariant::Visitors => {
+                let v = self.state.visitors.clone();
+                let mut pages = div().flex().flex_col().gap(px(4.));
+                let ps = v.pages(n, 4);
+                let top = ps.first().map(|p| p.1).unwrap_or(1).max(1);
+                for (p, cnt) in ps {
+                    pages = pages.child(
+                        div()
+                            .flex()
+                            .flex_col()
+                            .gap(px(2.))
+                            .child(
+                                row()
+                                    .justify_between()
+                                    .child(text(t, p, ColorRole::FgDefault, 12.5))
+                                    .child(text(t, cnt.to_string(), muted, 12.)),
+                            )
+                            .child(bar(t, cnt as f64 / top as f64, c(t, ColorRole::FgMuted))),
+                    );
+                }
+                let mut evs = div().flex().flex_col().gap(px(4.));
+                for e in v.events(n, 4) {
+                    evs = evs.child(
+                        row()
+                            .justify_between()
+                            .child(text(
+                                t,
+                                format!(
+                                    "{} · {}, {}",
+                                    e.label, LV_CITIES[e.city].0, LV_CITIES[e.city].1
+                                ),
+                                ColorRole::FgDefault,
+                                12.5,
+                            ))
+                            .child(text(t, v.ago(e.tick, n), muted, 12.)),
+                    );
+                }
+                div()
+                    .flex()
+                    .flex_col()
+                    .gap(px(10.))
+                    .child(
+                        row()
+                            .justify_between()
+                            .child(
+                                row()
+                                    .child(pill(
+                                        t,
+                                        v.status(),
+                                        if v.paused.is_some() {
+                                            "neutral"
+                                        } else {
+                                            "green"
+                                        },
+                                    ))
+                                    .child(
+                                        div()
+                                            .text_size(px(26.))
+                                            .font_weight(FontWeight::SEMIBOLD)
+                                            .child(v.count(n).to_string()),
+                                    )
+                                    .child(text(t, "people on the site now", muted, 12.5)),
+                            )
+                            .child(self.btn(
+                                cx,
+                                "lv-pause",
+                                if v.paused.is_some() {
+                                    "Resume"
+                                } else {
+                                    "Pause"
+                                },
+                                false,
+                            )),
+                    )
+                    .child(
+                        row()
+                            .items_start()
+                            .gap(px(18.))
+                            .child(
+                                div()
+                                    .flex_1()
+                                    .child(text(t, "Top pages", ColorRole::FgDefault, 13.))
+                                    .child(pages),
+                            )
+                            .child(
+                                div()
+                                    .flex_1()
+                                    .child(text(t, "Conversions", ColorRole::FgDefault, 13.))
+                                    .child(evs),
+                            ),
+                    )
+            }
+            AiVariant::Proof => {
+                let p = self.state.proof.clone();
+                let mut stack = div().flex().flex_col().gap(px(6.)).w(px(360.));
+                for seq in p.visible(n) {
+                    let e = Proof::event(seq);
+                    stack = stack.child(
+                        row()
+                            .justify_between()
+                            .p(px(10.))
+                            .rounded(px(12.))
+                            .border_1()
+                            .border_color(c(t, ColorRole::BorderSubtle))
+                            .child(
+                                div()
+                                    .flex()
+                                    .flex_col()
+                                    .min_w(px(0.))
+                                    .child(text(
+                                        t,
+                                        format!("{} {}", e.0, e.1),
+                                        ColorRole::FgDefault,
+                                        12.5,
+                                    ))
+                                    .child(text(
+                                        t,
+                                        format!("{} · {} {}", e.2, p.when(seq, n), e.5),
+                                        muted,
+                                        11.5,
+                                    )),
+                            )
+                            .child(self.btn(cx, &format!("sp-dismiss-{seq}"), "×", false)),
+                    );
+                }
+                div()
+                    .flex()
+                    .flex_col()
+                    .gap(px(10.))
+                    .child(row().child(text(t, p.week(), muted, 12.5)).child(self.btn(
+                        cx,
+                        if p.paused.is_some() {
+                            "sp-resume"
+                        } else {
+                            "sp-pause"
+                        },
+                        if p.paused.is_some() {
+                            "Resume"
+                        } else {
+                            "Pause"
+                        },
+                        false,
+                    )))
+                    .child(stack)
+            }
         };
         let said = self.state.said.clone();
         div()
@@ -1785,6 +3197,33 @@ mod tests {
     use super::*;
 
     #[test]
+    fn c1e_presses_and_keys_route_to_each_model() {
+        let mut s = AiKitState::default();
+        s.press(AiVariant::Ask, "ay-sug-1");
+        assert_eq!(s.ask.data().map(|d| d.fmt), Some("kusd"));
+        s.press(AiVariant::Training, "tr-cancel");
+        assert!(s.train.confirming(s.now));
+        s.press(AiVariant::Mascot, "ms-mood-2");
+        assert_eq!(s.mascot.mood(s.now), Mood::Thinking);
+        s.press(AiVariant::Upgrade, "up-later");
+        assert_eq!(s.upgrade.phase(s.now), UpPhase::Later);
+        s.press(AiVariant::Referral, "rf-sample");
+        assert_eq!(s.referral.chips.len(), 2);
+        s.key(AiVariant::Referral, "backspace", false, false);
+        assert_eq!(s.referral.chips.len(), 1);
+        s.press(AiVariant::Trial, "tb-dismiss");
+        assert!(s.trial.folded);
+        s.press(AiVariant::Visitors, "lv-pause");
+        assert!(s.visitors.paused.is_some());
+        s.key(AiVariant::Tone, "end", false, false);
+        assert_eq!(s.tone.controls(s.now).formality, 2);
+        s.key(AiVariant::ProviderStatus, "home", false, false);
+        assert_eq!(s.prov.cursor, Some((0, 0)));
+        assert_eq!(AiVariant::Proof.slug(), "social-proof-toast");
+        assert_eq!(AiVariant::Ask.slug(), "ask-your-data");
+    }
+
+    #[test]
     fn c1d_presses_and_keys_route_to_each_model() {
         let mut s = AiKitState::default();
         s.press(AiVariant::Timeline, "tl-span-4");
@@ -1804,7 +3243,7 @@ mod tests {
         assert!(s.reply.inserted);
         s.press(AiVariant::Router, "rt-pause");
         assert!(s.router.paused.is_some());
-        assert_eq!(AiVariant::ALL.len(), 17);
+        assert_eq!(AiVariant::ALL.len(), 33);
         assert_eq!(AiVariant::Router.slug(), "ticket-router");
     }
 }

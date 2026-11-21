@@ -30,7 +30,7 @@ Reduced motion: streamed text and moves appear at their end state; progress stil
 |---|---|
 | `details` | Details of Claude Sonnet 4.5 at 100M tokens a month. |
 | `compare` | GPT-5 against a rival with the better values checked. |
-| `picker-pane` | The detail pane of a model picker with Use model (Oxyn extra). |
+| `picker-pane` | Shown as the side panel of a model chooser, with a Use model button (Oxyn extra). |
 | `error` | Couldn't load, with Retry. |
 
 ## 6. Responsive and edge cases

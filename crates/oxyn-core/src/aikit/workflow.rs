@@ -507,7 +507,7 @@ impl Workflow {
         ((t.saturating_sub(s0)) as f64 / TRAVEL_MS as f64).clamp(0.0, 1.0)
     }
 
-    /// True while a run is in progress (not finished, failed, stopped or held).
+    /// True mid-run (not yet finished, failed, stopped or held).
     pub fn running(&self, now: u64) -> bool {
         match self.rt(now) {
             Some(t) => self.frozen.is_none() && t < self.total() && !self.held(now),

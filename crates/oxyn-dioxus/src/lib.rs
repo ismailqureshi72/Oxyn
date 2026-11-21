@@ -19,9 +19,12 @@ mod status_indicator;
 mod status_text;
 
 pub use aikit::{
-    AgentTimeline, AiTranslate, AiWorkflow, ConnectorSetup, EnrichColumn, GenerationStats,
-    HumanHandoff, ImageGeneration, LlmCostCalculator, MeetingSummary, ModelCard, PiiRedaction,
-    ProviderKeys, ReplyDraft, SpeechPlayer, TicketRouter, TldrToggle,
+    AgentDocCursor, AgentTimeline, AiMascot, AiSpark, AiTranslate, AiWorkflow, AskYourData,
+    ConnectorSetup, CubeMascot, EnrichColumn, GenerationStats, GhostMascot, HumanHandoff,
+    ImageGeneration, ImageReveal, LiveVisitors, LlmCostCalculator, MeetingSummary, ModelCard,
+    PiiRedaction, PixelMascot, ProviderKeys, ProviderStatus, ReferralCard, ReplyDraft,
+    SocialProofToast, SpeechPlayer, TicketRouter, TldrToggle, ToneTuner, TrainingRun, TrialBanner,
+    UpgradePrompt,
 };
 pub use approval::{ApprovalCard, ApprovalCardProps, ApprovalPager, ApprovalPagerProps};
 pub use brand::{BrandIcon, BrandIconProps, has_brand};

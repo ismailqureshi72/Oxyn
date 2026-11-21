@@ -25,27 +25,55 @@
 //! - [`connector`]: Connector setup: connect apps inline with a first sync and scopes.
 //! - [`enrich`]: Enrich column: one prompt runs down a table column.
 //! - [`router`]: Ticket router: incoming tickets classified into team lanes.
+//! - [`ask`]: Ask your data: a question becomes SQL, a query and a chart.
+//! - [`doccursor`]: Agent doc cursor: an agent edits a document beside a teammate.
+//! - [`provstatus`]: Provider status: health, latency and 30-day uptime of AI providers.
+//! - [`training`]: Training run: a fine-tuning job with a live loss curve.
+//! - [`tone`]: Tone tuner: a reply rewritten by formality, detail and voice.
+//! - [`mascot`]: AI, ghost and cube mascots (shared status model and drawing).
+//! - [`reveal`]: Image reveal: an image denoising into view.
+//! - [`spark`]: AI spark: an animated status mark.
+//! - [`pixel`]: Pixel mascot: a pixel robot sprite.
+//! - [`upgrade`]: Upgrade prompt: a limit-reached nudge with a billing toggle.
+//! - [`referral`]: Referral card: invite link, email chips and a referral funnel.
+//! - [`trial`]: Trial banner: days left in a trial as a banner, card or pill.
+//! - [`visitors`]: Live visitors: a realtime count, map, pages and conversions.
+//! - [`proof`]: Social proof toast: a stack of recent-activity toasts.
 
+pub mod ask;
 pub mod connector;
 pub mod cost;
+pub mod doccursor;
 pub mod enrich;
 pub mod genstats;
 pub mod handoff;
 pub mod imagegen;
 pub mod keys;
+pub mod mascot;
 pub mod meeting;
 pub mod model_card;
 pub mod pii;
+pub mod pixel;
+pub mod proof;
+pub mod provstatus;
+pub mod referral;
 pub mod reply;
+pub mod reveal;
 pub mod router;
+pub mod spark;
 pub mod speech;
 pub mod timeline;
 pub mod tldr;
+pub mod tone;
+pub mod training;
 pub mod translate;
+pub mod trial;
+pub mod upgrade;
+pub mod visitors;
 pub mod workflow;
 
 /// Page slugs of the AI special components, in gallery order.
-pub const AI_SLUGS: [&str; 17] = [
+pub const AI_SLUGS: [&str; 33] = [
     "agent-timeline",
     "model-card",
     "ai-workflow",
@@ -63,6 +91,22 @@ pub const AI_SLUGS: [&str; 17] = [
     "connector-setup",
     "enrich-column",
     "ticket-router",
+    "ask-your-data",
+    "agent-doc-cursor",
+    "provider-status",
+    "training-run",
+    "tone-tuner",
+    "ai-mascot",
+    "image-reveal",
+    "ai-spark",
+    "pixel-mascot",
+    "ghost-mascot",
+    "cube-mascot",
+    "upgrade-prompt",
+    "referral-card",
+    "trial-banner",
+    "live-visitors",
+    "social-proof-toast",
 ];
 
 /// Streaming pace shared by every component: one chunk of words every 34 ms.
@@ -203,6 +247,6 @@ mod tests {
         assert_eq!(rove(0, 3, "ArrowLeft"), 0);
         assert_eq!(rove(1, 3, "End"), 2);
         assert_eq!(nth("mc-model-2", "mc-model-"), Some(2));
-        assert_eq!(AI_SLUGS.len(), 17);
+        assert_eq!(AI_SLUGS.len(), 33);
     }
 }
