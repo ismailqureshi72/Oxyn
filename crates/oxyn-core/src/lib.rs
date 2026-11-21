@@ -45,6 +45,7 @@ pub mod state;
 pub mod text;
 mod time;
 pub mod verbs;
+pub mod xpost;
 
 pub use clock::{MotionClock, MotionKind, WindowState};
 pub use state::{
