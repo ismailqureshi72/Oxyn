@@ -10,7 +10,7 @@ import BackButton from './BackButton.astro';
 import { icon } from './icons';
 import { mark } from './brands';
 import {
-  groupOf, demoUrl, props, specSection, md, highlightRust, cssConst, installLine, whenToUse, whenNotToUse,
+  groupOf, demoUrl, props, specSection, md, highlightRust, cssConst, installLine, CLI_INSTALL, whenToUse, whenNotToUse,
   related, keyChips, notesForAi, guidesFor, isScreen, isBlock, blockGroupOf, isPro, REPO, type Demo,
 } from '../../lib/data';
 
@@ -27,8 +27,9 @@ const edgeSpec = specSection(demo.spec, 'Responsive', 'Edge cases');
 const motionSpec = specSection(demo.spec, 'Micro-interactions');
 const timing = specSection(demo.spec, 'Timing');
 const usage = `use oxyn_dioxus::{${comps.join(', ')}, ${cssConst(demo.source)}};`;
-// Pro items install through the Pro CLI (licence checked); copying it without a plan leads to pricing.
-const install = pro ? `oxyn add pro/${demo.slug}` : installLine(demo);
+// Pro items install through the CLI with a Pro licence; copying it without a plan leads to pricing.
+const install = installLine(demo);
+const cliUsage = `use crate::oxyn::{${comps.join(', ')}, ${cssConst(demo.source)}};`;
 const site = 'https://ui.oxyn.workers.dev';
 const url = demoUrl(demo);
 const prompt = `Add the ${demo.name} component from Oxyn (Rust, Dioxus) to my app. Docs: ${site}${url}`;
@@ -83,7 +84,7 @@ const kind = screen ? 'screen' : bg ? 'block' : 'component';
           {screen && <a class="iconbtn" href={`${url}full/`} target="_self" aria-label="Open full screen" title="Open full screen (this tab)"><Fragment set:html={icon.expand} /></a>}
           <span class="pv-div" aria-hidden="true"></span>
           {ai.map(([l, id, h]) => <a class="aibtn x-aibtn-logo" href={h} target="_blank" rel="noopener" title={`Open in ${l}`} aria-label={`Open in ${l}`}><Fragment set:html={mark(id)} /></a>)}
-          <a class="aibtn x-aibtn-mcp" href="/docs/installation/" title="MCP server (planned with the oxyn CLI)"><Fragment set:html={mark('mcp')} />MCP</a>
+          <a class="aibtn x-aibtn-mcp" href="/docs/installation/" title="MCP server (planned; the oxyn CLI is out)"><Fragment set:html={mark('mcp')} />MCP</a>
           <button class="x-pill pill-black pill-sm x-copy" type="button" data-copy-from="pv"><Fragment set:html={icon.copy} />Copy</button>
           {pro && <a class="x-pill pill-black pill-sm x-getpro" href={`/pricing/?from=${demo.slug}`}><Fragment set:html={icon.bolt} />Get Pro</a>}
         </div>
@@ -111,9 +112,19 @@ const kind = screen ? 'screen' : bg ? 'block' : 'component';
 
     <section class="sec" id="installation">
       <h2>Installation</h2>
-      <p class="x-muted">{pro ? <>{demo.name} is part of <a href="/pricing/">Oxyn Pro</a>; the preview is free.</> : <>{demo.name} is free and MIT.</>} Oxyn is not on crates.io yet, so depend on the repository, then import the {kind} and its stylesheet. The <code>oxyn add</code> CLI that copies one file into your project is planned.</p>
-      <div class="codeblk copyable"><div class="codeblk-h"><span>Terminal</span><button class="pill-copy" type="button" data-copy={`cargo add oxyn-dioxus oxyn-core --git ${REPO}`} aria-label="Copy"><Fragment set:html={icon.copy} /></button></div><pre><code>cargo add oxyn-dioxus oxyn-core --git {REPO}</code></pre></div>
-      <div class="codeblk copyable"><div class="codeblk-h"><span>Rust</span><button class="pill-copy" type="button" data-copy={usage} aria-label="Copy"><Fragment set:html={icon.copy} /></button></div><pre><code>{usage}</code></pre></div>
+      {pro ? (
+        <>
+          <p class="x-muted">{demo.name} is part of <a href="/pricing/">Oxyn Pro</a>; the preview is free. Pro items install with the <a href="/docs/cli/">oxyn CLI</a> once your licence is signed in; until then Pro members copy the code from this page.</p>
+          <div class="codeblk copyable"><div class="codeblk-h"><span>Terminal</span><button class="pill-copy" type="button" data-copy={install} data-pro-cli="true" aria-label="Copy"><Fragment set:html={icon.copy} /></button></div><pre><code>{install}</code></pre></div>
+        </>
+      ) : (
+        <>
+          <p class="x-muted">{demo.name} is free and MIT. The <a href="/docs/cli/">oxyn CLI</a> copies its code, and the components it needs, into <code>src/oxyn/</code> of your Dioxus or GPUI project, so it is yours to change.</p>
+          <div class="codeblk copyable"><div class="codeblk-h"><span>Terminal</span><button class="pill-copy" type="button" data-copy={`${CLI_INSTALL}\noxyn init\n${install}`} aria-label="Copy"><Fragment set:html={icon.copy} /></button></div><pre><code>{CLI_INSTALL}{'\n'}oxyn init{'\n'}{install}</code></pre></div>
+          <div class="codeblk copyable"><div class="codeblk-h"><span>Rust</span><button class="pill-copy" type="button" data-copy={cliUsage} aria-label="Copy"><Fragment set:html={icon.copy} /></button></div><pre><code>{cliUsage}</code></pre></div>
+          <p class="x-muted">Rather depend on the crate? <code>cargo add oxyn-dioxus oxyn-core --git {REPO}</code>, then <code>{usage}</code></p>
+        </>
+      )}
     </section>
 
     <section class="sec" id="usage">
