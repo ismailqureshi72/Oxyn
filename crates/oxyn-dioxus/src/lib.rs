@@ -29,8 +29,10 @@ pub use aikit::{
 };
 pub use approval::{ApprovalCard, ApprovalCardProps, ApprovalPager, ApprovalPagerProps};
 pub use blocks::{
-    AgentBuilder, AgentGallery, AgentRoutines, AiInsightCard, BackgroundAgents, EvalSuite,
-    KnowledgeBase, LiveSession, McpServers, MissionControl, MissionTimeline, RunInspector,
+    AgentBuilder, AgentGallery, AgentRoutines, AiFeatureLaunch, AiInsightCard, AiSetupWizard,
+    AssistantMemory, BackgroundAgents, CallInsights, CatchUp, EvalSuite, KnowledgeBase,
+    LeadScoring, LiveSession, McpServers, MissionControl, MissionTimeline, ModelArena,
+    PromptStudio, RunInspector,
 };
 pub use brand::{BrandIcon, BrandIconProps, has_brand};
 pub use chat::{
