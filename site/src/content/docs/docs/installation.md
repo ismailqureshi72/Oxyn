@@ -3,7 +3,7 @@ title: Installation
 description: Add Oxyn to a Dioxus or GPUI project.
 ---
 
-Oxyn is not published to crates.io yet. Depend on the repository directly.
+The quickest way in is the [oxyn CLI](/docs/cli/): `oxyn add <component>` copies a component's code into your project. To depend on the crates instead, use the repository (Oxyn is not on crates.io yet).
 
 ## Dioxus (web)
 

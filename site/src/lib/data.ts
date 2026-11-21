@@ -166,10 +166,13 @@ export function cssConst(source: string): string {
   return 'STATUS_INDICATOR_CSS';
 }
 
-/** Installation line for a component (the CLI ships later; today it is a git dependency). */
+/** The CLI line that installs an item (docs/cli.md). Pro items need Oxyn Pro to install. */
 export function installLine(d: Demo): string {
-  return `cargo add oxyn-dioxus --git ${REPO}`;
+  return `oxyn add ${d.slug}`;
 }
+
+/** Installs the `oxyn` CLI from the repository (no crates.io release yet). */
+export const CLI_INSTALL = `cargo install --git ${REPO} oxyn-cli`;
 
 /** Items of a parity section from status.csv (affectUI rows by section prefix). */
 export function parityItems(section: string) {
