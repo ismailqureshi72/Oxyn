@@ -22,6 +22,7 @@ mod shell;
 mod status_indicator;
 mod status_text;
 mod surfaces;
+mod xpost;
 
 pub use aikit::{AiKitState, AiKitView, AiVariant};
 pub use blocks::{BlockVariant, BlocksState, BlocksView};
@@ -204,6 +205,7 @@ pub use surfaces::{
     DialogEl, ExpandingSearchEl, NotificationStackEl, PaginationEl, ScrollAreaEl, SearchFieldEl,
     SheetEl, SheetStackEl, ShortcutRecorderEl, SkeletonEl, SkeletonMorphEl, ToasterEl, dialog_size,
 };
+pub use xpost::{XPostState, XPostVariant, XPostView};
 
 use gpui::{Hsla, Rgba};
 use oxyn_tokens::Color;
