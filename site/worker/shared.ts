@@ -21,6 +21,8 @@ export interface Env {
   ASSETS: { fetch(r: Request): Promise<Response> };
   GITHUB_TOKEN?: string;
   GITHUB_REPO?: string;
+  // The canonical origin (wrangler.jsonc vars; default https://oxynui.com). See canonicalRedirect.
+  SITE_URL?: string;
   RATE_SALT?: string;
   // Site accounts (docs/auth.md): the GitHub OAuth app and the Google OAuth client. Unset = that
   // button shows "coming soon" and its routes answer 503.
@@ -33,6 +35,29 @@ export interface Env {
   // Worker open pre-signed customer portal sessions and archive the founder products at 100.
   POLAR_WEBHOOK_SECRET?: string; // secret
   POLAR_ACCESS_TOKEN?: string; // secret
+}
+
+export const DEFAULT_SITE_URL = 'https://oxynui.com';
+/** The canonical origin, `https://oxynui.com` unless wrangler.jsonc sets another SITE_URL. */
+export function siteOrigin(env: Pick<Env, 'SITE_URL'>): string {
+  try { return new URL(env.SITE_URL || DEFAULT_SITE_URL).origin; } catch { return DEFAULT_SITE_URL; }
+}
+/** Hosts that serve the same Worker but are not canonical: www and the original workers.dev address. */
+export const LEGACY_HOSTS = ['ui.oxyn.workers.dev'];
+
+/** A 301 to the canonical origin (same path and query) for a request on www.<canonical host> or a
+ *  legacy host; null for everything else. /api/* is never redirected, so OAuth apps, the Polar
+ *  webhook and older CLIs that still call https://ui.oxyn.workers.dev/api/... keep working while
+ *  they move over (docs/backend.md, "Domains"). Other hosts (localhost, version previews) pass. */
+export function canonicalRedirect(env: Pick<Env, 'SITE_URL'>, url: URL, method = 'GET'): Response | null {
+  const site = new URL(siteOrigin(env));
+  const host = url.hostname.toLowerCase();
+  if (host === site.hostname) return null;
+  if (host !== `www.${site.hostname}` && !LEGACY_HOSTS.includes(host)) return null;
+  if (url.pathname === '/api' || url.pathname.startsWith('/api/')) return null;
+  // 301 for page loads; 308 keeps the method and body of anything else.
+  const status = method === 'GET' || method === 'HEAD' ? 301 : 308;
+  return new Response(null, { status, headers: { location: `${site.origin}${url.pathname}${url.search}`, 'cache-control': 'public, max-age=3600' } });
 }
 
 export const KINDS = ['Bug', 'Idea', 'Question'] as const;
@@ -84,7 +109,7 @@ export async function openIssue(env: Env, f: { id: string; kind: Kind; message: 
     '',
     quoted,
     '',
-    `- Page: ${f.page ? `https://ui.oxyn.workers.dev${f.page}` : 'unknown'}`,
+    `- Page: ${f.page ? `${siteOrigin(env)}${f.page}` : 'unknown'}`,
     `- Received: ${f.created}`,
     `- Screenshot: ${f.hasShot ? 'yes (in the admin inbox)' : 'no'}`,
     `- Feedback id: \`${f.id}\``,

@@ -1,6 +1,8 @@
-// The Oxyn site Worker. Static assets (dist/) are served by Cloudflare before this code runs;
-// wrangler.jsonc routes only /api/* and /admin* here (assets.run_worker_first), so the site never
-// touches the Worker. Plain TypeScript with no dependencies: wrangler bundles it with esbuild,
+// The Oxyn site Worker, live at https://oxynui.com. wrangler.jsonc runs it first for every path but
+// the fingerprinted bundles (assets.run_worker_first), so it can send www.oxynui.com and the old
+// ui.oxyn.workers.dev to https://oxynui.com with a 301 (canonicalRedirect in shared.ts; /api/* is
+// left alone on every host). Pages on the canonical host go straight to the ASSETS binding, which
+// still applies dist/_redirects and dist/_headers. Plain TypeScript with no dependencies: wrangler bundles it with esbuild,
 // so CI needs no extra toolchain next to the Rust + Astro build.
 //
 //   GET  /api/health    liveness + a D1 round trip
@@ -20,7 +22,7 @@
 // POLAR_WEBHOOK_SECRET turns on the Polar webhook; POLAR_ACCESS_TOKEN (optional) adds pre-signed
 // customer portal links and archives the founder products at 100.
 
-import { EMAIL_RE, HttpError, KINDS, fail, json, openIssue, sameOrigin, sha256Hex, type Ctx, type Env, type Kind } from './shared';
+import { EMAIL_RE, HttpError, KINDS, canonicalRedirect, fail, json, openIssue, sameOrigin, sha256Hex, type Ctx, type Env, type Kind } from './shared';
 import { handleAdmin, isAdminPath, publicFlags } from './admin';
 import { handleAuth } from './auth';
 import { handleBilling, isBillingPath } from './billing';
@@ -47,6 +49,9 @@ const IMAGE_TYPES: Record<string, string> = { 'image/png': 'png', 'image/jpeg': 
 export default {
   async fetch(req: Request, env: Env, ctx: Ctx): Promise<Response> {
     const url = new URL(req.url);
+    // www.oxynui.com and ui.oxyn.workers.dev -> https://oxynui.com (same path and query), not /api/*.
+    const moved = canonicalRedirect(env, url, req.method);
+    if (moved) return moved;
     // /admin* and /api/admin/*: the site session of a provider-verified email on the admin list.
     if (isAdminPath(url.pathname)) return handleAdmin(req, env, ctx, url);
     // /api/auth/*: site accounts (Google, GitHub or email + password), see auth.ts and docs/auth.md.
