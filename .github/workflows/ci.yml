@@ -94,6 +94,7 @@ jobs:
           OXYN=$CARGO_TARGET_DIR/debug/oxyn; R=$PWD/site/public/r
           n=$($OXYN list --registry "$R" --tier free --json | node -e 'console.log(JSON.parse(require("fs").readFileSync(0)).length)')
           echo "$n free items"; test "$n" -ge 72 && test "$n" -le 75
+          node -e 'const i=require(process.argv[1]).items.filter(x=>x.tier==="free"&&!x.installable);for(const x of i)console.log("::error::"+x.slug+": "+x.note);process.exit(i.length?1:0)' "$R/index.json"
           $OXYN search --registry "$R" approval
           $OXYN view --registry "$R" composer
           mkdir -p "$RUNNER_TEMP/pro" && cd "$RUNNER_TEMP/pro" && cargo new -q p --vcs none && cd p
