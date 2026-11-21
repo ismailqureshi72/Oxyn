@@ -60,7 +60,7 @@ pub struct Category {
 }
 
 /// Categories in nav order.
-pub const CATEGORIES: [Category; 28] = [
+pub const CATEGORIES: [Category; 30] = [
     Category {
         slug: "composer",
         name: "Composer",
