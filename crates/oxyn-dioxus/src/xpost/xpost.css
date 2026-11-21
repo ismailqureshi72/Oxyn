@@ -256,6 +256,8 @@
 .oxxp-pp-link{display:flex;align-items:center;gap:7px;padding:6px 6px 6px 9px;border:1px solid var(--xp-line2);border-radius:8px;background:var(--xp-card);min-width:0}
 .oxxp-pp-link>.oxxp-mono{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .oxxp-pp-pop p{margin:0}
+.oxxp-pp-pop .oxxp-seg{display:flex;flex-wrap:wrap;overflow:visible}
+.oxxp-pp-pop .oxxp-sg{flex:1 1 auto;justify-content:center}
 .oxxp-pp-doc{color:var(--xp-fg2);max-width:46ch}
 .oxxp-pp-doc h4{margin:4px 0 6px;color:var(--xp-fg);font-size:14px}
 .oxxp-pp-doc p{margin:0 0 8px}
