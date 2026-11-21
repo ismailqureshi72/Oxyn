@@ -10,3 +10,11 @@
 .x-soon-note{margin:18px auto 0;max-width:620px;font-size:13px;color:var(--fg3)}
 .x-soon-cta{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:24px}
 @media (max-width:520px){.x-soon{padding:28px 18px;border-radius:16px}}
+
+/* Library header: the slim bar must keep its 46 px inside the scrolling panel (a flex item would
+   shrink and open a gap above the sticky tabs), and the tabs row is a solid band edge to edge, with
+   a lip above it, so no card shows above, beside or behind it. */
+.lbar{flex:none;min-height:46px;box-sizing:border-box}
+.ltabs{z-index:35;margin-left:-24px;margin-right:-24px;padding:0 24px;isolation:isolate}
+.ltabs::before{content:"";position:absolute;left:0;right:0;bottom:100%;height:12px;background:var(--pn);pointer-events:none}
+@media (max-width:900px){.ltabs{margin-left:-16px;margin-right:-16px;padding:0 16px}}
