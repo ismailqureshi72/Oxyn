@@ -1,6 +1,8 @@
 //! Blocks (Oxyn Pro) in GPUI as one live view: Live session, Mission control, Mission
 //! timeline, Run inspector, Background agents, Agent routines, MCP servers, Knowledge base, Eval
-//! suite, Agent builder, Agent gallery and AI insight card. Every variant runs on the same
+//! suite, Agent builder, Agent gallery, AI insight card, Model arena, Prompt studio, Assistant
+//! memory, Catch up, AI feature launch, AI setup wizard, Call insights and Lead scoring (drawn in
+//! [`ai`]). Every variant runs on the same
 //! `oxyn_core::blocks` models as the Dioxus blocks, so presses and keys behave the same in both
 //! renderers. The view keeps its own clock (a tick every 100 ms while it lives); a host can also
 //! drive it with [`BlocksView::advance`]. Text fields show as text; the samples' quick picks
@@ -14,23 +16,33 @@ use gpui::{
     px, relative,
 };
 use oxyn_core::blocks::{
+    arena::Arena,
     bgagents::{self, BgAgents, Phase as BaPhase},
     builder::{self, Builder},
+    call::Call,
+    catchup::CatchUp,
     dur,
     evals::{self, Evals, Out},
     gallery::{self, Flow, Gallery},
     insight::{self, Insight},
     inspector::{Inspector, Kind as SpanKind, SPANS, SpanSt},
     kb::{self, Kb, View as KbView},
+    launch::Launch,
+    leads::Leads,
     mcp::{self, Mcp, Sheet, SrvSt},
+    memory::Memory,
     mission::{self, Mission, St},
+    prompt::Studio,
     routines::{self, Routines, Tick},
     session::{self, Session, StepSt},
     thousands,
+    wizard::Wizard,
 };
 use oxyn_tokens::{ColorRole, Theme};
 
 use crate::aikit::{bar, c, hue, mark, pill, row, text, title};
+
+mod ai;
 
 /// Which block the view draws.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -59,11 +71,27 @@ pub enum BlockVariant {
     Gallery,
     /// AI insight card.
     Insight,
+    /// Model arena.
+    Arena,
+    /// Prompt studio.
+    Prompt,
+    /// Assistant memory.
+    Memory,
+    /// Catch up.
+    CatchUp,
+    /// AI feature launch.
+    Launch,
+    /// AI setup wizard.
+    Wizard,
+    /// Call insights.
+    Call,
+    /// Lead scoring.
+    Leads,
 }
 
 impl BlockVariant {
     /// Every variant, in gallery order.
-    pub const ALL: [BlockVariant; 12] = [
+    pub const ALL: [BlockVariant; 20] = [
         Self::LiveSession,
         Self::MissionControl,
         Self::MissionTimeline,
@@ -76,6 +104,14 @@ impl BlockVariant {
         Self::Builder,
         Self::Gallery,
         Self::Insight,
+        Self::Arena,
+        Self::Prompt,
+        Self::Memory,
+        Self::CatchUp,
+        Self::Launch,
+        Self::Wizard,
+        Self::Call,
+        Self::Leads,
     ];
 
     /// The page slug.
@@ -114,6 +150,22 @@ pub struct BlocksState {
     pub gallery: Gallery,
     /// AI insight card.
     pub insight: Insight,
+    /// Model arena.
+    pub arena: Arena,
+    /// Prompt studio.
+    pub prompt: Studio,
+    /// Assistant memory.
+    pub memory: Memory,
+    /// Catch up.
+    pub catchup: CatchUp,
+    /// AI feature launch.
+    pub launch: Launch,
+    /// AI setup wizard.
+    pub wizard: Wizard,
+    /// Call insights.
+    pub call: Call,
+    /// Lead scoring.
+    pub leads: Leads,
     /// The last thing said (the live region of the web blocks).
     pub said: String,
 }
@@ -135,6 +187,14 @@ impl Default for BlocksState {
             builder: Builder::new(false, now),
             gallery: Gallery::new(2, false),
             insight: Insight::new(true, false, now),
+            arena: Arena::new(true, false, true, now),
+            prompt: Studio::new(true, false, now),
+            memory: Memory::new(false, false),
+            catchup: CatchUp::new(1, true, false, now),
+            launch: Launch::new(true, false, true, now),
+            wizard: Wizard::new(0, false, now),
+            call: Call::new(true, 0, now),
+            leads: Leads::new(true, false, None, now),
             said: String::new(),
         }
     }
@@ -164,6 +224,17 @@ impl BlocksState {
             BlockVariant::Builder => self.builder.press(id, n),
             BlockVariant::Gallery => self.gallery.press(id, n),
             BlockVariant::Insight => self.insight.press(id, n),
+            BlockVariant::Arena => self.arena.press(id, n),
+            BlockVariant::Prompt => self.prompt.press(id, n),
+            BlockVariant::Memory if id == "mm-add" => {
+                self.memory.add("Prefers meetings after 10 am", n)
+            }
+            BlockVariant::Memory => self.memory.press(id, n),
+            BlockVariant::CatchUp => self.catchup.press(id, n),
+            BlockVariant::Launch => self.launch.press(id, n),
+            BlockVariant::Wizard => self.wizard.press(id, n),
+            BlockVariant::Call => self.call.press(id, n),
+            BlockVariant::Leads => self.leads.press(id, n),
         };
         if let Some(s) = out {
             self.said = s;
@@ -193,6 +264,15 @@ impl BlocksState {
             BlockVariant::Builder => self.builder.key(k, n),
             BlockVariant::Gallery => self.gallery.key(k, n),
             BlockVariant::Insight => self.insight.key(k, n),
+            BlockVariant::Arena => self.arena.key(k, n),
+            BlockVariant::Prompt if k == "Enter" && cmd => self.prompt.key("run", n),
+            BlockVariant::Prompt => self.prompt.key(k, n),
+            BlockVariant::Memory => self.memory.key(k, n),
+            BlockVariant::CatchUp => self.catchup.key(k, n),
+            BlockVariant::Launch => self.launch.key(k, n),
+            BlockVariant::Wizard => self.wizard.key(k, n),
+            BlockVariant::Call => self.call.key("markers", k, n),
+            BlockVariant::Leads => self.leads.key(k, n),
         };
         if let Some(s) = out {
             self.said = s;
@@ -2093,6 +2173,14 @@ impl Render for BlocksView {
             BlockVariant::Builder => self.builder(cx),
             BlockVariant::Gallery => self.gallery(cx),
             BlockVariant::Insight => self.insight(cx),
+            BlockVariant::Arena => self.arena(cx),
+            BlockVariant::Prompt => self.prompt(cx),
+            BlockVariant::Memory => self.memory(cx),
+            BlockVariant::CatchUp => self.catchup(cx),
+            BlockVariant::Launch => self.launch(cx),
+            BlockVariant::Wizard => self.wizard(cx),
+            BlockVariant::Call => self.call(cx),
+            BlockVariant::Leads => self.leads(cx),
         };
         let said = self.state.said.clone();
         let line: Hsla = c(t, ColorRole::BorderSubtle);
@@ -2162,7 +2250,27 @@ mod tests {
         assert_eq!(s.gallery.team, 3);
         s.key(BlockVariant::Insight, "home", false);
         assert_eq!(s.insight.point, Some(0));
-        assert_eq!(BlockVariant::ALL.len(), 12);
+        s.press(BlockVariant::Arena, "ar-blind");
+        assert!(!s.arena.blind);
+        s.key(BlockVariant::Prompt, "enter", true);
+        s.press(BlockVariant::Memory, "mm-add");
+        assert_eq!(s.memory.list.len(), 11);
+        s.now += 20_000;
+        s.key(BlockVariant::CatchUp, "end", false);
+        assert_eq!(s.catchup.range, 2);
+        s.key(BlockVariant::Launch, "end", false);
+        assert_eq!(s.launch.manual, Some(2));
+        s.press(BlockVariant::Wizard, "wz-connect-0");
+        assert!(matches!(
+            s.wizard.src[0],
+            oxyn_core::blocks::wizard::Src::Syncing(_)
+        ));
+        s.key(BlockVariant::Call, "end", false);
+        assert_eq!(s.call.moment, 4);
+        s.key(BlockVariant::Leads, "down", false);
+        assert_eq!(s.leads.focus, 1);
+        assert_eq!(BlockVariant::ALL.len(), 20);
+        assert_eq!(BlockVariant::Leads.slug(), "lead-scoring");
         assert_eq!(BlockVariant::Insight.slug(), "ai-insight-card");
     }
 }
