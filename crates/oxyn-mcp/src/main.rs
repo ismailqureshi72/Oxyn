@@ -1,5 +1,5 @@
 //! `oxyn-mcp`: the Oxyn MCP server over stdio. Point your agent at it, for example
-//! `claude mcp add oxyn -- oxyn-mcp`. See https://ui.oxyn.workers.dev/docs/mcp/.
+//! `claude mcp add oxyn -- oxyn-mcp`. See https://oxynui.com/docs/mcp/.
 
 use std::process::ExitCode;
 
@@ -14,11 +14,11 @@ Your agent starts it; it reads JSON-RPC on stdin and answers on stdout.
   claude mcp add oxyn -- oxyn-mcp
 
 Options:
-  --registry <URL|DIR>  Registry base (default https://ui.oxyn.workers.dev/r; env OXYN_REGISTRY)
+  --registry <URL|DIR>  Registry base (default https://oxynui.com/r; env OXYN_REGISTRY)
   -h, --help            This help
   -V, --version         Version
 
-Docs: https://ui.oxyn.workers.dev/docs/mcp/";
+Docs: https://oxynui.com/docs/mcp/";
 
 fn main() -> ExitCode {
     let mut registry: Option<String> = None;

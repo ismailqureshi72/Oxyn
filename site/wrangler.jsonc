@@ -1,22 +1,33 @@
 // Cloudflare Worker for the Oxyn site: static assets plus a small API under /api/*.
 // Build first (`npm run build` in site/), then `npx wrangler deploy` from site/.
 // CI deploys on every push to main (repo secrets CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID).
-// Live at https://ui.oxyn.workers.dev (Worker name "ui"). See docs/backend.md.
+// Live at https://oxynui.com (Worker name "ui"); www.oxynui.com and the original
+// https://ui.oxyn.workers.dev answer with a 301 there, except /api/*. See docs/backend.md, "Domains".
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "ui",
   "main": "worker/index.ts",
   "compatibility_date": "2026-11-01",
+  // Custom Domains on the oxynui.com zone. Declared here so a deploy keeps them attached;
+  // workers.dev stays on so the old address can answer with its redirects.
+  "routes": [
+    { "pattern": "oxynui.com", "custom_domain": true },
+    { "pattern": "www.oxynui.com", "custom_domain": true }
+  ],
+  "workers_dev": true,
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS",
     "not_found_handling": "404-page",
     "html_handling": "auto-trailing-slash",
-    // Assets answer first; only the API and the admin panel run the Worker. /admin is not in
-    // dist/: the Worker serves it (site/worker/admin-ui/) to signed-in, verified admins only.
-    // /_pro/* holds the Pro registry JSON (site/public/_pro/r, written by scripts/gen.mjs): the
-    // Worker runs first there and answers 404, so only worker/pro.ts reads it (ASSETS binding).
-    "run_worker_first": ["/api/*", "/admin", "/admin/*", "/_pro", "/_pro/*"]
+    // The Worker runs first for every path except the fingerprinted bundles and fonts (asset-first,
+    // unbilled), so pages on www.oxynui.com and ui.oxyn.workers.dev can 301 to https://oxynui.com
+    // (worker/index.ts). On the canonical host it hands pages to the ASSETS binding, which applies
+    // dist/_redirects and dist/_headers as before. /admin is not in dist/: the Worker serves it
+    // (site/worker/admin-ui/) to signed-in, verified admins only. /_pro/* holds the Pro registry
+    // JSON (site/public/_pro/r, written by scripts/gen.mjs): the Worker answers 404 there, so only
+    // worker/pro.ts reads it (ASSETS binding).
+    "run_worker_first": ["/*", "!/_astro/*", "!/wasm/gallery-dioxus.*", "!/fonts/*"]
   },
   "d1_databases": [
     {
@@ -33,7 +44,9 @@
     }
   ],
   "vars": {
-    "GITHUB_REPO": "ismailqureshi72/Oxyn"
+    "GITHUB_REPO": "ismailqureshi72/Oxyn",
+    // The canonical origin: redirect target for www and the old workers.dev host (shared.ts).
+    "SITE_URL": "https://oxynui.com"
   },
   // The admin UI files are bundled into the Worker as text (never published as assets).
   "rules": [{ "type": "Text", "globs": ["**/admin-ui/*.html", "**/admin-ui/*.css", "**/admin-ui/*.js"], "fallthrough": false }],

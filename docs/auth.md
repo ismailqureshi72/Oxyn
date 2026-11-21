@@ -89,16 +89,18 @@ project that should own the client, for example a new project named `Oxyn`):
 2. **APIs & Services → OAuth consent screen** (in the newer console: **Google Auth Platform →
    Branding / Audience / Data access**):
    - User type **External**; app name `Oxyn`; support email and developer contact: a maintainer's
-     address; app home page `https://ui.oxyn.workers.dev`; authorised domain `oxyn.workers.dev`
-     (Google may ask for `workers.dev`).
+     address; app home page `https://oxynui.com`; authorised domains `oxynui.com` and
+     `oxyn.workers.dev` (Google may ask for `workers.dev`).
    - Scopes: `openid`, `.../auth/userinfo.email`, `.../auth/userinfo.profile` (non-sensitive, so no
      Google review is needed).
    - **Publish app** (status *In production*). While it is in *Testing*, only the test users listed
      there can sign in.
 3. **APIs & Services → Credentials → Create credentials → OAuth client ID**:
    - Application type **Web application**, name `Oxyn site`.
-   - **Authorised JavaScript origins**: `https://ui.oxyn.workers.dev`
-   - **Authorised redirect URIs**: `https://ui.oxyn.workers.dev/api/auth/google/callback`
+   - **Authorised JavaScript origins**: `https://oxynui.com` (and `https://ui.oxyn.workers.dev`,
+     the original address)
+   - **Authorised redirect URIs**: `https://oxynui.com/api/auth/google/callback` (and
+     `https://ui.oxyn.workers.dev/api/auth/google/callback`)
    - **Create**, then copy the Client ID and the Client secret.
 4. From `site/` (signed in to the Cloudflare account with `wrangler login` or `CLOUDFLARE_API_TOKEN`):
 
@@ -125,8 +127,10 @@ organisation that should own the app):
    (for an organisation: the organisation's **Settings → Developer settings → OAuth Apps**).
 2. Fill in:
    - **Application name**: `Oxyn`
-   - **Homepage URL**: `https://ui.oxyn.workers.dev`
-   - **Authorization callback URL**: `https://ui.oxyn.workers.dev/api/auth/github/callback`
+   - **Homepage URL**: `https://oxynui.com`
+   - **Authorization callback URL**: `https://oxynui.com/api/auth/github/callback`
+     (an OAuth App holds one callback URL; the old `https://ui.oxyn.workers.dev/...` one is not
+     needed, since sign-in pages on that host redirect to https://oxynui.com)
    - Leave **Enable Device Flow** off.
 3. **Register application**, then **Generate a new client secret**. Copy the Client ID and the secret
    (the secret is shown once).

@@ -59,10 +59,10 @@ oxyn add composer approval-card   # copies the code into src/oxyn/
 ```
 
 74 components are free (MIT); `oxyn list` shows everything, Pro included. With a
-[Pro or Team plan](https://ui.oxyn.workers.dev/pricing/), `oxyn login` signs the CLI (and the MCP
+[Pro or Team plan](https://oxynui.com/pricing/), `oxyn login` signs the CLI (and the MCP
 server) in and `oxyn add` installs Pro items too: 20 Pro components and 8 screens or blocks a month
 on Pro, 75 and 22 shared on Team, each item counted once a month (`oxyn whoami` shows the count).
-Commands, flags and the registry: [ui.oxyn.workers.dev/docs/cli](https://ui.oxyn.workers.dev/docs/cli/).
+Commands, flags and the registry: [oxynui.com/docs/cli](https://oxynui.com/docs/cli/).
 
 ## Let your coding agent add them (MCP)
 
@@ -73,7 +73,7 @@ claude mcp add oxyn -- oxyn-mcp     # Cursor, Codex and Zed: see the docs
 
 The `oxyn-mcp` server gives Claude Code, Cursor, Codex and Zed five tools: list, search and read
 components (props, dependencies, source), and add them to a project the way `oxyn add` does.
-Setup for each agent: [ui.oxyn.workers.dev/docs/mcp](https://ui.oxyn.workers.dev/docs/mcp/).
+Setup for each agent: [oxynui.com/docs/mcp](https://oxynui.com/docs/mcp/).
 
 ## Planned packages
 
