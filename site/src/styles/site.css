@@ -23,8 +23,9 @@ code{font-family:var(--oxyn-font-mono)}
 .announce button{all:unset;position:absolute;right:10px;top:50%;transform:translateY(-50%);width:24px;height:24px;display:grid;place-items:center;border-radius:6px;cursor:pointer;color:var(--fg3)}
 .announce button:hover{background:var(--hov);color:var(--fg)}
 html[data-announce="hidden"] .announce{display:none}
+.announce .an-short{display:none}
 /* Phones: one line at a fixed height, so the bar never reflows or pushes the header. */
-@media (max-width:640px){.announce{height:32px;min-height:0;padding:0 40px 0 14px;box-sizing:border-box;font-size:12px}.announce a{display:block;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
+@media (max-width:640px){.announce{height:32px;min-height:0;padding:0 40px 0 14px;box-sizing:border-box;font-size:12px}.announce a{display:block;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.announce .an-long{display:none}.announce .an-short{display:inline}}
 
 /* ── Landing ────────────────────────────────────────────────────────── */
 /* Hero, "Live edit" (Hero.astro + hero.js): the headline lockup on a 16 px dot canvas, being
@@ -38,6 +39,9 @@ html[data-announce="hidden"] .announce{display:none}
 .badge-pill{display:inline-flex;align-items:center;gap:8px;height:32px;padding:0 13px 0 4px;border-radius:999px;background:var(--pn);box-shadow:inset 0 0 0 1px var(--ln),0 1px 2px rgb(0 0 0 / .05),0 8px 22px -14px rgb(0 0 0 / .35);font-size:13px;color:var(--fg2);text-decoration:none;transition:color .16s,box-shadow .16s}
 .badge-pill b{display:inline-flex;align-items:center;height:24px;padding:0 9px;border-radius:999px;background:var(--ink);color:var(--on-ink);font-weight:600;font-variant-numeric:tabular-nums}
 .badge-pill .bp-go{transition:transform .16s}
+.badge-pill,.badge-pill b,.badge-pill span{white-space:nowrap}
+.badge-pill span:not(.bp-go){min-width:0;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:440px){.badge-pill{font-size:12px;gap:6px;padding-right:10px}.badge-pill b{padding:0 7px}}
 .badge-pill:hover{color:var(--fg)}
 .badge-pill:hover .bp-go{transform:translateX(2px)}
 .dz{--dz-sel:var(--fg);--dz-red:#E5484D;--dz-dot:rgb(0 0 0 / .09);--dz-hatch:rgb(0 0 0 / .07);--dz-ease:cubic-bezier(.22,1,.36,1);

@@ -333,14 +333,15 @@ export const libraryTotal = counts.components + counts.screens + counts.blocks;
 export const libraryRounded = () => `${Math.floor(libraryTotal / 50) * 50}+`;
 /** The announcement strip on the landing (Base.astro `promo`). Says what is new and whether it is
  *  Free or Pro: the CLI and MCP launch while it is the news, else the newest components with their tier. */
-export const ANNOUNCE: { text: string; href: string } = (() => {
-  const LAUNCH: { text: string; href: string } | null = { text: 'The oxyn CLI and MCP server are live: add components from your terminal or your agent', href: '/docs/cli/' };
+export const ANNOUNCE: { text: string; short: string; href: string } = (() => {
+  const LAUNCH: { text: string; short: string; href: string } | null = { text: 'The oxyn CLI and MCP server are live: add components from your terminal or your agent', short: 'The oxyn CLI and MCP server are live', href: '/docs/cli/' };
   if (LAUNCH) return LAUNCH;
   const names = newDemos.slice(0, 2).map((d) => d.name);
   const more = newDemos.length - names.length;
   const free = newDemos.filter((d) => isFree(d)).length;
   const tier = free === newDemos.length ? 'all free' : free === 0 ? 'in Oxyn Pro' : `${free} free`;
-  return { text: `${names.join(', ')}${more > 0 ? ` and ${more} more` : ''} new, ${tier}`, href: '/components/new/' };
+  const text = `${names.join(', ')}${more > 0 ? ` and ${more} more` : ''} new, ${tier}`;
+  return { text, short: text, href: '/components/new/' };
 })();
 
 /** The library in one line, from the data (never hand-written numbers). */
