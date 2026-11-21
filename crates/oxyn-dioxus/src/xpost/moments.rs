@@ -219,11 +219,20 @@ pub fn DoneShockwave(
     let t0 = now.0;
     let mut st = use_signal(move || Shock::new(fail, strength, speed, autoplay, t0));
     let mut said = use_signal(String::new);
+    // Set when a key or click swaps the card's button, so the button that replaces it takes focus.
+    let mut refocus = use_signal(|| false);
     let n = now.0;
     let s = st.read().clone();
     let mut act = move |id: String| {
         if let Some(x) = st.write().press(&id, n) {
+            refocus.set(true);
             said.set(x);
+        }
+    };
+    let grab = move |e: MountedEvent| async move {
+        if *refocus.peek() {
+            refocus.set(false);
+            let _ = e.data().set_focus(true).await;
         }
     };
     let ph = s.phase(n);
@@ -240,7 +249,7 @@ pub fn DoneShockwave(
             onkeydown: move |e: KeyboardEvent| {
                 let k = key_of(&e);
                 if k == "Space" { e.prevent_default(); }
-                if let Some(x) = st.write().key(&k, n) { said.set(x); }
+                if let Some(x) = st.write().key(&k, n) { refocus.set(true); said.set(x); }
             },
             div { class: "oxxp-sw-stage", "aria-hidden": "true",
                 for (k, (r, a)) in rings.iter().enumerate() {
@@ -259,9 +268,9 @@ pub fn DoneShockwave(
                 div { class: "oxxp-ctl",
                     match ph {
                         SwPhase::Running => rsx! { span { class: "oxxp-num oxxp-mute", "{s.progress(n) * 100.0:.0}%" } },
-                        SwPhase::Failed => rsx! { button { class: "oxxp-btn sm pri", r#type: "button", onclick: move |_| act("sw-retry".into()), "Retry" } },
-                        SwPhase::Done => rsx! { button { class: "oxxp-btn sm", r#type: "button", onclick: move |_| act("sw-run".into()), "Deploy again" } },
-                        SwPhase::Idle => rsx! { button { class: "oxxp-btn sm pri", r#type: "button", onclick: move |_| act("sw-run".into()), "Deploy" } },
+                        SwPhase::Failed => rsx! { button { class: "oxxp-btn sm pri", r#type: "button", onmounted: grab, onclick: move |_| act("sw-retry".into()), "Retry" } },
+                        SwPhase::Done => rsx! { button { class: "oxxp-btn sm", r#type: "button", onmounted: grab, onclick: move |_| act("sw-run".into()), "Deploy again" } },
+                        SwPhase::Idle => rsx! { button { class: "oxxp-btn sm pri", r#type: "button", onmounted: grab, onclick: move |_| act("sw-run".into()), "Deploy" } },
                     }
                 }
             }
