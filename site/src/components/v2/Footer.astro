@@ -7,7 +7,7 @@ import { icon } from './icons';
 import { lockup, wordmark } from './logo';
 import { mark, brands } from './brands';
 import { starCount } from './meta';
-import { REPO, counts } from '../../lib/data';
+import { REPO, countsText } from '../../lib/data';
 const stars = await starCount();
 const cols: [string, [string, string][]][] = [
   ['Library', [['Components', '/components/'], ['Screens', '/screens/'], ['Motion', '/motion/'], ['Compare', '/compare/'], ['Pricing', '/pricing/']]],
@@ -42,7 +42,7 @@ const founders: [string, [keyof typeof social, string][]][] = [
     <div class="x-foot-grid">
       <div class="x-foot-about">
         <a class="wm x-foot-wm" href="/" aria-label="Oxyn home"><Fragment set:html={lockup} /></a>
-        <p>Agent-UI components for Rust: Dioxus on the web, GPUI on the desktop. {counts.components} components free, {counts.screens} screens in Pro.</p>
+        <p>Agent-UI components for Rust: Dioxus on the web, GPUI on the desktop. {countsText()}.</p>
         <span class="x-foot-lbl">Works with</span>
         <ul class="x-foot-agents" aria-label="Agents that can use Oxyn">
           {agents.map((id) => <li title={brands[id].title}><Fragment set:html={mark(id)} /><span class="sr-only">{brands[id].title}</span></li>)}
@@ -76,7 +76,7 @@ const founders: [string, [keyof typeof social, string][]][] = [
       </div>
     </div>
     <div class="x-foot-legal">
-      <span>© 2026 Oxyn · Components MIT licensed, free to use and change.</span>
+      <span>© 2026 Oxyn · Free components MIT licensed, free to use and change.</span>
       <span>Built with Rust, Dioxus, GPUI and Astro. Brand marks belong to their owners.</span>
     </div>
   </div>

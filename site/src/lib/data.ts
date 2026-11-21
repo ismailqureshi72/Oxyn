@@ -321,5 +321,8 @@ export function guidesFor(d: Demo) {
   return hits.length ? hits : DOC_CARDS;
 }
 
+/** The library in one line, from the data (never hand-written numbers). */
+export const countsText = () =>
+  `${counts.free} free components, ${counts.proComponents} Pro components, ${counts.screens} screens and ${counts.blocks} blocks`;
 export const endLine = () =>
-  `Oxyn · ${counts.components} components · ${counts.screens} screens · ${counts.variants} variant presets · Dioxus and GPUI`;
+  `Oxyn · ${counts.free} free components · ${counts.proComponents} Pro components · ${counts.screens} screens · ${counts.blocks} blocks · Dioxus and GPUI`;
