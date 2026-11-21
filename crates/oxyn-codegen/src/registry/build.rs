@@ -59,7 +59,7 @@ pub struct MetaItem {
 pub struct BuildConfig {
     /// The Oxyn repository root.
     pub repo_root: PathBuf,
-    /// Site origin, for the index (`https://ui.oxyn.workers.dev`).
+    /// Site origin, for the index (`https://oxynui.com`).
     pub homepage: String,
     /// Repository URL for git dependencies.
     pub git: String,

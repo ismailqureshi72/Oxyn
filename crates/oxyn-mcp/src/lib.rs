@@ -24,7 +24,7 @@ use serde_json::{Value, json};
 pub const PROTOCOL_VERSIONS: [&str; 4] = ["2025-11-25", "2025-06-18", "2025-03-26", "2024-11-05"];
 
 /// Short guidance the client may show the model.
-pub const INSTRUCTIONS: &str = "Oxyn is a Rust UI kit for agent apps (Dioxus and GPUI). Find components with list_components or search_components, read one with get_component, and install with add_component (pass project_path: the directory with the app's Cargo.toml). Code is copied into src/oxyn/ and is the user's to edit. Free items install directly; Pro items need Oxyn Pro (https://ui.oxyn.workers.dev/pricing).";
+pub const INSTRUCTIONS: &str = "Oxyn is a Rust UI kit for agent apps (Dioxus and GPUI). Find components with list_components or search_components, read one with get_component, and install with add_component (pass project_path: the directory with the app's Cargo.toml). Code is copied into src/oxyn/ and is the user's to edit. Free items install directly; Pro items need Oxyn Pro (https://oxynui.com/pricing).";
 
 /// JSON-RPC error codes used here.
 pub mod code {
@@ -144,7 +144,7 @@ fn initialize(params: &Value) -> Value {
             "name": "oxyn",
             "title": "Oxyn UI",
             "version": env!("CARGO_PKG_VERSION"),
-            "websiteUrl": "https://ui.oxyn.workers.dev/docs/mcp/"
+            "websiteUrl": "https://oxynui.com/docs/mcp/"
         },
         "instructions": INSTRUCTIONS
     })

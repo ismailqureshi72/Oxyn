@@ -2,7 +2,7 @@
 //!
 //! ```text
 //! oxyn-registry --input site/src/generated/registry-input.json --out site/public/r \
-//!     [--pro-out site/public/_pro/r] [--root .] [--rev <commit>] [--homepage https://ui.oxyn.workers.dev]
+//!     [--pro-out site/public/_pro/r] [--root .] [--rev <commit>] [--homepage https://oxynui.com]
 //! ```
 //!
 //! Writes `index.json` (every item, free and Pro, without file contents) and `<slug>.json` for
@@ -33,7 +33,7 @@ fn run() -> Result<(), String> {
     let mut pro_out: Option<PathBuf> = None;
     let mut root = PathBuf::from(".");
     let mut rev = std::env::var("GITHUB_SHA").ok();
-    let mut homepage = "https://ui.oxyn.workers.dev".to_string();
+    let mut homepage = "https://oxynui.com".to_string();
     let mut git = "https://github.com/ismailqureshi72/Oxyn".to_string();
     let mut quiet = false;
     let mut args = std::env::args().skip(1);
