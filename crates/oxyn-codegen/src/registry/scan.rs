@@ -346,6 +346,14 @@ fn classify(head: &str, is_component: bool) -> (bool, ItemKind) {
             ItemKind::Def(vec![name])
         }
         "macro_rules!" => ItemKind::Def(vec![name]),
+        // A top-level macro call that defines a type, like `el!(AgentTrailEl, …)`: the first
+        // argument names it.
+        m if m.ends_with('!') && (name == "(" || name == "{") => match w.get(i + 2) {
+            Some(n) if n.chars().next().is_some_and(|c| c.is_ascii_uppercase()) => {
+                ItemKind::Def(vec![n.clone()])
+            }
+            _ => ItemKind::Other,
+        },
         _ => ItemKind::Other,
     };
     (public, kind)
@@ -606,6 +614,11 @@ mod tests {
         assert!(it[5].test_only);
         assert_eq!(kinds[6], ItemKind::Other);
         assert_eq!(kinds[7], ItemKind::Def(vec!["S".into()]));
+        let m = blank("el!(\n    AgentTrailEl,\n    Trail,\n);\n");
+        assert_eq!(
+            items("el!(\n    AgentTrailEl,\n    Trail,\n);\n", &m)[0].kind,
+            ItemKind::Def(vec!["AgentTrailEl".into()])
+        );
         assert!(it[7].public);
     }
 

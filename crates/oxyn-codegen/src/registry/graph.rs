@@ -4,8 +4,8 @@
 //! for the code in this repository. The registry builder walks it to find the exact set of items
 //! (not whole files) a component needs.
 
-use std::cell::RefCell;
-use std::collections::{BTreeMap, BTreeSet, HashMap};
+use std::cell::{Cell, RefCell};
+use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
 use std::fs;
 use std::path::{Path, PathBuf};
 
@@ -77,6 +77,10 @@ pub struct Graph {
     /// Every file module by path.
     pub modules: BTreeMap<ModPath, Module>,
     memo: RefCell<HashMap<(ModPath, String), Option<Target>>>,
+    in_progress: RefCell<HashSet<(ModPath, String)>>,
+    tainted: Cell<bool>,
+    refs_memo: RefCell<HashMap<Node, BTreeSet<Target>>>,
+    impl_memo: RefCell<HashMap<Node, Option<BTreeSet<Node>>>>,
 }
 
 /// Paths rooted in these are the standard library, not crates to depend on.
@@ -90,6 +94,10 @@ impl Graph {
         Ok(Graph {
             modules,
             memo: RefCell::new(HashMap::new()),
+            in_progress: RefCell::new(HashSet::new()),
+            tainted: Cell::new(false),
+            refs_memo: RefCell::new(HashMap::new()),
+            impl_memo: RefCell::new(HashMap::new()),
         })
     }
 
@@ -119,10 +127,23 @@ impl Graph {
         if let Some(hit) = self.memo.borrow().get(&key) {
             return hit.clone();
         }
-        // Cycle guard: a re-entrant lookup of the same key sees `None`.
-        self.memo.borrow_mut().insert(key.clone(), None);
+        // Cycle guard: a re-entrant lookup of a key in progress sees `None`, and every result that
+        // depended on such a `None` is left out of the memo (it may be wrong once the cycle ends).
+        if !self.in_progress.borrow_mut().insert(key.clone()) {
+            self.tainted.set(true);
+            return None;
+        }
+        let outer = self.tainted.replace(false);
         let r = self.resolve_name_uncached(m, name);
-        self.memo.borrow_mut().insert(key, r.clone());
+        let mine = self.tainted.get();
+        self.in_progress.borrow_mut().remove(&key);
+        // A top-level lookup is complete even when a cycle was cut below it: the cut branches
+        // were being explored by this very call.
+        let top = self.in_progress.borrow().is_empty();
+        if !mine || top {
+            self.memo.borrow_mut().insert(key, r.clone());
+        }
+        self.tainted.set(outer || mine);
         r
     }
 
@@ -175,10 +196,7 @@ impl Graph {
         };
         for seg in rest {
             match &cur {
-                Target::Module(mp) => match self.resolve_name(mp, seg) {
-                    Some(t) => cur = t,
-                    None => return Some(cur),
-                },
+                Target::Module(mp) => cur = self.resolve_name(mp, seg)?,
                 Target::Item(..) => break,
             }
         }
@@ -187,14 +205,27 @@ impl Graph {
 
     /// What item `i` of module `p` names: the items and modules its paths resolve to.
     pub fn item_refs(&self, p: &ModPath, i: usize) -> BTreeSet<Target> {
+        let key = (p.clone(), i);
+        if let Some(hit) = self.refs_memo.borrow().get(&key) {
+            return hit.clone();
+        }
+        let r = self.item_refs_uncached(p, i);
+        self.refs_memo.borrow_mut().insert(key, r.clone());
+        r
+    }
+
+    fn item_refs_uncached(&self, p: &ModPath, i: usize) -> BTreeSet<Target> {
         let m = &self.modules[p];
         let mut out = BTreeSet::new();
         for path in &m.item_paths[i] {
-            let t = if path.len() == 1 {
-                self.resolve_name(p, &path[0])
-            } else {
-                self.resolve_path(p, path)
-            };
+            // The longest prefix that resolves (`module::macro_made_fn` still needs `module`).
+            let t = (1..=path.len()).rev().find_map(|n| {
+                if n == 1 {
+                    self.resolve_name(p, &path[0])
+                } else {
+                    self.resolve_path(p, &path[..n])
+                }
+            });
             if let Some(t) = t
                 && t != Target::Item(p.clone(), i)
             {
@@ -207,6 +238,16 @@ impl Graph {
     /// For an `impl` block: the local items its header names (`impl Trait for Type`). The block is
     /// needed exactly when all of them are.
     pub fn impl_header_refs(&self, p: &ModPath, i: usize) -> Option<BTreeSet<Node>> {
+        let key = (p.clone(), i);
+        if let Some(hit) = self.impl_memo.borrow().get(&key) {
+            return hit.clone();
+        }
+        let r = self.impl_header_refs_uncached(p, i);
+        self.impl_memo.borrow_mut().insert(key, r.clone());
+        r
+    }
+
+    fn impl_header_refs_uncached(&self, p: &ModPath, i: usize) -> Option<BTreeSet<Node>> {
         let m = &self.modules[p];
         let code = m.code_of(i);
         let at = code.find("impl")?;
