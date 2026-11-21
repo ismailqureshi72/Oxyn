@@ -27,7 +27,9 @@ owner's brand guidelines when you ship them.
   DeepSeek, Cohere, Perplexity, Hugging Face, Qwen, Kimi, Claude Code, Codex, MiniMax, Antigravity,
   Devin, Amp, Gemma, Trae, Kiro, Replit, Lovable). On the website
   (`site/src/components/v2/brands.ts`, coloured variants): Claude, ChatGPT (OpenAI mark), Cursor,
-  Model Context Protocol, Claude Code, Codex, GitHub Copilot, Gemini CLI (Gemini mark), OpenCode, Amp.
+  Model Context Protocol, Claude Code, Codex, GitHub Copilot, Gemini CLI (Gemini mark), OpenCode, Amp,
+  Google Antigravity, Kimi Code (Kimi mark) and MiniMax Code (MiniMax mark); the same marks are written
+  as files to `site/public/brand/marks/` for the MCP setup in the docs.
 - Source: https://github.com/lobehub/lobe-icons (`@lobehub/icons-static-svg` 1.102.0)
 - License: MIT
 
