@@ -63,9 +63,9 @@ jobs:
         run: sudo apt-get update -qq && sudo apt-get install -y -qq libxkbcommon-dev libxkbcommon-x11-dev libfontconfig1-dev libfreetype-dev
       - run: cargo clippy --locked --manifest-path examples/gpui-agent-apps/Cargo.toml -- -D warnings
 
-  # The oxyn CLI end to end: build the registry from this commit (no WASM), then a fresh Dioxus
-  # project and a fresh GPUI project each get `oxyn init` + `oxyn add` of three free components and
-  # must `cargo check`. oxyn-core comes from this checkout (--oxyn-path), the code from the registry.
+  # The oxyn CLI and the oxyn-mcp server end to end: build the registry from this commit (no WASM),
+  # then fresh Dioxus and GPUI projects each get `oxyn init` + `oxyn add` of three free components
+  # (and a third project gets them through the MCP server) and must `cargo check`. oxyn-core comes from this checkout (--oxyn-path), the code from the registry.
   cli-e2e:
     runs-on: ubuntu-latest
     env:
@@ -88,7 +88,7 @@ jobs:
       - name: registry (site/public/r) from this commit
         run: node scripts/gen.mjs
         working-directory: site
-      - run: cargo build --locked -p oxyn-cli
+      - run: cargo build --locked -p oxyn-cli -p oxyn-mcp
       - name: list, search, view; a Pro item exits 2
         run: |
           OXYN=$CARGO_TARGET_DIR/debug/oxyn; R=$PWD/site/public/r
@@ -111,6 +111,16 @@ jobs:
           printf 'mod oxyn;\n#[allow(unused_imports)]\nuse oxyn::{ApprovalCard, Composer, TagInput};\nfn main() {}\n' > src/main.rs
           cargo check
           $OXYN diff --registry "$R" composer
+      - name: MCP server over stdio (initialize, tools/list, list/get/add), then cargo check what it added
+        run: |
+          OXYN=$CARGO_TARGET_DIR/debug/oxyn; R=$PWD/site/public/r; ROOT=$PWD
+          (cd "$RUNNER_TEMP" && cargo new -q mcpdx --vcs none && cd mcpdx \
+            && cargo add -q dioxus@0.7 --no-default-features -F macro,html,signals,hooks \
+            && $OXYN init --registry "$R" --oxyn-path "$ROOT")
+          OXYN_MCP_E2E_REGISTRY="$R" OXYN_MCP_E2E_PROJECT="$RUNNER_TEMP/mcpdx" cargo test --locked -p oxyn-mcp -- --nocapture
+          cd "$RUNNER_TEMP/mcpdx"
+          printf 'mod oxyn;\n#[allow(unused_imports)]\nuse oxyn::{ApprovalCard, Composer, TagInput};\nfn main() {}\n' > src/main.rs
+          cargo check
       - name: fresh GPUI project, oxyn add button badge spinner, cargo check
         run: |
           OXYN=$CARGO_TARGET_DIR/debug/oxyn; R=$PWD/site/public/r; ROOT=$PWD
