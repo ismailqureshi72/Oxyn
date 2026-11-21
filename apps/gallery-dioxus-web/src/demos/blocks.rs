@@ -1,13 +1,17 @@
 //! Blocks (Oxyn Pro): larger compositions for AI and agent products. Agents: Live session,
 //! Mission control, Mission timeline, Run inspector, Background agents, Agent routines, MCP
-//! servers, Knowledge base, Eval suite, Agent builder and Agent gallery. AI: AI insight card.
+//! servers, Knowledge base, Eval suite, Agent builder and Agent gallery. AI: AI insight card,
+//! Model arena, Prompt studio, Assistant memory, Catch up, AI feature launch, AI setup wizard,
+//! Call insights and Lead scoring.
 //! Every demo runs on the host clock (`live`).
 
 use dioxus::prelude::*;
 use oxyn_core::ClockMs;
 use oxyn_dioxus::{
-    AgentBuilder, AgentGallery, AgentRoutines, AiInsightCard, BackgroundAgents, EvalSuite,
-    KnowledgeBase, LiveSession, McpServers, MissionControl, MissionTimeline, RunInspector,
+    AgentBuilder, AgentGallery, AgentRoutines, AiFeatureLaunch, AiInsightCard, AiSetupWizard,
+    AssistantMemory, BackgroundAgents, CallInsights, CatchUp, EvalSuite, KnowledgeBase,
+    LeadScoring, LiveSession, McpServers, MissionControl, MissionTimeline, ModelArena,
+    PromptStudio, RunInspector,
 };
 
 use super::{Code, mk, rng, sel, tog, var};
@@ -210,6 +214,117 @@ fn insight_code(v: &Vals) -> String {
     let mut c = clock("AiInsightCard");
     if !v.b("auto") {
         c = c.raw("auto_play", "false");
+    }
+    c.b("fail", v.b("fail")).done()
+}
+
+fn arena(v: &Vals, now: ClockMs) -> Element {
+    rsx! { ModelArena { now, auto_play: v.b("auto"), blind: v.b("blind"), fail: v.b("fail"), board: v.b("board") } }
+}
+fn arena_code(v: &Vals) -> String {
+    let mut c = clock("ModelArena");
+    if !v.b("auto") {
+        c = c.raw("auto_play", "false");
+    }
+    if !v.b("blind") {
+        c = c.raw("blind", "false");
+    }
+    c.b("fail", v.b("fail")).b("board", v.b("board")).done()
+}
+
+fn prompt(v: &Vals, now: ClockMs) -> Element {
+    rsx! { PromptStudio { now, auto_play: v.b("auto"), fail: v.b("fail"), compare: v.b("compare") } }
+}
+fn prompt_code(v: &Vals) -> String {
+    let mut c = clock("PromptStudio");
+    if !v.b("auto") {
+        c = c.raw("auto_play", "false");
+    }
+    c.b("fail", v.b("fail")).b("compare", v.b("compare")).done()
+}
+
+const MEM_FILTERS: [&str; 5] = ["all", "about you", "preferences", "projects", "people"];
+
+fn memory(v: &Vals, now: ClockMs) -> Element {
+    rsx! { AssistantMemory { now, full: v.b("full"), paused: v.b("paused"), filter: pick(v, "filter", &MEM_FILTERS) } }
+}
+fn memory_code(v: &Vals) -> String {
+    let mut c = clock("AssistantMemory")
+        .b("full", v.b("full"))
+        .b("paused", v.b("paused"));
+    let f = pick(v, "filter", &MEM_FILTERS);
+    if f > 0 {
+        c = c.raw("filter", f.to_string());
+    }
+    c.done()
+}
+
+const RANGES: [&str; 3] = ["since yesterday", "last 3 days", "last week"];
+
+fn catchup(v: &Vals, now: ClockMs) -> Element {
+    rsx! { CatchUp { now, range: pick(v, "range", &RANGES), auto_play: v.b("auto"), fail: v.b("fail") } }
+}
+fn catchup_code(v: &Vals) -> String {
+    let mut c = clock("CatchUp").raw("range", pick(v, "range", &RANGES).to_string());
+    if !v.b("auto") {
+        c = c.raw("auto_play", "false");
+    }
+    c.b("fail", v.b("fail")).done()
+}
+
+fn launch(v: &Vals, now: ClockMs) -> Element {
+    rsx! { AiFeatureLaunch { now, admin: v.b("admin"), enabled: v.b("enabled"), auto_play: v.b("auto") } }
+}
+fn launch_code(v: &Vals) -> String {
+    let mut c = clock("AiFeatureLaunch");
+    if !v.b("admin") {
+        c = c.raw("admin", "false");
+    }
+    if !v.b("auto") {
+        c = c.raw("auto_play", "false");
+    }
+    c.b("enabled", v.b("enabled")).done()
+}
+
+const WZ_START: [&str; 4] = ["connect", "behaviour", "test", "live"];
+
+fn wizard(v: &Vals, now: ClockMs) -> Element {
+    rsx! { AiSetupWizard { now, start: pick(v, "start", &WZ_START), fail: v.b("fail") } }
+}
+fn wizard_code(v: &Vals) -> String {
+    let mut c = clock("AiSetupWizard");
+    let s = pick(v, "start", &WZ_START);
+    if s > 0 {
+        c = c.raw("start", s.to_string());
+    }
+    c.b("fail", v.b("fail")).done()
+}
+
+fn call(v: &Vals, now: ClockMs) -> Element {
+    rsx! { CallInsights { now, tour: v.b("tour"), done: v.f("done") as usize } }
+}
+fn call_code(v: &Vals) -> String {
+    let mut c = clock("CallInsights");
+    if !v.b("tour") {
+        c = c.raw("tour", "false");
+    }
+    if v.f("done") > 0.0 {
+        c = c.raw("done", format!("{}", v.f("done") as usize));
+    }
+    c.done()
+}
+
+fn leads(v: &Vals, now: ClockMs) -> Element {
+    let open = v.b("open").then_some(0);
+    rsx! { LeadScoring { now, intro: v.b("intro"), fail: v.b("fail"), open } }
+}
+fn leads_code(v: &Vals) -> String {
+    let mut c = clock("LeadScoring");
+    if !v.b("intro") {
+        c = c.raw("intro", "false");
+    }
+    if v.b("open") {
+        c = c.raw("open", "Some(0)");
     }
     c.b("fail", v.b("fail")).done()
 }
@@ -796,6 +911,377 @@ pub(crate) fn demos() -> Vec<Demo> {
             ],
             vec!["Up to 600 px; below 460 px the legend hides and the bars shorten."],
             560,
+        ),
+        blk(
+            "model-arena",
+            "Model arena",
+            CAT_AI,
+            "ModelArena",
+            "A blind taste test for language models: one prompt goes to two unnamed models, both answers arrive side by side at each model's own speed with first token time, speed and cost underneath, and only after you vote are the names and marks revealed; a leaderboard keeps the win rates.",
+            vec![
+                tog("auto", "Run at once", true),
+                tog("blind", "Blind", true),
+                tog("fail", "Model B fails first", false),
+                tog("board", "Leaderboard open", false),
+            ],
+            vec![
+                var("blind", "Blind round running.", &[]),
+                var(
+                    "named",
+                    "Names shown from the start (Oxyn extra).",
+                    &[("blind", "false")],
+                ),
+                var(
+                    "error",
+                    "Model B fails, with Retry (Oxyn extra).",
+                    &[("fail", "true")],
+                ),
+                var(
+                    "leaderboard",
+                    "Idle with the leaderboard open (Oxyn extra).",
+                    &[("auto", "false"), ("board", "true")],
+                ),
+            ],
+            arena,
+            arena_code,
+            vec![
+                (
+                    "Enter / Ctrl+Enter",
+                    "In the prompt field, run (Stop while answering)",
+                ),
+                ("Esc", "Stop a run, or close the leaderboard"),
+                (
+                    "← / → / Home / End",
+                    "On the narrow layout's answer tabs, switch model",
+                ),
+                (
+                    "Tab",
+                    "Leaderboard, Blind, prompt, Run, samples, each answer, then the votes",
+                ),
+            ],
+            vec![
+                "Each pane is a labelled region; its name gains the model only after the vote or with Blind off.",
+                "Status is a word with an icon (Thinking, Writing, Done, Finished first, Stopped, Failed).",
+                "Votes are a labelled group; the round, the result with both models and Retry are read out.",
+            ],
+            vec![
+                "Up to 800 px; below 560 px the panes become two tabs that keep both statuses visible; below 480 px votes form a 2 × 2 grid.",
+            ],
+            620,
+        ),
+        blk(
+            "prompt-studio",
+            "Prompt studio",
+            CAT_AI,
+            "PromptStudio",
+            "Edit, test and ship a prompt template in one card: variables show as coloured chips, fields fill them from saved test cases, Run streams a reply with latency, tokens and cost, and versions can be compared word by word and promoted to production with Undo.",
+            vec![
+                tog("auto", "Run at once", true),
+                tog("fail", "First run fails", false),
+                tog("compare", "Compare mode", false),
+            ],
+            vec![
+                var("editing", "Latest version, test run streaming.", &[]),
+                var(
+                    "compare",
+                    "Word diff against production (Oxyn extra).",
+                    &[("auto", "false"), ("compare", "true")],
+                ),
+                var(
+                    "error",
+                    "The run fails, with Retry (Oxyn extra).",
+                    &[("fail", "true")],
+                ),
+            ],
+            prompt,
+            prompt_code,
+            vec![
+                (
+                    "Ctrl/Cmd+Enter",
+                    "Run the selected test case from anywhere in the card",
+                ),
+                (
+                    "← / →",
+                    "On System and User, the test cases and effort, move the selection",
+                ),
+                ("↑ / ↓", "In the version and model menus, move between rows"),
+                ("Esc", "Close a menu, or leave compare mode"),
+            ],
+            vec![
+                "System and User are real tabs; the diff uses ins and del with hidden Added and Removed words and a visible sign.",
+                "Each variable field has a visible label in its colour; an empty variable's chips turn dashed and the field is marked invalid.",
+                "Runs, results, promotions and undos are announced, including that the reply is simulated.",
+            ],
+            vec![
+                "Up to 760 px; below 560 px the fields go to two columns and below 340 px to one; below 480 px the test cases and Run take full rows.",
+            ],
+            620,
+        ),
+        blk(
+            "assistant-memory",
+            "Assistant memory",
+            CAT_AI,
+            "AssistantMemory",
+            "What an assistant remembers about you, one plain sentence each: filter by group or search, edit or forget a memory in place with Undo, file the memory this chat just made, add your own and switch saved memories or chat history off. (Arc's Agent memory; ours is assistant-memory because agent-memory is a screen.)",
+            vec![
+                tog("full", "Nearly full", false),
+                tog("paused", "Saved memories off", false),
+                sel("filter", "Filter", &MEM_FILTERS, "all"),
+            ],
+            vec![
+                var("memories", "All memories with a new one to file.", &[]),
+                var(
+                    "full",
+                    "Near capacity, Preferences only (Oxyn extra).",
+                    &[("full", "true"), ("filter", "preferences")],
+                ),
+                var(
+                    "paused",
+                    "Saved memories off (Oxyn extra).",
+                    &[("paused", "true")],
+                ),
+            ],
+            memory,
+            memory_code,
+            vec![
+                ("← / → / Home / End", "Move between the filter pills"),
+                (
+                    "Enter",
+                    "Save an edit, or add a typed memory; Shift+Enter adds a line while editing",
+                ),
+                ("Esc", "Cancel an edit, or close the search"),
+            ],
+            vec![
+                "Groups are labelled with their counts; the meter reads its fullness as text and warns with an icon.",
+                "Edit and Forget name the memory they act on; actions stay visible on touch screens.",
+                "Filing, adding (with its keyword guess), saving, forgetting with its undo window and restoring are announced.",
+            ],
+            vec![
+                "Up to 640 px; the list scrolls inside a fixed height; below 440 px the pills scroll sideways and the inset tightens.",
+            ],
+            640,
+        ),
+        blk(
+            "catch-up",
+            "Catch up",
+            CAT_AI,
+            "CatchUp",
+            "A catch me up digest: one button reads Slack, Linear, GitHub and Gmail for the range you pick and streams back a short ranked summary (Needs you, Decisions made, Shipped, FYI); each line has its source, people and link, and marking lines as read clears them until you are caught up.",
+            vec![
+                sel("range", "Range", &RANGES, "last 3 days"),
+                tog("auto", "Read at once", true),
+                tog("fail", "GitHub unreachable", false),
+            ],
+            vec![
+                var("digest", "Three day digest.", &[]),
+                var(
+                    "idle",
+                    "Before the first read, since yesterday (Oxyn extra).",
+                    &[("auto", "false"), ("range", "since yesterday")],
+                ),
+                var(
+                    "partial",
+                    "GitHub skipped, with Retry (Oxyn extra).",
+                    &[("fail", "true"), ("range", "last week")],
+                ),
+            ],
+            catchup,
+            catchup_code,
+            vec![
+                ("← / → / Home / End", "Move between time ranges"),
+                ("Enter / Space", "Run, stop, open a line or mark it as read"),
+                (
+                    "Tab",
+                    "Range, each line's open and read buttons, then the footer",
+                ),
+            ],
+            vec![
+                "Sections are labelled with a heading and count; each line starts with its source for screen readers.",
+                "Lines not yet streamed are absent; reading, ready, read counts and all caught up are announced.",
+                "Status pairs an icon with a word (sections, sources reading, read and skipped).",
+            ],
+            vec![
+                "Up to 600 px; below 440 px the range wraps under the title and meta lines truncate.",
+            ],
+            600,
+        ),
+        blk(
+            "ai-feature-launch",
+            "AI feature launch",
+            CAT_AI,
+            "AiFeatureLaunch",
+            "An in-product card for launching an AI feature: a looping mini demo above a three-step tour that autoplays until you take over, three benefits per step, a workspace switch only admins can turn on, and Try it now.",
+            vec![
+                tog("admin", "You are an admin", true),
+                tog("enabled", "Already on", false),
+                tog("auto", "Autoplay", true),
+            ],
+            vec![
+                var("tour", "Autoplaying tour, admin.", &[]),
+                var(
+                    "member",
+                    "Member: the switch is locked with a note (Oxyn extra).",
+                    &[("admin", "false")],
+                ),
+                var(
+                    "enabled",
+                    "On for the workspace, tour paused (Oxyn extra).",
+                    &[("enabled", "true"), ("auto", "false")],
+                ),
+            ],
+            launch,
+            launch_code,
+            vec![
+                (
+                    "← / → / Home / End",
+                    "On the dots, change step and stop autoplay",
+                ),
+                (
+                    "Space",
+                    "Toggle the workspace switch; again while saving cancels",
+                ),
+                (
+                    "Tab",
+                    "The active dot, the switch, Learn more and Try it now",
+                ),
+            ],
+            vec![
+                "The dots are a tablist with roving focus; the demo is decorative and hidden from screen readers.",
+                "The switch says who can change it; saving, cancelling and every simulated action are announced.",
+            ],
+            vec![
+                "Up to 520 px; below 440 px the actions span the width and the credit centres under them.",
+            ],
+            560,
+        ),
+        blk(
+            "ai-setup-wizard",
+            "AI setup wizard",
+            CAT_AI,
+            "AiSetupWizard",
+            "Three steps to turn on an AI assistant: connect sources and watch them sync, choose the model, tone and guardrails, then ask a test question whose answer streams with numbered citations before you go live.",
+            vec![
+                sel("start", "Start at", &WZ_START, "connect"),
+                tog("fail", "Intercom fails first", false),
+            ],
+            vec![
+                var("connect", "Step 1, nothing connected.", &[]),
+                var(
+                    "test",
+                    "Step 3 with sources synced (Oxyn extra).",
+                    &[("start", "test")],
+                ),
+                var(
+                    "error",
+                    "Intercom's token expired, with Retry (Oxyn extra).",
+                    &[("fail", "true")],
+                ),
+                var(
+                    "live",
+                    "Live, with the summary (Oxyn extra).",
+                    &[("start", "live")],
+                ),
+            ],
+            wizard,
+            wizard_code,
+            vec![
+                ("← / → / ↑ / ↓", "On the model cards, select a model"),
+                ("Space", "Toggle a guardrail"),
+                ("Enter", "Ask the question, or stop an answer"),
+            ],
+            vec![
+                "Steps are an ordered list with aria-current; locked steps are disabled.",
+                "Each sync is a progressbar named after its source; citations are numbered and listed by source.",
+                "Connecting, failures, selections, answers and going live are announced, including that they are simulated.",
+            ],
+            vec![
+                "Up to 600 px; below 480 px step labels hide behind their numbers; below 400 px the footer meta hides.",
+            ],
+            620,
+        ),
+        blk(
+            "call-insights",
+            "Call insights",
+            CAT_AI,
+            "CallInsights",
+            "A sales call in one card: talk time split by speaker, pricing, competitor and objection moments on a rail that play their quote with a seekable waveform, an AI summary that streams once, and next steps whose checking lowers the deal risk.",
+            vec![
+                tog("tour", "Tour the moments", true),
+                rng("done", "Steps done", 0.0, 3.0, 1.0, "0"),
+            ],
+            vec![
+                var("tour", "Touring the moments, high risk.", &[]),
+                var(
+                    "low-risk",
+                    "Two steps done, risk drops (Oxyn extra).",
+                    &[("tour", "false"), ("done", "2")],
+                ),
+                var(
+                    "all-done",
+                    "Every step done (Oxyn extra).",
+                    &[("tour", "false"), ("done", "3")],
+                ),
+            ],
+            call,
+            call_code,
+            vec![
+                (
+                    "← / → / Home / End",
+                    "On the markers, select a moment; on the waveform, seek a second or to an end",
+                ),
+                (
+                    "Space / Enter",
+                    "Play or pause the clip; toggle a next step",
+                ),
+            ],
+            vec![
+                "Markers are a radio group named with kind and time; the waveform is a slider with a time value.",
+                "Risk is a word with an icon; selecting, playing, copying and each step change are announced.",
+            ],
+            vec![
+                "360 to 680 px; below 560 px the legend goes to two columns and attendees hide; below 460 px titles and owners drop.",
+            ],
+            640,
+        ),
+        blk(
+            "lead-scoring",
+            "Lead scoring",
+            CAT_AI,
+            "LeadScoring",
+            "Inbound leads ranked by an AI fit score: each row has a score ring, Hot, Warm or Cold in words and the model's one-line reason; open one for its signals and weighted breakdown, then push it to HubSpot or Airtable.",
+            vec![
+                tog("intro", "Count up on view", true),
+                tog("open", "First lead open", false),
+                tog("fail", "First push fails", false),
+            ],
+            vec![
+                var("ranked", "Ranked list, rings counting up.", &[]),
+                var(
+                    "open",
+                    "Top lead open with its breakdown (Oxyn extra).",
+                    &[("open", "true"), ("intro", "false")],
+                ),
+                var(
+                    "error",
+                    "Push fails, with Retry (Oxyn extra).",
+                    &[("open", "true"), ("fail", "true")],
+                ),
+            ],
+            leads,
+            leads_code,
+            vec![
+                ("↑ / ↓ / Home / End", "Move between lead rows"),
+                ("Enter / Space", "Open or close the focused lead"),
+                ("← / →", "In an open lead, switch the CRM"),
+            ],
+            vec![
+                "Rows are buttons named with company, person, score, tier and reason; rings are decorative.",
+                "Rescoring, opening, the destination and pushes are announced, including that pushes are simulated.",
+            ],
+            vec![
+                "360 to 640 px; below 460 px the role leaves the row and the push button fills the row.",
+            ],
+            600,
         ),
     ]
 }

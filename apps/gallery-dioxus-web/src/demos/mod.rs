@@ -104,7 +104,7 @@ pub const CATEGORIES: [Category; 30] = [
     Category {
         slug: "blocks-ai",
         name: "Blocks · AI",
-        blurb: "Pro: AI surfaces for products: the AI insight card.",
+        blurb: "Pro: AI surfaces for products: AI insight card, model arena, prompt studio, assistant memory, catch up, AI feature launch, AI setup wizard, call insights and lead scoring.",
     },
     Category {
         slug: "buttons",
