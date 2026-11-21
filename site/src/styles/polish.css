@@ -47,3 +47,16 @@
 .x-studio-lede{margin:18px auto 0;max-width:640px;font-size:17px;line-height:1.6;color:var(--fg2)}
 .x-studio .x-soon{margin-top:40px}
 @media (max-width:640px){.x-studio{padding:44px 16px 40px}.x-studio-lede{font-size:15.5px}}
+
+/* Landing hero: five collaborators, each with a colour; a selection frame takes the colour of the
+   cursor that made it. Light text on the light-theme colours, dark text on the dark-theme ones. */
+.dz{--dz-c-a:#6D4AFF;--dz-c-b:#0B7F73;--dz-c-c:#D9480F;--dz-c-d:#C2255C;--dz-c-e:#1C6FD6;--dz-on:#FFFFFF}
+[data-theme="dark"] .dz{--dz-c-a:#A594FF;--dz-c-b:#3CCFB8;--dz-c-c:#FF9466;--dz-c-d:#FF7EB3;--dz-c-e:#74B0FF;--dz-on:#0D0D0E}
+.dz-cur.a{--cc:var(--dz-c-a)}.dz-cur.b{--cc:var(--dz-c-b)}.dz-cur.c,.dz-ghost.c{--cc:var(--dz-c-c)}.dz-cur.d,.dz-ghost.d{--cc:var(--dz-c-d)}.dz-cur.e,.dz-ghost.e{--cc:var(--dz-c-e)}
+.dz-cur.a path,.dz-cur.b path,.dz-cur.amb path{fill:var(--cc);stroke:var(--dz-on)}
+.dz-cur.a span,.dz-cur.b span,.dz-cur.amb span{background:var(--cc);color:var(--dz-on);box-shadow:0 2px 6px rgb(0 0 0 / .12)}
+.dz-cur.amb{transition:opacity .3s,transform .7s var(--dz-ease)!important}
+.dz-ghost{border:1.5px solid var(--cc);border-radius:3px;background:color-mix(in srgb,var(--cc) 9%,transparent);box-sizing:border-box}
+.dz.dz-tint .dz-name,.dz.dz-tint .dz-dim,.dz.dz-tint .dz-bdg:not(.dz-red){color:var(--dz-on)}
+.dz.dz-tint .dz-sel{border-width:1.5px}
+@media (max-width:760px){.dz-cur{display:block}.dz-cur span{font-size:10px;height:17px;line-height:17px;padding:0 6px}}
