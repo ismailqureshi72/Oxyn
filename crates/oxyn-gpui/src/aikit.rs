@@ -610,11 +610,11 @@ impl AiKitView {
     }
 }
 
-fn c(t: &Theme, r: ColorRole) -> Hsla {
+pub(crate) fn c(t: &Theme, r: ColorRole) -> Hsla {
     hsla(t.color(r))
 }
 
-fn hue(t: &Theme, h: &str) -> Hsla {
+pub(crate) fn hue(t: &Theme, h: &str) -> Hsla {
     match h {
         "blue" => c(t, ColorRole::StatusInfoFg),
         "green" => c(t, ColorRole::StatusSuccessFg),
@@ -626,14 +626,14 @@ fn hue(t: &Theme, h: &str) -> Hsla {
     }
 }
 
-fn text(t: &Theme, s: impl Into<SharedString>, r: ColorRole, size: f32) -> Div {
+pub(crate) fn text(t: &Theme, s: impl Into<SharedString>, r: ColorRole, size: f32) -> Div {
     div()
         .text_size(px(size))
         .text_color(c(t, r))
         .child(s.into())
 }
 
-fn title(t: &Theme, h: &str, sub: impl Into<SharedString>) -> Div {
+pub(crate) fn title(t: &Theme, h: &str, sub: impl Into<SharedString>) -> Div {
     div()
         .flex()
         .flex_col()
@@ -649,11 +649,11 @@ fn title(t: &Theme, h: &str, sub: impl Into<SharedString>) -> Div {
         .child(text(t, sub, ColorRole::FgMuted, 12.5))
 }
 
-fn row() -> Div {
+pub(crate) fn row() -> Div {
     div().flex().items_center().gap(px(6.)).min_w(px(0.))
 }
 
-fn pill(t: &Theme, s: impl Into<SharedString>, h: &str) -> Div {
+pub(crate) fn pill(t: &Theme, s: impl Into<SharedString>, h: &str) -> Div {
     let col = hue(t, h);
     div()
         .h(px(20.))
@@ -671,7 +671,7 @@ fn pill(t: &Theme, s: impl Into<SharedString>, h: &str) -> Div {
         .child(s.into())
 }
 
-fn bar(t: &Theme, frac: f64, col: Hsla) -> Div {
+pub(crate) fn bar(t: &Theme, frac: f64, col: Hsla) -> Div {
     div()
         .h(px(6.))
         .w_full()
@@ -686,7 +686,7 @@ fn bar(t: &Theme, frac: f64, col: Hsla) -> Div {
         )
 }
 
-fn mark(name: &str, size: f32, fg: Hsla) -> Div {
+pub(crate) fn mark(name: &str, size: f32, fg: Hsla) -> Div {
     let d = div()
         .flex_none()
         .size(px(size))
