@@ -152,13 +152,13 @@ affectUI,App Directory,https://www.affectui.com/blocks/app-directory,Blocks · I
 affectUI,Client Context,https://www.affectui.com/blocks/client-context,Blocks · Productivity,Pro,NEW,K2,#41,planned
 affectUI,Invoice & Credit Note,https://www.affectui.com/blocks/invoice-credit,Blocks · Billing,Pro,NEW,K2,#41,planned
 affectUI,KPI Board,https://www.affectui.com/blocks/kpi-board,Blocks · Analytics,Pro,genui-blocks,K2,#41,planned
-affectUI,Live Session,https://www.affectui.com/blocks/live-session,Blocks · Agents,Pro,"subagent-tree, plan-todo, composer",K1,#39,planned
+affectUI,Live Session,https://www.affectui.com/blocks/live-session,Blocks · Agents,Pro,live-session,C1,C1f,"built (C1f: Dioxus + GPUI interactive, oxyn_core::blocks, /blocks/agents/live-session/, Pro)"
 affectUI,Logo Marquee,https://www.affectui.com/blocks/logo-marquee,Blocks · Social proof,Free,NEW,K3,#43,planned
 affectUI,Metrics Dashboard,https://www.affectui.com/blocks/metrics-dashboard,Blocks · Analytics,Pro,genui-blocks,K2,#41,planned
-affectUI,Mission Control,https://www.affectui.com/blocks/mission-control,Blocks · Agents,Pro,"background-jobs, subagent-tree, approvals",K1,#39,planned
-affectUI,Mission Timeline,https://www.affectui.com/blocks/mission-timeline,Blocks · Agents,Pro,"trace-view, background-jobs",K1,#39,planned
+affectUI,Mission Control,https://www.affectui.com/blocks/mission-control,Blocks · Agents,Pro,mission-control,C1,C1f,"built (C1f: Dioxus + GPUI interactive, oxyn_core::blocks, /blocks/agents/mission-control/, Pro)"
+affectUI,Mission Timeline,https://www.affectui.com/blocks/mission-timeline,Blocks · Agents,Pro,mission-timeline,C1,C1f,"built (C1f: Dioxus + GPUI interactive, oxyn_core::blocks, /blocks/agents/mission-timeline/, Pro)"
 affectUI,Pricing Plans,https://www.affectui.com/blocks/pricing-plans,Blocks · Pricing,Pro,NEW,K3,#43,planned
-affectUI,Run Inspector,https://www.affectui.com/blocks/run-inspector,Blocks · Agents,Pro,"trace-view, subagent-tree, run-meter",K1,#39,planned
+affectUI,Run Inspector,https://www.affectui.com/blocks/run-inspector,Blocks · Agents,Pro,run-inspector,C1,C1f,"built (C1f: Dioxus + GPUI interactive, oxyn_core::blocks, /blocks/agents/run-inspector/, Pro)"
 affectUI,Task Board,https://www.affectui.com/blocks/task-board,Blocks · Productivity,Pro,NEW,K2,#41,planned
 affectUI,Testimonial Wall,https://www.affectui.com/blocks/testimonial-wall,Blocks · Social proof,Free,NEW,K3,#43,planned
 affectUI,Agent Team,https://www.affectui.com/illustrations/agent-team,Illustrations · Card illustrations,Free,animated-marks,I1,#42,planned
@@ -362,7 +362,7 @@ Arc UI,Agent memory,https://uiarc.dev/components/blocks/agent-memory,Blocks · A
 Arc UI,AI side panel,https://uiarc.dev/components/blocks/ai-side-panel,Blocks · AI,Pro,side-panels,,#27,built
 Arc UI,AI inline edit,https://uiarc.dev/components/blocks/ai-inline-edit,Blocks · AI,Pro,"ai-inline-edit, diff-viewer",,#30,built
 Arc UI,Research run,https://uiarc.dev/components/blocks/research-run,Blocks · AI,Pro,citations-sources,,#27,built
-Arc UI,AI insight card,https://uiarc.dev/components/blocks/ai-insight-card,Blocks · AI,Pro,genui-blocks.md (partial),,#36,planned
+Arc UI,AI insight card,https://uiarc.dev/components/blocks/ai-insight-card,Blocks · AI,Pro,ai-insight-card,C1,C1f,"built (C1f: Dioxus + GPUI interactive, oxyn_core::blocks, /blocks/ai/ai-insight-card/, Pro)"
 Arc UI,Catch up,https://uiarc.dev/components/blocks/catch-up,Blocks · AI,Pro,NEW,N9,#35,planned
 Arc UI,AI feature launch,https://uiarc.dev/components/blocks/ai-feature-launch,Blocks · AI,Pro,NEW,N25,#43,planned
 Arc UI,AI search bar,https://uiarc.dev/components/blocks/ai-search-bar,Blocks · AI,Pro,ai-search-bar,,#26,built
@@ -370,15 +370,15 @@ Arc UI,AI setup wizard,https://uiarc.dev/components/blocks/ai-setup-wizard,Block
 Arc UI,Call insights,https://uiarc.dev/components/blocks/call-insights,Blocks · AI,Pro,live-captions.md (partial),,#38,planned
 Arc UI,Lead scoring,https://uiarc.dev/components/blocks/lead-scoring,Blocks · AI,Pro,NEW (CRM),N10,#35,planned
 Arc UI,Agent run,https://uiarc.dev/components/blocks/agent-run,Blocks · Agents,Pro,"tool-call.md, plan-todo.md, diff-viewer.md, approval-card.md, pr-card.md",,#28,built
-Arc UI,Agent tasks,https://uiarc.dev/components/blocks/agent-tasks,Blocks · Agents,Pro,background-jobs.md,,#35,planned
+Arc UI,Agent tasks,https://uiarc.dev/components/blocks/agent-tasks,Blocks · Agents,Pro,background-agents,C1,C1f,"built (C1f: Dioxus + GPUI interactive, oxyn_core::blocks, /blocks/agents/background-agents/, Pro)"
 Arc UI,Agent approvals,https://uiarc.dev/components/blocks/agent-approvals,Blocks · Agents,Pro,"approvals.md, approval-card.md, permission-rules.md",,#28,built
-Arc UI,Agent routines,https://uiarc.dev/components/blocks/agent-routines,Blocks · Agents,Pro,"background-jobs.md (partial, schedules)",,#35,planned
+Arc UI,Agent routines,https://uiarc.dev/components/blocks/agent-routines,Blocks · Agents,Pro,agent-routines,C1,C1f,"built (C1f: Dioxus + GPUI interactive, oxyn_core::blocks, /blocks/agents/agent-routines/, Pro)"
 Arc UI,Agent orchestrator,https://uiarc.dev/components/blocks/agent-orchestrator,Blocks · Agents,Pro,"subagent-tree.md, fanout-grid.md",,#28,built
-Arc UI,MCP servers,https://uiarc.dev/components/blocks/mcp-servers,Blocks · Agents,Pro,mcp-plugin-list.md,,#35,planned
-Arc UI,Knowledge base,https://uiarc.dev/components/blocks/knowledge-base,Blocks · Agents,Pro,NEW,N7,#35,planned
-Arc UI,Eval suite,https://uiarc.dev/components/blocks/eval-suite,Blocks · Agents,Pro,NEW,N7,#35,planned
-Arc UI,Agent builder,https://uiarc.dev/components/blocks/agent-builder,Blocks · Agents,Pro,NEW,N7,#35,planned
-Arc UI,Agent gallery,https://uiarc.dev/components/blocks/agent-gallery,Blocks · Agents,Pro,NEW,N7,#35,planned
+Arc UI,MCP servers,https://uiarc.dev/components/blocks/mcp-servers,Blocks · Agents,Pro,mcp-servers,C1,C1f,"built (C1f: Dioxus + GPUI interactive, oxyn_core::blocks, /blocks/agents/mcp-servers/, Pro)"
+Arc UI,Knowledge base,https://uiarc.dev/components/blocks/knowledge-base,Blocks · Agents,Pro,knowledge-base,C1,C1f,"built (C1f: Dioxus + GPUI interactive, oxyn_core::blocks, /blocks/agents/knowledge-base/, Pro)"
+Arc UI,Eval suite,https://uiarc.dev/components/blocks/eval-suite,Blocks · Agents,Pro,eval-suite,C1,C1f,"built (C1f: Dioxus + GPUI interactive, oxyn_core::blocks, /blocks/agents/eval-suite/, Pro)"
+Arc UI,Agent builder,https://uiarc.dev/components/blocks/agent-builder,Blocks · Agents,Pro,agent-builder,C1,C1f,"built (C1f: Dioxus + GPUI interactive, oxyn_core::blocks, /blocks/agents/agent-builder/, Pro)"
+Arc UI,Agent gallery,https://uiarc.dev/components/blocks/agent-gallery,Blocks · Agents,Pro,agent-gallery,C1,C1f,"built (C1f: Dioxus + GPUI interactive, oxyn_core::blocks, /blocks/agents/agent-gallery/, Pro)"
 Arc UI,Sidebar,https://uiarc.dev/components/blocks/sidebar,Blocks · App shell,Pro,"workspace-chrome, side-panels",,#27,built
 Arc UI,Workspace sidebar,https://uiarc.dev/components/blocks/workspace-sidebar,None · None,Pro,workspace-chrome,,#27,built
 Arc UI,Sidebar rail,https://uiarc.dev/components/blocks/sidebar-rail,None · None,Pro,workspace-chrome,,#27,built

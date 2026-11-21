@@ -298,4 +298,16 @@ specified just as deeply. When we point at one component as an example, the stan
 | [trial-banner.md](trial-banner.md) | v0.1 — built (C1e, AI Components, Pro) |
 | [live-visitors.md](live-visitors.md) | v0.1 — built (C1e, AI Components, Pro) |
 | [social-proof-toast.md](social-proof-toast.md) | v0.1 — built (C1e, AI Components, Pro) |
+| [live-session.md](live-session.md) | v0.1 — built (C1f, Blocks, Pro) |
+| [mission-control.md](mission-control.md) | v0.1 — built (C1f, Blocks, Pro) |
+| [mission-timeline.md](mission-timeline.md) | v0.1 — built (C1f, Blocks, Pro) |
+| [run-inspector.md](run-inspector.md) | v0.1 — built (C1f, Blocks, Pro) |
+| [background-agents.md](background-agents.md) | v0.1 — built (C1f, Blocks, Pro) |
+| [agent-routines.md](agent-routines.md) | v0.1 — built (C1f, Blocks, Pro) |
+| [mcp-servers.md](mcp-servers.md) | v0.1 — built (C1f, Blocks, Pro) |
+| [knowledge-base.md](knowledge-base.md) | v0.1 — built (C1f, Blocks, Pro) |
+| [eval-suite.md](eval-suite.md) | v0.1 — built (C1f, Blocks, Pro) |
+| [agent-builder.md](agent-builder.md) | v0.1 — built (C1f, Blocks, Pro) |
+| [agent-gallery.md](agent-gallery.md) | v0.1 — built (C1f, Blocks, Pro) |
+| [ai-insight-card.md](ai-insight-card.md) | v0.1 — built (C1f, Blocks, Pro) |
 | Every other component in [../component-taxonomy.md](../component-taxonomy.md) | to write in V2.2 |

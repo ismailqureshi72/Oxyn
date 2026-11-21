@@ -4,7 +4,7 @@
 // The palette (public/site.js) fetches it once, keeps it in memory and ranks on the client.
 import type { APIRoute } from 'astro';
 import { getCollection } from 'astro:content';
-import { components, screens, groups, groupOf, demoUrl, agentApps, arcScreens, composedScreens, type Demo } from '../lib/data';
+import { components, screens, blocks, blockGroupOf, groups, groupOf, demoUrl, agentApps, arcScreens, composedScreens, type Demo } from '../lib/data';
 import { AGENT_APPS, familyOf } from '../lib/taxonomy.mjs';
 
 // Words people type for a part that its own name does not contain.
@@ -50,6 +50,7 @@ export const GET: APIRoute = async () => {
     const fam = familyOf(d);
     rows.push({ t: d.name, u: demoUrl(d), g: 'c', k: g?.name ?? '', d: clip(d.summary), w: words(d.slug, d.category, fam?.name, ALIASES[d.slug]) });
   }
+  for (const d of blocks) rows.push({ t: d.name, u: demoUrl(d), g: 'c', k: `Block · ${blockGroupOf(d)?.name ?? ''}`, d: clip(d.summary), w: words(d.slug, 'block', d.category, ALIASES[d.slug]) });
   const apps = new Set(agentApps.map((d) => d.slug));
   const arc = new Set(arcScreens.map((d) => d.slug));
   for (const d of screens) {
@@ -71,7 +72,7 @@ export const GET: APIRoute = async () => {
     ['Screens', '/screens/', 'Whole app frames built from Oxyn components.'],
     ['Agent apps', '/screens/#agent-apps', 'Whole desktop agent apps, in the patterns those apps share.'],
     ['Arc screens', '/screens/#arc-screens', 'Work-app screens on the Arc frame.'],
-    ['Blocks', '/blocks/', 'Larger sections you drop into a page.'],
+    ['Blocks', '/blocks/', 'Whole agent and AI surfaces built from the components (Pro).'],
     ['Illustrations', '/illustrations/', 'Animated spot illustrations for empty states and onboarding.'],
     ['Motion', '/motion/', 'Durations, easings and springs as tokens.'],
     ['Pricing', '/pricing/', 'Components are free and MIT licensed. Pro: screens, templates, blocks and kits.'],

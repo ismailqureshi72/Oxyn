@@ -146,14 +146,14 @@ fs.writeFileSync(path.join(gen, 'parity.json'), JSON.stringify(rows));
 fs.copyFileSync(path.join(root, 'tokens/oxyn.motion.json'), path.join(gen, 'motion.json'));
 
 // 6. Pro usage code (docs/pricing.md): the code of every Pro item (screens, agent-app templates,
-// the AI special components)
+// the AI special components, the blocks)
 // goes to the Worker bundle, which hands it out only to Pro accounts (GET /api/pro/source/<slug>).
 // The static pages carry the preview and a locked code panel, never this code.
 {
   const { demos } = JSON.parse(fs.readFileSync(path.join(gen, 'demos.json'), 'utf8'));
   const pro = {};
   for (const d of demos) {
-    if (!SCREENS.includes(d.slug) && !PRO_COMPONENTS.includes(d.slug)) continue;
+    if (!SCREENS.includes(d.slug) && !PRO_COMPONENTS.includes(d.slug) && !String(d.category).startsWith('blocks-')) continue;
     pro[d.slug] = { name: d.name, code: d.code, variants: d.variants.map((v) => ({ name: v.name, code: v.code })) };
   }
   fs.writeFileSync(path.join(site, 'worker/pro-src.json'), JSON.stringify(pro));

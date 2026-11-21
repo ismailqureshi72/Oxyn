@@ -301,6 +301,13 @@ Pro: the Arc "Special components · AI" set, each a self-contained card with its
 
 **Built in C1d (2026-11-21):** all 17, three or four variants each (Oxyn extras marked in the demos). Arc "Agent handoff" ships as `human-handoff` because `agent-handoff` is the agent-to-agent component in Multi-agent.
 
+## Blocks (`blocks`)
+Pro: larger compositions built from the components, each a whole working surface with its own model in `oxyn_core::blocks`, Dioxus blocks in `oxyn_dioxus::blocks` (`blocks.css`, prefix `oxbk-`) and the GPUI `BlocksView`. Pages live at `/blocks/<group>/<slug>/` (groups: Agents, AI); the Blocks section lists them.
+
+**Existing:** Live session (`live-session`), Mission control (`mission-control`), Mission timeline (`mission-timeline`), Run inspector (`run-inspector`), Background agents (`background-agents`), Agent routines (`agent-routines`), MCP servers (`mcp-servers`), Knowledge base (`knowledge-base`), Eval suite (`eval-suite`), Agent builder (`agent-builder`), Agent gallery (`agent-gallery`), AI insight card (`ai-insight-card`)
+
+**Built in C1f (2026-11-21):** the four affectUI "Blocks · Agents" (Live Session, Mission Control, Mission Timeline, Run Inspector), seven Arc "Blocks · Agents" and Arc "AI insight card", three variants each (Oxyn extras marked in the demos). Arc "Agent tasks" ships as `background-agents` because `agent-tasks` is a screen. Next: model arena, prompt studio, agent memory, catch up, AI feature launch, AI setup wizard, call insights, lead scoring.
+
 ## Comments & Reactions (`comments`)
 Talking about the work: threads, panels, reactions.
 

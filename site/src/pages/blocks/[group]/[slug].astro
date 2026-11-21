@@ -1,0 +1,10 @@
+---
+import ItemPage from '../../../components/v2/ItemPage.astro';
+import { blocks, blockGroupOf, type Demo } from '../../../lib/data';
+
+export function getStaticPaths() {
+  return blocks.map((d) => ({ params: { group: blockGroupOf(d)!.slug, slug: d.slug }, props: { demo: d } }));
+}
+const { demo } = Astro.props as { demo: Demo };
+---
+<ItemPage demo={demo} />
