@@ -55,6 +55,7 @@ export default defineConfig({
             { label: 'Introduction', link: '/docs/' },
             { label: 'Installation', link: '/docs/installation/' },
             { label: 'CLI', link: '/docs/cli/' },
+            { label: 'MCP server', link: '/docs/mcp/' },
             { label: 'Agent state', link: '/docs/agent-state/' },
             { label: 'Theming and tokens', link: '/docs/theming/' },
             { label: 'Motion', link: '/docs/motion/' },
