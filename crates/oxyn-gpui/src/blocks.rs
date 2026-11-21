@@ -420,6 +420,28 @@ impl BlocksView {
             }))
     }
 
+    /// A brand mark on a small tile; on dark themes the tile is white so marks whose official
+    /// colour is dark (Sentry, PostgreSQL) stay visible.
+    fn logo_tile(&self, name: &str, size: f32) -> Div {
+        let t = self.theme();
+        let (bg, ink) = if self.dark {
+            (gpui::white(), gpui::black())
+        } else {
+            (c(t, ColorRole::SurfaceBase), c(t, ColorRole::FgDefault))
+        };
+        div()
+            .size(px(size + 12.))
+            .flex_none()
+            .flex()
+            .items_center()
+            .justify_center()
+            .rounded(px(7.))
+            .border_1()
+            .border_color(c(t, ColorRole::BorderSubtle))
+            .bg(bg)
+            .child(mark(name, size, ink))
+    }
+
     fn key(&mut self, ev: &KeyDownEvent, cx: &mut Context<Self>) {
         let m = &ev.keystroke.modifiers;
         let k = ev.keystroke.key.clone();
@@ -431,7 +453,7 @@ impl BlocksView {
         let t = self.theme();
         let n = self.state.now;
         let s = &self.state.session;
-        let mut tabs = row().gap(px(4.));
+        let mut tabs = row().gap(px(4.)).flex_wrap();
         for (i, (name, brand, _)) in session::AGENTS.iter().enumerate() {
             let on = s.focus.unwrap_or(0) == i;
             let label = if i == 0 { "Everyone" } else { name };
@@ -1258,7 +1280,7 @@ impl BlocksView {
             let mut head = self
                 .hit(cx, &format!("mcp-open-{i}"), m.open == Some(i))
                 .flex_1()
-                .child(mark(s.brand, 16., c(t, ColorRole::FgDefault)))
+                .child(self.logo_tile(s.brand, 16.))
                 .child(
                     div()
                         .flex_1()
