@@ -1,6 +1,6 @@
-//! Connector setup: a "Connect your tools" card for an AI assistant. Each app connects inline:
-//! it redirects, authorises and runs a first sync with a progress hairline, then lists the scopes
-//! it was granted and offers Disconnect with an inline confirm.
+//! Connector setup: the "Connect your tools" step of an assistant. Every app is linked without
+//! leaving the card: a redirect, the grant, then an initial import shown by a thin bar; afterwards
+//! the card lists what access was given and can unlink the app after a confirming press.
 
 use super::{nth, thousands};
 

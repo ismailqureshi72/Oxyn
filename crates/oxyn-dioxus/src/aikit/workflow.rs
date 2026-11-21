@@ -19,12 +19,12 @@ fn status_label(st: StepSt) -> (String, &'static str) {
     }
 }
 
-/// AI workflow: a trigger, an AI step, a branch and actions on one hairline rail. Test run glides
-/// a dot down each connector, runs each step with a shimmering activity line and opens its
-/// output inline (the email, a label with a streamed reason, the posted message, the created
-/// issue); the untaken path is skipped; a failing step shows Retry, which resumes from it. Steps
-/// are added from a command menu (search, app marks, 1–9 shortcuts) and removed with a small
-/// button. Keys: Enter/Space on buttons, ←/→ on branch tabs, ↑/↓ Enter Escape in the menu.
+/// AI workflow: one rail holding a trigger, a model step, a branch and its actions. Test run moves
+/// a dot along each link, runs each step with a shimmer and unfolds what it produced (the incoming
+/// email, a label and its reason as it streams, the Slack post, the new issue); the branch not
+/// taken is skipped; a failed step offers Retry and carries on from there. New steps come from a
+/// searchable menu with app logos and 1–9 shortcuts; each step has a small delete button. Keys:
+/// Enter/Space on buttons, ←/→ on branch tabs, ↑/↓ Enter Escape in the menu.
 #[component]
 pub fn AiWorkflow(
     /// Host clock.

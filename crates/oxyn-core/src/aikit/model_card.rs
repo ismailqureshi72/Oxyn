@@ -264,7 +264,7 @@ impl ModelCard {
         )
     }
 
-    /// The two rivals shown under the model in the benchmark rows.
+    /// The two competitors listed below this model in each benchmark.
     pub fn bench_rivals(&self) -> Vec<usize> {
         (0..self.models.len())
             .filter(|&i| i != self.model)
@@ -281,8 +281,8 @@ impl ModelCard {
         v
     }
 
-    /// Rank of model `i` on the shown benchmark among every model with a score (1-based) and the
-    /// gap to the leader.
+    /// Rank of model `i` on the shown benchmark among every model with a score (1-based) and how far it
+    /// trails the top score.
     pub fn rank(&self, i: usize) -> Option<(usize, f64)> {
         let s = self.models[i].scores[self.bench]?;
         let mut all: Vec<f64> = self

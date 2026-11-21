@@ -6,10 +6,10 @@ use oxyn_core::aikit::connector::{APPS, ConnSt, Connectors};
 
 use super::{dots, ico, key_of, live, mark};
 
-/// Connector setup: a "Connect your tools" card for an AI assistant. Each app connects inline:
-/// it redirects, waits for the grant and runs a first sync with a progress hairline and a rolling
-/// count, then lists the scopes it was granted and offers Disconnect with an inline confirm
-/// (Escape cancels). A denied grant offers Retry. Search filters the apps.
+/// Connector setup: the "Connect your tools" step of an assistant. Every app is linked without
+/// leaving the card: a redirect, a wait for the grant, then an initial import with a thin bar and a
+/// counter; afterwards it lists what access was given and can unlink the app after a confirming
+/// press (Escape backs out). A refused grant offers Retry, and search narrows the list.
 #[component]
 pub fn ConnectorSetup(
     /// Host clock.

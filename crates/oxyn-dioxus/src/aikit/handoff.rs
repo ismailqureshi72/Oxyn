@@ -7,11 +7,11 @@ use oxyn_core::aikit::handoff::{ASSISTANT, Handoff, PERSON, Stage, Who};
 
 use super::{cls, dots, ico, key_of, live, mark};
 
-/// Human handoff (Arc "Agent handoff"): a support chat where an AI assistant hands over to a
-/// person. Talk to a person starts a transfer card with the summary the assistant passes on
-/// (editable first, Oxyn extra) and the typical wait with a queue place; Cancel brings the
-/// assistant back; the person joins and takes over; Resolve closes it. A thin timeline marks
-/// each stage. When nobody is online the card offers to try again or keep chatting.
+/// Human handoff (Arc "Agent handoff"): a help chat in which the bot passes the conversation to a
+/// human. Talk to a person opens a transfer card with the brief the bot hands over (editable first,
+/// an Oxyn extra) and the usual wait with a queue position; Cancel returns to the bot; a teammate
+/// arrives and carries on; Resolve ends it. A slim trail records each step. If nobody is online the
+/// card offers to try later or stay with the bot.
 #[component]
 pub fn HumanHandoff(
     /// Host clock.
