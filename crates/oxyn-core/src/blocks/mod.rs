@@ -18,23 +18,39 @@
 //!
 //! AI:
 //! - [`insight`]: AI insight card: a KPI that explains its own change.
+//! - [`arena`]: Model arena: two models answer one prompt blind; vote, then reveal.
+//! - [`prompt`]: Prompt studio: a template with variables, test runs, versions and a diff.
+//! - [`memory`]: Assistant memory: what an assistant remembers, to edit, forget or add.
+//! - [`catchup`]: Catch up: a ranked digest of what happened in your tools.
+//! - [`launch`]: AI feature launch: a tour card with a mini demo and an admin switch.
+//! - [`wizard`]: AI setup wizard: connect sources, set behaviour, test and go live.
+//! - [`call`]: Call insights: talk time, key moments, summary and next steps of a sales call.
+//! - [`leads`]: Lead scoring: inbound leads ranked by fit score and pushed to a CRM.
 
+pub mod arena;
 pub mod bgagents;
 pub mod builder;
+pub mod call;
+pub mod catchup;
 pub mod evals;
 pub mod gallery;
 pub mod insight;
 pub mod inspector;
 pub mod kb;
+pub mod launch;
+pub mod leads;
 pub mod mcp;
+pub mod memory;
 pub mod mission;
+pub mod prompt;
 pub mod routines;
 pub mod session;
+pub mod wizard;
 
 pub use crate::aikit::{first_words, hash, norm_key, nth, rove, thousands, usd, words_at};
 
 /// Page slugs of the blocks, in gallery order.
-pub const BLOCK_SLUGS: [&str; 12] = [
+pub const BLOCK_SLUGS: [&str; 20] = [
     "live-session",
     "mission-control",
     "mission-timeline",
@@ -47,6 +63,14 @@ pub const BLOCK_SLUGS: [&str; 12] = [
     "agent-builder",
     "agent-gallery",
     "ai-insight-card",
+    "model-arena",
+    "prompt-studio",
+    "assistant-memory",
+    "catch-up",
+    "ai-feature-launch",
+    "ai-setup-wizard",
+    "call-insights",
+    "lead-scoring",
 ];
 
 /// A duration as `2m 14s`, `14s` or `1h 05m`.
@@ -110,6 +134,6 @@ mod tests {
         assert_eq!(ago(30_000), "just now");
         assert_eq!(ago(720_000), "12 min ago");
         assert_eq!(frac(5, 10), 0.5);
-        assert_eq!(BLOCK_SLUGS.len(), 12);
+        assert_eq!(BLOCK_SLUGS.len(), 20);
     }
 }
