@@ -3,6 +3,7 @@
 :root,[data-theme="light"]{
   --pg:#F4F4F5;--pn:#FFFFFF;--ln:#E6E6E8;--ln2:#EFEFF1;--fg:#111111;--fg2:#5B5B60;--fg3:#9A9A9F;
   --fill:#FAFAFA;--chip:#F4F4F5;--chip2:#EBEBED;--hov:rgb(0 0 0 / .045);--sel:#EBEBED;
+  --bolt-a:#0284C7;--bolt-b:#6D5CF0;--getpro-a:#0369A1;--getpro-b:#5B47E0;
   --ink:#111111;--on-ink:#FFFFFF;--pro-bg:var(--oxyn-color-accent-bg,#F1F1F2);--pro-fg:var(--oxyn-color-accent-fg,#111);
   --shadow:0 1px 2px rgb(0 0 0 / .06),0 1px 1px rgb(0 0 0 / .03);
   --site-bg:var(--pn);--site-panel:var(--fill);--site-stage:var(--fill);--site-code:var(--fill);--site-inset:var(--chip);
@@ -11,6 +12,7 @@
 [data-theme="dark"]{
   --pg:#161618;--pn:#0D0D0E;--ln:#2A2A2D;--ln2:#202023;--fg:#F2F2F3;--fg2:#A3A3A8;--fg3:#6E6E74;
   --fill:#131315;--chip:#1E1E21;--chip2:#2A2A2D;--hov:rgb(255 255 255 / .05);--sel:#232326;
+  --bolt-a:#38BDF8;--bolt-b:#8B7CF8;--getpro-a:#0369A1;--getpro-b:#5B47E0;
   --ink:#F2F2F3;--on-ink:#0D0D0E;--pro-bg:var(--oxyn-color-accent-bg,#1E1E21);--pro-fg:var(--oxyn-color-accent-fg,#F2F2F3);
   --shadow:0 1px 2px rgb(0 0 0 / .5);
   --site-bg:var(--pn);--site-panel:var(--fill);--site-stage:var(--fill);--site-code:var(--fill);--site-inset:var(--chip);
@@ -26,6 +28,18 @@
 .pill-grey:hover{background:var(--chip2)}
 .pill-pro{background:var(--pro-bg);color:var(--pro-fg);box-shadow:inset 0 0 0 1px var(--ln)}
 .pill-pro:hover{background:var(--chip2)}
+/* Pro marker: a filled bolt in the Pro gradient (sky to violet; Oxyn's own, not a brand pink). */
+.x-bolt{display:inline-block;flex:none;width:12px;height:12px;background:linear-gradient(135deg,var(--bolt-a),var(--bolt-b));-webkit-mask:var(--bolt-mask) center/contain no-repeat;mask:var(--bolt-mask) center/contain no-repeat}
+:root{--bolt-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M13.6 2 4 14h7l-1.6 8L19 10h-7z'/%3E%3C/svg%3E")}
+/* Get Pro: a rounded rectangle in the Pro gradient, white text, in both themes. */
+.x-gopro{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;border-radius:8px;background:linear-gradient(120deg,var(--getpro-a),var(--getpro-b));color:#FFFFFF;font-size:13px;font-weight:600;text-decoration:none;white-space:nowrap;box-shadow:inset 0 0 0 1px rgb(255 255 255 / .14),0 1px 2px rgb(0 0 0 / .12)}
+.x-gopro:hover{filter:brightness(1.08)}
+.x-gopro:focus-visible{outline:2px solid var(--oxyn-color-focus);outline-offset:2px}
+.x-gopro .x-bolt{width:13px;height:13px;background:#FFFFFF}
+html[data-pro="1"] .x-gopro{display:none!important}
+.tb-gopro{height:32px}
+@media (max-width:1180px){.tb-gopro{display:none}}
+.tb-in.sl .tb-gopro{display:none}
 .pill-lg{height:40px;padding:0 20px;font-size:14.5px}
 .pill-sm{height:28px;padding:0 13px;font-size:12.5px}
 .iconbtn{all:unset;box-sizing:border-box;cursor:pointer;width:30px;height:30px;display:inline-grid;place-items:center;border-radius:8px;color:var(--fg2);flex:none}
@@ -128,15 +142,35 @@ html[data-oxyn-reduced] .page-white .x-tb{transition:none}
   .x-nav{grid-template-columns:1fr auto}
   .x-nav .x-nav-pill{display:none}
   .x-nav .x-nav-search{width:32px;padding:0;justify-content:center}
-  nav.x-mm.open{position:fixed;inset:0;z-index:59;display:flex;flex-direction:column;gap:18px;padding:100px 20px 32px;background:var(--pn);overflow:auto}
+}
+
+/* ── Phone and tablet navbar (P1 nav fix) ──────────────────────────────
+   The header is a plain sticky bar: no slide-away, no glass fading in with scroll, no transform
+   (a transformed header would become the containing block of the fixed menu and clip it). The
+   menu is an opaque sheet that starts below the header (site.js sets --mm-top on open), the page
+   behind it is locked, and the area under the sheet is a scrim that closes it. */
+@media (max-width:900px){
+  .page-white .x-tb{transform:none!important;transition:none;will-change:auto;background:var(--pn)}
+  .page-white .x-tb::before{opacity:1;transition:none;background:var(--pn);-webkit-backdrop-filter:none;backdrop-filter:none}
+  .x-tb{box-shadow:0 1px 0 var(--ln)}
+  nav.x-mm{display:none}
+  nav.x-mm.open{position:fixed;left:0;right:0;top:var(--mm-top,60px);bottom:0;z-index:59;display:block;padding:0;background:var(--oxyn-color-scrim,rgb(0 0 0 / .4));overscroll-behavior:contain}
+  .x-mm-sheet{display:flex;flex-direction:column;gap:18px;max-height:100%;box-sizing:border-box;overflow:auto;overscroll-behavior:contain;padding:16px 20px 24px;background:var(--pn);border-bottom:1px solid var(--ln);box-shadow:0 18px 40px rgb(0 0 0 / .16)}
   .x-mm .x-mm-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-  .x-mm .x-mm-grid a{display:flex;flex-direction:column;gap:2px;min-width:0;padding:12px 14px;border:0;border-radius:14px;background:var(--chip);font-size:15px;font-weight:600;color:var(--fg);text-decoration:none}
+  .x-mm .x-mm-grid a{display:flex;flex-direction:column;gap:2px;min-width:0;padding:12px 14px;border:0;border-radius:12px;background:var(--chip);font-size:15px;font-weight:600;color:var(--fg);text-decoration:none}
   .x-mm .x-mm-grid a small{font-size:12px;font-weight:450;color:var(--fg3)}
   .x-mm .x-mm-grid a:hover{background:var(--chip2)}
   .x-mm .x-mm-list{display:flex;flex-direction:column}
-  .x-mm .x-mm-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:auto}
+  .x-mm .x-mm-foot{display:flex;align-items:center;justify-content:space-between;gap:12px}
   .x-mm .x-mm-foot .x-pill{display:inline-flex;padding:0 18px;height:40px;border:0;color:var(--on-ink);font-size:14px}
+  .x-mm .x-mm-icons{display:inline-flex;align-items:center;gap:6px}
+  .x-mm .x-mm-icons a,.x-mm .x-mm-icons button{padding:0;border:0}
+  .x-mm a:focus-visible,.x-mm button:focus-visible{outline:2px solid var(--oxyn-color-focus);outline-offset:2px}
+  html.mm-open,html.mm-open body{overflow:hidden}
 }
+@media (min-width:641px){.x-mm .x-mm-icons{display:none}}
+/* At phone widths the bar keeps search, account and the menu; feedback and GitHub move into it. */
+@media (max-width:640px){.x-nav-act>.fb-btn,.x-nav-act>.gh-link{display:none}}
 
 /* ── ⌘K search palette ─────────────────────────────────────────────── */
 .search-dlg{position:fixed;inset:0;z-index:100;display:none;align-items:flex-start;justify-content:center;padding:12vh 16px 16px;background:var(--oxyn-color-scrim)}
@@ -287,7 +321,8 @@ html[data-intro] body::after{left:50%;top:50%;width:min(240px,52vw);aspect-ratio
 .acct-menu [role="menuitem"]{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;gap:9px;width:100%;height:34px;padding:0 9px;border-radius:9px;font-size:13.5px;color:var(--fg);text-decoration:none}
 .acct-menu [role="menuitem"] svg{width:16px;height:16px;color:var(--fg2)}
 .acct-plan-tag{margin-left:auto;font-size:11.5px;font-weight:600;color:var(--fg2);background:var(--chip);border-radius:999px;padding:1px 8px}
-.acct-plan-tag[data-tier="pro"],.acct-plan-tag[data-tier="team"]{background:var(--ink);color:var(--on-ink)}
+.acct-plan-tag[data-tier="pro"],.acct-plan-tag[data-tier="team"],.acct-plan-tag[data-tier="admin"]{background:linear-gradient(120deg,var(--getpro-a),var(--getpro-b));color:#FFFFFF}
+.acct-menu [data-acct-plan-item] .x-bolt{width:16px;height:16px}
 .acct-menu [role="menuitem"]:hover,.acct-menu [role="menuitem"]:focus{background:var(--hov)}
 @media (max-width:640px){
   .acct-in{width:32px;padding:0;justify-content:center}

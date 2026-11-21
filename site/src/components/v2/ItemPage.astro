@@ -61,7 +61,7 @@ const kind = screen ? 'screen' : bg ? 'block' : 'component';
       )}
     </nav>
     </div>
-    <h1 class="art-title" data-pagefind-meta="title">{demo.name}{pro && <a class="x-chip pro-chip" href={`/pricing/?from=${demo.slug}`} title="Part of Oxyn Pro: the preview is free, the code needs Pro"><Fragment set:html={icon.bolt} />Pro</a>}</h1>
+    <h1 class="art-title" data-pagefind-meta="title">{demo.name}{pro && <a class="x-chip pro-chip" href={`/pricing/?from=${demo.slug}`} title="Part of Oxyn Pro: the preview is free, the code needs Pro"><i class="x-bolt" aria-hidden="true"></i>Pro</a>}</h1>
     <p class="art-lede">{demo.summary}</p>
     <div class="install-pill copyable"><code>{install}</code><button class="pill-copy" type="button" data-copy={install} data-pro-cli={pro ? 'true' : undefined} aria-label="Copy install command"><Fragment set:html={icon.copy} /></button></div>
 
@@ -86,7 +86,7 @@ const kind = screen ? 'screen' : bg ? 'block' : 'component';
           {ai.map(([l, id, h]) => <a class="aibtn x-aibtn-logo" href={h} target="_blank" rel="noopener" title={`Open in ${l}`} aria-label={`Open in ${l}`}><Fragment set:html={mark(id)} /></a>)}
           <a class="aibtn x-aibtn-mcp" href="/docs/installation/" title="MCP server (planned; the oxyn CLI is out)"><Fragment set:html={mark('mcp')} />MCP</a>
           <button class="x-pill pill-black pill-sm x-copy" type="button" data-copy-from="pv"><Fragment set:html={icon.copy} />Copy</button>
-          {pro && <a class="x-pill pill-black pill-sm x-getpro" href={`/pricing/?from=${demo.slug}`}><Fragment set:html={icon.bolt} />Get Pro</a>}
+          {pro && <a class="x-gopro x-getpro" href={`/pricing/?from=${demo.slug}`}><i class="x-bolt" aria-hidden="true"></i>Get Pro</a>}
         </div>
       </div>
       <div class:list={['pv', { 'pv-screen': screen }]} data-view="preview" data-controls="hidden" data-cstyle="clean">
@@ -145,7 +145,7 @@ const kind = screen ? 'screen' : bg ? 'block' : 'component';
             {v.note && <p class="x-muted">{v.note}</p>}
             <div class="ex-prev"><OxynDemo slug={demo.slug} html={v.html} variant={i} /></div>
             {pro ? (
-              <details class="ex-code pro-code" data-pro-code={String(i)}><summary>Code <span class="x-chip pro-chip sm"><Fragment set:html={icon.bolt} />Pro</span></summary><pre hidden><code></code></pre><ProLock compact from={demo.slug} /></details>
+              <details class="ex-code pro-code" data-pro-code={String(i)}><summary>Code <span class="x-chip pro-chip sm"><i class="x-bolt" aria-hidden="true"></i>Pro</span></summary><pre hidden><code></code></pre><ProLock compact from={demo.slug} /></details>
             ) : (
               <details class="ex-code"><summary>Code</summary><pre><code set:html={highlightRust(v.code)} /></pre></details>
             )}

@@ -53,12 +53,12 @@ const groupsList = [
     {groupsList.map((g) => g.head ? (
       <p class="lsb-head"><a href={g.href}>{g.label}</a><span class="n">{g.n}</span></p>
     ) : (
-      <details class:list={['lsb-g', g.family && 'lsb-fam']} open={g.family ? g.items.some(([, h]) => h === current) : g.items.length > 0 && g.items.length < 400}>
+      <details class:list={['lsb-g', g.family && 'lsb-fam']} data-g={g.label} data-cur={g.items.some(([, h]) => h === current) ? '' : undefined} open>
         <summary><a href={g.href}>{g.label}</a>{g.n != null && <span class="n">{g.n}</span>}<span class="chev"><Fragment set:html={icon.chevron} /></span></summary>
         {g.items.length > 0 ? (
           <ul>
             {g.items.map(([name, href, pro]) => (
-              <li><a href={href} aria-current={current === href ? 'page' : undefined}><span>{name}</span>{pro && <span class="pro" title="Pro"><Fragment set:html={icon.bolt} /></span>}</a></li>
+              <li><a href={href} aria-current={current === href ? 'page' : undefined}><span>{name}</span>{pro && <span class="pro"><i class="x-bolt" aria-hidden="true"></i><span class="pro-l">Pro</span></span>}</a></li>
             ))}
           </ul>
         ) : (
@@ -70,10 +70,25 @@ const groupsList = [
 </aside>
 <script is:inline>
   // Keep the sidebar where it was across page loads; bring the current item into view only
-  // when it would be off screen.
+  // when it would be off screen. Groups start open; the ones you close stay closed on every page
+  // (localStorage), restored here, before the first paint. The current item's group stays open.
   (function () {
     var sb = document.getElementById('lsb');
     if (!sb) return;
+    var KEY = 'oxyn-lsb-closed', closed = [];
+    try { closed = JSON.parse(localStorage.getItem(KEY) || '[]') || []; } catch (e) { closed = []; }
+    var gs = sb.querySelectorAll('details[data-g]');
+    for (var i = 0; i < gs.length; i++) {
+      if (closed.indexOf(gs[i].dataset.g) !== -1 && !gs[i].hasAttribute('data-cur')) gs[i].removeAttribute('open');
+    }
+    sb.addEventListener('toggle', function (e) {
+      var g = e.target && e.target.dataset && e.target.dataset.g;
+      if (!g) return;
+      var set = closed.filter(function (x) { return x !== g; });
+      if (!e.target.open) set.push(g);
+      closed = set;
+      try { localStorage.setItem(KEY, JSON.stringify(set)); } catch (err) {}
+    }, true);
     var y = sessionStorage.getItem('oxyn-lsb-y');
     if (y !== null) sb.scrollTop = +y;
     var cur = sb.querySelector('.lsb-g li a[aria-current="page"]');

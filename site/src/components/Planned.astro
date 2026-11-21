@@ -16,7 +16,7 @@ const built = items.filter((r) => r.status.startsWith('built')).length;
   <div class="lidx">
     <h1 class="lidx-title">{title}</h1>
     <p class="lede">{lede}</p>
-    {pro && <p class="lede pro-lede"><span class="x-chip pro-chip"><Fragment set:html={icon.bolt} />Pro</span> {title} are part of <a href="/pricing/">Oxyn Pro</a>, with kits and the weekly drops. Previews stay free to open.</p>}
+    {pro && <p class="lede pro-lede"><span class="x-chip pro-chip"><i class="x-bolt" aria-hidden="true"></i>Pro</span> {title} are part of <a href="/pricing/">Oxyn Pro</a>, with kits and the weekly drops. Previews stay free to open.</p>}
     <LibTabs active={tab} />
     <div class="meta-row">
       <span class="x-tag">{items.length} planned</span>

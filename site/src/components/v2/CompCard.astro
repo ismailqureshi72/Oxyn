@@ -17,7 +17,7 @@ const install = installLine(demo);
   <div class="cc-top">
     <a class="x-chip" href={chipHref}>{g.name}</a>
     <span class="x-chip soft">{demo.variants.length} {demo.variants.length === 1 ? 'variant' : 'variants'}</span>
-    {isPro(demo) && <span class="x-chip pro-chip" title="Oxyn Pro: the preview is free, the code needs Pro"><Fragment set:html={icon.bolt} />Pro</span>}
+    {isPro(demo) && <span class="x-promark" title="Oxyn Pro: the preview is free, the code needs Pro"><i class="x-bolt" aria-hidden="true"></i><span class="pro-l">Pro</span></span>}
   </div>
   <div class="cc-prev" aria-hidden="true" inert>
     <OxynDemo slug={demo.slug} html={v.html} variant={0} />
