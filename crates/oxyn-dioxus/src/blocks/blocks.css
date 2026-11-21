@@ -26,6 +26,7 @@
 .oxbk-tab{display:inline-flex;align-items:center;gap:6px;flex:none;height:30px;padding:0 10px;border:1px solid transparent;border-radius:8px;background:transparent;color:var(--ai-fg2);font:inherit;font-size:12.5px;cursor:pointer}
 .oxbk-tab:hover{background:var(--ai-hover);color:var(--ai-fg)}
 .oxbk-tab.on{border-color:var(--ai-line2);background:var(--ai-sel);color:var(--ai-fg);font-weight:500}
+@container (max-width:560px){.oxbk-tabs{flex-wrap:wrap;overflow:visible;row-gap:4px}.oxbk-tab{height:28px;padding:0 8px;gap:5px;font-size:12px}.oxbk-tab .oxbk-av{width:18px;height:18px}}
 .oxbk-stack{position:relative;display:flex;height:8px;border-radius:4px;background:var(--ai-sel);overflow:hidden}
 .oxbk-stack>span{height:100%;background:var(--h);transition:width .3s}
 .oxbk-stack>span+span{border-left:1px solid var(--ai-bg)}
@@ -426,3 +427,6 @@
 .oxbk-in-dr>span:last-child{text-align:right;color:var(--h)}
 .oxbk-in-fu{gap:6px}
 @container (max-width:460px){.oxbk-in-leg{display:none}.oxbk-in-dr{grid-template-columns:18px minmax(0,1fr) 50px 36px}.oxbk-in-val{flex-wrap:wrap}}
+/* Dark themes: marks whose official colour is dark (Sentry, PostgreSQL…) sit on a light tile, and Sentry uses its white form elsewhere. */
+:is([data-oxyn-theme="dark"],[data-oxyn-theme="hc-dark"]) .oxbk-mcp-mk{background:#fff;border-color:#fff;--ox-brand-ink:#000}
+:is([data-oxyn-theme="dark"],[data-oxyn-theme="hc-dark"]) .oxbk :not(.oxbk-mcp-mk)>.oxaik-mk .oxyn-brand[data-brand="sentry"],:is([data-oxyn-theme="dark"],[data-oxyn-theme="hc-dark"]) .oxbk .oxbk-av .oxyn-brand[data-brand="sentry"]{--ox-brand-tone:#FFFFFF}
