@@ -48,6 +48,7 @@ mod shells;
 mod status_text;
 mod surfaces;
 mod tools;
+mod xpost;
 
 /// A category of the Components section.
 pub struct Category {
@@ -244,6 +245,7 @@ pub fn catalog() -> Vec<Demo> {
     v.extend(checkpoints::demos());
     v.extend(ai_special::demos());
     v.extend(ai_special_2::demos());
+    v.extend(xpost::demos());
     v.extend(blocks::demos());
     v.extend(buttons::demos());
     v.extend(inputs::demos());
