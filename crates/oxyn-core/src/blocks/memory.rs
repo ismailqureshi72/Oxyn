@@ -58,7 +58,7 @@ pub const CAPTURE: (&str, usize) = ("Wants dates written as 21 Nov 2026", 1);
 
 /// Memory capacity, in memories, for the meter.
 pub const CAPACITY: usize = 16;
-/// How long a forgotten memory can be restored, ms.
+/// Undo window after Forget, ms.
 pub const UNDO_MS: u64 = 6_000;
 /// How long a filed memory stays highlighted, ms.
 pub const GLOW_MS: u64 = 1_600;
@@ -78,7 +78,7 @@ pub struct Mem {
     pub at: Option<u64>,
 }
 
-/// Sorts a typed memory into a group by keywords (the preview's guess).
+/// Picks a group for typed text by keywords (the preview's guess).
 pub fn classify(t: &str) -> usize {
     let l = t.to_lowercase();
     let has = |w: &[&str]| w.iter().any(|x| l.contains(x));
@@ -383,7 +383,7 @@ impl Memory {
         None
     }
 
-    /// Keys: Left/Right/Home/End move the filter; Escape cancels an edit or closes the search.
+    /// Keys: Left/Right/Home/End move the filter; Escape leaves editing first, then search.
     pub fn key(&mut self, key: &str, now: u64) -> Option<String> {
         let k = super::norm_key(key);
         match k {
