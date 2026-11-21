@@ -40,6 +40,7 @@ const on = (p: string) => (current.startsWith(p) ? 'page' : undefined);
     <a class="x-nav-a" href="/screens/" aria-current={on('/screens')}>Screens</a>
     <a class="x-nav-a" href="/docs/" aria-current={on('/docs')}>Docs</a>
     <a class="x-nav-a" href="/pricing/" aria-current={on('/pricing')}>Pricing</a>
+    <a class="x-nav-a x-nav-studio" href="/studio/" aria-current={on('/studio')}>Studio<span class="x-soon-badge">Soon</span></a>
   </nav>
   <div class="tb-r x-nav-act">
     <button type="button" class="x-nav-search" data-open-search aria-label="Search"><Fragment set:html={icon.search} /><span class="x-nav-k" data-mod-k>⌘K</span></button>
@@ -63,6 +64,7 @@ const on = (p: string) => (current.startsWith(p) ? 'page' : undefined);
       <a href="/docs/mcp/">MCP server</a>
       <a href="/guides/">Guides</a>
       <a href="/pricing/">Pricing</a>
+      <a href="/studio/">Studio <span class="x-soon-badge">Soon</span></a>
       <button type="button" class="mm-search" data-open-search>Search…</button>
     </div>
     <div class="x-mm-foot">
