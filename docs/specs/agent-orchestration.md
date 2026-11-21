@@ -3,7 +3,7 @@
 # Spec: Agent · Orchestration (`agent-orchestration`)
 
 Family: Screens. Reference: affectUI Agent / Orchestration, behaviour only.
-Components: `OrchestrationScreen` (Dioxus) · `OrchestrationEl` (GPUI), models in `oxyn_core::parity::screens2fid`.
+Components: `OrchestrationScreen` (Dioxus) · `OrchestrationEl` (GPUI), models in `oxyn_core::kit::screens2fid`.
 
 ## 1. Purpose
 Watch one multi-agent run: who is working on what, what it costs, and every call it made.
@@ -40,4 +40,4 @@ Root fills its container (definite width, overflow clip, container queries). Und
 ## 7. Known gaps
 The tree is laid out as an indented outline of cards, not affectUI's free canvas with curved connectors and travelling light; the GPUI element does not show the S5 role tags or extras yet.
 GPUI is a static snapshot (no zoom, folding, panel or clock); the host owns state. Fit uses a fixed 80 % rather than measuring the tree. The tree is a role=tree of buttons; arrow-key movement between cards is not wired (Tab reaches every card).
-In a window, `ScreenView` (oxyn-gpui, `parity::screenview`) runs this screen live from `oxyn_core::parity::screenui`: the sidebar and page links open their screens (across sets), buttons open their state, the bar above it switches the set's screens and the state bar, a command bar (a real text field) jumps to any screen or state, the account row opens its menu, and Left / Right, Up / Down and Escape step states and screens. Editing the page's own fields in place is still the host's.
+In a window, `ScreenView` (oxyn-gpui, `kit::screenview`) runs this screen live from `oxyn_core::kit::screenui`: the sidebar and page links open their screens (across sets), buttons open their state, the bar above it switches the set's screens and the state bar, a command bar (a real text field) jumps to any screen or state, the account row opens its menu, and Left / Right, Up / Down and Escape step states and screens. Editing the page's own fields in place is still the host's.

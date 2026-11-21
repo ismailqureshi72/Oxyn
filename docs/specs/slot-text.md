@@ -46,8 +46,8 @@ Text and numbers that spin into their new value on reels: digits roll through 0â
 - Reel widths do not spring (characters are tabular).
 
 ## 10. Implementation
-- Core: `SlotText`, `Reel`, `group` (`oxyn_core::parity::text`), with tests.
-- Dioxus: `SlotReels` (parity/text.rs, text.css).
+- Core: `SlotText`, `Reel`, `group` (`oxyn_core::kit::text`), with tests.
+- Dioxus: `SlotReels` (kit/text.rs, text.css).
 - GPUI: `SlotTextEl` (reels at the clock, grow and collapse widths; `reduced(true)` shows the landed value). No speed blur.
 
 ## 11. References

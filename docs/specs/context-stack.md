@@ -3,7 +3,7 @@
 # Spec: Context stack (`context-stack`)
 
 Family: Context Visualizer. Reference: none (an Oxyn original).
-Components: `ContextStack` (Dioxus) · `ContextStackEl` (GPUI), models in `oxyn_core::parity::ctxvisfid`.
+Components: `ContextStack` (Dioxus) · `ContextStackEl` (GPUI), models in `oxyn_core::kit::ctxvisfid`.
 
 ## 1. Purpose
 Make compaction physical: the window is a pile, the chat is the top slab, and there is a line it may not cross.

@@ -3,7 +3,7 @@
 # Spec: Support conversation (`support-conversation`)
 
 Family: Arc screens (pages at `/screens/support-conversation/` and `/full`). Reference: the support conversation screen of Arc UI (uiarc.dev), behaviour and layout only, under our own design; no source, artwork or copy taken. Every person, customer, workspace and article is fictional; dates are absolute ISO dates and times are 24-hour.
-Components: `SupportConversationScreen` (Dioxus) · `SupportConversationEl` (GPUI), rules in `oxyn_core::parity::arcscr2`.
+Components: `SupportConversationScreen` (Dioxus) · `SupportConversationEl` (GPUI), rules in `oxyn_core::kit::arcscr2`.
 
 ## 1. Purpose
 Answer one customer well, with the team's context beside the thread.
@@ -21,7 +21,7 @@ The Arc frame (shared with the S12 screens): a 248 px sidebar (workspace mark an
 | Right card | Profile / Activity tabs; email, local time, plan, customer since; Apps with official coloured marks (Google Calendar: the next call, Stripe: plan and last invoice); the linked issue with the Linear mark; previous conversations |
 
 ## 3. Behaviour
-`Desk` in `oxyn_core::parity::arcscr2` keeps tickets, the open one, the view, the composer (mode, text, files, article). Send needs text, a file or an article; a reply sets Waiting on customer and stops the SLA, a note stays internal. Close adds a system line (Reopen undoes it); Snooze moves the ticket to Snoozed until an absolute time. The list puts late SLAs first.
+`Desk` in `oxyn_core::kit::arcscr2` keeps tickets, the open one, the view, the composer (mode, text, files, article). Send needs text, a file or an article; a reply sets Waiting on customer and stops the SLA, a note stays internal. Close adds a system line (Reopen undoes it); Snooze moves the ticket to Snoozed until an absolute time. The list puts late SLAs first.
 
 ## 4. Variants
 States: Data · Loading · Empty ("No tickets yet" with Copy support address) · **Internal note** (Note mode with a draft) · **Reply sent** (a saved reply sent) · **Closed**. Frame: Inset · Flat.

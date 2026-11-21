@@ -5,7 +5,7 @@
 Family H, "Checkpoints, diff & git" (overview in [checkpoints-git.md](checkpoints-git.md)). Closes the
 affectUI **Conflict Radar** (Pro, Components · Agents). Behaviour-only rebuild from its public docs
 page; nothing is copied. Dioxus `ConflictRadar` / GPUI `ConflictRadarEl` over
-`oxyn_core::parity::merge::{Radar, RadarAgent, RadarEdit, RadarFile}`. Styles: `merge.css`, classes
+`oxyn_core::kit::merge::{Radar, RadarAgent, RadarEdit, RadarFile}`. Styles: `merge.css`, classes
 `oxyn-crd-*`. Sibling: [merge-conflict.md](merge-conflict.md) (the line-level editor a settled
 conflict can open).
 

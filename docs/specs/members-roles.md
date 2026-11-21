@@ -3,7 +3,7 @@
 # Spec: Members (`members-roles`)
 
 Family: Arc screens (pages at `/screens/members-roles/` and `/full`). Reference: the Arc demo app's members page, behaviour and layout only, under our own design; no source, artwork or copy taken. Every company, person, key, endpoint and amount is fictional; dates are absolute ISO dates and times are 24-hour UTC.
-Components: `MembersRolesScreen` (Dioxus) · `MembersRolesEl` (GPUI), rules in `oxyn_core::parity::arcscr4`.
+Components: `MembersRolesScreen` (Dioxus) · `MembersRolesEl` (GPUI), rules in `oxyn_core::kit::arcscr4`.
 
 ## 1. Purpose
 Bring people in with the right role and keep the seat count honest.
@@ -20,7 +20,7 @@ The Arc frame (shared with the S12–S14 screens): a 248 px sidebar (Corvel Labs
 | Pending invites | Email, role and sent date, Resend, Revoke |
 
 ## 3. Behaviour
-`Members` in `oxyn_core::parity::arcscr4`: `invite_error`, `send()`, `cycle_role(i)`, `remove(i)` (two presses, never the only owner), `resend(id)`, `revoke(id)`.
+`Members` in `oxyn_core::kit::arcscr4`: `invite_error`, `send()`, `cycle_role(i)`, `remove(i)` (two presses, never the only owner), `resend(id)`, `revoke(id)`.
 
 ## 4. Variants
 States: Data · Loading · Empty (Just you so far) · **Invite open** (a half-typed email with its error) · **Seats full** (the invite refuses) · **Admins only**. Frame: Inset · Flat.
@@ -32,7 +32,7 @@ The seat bar is role meter with its value; invite errors are alerts; role button
 Authored on the 1440 × 900 stage and scaled to its column; `/full` renders at the real viewport. Under 960 px the sidebar is a drawer from the header's menu button and the right card hides; under 640 px header actions become icon buttons. scripts/ovl.py checks text overlap at 1440, 768 and 390 in light and dark.
 
 ## 7. Data
-`MembersRolesScreen` takes `layout` and `state`; sample data comes from `oxyn_core::parity::arcscr4`.
+`MembersRolesScreen` takes `layout` and `state`; sample data comes from `oxyn_core::kit::arcscr4`.
 
 ## 8. Known gaps
 No email is sent.

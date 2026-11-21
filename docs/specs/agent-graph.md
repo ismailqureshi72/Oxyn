@@ -1,10 +1,10 @@
 **Status:** built v0.1 (2026-11-16, plan #32 affectUI fidelity pass, overnight batch, family B part 3).
 
-# Spec: Agent Graph (`agent-graph`)
+# Spec: Tool network (`agent-graph`)
 
 Family: Agents. Closes the parity row: affectUI · Agent Graph (Pro). Behaviour-only rebuild; nothing is copied (the demo
 agents, models, tools and calls are our own).
-Components: `AgentGraph` (Dioxus) · `AgentGraphEl` (GPUI), model in `oxyn_core::parity::graphfid`.
+Components: `AgentGraph` (Dioxus) · `AgentGraphEl` (GPUI), model in `oxyn_core::kit::graphfid`.
 
 ## 1. Purpose
 Agents and the tools they call as a living network: the lead in the middle, the other agents on an inner orbit, tools and

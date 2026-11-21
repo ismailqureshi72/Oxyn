@@ -1,6 +1,6 @@
 **Status:** built v0.1 (2026-11-14, plan #28).
 
-# Spec: Release readiness (`release-readiness`)
+# Spec: Launch checklist (`release-readiness`)
 
 Family: F Tool calls & plans ([tools.md](tools.md)). Closes the parity row(s): Arc UI · Release readiness (block).
 
@@ -49,7 +49,7 @@ A launch checklist that keeps prerequisites, progress and the final action toget
 
 ## 10. Implementation
 - Core: `Readiness`, `Prereq` (`oxyn_core::parity`), with tests.
-- Dioxus: `ReleaseReadiness` (parity/run.rs, run.css).
+- Dioxus: `ReleaseReadiness` (kit/run.rs, run.css).
 - GPUI: `ReadinessEl` (`release`).
 
 ## 11. References

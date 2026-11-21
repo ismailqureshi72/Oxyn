@@ -1,6 +1,6 @@
 **Status:** built v0.1 (2026-11-15, plan #28).
 
-# Spec: Elastic slider (`elastic-slider`)
+# Spec: Rubber slider (`elastic-slider`)
 
 Family: Composer & inputs ([slider.md](slider.md)). Closes the parity row(s): Arc UI · Elastic slider. Behaviour-only rebuild; nothing is copied.
 

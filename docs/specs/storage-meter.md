@@ -3,7 +3,7 @@
 # Spec: Storage meter (`storage-meter`)
 
 Family: Storage. Reference: the behaviour of a public storage-scanner experiment and the notch app that ships it (dot-matrix capacity bar, category grid with a hover/click detail hint, Rescan, clear caches). Behaviour only; categories, figures, icons and wording are our own.
-Components: `StorageMeter` (Dioxus) · `StorageMeterEl` (GPUI), models in `oxyn_core::parity::storagefid`.
+Components: `StorageMeter` (Dioxus) · `StorageMeterEl` (GPUI), models in `oxyn_core::kit::storagefid`.
 
 ## 1. Purpose
 Show what fills a disk and offer the one quick win, in a card small enough for a menu-bar panel.

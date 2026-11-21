@@ -3,7 +3,7 @@
 # Spec: Drop lanes (`drop-lanes`)
 
 Family: Attachments. Reference: none (an Oxyn original).
-Components: `DropLanes` (Dioxus) · `DropLanesEl` (GPUI), models in `oxyn_core::parity::attachfid`.
+Components: `DropLanes` (Dioxus) · `DropLanesEl` (GPUI), models in `oxyn_core::kit::attachfid`.
 
 ## 1. Purpose
 Decide at drop time what a file is for – this message only, the whole project, or just its look.

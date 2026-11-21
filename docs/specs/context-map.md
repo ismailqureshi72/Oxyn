@@ -1,11 +1,11 @@
 **Status:** built v0.1 (2026-11-16, plan #32 affectUI fidelity pass, overnight batch, family B part 6).
 
-# Spec: Context Map (`context-map`)
+# Spec: Context treemap (`context-map`)
 
 Family: Agents. Closes the parity row: affectUI · Context Map (Pro). Behaviour-only rebuild; nothing is copied (the
 session, agents, files and numbers in the demo are our own). Related Oxyn component: composer-context-meter (just the
 fill level).
-Components: `ContextMap` (Dioxus) · `ContextMapEl` (GPUI), model in `oxyn_core::parity::ctxmapfid`.
+Components: `ContextMap` (Dioxus) · `ContextMapEl` (GPUI), model in `oxyn_core::kit::ctxmapfid`.
 
 ## 1. Purpose
 A treemap of everything in an agent's context: each prompt, tool list, memory, file, chat turn and tool result is a

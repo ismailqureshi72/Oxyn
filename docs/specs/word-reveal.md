@@ -51,8 +51,8 @@ Text that arrives word by word or letter by letter: each piece rises out of a cl
 - Spaces stay inside each word box so wrapping is natural.
 
 ## 10. Implementation
-- Core: — (`oxyn_core::parity::text`), with tests.
-- Dioxus: `WordReveal` (parity/text.rs, text.css).
+- Core: — (`oxyn_core::kit::text`), with tests.
+- Dioxus: `WordReveal` (kit/text.rs, text.css).
 - GPUI: not yet (plan #28 follow-up; the core models are shared).
 
 ## 11. References

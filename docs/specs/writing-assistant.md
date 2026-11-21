@@ -1,9 +1,9 @@
 **Status:** built v0.1 (2026-11-16, plan #32 affectUI fidelity pass, overnight batch, family A).
 
-# Spec: Writing Assistant (`writing-assistant`)
+# Spec: Writing assistant (`writing-assistant`)
 
 Family: Chat. Closes the parity row: affectUI · Writing Assistant. Behaviour-only rebuild; nothing is copied.
-Components: `WritingAssistant` (Dioxus) · `WritingAssistantEl` (GPUI), models in `oxyn_core::parity::answers`.
+Components: `WritingAssistant` (Dioxus) · `WritingAssistantEl` (GPUI), models in `oxyn_core::kit::answers`.
 Oxyn extras on the same page: none.
 
 ## 1. Purpose

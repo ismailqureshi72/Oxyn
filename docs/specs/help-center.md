@@ -3,7 +3,7 @@
 # Spec: Help center (`help-center`)
 
 Family: Arc screens (pages at `/screens/help-center/` and `/full`). Reference: the help center screen of Arc UI (uiarc.dev), behaviour and layout only, under our own design; no source, artwork or copy taken. Every person, customer, workspace and article is fictional; dates are absolute ISO dates and times are 24-hour.
-Components: `HelpCenterScreen` (Dioxus) · `HelpCenterEl` (GPUI), rules in `oxyn_core::parity::arcscr2`.
+Components: `HelpCenterScreen` (Dioxus) · `HelpCenterEl` (GPUI), rules in `oxyn_core::kit::arcscr2`.
 
 ## 1. Purpose
 Keep a help site's articles current and learn what readers can't find.
@@ -21,7 +21,7 @@ The Arc frame (shared with the S12 screens): a 248 px sidebar (workspace mark an
 | Insights (250 px) | Views in 30 days, helpful share with a bar, votes, Top searches with counts; those with no results flagged rose |
 
 ## 3. Behaviour
-`Help` and `search` in `oxyn_core::parity::arcscr2`: search needs every word in the title or body, ranks title matches first, then views, and returns the matching sentence; tabs and collections narrow the pool. One vote per reader per article; a No needs a reason before Send; Publish turns a draft or review into Published with today's date.
+`Help` and `search` in `oxyn_core::kit::arcscr2`: search needs every word in the title or body, ranks title matches first, then views, and returns the matching sentence; tabs and collections narrow the pool. One vote per reader per article; a No needs a reason before Send; Publish turns a draft or review into Published with today's date.
 
 ## 4. Variants
 States: Data · Loading · Empty ("No articles yet" with Write an article) · **Search** ("cancel") · **No results** ("dark mode") · **Feedback** (a No with Missing steps picked). Frame: Inset · Flat.

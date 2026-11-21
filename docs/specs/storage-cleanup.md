@@ -3,7 +3,7 @@
 # Spec: Storage cleanup (`storage-cleanup`)
 
 Family: Storage. Reference: the behaviour of a cleanup panel in a public notch app (unused skills with checkboxes, a not-used-in window, counters, move to Trash with undo). Behaviour only; names, figures and wording are our own.
-Components: `StorageCleanup` (Dioxus) · `StorageCleanupEl` (GPUI), models in `oxyn_core::parity::storagefid`.
+Components: `StorageCleanup` (Dioxus) · `StorageCleanupEl` (GPUI), models in `oxyn_core::kit::storagefid`.
 
 ## 1. Purpose
 Give back context an agent wastes every session on skills and commands nobody uses.

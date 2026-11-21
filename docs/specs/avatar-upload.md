@@ -60,4 +60,4 @@ Click or drop a photo onto the avatar to crop it in place. The file is checked (
 - Pinch zoom on touch and re-encoding to a 512 px PNG/JPEG need canvas access (JS); the host cuts the square from the reported crop.
 
 ## 10. GPUI
-AvatarUploadEl renders the avatar, ring and crop circle from `parity::upload::Crop`.
+AvatarUploadEl renders the avatar, ring and crop circle from `kit::upload::Crop`.

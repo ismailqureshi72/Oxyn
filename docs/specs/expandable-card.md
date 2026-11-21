@@ -51,8 +51,8 @@ A dense card that gives itself more room on request: a header button with an ico
 - Toggling mid-morph reverses from the current size (CSS transitions).
 
 ## 10. Implementation
-- Core: — (`oxyn_core::parity::tools`), with tests.
-- Dioxus: `ExpandableCard` (parity/tools.rs, tools.css).
+- Core: — (`oxyn_core::kit::tools`), with tests.
+- Dioxus: `ExpandableCard` (kit/tools.rs, tools.css).
 - GPUI: `ExpandableCardEl` (`toggle`).
 
 ## 11. References

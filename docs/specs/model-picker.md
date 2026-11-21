@@ -3,7 +3,7 @@
 # Spec: Model picker (`model-picker`)
 
 Family: Chat. Closes the parity row: affectUI · Model Picker. Behaviour-only rebuild; nothing is copied.
-Components: `ModelPickerMenu` (Dioxus) · `ModelPickerMenuEl` (GPUI), models in `oxyn_core::parity::chatfid`.
+Components: `ModelPickerMenu` (Dioxus) · `ModelPickerMenuEl` (GPUI), models in `oxyn_core::kit::chatfid`.
 Oxyn extras on the same page: the plan #28 `ModelMenu` (variant `oxyn-model-menu`); the provider
 switcher with search and favourites is its own page, `model-switcher`.
 

@@ -3,7 +3,7 @@
 # Spec: Agent · Inbox (`inbox`)
 
 Family: Screens. Reference: affectUI Agent / Inbox (`/screens/inbox`), layout and behaviour only; no source or assets copied.
-Components: `InboxScreen` (Dioxus) · `InboxEl` (GPUI), models in `oxyn_core::parity::agentscr`.
+Components: `InboxScreen` (Dioxus) · `InboxEl` (GPUI), models in `oxyn_core::kit::agentscr`.
 
 ## 1. Purpose
 Every question agents are waiting on, answered one at a time with a single keystroke.
@@ -34,4 +34,4 @@ Authored on the 1440 × 900 stage (rule R1) and scaled to its column; the full v
 
 ## 7. Known gaps
 GPUI is a static snapshot: `.extra(...)` draws the screen's own state or an option; typing, timers and menus belong to the host. Sample people, companies and projects are fictional.
-In a window, `ScreenView` (oxyn-gpui, `parity::screenview`) runs this screen live from `oxyn_core::parity::screenui`: the sidebar and page links open their screens (across sets), buttons open their state, the bar above it switches the set's screens and the state bar, a command bar (a real text field) jumps to any screen or state, the account row opens its menu, and Left / Right, Up / Down and Escape step states and screens. Editing the page's own fields in place is still the host's.
+In a window, `ScreenView` (oxyn-gpui, `kit::screenview`) runs this screen live from `oxyn_core::kit::screenui`: the sidebar and page links open their screens (across sets), buttons open their state, the bar above it switches the set's screens and the state bar, a command bar (a real text field) jumps to any screen or state, the account row opens its menu, and Left / Right, Up / Down and Escape step states and screens. Editing the page's own fields in place is still the host's.

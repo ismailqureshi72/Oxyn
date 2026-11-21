@@ -3,7 +3,7 @@
 # Spec: Gooey composer (`gooey-composer`)
 
 Family: Menu Motion. Reference: the attach (plus) and model menus of a public chat-composer component, which grow out of the corner beside their buttons, cascade rows and glide a hover fill. Behaviour only, rebuilt from scratch; items, icons and wording are our own.
-Components: `GooeyComposer` (Dioxus) · `GooeyComposerEl` (GPUI), models in `oxyn_core::parity::gooeyfid`.
+Components: `GooeyComposer` (Dioxus) · `GooeyComposerEl` (GPUI), models in `oxyn_core::kit::gooeyfid`.
 
 ## 1. Purpose
 Put the gooey menu motion on a real prompt box: both menus pour out of the box's top edge above their buttons.

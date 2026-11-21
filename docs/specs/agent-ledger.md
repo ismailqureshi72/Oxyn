@@ -1,10 +1,10 @@
 **Status:** built v0.1 (2026-11-16, plan #32 affectUI fidelity pass, overnight batch, family B part 4).
 
-# Spec: Agent Ledger (`agent-ledger`)
+# Spec: Change ledger (`agent-ledger`)
 
 Family: Agents. Closes the parity row: affectUI · Agent Ledger (Pro). Behaviour-only rebuild; nothing is copied (the
 demo's changes, systems' details and agent name are our own).
-Components: `AgentLedger` (Dioxus) · `AgentLedgerEl` (GPUI), model in `oxyn_core::parity::ledgerfid`.
+Components: `AgentLedger` (Dioxus) · `AgentLedgerEl` (GPUI), model in `oxyn_core::kit::ledgerfid`.
 
 ## 1. Purpose
 Everything an agent changed in your systems, newest first, each change with an undo. Pointing at Undo is honest about

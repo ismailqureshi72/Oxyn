@@ -173,7 +173,7 @@ export async function unlock(env: Env, u: Who, slug: string, bucket: Bucket, via
 }
 
 // ── Registry index (kinds and dependencies) ───────────────────────────────────────────────────
-interface IdxEntry { slug: string; kind: string; tier: 'free' | 'pro'; installable: boolean; oxyn_deps?: Record<string, string[]> }
+interface IdxEntry { slug: string; kind: string; tier: 'free' | 'pro'; installable: boolean; oxyn_deps?: Record<string, string[]>; aliases?: string[] }
 let IDX: { at: number; items: Map<string, IdxEntry> } | null = null;
 
 /** The public index (dist/r/index.json), cached per isolate for 5 minutes. Kinds come from here. */
@@ -182,7 +182,10 @@ export async function registryIndex(env: Env, origin: string): Promise<Map<strin
   const r = await env.ASSETS.fetch(new Request(`${origin}/r/index.json`));
   if (!r.ok) throw new HttpError(503, 'registry_unavailable', 'The registry index is not available right now.');
   const d = (await r.json()) as { items: IdxEntry[] };
-  IDX = { at: Date.now(), items: new Map(d.items.map((i) => [i.slug, i])) };
+  // Renamed items answer to their old slugs too (`aliases`, docs/renames.md); the entry keeps the current slug.
+  const items = new Map<string, IdxEntry>(d.items.map((i) => [i.slug, i]));
+  for (const i of d.items) for (const a of i.aliases ?? []) if (!items.has(a)) items.set(a, i);
+  IDX = { at: Date.now(), items };
   return IDX.items;
 }
 export const resetIndexCache = () => { IDX = null; };
@@ -301,6 +304,7 @@ async function registryItem(req: Request, env: Env, ctx: Ctx, url: URL, slug: st
   const idx = await registryIndex(env, url.origin);
   const entry = idx.get(slug);
   if (!entry) throw new HttpError(404, 'not_found', `There is no item called \`${slug}\`.`);
+  slug = entry.slug; // an old slug of a renamed item counts and serves as the item itself
   if (entry.tier !== 'pro') {
     const r = await env.ASSETS.fetch(new Request(`${url.origin}/r/${slug}.json`));
     if (!r.ok) throw new HttpError(404, 'not_found', `\`${slug}\` has no installable build.`);
@@ -312,7 +316,8 @@ async function registryItem(req: Request, env: Env, ctx: Ctx, url: URL, slug: st
   const e = await plan_for(env, u);
   const via = viaOf(req, url);
   // A dependency of an item this pool already opened this month comes with it.
-  const parent = url.searchParams.get('for') || '';
+  const parentArg = url.searchParams.get('for') || '';
+  const parent = idx.get(parentArg)?.slug ?? parentArg;
   let usage: Usage;
   let counted = false;
   if (parent && parent !== slug && SLUG.test(parent) && e.pro && depClosure(idx, parent).has(slug) &&

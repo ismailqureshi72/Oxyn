@@ -1,4 +1,4 @@
-//! Skeletons, the shimmer loader and the skeleton morph (`skeletons.md`, `skeleton-morph.md`).
+//! Skeletons, the shimmer loader and the skeleton reveal (`skeletons.md`, `skeleton-morph.md`).
 //!
 //! - **Skeleton** (affectUI Skeleton, Arc UI Skeleton): grey shapes the size of what they stand in
 //!   for. affectUI: one soft sheen sweeps across every skeleton in step (1.6 s), and a `Loading`

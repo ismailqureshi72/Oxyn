@@ -1,9 +1,9 @@
 **Status:** built v0.1 (2026-11-16, plan #32 affectUI fidelity pass, overnight batch, family A).
 
-# Spec: AI Answer (`ai-answer`)
+# Spec: AI answer (`ai-answer`)
 
 Family: Chat. Closes the parity row: affectUI · AI Answer. Behaviour-only rebuild; nothing is copied.
-Components: `AnswerCard` (Dioxus) · `AnswerCardEl` (GPUI), models in `oxyn_core::parity::answers`.
+Components: `AnswerCard` (Dioxus) · `AnswerCardEl` (GPUI), models in `oxyn_core::kit::answers`.
 Oxyn extras on the same page: the plan #27 `AiAnswer` (variant `oxyn-ai-answer`; its own spec is `citations-sources`).
 
 ## 1. Purpose

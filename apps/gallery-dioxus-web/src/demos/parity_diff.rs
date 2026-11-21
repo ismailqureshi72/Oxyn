@@ -5,12 +5,12 @@
 use dioxus::prelude::*;
 use oxyn_core::{
     ClockMs,
-    parity::diff::{
+    kit::diff::{
         Comment, CompareMode, FileDiff, Filter, Finding, Order, Person, ReviewFile, ReviewItem,
         ReviewMode, ReviewStep, Revision, Risk, Severity, Span, SugHunk, SugStatus, Suggestion,
         Thread, table_diff,
     },
-    parity::difftlfid::{dt_demo, dt_end},
+    kit::difftlfid::{dt_demo, dt_end},
 };
 use oxyn_dioxus::{
     AiInlineEdit, ChangeSummary, CodeSuggestion, CommentThread, DiffTable, DiffTimeline,
@@ -162,8 +162,8 @@ fn diff_viewer(v: &Vals, _: ClockMs) -> Element {
             DiffViewer { files, mode: ReviewMode::from_id(v.s("mode")), layout: v.string("layout"), change_style: v.string("style"),
                 file_list: v.b("list"), word_diff: v.b("words"), wrap: v.b("wrap"), line_numbers: v.b("numbers"), minimap: v.b("minimap"),
                 comments: v.b("comments"), focus_dim: v.b("dim"),
-                on_decide: move |(h, d): (oxyn_core::parity::diff::HunkRef, oxyn_core::parity::diff::Decision)| msg.set(format!("onDecide(file {}, hunk {}, {})", h.0, h.1, d.id())),
-                on_send: move |c: Vec<oxyn_core::parity::diff::LineComment>| msg.set(format!("onSend({} comments)", c.len())),
+                on_decide: move |(h, d): (oxyn_core::kit::diff::HunkRef, oxyn_core::kit::diff::Decision)| msg.set(format!("onDecide(file {}, hunk {}, {})", h.0, h.1, d.id())),
+                on_send: move |c: Vec<oxyn_core::kit::diff::LineComment>| msg.set(format!("onSend({} comments)", c.len())),
             }
             {status(msg)}
         }
@@ -607,7 +607,7 @@ fn comment_thread(v: &Vals, _: ClockMs) -> Element {
         div { style: "width:100%;max-width:560px;display:flex;flex-direction:column;gap:6px",
             for k in [format!("{}{}{}", v.s("set"), v.b("resolved"), v.s("depth"))] {
                 CommentThread { key: "{k}", thread: t.clone(), me: me.clone(), people: pp.clone(), title: Some(v.string("title")), default_resolved: v.b("resolved"), max_depth: v.u("depth"),
-                    on_change: move |(_, e): (Thread, oxyn_core::parity::diff::ThreadEvent)| msg.set(format!("onChange({e:?})")),
+                    on_change: move |(_, e): (Thread, oxyn_core::kit::diff::ThreadEvent)| msg.set(format!("onChange({e:?})")),
                     on_resolved: move |r: bool| msg.set(format!("onResolvedChange({r})")) }
             }
             {status(msg)}
@@ -753,7 +753,7 @@ fn review_center(v: &Vals, now: ClockMs) -> Element {
         div { style: "width:100%;max-width:980px;display:flex;flex-direction:column;gap:6px",
             for k in [format!("{}{}{}{}", v.s("order"), v.s("filter"), v.s("sla"), v.b("batch"))] {
                 ReviewCenter { key: "{k}", items: review_items(), now: shifted(now), reviewed: 24, sla, order: Order::from_id(v.s("order")), default_filter: Filter::from_id(v.s("filter")), batch_low: v.b("batch"),
-                    on_decide: move |(id, d): (String, oxyn_core::parity::diff::Verdict)| msg.set(format!("onDecide({id}, {d:?})")),
+                    on_decide: move |(id, d): (String, oxyn_core::kit::diff::Verdict)| msg.set(format!("onDecide({id}, {d:?})")),
                     on_undo: move |id: String| msg.set(format!("onUndo({id})")),
                     on_skip: move |id: String| msg.set(format!("onSkip({id})")) }
             }
@@ -797,7 +797,7 @@ fn review_card(v: &Vals, _: ClockMs) -> Element {
         div { style: "width:100%;max-width:600px;display:flex;flex-direction:column;gap:6px",
             for k in [format!("{}{}", v.b("nits"), v.b("first"))] {
                 ReviewCard { key: "{k}", findings: findings(), subject: "PR #311 · 4 files".to_string(), hide_nits: !v.b("nits"), expand_first: v.b("first"),
-                    on_change: move |(id, s): (String, oxyn_core::parity::diff::FindingState)| msg.set(format!("onChange({id}, {s:?})")) }
+                    on_change: move |(id, s): (String, oxyn_core::kit::diff::FindingState)| msg.set(format!("onChange({id}, {s:?})")) }
             }
             {status(msg)}
         }
@@ -901,7 +901,7 @@ pub(crate) fn demos() -> Vec<Demo> {
                 "DiffViewer",
                 "DiffViewerEl",
                 "diff-viewer",
-                "parity/diff.rs",
+                "kit/diff.rs",
             )
         },
         Demo {
@@ -983,7 +983,7 @@ pub(crate) fn demos() -> Vec<Demo> {
                 "InlineDiff",
                 "InlineDiffEl",
                 "inline-diff",
-                "parity/diff.rs",
+                "kit/diff.rs",
             )
         },
         Demo {
@@ -1017,7 +1017,7 @@ pub(crate) fn demos() -> Vec<Demo> {
                 "ChangeSummary",
                 "ChangeSummaryEl",
                 "change-summary",
-                "parity/diff.rs",
+                "kit/diff.rs",
             )
         },
         Demo {
@@ -1059,7 +1059,7 @@ pub(crate) fn demos() -> Vec<Demo> {
                 "DiffTable",
                 "DiffTableEl",
                 "diff-table",
-                "parity/diff.rs",
+                "kit/diff.rs",
             )
         },
         Demo {
@@ -1157,7 +1157,7 @@ pub(crate) fn demos() -> Vec<Demo> {
                 "DiffTimeline",
                 "DiffTimelineEl",
                 "diff-timeline",
-                "parity/diff.rs",
+                "kit/diff.rs",
             )
         },
         Demo {
@@ -1222,7 +1222,7 @@ pub(crate) fn demos() -> Vec<Demo> {
                 "CodeSuggestion",
                 "CodeSuggestionEl",
                 "code-suggestion",
-                "parity/diff.rs",
+                "kit/diff.rs",
             )
         },
         Demo {
@@ -1292,7 +1292,7 @@ pub(crate) fn demos() -> Vec<Demo> {
                 "AiInlineEdit",
                 "AiInlineEditEl",
                 "ai-inline-edit",
-                "parity/review.rs",
+                "kit/review.rs",
             )
         },
         Demo {
@@ -1354,7 +1354,7 @@ pub(crate) fn demos() -> Vec<Demo> {
                 "ImageCompare",
                 "ImageCompareEl",
                 "image-compare",
-                "parity/review.rs",
+                "kit/review.rs",
             )
         },
         Demo {
@@ -1412,7 +1412,7 @@ pub(crate) fn demos() -> Vec<Demo> {
                 "CommentThread",
                 "CommentThreadEl",
                 "comment-thread",
-                "parity/review.rs",
+                "kit/review.rs",
             )
         },
         Demo {
@@ -1477,7 +1477,7 @@ pub(crate) fn demos() -> Vec<Demo> {
                 "ReviewCenter",
                 "ReviewCenterEl",
                 "review-center",
-                "parity/review.rs",
+                "kit/review.rs",
             )
         },
         Demo {
@@ -1512,7 +1512,7 @@ pub(crate) fn demos() -> Vec<Demo> {
                 "ReviewCard",
                 "ReviewCardEl",
                 "review-card",
-                "parity/review.rs",
+                "kit/review.rs",
             )
         },
     ]

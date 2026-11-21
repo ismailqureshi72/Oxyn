@@ -1,11 +1,11 @@
 **Status:** built v0.2 (2026-11-16, plan #32 affectUI fidelity pass, family B part 8 – exact pass against the ref-1 capture notes).
 
-# Spec: Fallback Chain (`fallback-chain`)
+# Spec: Fallback chain (`fallback-chain`)
 
 Family: Agents. Closes the parity row: affectUI · Fallback Chain (Pro). Behaviour-only rebuild; sizes, colours, states,
 motion and responsive rules follow the ref-1 capture notes (approximate, read off screenshots); models, timings,
 reasons and copy are our own. Related Oxyn component: trace-view.
-Components: `FallbackChain` (Dioxus) · `FallbackChainEl` (GPUI), model in `oxyn_core::parity::fallbackfid`.
+Components: `FallbackChain` (Dioxus) · `FallbackChainEl` (GPUI), model in `oxyn_core::kit::fallbackfid`.
 
 ## 1. Purpose
 Which model actually served a request: the fallback order as a small flow with a running clock and cost, each failed

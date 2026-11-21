@@ -430,7 +430,7 @@ chip state, pane labels) · [review-card.md](review-card.md) · [file-edit-chip.
 | "Current / Incoming" wording | common editor vocabulary; ours is written in-house in `MergeLabels` | not from our research notes; no code or assets used |
 
 ## 12. Implemented (plan #31, 2026-11-15)
-Dioxus `MergeConflict` / GPUI `MergeConflictEl` over `oxyn_core::parity::merge` (`parse_markers`,
+Dioxus `MergeConflict` / GPUI `MergeConflictEl` over `oxyn_core::kit::merge` (`parse_markers`,
 `MergeFile`, `Merge`, `Pick`, `merge_key`). Styles: `merge.css`, classes `oxyn-mrg-*`.
 
 **Model.** `parse_markers` reads git marker files (`<<<<<<<`, optional `|||||||` base section from

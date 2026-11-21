@@ -61,4 +61,4 @@ A generous target for one or more files and the list that follows. Files are che
 - Uploads are simulated on the clock; a real host maps its upload progress onto rows. ⌘V paste of files and image thumbnails (object URLs) need JS and are not offered.
 
 ## 10. GPUI
-FileDropzoneEl renders the target and rows from `parity::upload::Uploads`.
+FileDropzoneEl renders the target and rows from `kit::upload::Uploads`.

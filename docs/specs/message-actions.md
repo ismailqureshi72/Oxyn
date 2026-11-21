@@ -1,9 +1,9 @@
 **Status:** built v0.1 (2026-11-16, plan #32 affectUI fidelity pass, overnight batch, family A).
 
-# Spec: Message Actions (`message-actions`)
+# Spec: Message actions (`message-actions`)
 
 Family: Chat. Closes the parity row: affectUI · Message Actions. Behaviour-only rebuild; nothing is copied.
-Components: `MessageActionBar` (Dioxus) · `MessageActionsEl` (GPUI), models in `oxyn_core::parity::answers`.
+Components: `MessageActionBar` (Dioxus) · `MessageActionsEl` (GPUI), models in `oxyn_core::kit::answers`.
 Oxyn extras on the same page: the plan #27 `ResponseFeedback` (variant `oxyn-response-feedback`; also its own page).
 
 ## 1. Purpose

@@ -3,7 +3,7 @@
 # Spec: Accent and density (`accent-density`)
 
 Family: Theme Selector. Reference: none (an Oxyn original).
-Components: `AccentDensity` (Dioxus) · `AccentDensityEl` (GPUI), models in `oxyn_core::parity::themefid`.
+Components: `AccentDensity` (Dioxus) · `AccentDensityEl` (GPUI), models in `oxyn_core::kit::themefid`.
 
 ## 1. Purpose
 Tune the accent colour, row spacing and corner shape together on a sample that shows each change at once.

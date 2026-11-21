@@ -50,7 +50,7 @@ A launch countdown: large digits with unit labels (each value rises in when it c
 
 ## 10. Implementation
 - Core: `Countdown` (`oxyn_core::parity`), with tests.
-- Dioxus: `Countdown` (parity/run.rs, run.css).
+- Dioxus: `Countdown` (kit/run.rs, run.css).
 - GPUI: `CountdownEl`.
 
 ## 11. References

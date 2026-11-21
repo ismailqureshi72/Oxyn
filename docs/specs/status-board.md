@@ -3,7 +3,7 @@
 # Spec: Status (`status-board`)
 
 Family: Arc screens (pages at `/screens/status-board/` and `/full`). Reference: the Arc demo app's status page, behaviour and layout only, under our own design; no source, artwork or copy taken. Every company, person, key, endpoint and amount is fictional; dates are absolute ISO dates and times are 24-hour UTC.
-Components: `StatusBoardScreen` (Dioxus) · `StatusBoardEl` (GPUI), rules in `oxyn_core::parity::arcscr4`.
+Components: `StatusBoardScreen` (Dioxus) · `StatusBoardEl` (GPUI), rules in `oxyn_core::kit::arcscr4`.
 
 ## 1. Purpose
 Tell customers and the team what works now, what broke recently and how long things have been reliable.
@@ -20,7 +20,7 @@ The Arc frame (shared with the S12–S14 screens): a 248 px sidebar (Corvel Labs
 | Past incidents | Five incidents with state, ISO date; each opens its duration and follow-up |
 
 ## 3. Behaviour
-`Status` in `oxyn_core::parity::arcscr4`: `day_health(c, d, mode)`, `uptime(c, mode)` (an outage day costs 0.4%, a degraded day 0.06%), `open_incident(mode)`, `read(c, d)`, `subscribe()`.
+`Status` in `oxyn_core::kit::arcscr4`: `day_health(c, d, mode)`, `uptime(c, mode)` (an outage day costs 0.4%, a degraded day 0.06%), `open_incident(mode)`, `read(c, d)`, `subscribe()`.
 
 ## 4. Variants
 States: Data · Loading · Empty (No components yet) · **Degraded** · **Outage** · **Maintenance**. Frame: Inset · Flat.
@@ -32,7 +32,7 @@ The overall state is a status region; day bars are buttons named with date and s
 Authored on the 1440 × 900 stage and scaled to its column; `/full` renders at the real viewport. Under 960 px the sidebar is a drawer from the header's menu button and the right card hides; under 640 px header actions become icon buttons. scripts/ovl.py checks text overlap at 1440, 768 and 390 in light and dark.
 
 ## 7. Data
-`StatusBoardScreen` takes `layout` and `state`; sample data comes from `oxyn_core::parity::arcscr4`.
+`StatusBoardScreen` takes `layout` and `state`; sample data comes from `oxyn_core::kit::arcscr4`.
 
 ## 8. Known gaps
 Subscribe changes demo state only; no email is sent.

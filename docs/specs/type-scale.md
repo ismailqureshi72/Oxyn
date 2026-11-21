@@ -3,7 +3,7 @@
 # Spec: Type scale (`type-scale`)
 
 Family: Theme Selector. Reference: none (an Oxyn original).
-Components: `TypeScale` (Dioxus) · `TypeScaleEl` (GPUI), models in `oxyn_core::parity::themefid`.
+Components: `TypeScale` (Dioxus) · `TypeScaleEl` (GPUI), models in `oxyn_core::kit::themefid`.
 
 ## 1. Purpose
 Set how text reads – family, size and line spacing – on a real paragraph, with a hint about line length.

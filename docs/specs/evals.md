@@ -3,7 +3,7 @@
 # Spec: Evals (`evals`)
 
 Family: Screens. Reference: affectUI Evals (`/screens/evals`), layout and behaviour only; no source or assets copied.
-Components: `EvalsScreen` (Dioxus) · `EvalsEl` (GPUI), models in `oxyn_core::parity::buildscr`.
+Components: `EvalsScreen` (Dioxus) · `EvalsEl` (GPUI), models in `oxyn_core::kit::buildscr`.
 
 ## 1. Purpose
 Know whether a prompt change made replies better before it ships: how often it passes, what changed in the prompt, and which cases broke.
@@ -40,4 +40,4 @@ Authored on the 1440 × 900 stage (rule R1) and scaled to its column; the full v
 
 ## 7. Known gaps
 GPUI is a static snapshot: `.extra("running" | "fails" | "cost")` draws the own state or an option; menus, re-runs and the chart's keyboard belong to the Dioxus screen. Prompts, cases, people and the workspace are fictional; model versions are fictional, model and channel marks are the providers' official ones.
-In a window, `ScreenView` (oxyn-gpui, `parity::screenview`) runs this screen live from `oxyn_core::parity::screenui`: the sidebar and page links open their screens (across sets), buttons open their state, the bar above it switches the set's screens and the state bar, a command bar (a real text field) jumps to any screen or state, the account row opens its menu, and Left / Right, Up / Down and Escape step states and screens. Editing the page's own fields in place is still the host's.
+In a window, `ScreenView` (oxyn-gpui, `kit::screenview`) runs this screen live from `oxyn_core::kit::screenui`: the sidebar and page links open their screens (across sets), buttons open their state, the bar above it switches the set's screens and the state bar, a command bar (a real text field) jumps to any screen or state, the account row opens its menu, and Left / Right, Up / Down and Escape step states and screens. Editing the page's own fields in place is still the host's.

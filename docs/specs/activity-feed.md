@@ -51,7 +51,7 @@ What happened, newest first, grouped by day (Today, Yesterday, n days ago) on a 
 
 ## 10. Implementation
 - Core: `Feed`, `FeedEvent`, `EventKind` (`oxyn_core::parity`), with tests.
-- Dioxus: `ActivityFeed` (parity/run.rs, run.css).
+- Dioxus: `ActivityFeed` (kit/run.rs, run.css).
 - GPUI: `ActivityFeedEl` (`show-new`, `read-all`).
 
 ## 11. References

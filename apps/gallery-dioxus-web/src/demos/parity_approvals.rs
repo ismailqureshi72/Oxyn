@@ -1,13 +1,13 @@
-//! Plan #28 parity demos, approvals: hold to confirm, confirm morph, confirm popover, approval
+//! Plan #28 parity demos, approvals: hold to confirm, inline confirm, confirm popover, approval
 //! gates, permission request and the agent approvals block.
 
 use dioxus::prelude::*;
 use oxyn_core::{
     ClockMs,
-    parity::{
+    kit::{
         confirm::{
-            ConfirmMode, ConfirmMorph as MorphModel, ConfirmPopover as PopModel, ConfirmTone,
-            HoldConfirm, MorphFace, PopoverAlign, PopoverPhase,
+            ConfirmMode, ConfirmPopover as PopModel, ConfirmTone, HoldConfirm,
+            InlineConfirm as MorphModel, MorphFace, PopoverAlign, PopoverPhase,
         },
         gates::{
             AgentApprovals as AgentModel, Arg, Gate, GateDecision, GateKind, GateStatus, Gates,
@@ -16,7 +16,7 @@ use oxyn_core::{
     },
 };
 use oxyn_dioxus::{
-    AgentApprovals, ApprovalGates, ConfirmMorph, ConfirmPopover, HoldToConfirm, PermissionRequest,
+    AgentApprovals, ApprovalGates, ConfirmPopover, HoldToConfirm, InlineConfirm, PermissionRequest,
 };
 
 use super::{Code, mk, q, sel, tog, var};
@@ -84,7 +84,7 @@ fn hold_code(v: &Vals) -> String {
         .done()
 }
 
-// ---------- confirm morph ----------
+// ---------- inline confirm ----------
 
 fn settle_morph(m: &mut MorphModel, pend: Option<u64>, undo: Option<u64>, ok: bool, now: ClockMs) {
     if let Some(p) = pend
@@ -155,7 +155,7 @@ fn LiveMorph(
     let mut shown = m.read().clone();
     settle_morph(&mut shown, pend(), undo_at(), ok, now);
     rsx! {
-        ConfirmMorph {
+        InlineConfirm {
             model: shown,
             now,
             on_open: move |_| { let mut w = m.write(); settle_morph(&mut w, pend(), undo_at(), ok, now); pend.set(None); undo_at.set(None); w.open(now) },
@@ -183,8 +183,8 @@ fn LiveMorph(
 }
 
 fn morph_code(v: &Vals) -> String {
-    Code::new("ConfirmMorph")
-        .pre("let mut m = use_signal(|| ConfirmMorph::new(\"Delete 3 files\"));")
+    Code::new("InlineConfirm")
+        .pre("let mut m = use_signal(|| InlineConfirm::new(\"Delete 3 files\"));")
         .pre(format!(
             "m.write().mode = ConfirmMode::{};",
             match v.s("mode") {
@@ -723,7 +723,7 @@ pub fn demos() -> Vec<Demo> {
                 "HoldToConfirm",
                 "HoldConfirmEl",
                 "hold-to-confirm",
-                "parity/approvals.rs",
+                "kit/approvals.rs",
             )
         },
         Demo {
@@ -777,14 +777,14 @@ pub fn demos() -> Vec<Demo> {
             height: 200,
             live: true,
             ..mk(
-                "confirm-morph",
-                "Confirm morph",
+                "inline-confirm",
+                "Inline confirm",
                 "approvals",
                 "A destructive button that morphs into an inline question, a spinner and a result with Undo, or an error with Retry. Confirm by press, by hold, or with a countdown Escape can still stop.",
-                "ConfirmMorph",
-                "ConfirmMorphEl",
+                "InlineConfirm",
+                "InlineConfirmEl",
                 "confirm-morph",
-                "parity/approvals.rs",
+                "kit/approvals.rs",
             )
         },
         Demo {
@@ -844,7 +844,7 @@ pub fn demos() -> Vec<Demo> {
                 "ConfirmPopover",
                 "ConfirmPopoverEl",
                 "confirm-popover",
-                "parity/approvals.rs",
+                "kit/approvals.rs",
             )
         },
         Demo {
@@ -899,7 +899,7 @@ pub fn demos() -> Vec<Demo> {
                 "ApprovalGates",
                 "ApprovalGatesEl",
                 "approval-gates",
-                "parity/approvals.rs",
+                "kit/approvals.rs",
             )
         },
         Demo {
@@ -954,7 +954,7 @@ pub fn demos() -> Vec<Demo> {
                 "PermissionRequest",
                 "PermissionRequestEl",
                 "permission-request",
-                "parity/approvals.rs",
+                "kit/approvals.rs",
             )
         },
         Demo {
@@ -989,7 +989,7 @@ pub fn demos() -> Vec<Demo> {
                 "AgentApprovals",
                 "AgentApprovalsEl",
                 "agent-approvals",
-                "parity/approvals.rs",
+                "kit/approvals.rs",
             )
         },
     ]

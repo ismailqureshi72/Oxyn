@@ -1,9 +1,9 @@
 **Status:** built v0.1 (2026-11-19, S14: Arc screens III).
 
-# Spec: Invoice studio (`invoice-studio`)
+# Spec: Invoice desk (`invoice-studio`)
 
-Family: Arc screens (pages at `/screens/invoice-studio/` and `/full`). Reference: the invoice studio screen of Arc UI (uiarc.dev), behaviour and layout only, under our own design; no source, artwork or copy taken. Every company, ticker, product, client and person is fictional; dates are absolute ISO dates and times are 24-hour.
-Components: `InvoiceStudioScreen` (Dioxus) · `InvoiceStudioEl` (GPUI), rules in `oxyn_core::parity::arcscr3`.
+Family: Arc screens (pages at `/screens/invoice-desk/` and `/full`). Reference: the invoice studio screen of Arc UI (uiarc.dev), behaviour and layout only, under our own design; no source, artwork or copy taken. Every company, ticker, product, client and person is fictional; dates are absolute ISO dates and times are 24-hour.
+Components: `InvoiceStudioScreen` (Dioxus) · `InvoiceStudioEl` (GPUI), rules in `oxyn_core::kit::arcscr3`.
 
 ## 1. Purpose
 Write an invoice line by line with live totals and send it when it is complete.
@@ -20,7 +20,7 @@ The Arc frame (shared with the S12 and S13 screens): a 248 px sidebar (workspace
 | Details card (312 px) | Client select, Payment terms (On receipt, Net 15, Net 30, Net 45) with the due date, Sales tax 8.25% and Automatic reminders switches, Activity |
 
 ## 3. Behaviour
-`Invoice` in `oxyn_core::parity::arcscr3`: only drafts edit; removing a line offers Undo that puts it back in place; tax rounds half up; the due date is the issue date plus the terms. Send checks in order: the client has a billing email, there is a line, every line is described, the total is above zero; a sent invoice turns Open and reports its email, total and due date.
+`Invoice` in `oxyn_core::kit::arcscr3`: only drafts edit; removing a line offers Undo that puts it back in place; tax rounds half up; the due date is the issue date plus the terms. Send checks in order: the client has a billing email, there is a line, every line is described, the total is above zero; a sent invoice turns Open and reports its email, total and due date.
 
 ## 4. Variants
 States: Data · Loading · Empty ("No invoices yet" with New invoice) · **Editing** (a new line "Rush turnaround") · **Preview** (read-only, as the client sees it) · **Sent** (Open, due 2026-12-12). Frame: Inset · Flat.

@@ -155,7 +155,7 @@
     chip.dataset.tier = plan.admin ? 'admin' : plan.tier;
     manage.hidden = !plan.has_billing;
     up.hidden = plan.pro;
-    let text = 'Every component and primitive, free and MIT licensed.';
+    let text = line.dataset.freeLine || 'The free components and primitives, MIT licensed.';
     if (plan.admin) {
       text = 'Admin: every component, screen and block is open to you, whatever the plan.';
     } else if (plan.via === 'subscription' && s) {

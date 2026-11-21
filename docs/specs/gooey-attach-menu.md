@@ -3,7 +3,7 @@
 # Spec: Gooey attach menu (`gooey-attach-menu`)
 
 Family: Menu Motion. Reference: the plus menu of a public chat-composer component (corner morph, row cascade, hover fill). Behaviour only; rows, icons and wording are our own.
-Components: `GooeyAttachMenu` (Dioxus) · `GooeyAttachMenuEl` (GPUI), models in `oxyn_core::parity::gooeyfid`.
+Components: `GooeyAttachMenu` (Dioxus) · `GooeyAttachMenuEl` (GPUI), models in `oxyn_core::kit::gooeyfid`.
 
 ## 1. Purpose
 The attach drop-up on its own, for any toolbar: file types and sources pouring out of a + button.

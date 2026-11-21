@@ -3,7 +3,7 @@
 # Spec: Kanban board (`kanban-board`)
 
 Family: Arc screens (pages at `/screens/kanban-board/` and `/full`). Reference: the kanban board screen of Arc UI (uiarc.dev), behaviour and layout only, under our own design; no source, artwork or copy taken. Every person, workspace and project is fictional; dates are absolute ISO dates.
-Components: `KanbanBoardScreen` (Dioxus) · `KanbanBoardEl` (GPUI), rules in `oxyn_core::parity::arcscr`.
+Components: `KanbanBoardScreen` (Dioxus) · `KanbanBoardEl` (GPUI), rules in `oxyn_core::kit::arcscr`.
 
 ## 1. Purpose
 Move a cycle's issues from Backlog to Done and see the cycle's progress.
@@ -33,10 +33,10 @@ Columns are labelled regions; cards are buttons with aria-roledescription Dragga
 Authored on the 1440 × 900 stage and scaled to its column; `/full` renders at the real viewport. Under 960 px the sidebar is a drawer from the header's menu button (Escape or the scrim closes it), columns scroll sideways. Under 640 px header actions become icon buttons, the meta line hides and grids drop to one column. scripts/ovl.py finds no text overlap at 1440, 768 and 390 in light and dark.
 
 ## 7. Data
-`KanbanBoardScreen` takes `data: Option<Vec<Issue>>` (`oxyn_core::parity::arcscr`): id, title, column, label, priority, points, assignee, due day, comments, pull request, sub-issues. `None` shows the sample for the state.
+`KanbanBoardScreen` takes `data: Option<Vec<Issue>>` (`oxyn_core::kit::arcscr`): id, title, column, label, priority, points, assignee, due day, comments, pull request, sub-issues. `None` shows the sample for the state.
 
 ## 8. Known gaps
 No backend; a new issue is assigned to the signed-in person. In GPUI a column shows its first five cards and "n more", labels filter from chips, and New issue and Share are said back (no inline field).
 
 ## 9. GPUI
-`KanbanBoardEl` draws one state (`.state()`, `.extra()`). `ScreenView` (oxyn-gpui, `parity::screenview`) runs it live as part of the **Arc screens I** set, driven by `oxyn_core::parity::screenui::ScreenUi` and its `ArcUi`: `ArcUi` keeps the board, the picked card and the label filter: press a card (`kb-pick-<n>`), then drop it on a column header or use Alt + arrows (`kb-left|right|up|down`); drag a card onto a column (`kb-drop-<col>`); `kb-label-<n>`, `kb-clear`, `kb-group`. The set's tabs, state bar, command bar and account menu work as for the other sets; `cargo run --manifest-path examples/gpui-agent-apps/Cargo.toml` opens it from the strip (S12 Arc I).
+`KanbanBoardEl` draws one state (`.state()`, `.extra()`). `ScreenView` (oxyn-gpui, `kit::screenview`) runs it live as part of the **Arc screens I** set, driven by `oxyn_core::kit::screenui::ScreenUi` and its `ArcUi`: `ArcUi` keeps the board, the picked card and the label filter: press a card (`kb-pick-<n>`), then drop it on a column header or use Alt + arrows (`kb-left|right|up|down`); drag a card onto a column (`kb-drop-<col>`); `kb-label-<n>`, `kb-clear`, `kb-group`. The set's tabs, state bar, command bar and account menu work as for the other sets; `cargo run --manifest-path examples/gpui-agent-apps/Cargo.toml` opens it from the strip (S12 Arc I).

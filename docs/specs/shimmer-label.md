@@ -45,8 +45,8 @@ Ongoing work as a calm band in the current text colour sweeping over a muted bas
 - The browser pauses CSS animations in background tabs.
 
 ## 10. Implementation
-- Core: — (`oxyn_core::parity::text`), with tests.
-- Dioxus: `SweepText` (parity/text.rs, text.css).
+- Core: — (`oxyn_core::kit::text`), with tests.
+- Dioxus: `SweepText` (kit/text.rs, text.css).
 - GPUI: `ShimmerEl` (per-letter band colour; `active(false)` / `reduced(true)` rest it). The rise-in on a label change is Dioxus only.
 
 ## 11. References

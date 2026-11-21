@@ -1,11 +1,11 @@
 **Status:** built v0.1 (2026-11-16, plan #32 affectUI fidelity pass, family B part 9 – against the ref-2 capture notes).
 
-# Spec: Scheduled Runs (`scheduled-runs`)
+# Spec: Scheduled runs (`scheduled-runs`)
 
 Family: Agents. Closes the parity row: affectUI · Scheduled Runs (Pro). Behaviour-only rebuild; layout, sizes,
 colours, states, motion and keyboard follow the ref-2 capture notes (approximate); the tasks, days and copy are our
 own. Related Oxyn components: background-jobs.
-Components: `ScheduledRuns` (Dioxus) · `ScheduledRunsEl` (GPUI), model in `oxyn_core::parity::schedfid`.
+Components: `ScheduledRuns` (Dioxus) · `ScheduledRunsEl` (GPUI), model in `oxyn_core::kit::schedfid`.
 
 ## 1. Purpose
 Plan a week of agent work against session usage limits: see what is booked where, what still waits, and which

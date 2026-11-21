@@ -13,12 +13,12 @@ const ORIGIN = 'https://ui.test';
 const ctx = { waitUntil: (_p: Promise<unknown>) => {} };
 
 // ── Fixture registry ──────────────────────────────────────────────────────────────────────────
-type Item = { slug: string; kind: string; tier: 'free' | 'pro'; installable: boolean; oxyn_deps?: Record<string, string[]> };
+type Item = { slug: string; kind: string; tier: 'free' | 'pro'; installable: boolean; oxyn_deps?: Record<string, string[]>; aliases?: string[] };
 const items: Item[] = [
-  { slug: 'free-btn', kind: 'component', tier: 'free', installable: true },
+  { slug: 'free-btn', kind: 'component', tier: 'free', installable: true, aliases: ['old-btn'] },
   { slug: 'parent-x', kind: 'screen', tier: 'pro', installable: true, oxyn_deps: { dioxus: ['dep-y', 'free-btn'], gpui: [] } },
   { slug: 'dep-y', kind: 'component', tier: 'pro', installable: true, oxyn_deps: { dioxus: ['dep-z'] } },
-  { slug: 'dep-z', kind: 'component', tier: 'pro', installable: true },
+  { slug: 'dep-z', kind: 'component', tier: 'pro', installable: true, aliases: ['old-z'] },
   { slug: 'not-built', kind: 'screen', tier: 'pro', installable: false },
   { slug: 'blk-1', kind: 'block', tier: 'pro', installable: true },
   { slug: 'app-1', kind: 'app', tier: 'pro', installable: true },
@@ -163,6 +163,17 @@ test('a dependency of an item already opened this month comes with it (not count
   const w = await get('/api/cli/whoami', t);
   assert.deepEqual([w.body.usage.components.used, w.body.usage.screens.used], [2, 1]);
   assert.equal((await get('/api/r/not-built.json', t)).status, 404);
+});
+
+test('an old slug of a renamed item serves and counts as the item itself', async () => {
+  const u = user('r@example.com'); grant(u.email, 'pro');
+  const t = await tokenFor(u);
+  const old = await get('/api/r/old-z.json', t);
+  assert.equal(old.status, 200);
+  assert.equal(old.body.slug, 'dep-z');
+  assert.equal(old.headers.get('x-oxyn-counted'), '1');
+  assert.equal((await get('/api/r/dep-z.json', t)).headers.get('x-oxyn-counted'), '0');
+  assert.equal((await get('/api/r/old-btn.json')).body.slug, 'free-btn');
 });
 
 test('admins are unlimited', async () => {

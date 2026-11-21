@@ -56,7 +56,7 @@ An agent's step-by-step plan to review before it runs. In draft every title is e
 
 ## 10. Implementation
 - Core: `PlanDraft`, `PlanStep`, `PlanPhase`, `StepState`, `short_duration` (`oxyn_core::parity`), with tests.
-- Dioxus: `AgentPlan` (parity/run.rs, run.css).
+- Dioxus: `AgentPlan` (kit/run.rs, run.css).
 - GPUI: `AgentPlanEl` (`run`, `cancel`, `retry`); title editing in GPUI waits on the IME text input (plan #28 chunk 4).
 
 ## 11. References

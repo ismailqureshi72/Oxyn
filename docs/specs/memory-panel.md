@@ -1,10 +1,10 @@
 **Status:** built v0.1 (2026-11-16, plan #32 affectUI fidelity pass, family B part 9 – against the ref-1 capture notes).
 
-# Spec: Memory Panel (`memory-panel`)
+# Spec: Memory panel (`memory-panel`)
 
 Family: Agents. Closes the parity row: affectUI · Memory Panel (Pro). Behaviour-only rebuild; layout, sizes, colours,
 states, motion and keyboard follow the ref-1 capture notes (approximate); the memories and copy are our own.
-Components: `MemoryPanel` (Dioxus) · `MemoryPanelEl` (GPUI), model in `oxyn_core::parity::memoryfid`.
+Components: `MemoryPanel` (Dioxus) · `MemoryPanelEl` (GPUI), model in `oxyn_core::kit::memoryfid`.
 
 ## 1. Purpose
 Show what the assistant remembers about you, grouped by category, and let you switch memory off, filter, search, edit,

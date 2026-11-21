@@ -1,11 +1,11 @@
 **Status:** built v0.1 (2026-11-16, plan #32 affectUI fidelity pass, family B part 9 – against the ref-2 capture notes).
 
-# Spec: Rate Limit Planner (`rate-limit-planner`)
+# Spec: Load planner (`rate-limit-planner`)
 
 Family: Agents. Closes the parity row: affectUI · Rate Limit Planner (Pro). Behaviour-only rebuild; layout, sizes,
 colours, states, motion and keyboard follow the ref-2 capture notes (approximate); the runs, numbers and copy are our
 own. Related Oxyn components: background-jobs.
-Components: `RateLimitPlanner` (Dioxus) · `RateLimitPlannerEl` (GPUI), model in `oxyn_core::parity::ratefid`.
+Components: `RateLimitPlanner` (Dioxus) · `RateLimitPlannerEl` (GPUI), model in `oxyn_core::kit::ratefid`.
 
 ## 1. Purpose
 Plan when agent runs start so the day's token load stays under an API's per-minute limit, and see at a glance where

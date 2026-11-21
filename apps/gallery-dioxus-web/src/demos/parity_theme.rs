@@ -123,7 +123,7 @@ fn background_picker_demo() -> Demo {
             "BackgroundPicker",
             "BackgroundPickerEl",
             "background-picker",
-            "parity/themefid.rs",
+            "kit/themefid.rs",
         )
     }
 }
@@ -231,7 +231,7 @@ fn theme_grid_demo() -> Demo {
             "ThemeGrid",
             "ThemeGridEl",
             "theme-grid",
-            "parity/themefid.rs",
+            "kit/themefid.rs",
         )
     }
 }
@@ -314,7 +314,7 @@ fn theme_split_demo() -> Demo {
             "ThemeSplit",
             "ThemeSplitEl",
             "theme-split",
-            "parity/themefid.rs",
+            "kit/themefid.rs",
         )
     }
 }
@@ -409,7 +409,7 @@ fn accent_density_demo() -> Demo {
             "AccentDensity",
             "AccentDensityEl",
             "accent-density",
-            "parity/themefid.rs",
+            "kit/themefid.rs",
         )
     }
 }
@@ -509,7 +509,7 @@ fn theme_schedule_demo() -> Demo {
             "ThemeSchedule",
             "ThemeScheduleEl",
             "theme-schedule",
-            "parity/themefid.rs",
+            "kit/themefid.rs",
         )
     }
 }
@@ -604,7 +604,7 @@ fn type_scale_demo() -> Demo {
             "TypeScale",
             "TypeScaleEl",
             "type-scale",
-            "parity/themefid.rs",
+            "kit/themefid.rs",
         )
     }
 }
@@ -679,7 +679,7 @@ fn light_playground_demo() -> Demo {
             "LightPlayground",
             "LightPlaygroundEl",
             "light-playground",
-            "parity/themefid.rs",
+            "kit/themefid.rs",
         )
     }
 }
@@ -758,7 +758,7 @@ fn app_icon_demo() -> Demo {
             "AppIconPicker",
             "AppIconPickerEl",
             "app-icon-picker",
-            "parity/themefid.rs",
+            "kit/themefid.rs",
         )
     }
 }
@@ -840,7 +840,7 @@ fn display_comfort_demo() -> Demo {
             "DisplayComfort",
             "DisplayComfortEl",
             "display-comfort",
-            "parity/themefid.rs",
+            "kit/themefid.rs",
         )
     }
 }

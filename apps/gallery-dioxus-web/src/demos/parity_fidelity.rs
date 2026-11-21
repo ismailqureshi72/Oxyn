@@ -4,7 +4,7 @@
 use dioxus::prelude::*;
 use oxyn_core::{
     ClockMs,
-    parity::{chatfid::RunTurn, fidelity::PanelComment},
+    kit::{chatfid::RunTurn, fidelity::PanelComment},
 };
 use oxyn_dioxus::{
     AgentCommentThread, AgentRunPanel, AiComposer, ChatComposer, CommentsPanel, MenuModel,
@@ -296,7 +296,7 @@ pub(crate) fn demos1() -> Vec<Demo> {
                 "ChatComposer, FileTypeIcon",
                 "ChatComposerEl",
                 "chat-composer",
-                "parity/fidelity.rs",
+                "kit/fidelity.rs",
             )
         },
         Demo {
@@ -347,7 +347,7 @@ pub(crate) fn demos1() -> Vec<Demo> {
                 "AgentCommentThread, PhotoAvatar, AgentOrb",
                 "AgentCommentThreadEl",
                 "comment-thread",
-                "parity/fidelity.rs",
+                "kit/fidelity.rs",
             )
         },
         Demo {
@@ -396,7 +396,7 @@ pub(crate) fn demos1() -> Vec<Demo> {
                 "CommentsPanel, PhotoAvatar",
                 "CommentsPanelEl",
                 "comments-panel",
-                "parity/fidelity.rs",
+                "kit/fidelity.rs",
             )
         },
     ]
@@ -672,7 +672,7 @@ pub(crate) fn demos2() -> Vec<Demo> {
                 "ModelPickerMenu",
                 "ModelPickerMenuEl",
                 "model-picker",
-                "parity/chatfid.rs",
+                "kit/chatfid.rs",
             )
         },
         Demo {
@@ -753,7 +753,7 @@ pub(crate) fn demos2() -> Vec<Demo> {
                 "AgentRunPanel",
                 "AgentRunPanelEl",
                 "run-controls",
-                "parity/chatfid.rs",
+                "kit/chatfid.rs",
             )
         },
     ]

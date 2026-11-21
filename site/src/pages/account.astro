@@ -5,6 +5,7 @@
 // usage and the tokens (/api/billing/me, /api/cli/tokens).
 import Base from '../layouts/Base.astro';
 import { icon } from '../components/v2/icons';
+import { counts } from '../lib/data';
 ---
 <Base back="/" title="Account" description="Your Oxyn account." index={false}>
   <section class="auth acct-page" data-ovl>
@@ -27,7 +28,7 @@ import { icon } from '../components/v2/icons';
         </dl>
         <section class="acct-plan" id="plan" aria-labelledby="h-plan" data-plan>
           <div class="acct-plan-h"><h2 id="h-plan">Plan</h2><span class="x-chip" data-plan-chip>Free</span></div>
-          <p class="acct-plan-line" data-plan-line>Every component and primitive, free and MIT licensed.</p>
+          <p class="acct-plan-line" data-plan-line data-free-line={`The ${counts.free} free components and the primitives, MIT licensed. Pro opens the rest.`}>{`The ${counts.free} free components and the primitives, MIT licensed. Pro opens the rest.`}</p>
           <p class="auth-err acct-plan-note" role="status" data-plan-note hidden></p>
           <div class="acct-actions">
             <a class="x-pill pill-black" href="/pricing/" data-plan-upgrade><Fragment set:html={icon.bolt} />See Pro plans</a>

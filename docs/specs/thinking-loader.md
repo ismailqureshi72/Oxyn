@@ -1,9 +1,9 @@
 **Status:** built v0.2 (2026-11-16, plan #32 affectUI fidelity pass, overnight batch, family A; v0.1 plan #28).
 
-# Spec: Thinking Loader (`thinking-loader`)
+# Spec: Thinking pill (`thinking-loader`)
 
 Family: Chat. Closes the parity row: affectUI · Thinking Loader. Behaviour-only rebuild; nothing is copied.
-Components: `ThinkingPill` (Dioxus) · `ThinkingPillEl` (GPUI), models in `oxyn_core::parity::answers`.
+Components: `ThinkingPill` (Dioxus) · `ThinkingPillEl` (GPUI), models in `oxyn_core::kit::answers`.
 Oxyn extras on the same page: the plan #28 `ThinkingLoader` (variant `oxyn-thinking-loader`).
 
 ## 1. Purpose
@@ -83,8 +83,8 @@ A small working pill for AI replies: an eight-ray spinner and a shimmering label
 - Done label rounds to whole seconds, at least 1.
 
 ### 10. Implementation
-- Core: `Phases` (`oxyn_core::parity::text`), with tests.
-- Dioxus: `ThinkingLoader` (parity/text.rs, text.css).
+- Core: `Phases` (`oxyn_core::kit::text`), with tests.
+- Dioxus: `ThinkingLoader` (kit/text.rs, text.css).
 - GPUI: `ThinkingLoaderEl` (ray dots, shimmer label, check on done; `reduced(true)` stills it). The host re-renders on its frame tick.
 
 ### 11. References

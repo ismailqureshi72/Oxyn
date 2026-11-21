@@ -4,7 +4,7 @@
 // The palette (public/site.js) fetches it once, keeps it in memory and ranks on the client.
 import type { APIRoute } from 'astro';
 import { getCollection } from 'astro:content';
-import { components, screens, blocks, blockGroupOf, groups, groupOf, demoUrl, agentApps, arcScreens, composedScreens, type Demo } from '../lib/data';
+import { counts, components, screens, blocks, blockGroupOf, groups, groupOf, demoUrl, agentApps, arcScreens, composedScreens, type Demo } from '../lib/data';
 import { AGENT_APPS, familyOf } from '../lib/taxonomy.mjs';
 
 // Words people type for a part that its own name does not contain.
@@ -15,7 +15,7 @@ const ALIASES: Record<string, string> = {
   'checkpoint-lanes': 'git branch rewind fork restore timeline',
   'checkpoint-tree': 'git branch fork rewind',
   'checkpoint-marker': 'restore rewind',
-  'thinking-loader': 'spinner loading working',
+  'thinking-pill': 'spinner loading working',
   'chat-composer': 'prompt input message box textarea',
   'model-picker': 'model menu llm select',
   'command-menu': 'command palette cmdk search',
@@ -76,7 +76,7 @@ export const GET: APIRoute = async () => {
     ['Illustrations', '/illustrations/', 'Animated spot illustrations for empty states and onboarding (coming soon).'],
     ['Studio', '/studio/', 'Visually edit and customise Oxyn components (coming soon).'],
     ['Motion', '/motion/', 'Durations, easings and springs as tokens.'],
-    ['Pricing', '/pricing/', 'Components are free and MIT licensed. Pro: screens, templates, blocks and kits.'],
+    ['Pricing', '/pricing/', `${counts.free} components are free and MIT licensed. Pro: every other component, screens, templates, blocks and kits.`],
   ];
   for (const [t, u, d] of pages) rows.push({ t, u, g: 'p', k: 'Page', d, w: words(u) });
   const docs = await getCollection('docs');

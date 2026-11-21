@@ -4,16 +4,16 @@
 use dioxus::prelude::*;
 use oxyn_core::{
     ClockMs,
-    parity::{
+    kit::{
         compose::Effort,
         fields::Choice,
         meters::{Band, Cat, GridItem, Part, PartItem, Share, Tone},
     },
 };
 use oxyn_dioxus::{
-    AiComposer, AvatarUpload, ContextField, ContextWindowGrid, CtxModel, ElasticSlider,
-    FileDropzone, Gauge, ModelPill, MorphSelect, NumberField, PillModel, RichTextEditor,
-    ScrubInput, SplitBar, UsageMeter,
+    AiComposer, AvatarUpload, ContextField, ContextWindowGrid, CtxModel, FileDropzone, Gauge,
+    ModelPill, NumberField, PillModel, RichTextEditor, RubberSlider, ScrubInput, SplitBar,
+    UnfoldSelect, UsageMeter,
 };
 
 use super::{Code, mk, rng, sel, tog, txt, var};
@@ -109,7 +109,7 @@ fn scrub_input_code(v: &Vals) -> String {
         .done()
 }
 
-// ---------- elastic slider ----------
+// ---------- rubber slider ----------
 
 fn elastic(v: &Vals, _: ClockMs) -> Element {
     let mut msg = use_signal(String::new);
@@ -127,7 +127,7 @@ fn elastic(v: &Vals, _: ClockMs) -> Element {
     let icons = v.b("icons");
     rsx! {
         div { style: "width:380px;max-width:100%;display:flex;flex-direction:column;gap:8px",
-            ElasticSlider { label: v.string("label"), value: 40.0, marks, suffix: "%",
+            RubberSlider { label: v.string("label"), value: 40.0, marks, suffix: "%",
                 start_icon: if icons { Some("volume".to_string()) } else { None },
                 end_icon: if icons { Some("volume".to_string()) } else { None },
                 show_value: v.b("show_value"), disabled: v.b("disabled"),
@@ -139,7 +139,7 @@ fn elastic(v: &Vals, _: ClockMs) -> Element {
 }
 
 fn elastic_code(v: &Vals) -> String {
-    Code::new("ElasticSlider")
+    Code::new("RubberSlider")
         .raw("label", super::q(&v.string("label")))
         .raw("value", "40.0")
         .raw(
@@ -151,7 +151,7 @@ fn elastic_code(v: &Vals) -> String {
         .done()
 }
 
-// ---------- morph select ----------
+// ---------- unfold select ----------
 
 fn tz_options(n: usize) -> Vec<Choice> {
     let all = [
@@ -196,7 +196,7 @@ fn morph(v: &Vals, now: ClockMs) -> Element {
     };
     rsx! {
         div { style: "display:flex;flex-direction:column;gap:10px;align-items:flex-start;min-height:280px",
-            MorphSelect { label: v.string("label"), hide_label: v.b("hide_label"), options: opts, value, searchable: v.string("search"),
+            UnfoldSelect { label: v.string("label"), hide_label: v.b("hide_label"), options: opts, value, searchable: v.string("search"),
                 align: v.string("align"), disabled: v.b("disabled"), now, name: Some("choice".to_string()),
                 on_change: move |x: String| msg.set(format!("onValueChange({x:?})")) }
             {status(msg)}
@@ -205,7 +205,7 @@ fn morph(v: &Vals, now: ClockMs) -> Element {
 }
 
 fn morph_code(v: &Vals) -> String {
-    Code::new("MorphSelect")
+    Code::new("UnfoldSelect")
         .raw("label", super::q(&v.string("label")))
         .raw(
             "options",
@@ -792,7 +792,7 @@ pub fn demos() -> Vec<Demo> {
                 "NumberField",
                 "NumberFieldEl",
                 "number-field",
-                "parity/fields.rs",
+                "kit/fields.rs",
             )
         },
         Demo {
@@ -841,7 +841,7 @@ pub fn demos() -> Vec<Demo> {
                 "ScrubInput",
                 "ScrubInputEl",
                 "scrub-input",
-                "parity/fields.rs",
+                "kit/fields.rs",
             )
         },
         Demo {
@@ -890,14 +890,14 @@ pub fn demos() -> Vec<Demo> {
             responsive: vec!["The track fills its container; icons stay at the ends."],
             height: 180,
             ..mk(
-                "elastic-slider",
-                "Elastic slider",
+                "rubber-slider",
+                "Rubber slider",
                 "inputs",
                 "A slider that stretches like rubber past its ends and springs back, pushing its icons outward, with a value tag that sways with the thumb's speed and detents it clicks into.",
-                "ElasticSlider",
-                "ElasticSliderEl",
+                "RubberSlider",
+                "RubberSliderEl",
                 "elastic-slider",
-                "parity/fields.rs",
+                "kit/fields.rs",
             )
         },
         Demo {
@@ -944,14 +944,14 @@ pub fn demos() -> Vec<Demo> {
             height: 320,
             live: true,
             ..mk(
-                "morph-select",
-                "Morph select",
+                "unfold-select",
+                "Unfold select",
                 "inputs",
                 "A select whose trigger grows into the list, with one gliding highlight, type-ahead, paging, an automatic search field for long lists and a value that rolls the way you moved.",
-                "MorphSelect",
-                "MorphSelectEl",
+                "UnfoldSelect",
+                "UnfoldSelectEl",
                 "morph-select",
-                "parity/fields.rs",
+                "kit/fields.rs",
             )
         },
         Demo {
@@ -996,7 +996,7 @@ pub fn demos() -> Vec<Demo> {
                 "Gauge",
                 "GaugeEl",
                 "gauge",
-                "parity/meters.rs",
+                "kit/meters.rs",
             )
         },
         Demo {
@@ -1036,7 +1036,7 @@ pub fn demos() -> Vec<Demo> {
                 "UsageMeter",
                 "UsageMeterEl",
                 "usage-meter",
-                "parity/meters.rs",
+                "kit/meters.rs",
             )
         },
         Demo {
@@ -1081,7 +1081,7 @@ pub fn demos() -> Vec<Demo> {
                 "SplitBar",
                 "SplitBarEl",
                 "split-bar",
-                "parity/meters.rs",
+                "kit/meters.rs",
             )
         },
         Demo {
@@ -1125,7 +1125,7 @@ pub fn demos() -> Vec<Demo> {
                 "ContextField",
                 "ContextFieldEl",
                 "context-field",
-                "parity/meters.rs",
+                "kit/meters.rs",
             )
         },
         Demo {
@@ -1169,7 +1169,7 @@ pub fn demos() -> Vec<Demo> {
                 "ContextWindowGrid",
                 "ContextGridEl",
                 "context-window-grid",
-                "parity/meters.rs",
+                "kit/meters.rs",
             )
         },
         Demo {
@@ -1238,7 +1238,7 @@ pub fn demos() -> Vec<Demo> {
                 "FileDropzone",
                 "FileDropzoneEl",
                 "file-dropzone",
-                "parity/upload.rs",
+                "kit/upload.rs",
             )
         },
         Demo {
@@ -1299,7 +1299,7 @@ pub fn demos() -> Vec<Demo> {
                 "AvatarUpload",
                 "AvatarUploadEl",
                 "avatar-upload",
-                "parity/upload.rs",
+                "kit/upload.rs",
             )
         },
         Demo {
@@ -1355,7 +1355,7 @@ pub fn demos() -> Vec<Demo> {
                 "RichTextEditor",
                 "RichTextEl",
                 "rich-text-editor",
-                "parity/compose.rs",
+                "kit/compose.rs",
             )
         },
         Demo {
@@ -1403,7 +1403,7 @@ pub fn demos() -> Vec<Demo> {
                 "AiComposer",
                 "AiComposerEl",
                 "ai-composer",
-                "parity/compose.rs",
+                "kit/compose.rs",
             )
         },
         Demo {
@@ -1452,7 +1452,7 @@ pub fn demos() -> Vec<Demo> {
                 "ModelPill",
                 "ModelPillEl",
                 "model-pill",
-                "parity/compose.rs",
+                "kit/compose.rs",
             )
         },
     ]

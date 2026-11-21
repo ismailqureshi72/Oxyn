@@ -3,7 +3,7 @@
 # Spec: Halo Chat (`halo-chat`)
 
 Family: Agent apps (pages at `/screens/halo-chat/` and `/full`). Reference: the desktop assistant pattern (the Gemini desktop app: chat with tool cards, a mini chat from a shortcut, Deep research plans, see the agent-apps research), behaviour and layout only, under our own name and design; no source, artwork or copy taken. Brand marks appear only where a real model is named (Lobe Icons, credited in `THIRD_PARTY_NOTICES.md`), never as this app's logo, which is our own drawn mark.
-Components: `HaloChatScreen` (Dioxus) · `HaloChatEl` (GPUI), rules in `oxyn_core::parity::halochat`.
+Components: `HaloChatScreen` (Dioxus) · `HaloChatEl` (GPUI), rules in `oxyn_core::kit::halochat`.
 
 ## 1. Purpose
 Ask an assistant anything, see what it searched, ran and built as cards, keep sources and a canvas draft beside the chat, ask quick questions from a mini chat over any app, and shape a research plan before it runs.
@@ -31,10 +31,10 @@ Sidebar is a nav landmark; the open chat has aria-current=page; helpers and Pin 
 1440 × 900 stage; `/full` at the real viewport. Under 960 px the sidebar is a drawer and the pane opens over the conversation from the top bar. Under 620 px chip labels shorten and dates hide in rows. scripts/ovl.py finds no text overlap at 1440, 768 and 390 in light and dark.
 
 ## 7. Data
-`HaloChatScreen` takes `data: Option<HaloChatData>` (`oxyn_core::parity::halochat`): `chats: Vec<HcChat>` (id, title, pinned, at). Start from `HaloChatData::default()`.
+`HaloChatScreen` takes `data: Option<HaloChatData>` (`oxyn_core::kit::halochat`): `chats: Vec<HcChat>` (id, title, pinned, at). Start from `HaloChatData::default()`.
 
 ## 8. Known gaps
 No backend: the search, code output, table, sources and canvas are fixed fictional data; the mini chat is drawn inside the app frame, not as a separate OS window; Create image and Run code only set the tool. The GPUI view draws Start research and Open full chat as presses (`start`, `full`).
 
 ## 9. GPUI
-`AgentAppView::new(AgentApp::HaloChat, window, cx)` (oxyn-gpui, `parity::apps`) is a real GPUI view (`Entity` + `Render`) of the whole Halo Chat app, drawn from the same screen code as the snapshot element `HaloChatEl` and driven by `oxyn_core::parity::appui::AppUi`, the rules the Dioxus app follows. Sidebar rows open on press; the logo toggles the icon rail; the account row opens a menu (Switch to light / dark, Sign out). The composer is a real `ImeInput`: Enter or the send button sends and the sent prompts show above it. With focus on the app, Up / Down move the open row, Left / Right step through the views (the chat, the research plan, the mini chat) and Escape closes the menu, then the rail. App presses: Start research fires `start`; Open full chat fires `full` and returns to the chat; a row press returns to the chat. Call `bind_ime_keys(cx)` once at start; `cargo run --manifest-path examples/gpui-agent-apps/Cargo.toml` (from the repo root) opens every agent app in one window.
+`AgentAppView::new(AgentApp::HaloChat, window, cx)` (oxyn-gpui, `kit::apps`) is a real GPUI view (`Entity` + `Render`) of the whole Halo Chat app, drawn from the same screen code as the snapshot element `HaloChatEl` and driven by `oxyn_core::kit::appui::AppUi`, the rules the Dioxus app follows. Sidebar rows open on press; the logo toggles the icon rail; the account row opens a menu (Switch to light / dark, Sign out). The composer is a real `ImeInput`: Enter or the send button sends and the sent prompts show above it. With focus on the app, Up / Down move the open row, Left / Right step through the views (the chat, the research plan, the mini chat) and Escape closes the menu, then the rail. App presses: Start research fires `start`; Open full chat fires `full` and returns to the chat; a row press returns to the chat. Call `bind_ime_keys(cx)` once at start; `cargo run --manifest-path examples/gpui-agent-apps/Cargo.toml` (from the repo root) opens every agent app in one window.

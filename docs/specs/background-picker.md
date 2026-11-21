@@ -3,7 +3,7 @@
 # Spec: Background picker (`background-picker`)
 
 Family: Theme Selector. Reference: a user screenshot of a home-screen background setting (picture tiles, a Default tile, a tile for your own picture, a texture switch). Behaviour only; the pictures are drawn by us as SVG, and layout, names and wording are our own.
-Components: `BackgroundPicker` (Dioxus) · `BackgroundPickerEl` (GPUI), models in `oxyn_core::parity::themefid`.
+Components: `BackgroundPicker` (Dioxus) · `BackgroundPickerEl` (GPUI), models in `oxyn_core::kit::themefid`.
 
 ## 1. Purpose
 Let someone put a picture behind their home screen, or their own, and lay a texture over it, seeing the result before leaving the page.

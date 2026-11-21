@@ -3,7 +3,7 @@
 # Spec: Run controls (`run-controls`)
 
 Family: Agents. Closes the parity row: affectUI · Run Controls. Behaviour-only rebuild; nothing is copied.
-Components: `AgentRunPanel` (Dioxus) · `AgentRunPanelEl` (GPUI), models in `oxyn_core::parity::chatfid`.
+Components: `AgentRunPanel` (Dioxus) · `AgentRunPanelEl` (GPUI), models in `oxyn_core::kit::chatfid`.
 The plan #28 `RunControls` (send menu with Send now / Steer / Queue, error state, amber context) stays
 as the **Oxyn extra** variant `oxyn-run-controls` on the same page.
 

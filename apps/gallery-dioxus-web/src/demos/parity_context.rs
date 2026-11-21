@@ -115,7 +115,7 @@ fn context_bar_demo() -> Demo {
             "ContextBar",
             "ContextBarEl",
             "context-bar",
-            "parity/ctxvisfid.rs",
+            "kit/ctxvisfid.rs",
         )
     }
 }
@@ -202,7 +202,7 @@ fn context_breakdown_demo() -> Demo {
             "ContextBreakdown",
             "ContextBreakdownEl",
             "context-breakdown",
-            "parity/ctxvisfid.rs",
+            "kit/ctxvisfid.rs",
         )
     }
 }
@@ -274,7 +274,7 @@ fn context_stack_demo() -> Demo {
             "ContextStack",
             "ContextStackEl",
             "context-stack",
-            "parity/ctxvisfid.rs",
+            "kit/ctxvisfid.rs",
         )
     }
 }
@@ -346,7 +346,7 @@ fn context_tide_demo() -> Demo {
             "ContextTide",
             "ContextTideEl",
             "context-tide",
-            "parity/ctxvisfid.rs",
+            "kit/ctxvisfid.rs",
         )
     }
 }

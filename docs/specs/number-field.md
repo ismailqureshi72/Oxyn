@@ -64,4 +64,4 @@ A bounded number with − and + buttons and a typed field. Holding a button repe
 - A function suffix (`n => …`) is covered by `suffix_one` for the singular form only.
 
 ## 10. GPUI
-NumberFieldEl draws the shell, steppers, affixes and the limit note from `parity::fields::NumberField`; hold-to-repeat and the digit roll are not animated in GPUI yet.
+NumberFieldEl draws the shell, steppers, affixes and the limit note from `kit::fields::NumberField`; hold-to-repeat and the digit roll are not animated in GPUI yet.

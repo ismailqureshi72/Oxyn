@@ -1,6 +1,6 @@
 **Status:** built v0.1 (2026-11-14, plan #28).
 
-# Spec: Action swap (`action-swap`)
+# Spec: Action states (`action-swap`)
 
 Family: Loaders & text ([loaders.md](loaders.md), [text-reveal.md](text-reveal.md)). Closes the parity row(s): Arc UI · Action swap.
 
@@ -48,8 +48,8 @@ A button whose label swaps to its next state while keeping its place (Follow →
 - Presses while working are ignored.
 
 ## 10. Implementation
-- Core: `ActionSwap`, `SwapState`, `SwapPhase` (`oxyn_core::parity::text`), with tests.
-- Dioxus: `ActionSwapButton` (parity/text.rs, text.css).
+- Core: `ActionSwap`, `SwapState`, `SwapPhase` (`oxyn_core::kit::text`), with tests.
+- Dioxus: `ActionSwapButton` (kit/text.rs, text.css).
 - GPUI: not yet (plan #28 follow-up; the core models are shared).
 
 ## 11. References

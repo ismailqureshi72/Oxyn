@@ -53,7 +53,7 @@ Who is working and how: the agent's avatar with a state dot (idle, thinking, wor
 
 ## 10. Implementation
 - Core: uses `short_duration` (`oxyn_core::parity`), with tests.
-- Dioxus: `AgentStatus` (parity/run.rs, run.css).
+- Dioxus: `AgentStatus` (kit/run.rs, run.css).
 - GPUI: `AgentStatusEl`.
 
 ## 11. References

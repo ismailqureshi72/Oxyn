@@ -1,4 +1,4 @@
-//! Smart form fill (`smart-form-fill.md`): paste an email signature or messy notes, the agent
+//! Form autofill (`smart-form-fill.md`): paste an email signature or messy notes, the agent
 //! reads it and fills a contact form field by field. Each value fades in with a confidence dot,
 //! its source lights up in the pasted text, low-confidence fields ask for review and block Save
 //! until checked or edited, and Undo restores the values from before the fill.

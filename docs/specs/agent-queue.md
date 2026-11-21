@@ -1,10 +1,10 @@
 **Status:** built v0.1 (2026-11-16, plan #32 affectUI fidelity pass, overnight batch, family B part 4).
 
-# Spec: Agent Queue (`agent-queue`)
+# Spec: Job queue (`agent-queue`)
 
 Family: Agents. Closes the parity row: affectUI · Agent Queue (Pro). Behaviour-only rebuild; nothing is copied (the
 demo's jobs, workers' names, queue name and numbers are our own; the simulation is ours).
-Components: `AgentQueue` (Dioxus) · `AgentQueueEl` (GPUI), model in `oxyn_core::parity::queuefid`.
+Components: `AgentQueue` (Dioxus) · `AgentQueueEl` (GPUI), model in `oxyn_core::kit::queuefid`.
 
 ## 1. Purpose
 The work waiting for your agents and how fast it moves: a live queue, workers running jobs as growing bars, Done and

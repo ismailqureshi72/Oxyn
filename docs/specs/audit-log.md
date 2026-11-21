@@ -3,7 +3,7 @@
 # Spec: Audit log (`audit-log`)
 
 Family: Arc screens (pages at `/screens/audit-log/` and `/full`). Reference: the Arc demo app's audit log, behaviour and layout only, under our own design; no source, artwork or copy taken. Every company, person, key, endpoint and amount is fictional; dates are absolute ISO dates and times are 24-hour UTC.
-Components: `AuditLogScreen` (Dioxus) · `AuditLogEl` (GPUI), rules in `oxyn_core::parity::arcscr4`.
+Components: `AuditLogScreen` (Dioxus) · `AuditLogEl` (GPUI), rules in `oxyn_core::kit::arcscr4`.
 
 ## 1. Purpose
 Find who did what, when and from where, and prove it with the before and after.
@@ -19,7 +19,7 @@ The Arc frame (shared with the S12–S14 screens): a 248 px sidebar (Corvel Labs
 | Foot | Show more (+6 at a time) |
 
 ## 3. Behaviour
-`Audit` in `oxyn_core::parity::arcscr4`: 16 sample events newest first; filters combine; `toggle(id)` opens and closes; `more()` pages by 6; `export()` names `audit-<date>.csv`.
+`Audit` in `oxyn_core::kit::arcscr4`: 16 sample events newest first; filters combine; `toggle(id)` opens and closes; `more()` pages by 6; `export()` names `audit-<date>.csv`.
 
 ## 4. Variants
 States: Data · Loading · Empty (Nothing logged yet) · **Filtered** (API keys) · **Event open** (a role change) · **No matches** (Clear filters). Frame: Inset · Flat.
@@ -31,7 +31,7 @@ Each action is a button with aria-expanded; the details are a labelled region; t
 Authored on the 1440 × 900 stage and scaled to its column; `/full` renders at the real viewport. Under 960 px the sidebar is a drawer from the header's menu button and the right card hides; under 640 px header actions become icon buttons. scripts/ovl.py checks text overlap at 1440, 768 and 390 in light and dark.
 
 ## 7. Data
-`AuditLogScreen` takes `layout` and `state`; sample data comes from `oxyn_core::parity::arcscr4`.
+`AuditLogScreen` takes `layout` and `state`; sample data comes from `oxyn_core::kit::arcscr4`.
 
 ## 8. Known gaps
 Export produces no file.

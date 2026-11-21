@@ -1,11 +1,11 @@
 **Status:** built v0.1 (2026-11-16, plan #32 affectUI fidelity pass, family B part 9 – against the ref-1 capture notes).
 
-# Spec: Judge Bracket (`judge-bracket`)
+# Spec: Model knockout (`judge-bracket`)
 
 Family: Agents. Closes the parity row: affectUI · Judge Bracket (Pro). Behaviour-only rebuild; layout, sizes, colours,
 states, motion and keyboard follow the ref-1 capture notes (approximate); contenders, answers, scores and copy are our
 own. Related Oxyn components: parallel-attempts, decision-tree.
-Components: `JudgeBracket` (Dioxus) · `JudgeBracketEl` (GPUI), model in `oxyn_core::parity::judgefid`.
+Components: `JudgeBracket` (Dioxus) · `JudgeBracketEl` (GPUI), model in `oxyn_core::kit::judgefid`.
 
 ## 1. Purpose
 Pick the best of many answers by pairwise judging: a judge model compares two answers at a time in a single-elimination

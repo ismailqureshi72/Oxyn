@@ -3,7 +3,7 @@
 # Spec: Liquid drops (`liquid-drops`)
 
 Family: Menu Motion. Reference: none (an Oxyn original).
-Components: `LiquidDrops` (Dioxus) · `LiquidDropsEl` (GPUI), models in `oxyn_core::parity::gooeyfid`.
+Components: `LiquidDrops` (Dioxus) · `LiquidDropsEl` (GPUI), models in `oxyn_core::kit::gooeyfid`.
 
 ## 1. Purpose
 A compact action launcher whose actions visibly come out of the button.

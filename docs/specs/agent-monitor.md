@@ -1,10 +1,10 @@
 **Status:** built v0.1 (2026-11-16, plan #32 affectUI fidelity pass, overnight batch, family B part 4).
 
-# Spec: Agent Monitor (`agent-monitor`)
+# Spec: Run monitor (`agent-monitor`)
 
 Family: Agents. Closes the parity row: affectUI · Agent Monitor (Pro). Behaviour-only rebuild; nothing is copied (the
 demo run, its steps, the command and the agent's role are our own).
-Components: `AgentMonitor` (Dioxus) · `AgentMonitorEl` (GPUI), model in `oxyn_core::parity::monitorfid`.
+Components: `AgentMonitor` (Dioxus) · `AgentMonitorEl` (GPUI), model in `oxyn_core::kit::monitorfid`.
 
 ## 1. Purpose
 One agent at work as a card: its current step with a clock and the bill so far, a time strip and the finished steps

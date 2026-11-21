@@ -1,11 +1,11 @@
 **Status:** built v0.1 (2026-11-16, plan #32 affectUI fidelity pass, family B part 9 – against the ref-2 capture notes).
 
-# Spec: Root Cause Tree (`root-cause-tree`)
+# Spec: Root cause tree (`root-cause-tree`)
 
 Family: Agents. Closes the parity row: affectUI · Root Cause Tree (Pro). Behaviour-only rebuild; layout, sizes,
 colours, states, motion and keyboard follow the ref-2 capture notes (approximate); the failure, hypotheses, evidence
 and copy are our own. Related Oxyn component: trace-view.
-Components: `RootCauseTree` (Dioxus) · `RootCauseTreeEl` (GPUI), model in `oxyn_core::parity::rootfid`.
+Components: `RootCauseTree` (Dioxus) · `RootCauseTreeEl` (GPUI), model in `oxyn_core::kit::rootfid`.
 
 ## 1. Purpose
 Show how an agent works out why a run failed: the failure on top, candidate causes below joined by OR / AND gates,

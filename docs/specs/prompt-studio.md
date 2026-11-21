@@ -1,8 +1,8 @@
 **Status:** built v0.1 (2026-11-21, C1g: AI blocks II). Pro.
 
-# Spec: Prompt studio (`prompt-studio`)
+# Spec: Prompt bench (`prompt-studio`)
 
-Section: Blocks · AI (page `/blocks/ai/prompt-studio/`, Pro). Reference: uiarc "Blocks · AI" ("Prompt studio"), behaviour only, under our own design; no source, artwork or copy taken. Every company, person and amount is fictional; companies and models that are named carry their official coloured marks.
+Section: Blocks · AI (page `/blocks/ai/prompt-bench/`, Pro). Reference: uiarc "Blocks · AI" ("Prompt studio"), behaviour only, under our own design; no source, artwork or copy taken. Every company, person and amount is fictional; companies and models that are named carry their official coloured marks.
 Components: `PromptStudio` (Dioxus, `oxyn_dioxus::blocks`, styles `blocks.css`, prefix `oxbk-`) · `BlocksView` with `BlockVariant::Prompt` (GPUI), rules in `oxyn_core::blocks::prompt`.
 
 ## 1. Purpose

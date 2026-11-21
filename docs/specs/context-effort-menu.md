@@ -3,7 +3,7 @@
 # Spec: Context + Effort menu (`context-effort-menu`)
 
 Family: Thinking Selector. Reference: a user-supplied screenshot of a composer dropdown with "Context window" and "Effort" groups (layout idea only; names, wording and colours are our own).
-Components: `ContextEffortMenu` (Dioxus) · `ContextEffortMenuEl` (GPUI), models in `oxyn_core::parity::{effmenufid, reasonfid, thinkfid}`.
+Components: `ContextEffortMenu` (Dioxus) · `ContextEffortMenuEl` (GPUI), models in `oxyn_core::kit::{effmenufid, reasonfid, thinkfid}`.
 
 ## 1. Purpose
 Set the context window and the effort of the current model in one dropdown, from one chip in the composer.

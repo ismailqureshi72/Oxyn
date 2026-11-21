@@ -12,7 +12,7 @@ import Footer from '../components/v2/Footer.astro';
 import SearchModal from '../components/SearchModal.astro';
 import Feedback from '../components/Feedback.astro';
 import BackButton from '../components/v2/BackButton.astro';
-import { newDemos } from '../lib/data';
+import { ANNOUNCE } from '../lib/data';
 
 interface Props {
   title: string;
@@ -28,11 +28,8 @@ interface Props {
 const { title, description, type = 'Page', promo = false, index = true, back } = Astro.props;
 const path = Astro.url.pathname;
 const fullTitle = path === '/' ? title : `${title} · Oxyn`;
-// Promo strip: the newest components by name, then how many more (never "0 more").
-const promoNames = newDemos.slice(0, 2).map((d) => d.name);
-const promoMore = newDemos.length - promoNames.length;
-const promoText = promoNames.length === 0 ? 'New components, all free →'
-  : `${promoNames.join(promoNames.length === 2 && promoMore === 0 ? ' and ' : ', ')}${promoMore > 0 ? ` and ${promoMore} more new component${promoMore === 1 ? '' : 's'}` : ` ${promoNames.length === 1 ? 'is' : 'are'} new`}, all free →`;
+// Promo strip: from the data (src/lib/data.ts ANNOUNCE), so it never claims a tier it doesn't have.
+const promo_ = ANNOUNCE;
 ---
 <!doctype html>
 <html lang="en" data-theme="light" data-oxyn-theme="light">
@@ -41,7 +38,7 @@ const promoText = promoNames.length === 0 ? 'New components, all free →'
     <a class="x-skip" href="#main">Skip to content</a>
     {promo && (
       <div class="announce" role="region" aria-label="Announcement" data-pagefind-ignore>
-        <a href="/components/new/"><span aria-hidden="true">✦</span> {promoText}</a>
+        <a href={promo_.href}><span aria-hidden="true">✦</span> <span class="an-long">{promo_.text}</span><span class="an-short">{promo_.short}</span> →</a>
         <button type="button" data-close-announce aria-label="Dismiss announcement">✕</button>
       </div>
     )}

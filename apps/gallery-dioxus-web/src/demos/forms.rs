@@ -1,5 +1,5 @@
 //! Forms (plan #25): tag input, combobox, multi-select, OTP, password field, password strength,
-//! inline edit, phone input, filter menu, stepper form, multi-step form, smart form fill.
+//! inline edit, phone input, filter menu, stepper form, multi-step form, form autofill.
 
 use dioxus::prelude::*;
 use oxyn_core::{
@@ -11,8 +11,8 @@ use oxyn_core::{
     },
 };
 use oxyn_dioxus::{
-    Combobox, FilterMenu, InlineEdit, MultiSelect, OtpInput, PasswordField, PasswordStrength,
-    PhoneInput, SmartFormFill, StepperForm, TagInput,
+    Combobox, FilterMenu, FormAutofill, InlineEdit, MultiSelect, OtpInput, PasswordField,
+    PasswordStrength, PhoneInput, StepperForm, TagInput,
 };
 
 use super::{Code, q, rng, sel, tog, txt, var};
@@ -585,11 +585,11 @@ fn multistep_code(v: &Vals) -> String {
         .done()
 }
 
-// ---- Smart form fill
+// ---- Form autofill
 
 fn smart_fill(v: &Vals, _: ClockMs) -> Element {
     rsx! {
-        SmartFormFill {
+        FormAutofill {
             prefill: v.b("prefill"),
             review_threshold: v.u("review_threshold") as u8,
             gate: v.b("gate"),
@@ -599,7 +599,7 @@ fn smart_fill(v: &Vals, _: ClockMs) -> Element {
 }
 
 fn smart_fill_code(v: &Vals) -> String {
-    Code::new("SmartFormFill")
+    Code::new("FormAutofill")
         .raw("review_threshold", v.s("review_threshold").to_string())
         .b("gate", v.b("gate"))
         .s("model", v.s("model"), "Haiku")
@@ -1357,11 +1357,11 @@ pub fn demos() -> Vec<Demo> {
             live: false,
         },
         Demo {
-            slug: "smart-form-fill",
-            name: "Smart form fill",
+            slug: "form-autofill",
+            name: "Form autofill",
             category: "forms",
             summary: "Paste a signature or messy notes and the agent fills a contact form field by field, with confidence, source highlights, review and Undo.",
-            dioxus: "SmartFormFill",
+            dioxus: "FormAutofill",
             gpui: "SmartFillEl",
             spec: "smart-form-fill",
             source: "primitives/flows.rs",

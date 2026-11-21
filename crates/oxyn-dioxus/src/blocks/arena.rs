@@ -1,4 +1,4 @@
-//! Model arena (Dioxus).
+//! Blind compare (Dioxus).
 
 use dioxus::prelude::*;
 use oxyn_core::ClockMs;
@@ -18,13 +18,13 @@ fn side_icon(s: Side) -> (&'static str, &'static str) {
     }
 }
 
-/// Model arena: one prompt goes to two models whose names stay hidden. Both answers stream side
+/// Blind compare: one prompt goes to two models whose names stay hidden. Both answers stream side
 /// by side at each model's own pace with first token time, speed and cost under them; the first
 /// to finish is marked. Once both are in, vote (A, tie, B or both bad) and the models are
 /// revealed with their marks; the leaderboard keeps win rates. On cards under 560 px one answer
 /// shows at a time, chosen from tabs that carry each side's state.
 #[component]
-pub fn ModelArena(
+pub fn BlindCompare(
     /// Host clock.
     now: ClockMs,
     /// Run the first sample at once.
@@ -61,10 +61,10 @@ pub fn ModelArena(
     let rev = a.revealed();
     let can_vote = a.can_vote(n);
     rsx! {
-        section { class: "oxaik oxbk oxbk-ar", "aria-label": "Model arena",
+        section { class: "oxaik oxbk oxbk-ar", "aria-label": "Blind compare",
             header { class: "oxaik-hd",
                 div { class: "oxaik-hl",
-                    h2 { class: "oxaik-h", "Model arena" }
+                    h2 { class: "oxaik-h", "Blind compare" }
                     p { class: "oxaik-sub", "Round {a.round + 1} · two models, one prompt" }
                 }
                 div { class: "oxaik-row oxbk-ar-tools",

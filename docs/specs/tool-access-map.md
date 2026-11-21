@@ -1,11 +1,11 @@
 **Status:** built v0.1 (2026-11-16, plan #32 affectUI fidelity pass, family B part 9 – against the ref-2 capture notes).
 
-# Spec: Tool Access Map (`tool-access-map`)
+# Spec: Tool reach (`tool-access-map`)
 
 Family: Agents. Closes the parity row: affectUI · Tool Access Map (Pro). Behaviour-only rebuild; layout, sizes,
 colours, states, motion and keyboard follow the ref-2 capture notes (approximate); agents, tools, calls and copy are
 our own. Related Oxyn components: mcp-plugin-list, plugin-icons.
-Components: `ToolAccessMap` (Dioxus) · `ToolAccessMapEl` (GPUI), model in `oxyn_core::parity::toolmapfid`.
+Components: `ToolAccessMap` (Dioxus) · `ToolAccessMapEl` (GPUI), model in `oxyn_core::kit::toolmapfid`.
 
 ## 1. Purpose
 Show which of a run's tools each agent can reach and what it did with them, and let you read any tool's calls and

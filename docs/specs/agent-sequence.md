@@ -1,10 +1,10 @@
 **Status:** built v0.1 (2026-11-16, plan #32 affectUI fidelity pass, overnight batch, family B part 4).
 
-# Spec: Agent Sequence (`agent-sequence`)
+# Spec: Sequence diagram (`agent-sequence`)
 
 Family: Agents. Closes the parity row: affectUI · Agent Sequence (Pro). Behaviour-only rebuild; nothing is copied (the
 demo run's task, messages, branch, PR number and times are our own).
-Components: `AgentSequence` (Dioxus) · `AgentSequenceEl` (GPUI), model in `oxyn_core::parity::seqfid`.
+Components: `AgentSequence` (Dioxus) · `AgentSequenceEl` (GPUI), model in `oxyn_core::kit::seqfid`.
 
 ## 1. Purpose
 One agent run as a sequence diagram: a column for you, each agent and each tool, every message an arrow from one

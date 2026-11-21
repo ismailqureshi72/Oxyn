@@ -3,7 +3,7 @@
 # Spec: Agent / Tool calls (`agent-tool-calls`)
 
 Family: App screens (pages at `/screens/agent-tool-calls/` and `/full`). Reference: affectUI Agent / Tool calls (https://www.affectui.com/screens/agent-tool-calls), behaviour and layout only, under our own design; no source, artwork or copy taken. Every company, person, key, endpoint and amount is fictional; dates are absolute ISO dates and times are 24-hour UTC.
-Components: `AgentToolCallsScreen` (Dioxus) · `AgentToolCallsEl` (GPUI), rules in `oxyn_core::parity::arcscr4`.
+Components: `AgentToolCallsScreen` (Dioxus) · `AgentToolCallsEl` (GPUI), rules in `oxyn_core::kit::arcscr4`.
 
 ## 1. Purpose
 See what one agent can do and what it did: which tool it calls now, what failed and why, and decide per tool whether it may run on its own, ask first or not at all.
@@ -21,7 +21,7 @@ The Arc frame (shared with the S12–S14 screens): a 248 px sidebar (Corvel Labs
 | Connect picker | Unconnected tools with their logos and Connect (joins as Ask first) |
 
 ## 3. Behaviour
-`ToolCalls` in `oxyn_core::parity::arcscr4`: `step()` once a second: a running call counts up and finishes with its output and tokens, then (unless paused) every third second the agent calls the next tool it may — Allowed tools run, Ask-first tools wait for you, Paused tools are skipped. `select`, `set_mode`, `disconnect` (two presses), `connect`, `pause`, `approve`, `reject`, `solve`, ranges filter by days ago.
+`ToolCalls` in `oxyn_core::kit::arcscr4`: `step()` once a second: a running call counts up and finishes with its output and tokens, then (unless paused) every third second the agent calls the next tool it may — Allowed tools run, Ask-first tools wait for you, Paused tools are skipped. `select`, `set_mode`, `disconnect` (two presses), `connect`, `pause`, `approve`, `reject`, `solve`, ranges filter by days ago.
 
 ## 4. Variants
 States: Data · Loading (grey cards and rows) · Empty (the agent alone, a dashed slot Connect the first tool) · **Needs approval** (a Stripe refund waiting) · **Failed call** (a Slack post with Run again) · **Agent paused**. Frame: Inset · Flat.
@@ -33,7 +33,7 @@ The chart is a labelled section of buttons that read name, source, mode and numb
 Authored on the 1440 × 900 stage and scaled to its column; `/full` renders at the real viewport. Under 960 px the sidebar is a drawer from the header's menu button and the right card hides; under 640 px header actions become icon buttons. scripts/ovl.py checks text overlap at 1440, 768 and 390 in light and dark.
 
 ## 7. Data
-`AgentToolCallsScreen` takes `layout` and `state` and the host clock `now` (and `live`); sample data comes from `oxyn_core::parity::arcscr4`.
+`AgentToolCallsScreen` takes `layout` and `state` and the host clock `now` (and `live`); sample data comes from `oxyn_core::kit::arcscr4`.
 
 ## 8. Known gaps
 No canvas layout (pan and zoom) and no compact layout; arrow-key navigation between cards is Tab order only; the table's top edge does not resize; the GPUI view ticks only when the host sends `tc-tick`.
