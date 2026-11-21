@@ -764,7 +764,7 @@ button.oxaik-ps-main:focus-visible{outline-offset:-2px!important}
 .oxaik-rf-stage{display:inline-flex;align-items:center;gap:5px;color:var(--ai-fg2);white-space:nowrap}
 .oxaik-rf-list li[data-stage="Earned"] .oxaik-rf-stage{color:var(--h-green)}
 .oxaik-rf-when{text-align:right}
-@container (max-width:470px){.oxaik-rf-link{flex-wrap:wrap}.oxaik-rf-url{flex-basis:calc(100% - 90px)}.oxaik-rf-share{flex-basis:100%}.oxaik-rf-who span{display:none}.oxaik-rf-who b{max-width:none}}
+@container (max-width:470px){.oxaik-rf-link{flex-wrap:wrap}.oxaik-rf-url{flex-basis:calc(100% - 90px)}.oxaik-rf-share{flex-basis:100%}.oxaik-rf-who span{display:none}.oxaik-rf-who b{flex:0 1 auto;max-width:100%}}
 /* ── Trial banner ── */
 .oxaik-tbw{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%;max-width:760px}
 .oxaik-tb{--tone:var(--ai-fg2)}
@@ -849,3 +849,4 @@ button.oxaik-ps-main:focus-visible{outline-offset:-2px!important}
 .oxaik-irw{width:560px}
 .oxaik-ir-grid{width:420px}
 .oxaik-pf:not([data-fan="true"]) .oxaik-pf-t:not([data-pos="0"])>*{opacity:0;transition:opacity .2s}
+.oxaik-ir-grid .oxaik-irw{width:auto;min-width:0}
