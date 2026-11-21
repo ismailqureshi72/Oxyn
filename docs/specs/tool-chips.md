@@ -50,8 +50,8 @@ Code edits and tool calls as compact chips: a header “4 tool calls, 2 messages
 - Hover and focus both preview; a pinned diff wins over a peek.
 
 ## 10. Implementation
-- Core: kind icons from `ToolKindMap` (`oxyn_core::parity::tools`), with tests.
-- Dioxus: `ToolChips` (parity/tools.rs, tools.css).
+- Core: kind icons from `ToolKindMap` (`oxyn_core::kit::tools`), with tests.
+- Dioxus: `ToolChips` (kit/tools.rs, tools.css).
 - GPUI: `ToolChipsEl`.
 
 ## 11. References

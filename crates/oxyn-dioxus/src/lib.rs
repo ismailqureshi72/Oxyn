@@ -12,7 +12,7 @@ mod chat;
 mod checkpoint;
 mod composer;
 mod glyph_loader;
-mod parity;
+mod kit;
 mod primitives;
 mod run;
 mod shell;
@@ -31,9 +31,9 @@ pub use aikit::{
 pub use approval::{ApprovalCard, ApprovalCardProps, ApprovalPager, ApprovalPagerProps};
 pub use blocks::{
     AgentBuilder, AgentGallery, AgentRoutines, AiFeatureLaunch, AiInsightCard, AiSetupWizard,
-    AssistantMemory, BackgroundAgents, CallInsights, CatchUp, EvalSuite, KnowledgeBase,
-    LeadScoring, LiveSession, McpServers, MissionControl, MissionTimeline, ModelArena,
-    PromptStudio, RunInspector,
+    AssistantMemory, BackgroundAgents, BlindCompare, CallInsights, CatchUp, EvalSuite,
+    FleetOverview, FleetTimeline, KnowledgeBase, LeadScoring, LiveSession, McpServers, PromptBench,
+    RunInspector,
 };
 pub use brand::{BrandIcon, BrandIconProps, has_brand};
 pub use chat::{
@@ -66,170 +66,170 @@ pub use xpost::{
 };
 /// Stylesheet for approvals and checkpoints.
 pub const HITL_CSS: &str = include_str!("hitl.css");
-pub use parity::AccentDensity;
-pub use parity::ActivityScreen;
-pub use parity::AgentThreadScreen;
-pub use parity::AnalyticsScreen;
-pub use parity::AppFrame;
-pub use parity::AppIconPicker;
-pub use parity::AppShellScreen;
-pub use parity::AttachmentChips;
-pub use parity::BackgroundPicker;
-pub use parity::ChatAgentsScreen;
-pub use parity::ChatOverviewScreen;
-pub use parity::ChatProgressScreen;
-pub use parity::ChatRailScreen;
-pub use parity::ChatRunScreen;
-pub use parity::ChatStartScreen;
-pub use parity::ContextBar;
-pub use parity::ContextBreakdown;
-pub use parity::ContextEffortMenu;
-pub use parity::ContextStack;
-pub use parity::ContextTide;
-pub use parity::CrmScreen;
-pub use parity::DiffTimelineRun;
-pub use parity::DisplayComfort;
-pub use parity::DropLanes;
-pub use parity::EffortList;
-pub use parity::EffortPill;
-pub use parity::EffortRuler;
-pub use parity::EffortStairs;
-pub use parity::FanoutGrid;
-pub use parity::FileIcon;
-pub use parity::FoldersScreen;
-pub use parity::GooeyAttachMenu;
-pub use parity::GooeyComposer;
-pub use parity::GooeyModelMenu;
-pub use parity::IntegrationsScreen;
-pub use parity::JudgeBracket;
-pub use parity::KanbanScreen;
-pub use parity::LightPlayground;
-pub use parity::LiquidDrops;
-pub use parity::LiquidTabs;
-pub use parity::MemoryPanel;
-pub use parity::MenuButton;
-pub use parity::ModelEffortMenu;
-pub use parity::NozzleSlider;
-pub use parity::OrchestrationScreen;
-pub use parity::ParallelAttempts;
-pub use parity::PlanVsActual;
-pub use parity::PolaroidStack;
-pub use parity::RailFrame;
-pub use parity::RailShellScreen;
-pub use parity::RateLimitPlanner;
-pub use parity::ReasoningPanel;
-pub use parity::RootCauseTree;
-pub use parity::RunningNow;
-pub use parity::ScheduledRuns;
-pub use parity::ScreenComposer;
-pub use parity::ScreenStage;
-pub use parity::SettingsScreen;
-pub use parity::StageScale;
-pub use parity::StorageCleanup;
-pub use parity::StorageForecast;
-pub use parity::StorageMeter;
-pub use parity::StorageWaffle;
-pub use parity::ThemeGrid;
-pub use parity::ThemeSchedule;
-pub use parity::ThemeSplit;
-pub use parity::ToolAccessMap;
-pub use parity::TraceWaterfall;
-pub use parity::TypeScale;
-pub use parity::UploadDropzone;
-pub use parity::WorkflowScreen;
-pub use parity::s2_states;
-pub use parity::s3_states;
-pub use parity::s4_states;
-pub use parity::s6_states;
-pub use parity::s8_states;
-pub use parity::s9_states;
-pub use parity::s10_states;
-pub use parity::{
-    ActionSwapButton, InViewTitle, LoadingState, SlotReels, Source, StreamingText, SweepText,
-    TextMorph, ThinkingLoader, WordReveal,
-};
-pub use parity::{
+pub use kit::AccentDensity;
+pub use kit::ActivityPill;
+pub use kit::ActivityScreen;
+pub use kit::AgentThreadScreen;
+pub use kit::AnalyticsScreen;
+pub use kit::AppFrame;
+pub use kit::AppIconPicker;
+pub use kit::AppShellScreen;
+pub use kit::AttachmentChips;
+pub use kit::AttemptRace;
+pub use kit::BackgroundPicker;
+pub use kit::ChatAgentsScreen;
+pub use kit::ChatOverviewScreen;
+pub use kit::ChatProgressScreen;
+pub use kit::ChatRailScreen;
+pub use kit::ChatRunScreen;
+pub use kit::ChatStartScreen;
+pub use kit::ContextBar;
+pub use kit::ContextBreakdown;
+pub use kit::ContextEffortMenu;
+pub use kit::ContextStack;
+pub use kit::ContextTide;
+pub use kit::CrmScreen;
+pub use kit::DiffTimelineRun;
+pub use kit::DisplayComfort;
+pub use kit::DropLanes;
+pub use kit::EffortList;
+pub use kit::EffortPill;
+pub use kit::EffortRuler;
+pub use kit::EffortStairs;
+pub use kit::FileIcon;
+pub use kit::FoldersScreen;
+pub use kit::GooeyAttachMenu;
+pub use kit::GooeyComposer;
+pub use kit::GooeyModelMenu;
+pub use kit::IntegrationsScreen;
+pub use kit::KanbanScreen;
+pub use kit::LightPlayground;
+pub use kit::LiquidDrops;
+pub use kit::LiquidTabs;
+pub use kit::LoadPlanner;
+pub use kit::MemoryPanel;
+pub use kit::MenuButton;
+pub use kit::ModelEffortMenu;
+pub use kit::ModelKnockout;
+pub use kit::NozzleSlider;
+pub use kit::OrchestrationScreen;
+pub use kit::PlanVsActual;
+pub use kit::PolaroidStack;
+pub use kit::RailFrame;
+pub use kit::RailShellScreen;
+pub use kit::ReasoningPanel;
+pub use kit::RootCauseTree;
+pub use kit::ScheduledRuns;
+pub use kit::ScreenComposer;
+pub use kit::ScreenStage;
+pub use kit::SettingsScreen;
+pub use kit::StageScale;
+pub use kit::StorageCleanup;
+pub use kit::StorageForecast;
+pub use kit::StorageMeter;
+pub use kit::StorageWaffle;
+pub use kit::TaskGrid;
+pub use kit::ThemeGrid;
+pub use kit::ThemeSchedule;
+pub use kit::ThemeSplit;
+pub use kit::ToolReach;
+pub use kit::TraceWaterfall;
+pub use kit::TypeScale;
+pub use kit::UploadDropzone;
+pub use kit::WorkflowScreen;
+pub use kit::s2_states;
+pub use kit::s3_states;
+pub use kit::s4_states;
+pub use kit::s6_states;
+pub use kit::s8_states;
+pub use kit::s9_states;
+pub use kit::s10_states;
+pub use kit::{
     ActivityFeed, AgentApprovals, AgentFleet, AgentOrchestrator, AgentPlan, AgentRun, AgentStatus,
-    AgentTrail, AgentTree, AnimatedCounter, ApprovalGates, ConfirmMorph, ConfirmPopover, Countdown,
-    FlowStepper, HoldToConfirm, OnboardingChecklist, PermissionRequest, ReleaseReadiness,
+    AgentTrail, AgentTree, AnimatedCounter, ApprovalGates, ConfirmPopover, Countdown, FlowStepper,
+    HoldToConfirm, InlineConfirm, LaunchChecklist, OnboardingChecklist, PermissionRequest,
     TaskBreakdown, TaskRows, TreeTable, gate_dot,
 };
-pub use parity::{
+pub use kit::{
     ActivityHeatmap, ActivityHome, AttachmentStrip, DocGrid, ExperimentGrid, PollingCost,
     RunModeMenu, ThreadList, TokenUsageChart,
 };
-pub use parity::{
+pub use kit::{
     AdminOverviewScreen, AgentToolCallsScreen, ApiKeysWebhooksScreen, AuditLogScreen,
     BillingUsageScreen, MembersRolesScreen, StatusBoardScreen, s15_slugs, s15_states,
 };
-pub use parity::{
+pub use kit::{
     AgentCommentThread, AgentOrb, AgentRunPanel, CommentsPanel, FileTypeIcon, ModelPickerMenu,
     PhotoAvatar, Portrait, ThreadNote,
 };
-pub use parity::{
-    AgentCrew, AgentCursors, AgentFindings, AgentGraph, AgentHandoff, AgentInbox, AgentLanes,
-    AgentLedger, AgentMonitor, AgentQueue, AgentRecap, AgentSequence, AutonomyDial, AwaySummary,
-    CollabStream, ContextMap, CostWaterfall, DecisionTree, DelegateBoard, FallbackChain,
-};
-pub use parity::{
+pub use kit::{
     AgentsScreen, PermissionsScreen, RunDetailScreen, SchedulesScreen, SkillsScreen, UsageScreen,
 };
-pub use parity::{
+pub use kit::{
     AiComposer, AvatarUpload, ChatComposer, ContextField, ContextWindowGrid, CtxModel,
-    ElasticSlider, FileDropzone, Gauge, MenuModel, ModelMenu, ModelPill, MorphSelect, NumberField,
-    PillModel, RichTextEditor, RunControls, ScrubInput, SplitBar, UsageMeter,
+    FileDropzone, Gauge, MenuModel, ModelMenu, ModelPill, NumberField, PillModel, RichTextEditor,
+    RubberSlider, RunControls, ScrubInput, SplitBar, UnfoldSelect, UsageMeter,
 };
-pub use parity::{
+pub use kit::{
     AiInlineEdit, ChangeSummary, CodeSuggestion, CommentThread, DiffTable, DiffTimeline,
     DiffViewer, ImageCompare, InlineDiff, ReviewCard, ReviewCenter,
 };
-pub use parity::{
+pub use kit::{
     AnswerCard, CitedAnswerCard, MessageActionBar, ThinkingPanel, ThinkingPill, WritingAssistant,
 };
-pub use parity::{
+pub use kit::{
+    AssignBoard, AutonomyLevels, ChangeLedger, ContextTreemap, CrewChat, CrewTree, DecisionTree,
+    FallbackChain, FindingsFeed, JobQueue, LiveLanes, OvernightRecap, PresenceCursors, RelayTrail,
+    ReturnBrief, RunMonitor, SequenceDiagram, SpendBreakdown, TaskInbox, ToolNetwork,
+};
+pub use kit::{
     BillingSettingsScreen, GeneralSettingsScreen, MembersSettingsScreen, ModelsSettingsScreen,
     NotificationsSettingsScreen, OnboardingSettingsScreen, PreferencesSettingsScreen,
     PrivacySettingsScreen, ProfileSettingsScreen, SecuritySettingsScreen,
 };
-pub use parity::{
+pub use kit::{
     ChipStep, DiffChip, ExpandableCard, JsonViewer, LinkUnfurl, RowOutput, ToolCall, ToolCallCard,
     ToolCallGroup, ToolCallList, ToolChips, ToolKindLegend,
 };
-pub use parity::{CommandBoardScreen, s11_board_states};
-pub use parity::{CommandCenterScreen, SessionStudioScreen};
-pub use parity::{ConflictRadar, MergeConflict};
-pub use parity::{
+pub use kit::{CommandBoardScreen, s11_board_states};
+pub use kit::{CommandCenterScreen, SessionStudioScreen};
+pub use kit::{ConflictRadar, MergeConflict};
+pub use kit::{
     CourierScreen, HaloChatScreen, HangarScreen, PilotPanelScreen, s16_courier_states,
     s16_halochat_states, s16_hangar_states, s16_pilotpanel_states,
 };
-pub use parity::{EvalsScreen, s5_states};
-pub use parity::{FleetWindowScreen, s11_fleet_states};
-pub use parity::{
+pub use kit::{EvalsScreen, s5_states};
+pub use kit::{FleetWindowScreen, s11_fleet_states};
+pub use kit::{
     GanttTimelineScreen, KanbanBoardScreen, MetricsDashboardScreen, ProjectBoardScreen,
     TeamDirectoryScreen, s12_states,
 };
-pub use parity::{GhostText, LabeledInput, LabeledTextarea, TextArea};
-pub use parity::{
+pub use kit::{GhostText, LabeledInput, LabeledTextarea, TextArea};
+pub use kit::{
     HelpCenterScreen, InboxTriageScreen, MonthCalendarScreen, SupportConversationScreen,
     WeekCalendarScreen, s13_states,
 };
-pub use parity::{InboxBoardScreen, InboxScreen, MemoryScreen, TasksScreen};
-pub use parity::{
-    InvoiceStudioScreen, MarketTerminalScreen, ProductDetailScreen, ProductListScreen,
-    SignInSplitScreen, s14_states,
+pub use kit::{InboxBoardScreen, InboxScreen, MemoryScreen, TasksScreen};
+pub use kit::{
+    InvoiceDeskScreen, ProductDetailScreen, ProductListScreen, SignInSplitScreen,
+    TradingDeskScreen, s14_states,
 };
-pub use parity::{
+pub use kit::{
+    LoadingState, ScrollTitle, SlotReels, Source, StatefulActionButton, StreamingText, SweepText,
+    TextMorph, ThinkingLoader, WordReveal,
+};
+pub use kit::{
     OnboardingBrandScreen, OnboardingReadyScreen, OnboardingToneScreen, OnboardingWebsiteScreen,
 };
-pub use parity::{
+pub use kit::{
     PreviewDeskScreen, RepoDeskScreen, TabstackScreen, ThreadbarScreen, s16_previewdesk_states,
     s16_repodesk_states, s16_tabstack_states, s16_threadbar_states,
 };
-pub use parity::{
+pub use kit::{
     TaskdeckBoardScreen, TaskdeckPluginsScreen, TaskdeckScheduledScreen, TaskdeckSitesScreen,
     TaskdeckStartScreen, TaskdeckTaskScreen,
 };
-pub use parity::{WorkspaceCoderScreen, s11_coder_states};
+pub use kit::{WorkspaceCoderScreen, s11_coder_states};
 pub use primitives::{
     Accordion, AccordionItem, Breadcrumb, ChipGroup, CodeBlock, CopyButton, Dock, Drawer,
     EmptyPreset, ExpandableText, HoverCard, NotificationCenter, PageHeader, PaneView, PresenceDot,
@@ -247,12 +247,12 @@ pub use primitives::{
     AiCommand, AiSearchBar, Alert, BottomSheet, Card, CommandPalette, ControlCenter, Dialog,
     ExpandingSearch, Line, MorphBlock, NotificationStack, Pagination, ScriptedAnswer, ScrollArea,
     SearchField, SeedToast, SettingsCommand, Sheet, SheetStack, ShimmerLabel, ShortcutList,
-    ShortcutRecorder, Skeleton, SkeletonMorph, StackPage, StackRow, Toaster, Toasts, use_toasts,
+    ShortcutRecorder, Skeleton, SkeletonReveal, StackPage, StackRow, Toaster, Toasts, use_toasts,
 };
 pub use primitives::{
-    ApprovalQuestions, Calendar, Combobox, DatePicker, DateRangePicker, DateReel, DecisionCard,
-    FilterMenu, InlineEdit, MultiSelect, OtpInput, PasswordField, PasswordStrength, PhoneInput,
-    SmartFormFill, StepperForm, TagInput, TimeDial, TimePicker,
+    ApprovalQuestions, Calendar, Combobox, DatePicker, DateRangePicker, DateWheel, DecisionCard,
+    FilterMenu, FormAutofill, InlineEdit, MultiSelect, OtpInput, PasswordField, PasswordStrength,
+    PhoneInput, StepperForm, TagInput, TimeDial, TimePicker,
 };
 pub use run::{
     PlanCard, PlanCardProps, RUN_CSS, StepTimeline, StepTimelineProps, SubagentTree,
@@ -271,6 +271,27 @@ pub use status_indicator::{
 pub use status_text::{
     ElapsedTimer, ElapsedTimerProps, STATUS_TEXT_CSS, TextReveal, TextRevealProps, TextShimmer,
     TextShimmerProps, VerbCycler, VerbCyclerProps,
+};
+
+/// Old names of components renamed in the naming pass (docs/renames.md). They still work so
+/// existing code keeps building; use the new names in new code.
+#[doc(hidden)]
+pub use self::{
+    ActivityPill as RunningNow, AssignBoard as DelegateBoard, AttemptRace as ParallelAttempts,
+    AutonomyLevels as AutonomyDial, BlindCompare as ModelArena, ChangeLedger as AgentLedger,
+    ContextTreemap as ContextMap, CrewChat as CollabStream, CrewTree as AgentCrew,
+    DateWheel as DateReel, FindingsFeed as AgentFindings, FleetOverview as MissionControl,
+    FleetTimeline as MissionTimeline, FormAutofill as SmartFormFill, InlineConfirm as ConfirmMorph,
+    InvoiceDeskScreen as InvoiceStudioScreen, JobQueue as AgentQueue,
+    LaunchChecklist as ReleaseReadiness, LiveLanes as AgentLanes, LoadPlanner as RateLimitPlanner,
+    ModelKnockout as JudgeBracket, OvernightRecap as AgentRecap, PresenceCursors as AgentCursors,
+    PromptBench as PromptStudio, RelayTrail as AgentHandoff, ReturnBrief as AwaySummary,
+    RubberSlider as ElasticSlider, RunMonitor as AgentMonitor, ScrollTitle as InViewTitle,
+    SequenceDiagram as AgentSequence, SkeletonReveal as SkeletonMorph,
+    SpendBreakdown as CostWaterfall, StatefulActionButton as ActionSwapButton,
+    TaskGrid as FanoutGrid, TaskInbox as AgentInbox, ToolNetwork as AgentGraph,
+    ToolReach as ToolAccessMap, TradingDeskScreen as MarketTerminalScreen,
+    UnfoldSelect as MorphSelect,
 };
 
 /// `var(--oxyn-color-…)` for a colour role.

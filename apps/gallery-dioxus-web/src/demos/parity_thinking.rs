@@ -4,7 +4,7 @@
 use dioxus::prelude::*;
 use oxyn_core::{
     ClockMs,
-    parity::{
+    kit::{
         effmenufid::effort_models,
         thinkfid::{effort_scale, effort_scale_api, effort_scale_short, level_index},
     },
@@ -124,7 +124,7 @@ fn effort_ruler_demo() -> Demo {
             "EffortRuler",
             "EffortRulerEl",
             "effort-ruler",
-            "parity/rulerfid.rs",
+            "kit/rulerfid.rs",
         )
     }
 }
@@ -226,7 +226,7 @@ fn reasoning_panel_demo() -> Demo {
             "ReasoningPanel",
             "ReasoningPanelEl",
             "reasoning-panel",
-            "parity/reasonfid.rs",
+            "kit/reasonfid.rs",
         )
     }
 }
@@ -304,7 +304,7 @@ fn effort_list_demo() -> Demo {
             "EffortList",
             "EffortListEl",
             "effort-list",
-            "parity/efflistfid.rs",
+            "kit/efflistfid.rs",
         )
     }
 }
@@ -387,7 +387,7 @@ fn effort_pill_demo() -> Demo {
             "EffortPill",
             "EffortPillEl",
             "effort-pill",
-            "parity/effpillfid.rs",
+            "kit/effpillfid.rs",
         )
     }
 }
@@ -474,7 +474,7 @@ fn context_effort_menu_demo() -> Demo {
             "ContextEffortMenu",
             "ContextEffortMenuEl",
             "context-effort-menu",
-            "parity/ctxefffid.rs",
+            "kit/ctxefffid.rs",
         )
     }
 }
@@ -555,14 +555,14 @@ fn model_effort_menu_demo() -> Demo {
             "ModelEffortMenu",
             "ModelEffortMenuEl",
             "model-effort-menu",
-            "parity/modeleffid.rs",
+            "kit/modeleffid.rs",
         )
     }
 }
 
 // ---------- Nozzle line ----------
 
-fn nozzle_scale(v: &Vals) -> Vec<oxyn_core::parity::thinkfid::EffortLevel> {
+fn nozzle_scale(v: &Vals) -> Vec<oxyn_core::kit::thinkfid::EffortLevel> {
     match v.s("levels") {
         "four" => effort_scale_short(),
         "api" => effort_scale_api(),
@@ -678,7 +678,7 @@ fn nozzle_slider_demo() -> Demo {
             "NozzleSlider",
             "NozzleSliderEl",
             "nozzle-slider",
-            "parity/nozzlefid.rs",
+            "kit/nozzlefid.rs",
         )
     }
 }
@@ -751,7 +751,7 @@ fn effort_stairs_demo() -> Demo {
             "EffortStairs",
             "EffortStairsEl",
             "effort-stairs",
-            "parity/stairsfid.rs",
+            "kit/stairsfid.rs",
         )
     }
 }

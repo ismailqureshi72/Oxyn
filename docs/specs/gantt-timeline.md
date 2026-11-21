@@ -3,7 +3,7 @@
 # Spec: Gantt timeline (`gantt-timeline`)
 
 Family: Arc screens (pages at `/screens/gantt-timeline/` and `/full`). Reference: the gantt timeline screen of Arc UI (uiarc.dev), behaviour and layout only, under our own design; no source, artwork or copy taken. Every person, workspace and project is fictional; dates are absolute ISO dates.
-Components: `GanttTimelineScreen` (Dioxus) · `GanttTimelineEl` (GPUI), rules in `oxyn_core::parity::arcscr`.
+Components: `GanttTimelineScreen` (Dioxus) · `GanttTimelineEl` (GPUI), rules in `oxyn_core::kit::arcscr`.
 
 ## 1. Purpose
 Plan a release across phases and change dates by dragging, with dependencies kept honest.
@@ -21,7 +21,7 @@ The Arc frame (shared by the S12 screens): a 248 px sidebar (workspace mark and 
 | Footer | The drag hint, **Undo** (disabled with nothing to undo) and **Reset** |
 
 ## 3. Behaviour
-Drag a bar to move it, its left edge to change the start or its right edge to change the end; a tooltip shows the new ISO dates while dragging, placed in free space so it never covers another bar (the row above when nothing there is under it, else the row below, else after the bar and its label when that fits in the visible part of the timeline, else before it: `oxyn_core::parity::arcscr::tip_at`), and the change lands on release (at least one day long; milestones only move). Focused bars move with ← / → and change their end with Shift + ← / →. Every change is undoable (40 steps); Reset returns to the sample plan and can itself be undone. Zoom sets 36, 15 or 6 px a day.
+Drag a bar to move it, its left edge to change the start or its right edge to change the end; a tooltip shows the new ISO dates while dragging, placed in free space so it never covers another bar (the row above when nothing there is under it, else the row below, else after the bar and its label when that fits in the visible part of the timeline, else before it: `oxyn_core::kit::arcscr::tip_at`), and the change lands on release (at least one day long; milestones only move). Focused bars move with ← / → and change their end with Shift + ← / →. Every change is undoable (40 steps); Reset returns to the sample plan and can itself be undone. Zoom sets 36, 15 or 6 px a day.
 
 ## 4. Variants
 States: Data · Loading · Empty ("No tasks on the timeline") · **Dragging** (Payments with saved cards four days later, with its tooltip) · **Month view**. Frame: Inset · Flat.
@@ -39,4 +39,4 @@ Authored on the 1440 × 900 stage and scaled to its column; `/full` renders at t
 No backend. In GPUI the timeline draws no dependency arrows (a rose ! in the task list marks a task that starts too early), a dragged bar drops on whole days (its dates show in free space in the Dragging state), phases do not collapse and Today does not scroll.
 
 ## 9. GPUI
-`GanttTimelineEl` draws one state (`.state()`, `.extra()`). `ScreenView` (oxyn-gpui, `parity::screenview`) runs it live as part of the **Arc screens I** set, driven by `oxyn_core::parity::screenui::ScreenUi` and its `ArcUi`: `ArcUi` keeps the plan with undo, the picked bar and the zoom: press a bar (`gt-pick-<id>`), then `gt-earlier|later|shorter|longer`, or drag it onto a day column (`gt-at-<day>`); `gt-zoom-<n>`, `gt-undo`, `gt-reset`, `gt-today`, `gt-owner` (the next owner, then everyone). Its toolbar matches the Dioxus screen: the filter field (the view's search field, filtering task names), Owner, Day / Week / Month and Today; the picked bar and its nudges (Earlier, Later, Shorter, Longer) sit in the foot with Undo and Reset, and a moved bar's dates use the same free-space placement. The set's tabs, state bar, command bar and account menu work as for the other sets; `cargo run --manifest-path examples/gpui-agent-apps/Cargo.toml` opens it from the strip (S12 Arc I).
+`GanttTimelineEl` draws one state (`.state()`, `.extra()`). `ScreenView` (oxyn-gpui, `kit::screenview`) runs it live as part of the **Arc screens I** set, driven by `oxyn_core::kit::screenui::ScreenUi` and its `ArcUi`: `ArcUi` keeps the plan with undo, the picked bar and the zoom: press a bar (`gt-pick-<id>`), then `gt-earlier|later|shorter|longer`, or drag it onto a day column (`gt-at-<day>`); `gt-zoom-<n>`, `gt-undo`, `gt-reset`, `gt-today`, `gt-owner` (the next owner, then everyone). Its toolbar matches the Dioxus screen: the filter field (the view's search field, filtering task names), Owner, Day / Week / Month and Today; the picked bar and its nudges (Earlier, Later, Shorter, Longer) sit in the foot with Undo and Reset, and a moved bar's dates use the same free-space placement. The set's tabs, state bar, command bar and account menu work as for the other sets; `cargo run --manifest-path examples/gpui-agent-apps/Cargo.toml` opens it from the strip (S12 Arc I).

@@ -3,7 +3,7 @@
 # Spec: Display comfort (`display-comfort`)
 
 Family: Theme Selector. Reference: none (an Oxyn original).
-Components: `DisplayComfort` (Dioxus) · `DisplayComfortEl` (GPUI), models in `oxyn_core::parity::themefid`.
+Components: `DisplayComfort` (Dioxus) · `DisplayComfortEl` (GPUI), models in `oxyn_core::kit::themefid`.
 
 ## 1. Purpose
 Gather the comfort settings that change how the whole app feels, and show what each one does before leaving the page.

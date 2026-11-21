@@ -60,8 +60,8 @@ A collapsible JSON tree (a small built-in parser, no dependency): branches open 
 - Paths read root.users[0].name.
 
 ## 10. Implementation
-- Core: `Json`, `JsonTree` (`with_depth`, `value_text`, `rows`, `key`), `JRow` (`oxyn_core::parity::tools`), with tests.
-- Dioxus: `JsonViewer` (parity/tools.rs, tools.css).
+- Core: `Json`, `JsonTree` (`with_depth`, `value_text`, `rows`, `key`), `JRow` (`oxyn_core::kit::tools`), with tests.
+- Dioxus: `JsonViewer` (kit/tools.rs, tools.css).
 - GPUI: `JsonViewerEl` (rows and the path line; keyboard via the host).
 
 ## 11. References

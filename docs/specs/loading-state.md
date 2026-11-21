@@ -47,8 +47,8 @@ A 4×4 pixel-grid loader (drive: a lit column sweeping with a trail; dots; orbit
 - Cells use four brightness levels of the text colour (monochrome).
 
 ## 10. Implementation
-- Core: `pixel_frame`, `elapsed_label` (`oxyn_core::parity::text`), with tests.
-- Dioxus: `LoadingState` (parity/text.rs, text.css).
+- Core: `pixel_frame`, `elapsed_label` (`oxyn_core::kit::text`), with tests.
+- Dioxus: `LoadingState` (kit/text.rs, text.css).
 - GPUI: `LoadingStateEl` (4×4 pixel frames, shimmer verb, elapsed seconds; `reduced(true)` holds frame 0).
 
 ## 11. References

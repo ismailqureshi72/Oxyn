@@ -1,13 +1,13 @@
 //! Plan #28 parity demos, loaders and moving text: thinking loader, loading state, word reveal,
-//! in-view title, text morph, action swap, shimmer label, slot text and streaming text.
+//! scroll title, text morph, action states, shimmer label, slot text and streaming text.
 
 use dioxus::prelude::*;
 use oxyn_core::{
     ClockMs,
-    parity::text::{ActionSwap, Phases, SlotText, Stream, SwapState, group},
+    kit::text::{Phases, SlotText, StatefulAction, Stream, SwapState, group},
 };
 use oxyn_dioxus::{
-    ActionSwapButton, InViewTitle, LoadingState, SlotReels, Source, StreamingText, SweepText,
+    LoadingState, ScrollTitle, SlotReels, Source, StatefulActionButton, StreamingText, SweepText,
     TextMorph, ThinkingLoader, WordReveal,
 };
 
@@ -144,7 +144,7 @@ fn reveal_code(v: &Vals) -> String {
         .done()
 }
 
-// ---------- in-view title ----------
+// ---------- scroll title ----------
 
 fn title(v: &Vals, _: ClockMs) -> Element {
     rsx! { LiveTitle { variant: v.string("variant"), tag: v.string("tag"), once: v.b("once") } }
@@ -157,7 +157,7 @@ fn LiveTitle(variant: String, tag: String, once: bool) -> Element {
     rsx! {
         div { class: "oxd-w520", style: "display:flex;flex-direction:column;gap:14px;align-items:flex-start",
             div { key: "{n}-{variant}-{tag}",
-                InViewTitle { text: "Every run, start to finish".to_string(), variant: variant.clone(), tag: tag.clone(), lines: vec!["Every run,".to_string(), "start to finish".to_string()], shown: shown(), once }
+                ScrollTitle { text: "Every run, start to finish".to_string(), variant: variant.clone(), tag: tag.clone(), lines: vec!["Every run,".to_string(), "start to finish".to_string()], shown: shown(), once }
             }
             div { style: "display:flex;gap:8px",
                 button { class: "oxr-btn", r#type: "button", onclick: move |_| n += 1, "Replay" }
@@ -168,7 +168,7 @@ fn LiveTitle(variant: String, tag: String, once: bool) -> Element {
 }
 
 fn title_code(v: &Vals) -> String {
-    Code::new("InViewTitle")
+    Code::new("ScrollTitle")
         .raw("text", q("Every run, start to finish"))
         .s("variant", &v.string("variant"), "blur")
         .s("tag", &v.string("tag"), "h2")
@@ -215,7 +215,7 @@ fn morph_code(_: &Vals) -> String {
     Code::new("TextMorph").raw("text", "label()").done()
 }
 
-// ---------- action swap ----------
+// ---------- action states ----------
 
 fn swap_states(kind: &str) -> Vec<SwapState> {
     match kind {
@@ -270,10 +270,10 @@ fn swap(v: &Vals, now: ClockMs) -> Element {
 
 #[component]
 fn LiveSwap(kind: String, size: String, fail: bool, asynch: bool, now: ClockMs) -> Element {
-    keyed!(m, kind.clone(), ActionSwap::new(swap_states(&kind)));
+    keyed!(m, kind.clone(), StatefulAction::new(swap_states(&kind)));
     // The simulated action settles 900 ms after the press.
     let mut cur = m();
-    if let oxyn_core::parity::text::SwapPhase::Working(s) = cur.phase
+    if let oxyn_core::kit::text::SwapPhase::Working(s) = cur.phase
         && now.0.saturating_sub(s.0) >= 900
     {
         cur.settle(!fail, now);
@@ -282,15 +282,15 @@ fn LiveSwap(kind: String, size: String, fail: bool, asynch: bool, now: ClockMs) 
     let shown = cur.clone();
     rsx! {
         div { style: "display:flex;flex-direction:column;gap:10px;align-items:center",
-            ActionSwapButton { model: shown, size, on_press: move |_| { let mut c = cur.clone(); c.press(asynch, now); m.set(c) } }
+            StatefulActionButton { model: shown, size, on_press: move |_| { let mut c = cur.clone(); c.press(asynch, now); m.set(c) } }
             span { class: "oxr-dim oxr-small", "Enter or Space advances" }
         }
     }
 }
 
 fn swap_code(v: &Vals) -> String {
-    Code::new("ActionSwapButton")
-        .pre("let mut swap = use_signal(|| ActionSwap::new(states)); // tick(now) each frame; settle(ok, now) when the action ends")
+    Code::new("StatefulActionButton")
+        .pre("let mut swap = use_signal(|| StatefulAction::new(states)); // tick(now) each frame; settle(ok, now) when the action ends")
         .raw("model", "swap()")
         .s("size", &v.string("size"), "md")
         .raw("on_press", "move |_| { swap.write().press(true, now); spawn(run_action()) }")
@@ -499,7 +499,7 @@ pub fn demos() -> Vec<Demo> {
                 "ThinkingLoader",
                 "ThinkingLoaderEl",
                 "thinking-loader",
-                "parity/text.rs",
+                "kit/text.rs",
             )
         },
         Demo {
@@ -552,7 +552,7 @@ pub fn demos() -> Vec<Demo> {
                 "LoadingState",
                 "LoadingStateEl",
                 "loading-state",
-                "parity/text.rs",
+                "kit/text.rs",
             )
         },
         Demo {
@@ -595,7 +595,7 @@ pub fn demos() -> Vec<Demo> {
                 "WordReveal",
                 "",
                 "word-reveal",
-                "parity/text.rs",
+                "kit/text.rs",
             )
         },
         Demo {
@@ -637,14 +637,14 @@ pub fn demos() -> Vec<Demo> {
             align: Align::Start,
             live: false,
             ..mk(
-                "in-view-title",
-                "In-view title",
+                "scroll-title",
+                "Scroll title",
                 "status-text",
                 "A section title that comes in as it scrolls into view: blur, word, line, tracking or wipe; once, or again on every entry with a quick fade out.",
-                "InViewTitle",
+                "ScrollTitle",
                 "",
                 "in-view-title",
-                "parity/text.rs",
+                "kit/text.rs",
             )
         },
         Demo {
@@ -678,7 +678,7 @@ pub fn demos() -> Vec<Demo> {
                 "TextMorph",
                 "",
                 "text-morph",
-                "parity/text.rs",
+                "kit/text.rs",
             )
         },
         Demo {
@@ -715,14 +715,14 @@ pub fn demos() -> Vec<Demo> {
             align: Align::Center,
             live: true,
             ..mk(
-                "action-swap",
-                "Action swap",
+                "action-states",
+                "Action states",
                 "buttons",
                 "An action label that swaps to its next state while keeping its place: a working phase (pending label or a round spinner), a failure label, tones, and holds that advance on their own.",
-                "ActionSwapButton",
+                "StatefulActionButton",
                 "",
                 "action-swap",
-                "parity/text.rs",
+                "kit/text.rs",
             )
         },
         Demo {
@@ -757,7 +757,7 @@ pub fn demos() -> Vec<Demo> {
                 "SweepText",
                 "ShimmerEl",
                 "shimmer-label",
-                "parity/text.rs",
+                "kit/text.rs",
             )
         },
         Demo {
@@ -801,7 +801,7 @@ pub fn demos() -> Vec<Demo> {
                 "SlotReels",
                 "SlotTextEl",
                 "slot-text",
-                "parity/text.rs",
+                "kit/text.rs",
             )
         },
         Demo {
@@ -847,7 +847,7 @@ pub fn demos() -> Vec<Demo> {
                 "StreamingText",
                 "",
                 "streaming-text",
-                "parity/text.rs",
+                "kit/text.rs",
             )
         },
     ]

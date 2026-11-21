@@ -98,7 +98,7 @@ fn gooey_attach_demo() -> Demo {
             "GooeyAttachMenu",
             "GooeyAttachMenuEl",
             "gooey-attach-menu",
-            "parity/gooeyfid.rs",
+            "kit/gooeyfid.rs",
         )
     }
 }
@@ -194,7 +194,7 @@ fn gooey_model_demo() -> Demo {
             "GooeyModelMenu",
             "GooeyModelMenuEl",
             "gooey-model-menu",
-            "parity/gooeyfid.rs",
+            "kit/gooeyfid.rs",
         )
     }
 }
@@ -272,7 +272,7 @@ fn gooey_composer_demo() -> Demo {
             "GooeyComposer",
             "GooeyComposerEl",
             "gooey-composer",
-            "parity/gooeyfid.rs",
+            "kit/gooeyfid.rs",
         )
     }
 }
@@ -346,7 +346,7 @@ fn liquid_tabs_demo() -> Demo {
             "LiquidTabs",
             "LiquidTabsEl",
             "liquid-tabs",
-            "parity/gooeyfid.rs",
+            "kit/gooeyfid.rs",
         )
     }
 }
@@ -418,7 +418,7 @@ fn liquid_drops_demo() -> Demo {
             "LiquidDrops",
             "LiquidDropsEl",
             "liquid-drops",
-            "parity/gooeyfid.rs",
+            "kit/gooeyfid.rs",
         )
     }
 }

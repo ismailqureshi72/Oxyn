@@ -3,7 +3,7 @@
 # Spec: Effort stairs (`effort-stairs`)
 
 Family: Thinking Selector. Reference: none (an Oxyn original) (layout idea only; names, wording and colours are our own).
-Components: `EffortStairs` (Dioxus) · `EffortStairsEl` (GPUI), models in `oxyn_core::parity::{stairsfid, thinkfid}`.
+Components: `EffortStairs` (Dioxus) · `EffortStairsEl` (GPUI), models in `oxyn_core::kit::{stairsfid, thinkfid}`.
 
 ## 1. Purpose
 Show what each effort level costs before picking it: rising bars, one per level, and a rough budget line for the level under the pointer.

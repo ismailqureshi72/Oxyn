@@ -21,7 +21,7 @@ use oxyn_core::{
         date::{
             Calendar, Date, DatePicker, DayCell, HourCycle, RangePicker, TimeOfDay, time_options,
         },
-        dial::{DateReel, TimeDial},
+        dial::{DateWheel, TimeDial},
         filter_menu::{FilterMenu, FilterRow},
         inline_edit::{EditPhase, InlineEdit},
         otp::{Otp, OtpStatus},
@@ -1690,15 +1690,15 @@ impl RenderOnce for TimeDialEl {
 
 /// `date-reel`: the summary, each reel's entries projected on the cylinder, quick picks.
 #[derive(IntoElement)]
-pub struct DateReelEl {
-    model: DateReel,
+pub struct DateWheelEl {
+    model: DateWheel,
     on_preset: Option<OnIndex>,
     theme: &'static Theme,
 }
 
-impl DateReelEl {
+impl DateWheelEl {
     /// From the model (the host ticks it every frame).
-    pub fn new(model: DateReel) -> Self {
+    pub fn new(model: DateWheel) -> Self {
         Self {
             model,
             on_preset: None,
@@ -1713,7 +1713,7 @@ impl DateReelEl {
     themed!();
 }
 
-impl RenderOnce for DateReelEl {
+impl RenderOnce for DateWheelEl {
     fn render(self, _: &mut Window, _: &mut App) -> impl IntoElement {
         let t = self.theme;
         let m = self.model;
@@ -2775,7 +2775,7 @@ mod tests {
         let _ = RangePickerEl::new(RangePicker::new(None, today));
         let _ = TimePickerEl::new("At", Some(TimeOfDay::new(9, 30)), 15).h24();
         let _ = TimeDialEl::new(TimeDial::new(vec![], 600));
-        let _ = DateReelEl::new(DateReel::new(
+        let _ = DateWheelEl::new(DateWheel::new(
             Default::default(),
             (today, TimeOfDay::new(9, 0)),
             today,

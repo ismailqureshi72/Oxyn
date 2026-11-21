@@ -3,7 +3,7 @@
 # Spec: Theme grid (`theme-grid`)
 
 Family: Theme Selector. Reference: a user screenshot of a display setting (a grid of mini-window theme swatches and a font size dropdown). Behaviour only; the themes, their colours and names are our own.
-Components: `ThemeGrid` (Dioxus) · `ThemeGridEl` (GPUI), models in `oxyn_core::parity::themefid`.
+Components: `ThemeGrid` (Dioxus) · `ThemeGridEl` (GPUI), models in `oxyn_core::kit::themefid`.
 
 ## 1. Purpose
 Pick the look of the whole app from small pictures of it, and the text size, and see both on a sample at once.

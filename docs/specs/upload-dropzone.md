@@ -3,7 +3,7 @@
 # Spec: Upload dropzone (`upload-dropzone`)
 
 Family: Attachments. Reference: the behaviour of a public upload-dropzone block (drag a file chip in, progress with percent, Uploaded, refused when too big; fill, hairline and corner options). Behaviour only; look, icons and wording are our own.
-Components: `UploadDropzone` (Dioxus) · `UploadDropzoneEl` (GPUI), models in `oxyn_core::parity::attachfid`.
+Components: `UploadDropzone` (Dioxus) · `UploadDropzoneEl` (GPUI), models in `oxyn_core::kit::attachfid`.
 
 ## 1. Purpose
 The simplest honest upload: one box, what it takes, and what happened to your file.

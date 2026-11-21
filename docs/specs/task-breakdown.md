@@ -48,7 +48,7 @@ One goal broken into a plan: tasks stream in with estimates (working days, steps
 
 ## 10. Implementation
 - Core: `Breakdown`, `BTask` (schedule, span, verdict, shift) (`oxyn_core::parity`), with tests.
-- Dioxus: `TaskBreakdown` (parity/run.rs, run.css).
+- Dioxus: `TaskBreakdown` (kit/run.rs, run.css).
 - GPUI: `BreakdownEl`.
 
 ## 11. References

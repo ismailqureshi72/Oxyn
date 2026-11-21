@@ -59,4 +59,4 @@ A Figma-style number field. Drag the label sideways to scrub (`px_per_step`, 2 p
 - Pointer lock is not used (Dioxus has no pointer-lock API without JS); a full-window drag layer keeps the cursor and events during a scrub instead.
 
 ## 10. GPUI
-ScrubInputEl renders label, value, unit and track from `parity::fields::Scrub`; drag wiring is left to the host view.
+ScrubInputEl renders label, value, unit and track from `kit::fields::Scrub`; drag wiring is left to the host view.

@@ -3,7 +3,7 @@
 # Spec: Folders · Detail (`folders-detail`)
 
 Family: Screens. Reference: affectUI Folders / Detail (`/screens/folder`), layout and behaviour only; no source or assets copied.
-Components: `FoldersScreen { detail: true }` (Dioxus) · `FolderDetailEl` (GPUI), models in `oxyn_core::parity::workscr`.
+Components: `FoldersScreen { detail: true }` (Dioxus) · `FolderDetailEl` (GPUI), models in `oxyn_core::kit::workscr`.
 
 ## 1. Purpose
 One folder open: what is in it, who it is shared with, and a way to add more.
@@ -35,4 +35,4 @@ Authored on the 1440 × 900 stage (rule R1) and scaled to its column; the full v
 
 ## 7. Known gaps
 GPUI is a static snapshot: `.extra(...)` draws the screen's own state or an option; drag, menus, typing and charts' crosshair belong to the host.
-In a window, `ScreenView` (oxyn-gpui, `parity::screenview`) runs this screen live from `oxyn_core::parity::screenui`: the sidebar and page links open their screens (across sets), buttons open their state, the bar above it switches the set's screens and the state bar, a command bar (a real text field) jumps to any screen or state, the account row opens its menu, and Left / Right, Up / Down and Escape step states and screens. Editing the page's own fields in place is still the host's.
+In a window, `ScreenView` (oxyn-gpui, `kit::screenview`) runs this screen live from `oxyn_core::kit::screenui`: the sidebar and page links open their screens (across sets), buttons open their state, the bar above it switches the set's screens and the state bar, a command bar (a real text field) jumps to any screen or state, the account row opens its menu, and Left / Right, Up / Down and Escape step states and screens. Editing the page's own fields in place is still the host's.

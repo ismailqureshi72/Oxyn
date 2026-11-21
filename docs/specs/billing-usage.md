@@ -3,7 +3,7 @@
 # Spec: Billing (`billing-usage`)
 
 Family: Arc screens (pages at `/screens/billing-usage/` and `/full`). Reference: the Arc demo app's billing page, behaviour and layout only, under our own design; no source, artwork or copy taken. Every company, person, key, endpoint and amount is fictional; dates are absolute ISO dates and times are 24-hour UTC.
-Components: `BillingUsageScreen` (Dioxus) · `BillingUsageEl` (GPUI), rules in `oxyn_core::parity::arcscr4`.
+Components: `BillingUsageScreen` (Dioxus) · `BillingUsageEl` (GPUI), rules in `oxyn_core::kit::arcscr4`.
 
 ## 1. Purpose
 Know what you pay, what you use and what a plan change costs today.
@@ -22,7 +22,7 @@ The Arc frame (shared with the S12–S14 screens): a 248 px sidebar (Corvel Labs
 | Invoices | Number, ISO date, amount, Paid / Open / Failed, download |
 
 ## 3. Behaviour
-`Billing` in `oxyn_core::parity::arcscr4`: `price(p)`, `prorate(p)` = (new − old) × days left / 30, `pick(p)` refuses a plan whose seats are fewer than used, `confirm()`, `toggle_cycle()`, `retry()`.
+`Billing` in `oxyn_core::kit::arcscr4`: `price(p)`, `prorate(p)` = (new − old) × days left / 30, `pick(p)` refuses a plan whose seats are fewer than used, `confirm()`, `toggle_cycle()`, `retry()`.
 
 ## 4. Variants
 States: Data · Loading · Empty (Starter, nothing billed) · **Yearly** · **Change plan** (Scale picked) · **Past due**. Frame: Inset · Flat.
@@ -34,7 +34,7 @@ Plans are a radio group; the change is a dialog with its sums written out; meter
 Authored on the 1440 × 900 stage and scaled to its column; `/full` renders at the real viewport. Under 960 px the sidebar is a drawer from the header's menu button and the right card hides; under 640 px header actions become icon buttons. scripts/ovl.py checks text overlap at 1440, 768 and 390 in light and dark.
 
 ## 7. Data
-`BillingUsageScreen` takes `layout` and `state`; sample data comes from `oxyn_core::parity::arcscr4`.
+`BillingUsageScreen` takes `layout` and `state`; sample data comes from `oxyn_core::kit::arcscr4`.
 
 ## 8. Known gaps
 No payment is taken; the card is fictional.

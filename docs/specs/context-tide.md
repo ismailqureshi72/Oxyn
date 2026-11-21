@@ -3,7 +3,7 @@
 # Spec: Context tide (`context-tide`)
 
 Family: Context Visualizer. Reference: none (an Oxyn original).
-Components: `ContextTide` (Dioxus) · `ContextTideEl` (GPUI), models in `oxyn_core::parity::ctxvisfid`.
+Components: `ContextTide` (Dioxus) · `ContextTideEl` (GPUI), models in `oxyn_core::kit::ctxvisfid`.
 
 ## 1. Purpose
 A calm, glanceable fill gauge for a sidebar: how high the water is and how many turns are left before it compacts.

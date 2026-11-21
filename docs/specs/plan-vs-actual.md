@@ -1,11 +1,11 @@
 **Status:** built v0.1 (2026-11-16, plan #32 affectUI fidelity pass, family B part 9 – against the ref-2 capture notes).
 
-# Spec: Plan vs Actual (`plan-vs-actual`)
+# Spec: Plan vs actual (`plan-vs-actual`)
 
 Family: Agents. Closes the parity row: affectUI · Plan vs Actual (Pro). Behaviour-only rebuild; layout, sizes,
 colours, states, motion and keyboard follow the ref-2 capture notes (approximate); the steps, times and copy are our
 own. Related Oxyn components: plan-todo, trace-view.
-Components: `PlanVsActual` (Dioxus) · `PlanVsActualEl` (GPUI), model in `oxyn_core::parity::planfid`.
+Components: `PlanVsActual` (Dioxus) · `PlanVsActualEl` (GPUI), model in `oxyn_core::kit::planfid`.
 
 ## 1. Purpose
 Lay an agent's run against its plan: each step's real bar over its dashed planned bar, so overruns, knock-on delays

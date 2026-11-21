@@ -51,7 +51,7 @@ One card that follows a coding agent through a task: the model and task in the h
 
 ## 10. Implementation
 - Core: reuses `Trail` (`oxyn_core::parity`), with tests.
-- Dioxus: `AgentRun` (parity/run.rs, run.css).
+- Dioxus: `AgentRun` (kit/run.rs, run.css).
 - GPUI: `AgentRunEl` (`approve`, `reject`, `pr`); the reject note is collected by the host.
 
 ## 11. References

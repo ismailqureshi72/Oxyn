@@ -364,6 +364,8 @@ fn get_component(server: &Server, args: &Value) -> Result<Value, Error> {
     let slug = arg_str(args, "slug").ok_or_else(|| Error::Invalid("slug is required".into()))?;
     let idx = server.client.index()?;
     let e = entry(&idx, slug)?;
+    // An older slug of a renamed item answers with the item under its current name.
+    let slug = e.slug.as_str();
     let mut out = json!({
         "slug": e.slug,
         "name": e.name,
@@ -496,6 +498,10 @@ fn add_component(server: &Server, args: &Value) -> Result<Value, Error> {
     let fw = arg_framework(args)?;
     let path = arg_str(args, "path");
     let idx = server.client.index()?;
+    let slugs: Vec<String> = slugs
+        .iter()
+        .map(|s| oxyn_cli::install::canonical(&idx, s))
+        .collect();
     // Say "needs Pro" / "sign in" / "monthly limit" before touching the project.
     for s in &slugs {
         if let Some(e) = idx.get(s)

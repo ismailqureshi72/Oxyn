@@ -1,6 +1,6 @@
 //! Surfaces (plan #26): `Dialog`, `Sheet`, `SheetStack`, `BottomSheet`, `Toaster` (with
 //! [`use_toasts`]), `NotificationStack`, `Alert`, `Card`, `ScrollArea`, `Pagination`,
-//! `Skeleton`, `ShimmerLabel`, `SkeletonMorph` + `MorphBlock`.
+//! `Skeleton`, `ShimmerLabel`, `SkeletonReveal` + `MorphBlock`.
 //!
 //! Logic lives in `oxyn_core::primitives::{modal, toast, scroll, feedback, skeleton}`. Overlays
 //! render into a layer that is fixed to the viewport, or absolute inside the nearest positioned
@@ -1733,11 +1733,11 @@ pub fn ShimmerLabel(
     rsx! { span { class: "oxyn-shtext", style: "--spd:{duration}s", "{text}" } }
 }
 
-/// Skeleton morph: a loading region whose skeleton blocks become the real content, block by
+/// Skeleton reveal: a loading region whose skeleton blocks become the real content, block by
 /// block (`stagger` ms apart, in reading order). Each placeholder stretches to the content's box
 /// while it fades; the content sharpens out of a 4 px blur. Going back to loading is immediate.
 #[component]
-pub fn SkeletonMorph(
+pub fn SkeletonReveal(
     /// Loading.
     loading: bool,
     /// Ms between blocks (40).
@@ -1764,7 +1764,7 @@ pub fn SkeletonMorph(
     }
 }
 
-/// One block of a [`SkeletonMorph`]: a size-matched skeleton while loading, the content after.
+/// One block of a [`SkeletonReveal`]: a size-matched skeleton while loading, the content after.
 #[component]
 pub fn MorphBlock(
     /// Order in the reveal.

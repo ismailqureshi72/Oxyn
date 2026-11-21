@@ -3,7 +3,7 @@
 # Spec: AI Chat · Run (`chat-run`)
 
 Family: Screens. Reference: affectUI AI Chat / Run (`/screens/agent-run`), layout and behaviour only.
-Components: `ChatRunScreen` (Dioxus) · `ChatRunEl` (GPUI), models in `oxyn_core::parity::screensfid`.
+Components: `ChatRunScreen` (Dioxus) · `ChatRunEl` (GPUI), models in `oxyn_core::kit::screensfid`.
 
 ## 1. Purpose
 One agent run: its plan ticking through, the apps it uses, live time and cost, and what needs your input.
@@ -34,4 +34,4 @@ Every screen is authored on the 1440 × 900 stage (rule R1) and scaled to its co
 
 ## 7. Known gaps
 GPUI is a static snapshot (`.extra("input" | "done")`).
-In a window, `ScreenView` (oxyn-gpui, `parity::screenview`) runs this screen live from `oxyn_core::parity::screenui`: the sidebar and page links open their screens (across sets), buttons open their state, the bar above it switches the set's screens and the state bar, a command bar (a real text field) jumps to any screen or state, the account row opens its menu, and Left / Right, Up / Down and Escape step states and screens. Editing the page's own fields in place is still the host's.
+In a window, `ScreenView` (oxyn-gpui, `kit::screenview`) runs this screen live from `oxyn_core::kit::screenui`: the sidebar and page links open their screens (across sets), buttons open their state, the bar above it switches the set's screens and the state bar, a command bar (a real text field) jumps to any screen or state, the account row opens its menu, and Left / Right, Up / Down and Escape step states and screens. Editing the page's own fields in place is still the host's.

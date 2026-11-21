@@ -3,7 +3,7 @@
 # Spec: Onboarding · Tone (`onboarding-tone`)
 
 Family: Screens. Reference: affectUI Onboarding / Tone (`/screens/onboarding-tone`), layout and behaviour only; no source or assets copied.
-Components: `OnboardingToneScreen` (Dioxus) · `OnboardingToneEl` (GPUI), rules in `oxyn_core::parity::onbscr`.
+Components: `OnboardingToneScreen` (Dioxus) · `OnboardingToneEl` (GPUI), rules in `oxyn_core::kit::onbscr`.
 
 ## 1. Purpose
 Step 3 of 4: how the assistant sounds: its name, tone, reply length and the person it passes hard questions to.
@@ -40,4 +40,4 @@ Authored on the 1440 × 900 stage (rule R1) and scaled to its column; the full v
 
 ## 7. Known gaps
 GPUI is a static snapshot: `.extra(...)` draws the own state, `named` or `form-only`; typing and ticks belong to the host. There is no backend: reading sites, uploading a logo and publishing are simulated with fictional page counts. The company, people and addresses are fictional (`kestrel.example`).
-In a window, `ScreenView` (oxyn-gpui, `parity::screenview`) runs this screen live from `oxyn_core::parity::screenui`: the sidebar and page links open their screens (across sets), buttons open their state, the bar above it switches the set's screens and the state bar, a command bar (a real text field) jumps to any screen or state, the account row opens its menu, and Left / Right, Up / Down and Escape step states and screens. Editing the page's own fields in place is still the host's.
+In a window, `ScreenView` (oxyn-gpui, `kit::screenview`) runs this screen live from `oxyn_core::kit::screenui`: the sidebar and page links open their screens (across sets), buttons open their state, the bar above it switches the set's screens and the state bar, a command bar (a real text field) jumps to any screen or state, the account row opens its menu, and Left / Right, Up / Down and Escape step states and screens. Editing the page's own fields in place is still the host's.

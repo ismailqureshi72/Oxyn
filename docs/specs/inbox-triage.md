@@ -3,7 +3,7 @@
 # Spec: Inbox triage (`inbox-triage`)
 
 Family: Arc screens (pages at `/screens/inbox-triage/` and `/full`). Reference: the inbox triage screen of Arc UI (uiarc.dev), behaviour and layout only, under our own design; no source, artwork or copy taken. Every person, customer, workspace and article is fictional; dates are absolute ISO dates and times are 24-hour.
-Components: `InboxTriageScreen` (Dioxus) · `InboxTriageEl` (GPUI), rules in `oxyn_core::parity::arcscr2`.
+Components: `InboxTriageScreen` (Dioxus) · `InboxTriageEl` (GPUI), rules in `oxyn_core::kit::arcscr2`.
 
 ## 1. Purpose
 Clear a support inbox fast, mostly from the keyboard.
@@ -21,7 +21,7 @@ The Arc frame (shared with the S12 screens): a 248 px sidebar (workspace mark an
 | Right card | The customer: name, company, email, local time and city, plan, customer since, label, previous conversations |
 
 ## 3. Behaviour
-`Triage` in `oxyn_core::parity::arcscr2` keeps the conversations, folder, tab, order, the open one and the selection. Resolving or snoozing acts on the selection (else the open conversation), opens the next one and keeps a snapshot for Undo; Assign to me moves rows into Assigned to me. Opening marks read. Every action reports in a polite live region.
+`Triage` in `oxyn_core::kit::arcscr2` keeps the conversations, folder, tab, order, the open one and the selection. Resolving or snoozing acts on the selection (else the open conversation), opens the next one and keeps a snapshot for Undo; Assign to me moves rows into Assigned to me. Opening marks read. Every action reports in a polite live region.
 
 ## 4. Variants
 States: Data · Loading · Empty ("Inbox zero" with Connect Gmail) · **Selected** (three rows with the bulk bar) · **Snooze menu** · **Resolved** (the first conversation resolved, Undo offered). Frame: Inset · Flat.

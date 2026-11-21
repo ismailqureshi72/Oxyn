@@ -63,8 +63,8 @@ Inline AI autocomplete. After `delay_ms` (450) of pause and at least `min_len` (
 - Past ten lines the mirror does not follow the field's own scroll (follow-up).
 
 ## 10. Implementation
-- Core: `Ghost` (`settle`, `edit`, `accept_all`, `accept_word`, `dismiss`), `next_word_end`, `demo_suggestion` (`oxyn_core::parity::input`), with tests.
-- Dioxus: `GhostText` (parity/input.rs, input.css).
+- Core: `Ghost` (`settle`, `edit`, `accept_all`, `accept_word`, `dismiss`), `next_word_end`, `demo_suggestion` (`oxyn_core::kit::input`), with tests.
+- Dioxus: `GhostText` (kit/input.rs, input.css).
 - GPUI: `ImeInput::set_ghost` draws a muted continuation after the text; Tab accepts it all, Alt/Cmd+→ one word, Escape dismisses (the host owns the `Ghost` model).
 
 ## 11. References

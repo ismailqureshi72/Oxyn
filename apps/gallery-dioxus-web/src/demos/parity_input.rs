@@ -197,7 +197,7 @@ pub fn demos() -> Vec<Demo> {
                 "TextArea",
                 "",
                 "text-area",
-                "parity/input.rs",
+                "kit/input.rs",
             )
         },
         Demo {
@@ -244,7 +244,7 @@ pub fn demos() -> Vec<Demo> {
                 "LabeledInput",
                 "",
                 "labeled-input",
-                "parity/input.rs",
+                "kit/input.rs",
             )
         },
         Demo {
@@ -283,7 +283,7 @@ pub fn demos() -> Vec<Demo> {
                 "LabeledTextarea",
                 "",
                 "labeled-textarea",
-                "parity/input.rs",
+                "kit/input.rs",
             )
         },
         Demo {
@@ -353,7 +353,7 @@ pub fn demos() -> Vec<Demo> {
                 "GhostText",
                 "",
                 "ghost-text",
-                "parity/input.rs",
+                "kit/input.rs",
             )
         },
     ]

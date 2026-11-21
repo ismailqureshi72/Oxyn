@@ -3,7 +3,7 @@
 # Spec: Week calendar (`week-calendar`)
 
 Family: Arc screens (pages at `/screens/week-calendar/` and `/full`). Reference: the week calendar screen of Arc UI (uiarc.dev), behaviour and layout only, under our own design; no source, artwork or copy taken. Every person, customer, workspace and article is fictional; dates are absolute ISO dates and times are 24-hour.
-Components: `WeekCalendarScreen` (Dioxus) · `WeekCalendarEl` (GPUI), rules in `oxyn_core::parity::arcscr2`.
+Components: `WeekCalendarScreen` (Dioxus) · `WeekCalendarEl` (GPUI), rules in `oxyn_core::kit::arcscr2`.
 
 ## 1. Purpose
 Plan the week on a time grid and move meetings by hand or keyboard.
@@ -20,7 +20,7 @@ The Arc frame (shared with the S12 screens): a 248 px sidebar (workspace mark an
 | Foot | The picked event (dot, title, ISO date and time, place, guests, Join, Delete) or the new-event form (title, ISO time, calendar menu, Cancel, Save), else a hint |
 
 ## 3. Behaviour
-Events, lanes, moves, gaps and focus blocks come from `oxyn_core::parity::arcscr2` (`events`, `day_events`, `lanes`, `move_event`, `nudge_event`, `resize_event`, `free_gaps`, `block_focus`). Drag an event to move it (whole days across columns, 15-minute steps up and down), drag its bottom edge to resize; drag on an empty slot to draw a new event (a click makes 30 minutes) and name it in the foot form (Enter saves to the chosen calendar). Hidden calendars leave the grid, the counts stay. Today returns to 2026-11-12; ‹ › page by a day, week or month. Every action reports in a polite live region.
+Events, lanes, moves, gaps and focus blocks come from `oxyn_core::kit::arcscr2` (`events`, `day_events`, `lanes`, `move_event`, `nudge_event`, `resize_event`, `free_gaps`, `block_focus`). Drag an event to move it (whole days across columns, 15-minute steps up and down), drag its bottom edge to resize; drag on an empty slot to draw a new event (a click makes 30 minutes) and name it in the foot form (Enter saves to the chosen calendar). Hidden calendars leave the grid, the counts stay. Today returns to 2026-11-12; ‹ › page by a day, week or month. Every action reports in a polite live region.
 
 ## 4. Variants
 States: Data · Loading (skeleton) · Empty ("No events yet" over the grid with New event) · **Dragging** (Launch dry run lifted one day and 30 minutes later, its new date in the event) · **New event** (a drawn block with the title field and calendar menu) · **Day view**. Frame: Inset · Flat.

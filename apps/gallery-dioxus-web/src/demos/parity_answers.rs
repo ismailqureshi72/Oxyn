@@ -1,5 +1,5 @@
 //! Plan #32 (affectUI fidelity pass), overnight batch family A demos: the exact AI Answer, Cited
-//! Answer, Message Actions, Thinking Loader, Thinking State and Writing Assistant, each with every
+//! Answer, Message Actions, Thinking pill, Thinking panel and Writing Assistant, each with every
 //! affectUI style and state, and Oxyn's earlier component for the same job as an extra.
 
 use dioxus::prelude::*;
@@ -138,7 +138,7 @@ fn message_actions_code(_: &Vals) -> String {
         .done()
 }
 
-// ---------- Thinking Loader ----------
+// ---------- Thinking pill ----------
 
 fn thinking_loader(v: &Vals, now: ClockMs) -> Element {
     if v.s("kind") == "oxyn" {
@@ -189,7 +189,7 @@ fn thinking_loader_code(v: &Vals) -> String {
     c.raw("now", "clock.now()").done()
 }
 
-// ---------- Thinking State ----------
+// ---------- Thinking panel ----------
 
 fn thinking_state(v: &Vals, now: ClockMs) -> Element {
     if v.s("kind") == "oxyn" {
@@ -298,13 +298,13 @@ pub(crate) fn demos() -> Vec<Demo> {
             live: true,
             ..mk(
                 "ai-answer",
-                "AI Answer",
+                "AI answer",
                 "chat",
                 "Streamed answer with source cards, citation chips that preview their source, copy, regenerate, feedback and follow-ups.",
                 "AnswerCard",
                 "AnswerCardEl",
                 "ai-answer",
-                "parity/answers.rs",
+                "kit/answers.rs",
             )
         },
         Demo {
@@ -355,13 +355,13 @@ pub(crate) fn demos() -> Vec<Demo> {
             height: 560,
             ..mk(
                 "cited-answer",
-                "Cited Answer",
+                "Cited answer",
                 "chat",
                 "An AI answer wired to its sources – point at a citation to light up its sentence and source, click to unfold the quoted passage with the matching words marked.",
                 "CitedAnswerCard",
                 "CitedAnswerEl",
                 "cited-answer",
-                "parity/answers.rs",
+                "kit/answers.rs",
             )
         },
         Demo {
@@ -419,13 +419,13 @@ pub(crate) fn demos() -> Vec<Demo> {
             live: true,
             ..mk(
                 "message-actions",
-                "Message Actions",
+                "Message actions",
                 "chat",
                 "The quiet bar under an AI message – copy turns into a check, regenerate spins and unfolds a version switcher, thumbs pop and ask why, read aloud becomes a tiny equalizer.",
                 "MessageActionBar",
                 "MessageActionsEl",
                 "message-actions",
-                "parity/answers.rs",
+                "kit/answers.rs",
             )
         },
         Demo {
@@ -481,14 +481,14 @@ pub(crate) fn demos() -> Vec<Demo> {
             height: 220,
             live: true,
             ..mk(
-                "thinking-loader",
-                "Thinking Loader",
+                "thinking-pill",
+                "Thinking pill",
                 "chat",
                 "A small working pill for AI replies – an eight-ray spinner and a shimmering label that rolls through phases and settles on a check.",
                 "ThinkingPill",
                 "ThinkingPillEl",
                 "thinking-loader",
-                "parity/answers.rs",
+                "kit/answers.rs",
             )
         },
         Demo {
@@ -549,14 +549,14 @@ pub(crate) fn demos() -> Vec<Demo> {
             height: 380,
             live: true,
             ..mk(
-                "thinking-state",
-                "Thinking State",
+                "thinking-panel",
+                "Thinking panel",
                 "chat",
                 "AI working panel with a live timer, searched sources and thinking steps that appear one by one.",
                 "ThinkingPanel",
                 "ThinkingPanelEl",
                 "thinking-state",
-                "parity/answers.rs",
+                "kit/answers.rs",
             )
         },
         Demo {
@@ -606,13 +606,13 @@ pub(crate) fn demos() -> Vec<Demo> {
             live: true,
             ..mk(
                 "writing-assistant",
-                "Writing Assistant",
+                "Writing assistant",
                 "chat",
                 "AI chat card with a soft gradient glow, suggestions, streaming replies and live voice dictation.",
                 "WritingAssistant",
                 "WritingAssistantEl",
                 "writing-assistant",
-                "parity/answers.rs",
+                "kit/answers.rs",
             )
         },
     ]

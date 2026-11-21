@@ -1,6 +1,6 @@
 **Status:** built v0.1 (2026-11-14, plan #28).
 
-# Spec: Confirm morph (`confirm-morph`)
+# Spec: Inline confirm (`confirm-morph`)
 
 Family: G Approvals ([approvals.md](approvals.md)). Closes the parity row(s): Arc UI · Confirm morph.
 

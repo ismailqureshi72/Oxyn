@@ -4,9 +4,9 @@
 use dioxus::prelude::*;
 use oxyn_core::{
     ClockMs,
-    parity::autonomyfid::{AutonomyAction, autonomy_demo},
+    kit::autonomyfid::{AutonomyAction, autonomy_demo},
 };
-use oxyn_dioxus::{AutonomyDial, AwaySummary, CollabStream, ContextMap, CostWaterfall};
+use oxyn_dioxus::{AutonomyLevels, ContextTreemap, CrewChat, ReturnBrief, SpendBreakdown};
 
 use super::{Code, mk, sel, var};
 use crate::{Align, Demo, Vals};
@@ -23,7 +23,7 @@ fn cstyle(v: &Vals) -> String {
     }
 }
 
-// ---------- Autonomy Dial ----------
+// ---------- Autonomy levels ----------
 
 fn detailed() -> Vec<AutonomyAction> {
     let details = [
@@ -75,7 +75,7 @@ fn autonomy_dial(v: &Vals, _now: ClockMs) -> Element {
     };
     rsx! {
         div { "data-k": "{key}", key: "{key}", style: "width:{width};max-width:100%;display:flex;flex-direction:column;gap:8px",
-            AutonomyDial { actions, default_level: level, default_pinned: pins, point: point.to_string(),
+            AutonomyLevels { actions, default_level: level, default_pinned: pins, point: point.to_string(),
                 title: "Support agent".to_string(), style: cstyle(v),
                 on_level_change: move |l: u8| msg.set(format!("onLevelChange({l})")),
                 on_pinned_change: move |p: Vec<String>| msg.set(format!("onPinnedChange({p:?})")) }
@@ -85,7 +85,7 @@ fn autonomy_dial(v: &Vals, _now: ClockMs) -> Element {
 }
 
 fn autonomy_dial_code(_: &Vals) -> String {
-    Code::new("AutonomyDial")
+    Code::new("AutonomyLevels")
         .raw("actions", "Some(agent.actions())")
         .raw("default_level", "1")
         .raw("default_pinned", "Some(vec![\"refund\".into()])")
@@ -95,7 +95,7 @@ fn autonomy_dial_code(_: &Vals) -> String {
         .done()
 }
 
-// ---------- Away Summary ----------
+// ---------- Return brief ----------
 
 fn agent_glyph() -> Element {
     rsx! {
@@ -132,7 +132,7 @@ fn away_summary(v: &Vals, now: ClockMs) -> Element {
                 {agent_glyph()}
                 span { "Sure. I'll break it into steps and carry on while you're away." }
             }
-            AwaySummary { now, resolved, since_clock, work_ms, expanded: state == "expanded", default_collapsed: state == "folded", style: cstyle(v),
+            ReturnBrief { now, resolved, since_clock, work_ms, expanded: state == "expanded", default_collapsed: state == "folded", style: cstyle(v),
                 on_action: move |id: String| msg.set(format!("onAction({id:?})")),
                 on_dismiss: move |_| msg.set("onDismiss()".into()),
                 on_collapsed_change: move |c: bool| msg.set(format!("onCollapsedChange({c})")) }
@@ -147,7 +147,7 @@ fn away_summary(v: &Vals, now: ClockMs) -> Element {
 }
 
 fn away_summary_code(_: &Vals) -> String {
-    Code::new("AwaySummary")
+    Code::new("ReturnBrief")
         .raw("items", "Some(thread.away_items())")
         .raw("away", "minutes_away")
         .raw("now", "clock.now()")
@@ -156,7 +156,7 @@ fn away_summary_code(_: &Vals) -> String {
         .done()
 }
 
-// ---------- Collaboration Stream ----------
+// ---------- Crew chat ----------
 
 fn collab_stream(v: &Vals, now: ClockMs) -> Element {
     let mut msg = use_signal(String::new);
@@ -173,7 +173,7 @@ fn collab_stream(v: &Vals, now: ClockMs) -> Element {
     };
     rsx! {
         div { "data-k": "{key}", key: "{key}", "data-state": "{state}", style: "width:{width};max-width:100%;display:flex;flex-direction:column;gap:8px",
-            CollabStream { now, live, selected, focus_agent, preview, mention_open: state == "mention", style: cstyle(v),
+            CrewChat { now, live, selected, focus_agent, preview, mention_open: state == "mention", style: cstyle(v),
                 on_selected_change: move |id: String| msg.set(format!("onSelectedChange({id:?})")),
                 on_focus_agent_change: move |id: String| msg.set(format!("onFocusAgentChange({id:?})")),
                 on_send: move |(t, to, r): (String, Vec<String>, Option<String>)| msg.set(format!("onSend({t:?}, {to:?}, {r:?})")) }
@@ -183,7 +183,7 @@ fn collab_stream(v: &Vals, now: ClockMs) -> Element {
 }
 
 fn collab_stream_code(_: &Vals) -> String {
-    Code::new("CollabStream")
+    Code::new("CrewChat")
         .raw("agents", "Some(run.agents())")
         .raw("messages", "Some(run.messages())")
         .raw("live", "run.is_live()")
@@ -195,7 +195,7 @@ fn collab_stream_code(_: &Vals) -> String {
         .done()
 }
 
-// ---------- Context Map ----------
+// ---------- Context treemap ----------
 
 fn context_map(v: &Vals, now: ClockMs) -> Element {
     let mut msg = use_signal(String::new);
@@ -217,7 +217,7 @@ fn context_map(v: &Vals, now: ClockMs) -> Element {
     };
     rsx! {
         div { "data-k": "{key}", key: "{key}", "data-state": "{state}", style: "width:{width};max-width:100%;display:flex;flex-direction:column;gap:8px",
-            ContextMap { now, live, compacted, view, grow, point, menu_open: state == "menu", style: cstyle(v),
+            ContextTreemap { now, live, compacted, view, grow, point, menu_open: state == "menu", style: cstyle(v),
                 on_select: move |id: String| msg.set(format!("onSelect({id:?})")),
                 on_agent_change: move |id: String| msg.set(format!("onAgentChange({id:?})")),
                 on_view_change: move |w: String| msg.set(format!("onViewChange({w:?})")) }
@@ -227,7 +227,7 @@ fn context_map(v: &Vals, now: ClockMs) -> Element {
 }
 
 fn context_map_code(_: &Vals) -> String {
-    Code::new("ContextMap")
+    Code::new("ContextTreemap")
         .raw("blocks", "Some(session.context_blocks())")
         .raw("limit", "200_000")
         .raw("compaction", "session.last_compaction()")
@@ -236,7 +236,7 @@ fn context_map_code(_: &Vals) -> String {
         .done()
 }
 
-// ---------- Cost Waterfall ----------
+// ---------- Spend breakdown ----------
 
 fn cost_waterfall(v: &Vals, now: ClockMs) -> Element {
     let mut msg = use_signal(String::new);
@@ -262,7 +262,7 @@ fn cost_waterfall(v: &Vals, now: ClockMs) -> Element {
     };
     rsx! {
         div { "data-k": "{key}", key: "{key}", "data-state": "{state}", style: "width:{width};max-width:100%;display:flex;flex-direction:column;gap:8px",
-            CostWaterfall { now, live, tokens, open_id, collapsed, style: cstyle(v),
+            SpendBreakdown { now, live, tokens, open_id, collapsed, style: cstyle(v),
                 on_mode_change: move |m: String| msg.set(format!("onModeChange({m:?})")),
                 on_open_change: move |id: String| msg.set(format!("onOpenChange({id:?})")),
                 on_collapsed_change: move |c: Vec<String>| msg.set(format!("onCollapsedChange({c:?})")) }
@@ -272,7 +272,7 @@ fn cost_waterfall(v: &Vals, now: ClockMs) -> Element {
 }
 
 fn cost_waterfall_code(_: &Vals) -> String {
-    Code::new("CostWaterfall")
+    Code::new("SpendBreakdown")
         .raw("steps", "Some(run.cost_steps())")
         .raw("task", "run.task.clone()")
         .raw("now", "clock.now()")
@@ -356,14 +356,14 @@ pub(crate) fn demos() -> Vec<Demo> {
             ],
             height: 560,
             ..mk(
-                "autonomy-dial",
-                "Autonomy Dial",
+                "autonomy-levels",
+                "Autonomy levels",
                 "tools",
                 "How much an agent may do on its own – three levels, and its real actions gliding between Runs on its own and Asks you first, with a lock for what always asks.",
-                "AutonomyDial",
-                "AutonomyDialEl",
+                "AutonomyLevels",
+                "AutonomyLevelsEl",
                 "autonomy-dial",
-                "parity/autonomyfid.rs",
+                "kit/autonomyfid.rs",
             )
         },
         Demo {
@@ -436,14 +436,14 @@ pub(crate) fn demos() -> Vec<Demo> {
             height: 600,
             live: true,
             ..mk(
-                "away-summary",
-                "Away Summary",
+                "return-brief",
+                "Return brief",
                 "tools",
                 "The While you were away card for a chat thread – how long you were gone, what needs you, what failed and what's done as a short list with one action per row; Got it folds it into a one-line divider.",
-                "AwaySummary",
-                "AwaySummaryEl",
+                "ReturnBrief",
+                "ReturnBriefEl",
                 "away-summary",
-                "parity/awayfid.rs",
+                "kit/awayfid.rs",
             )
         },
         Demo {
@@ -539,14 +539,14 @@ pub(crate) fn demos() -> Vec<Demo> {
             live: true,
             align: Align::Start,
             ..mk(
-                "collaboration-stream",
-                "Collaboration Stream",
+                "crew-chat",
+                "Crew chat",
                 "tools",
                 "What agents say to each other – a quiet chat where every message shows who it is from and who it is for, handoffs and questions for you tagged, files as chips that open a preview, details under a message, and a composer that names agents with @.",
-                "CollabStream",
-                "CollabStreamEl",
+                "CrewChat",
+                "CrewChatEl",
                 "collaboration-stream",
-                "parity/collabfid.rs",
+                "kit/collabfid.rs",
             )
         },
         Demo {
@@ -633,14 +633,14 @@ pub(crate) fn demos() -> Vec<Demo> {
             live: true,
             align: Align::Start,
             ..mk(
-                "context-map",
-                "Context Map",
+                "context-treemap",
+                "Context treemap",
                 "tools",
                 "A treemap of everything in an agent's context: each prompt, tool list, memory, file, chat turn and tool result is a tile sized by tokens, tiles slide as the window fills, unused room stays hatched, and compaction folds old turns into one summary tile.",
-                "ContextMap",
-                "ContextMapEl",
+                "ContextTreemap",
+                "ContextTreemapEl",
                 "context-map",
-                "parity/ctxmapfid.rs",
+                "kit/ctxmapfid.rs",
             )
         },
         Demo {
@@ -729,14 +729,14 @@ pub(crate) fn demos() -> Vec<Demo> {
             live: true,
             align: Align::Start,
             ..mk(
-                "cost-waterfall",
-                "Cost Waterfall",
+                "spend-breakdown",
+                "Spend breakdown",
                 "tools",
                 "A run's spend, step by step: model calls, tools and sub-agents stack across to the total, each with its model, tokens in and out, price and duration; the priciest step is flagged and one toggle swaps money for tokens.",
-                "CostWaterfall",
-                "CostWaterfallEl",
+                "SpendBreakdown",
+                "SpendBreakdownEl",
                 "cost-waterfall",
-                "parity/costfid.rs",
+                "kit/costfid.rs",
             )
         },
     ]

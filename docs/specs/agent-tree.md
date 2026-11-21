@@ -52,7 +52,7 @@ Who started whom: an orchestrator and its sub-agents as a live tree. Every card 
 
 ## 10. Implementation
 - Core: `CrewAgent`, `Resolve`, `dollars` (`oxyn_core::parity`), with tests.
-- Dioxus: `AgentTree` (parity/run.rs, run.css).
+- Dioxus: `AgentTree` (kit/run.rs, run.css).
 - GPUI: `AgentTreeEl` (answers for the first agent that needs one).
 
 ## 11. References

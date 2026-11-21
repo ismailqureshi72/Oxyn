@@ -54,4 +54,4 @@ What fills an allowance. Segments grow in left to right on mount, then re-flow o
 - Segments use a monochrome grey ramp (Oxyn's colour rule) rather than series hues; Studio presets can colour them.
 
 ## 10. GPUI
-UsageMeterEl draws the bar, overage and badge from `parity::meters::usage`.
+UsageMeterEl draws the bar, overage and badge from `kit::meters::usage`.

@@ -60,8 +60,8 @@ Tool call rows for agent transcripts. Each row shows the tool's mark (from the t
 - Custom output renderers: pass your own element as a row's sibling (renderOutput has no direct prop yet).
 
 ## 10. Implementation
-- Core: `ToolKindMap`, `CallStatus`, `ms_label` (`oxyn_core::parity::tools`), with tests.
-- Dioxus: `ToolCall`, `ToolCallList` (parity/tools.rs, tools.css).
+- Core: `ToolKindMap`, `CallStatus`, `ms_label` (`oxyn_core::kit::tools`), with tests.
+- Dioxus: `ToolCall`, `ToolCallList` (kit/tools.rs, tools.css).
 - GPUI: `ToolCallEl` (`toggle`, `allow`, `deny`, `retry`).
 
 ## 11. References

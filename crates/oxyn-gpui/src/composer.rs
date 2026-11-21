@@ -34,8 +34,9 @@ use oxyn_core::{
 use oxyn_tokens::{ColorRole, Theme};
 
 use crate::{
-    hsla, mix,
-    parity::{ImeEvent, ImeInput},
+    hsla,
+    kit::{ImeEvent, ImeInput},
+    mix,
 };
 
 /// What the composer tells its host.

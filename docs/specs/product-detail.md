@@ -3,7 +3,7 @@
 # Spec: Product detail (`product-detail`)
 
 Family: Arc screens (pages at `/screens/product-detail/` and `/full`). Reference: the product detail screen of Arc UI (uiarc.dev), behaviour and layout only, under our own design; no source, artwork or copy taken. Every company, ticker, product, client and person is fictional; dates are absolute ISO dates and times are 24-hour.
-Components: `ProductDetailScreen` (Dioxus) · `ProductDetailEl` (GPUI), rules in `oxyn_core::parity::arcscr3`.
+Components: `ProductDetailScreen` (Dioxus) · `ProductDetailEl` (GPUI), rules in `oxyn_core::kit::arcscr3`.
 
 ## 1. Purpose
 Choose a colour, size and quantity of one product and add it to the cart.

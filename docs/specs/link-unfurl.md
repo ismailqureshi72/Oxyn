@@ -56,8 +56,8 @@ A composer where a pasted URL (found with `find_urls`) shimmers on its host whil
 - Trailing , . ) are trimmed from pasted URLs.
 
 ## 10. Implementation
-- Core: `Unfurl`, `UnfurlState`, `Preview`, `find_urls` (`oxyn_core::parity::tools`), with tests.
-- Dioxus: `LinkUnfurl` (parity/tools.rs, tools.css).
+- Core: `Unfurl`, `UnfurlState`, `Preview`, `find_urls` (`oxyn_core::kit::tools`), with tests.
+- Dioxus: `LinkUnfurl` (kit/tools.rs, tools.css).
 - GPUI: `LinkUnfurlEl`; typing waits on the GPUI IME input (plan #28 chunk 4).
 
 ## 11. References

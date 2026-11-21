@@ -4,7 +4,7 @@
 
 Family: Thinking Selector. Reference: a user-supplied screenshot of a "change thinking effort" list over a chip (layout
 idea only; wording is our own). Components: `EffortList` (Dioxus) · `EffortListEl` (GPUI), models in
-`oxyn_core::parity::{thinkfid, effmenufid}`.
+`oxyn_core::kit::{thinkfid, effmenufid}`.
 
 ## 1. Purpose
 The quietest effort control: a chip in the composer's footer showing the level, opening a plain list above it.

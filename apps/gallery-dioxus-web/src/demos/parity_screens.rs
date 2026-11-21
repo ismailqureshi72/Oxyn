@@ -37,8 +37,8 @@ use oxyn_dioxus::{
     WeekCalendarScreen, s13_states,
 };
 use oxyn_dioxus::{
-    InvoiceStudioScreen, MarketTerminalScreen, ProductDetailScreen, ProductListScreen,
-    SignInSplitScreen, s14_states,
+    InvoiceDeskScreen, ProductDetailScreen, ProductListScreen, SignInSplitScreen,
+    TradingDeskScreen, s14_states,
 };
 use oxyn_dioxus::{
     OnboardingBrandScreen, OnboardingReadyScreen, OnboardingToneScreen, OnboardingWebsiteScreen,
@@ -175,7 +175,7 @@ fn shell_inset_demo() -> Demo {
             "AppShellScreen",
             "ScreenShellEl",
             "shell-inset",
-            "parity/screensfid.rs",
+            "kit/screensfid.rs",
         )
     }
 }
@@ -243,7 +243,7 @@ fn shell_flat_demo() -> Demo {
             "AppShellScreen",
             "ScreenShellEl",
             "shell-flat",
-            "parity/screensfid.rs",
+            "kit/screensfid.rs",
         )
     }
 }
@@ -311,7 +311,7 @@ fn shell_three_pane_demo() -> Demo {
             "RailShellScreen",
             "ScreenRailEl",
             "shell-three-pane",
-            "parity/screensfid.rs",
+            "kit/screensfid.rs",
         )
     }
 }
@@ -322,7 +322,7 @@ fn chat_start(v: &Vals, now: ClockMs) -> Element {
     let (st, lay, key) = frame(v);
     rsx! {
         div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
-            ScreenStage { state: st, states: oxyn_core::parity::screensfid::START_STATES.to_vec(), screen: move |s: String| rsx! { ChatStartScreen { layout: lay.clone(), state: s, now } } }
+            ScreenStage { state: st, states: oxyn_core::kit::screensfid::START_STATES.to_vec(), screen: move |s: String| rsx! { ChatStartScreen { layout: lay.clone(), state: s, now } } }
         }
     }
 }
@@ -390,7 +390,7 @@ fn chat_start_demo() -> Demo {
             "ChatStartScreen",
             "ChatStartEl",
             "chat-start",
-            "parity/screensfid.rs",
+            "kit/screensfid.rs",
         )
     }
 }
@@ -401,7 +401,7 @@ fn chat_overview(v: &Vals, now: ClockMs) -> Element {
     let (st, lay, key) = frame(v);
     rsx! {
         div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
-            ScreenStage { state: st, states: oxyn_core::parity::screensfid::OVERVIEW_STATES.to_vec(), screen: move |s: String| rsx! { ChatOverviewScreen { layout: lay.clone(), state: s, now } } }
+            ScreenStage { state: st, states: oxyn_core::kit::screensfid::OVERVIEW_STATES.to_vec(), screen: move |s: String| rsx! { ChatOverviewScreen { layout: lay.clone(), state: s, now } } }
         }
     }
 }
@@ -464,7 +464,7 @@ fn chat_overview_demo() -> Demo {
             "ChatOverviewScreen",
             "ChatOverviewEl",
             "chat-overview",
-            "parity/screensfid.rs",
+            "kit/screensfid.rs",
         )
     }
 }
@@ -475,7 +475,7 @@ fn chat_agents(v: &Vals, now: ClockMs) -> Element {
     let (st, lay, key) = frame(v);
     rsx! {
         div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
-            ScreenStage { state: st, states: oxyn_core::parity::screensfid::AGENTS_STATES.to_vec(), screen: move |s: String| rsx! { ChatAgentsScreen { layout: lay.clone(), state: s, now } } }
+            ScreenStage { state: st, states: oxyn_core::kit::screensfid::AGENTS_STATES.to_vec(), screen: move |s: String| rsx! { ChatAgentsScreen { layout: lay.clone(), state: s, now } } }
         }
     }
 }
@@ -538,7 +538,7 @@ fn chat_agents_demo() -> Demo {
             "ChatAgentsScreen",
             "ChatAgentsEl",
             "chat-agents",
-            "parity/screensfid.rs",
+            "kit/screensfid.rs",
         )
     }
 }
@@ -549,7 +549,7 @@ fn chat_double_sidebar(v: &Vals, now: ClockMs) -> Element {
     let (st, lay, key) = frame(v);
     rsx! {
         div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
-            ScreenStage { state: st, states: oxyn_core::parity::screensfid::RAIL_STATES.to_vec(), screen: move |s: String| rsx! { ChatRailScreen { layout: lay.clone(), state: s, now } } }
+            ScreenStage { state: st, states: oxyn_core::kit::screensfid::RAIL_STATES.to_vec(), screen: move |s: String| rsx! { ChatRailScreen { layout: lay.clone(), state: s, now } } }
         }
     }
 }
@@ -613,7 +613,7 @@ fn chat_double_sidebar_demo() -> Demo {
             "ChatRailScreen",
             "ChatRailEl",
             "chat-double-sidebar",
-            "parity/screensfid.rs",
+            "kit/screensfid.rs",
         )
     }
 }
@@ -624,7 +624,7 @@ fn chat_progress(v: &Vals, now: ClockMs) -> Element {
     let (st, lay, key) = frame(v);
     rsx! {
         div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
-            ScreenStage { state: st, states: oxyn_core::parity::screensfid::PROGRESS_STATES.to_vec(), screen: move |s: String| rsx! { ChatProgressScreen { layout: lay.clone(), state: s, now } } }
+            ScreenStage { state: st, states: oxyn_core::kit::screensfid::PROGRESS_STATES.to_vec(), screen: move |s: String| rsx! { ChatProgressScreen { layout: lay.clone(), state: s, now } } }
         }
     }
 }
@@ -687,7 +687,7 @@ fn chat_progress_demo() -> Demo {
             "ChatProgressScreen",
             "ChatProgressEl",
             "chat-progress",
-            "parity/screensfid.rs",
+            "kit/screensfid.rs",
         )
     }
 }
@@ -698,7 +698,7 @@ fn chat_run(v: &Vals, now: ClockMs) -> Element {
     let (st, lay, key) = frame(v);
     rsx! {
         div { key: "{key}", "data-k": "{key}", style: "width:100%;min-width:0",
-            ScreenStage { state: st, states: oxyn_core::parity::screensfid::RUN_STATES.to_vec(), screen: move |s: String| rsx! { ChatRunScreen { layout: lay.clone(), state: s, now } } }
+            ScreenStage { state: st, states: oxyn_core::kit::screensfid::RUN_STATES.to_vec(), screen: move |s: String| rsx! { ChatRunScreen { layout: lay.clone(), state: s, now } } }
         }
     }
 }
@@ -769,7 +769,7 @@ fn chat_run_demo() -> Demo {
             "ChatRunScreen",
             "ChatRunEl",
             "chat-run",
-            "parity/screensfid.rs",
+            "kit/screensfid.rs",
         )
     }
 }
@@ -871,7 +871,7 @@ fn folders_overview_demo() -> Demo {
             "FoldersScreen",
             "FoldersEl",
             "folders-overview",
-            "parity/workscr.rs",
+            "kit/workscr.rs",
         )
     }
 }
@@ -962,7 +962,7 @@ fn folders_detail_demo() -> Demo {
             "FoldersScreen",
             "FolderDetailEl",
             "folders-detail",
-            "parity/workscr.rs",
+            "kit/workscr.rs",
         )
     }
 }
@@ -1052,7 +1052,7 @@ fn integrations_demo() -> Demo {
             "IntegrationsScreen",
             "IntegrationsEl",
             "integrations",
-            "parity/workscr.rs",
+            "kit/workscr.rs",
         )
     }
 }
@@ -1159,7 +1159,7 @@ fn kanban_demo() -> Demo {
             "KanbanScreen",
             "KanbanEl",
             "kanban",
-            "parity/workscr.rs",
+            "kit/workscr.rs",
         )
     }
 }
@@ -1267,7 +1267,7 @@ fn workflow_demo() -> Demo {
             "WorkflowScreen",
             "WorkflowEl",
             "workflow",
-            "parity/screensfid.rs",
+            "kit/screensfid.rs",
         )
     }
 }
@@ -1342,7 +1342,7 @@ fn settings_demo() -> Demo {
             "SettingsScreen",
             "SettingsEl",
             "settings",
-            "parity/screensfid.rs",
+            "kit/screensfid.rs",
         )
     }
 }
@@ -1433,7 +1433,7 @@ fn crm_demo() -> Demo {
             "CrmScreen",
             "CrmEl",
             "crm",
-            "parity/workscr.rs",
+            "kit/workscr.rs",
         )
     }
 }
@@ -1538,7 +1538,7 @@ fn agent_orchestration_demo() -> Demo {
             "OrchestrationScreen",
             "OrchestrationEl",
             "agent-orchestration",
-            "parity/screensfid.rs",
+            "kit/screensfid.rs",
         )
     }
 }
@@ -1645,7 +1645,7 @@ fn analytics_demo() -> Demo {
             "AnalyticsScreen",
             "AnalyticsEl",
             "analytics",
-            "parity/workscr.rs",
+            "kit/workscr.rs",
         )
     }
 }
@@ -1785,7 +1785,7 @@ fn agent_thread_demo() -> Demo {
             "AgentThreadScreen",
             "AgentThreadEl",
             "agent-thread",
-            "parity/agentscr.rs",
+            "kit/agentscr.rs",
         )
     }
 }
@@ -1887,7 +1887,7 @@ fn inbox_screen_demo() -> Demo {
             "InboxScreen",
             "InboxScreenEl",
             "inbox",
-            "parity/agentscr.rs",
+            "kit/agentscr.rs",
         )
     }
 }
@@ -1980,7 +1980,7 @@ fn inbox_board_demo() -> Demo {
             "InboxBoardScreen",
             "InboxBoardEl",
             "agent-inbox-board",
-            "parity/agentscr.rs",
+            "kit/agentscr.rs",
         )
     }
 }
@@ -2073,7 +2073,7 @@ fn tasks_screen_demo() -> Demo {
             "TasksScreen",
             "TasksEl",
             "agent-tasks",
-            "parity/agentscr.rs",
+            "kit/agentscr.rs",
         )
     }
 }
@@ -2171,7 +2171,7 @@ fn activity_screen_demo() -> Demo {
             "ActivityScreen",
             "ActivityEl",
             "agent-activity",
-            "parity/agentscr.rs",
+            "kit/agentscr.rs",
         )
     }
 }
@@ -2268,7 +2268,7 @@ fn memory_screen_demo() -> Demo {
             "MemoryScreen",
             "MemoryEl",
             "agent-memory",
-            "parity/agentscr.rs",
+            "kit/agentscr.rs",
         )
     }
 }
@@ -2373,7 +2373,7 @@ fn agents_screen_demo() -> Demo {
             "AgentsScreen",
             "AgentsEl",
             "agent-agents",
-            "parity/opsscr.rs",
+            "kit/opsscr.rs",
         )
     }
 }
@@ -2472,7 +2472,7 @@ fn skills_screen_demo() -> Demo {
             "SkillsScreen",
             "SkillsEl",
             "agent-skills",
-            "parity/opsscr.rs",
+            "kit/opsscr.rs",
         )
     }
 }
@@ -2564,7 +2564,7 @@ fn schedules_screen_demo() -> Demo {
             "SchedulesScreen",
             "SchedulesEl",
             "agent-schedules",
-            "parity/opsscr.rs",
+            "kit/opsscr.rs",
         )
     }
 }
@@ -2660,7 +2660,7 @@ fn usage_screen_demo() -> Demo {
             "UsageScreen",
             "UsageEl",
             "agent-usage",
-            "parity/opsscr.rs",
+            "kit/opsscr.rs",
         )
     }
 }
@@ -2759,7 +2759,7 @@ fn permissions_screen_demo() -> Demo {
             "PermissionsScreen",
             "PermissionsEl",
             "agent-permissions",
-            "parity/opsscr.rs",
+            "kit/opsscr.rs",
         )
     }
 }
@@ -2855,7 +2855,7 @@ fn run_detail_screen_demo() -> Demo {
             "RunDetailScreen",
             "RunDetailEl",
             "agent-run-detail",
-            "parity/opsscr.rs",
+            "kit/opsscr.rs",
         )
     }
 }
@@ -2971,7 +2971,7 @@ fn evals_screen_demo() -> Demo {
             "EvalsScreen",
             "EvalsEl",
             "evals",
-            "parity/buildscr.rs",
+            "kit/buildscr.rs",
         )
     }
 }
@@ -3079,7 +3079,7 @@ fn set_profile_demo() -> Demo {
             "ProfileSettingsScreen",
             "ProfileSettingsEl",
             "settings-profile",
-            "parity/setscr.rs",
+            "kit/setscr.rs",
         )
     }
 }
@@ -3177,7 +3177,7 @@ fn set_preferences_demo() -> Demo {
             "PreferencesSettingsScreen",
             "PreferencesSettingsEl",
             "settings-preferences",
-            "parity/setscr.rs",
+            "kit/setscr.rs",
         )
     }
 }
@@ -3278,7 +3278,7 @@ fn set_notifications_demo() -> Demo {
             "NotificationsSettingsScreen",
             "NotificationsSettingsEl",
             "settings-notifications",
-            "parity/setscr.rs",
+            "kit/setscr.rs",
         )
     }
 }
@@ -3372,7 +3372,7 @@ fn set_privacy_demo() -> Demo {
             "PrivacySettingsScreen",
             "PrivacySettingsEl",
             "settings-privacy",
-            "parity/setscr.rs",
+            "kit/setscr.rs",
         )
     }
 }
@@ -3463,7 +3463,7 @@ fn set_general_demo() -> Demo {
             "GeneralSettingsScreen",
             "GeneralSettingsEl",
             "settings-general",
-            "parity/setscr.rs",
+            "kit/setscr.rs",
         )
     }
 }
@@ -3559,7 +3559,7 @@ fn set_members_demo() -> Demo {
             "MembersSettingsScreen",
             "MembersSettingsEl",
             "settings-members",
-            "parity/setscr2.rs",
+            "kit/setscr2.rs",
         )
     }
 }
@@ -3655,7 +3655,7 @@ fn set_models_demo() -> Demo {
             "ModelsSettingsScreen",
             "ModelsSettingsEl",
             "settings-models",
-            "parity/setscr2.rs",
+            "kit/setscr2.rs",
         )
     }
 }
@@ -3748,7 +3748,7 @@ fn set_security_demo() -> Demo {
             "SecuritySettingsScreen",
             "SecuritySettingsEl",
             "settings-security",
-            "parity/setscr2.rs",
+            "kit/setscr2.rs",
         )
     }
 }
@@ -3844,7 +3844,7 @@ fn set_billing_demo() -> Demo {
             "BillingSettingsScreen",
             "BillingSettingsEl",
             "settings-billing",
-            "parity/setscr2.rs",
+            "kit/setscr2.rs",
         )
     }
 }
@@ -3938,7 +3938,7 @@ fn set_onboarding_demo() -> Demo {
             "OnboardingSettingsScreen",
             "OnboardingSettingsEl",
             "settings-onboarding",
-            "parity/setscr2.rs",
+            "kit/setscr2.rs",
         )
     }
 }
@@ -4085,7 +4085,7 @@ fn onb_demo(
         height: 240,
         live: false,
         align: Align::Start,
-        ..mk(slug, name, CAT, summary, dx, gp, slug, "parity/onbscr.rs")
+        ..mk(slug, name, CAT, summary, dx, gp, slug, "kit/onbscr.rs")
     }
 }
 
@@ -4338,7 +4338,7 @@ fn td_demo(
         height: 240,
         live: false,
         align: Align::Start,
-        ..mk(slug, name, CAT, summary, dx, gp, slug, "parity/taskdeck.rs")
+        ..mk(slug, name, CAT, summary, dx, gp, slug, "kit/taskdeck.rs")
     }
 }
 
@@ -4660,18 +4660,18 @@ fn ag_demo(
             gp,
             slug,
             match slug {
-                "fleet-window" => "parity/fleetwin.rs",
-                "workspace-coder" => "parity/wscoder.rs",
-                "command-board" => "parity/cmdboard.rs",
-                "threadbar" => "parity/threadbar.rs",
-                "tabstack" => "parity/tabstack.rs",
-                "repo-desk" => "parity/repodesk.rs",
-                "preview-desk" => "parity/previewdesk.rs",
-                "hangar" => "parity/hangar.rs",
-                "halo-chat" => "parity/halochat.rs",
-                "pilot-panel" => "parity/pilotpanel.rs",
-                "courier" => "parity/courier.rs",
-                _ => "parity/cmdstudio.rs",
+                "fleet-window" => "kit/fleetwin.rs",
+                "workspace-coder" => "kit/wscoder.rs",
+                "command-board" => "kit/cmdboard.rs",
+                "threadbar" => "kit/threadbar.rs",
+                "tabstack" => "kit/tabstack.rs",
+                "repo-desk" => "kit/repodesk.rs",
+                "preview-desk" => "kit/previewdesk.rs",
+                "hangar" => "kit/hangar.rs",
+                "halo-chat" => "kit/halochat.rs",
+                "pilot-panel" => "kit/pilotpanel.rs",
+                "courier" => "kit/courier.rs",
+                _ => "kit/cmdstudio.rs",
             },
         )
     }
@@ -5332,7 +5332,7 @@ fn arc_demo(
         height: 240,
         live: false,
         align: Align::Start,
-        ..mk(slug, name, CAT, summary, dx, gp, slug, "parity/arcscr.rs")
+        ..mk(slug, name, CAT, summary, dx, gp, slug, "kit/arcscr.rs")
     }
 }
 
@@ -5699,7 +5699,7 @@ fn arc2_demo(
     let mut d = arc_demo(
         slug, name, summary, dx, gp, render, code, keyboard, a11y, own,
     );
-    d.source = "parity/arcscr2.rs";
+    d.source = "kit/arcscr2.rs";
     d
 }
 
@@ -5945,9 +5945,9 @@ fn arc3_el(slug: &'static str, lay: String, s: String, now: ClockMs) -> Element 
     match slug {
         "product-list" => rsx! { ProductListScreen { layout: lay, state: s } },
         "product-detail" => rsx! { ProductDetailScreen { layout: lay, state: s } },
-        "invoice-studio" => rsx! { InvoiceStudioScreen { layout: lay, state: s } },
+        "invoice-studio" => rsx! { InvoiceDeskScreen { layout: lay, state: s } },
         "sign-in-split" => rsx! { SignInSplitScreen { layout: lay, state: s } },
-        _ => rsx! { MarketTerminalScreen { layout: lay, state: s, now } },
+        _ => rsx! { TradingDeskScreen { layout: lay, state: s, now } },
     }
 }
 
@@ -5985,9 +5985,9 @@ fn arc3_demo(
     let mut d = arc_demo(
         slug, name, summary, dx, gp, render, code, keyboard, a11y, own,
     );
-    d.source = "parity/arcscr3.rs";
+    d.source = "kit/arcscr3.rs";
     // The market's price ticks with the clock.
-    d.live = slug == "market-terminal";
+    d.live = slug == "trading-desk";
     d
 }
 
@@ -5995,7 +5995,7 @@ fn mt_screen(v: &Vals, now: ClockMs) -> Element {
     arc3_screen("market-terminal", v, now)
 }
 fn mt_code(v: &Vals) -> String {
-    arc3_code("MarketTerminalScreen", "market-terminal", v)
+    arc3_code("TradingDeskScreen", "market-terminal", v)
 }
 fn pl_screen(v: &Vals, now: ClockMs) -> Element {
     arc3_screen("product-list", v, now)
@@ -6013,7 +6013,7 @@ fn iv_screen(v: &Vals, now: ClockMs) -> Element {
     arc3_screen("invoice-studio", v, now)
 }
 fn iv_code(v: &Vals) -> String {
-    arc3_code("InvoiceStudioScreen", "invoice-studio", v)
+    arc3_code("InvoiceDeskScreen", "invoice-studio", v)
 }
 fn si_screen(v: &Vals, now: ClockMs) -> Element {
     arc3_screen("sign-in-split", v, now)
@@ -6024,11 +6024,11 @@ fn si_code(v: &Vals) -> String {
 
 fn mt_demo() -> Demo {
     arc3_demo(
-        "market-terminal",
-        "Market terminal",
-        "Work screens / Market terminal: a brokerage trade screen with fictional symbols. A watchlist with prices, day change and the account value; the open symbol's live price, ticking with the clock (Pause holds it), and its chart over 1D, 1W, 1M, 3M or 1Y; positions with return, open orders with Cancel and today's fills. The order ticket switches Buy / Sell and Market / Limit, steps shares and the limit price, shows the estimate and refuses an order the cash or the shares cannot cover.",
-        "MarketTerminalScreen",
-        "MarketTerminalEl",
+        "trading-desk",
+        "Trading desk",
+        "Work screens / Trading desk: a brokerage trade screen with fictional symbols. A watchlist with prices, day change and the account value; the open symbol's live price, ticking with the clock (Pause holds it), and its chart over 1D, 1W, 1M, 3M or 1Y; positions with return, open orders with Cancel and today's fills. The order ticket switches Buy / Sell and Market / Limit, steps shares and the limit price, shows the estimate and refuses an order the cash or the shares cannot cover.",
+        "TradingDeskScreen",
+        "TradingDeskEl",
         mt_screen,
         mt_code,
         vec![
@@ -6134,11 +6134,11 @@ fn pd_demo() -> Demo {
 
 fn iv_demo() -> Demo {
     arc3_demo(
-        "invoice-studio",
-        "Invoice studio",
-        "Work screens / Invoice studio: invoices grouped Overdue, Open, Drafts and Paid, and the open invoice as paper edited in place: line items to add, describe, step and remove (with Undo), live subtotal, tax and total, the client, payment terms with an absolute due date, sales tax and reminders. Preview shows what the client sees; Send checks the email, the lines and the total first.",
-        "InvoiceStudioScreen",
-        "InvoiceStudioEl",
+        "invoice-desk",
+        "Invoice desk",
+        "Work screens / Invoice desk: invoices grouped Overdue, Open, Drafts and Paid, and the open invoice as paper edited in place: line items to add, describe, step and remove (with Undo), live subtotal, tax and total, the client, payment terms with an absolute due date, sales tax and reminders. Preview shows what the client sees; Send checks the email, the lines and the total first.",
+        "InvoiceDeskScreen",
+        "InvoiceDeskEl",
         iv_screen,
         iv_code,
         vec![
@@ -6494,7 +6494,7 @@ fn s15_demo(slug: &'static str) -> Demo {
         ),
     };
     let mut d = arc_demo(slug, name, summary, dx, gp, r, c, kb, a11y, own);
-    d.source = "parity/arcscr4.rs";
+    d.source = "kit/arcscr4.rs";
     d.live = slug == "agent-tool-calls";
     d
 }

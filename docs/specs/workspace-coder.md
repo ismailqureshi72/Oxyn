@@ -3,7 +3,7 @@
 # Spec: Workspace Coder (`workspace-coder`)
 
 Family: Agent apps (pages at `/screens/workspace-coder/` and `/full`). Reference: the chat-plus-computer pattern of agent apps (Kimi's agent mode and others, see the agent-apps research), behaviour and layout only, under our own name and design; no source, artwork or copy taken.
-Components: `WorkspaceCoderScreen` (Dioxus) · `WorkspaceCoderEl` (GPUI), rules in `oxyn_core::parity::wscoder`.
+Components: `WorkspaceCoderScreen` (Dioxus) · `WorkspaceCoderEl` (GPUI), rules in `oxyn_core::kit::wscoder`.
 
 ## 1. Purpose
 Ask for something to be researched and built, watch the agent work in its own computer, then preview and share what it made.
@@ -30,10 +30,10 @@ Sidebar is a nav landmark; the open chat has aria-current=page. The Workspace ta
 1440 × 900 stage; `/full` at the real viewport. Under 960 px the sidebar is a drawer and the Workspace opens over the chat. Under 620 px the Thinking label hides. scripts/ovl.py finds no text overlap at 1440, 768 and 390 in light and dark.
 
 ## 7. Data
-`WorkspaceCoderScreen` takes `data: Option<WorkspaceCoderData>` (`oxyn_core::parity::wscoder`): `chats: Vec<Chat>` (id, title, mode, running, day), `files: Vec<WsFile>` (path and lines; Files lists them and Preview reads the CSV), `deliverable: String`. Start from `WorkspaceCoderData::default()`.
+`WorkspaceCoderScreen` takes `data: Option<WorkspaceCoderData>` (`oxyn_core::kit::wscoder`): `chats: Vec<Chat>` (id, title, mode, running, day), `files: Vec<WsFile>` (path and lines; Files lists them and Preview reads the CSV), `deliverable: String`. Start from `WorkspaceCoderData::default()`.
 
 ## 8. Known gaps
 The GPUI snapshot element draws one state (`.extra("preview" | "files")`, `rail`, `hidden`); the interactive `AgentAppView` (section 9) runs the whole app. In `AgentAppView` all four workspace tabs (Files, Terminal, Browser, Preview) switch. No backend: progress, log, terminal, browser and the page are fixed fictional data; Publish only shows the link.
 
 ## 9. GPUI
-`AgentAppView::new(AgentApp::WorkspaceCoder, window, cx)` (oxyn-gpui, `parity::apps`) is a real GPUI view (`Entity` + `Render`) of the whole Workspace Coder app, drawn from the same screen code as the snapshot element and driven by `oxyn_core::parity::appui::AppUi`, the rules the Dioxus app follows. Sidebar rows open on press; the logo toggles the icon rail; the account row opens a menu (Switch to light / dark, Sign out). The composer is a real `ImeInput`: Enter or the send button sends and the sent prompts show above it. With focus on the app, Up / Down move the open row, Left / Right step through the views and Escape closes the menu, then the rail; inside the composer the keys edit text and Escape returns focus to the app. App presses: the Files and Preview tabs of the Workspace pane switch it; Left / Right step through the running chat, Files and Preview. Call `bind_ime_keys(cx)` once at start; `cargo run --manifest-path examples/gpui-agent-apps/Cargo.toml` (from the repo root) opens all six apps in one window.
+`AgentAppView::new(AgentApp::WorkspaceCoder, window, cx)` (oxyn-gpui, `kit::apps`) is a real GPUI view (`Entity` + `Render`) of the whole Workspace Coder app, drawn from the same screen code as the snapshot element and driven by `oxyn_core::kit::appui::AppUi`, the rules the Dioxus app follows. Sidebar rows open on press; the logo toggles the icon rail; the account row opens a menu (Switch to light / dark, Sign out). The composer is a real `ImeInput`: Enter or the send button sends and the sent prompts show above it. With focus on the app, Up / Down move the open row, Left / Right step through the views and Escape closes the menu, then the rail; inside the composer the keys edit text and Escape returns focus to the app. App presses: the Files and Preview tabs of the Workspace pane switch it; Left / Right step through the running chat, Files and Preview. Call `bind_ime_keys(cx)` once at start; `cargo run --manifest-path examples/gpui-agent-apps/Cargo.toml` (from the repo root) opens all six apps in one window.

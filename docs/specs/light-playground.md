@@ -3,7 +3,7 @@
 # Spec: Light playground (`light-playground`)
 
 Family: Theme Selector. Reference: none (an Oxyn original; the "drag a light source over the UI" idea from the family plan).
-Components: `LightPlayground` (Dioxus) · `LightPlaygroundEl` (GPUI), models in `oxyn_core::parity::themefid`.
+Components: `LightPlayground` (Dioxus) · `LightPlaygroundEl` (GPUI), models in `oxyn_core::kit::themefid`.
 
 ## 1. Purpose
 Show how depth reads in a theme by letting someone move the light: shadows and highlights follow the lamp.

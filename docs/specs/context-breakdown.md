@@ -3,7 +3,7 @@
 # Spec: Context breakdown (`context-breakdown`)
 
 Family: Context Visualizer. Reference: the item lists of a public context-map component and a storage-cleanup panel (what each part holds, unload to free room). Behaviour only; wording and look are our own.
-Components: `ContextBreakdown` (Dioxus) · `ContextBreakdownEl` (GPUI), models in `oxyn_core::parity::ctxvisfid`.
+Components: `ContextBreakdown` (Dioxus) · `ContextBreakdownEl` (GPUI), models in `oxyn_core::kit::ctxvisfid`.
 
 ## 1. Purpose
 Answer "what exactly is in there" and let the user unload a file or tool to give room back.

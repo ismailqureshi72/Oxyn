@@ -1,9 +1,9 @@
 **Status:** built v0.1 (2026-11-19, S14: Arc screens III).
 
-# Spec: Market terminal (`market-terminal`)
+# Spec: Trading desk (`market-terminal`)
 
-Family: Arc screens (pages at `/screens/market-terminal/` and `/full`). Reference: the market terminal screen of Arc UI (uiarc.dev), behaviour and layout only, under our own design; no source, artwork or copy taken. Every company, ticker, product, client and person is fictional; dates are absolute ISO dates and times are 24-hour.
-Components: `MarketTerminalScreen` (Dioxus) · `MarketTerminalEl` (GPUI), rules in `oxyn_core::parity::arcscr3`.
+Family: Arc screens (pages at `/screens/trading-desk/` and `/full`). Reference: the market terminal screen of Arc UI (uiarc.dev), behaviour and layout only, under our own design; no source, artwork or copy taken. Every company, ticker, product, client and person is fictional; dates are absolute ISO dates and times are 24-hour.
+Components: `MarketTerminalScreen` (Dioxus) · `MarketTerminalEl` (GPUI), rules in `oxyn_core::kit::arcscr3`.
 
 ## 1. Purpose
 Watch a few symbols, read one price and chart, and place an order that the account can cover.
@@ -21,7 +21,7 @@ The Arc frame (shared with the S12 and S13 screens): a 248 px sidebar (workspace
 | Order ticket (300 px) | Buy / Sell, Market / Limit, a shares stepper (typed or stepped), the limit price stepper, the estimate, cash or shares held, the refusal line and **Buy 10 KSTR** in green (Sell in rose) |
 
 ## 3. Behaviour
-`Market`, `series` and `live_price` in `oxyn_core::parity::arcscr3`: each symbol has a fixed series per range ending at its close; the live price is a small deterministic walk driven by a tick (the host clock every 1.5 s in Dioxus, a press in GPUI) and stops while paused or closed. A market order fills at the live price and moves cash, shares and the average cost; a limit order joins Open orders; a closed market queues market orders. The ticket refuses zero shares, a buy beyond cash and a sell beyond the shares held.
+`Market`, `series` and `live_price` in `oxyn_core::kit::arcscr3`: each symbol has a fixed series per range ending at its close; the live price is a small deterministic walk driven by a tick (the host clock every 1.5 s in Dioxus, a press in GPUI) and stops while paused or closed. A market order fills at the live price and moves cash, shares and the average cost; a limit order joins Open orders; a closed market queues market orders. The ticket refuses zero shares, a buy beyond cash and a sell beyond the shares held.
 
 ## 4. Variants
 States: Data · Loading · Empty ("No positions yet" with Add funds) · **Limit order** (15 shares at $184.00) · **Order placed** (a market buy filled) · **Market closed** (prices still, a note). Frame: Inset · Flat.

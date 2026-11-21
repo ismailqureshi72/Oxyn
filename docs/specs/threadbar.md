@@ -3,7 +3,7 @@
 # Spec: Threadbar (`threadbar`)
 
 Family: Agent apps (pages at `/screens/threadbar/` and `/full`). Reference: the editor-plus-agent-panel pattern (Zed's agent panel and threads sidebar, see the agent-apps research), behaviour and layout only, under our own name and design; no source, artwork or copy taken. Brand marks appear only where a real model, agent or code host is named (Lobe Icons / Simple Icons, credited in `THIRD_PARTY_NOTICES.md`), never as this app's logo.
-Components: `ThreadbarScreen` (Dioxus) · `ThreadbarEl` (GPUI), rules in `oxyn_core::parity::threadbar`.
+Components: `ThreadbarScreen` (Dioxus) · `ThreadbarEl` (GPUI), rules in `oxyn_core::kit::threadbar`.
 
 ## 1. Purpose
 Talk to an agent inside a code editor, keep or reject what it changes, switch between agent threads and terminal threads, and commit the result.
@@ -31,10 +31,10 @@ Sidebar is a nav landmark; the open thread has aria-current=page. Files / Git ar
 1440 × 900 stage; `/full` at the real viewport. Under 960 px the sidebar is a drawer and the pane opens over the conversation from the top bar. Under 620 px chip labels shorten and rows stack. scripts/ovl.py finds no text overlap at 1440, 768 and 390 in light and dark.
 
 ## 7. Data
-`ThreadbarScreen` takes `data: Option<ThreadbarData>` (`oxyn_core::parity::threadbar`): `threads: Vec<TbThread>` (id, title, project, terminal, running, at), `changes: Vec<TbChange>` (path, add, del, staged), `branch: String`. Start from `ThreadbarData::default()`.
+`ThreadbarScreen` takes `data: Option<ThreadbarData>` (`oxyn_core::kit::threadbar`): `threads: Vec<TbThread>` (id, title, project, terminal, running, at), `changes: Vec<TbChange>` (path, add, del, staged), `branch: String`. Start from `ThreadbarData::default()`.
 
 ## 8. Known gaps
 No backend: tool calls, the diff, the tree and the terminal answers are fixed fictional data; outside agents are listed by name and mark only. The GPUI view draws Keep / Reject and Commit as presses (`keep`, `reject`, `commit`) for the host; the staging checkboxes are drawn, not toggled.
 
 ## 9. GPUI
-`AgentAppView::new(AgentApp::Threadbar, window, cx)` (oxyn-gpui, `parity::apps`) is a real GPUI view (`Entity` + `Render`) of the whole Threadbar app, drawn from the same screen code as the snapshot element `ThreadbarEl` and driven by `oxyn_core::parity::appui::AppUi`, the rules the Dioxus app follows. Sidebar rows open on press; the logo toggles the icon rail; the account row opens a menu (Switch to light / dark, Sign out). The composer is a real `ImeInput`: Enter or the send button sends and the sent prompts show above it. With focus on the app, Up / Down move the open row, Left / Right step through the views (the agent thread, the terminal thread, Git) and Escape closes the menu, then the rail. App presses: a terminal row opens the terminal view; Files and Git switch the pane (`view:`, `view:git`). Call `bind_ime_keys(cx)` once at start; `cargo run --manifest-path examples/gpui-agent-apps/Cargo.toml` (from the repo root) opens every agent app in one window.
+`AgentAppView::new(AgentApp::Threadbar, window, cx)` (oxyn-gpui, `kit::apps`) is a real GPUI view (`Entity` + `Render`) of the whole Threadbar app, drawn from the same screen code as the snapshot element `ThreadbarEl` and driven by `oxyn_core::kit::appui::AppUi`, the rules the Dioxus app follows. Sidebar rows open on press; the logo toggles the icon rail; the account row opens a menu (Switch to light / dark, Sign out). The composer is a real `ImeInput`: Enter or the send button sends and the sent prompts show above it. With focus on the app, Up / Down move the open row, Left / Right step through the views (the agent thread, the terminal thread, Git) and Escape closes the menu, then the rail. App presses: a terminal row opens the terminal view; Files and Git switch the pane (`view:`, `view:git`). Call `bind_ime_keys(cx)` once at start; `cargo run --manifest-path examples/gpui-agent-apps/Cargo.toml` (from the repo root) opens every agent app in one window.

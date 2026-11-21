@@ -1,7 +1,7 @@
 //! Blocks (Oxyn Pro): larger compositions for AI and agent products. Agents: Live session,
-//! Mission control, Mission timeline, Run inspector, Background agents, Agent routines, MCP
+//! Fleet overview, Fleet timeline, Run inspector, Background agents, Agent routines, MCP
 //! servers, Knowledge base, Eval suite, Agent builder and Agent gallery. AI: AI insight card,
-//! Model arena, Prompt studio, Assistant memory, Catch up, AI feature launch, AI setup wizard,
+//! Blind compare, Prompt bench, Assistant memory, Catch up, AI feature launch, AI setup wizard,
 //! Call insights and Lead scoring.
 //! Every demo runs on the host clock (`live`).
 
@@ -9,9 +9,9 @@ use dioxus::prelude::*;
 use oxyn_core::ClockMs;
 use oxyn_dioxus::{
     AgentBuilder, AgentGallery, AgentRoutines, AiFeatureLaunch, AiInsightCard, AiSetupWizard,
-    AssistantMemory, BackgroundAgents, CallInsights, CatchUp, EvalSuite, KnowledgeBase,
-    LeadScoring, LiveSession, McpServers, MissionControl, MissionTimeline, ModelArena,
-    PromptStudio, RunInspector,
+    AssistantMemory, BackgroundAgents, BlindCompare, CallInsights, CatchUp, EvalSuite,
+    FleetOverview, FleetTimeline, KnowledgeBase, LeadScoring, LiveSession, McpServers, PromptBench,
+    RunInspector,
 };
 
 use super::{Code, mk, rng, sel, tog, var};
@@ -94,20 +94,20 @@ fn session_code(v: &Vals) -> String {
 }
 
 fn control(v: &Vals, now: ClockMs) -> Element {
-    rsx! { MissionControl { now, filter: pick(v, "filter", &FILTERS), fail_retry: v.b("fail") } }
+    rsx! { FleetOverview { now, filter: pick(v, "filter", &FILTERS), fail_retry: v.b("fail") } }
 }
 fn control_code(v: &Vals) -> String {
-    clock("MissionControl")
+    clock("FleetOverview")
         .raw("filter", pick(v, "filter", &FILTERS).to_string())
         .b("fail_retry", v.b("fail"))
         .done()
 }
 
 fn timeline(v: &Vals, now: ClockMs) -> Element {
-    rsx! { MissionTimeline { now, filter: pick(v, "filter", &FILTERS), fail_retry: v.b("fail"), ticks: v.b("ticks") } }
+    rsx! { FleetTimeline { now, filter: pick(v, "filter", &FILTERS), fail_retry: v.b("fail"), ticks: v.b("ticks") } }
 }
 fn timeline_code(v: &Vals) -> String {
-    clock("MissionTimeline")
+    clock("FleetTimeline")
         .raw("filter", pick(v, "filter", &FILTERS).to_string())
         .b("fail_retry", v.b("fail"))
         .done()
@@ -219,10 +219,10 @@ fn insight_code(v: &Vals) -> String {
 }
 
 fn arena(v: &Vals, now: ClockMs) -> Element {
-    rsx! { ModelArena { now, auto_play: v.b("auto"), blind: v.b("blind"), fail: v.b("fail"), board: v.b("board") } }
+    rsx! { BlindCompare { now, auto_play: v.b("auto"), blind: v.b("blind"), fail: v.b("fail"), board: v.b("board") } }
 }
 fn arena_code(v: &Vals) -> String {
-    let mut c = clock("ModelArena");
+    let mut c = clock("BlindCompare");
     if !v.b("auto") {
         c = c.raw("auto_play", "false");
     }
@@ -233,10 +233,10 @@ fn arena_code(v: &Vals) -> String {
 }
 
 fn prompt(v: &Vals, now: ClockMs) -> Element {
-    rsx! { PromptStudio { now, auto_play: v.b("auto"), fail: v.b("fail"), compare: v.b("compare") } }
+    rsx! { PromptBench { now, auto_play: v.b("auto"), fail: v.b("fail"), compare: v.b("compare") } }
 }
 fn prompt_code(v: &Vals) -> String {
-    let mut c = clock("PromptStudio");
+    let mut c = clock("PromptBench");
     if !v.b("auto") {
         c = c.raw("auto_play", "false");
     }
@@ -394,10 +394,10 @@ pub(crate) fn demos() -> Vec<Demo> {
             620,
         ),
         blk(
-            "mission-control",
-            "Mission control",
+            "fleet-overview",
+            "Fleet overview",
             CAT_AGENTS,
-            "MissionControl",
+            "FleetOverview",
             "One overview for a whole fleet: a stacked event chart of the last eight hours, lead agents with their helpers, and a side queue of asks and failures, all narrowed by a single status switch.",
             vec![filter_ctl(), tog("fail", "Retry fails again", false)],
             vec![
@@ -441,10 +441,10 @@ pub(crate) fn demos() -> Vec<Demo> {
             640,
         ),
         blk(
-            "mission-timeline",
-            "Mission timeline",
+            "fleet-timeline",
+            "Fleet timeline",
             CAT_AGENTS,
-            "MissionTimeline",
+            "FleetTimeline",
             "The fleet overview laid out against time: one row per agent across the last half hour, the same event chart above and the same queue of asks beside it.",
             vec![
                 filter_ctl(),
@@ -913,10 +913,10 @@ pub(crate) fn demos() -> Vec<Demo> {
             560,
         ),
         blk(
-            "model-arena",
-            "Model arena",
+            "blind-compare",
+            "Blind compare",
             CAT_AI,
-            "ModelArena",
+            "BlindCompare",
             "A blind taste test for language models: one prompt goes to two unnamed models, both answers arrive side by side at each model's own speed with first token time, speed and cost underneath, and only after you vote are the names and marks revealed; a leaderboard keeps the win rates.",
             vec![
                 tog("auto", "Run at once", true),
@@ -970,10 +970,10 @@ pub(crate) fn demos() -> Vec<Demo> {
             620,
         ),
         blk(
-            "prompt-studio",
-            "Prompt studio",
+            "prompt-bench",
+            "Prompt bench",
             CAT_AI,
-            "PromptStudio",
+            "PromptBench",
             "Edit, test and ship a prompt template in one card: variables show as coloured chips, fields fill them from saved test cases, Run streams a reply with latency, tokens and cost, and versions can be compared word by word and promoted to production with Undo.",
             vec![
                 tog("auto", "Run at once", true),

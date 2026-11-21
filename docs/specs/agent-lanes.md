@@ -1,10 +1,10 @@
 **Status:** built v0.1 (2026-11-16, plan #32 affectUI fidelity pass, overnight batch, family B part 3).
 
-# Spec: Agent Lanes (`agent-lanes`)
+# Spec: Live lanes (`agent-lanes`)
 
 Family: Agents. Closes the parity row: affectUI · Agent Lanes (Pro). Behaviour-only rebuild; nothing is copied (the
 demo agents, tasks, summaries and the decision's wording are our own).
-Components: `AgentLanes` (Dioxus) · `AgentLanesEl` (GPUI), model in `oxyn_core::parity::lanesfid`.
+Components: `AgentLanes` (Dioxus) · `AgentLanesEl` (GPUI), model in `oxyn_core::kit::lanesfid`.
 
 ## 1. Purpose
 Where every agent is right now: a live timeline with one lane per agent over the last half hour. Tasks grow into

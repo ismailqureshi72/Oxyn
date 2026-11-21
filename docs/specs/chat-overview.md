@@ -3,7 +3,7 @@
 # Spec: AI Chat · Overview (`chat-overview`)
 
 Family: Screens. Reference: affectUI AI Chat / Overview (`/screens/assistant-overview`), layout and behaviour only.
-Components: `ChatOverviewScreen` (Dioxus) · `ChatOverviewEl` (GPUI), models in `oxyn_core::parity::screensfid`.
+Components: `ChatOverviewScreen` (Dioxus) · `ChatOverviewEl` (GPUI), models in `oxyn_core::kit::screensfid`.
 
 ## 1. Purpose
 The start composer with the numbers under it, in one centred 880 px column.
@@ -35,4 +35,4 @@ Every screen is authored on the 1440 × 900 stage (rule R1) and scaled to its co
 
 ## 7. Known gaps
 GPUI is a static snapshot (`.extra("limit")` for the near-limit meter).
-In a window, `ScreenView` (oxyn-gpui, `parity::screenview`) runs this screen live from `oxyn_core::parity::screenui`: the sidebar and page links open their screens (across sets), buttons open their state, the bar above it switches the set's screens and the state bar, a command bar (a real text field) jumps to any screen or state, the account row opens its menu, and Left / Right, Up / Down and Escape step states and screens. Editing the page's own fields in place is still the host's.
+In a window, `ScreenView` (oxyn-gpui, `kit::screenview`) runs this screen live from `oxyn_core::kit::screenui`: the sidebar and page links open their screens (across sets), buttons open their state, the bar above it switches the set's screens and the state bar, a command bar (a real text field) jumps to any screen or state, the account row opens its menu, and Left / Right, Up / Down and Escape step states and screens. Editing the page's own fields in place is still the host's.

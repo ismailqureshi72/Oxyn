@@ -3,7 +3,7 @@
 # Spec: Sign-in split (`sign-in-split`)
 
 Family: Arc screens (pages at `/screens/sign-in-split/` and `/full`). Reference: the sign-in split screen of Arc UI (uiarc.dev), behaviour and layout only, under our own design; no source, artwork or copy taken. Every company, ticker, product, client and person is fictional; dates are absolute ISO dates and times are 24-hour.
-Components: `SignInSplitScreen` (Dioxus) · `SignInSplitEl` (GPUI), rules in `oxyn_core::parity::arcscr3`.
+Components: `SignInSplitScreen` (Dioxus) · `SignInSplitEl` (GPUI), rules in `oxyn_core::kit::arcscr3`.
 
 ## 1. Purpose
 Sign in to a workspace with SSO or email and password, with clear errors.
@@ -18,7 +18,7 @@ A split page of its own (no sidebar): the form side and an art panel, inside the
 | Art panel | A neutral panel of rings with a customer quote card (fictional) |
 
 ## 3. Behaviour
-`SignIn` in `oxyn_core::parity::arcscr3`: checks run on submit (email shape, password of 8 or more characters); the demo account signs in, anything else counts a wrong try ("2 tries left"), and three wrong tries lock the form ("Reset your password to continue"). An SSO press shows that provider busy and disables the others; pressing it again finishes.
+`SignIn` in `oxyn_core::kit::arcscr3`: checks run on submit (email shape, password of 8 or more characters); the demo account signs in, anything else counts a wrong try ("2 tries left"), and three wrong tries lock the form ("Reset your password to continue"). An SSO press shows that provider busy and disables the others; pressing it again finishes.
 
 ## 4. Variants
 States: Data (the demo email filled) · Loading · Empty (a blank form) · **Invalid** (bad email, short password) · **Wrong password** · **Signing in** (Continuing with GitHub). Frame: Inset · Flat.

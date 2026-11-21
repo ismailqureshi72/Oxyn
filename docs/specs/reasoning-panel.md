@@ -4,7 +4,7 @@
 
 Family: Thinking Selector. Reference: user-supplied screenshots of a model-details side panel with a reasoning slider,
 Fast mode and Favorite (layout idea only; the model, names and wording are our own; the model is fictional).
-Components: `ReasoningPanel` (Dioxus) · `ReasoningPanelEl` (GPUI), models in `oxyn_core::parity::{thinkfid, reasonfid}`.
+Components: `ReasoningPanel` (Dioxus) · `ReasoningPanelEl` (GPUI), models in `oxyn_core::kit::{thinkfid, reasonfid}`.
 
 ## 1. Purpose
 The details of one model next to a model list: its context length, how hard it reasons, whether Fast mode is on, and a

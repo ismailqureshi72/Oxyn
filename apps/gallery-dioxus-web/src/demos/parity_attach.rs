@@ -2,7 +2,7 @@
 //! and two Oxyn originals – a stack of image prints and a drop target that splits into lanes.
 
 use dioxus::prelude::*;
-use oxyn_core::{ClockMs, parity::attachfid::demo_files};
+use oxyn_core::{ClockMs, kit::attachfid::demo_files};
 use oxyn_dioxus::{AttachmentChips, DropLanes, PolaroidStack, UploadDropzone};
 
 use super::{Code, mk, rng, sel, tog, var};
@@ -106,7 +106,7 @@ fn upload_dropzone_demo() -> Demo {
             "UploadDropzone",
             "UploadDropzoneEl",
             "upload-dropzone",
-            "parity/attachfid.rs",
+            "kit/attachfid.rs",
         )
     }
 }
@@ -179,7 +179,7 @@ fn attachment_chips_demo() -> Demo {
             "AttachmentChips",
             "AttachmentChipsEl",
             "attachment-chips",
-            "parity/attachfid.rs",
+            "kit/attachfid.rs",
         )
     }
 }
@@ -255,7 +255,7 @@ fn polaroid_stack_demo() -> Demo {
             "PolaroidStack",
             "PolaroidStackEl",
             "polaroid-stack",
-            "parity/attachfid.rs",
+            "kit/attachfid.rs",
         )
     }
 }
@@ -334,7 +334,7 @@ fn drop_lanes_demo() -> Demo {
             "DropLanes",
             "DropLanesEl",
             "drop-lanes",
-            "parity/attachfid.rs",
+            "kit/attachfid.rs",
         )
     }
 }

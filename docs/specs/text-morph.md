@@ -43,8 +43,8 @@ A label that morphs into its next state letter by letter: letters are matched by
 - Gap: kept letters snap to their new position instead of gliding on a spring, and the frame width does not spring (no layout measurement in the core).
 
 ## 10. Implementation
-- Core: `morph_letters`, `MorphLetter`, `LetterMove` (`oxyn_core::parity::text`), with tests.
-- Dioxus: `TextMorph` (parity/text.rs, text.css).
+- Core: `morph_letters`, `MorphLetter`, `LetterMove` (`oxyn_core::kit::text`), with tests.
+- Dioxus: `TextMorph` (kit/text.rs, text.css).
 - GPUI: not yet (plan #28 follow-up; the core models are shared).
 
 ## 11. References

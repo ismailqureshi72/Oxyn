@@ -4,7 +4,7 @@
 
 Family: Thinking Selector. Reference: a user-supplied screenshot of a "Max · thinks as long as it needs" card with a
 dense tick ruler (layout idea only; names, wording and colours are our own).
-Components: `EffortRuler` (Dioxus) · `EffortRulerEl` (GPUI), model in `oxyn_core::parity::thinkfid`.
+Components: `EffortRuler` (Dioxus) · `EffortRulerEl` (GPUI), model in `oxyn_core::kit::thinkfid`.
 
 ## 1. Purpose
 Pick how hard the model thinks with one glance at a ruler. The level's name and what it does sit above a ruler of

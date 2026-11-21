@@ -3,7 +3,7 @@
 # Spec: Storage forecast (`storage-forecast`)
 
 Family: Storage. Reference: none (an Oxyn original).
-Components: `StorageForecast` (Dioxus) · `StorageForecastEl` (GPUI), models in `oxyn_core::parity::storagefid`.
+Components: `StorageForecast` (Dioxus) · `StorageForecastEl` (GPUI), models in `oxyn_core::kit::storagefid`.
 
 ## 1. Purpose
 Turn a fortnight of growth into one answer: when the disk is full at this pace.

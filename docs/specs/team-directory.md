@@ -3,7 +3,7 @@
 # Spec: Team directory (`team-directory`)
 
 Family: Arc screens (pages at `/screens/team-directory/` and `/full`). Reference: the team directory screen of Arc UI (uiarc.dev), behaviour and layout only, under our own design; no source, artwork or copy taken. Every person, workspace and project is fictional; dates are absolute ISO dates.
-Components: `TeamDirectoryScreen` (Dioxus) · `TeamDirectoryEl` (GPUI), rules in `oxyn_core::parity::arcscr`.
+Components: `TeamDirectoryScreen` (Dioxus) · `TeamDirectoryEl` (GPUI), rules in `oxyn_core::kit::arcscr`.
 
 ## 1. Purpose
 Find a colleague, see where and when they are, and invite someone new.
@@ -40,4 +40,4 @@ Authored on the 1440 × 900 stage and scaled to its column; `/full` renders at t
 No backend: invites are not sent anywhere; Org chart and Time off only report. In GPUI Invite is said back (the Invite state shows the bar with its address) and the team and status filters are chips.
 
 ## 9. GPUI
-`TeamDirectoryEl` draws one state (`.state()`, `.extra()`). `ScreenView` (oxyn-gpui, `parity::screenview`) runs it live as part of the **Arc screens I** set, driven by `oxyn_core::parity::screenui::ScreenUi` and its `ArcUi`: `ArcUi` keeps the search text, team / status / office filters, view and favourites: `td-team-<n>`, `td-status-<n>`, `td-office-<n>`, `td-view`, `td-fav-<n>`, `td-clear`; the search is a real `ImeInput`. The set's tabs, state bar, command bar and account menu work as for the other sets; `cargo run --manifest-path examples/gpui-agent-apps/Cargo.toml` opens it from the strip (S12 Arc I).
+`TeamDirectoryEl` draws one state (`.state()`, `.extra()`). `ScreenView` (oxyn-gpui, `kit::screenview`) runs it live as part of the **Arc screens I** set, driven by `oxyn_core::kit::screenui::ScreenUi` and its `ArcUi`: `ArcUi` keeps the search text, team / status / office filters, view and favourites: `td-team-<n>`, `td-status-<n>`, `td-office-<n>`, `td-view`, `td-fav-<n>`, `td-clear`; the search is a real `ImeInput`. The set's tabs, state bar, command bar and account menu work as for the other sets; `cargo run --manifest-path examples/gpui-agent-apps/Cargo.toml` opens it from the strip (S12 Arc I).

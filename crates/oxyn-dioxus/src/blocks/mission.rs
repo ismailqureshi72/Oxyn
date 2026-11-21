@@ -1,4 +1,4 @@
-//! Mission control and Mission timeline (Dioxus).
+//! Fleet overview and Fleet timeline (Dioxus).
 
 use dioxus::prelude::*;
 use oxyn_core::ClockMs;
@@ -147,13 +147,13 @@ fn key_handler(
     }
 }
 
-/// Mission control: every agent at a glance. On top, what happened since you looked as a curve
+/// Fleet overview: every agent at a glance. On top, what happened since you looked as a curve
 /// of done, needs-you and failed events; in the middle the fleet (each lead with its sub-agents,
 /// the picked lead's sub-agents beside it); on the side an inbox of asks and failures with their
 /// answers. One filter (All, Running, Waiting, Failed; arrow keys) narrows all three. Approve,
 /// Decline, Retry and Dismiss change the agent in place.
 #[component]
-pub fn MissionControl(
+pub fn FleetOverview(
     /// Host clock.
     now: ClockMs,
     /// Start filter (0 all, 1 running, 2 waiting, 3 failed).
@@ -163,7 +163,7 @@ pub fn MissionControl(
     #[props(default)]
     fail_retry: bool,
     /// Heading.
-    #[props(default = "Mission control".to_string())]
+    #[props(default = "Fleet overview".to_string())]
     title: String,
 ) -> Element {
     let mut ms = use_signal(move || Mission::new(filter, fail_retry, now.0));
@@ -251,12 +251,12 @@ pub fn MissionControl(
     }
 }
 
-/// Mission timeline: Mission control on one clock. Every agent gets a lane (leads with their
+/// Fleet timeline: Fleet overview on one clock. Every agent gets a lane (leads with their
 /// sub-agents indented) on a shared 30-minute axis ending now; running blocks grow, finished ones
 /// stop, waiting and failed ones carry their colour and word. The curve, the filter and the inbox
-/// work as in Mission control.
+/// work as in Fleet overview.
 #[component]
-pub fn MissionTimeline(
+pub fn FleetTimeline(
     /// Host clock.
     now: ClockMs,
     /// Start filter (0 all, 1 running, 2 waiting, 3 failed).
@@ -292,9 +292,9 @@ pub fn MissionTimeline(
         }
     }
     rsx! {
-        section { class: "oxaik oxbk oxbk-mc oxbk-mt", "aria-label": "Mission timeline", onkeydown: key_handler(ms, said, n),
+        section { class: "oxaik oxbk oxbk-mc oxbk-mt", "aria-label": "Fleet timeline", onkeydown: key_handler(ms, said, n),
             header { class: "oxaik-hd",
-                div { class: "oxaik-hl", h3 { class: "oxaik-h", "Mission timeline" } p { class: "oxaik-sub", "{AGENTS.len()} agents on one clock · last {SPAN_MIN} min" } }
+                div { class: "oxaik-hl", h3 { class: "oxaik-h", "Fleet timeline" } p { class: "oxaik-sub", "{AGENTS.len()} agents on one clock · last {SPAN_MIN} min" } }
                 {filt}
             }
             {summary}

@@ -3,7 +3,7 @@
 # Spec: Tabstack (`tabstack`)
 
 Family: Agent apps (pages at `/screens/tabstack/` and `/full`). Reference: the agent-first terminal pattern (Warp's vertical tabs, blocks and agent management, see the agent-apps research), behaviour and layout only, under our own name and design; no source, artwork or copy taken. Brand marks appear only where a real model, agent or code host is named (Lobe Icons / Simple Icons, credited in `THIRD_PARTY_NOTICES.md`), never as this app's logo.
-Components: `TabstackScreen` (Dioxus) · `TabstackEl` (GPUI), rules in `oxyn_core::parity::tabstack`.
+Components: `TabstackScreen` (Dioxus) · `TabstackEl` (GPUI), rules in `oxyn_core::kit::tabstack`.
 
 ## 1. Purpose
 Run commands and agents side by side in one terminal, approve what the agent wants to run, and review its change.
@@ -31,10 +31,10 @@ Tabs are a nav landmark; the open tab has aria-current=page. Blocks are a list a
 1440 × 900 stage; `/full` at the real viewport. Under 960 px the sidebar is a drawer and the pane opens over the conversation from the top bar. Under 620 px chip labels shorten and rows stack. scripts/ovl.py finds no text overlap at 1440, 768 and 390 in light and dark.
 
 ## 7. Data
-`TabstackScreen` takes `data: Option<TabstackData>` (`oxyn_core::parity::tabstack`): `tabs: Vec<TsTab>` (id, title, agent mark id, branch, worktree, pr, state), `blocks: Vec<Block>` (`Cmd(command, output, exit code, ms)`, `Ask`, `Say`). Start from `TabstackData::default()`.
+`TabstackScreen` takes `data: Option<TabstackData>` (`oxyn_core::kit::tabstack`): `tabs: Vec<TsTab>` (id, title, agent mark id, branch, worktree, pr, state), `blocks: Vec<Block>` (`Cmd(command, output, exit code, ms)`, `Ask`, `Say`). Start from `TabstackData::default()`.
 
 ## 8. Known gaps
 No real shell: typed commands get canned answers. Only the first tab has blocks; the others say where their worktree is. The GPUI view shows the approval card on the Needs approval view and the run's block on Review.
 
 ## 9. GPUI
-`AgentAppView::new(AgentApp::Tabstack, window, cx)` (oxyn-gpui, `parity::apps`) is a real GPUI view (`Entity` + `Render`) of the whole Tabstack app, drawn from the same screen code as the snapshot element `TabstackEl` and driven by `oxyn_core::parity::appui::AppUi`, the rules the Dioxus app follows. Sidebar rows open on press; the logo toggles the icon rail; the account row opens a menu (Switch to light / dark, Sign out). The composer is a real `ImeInput`: Enter or the send button sends and the sent prompts show above it. With focus on the app, Up / Down move the open row, Left / Right step through the views (the blocks, Needs approval, Review) and Escape closes the menu, then the rail. App presses: Run opens Review with the passing block, Deny returns to the blocks; Agents and Review switch the pane (`view:`, `view:review`). Call `bind_ime_keys(cx)` once at start; `cargo run --manifest-path examples/gpui-agent-apps/Cargo.toml` (from the repo root) opens every agent app in one window.
+`AgentAppView::new(AgentApp::Tabstack, window, cx)` (oxyn-gpui, `kit::apps`) is a real GPUI view (`Entity` + `Render`) of the whole Tabstack app, drawn from the same screen code as the snapshot element `TabstackEl` and driven by `oxyn_core::kit::appui::AppUi`, the rules the Dioxus app follows. Sidebar rows open on press; the logo toggles the icon rail; the account row opens a menu (Switch to light / dark, Sign out). The composer is a real `ImeInput`: Enter or the send button sends and the sent prompts show above it. With focus on the app, Up / Down move the open row, Left / Right step through the views (the blocks, Needs approval, Review) and Escape closes the menu, then the rail. App presses: Run opens Review with the passing block, Deny returns to the blocks; Agents and Review switch the pane (`view:`, `view:review`). Call `bind_ime_keys(cx)` once at start; `cargo run --manifest-path examples/gpui-agent-apps/Cargo.toml` (from the repo root) opens every agent app in one window.

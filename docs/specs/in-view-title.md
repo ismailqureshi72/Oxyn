@@ -1,6 +1,6 @@
 **Status:** built v0.1 (2026-11-14, plan #28).
 
-# Spec: In-view title (`in-view-title`)
+# Spec: Scroll title (`in-view-title`)
 
 Family: Loaders & text ([loaders.md](loaders.md), [text-reveal.md](text-reveal.md)). Closes the parity row(s): Arc UI · In-view title.
 
@@ -50,8 +50,8 @@ A section title that comes in as it scrolls into view (host-observed, e.g. 45 % 
 - `line` without lines falls back to one line.
 
 ## 10. Implementation
-- Core: — (`oxyn_core::parity::text`), with tests.
-- Dioxus: `InViewTitle` (parity/text.rs, text.css).
+- Core: — (`oxyn_core::kit::text`), with tests.
+- Dioxus: `InViewTitle` (kit/text.rs, text.css).
 - GPUI: not yet (plan #28 follow-up; the core models are shared).
 
 ## 11. References

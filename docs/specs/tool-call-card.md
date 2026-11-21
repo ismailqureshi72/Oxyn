@@ -58,8 +58,8 @@ An agent's tool call in one line: a tile with the kind icon, the tool name in mo
 - A controlled `open` is the card's `open` field.
 
 ## 10. Implementation
-- Core: `CallCard`, `CallStatus`, `group_label`, `ms_label` (`oxyn_core::parity::tools`), with tests.
-- Dioxus: `ToolCallCard`, `ToolCallGroup` (parity/tools.rs, tools.css).
+- Core: `CallCard`, `CallStatus`, `group_label`, `ms_label` (`oxyn_core::kit::tools`), with tests.
+- Dioxus: `ToolCallCard`, `ToolCallGroup` (kit/tools.rs, tools.css).
 - GPUI: `ToolCallCardEl` (`toggle`, `retry`).
 
 ## 11. References

@@ -3,7 +3,7 @@
 # Spec: AI Chat · Start (`chat-start`)
 
 Family: Screens. Reference: affectUI AI Chat / Start (`/screens/assistant-home`), layout and behaviour only.
-Components: `ChatStartScreen` (Dioxus) · `ChatStartEl` (GPUI), models in `oxyn_core::parity::screensfid`.
+Components: `ChatStartScreen` (Dioxus) · `ChatStartEl` (GPUI), models in `oxyn_core::kit::screensfid`.
 
 ## 1. Purpose
 Where a new chat begins: a greeting over the exact composer, a folder and apps to work with, and suggestions that fill the prompt.
@@ -35,4 +35,4 @@ Every screen is authored on the 1440 × 900 stage (rule R1) and scaled to its co
 
 ## 7. Known gaps
 GPUI is a static snapshot: `.extra("attached" | "dictating" | "plus" | "model" | "approval")` draws a state or a menu open; menus, typing and the live clock belong to the host.
-In a window, `ScreenView` (oxyn-gpui, `parity::screenview`) runs this screen live from `oxyn_core::parity::screenui`: the sidebar and page links open their screens (across sets), buttons open their state, the bar above it switches the set's screens and the state bar, a command bar (a real text field) jumps to any screen or state, the account row opens its menu, and Left / Right, Up / Down and Escape step states and screens. Editing the page's own fields in place is still the host's.
+In a window, `ScreenView` (oxyn-gpui, `kit::screenview`) runs this screen live from `oxyn_core::kit::screenui`: the sidebar and page links open their screens (across sets), buttons open their state, the bar above it switches the set's screens and the state bar, a command bar (a real text field) jumps to any screen or state, the account row opens its menu, and Left / Right, Up / Down and Escape step states and screens. Editing the page's own fields in place is still the host's.
