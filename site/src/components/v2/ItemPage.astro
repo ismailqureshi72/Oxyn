@@ -8,6 +8,7 @@ import CompCard from './CompCard.astro';
 import ProLock from './ProLock.astro';
 import BackButton from './BackButton.astro';
 import { icon } from './icons';
+import { SITE } from '../../lib/site.mjs';
 import { mark } from './brands';
 import {
   groupOf, demoUrl, props, specSection, md, highlightRust, cssConst, installLine, CLI_INSTALL, whenToUse, whenNotToUse,
@@ -30,7 +31,7 @@ const usage = `use oxyn_dioxus::{${comps.join(', ')}, ${cssConst(demo.source)}};
 // Pro items install through the CLI with a Pro licence; copying it without a plan leads to pricing.
 const install = installLine(demo);
 const cliUsage = `use crate::oxyn::{${comps.join(', ')}, ${cssConst(demo.source)}};`;
-const site = 'https://ui.oxyn.workers.dev';
+const site = SITE;
 const url = demoUrl(demo);
 const prompt = `Add the ${demo.name} component from Oxyn (Rust, Dioxus) to my app. Docs: ${site}${url}`;
 const ai = [
