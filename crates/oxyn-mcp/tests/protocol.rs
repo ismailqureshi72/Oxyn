@@ -140,6 +140,11 @@ fn fake_registry(r: &Path) {
         url: format!("https://x.test/{slug}/"),
         dioxus: Some(entry.into()),
         gpui: None,
+        aliases: if slug == "send-button" {
+            vec!["send-old".into()]
+        } else {
+            vec![]
+        },
     };
     let meta = vec![
         m("send-button", Tier::Free, Kind::Component, "SendButton"),

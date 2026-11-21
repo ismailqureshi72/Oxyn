@@ -170,6 +170,9 @@ fs.copyFileSync(path.join(root, 'tokens/oxyn.motion.json'), path.join(gen, 'moti
 {
   const { demos } = JSON.parse(fs.readFileSync(path.join(gen, 'demos.json'), 'utf8'));
   const origin = 'https://ui.oxyn.workers.dev';
+  // Renamed items keep their old slug as an alias (src/lib/renames.json, docs/renames.md).
+  const { renames } = JSON.parse(fs.readFileSync(path.join(site, 'src/lib/renames.json'), 'utf8'));
+  const aliasesOf = (slug) => renames.filter((r) => r.to === slug).map((r) => r.from);
   const input = demos.map((d) => ({
     slug: d.slug,
     name: d.name,
@@ -180,6 +183,7 @@ fs.copyFileSync(path.join(root, 'tokens/oxyn.motion.json'), path.join(gen, 'moti
     url: origin + pageUrl(d),
     dioxus: d.dioxus || null,
     gpui: d.gpui || null,
+    aliases: aliasesOf(d.slug),
   }));
   const inputPath = path.join(gen, 'registry-input.json');
   fs.writeFileSync(inputPath, JSON.stringify(input));

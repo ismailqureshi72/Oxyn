@@ -87,6 +87,8 @@ An item counts once, the first time its code is opened in a billing month, wheth
 
 The CLI reads a static registry: `https://ui.oxyn.workers.dev/r/index.json` lists every item, and `https://ui.oxyn.workers.dev/r/<slug>.json` holds the files of each free item. Pro items come from `https://ui.oxyn.workers.dev/api/r/<slug>.json` with your token (`OXYN_API` overrides the API base). Point it elsewhere with `--registry <url-or-directory>` or the `OXYN_REGISTRY` environment variable, for example a registry built from a checkout with `npm run gen` in `site/` (`site/public/r`).
 
+A renamed item keeps its old slug in the index (`aliases`), so an older `oxyn add` line still works: it installs the item under its new name, and `oxyn view` shows the new one.
+
 ## Prompt for your agent
 
 Paste this into Claude Code, Codex, Cursor or any other coding agent to set Oxyn up in your project. The copy button is in the corner of the block.

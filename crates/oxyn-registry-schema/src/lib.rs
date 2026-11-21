@@ -189,7 +189,7 @@ pub struct RegistryFile {
     #[serde(default, skip_serializing_if = "String::is_empty")]
     pub content: String,
     /// Assets shared by many items are stored once: the content is at this path, relative to the
-    /// registry base URL (`files/dioxus/parity/run.css`).
+    /// registry base URL (`files/dioxus/kit/run.css`).
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub url: Option<String>,
 }
@@ -329,6 +329,9 @@ pub struct IndexEntry {
     /// Why an item is not installable, when it is not.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub note: Option<String>,
+    /// Older slugs of this item (it was renamed); `oxyn add <old>` still finds it.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub aliases: Vec<String>,
 }
 
 /// Where the Oxyn crates come from by default.
@@ -358,9 +361,14 @@ pub struct RegistryIndex {
 }
 
 impl RegistryIndex {
-    /// The entry for a slug.
+    /// The entry for a slug, or for an older slug of a renamed item (see [`IndexEntry::aliases`]).
+    /// The entry's own `slug` is the current one.
     pub fn get(&self, slug: &str) -> Option<&IndexEntry> {
-        self.items.iter().find(|e| e.slug == slug)
+        self.items.iter().find(|e| e.slug == slug).or_else(|| {
+            self.items
+                .iter()
+                .find(|e| e.aliases.iter().any(|a| a == slug))
+        })
     }
 }
 
@@ -470,6 +478,28 @@ mod tests {
         assert!(!e.installable);
         assert!(e.frameworks.is_empty());
         assert_eq!(e.tier, Tier::Pro);
+    }
+
+    #[test]
+    fn index_finds_items_by_an_older_slug() {
+        let e: IndexEntry = serde_json::from_str(
+            r#"{"slug":"crew-tree","name":"Crew tree","kind":"component","category":"agents","tier":"free","aliases":["agent-crew"]}"#,
+        )
+        .unwrap();
+        let idx = RegistryIndex {
+            schema: SCHEMA_VERSION,
+            name: "oxyn".into(),
+            homepage: String::new(),
+            pricing: String::new(),
+            source: OxynSource {
+                git: String::new(),
+                rev: String::new(),
+            },
+            items: vec![e],
+        };
+        assert_eq!(idx.get("agent-crew").unwrap().slug, "crew-tree");
+        assert_eq!(idx.get("crew-tree").unwrap().slug, "crew-tree");
+        assert!(idx.get("agent").is_none());
     }
 
     #[test]
