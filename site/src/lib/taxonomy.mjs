@@ -98,7 +98,7 @@ export const isArcScreen = (d) => ARC_SCREENS.includes(d.slug);
  * A block's demo category is `blocks-<group>`. */
 export const BLOCK_GROUPS = [
   { slug: 'agents', cat: 'blocks-agents', name: 'Agents', blurb: 'Whole agent surfaces: a live session with a team of agents, mission control and its timeline, a run inspector, background coding agents, routines, MCP servers, a knowledge base, an eval suite, an agent builder and an agent gallery.' },
-  { slug: 'ai', cat: 'blocks-ai', name: 'AI', blurb: 'AI surfaces for products: a KPI card that explains its own change.' },
+  { slug: 'ai', cat: 'blocks-ai', name: 'AI', blurb: 'AI surfaces for products: a KPI card that explains its own change, a blind model arena, a prompt studio, assistant memory, a catch-up digest, a feature launch card, a setup wizard, sales call insights and lead scoring.' },
 ];
 export const isBlock = (d) => BLOCK_GROUPS.some((g) => g.cat === d.category);
 export const blockGroupOf = (d) => BLOCK_GROUPS.find((g) => g.cat === d.category) ?? null;

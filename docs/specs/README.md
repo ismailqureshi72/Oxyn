@@ -310,4 +310,12 @@ specified just as deeply. When we point at one component as an example, the stan
 | [agent-builder.md](agent-builder.md) | v0.1 — built (C1f, Blocks, Pro) |
 | [agent-gallery.md](agent-gallery.md) | v0.1 — built (C1f, Blocks, Pro) |
 | [ai-insight-card.md](ai-insight-card.md) | v0.1 — built (C1f, Blocks, Pro) |
+| [model-arena.md](model-arena.md) | v0.1 — built (C1g, Blocks, Pro) |
+| [prompt-studio.md](prompt-studio.md) | v0.1 — built (C1g, Blocks, Pro) |
+| [assistant-memory.md](assistant-memory.md) | v0.1 — built (C1g, Blocks, Pro) |
+| [catch-up.md](catch-up.md) | v0.1 — built (C1g, Blocks, Pro) |
+| [ai-feature-launch.md](ai-feature-launch.md) | v0.1 — built (C1g, Blocks, Pro) |
+| [ai-setup-wizard.md](ai-setup-wizard.md) | v0.1 — built (C1g, Blocks, Pro) |
+| [call-insights.md](call-insights.md) | v0.1 — built (C1g, Blocks, Pro) |
+| [lead-scoring.md](lead-scoring.md) | v0.1 — built (C1g, Blocks, Pro) |
 | Every other component in [../component-taxonomy.md](../component-taxonomy.md) | to write in V2.2 |
