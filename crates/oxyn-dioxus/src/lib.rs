@@ -6,6 +6,7 @@
 
 mod aikit;
 mod approval;
+mod blocks;
 mod brand;
 mod chat;
 mod checkpoint;
@@ -27,6 +28,10 @@ pub use aikit::{
     UpgradePrompt,
 };
 pub use approval::{ApprovalCard, ApprovalCardProps, ApprovalPager, ApprovalPagerProps};
+pub use blocks::{
+    AgentBuilder, AgentGallery, AgentRoutines, AiInsightCard, BackgroundAgents, EvalSuite,
+    KnowledgeBase, LiveSession, McpServers, MissionControl, MissionTimeline, RunInspector,
+};
 pub use brand::{BrandIcon, BrandIconProps, has_brand};
 pub use chat::{
     AiAnswer, AiChat, CHAT_CSS, ChatThread, ContextCards, DocumentExtraction, Markdown,
