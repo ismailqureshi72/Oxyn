@@ -17,6 +17,8 @@ That puts `oxyn-mcp` in `~/.cargo/bin`. It speaks MCP over stdio; your agent sta
 
 ## Connect your agent
 
+Each agent starts `oxyn-mcp` itself once it knows the command.
+
 ### Claude Code
 
 ```sh
@@ -66,13 +68,11 @@ Other MCP clients work the same way: the command is `oxyn-mcp`, with no argument
 
 ## Tools
 
-| Tool | What it does |
-|---|---|
-| `list_components` | Every item, free and Pro, filtered by `category`, `tier` or `framework`. |
-| `search_components` | Searches names, categories and descriptions. |
-| `get_component` | One item: what it is, its props (Dioxus) or builder methods (GPUI), the items and crates it needs, the install command, its docs page, and for free items the source files. |
-| `add_component` | Copies items and what they need into a project, adds crates to `Cargo.toml`, declares `mod oxyn;`. Sets the project up on first use. |
-| `get_install_instructions` | Setup steps for Dioxus or GPUI: dependencies, styles and theme. |
+- `list_components`: every item, free and Pro, filtered by `category`, `tier` or `framework`.
+- `search_components`: searches names, categories and descriptions.
+- `get_component`: one item. What it is, its props (Dioxus) or builder methods (GPUI), the items and crates it needs, the install command, its docs page, and for free items the source files.
+- `add_component`: copies items and what they need into a project, adds crates to `Cargo.toml` and declares `mod oxyn;`. Sets the project up on first use.
+- `get_install_instructions`: setup steps for Dioxus or GPUI: dependencies, styles and theme.
 
 `add_component` takes `project_path` (the folder with your `Cargo.toml`); without it, it uses the folder the agent started the server in. Files you changed since they were added are kept unless the agent passes `overwrite`, the same protection `oxyn add` gives you.
 
