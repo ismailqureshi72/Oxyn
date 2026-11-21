@@ -37,7 +37,7 @@ affectUI,Command Menu,https://www.affectui.com/components/command-menu,Component
 affectUI,Comment Thread,https://www.affectui.com/components/comment-thread,Components · Chat,Free,Pro,comment-thread,,#32,built
 affectUI,Comments Panel,https://www.affectui.com/components/comments-panel,Components · Chat,Pro,Pro,comments-panel,,#32,built
 affectUI,Compact Breakdown,https://www.affectui.com/components/compact-breakdown,Components · Data display,Pro,,genui-blocks,C12,#36,planned
-affectUI,Conflict Radar,https://www.affectui.com/components/conflict-radar,Components · Agents,Pro,,"conflict-radar, merge-conflict",C8,#31,built
+affectUI,Conflict Radar,https://www.affectui.com/components/conflict-radar,Components · Agents,Pro,Pro,"conflict-radar, merge-conflict",C8,#31,built
 affectUI,Context Map,https://www.affectui.com/components/context-map,Components · Agents,Pro,Free,"context-map (exact, overnight batch B part 6), composer-context-meter",C9,#32,built
 affectUI,Context Window,https://www.affectui.com/components/context-window,Components · Agents,Pro,,composer-context-meter,,#28,built
 affectUI,Cost Waterfall,https://www.affectui.com/components/cost-waterfall,Components · Agents,Pro,Free,"cost-waterfall (exact, overnight batch B part 6), trace-view, run-meter",,#32,built
@@ -65,7 +65,7 @@ affectUI,Judge Bracket,https://www.affectui.com/components/judge-bracket,Compone
 affectUI,KPI Chart,https://www.affectui.com/components/kpi-chart,Components · Data display,Pro,,genui-blocks,C12,#36,planned
 affectUI,Memory Panel,https://www.affectui.com/components/memory-panel,Components · Agents,Pro,Pro,"memory-panel (exact, ref-1 notes, family B part 9)",C10,#32,built
 affectUI,Message Actions,https://www.affectui.com/components/message-actions,Components · Chat,Free,Mixed,"message-actions (exact, overnight batch A), icon-states, message-bubble",,#32,built
-affectUI,Model Picker,https://www.affectui.com/components/model-picker,Components · Chat,Pro,Mixed,"model-picker (exact, chunk 2; selected row marked by check and blue dashes only, batch A), model-menu, composer-effort-control",,#32,built
+affectUI,Model Picker,https://www.affectui.com/components/model-picker,Components · Chat,Pro,Free,"model-picker (exact, chunk 2; selected row marked by check and blue dashes only, batch A), model-menu, composer-effort-control",,#32,built
 affectUI,Notification Stack,https://www.affectui.com/components/notification-stack,Components · Feedback,Free,Pro,notification-stack,C3,#26,built
 affectUI,OTP Input,https://www.affectui.com/components/otp-input,Components · Inputs,Free,Free,otp-input,C2,#25,built
 affectUI,Parallel Attempts,https://www.affectui.com/components/parallel-attempts,Components · Agents,Pro,Mixed,"parallel-attempts (exact, ref-1 notes, family B part 9), fanout-grid",C8,#32,built
@@ -152,13 +152,13 @@ affectUI,App Directory,https://www.affectui.com/blocks/app-directory,Blocks · I
 affectUI,Client Context,https://www.affectui.com/blocks/client-context,Blocks · Productivity,Pro,,NEW,K2,#41,planned
 affectUI,Invoice & Credit Note,https://www.affectui.com/blocks/invoice-credit,Blocks · Billing,Pro,,NEW,K2,#41,planned
 affectUI,KPI Board,https://www.affectui.com/blocks/kpi-board,Blocks · Analytics,Pro,,genui-blocks,K2,#41,planned
-affectUI,Live Session,https://www.affectui.com/blocks/live-session,Blocks · Agents,Pro,,live-session,C1,C1f,"built (C1f: Dioxus + GPUI interactive, oxyn_core::blocks, /blocks/agents/live-session/, Pro)"
+affectUI,Live Session,https://www.affectui.com/blocks/live-session,Blocks · Agents,Pro,Pro,live-session,C1,C1f,"built (C1f: Dioxus + GPUI interactive, oxyn_core::blocks, /blocks/agents/live-session/, Pro)"
 affectUI,Logo Marquee,https://www.affectui.com/blocks/logo-marquee,Blocks · Social proof,Free,,NEW,K3,#43,planned
 affectUI,Metrics Dashboard,https://www.affectui.com/blocks/metrics-dashboard,Blocks · Analytics,Pro,,genui-blocks,K2,#41,planned
-affectUI,Mission Control,https://www.affectui.com/blocks/mission-control,Blocks · Agents,Pro,,mission-control,C1,C1f,"built (C1f: Dioxus + GPUI interactive, oxyn_core::blocks, /blocks/agents/mission-control/, Pro)"
-affectUI,Mission Timeline,https://www.affectui.com/blocks/mission-timeline,Blocks · Agents,Pro,,mission-timeline,C1,C1f,"built (C1f: Dioxus + GPUI interactive, oxyn_core::blocks, /blocks/agents/mission-timeline/, Pro)"
+affectUI,Mission Control,https://www.affectui.com/blocks/mission-control,Blocks · Agents,Pro,Pro,mission-control,C1,C1f,"built (C1f: Dioxus + GPUI interactive, oxyn_core::blocks, /blocks/agents/mission-control/, Pro)"
+affectUI,Mission Timeline,https://www.affectui.com/blocks/mission-timeline,Blocks · Agents,Pro,Pro,mission-timeline,C1,C1f,"built (C1f: Dioxus + GPUI interactive, oxyn_core::blocks, /blocks/agents/mission-timeline/, Pro)"
 affectUI,Pricing Plans,https://www.affectui.com/blocks/pricing-plans,Blocks · Pricing,Pro,,NEW,K3,#43,planned
-affectUI,Run Inspector,https://www.affectui.com/blocks/run-inspector,Blocks · Agents,Pro,,run-inspector,C1,C1f,"built (C1f: Dioxus + GPUI interactive, oxyn_core::blocks, /blocks/agents/run-inspector/, Pro)"
+affectUI,Run Inspector,https://www.affectui.com/blocks/run-inspector,Blocks · Agents,Pro,Pro,run-inspector,C1,C1f,"built (C1f: Dioxus + GPUI interactive, oxyn_core::blocks, /blocks/agents/run-inspector/, Pro)"
 affectUI,Task Board,https://www.affectui.com/blocks/task-board,Blocks · Productivity,Pro,,NEW,K2,#41,planned
 affectUI,Testimonial Wall,https://www.affectui.com/blocks/testimonial-wall,Blocks · Social proof,Free,,NEW,K3,#43,planned
 affectUI,Agent Team,https://www.affectui.com/illustrations/agent-team,Illustrations · Card illustrations,Free,,animated-marks,I1,#42,planned
@@ -355,30 +355,30 @@ Arc UI,AI chat,https://uiarc.dev/components/blocks/ai-chat,Blocks · AI,Pro,,mes
 Arc UI,AI composer,https://uiarc.dev/components/blocks/ai-composer,Blocks · AI,Pro,,composer.md (+ composer-* family),,#28,built
 Arc UI,AI answer,https://uiarc.dev/components/blocks/ai-answer,Blocks · AI,Pro,,citations-sources,,#27,built
 Arc UI,Model picker,https://uiarc.dev/components/blocks/model-picker,Blocks · AI,Pro,,"composer-model-picker.md, composer-effort-control.md",,#28,built
-Arc UI,Model arena,https://uiarc.dev/components/blocks/model-arena,Blocks · AI,Pro,,model-arena,C1,C1g,"built (C1g: Dioxus + GPUI interactive, oxyn_core::blocks, /blocks/ai/model-arena/, Pro)"
-Arc UI,Prompt studio,https://uiarc.dev/components/blocks/prompt-studio,Blocks · AI,Pro,,prompt-studio,C1,C1g,"built (C1g: Dioxus + GPUI interactive, oxyn_core::blocks, /blocks/ai/prompt-studio/, Pro)"
+Arc UI,Model arena,https://uiarc.dev/components/blocks/model-arena,Blocks · AI,Pro,Pro,model-arena,C1,C1g,"built (C1g: Dioxus + GPUI interactive, oxyn_core::blocks, /blocks/ai/model-arena/, Pro)"
+Arc UI,Prompt studio,https://uiarc.dev/components/blocks/prompt-studio,Blocks · AI,Pro,Pro,prompt-studio,C1,C1g,"built (C1g: Dioxus + GPUI interactive, oxyn_core::blocks, /blocks/ai/prompt-studio/, Pro)"
 Arc UI,Document extraction,https://uiarc.dev/components/blocks/document-extract,Blocks · AI,Pro,,citations-sources,,#27,built
-Arc UI,Agent memory,https://uiarc.dev/components/blocks/agent-memory,Blocks · AI,Pro,,assistant-memory,C1,C1g,"built (C1g: Dioxus + GPUI interactive, oxyn_core::blocks, /blocks/ai/assistant-memory/, Pro)"
+Arc UI,Agent memory,https://uiarc.dev/components/blocks/agent-memory,Blocks · AI,Pro,Pro,assistant-memory,C1,C1g,"built (C1g: Dioxus + GPUI interactive, oxyn_core::blocks, /blocks/ai/assistant-memory/, Pro)"
 Arc UI,AI side panel,https://uiarc.dev/components/blocks/ai-side-panel,Blocks · AI,Pro,,side-panels,,#27,built
 Arc UI,AI inline edit,https://uiarc.dev/components/blocks/ai-inline-edit,Blocks · AI,Pro,Mixed,"ai-inline-edit, diff-viewer",,#30,built
 Arc UI,Research run,https://uiarc.dev/components/blocks/research-run,Blocks · AI,Pro,,citations-sources,,#27,built
-Arc UI,AI insight card,https://uiarc.dev/components/blocks/ai-insight-card,Blocks · AI,Pro,,ai-insight-card,C1,C1f,"built (C1f: Dioxus + GPUI interactive, oxyn_core::blocks, /blocks/ai/ai-insight-card/, Pro)"
-Arc UI,Catch up,https://uiarc.dev/components/blocks/catch-up,Blocks · AI,Pro,,catch-up,C1,C1g,"built (C1g: Dioxus + GPUI interactive, oxyn_core::blocks, /blocks/ai/catch-up/, Pro)"
-Arc UI,AI feature launch,https://uiarc.dev/components/blocks/ai-feature-launch,Blocks · AI,Pro,,ai-feature-launch,C1,C1g,"built (C1g: Dioxus + GPUI interactive, oxyn_core::blocks, /blocks/ai/ai-feature-launch/, Pro)"
+Arc UI,AI insight card,https://uiarc.dev/components/blocks/ai-insight-card,Blocks · AI,Pro,Pro,ai-insight-card,C1,C1f,"built (C1f: Dioxus + GPUI interactive, oxyn_core::blocks, /blocks/ai/ai-insight-card/, Pro)"
+Arc UI,Catch up,https://uiarc.dev/components/blocks/catch-up,Blocks · AI,Pro,Pro,catch-up,C1,C1g,"built (C1g: Dioxus + GPUI interactive, oxyn_core::blocks, /blocks/ai/catch-up/, Pro)"
+Arc UI,AI feature launch,https://uiarc.dev/components/blocks/ai-feature-launch,Blocks · AI,Pro,Pro,ai-feature-launch,C1,C1g,"built (C1g: Dioxus + GPUI interactive, oxyn_core::blocks, /blocks/ai/ai-feature-launch/, Pro)"
 Arc UI,AI search bar,https://uiarc.dev/components/blocks/ai-search-bar,Blocks · AI,Pro,Pro,ai-search-bar,,#26,built
-Arc UI,AI setup wizard,https://uiarc.dev/components/blocks/ai-setup-wizard,Blocks · AI,Pro,,ai-setup-wizard,C1,C1g,"built (C1g: Dioxus + GPUI interactive, oxyn_core::blocks, /blocks/ai/ai-setup-wizard/, Pro)"
-Arc UI,Call insights,https://uiarc.dev/components/blocks/call-insights,Blocks · AI,Pro,,call-insights,C1,C1g,"built (C1g: Dioxus + GPUI interactive, oxyn_core::blocks, /blocks/ai/call-insights/, Pro)"
-Arc UI,Lead scoring,https://uiarc.dev/components/blocks/lead-scoring,Blocks · AI,Pro,,lead-scoring,C1,C1g,"built (C1g: Dioxus + GPUI interactive, oxyn_core::blocks, /blocks/ai/lead-scoring/, Pro)"
+Arc UI,AI setup wizard,https://uiarc.dev/components/blocks/ai-setup-wizard,Blocks · AI,Pro,Pro,ai-setup-wizard,C1,C1g,"built (C1g: Dioxus + GPUI interactive, oxyn_core::blocks, /blocks/ai/ai-setup-wizard/, Pro)"
+Arc UI,Call insights,https://uiarc.dev/components/blocks/call-insights,Blocks · AI,Pro,Pro,call-insights,C1,C1g,"built (C1g: Dioxus + GPUI interactive, oxyn_core::blocks, /blocks/ai/call-insights/, Pro)"
+Arc UI,Lead scoring,https://uiarc.dev/components/blocks/lead-scoring,Blocks · AI,Pro,Pro,lead-scoring,C1,C1g,"built (C1g: Dioxus + GPUI interactive, oxyn_core::blocks, /blocks/ai/lead-scoring/, Pro)"
 Arc UI,Agent run,https://uiarc.dev/components/blocks/agent-run,Blocks · Agents,Pro,,"tool-call.md, plan-todo.md, diff-viewer.md, approval-card.md, pr-card.md",,#28,built
-Arc UI,Agent tasks,https://uiarc.dev/components/blocks/agent-tasks,Blocks · Agents,Pro,,background-agents,C1,C1f,"built (C1f: Dioxus + GPUI interactive, oxyn_core::blocks, /blocks/agents/background-agents/, Pro)"
+Arc UI,Agent tasks,https://uiarc.dev/components/blocks/agent-tasks,Blocks · Agents,Pro,Pro,background-agents,C1,C1f,"built (C1f: Dioxus + GPUI interactive, oxyn_core::blocks, /blocks/agents/background-agents/, Pro)"
 Arc UI,Agent approvals,https://uiarc.dev/components/blocks/agent-approvals,Blocks · Agents,Pro,,"approvals.md, approval-card.md, permission-rules.md",,#28,built
-Arc UI,Agent routines,https://uiarc.dev/components/blocks/agent-routines,Blocks · Agents,Pro,,agent-routines,C1,C1f,"built (C1f: Dioxus + GPUI interactive, oxyn_core::blocks, /blocks/agents/agent-routines/, Pro)"
+Arc UI,Agent routines,https://uiarc.dev/components/blocks/agent-routines,Blocks · Agents,Pro,Pro,agent-routines,C1,C1f,"built (C1f: Dioxus + GPUI interactive, oxyn_core::blocks, /blocks/agents/agent-routines/, Pro)"
 Arc UI,Agent orchestrator,https://uiarc.dev/components/blocks/agent-orchestrator,Blocks · Agents,Pro,,"subagent-tree.md, fanout-grid.md",,#28,built
-Arc UI,MCP servers,https://uiarc.dev/components/blocks/mcp-servers,Blocks · Agents,Pro,,mcp-servers,C1,C1f,"built (C1f: Dioxus + GPUI interactive, oxyn_core::blocks, /blocks/agents/mcp-servers/, Pro)"
-Arc UI,Knowledge base,https://uiarc.dev/components/blocks/knowledge-base,Blocks · Agents,Pro,,knowledge-base,C1,C1f,"built (C1f: Dioxus + GPUI interactive, oxyn_core::blocks, /blocks/agents/knowledge-base/, Pro)"
-Arc UI,Eval suite,https://uiarc.dev/components/blocks/eval-suite,Blocks · Agents,Pro,,eval-suite,C1,C1f,"built (C1f: Dioxus + GPUI interactive, oxyn_core::blocks, /blocks/agents/eval-suite/, Pro)"
-Arc UI,Agent builder,https://uiarc.dev/components/blocks/agent-builder,Blocks · Agents,Pro,,agent-builder,C1,C1f,"built (C1f: Dioxus + GPUI interactive, oxyn_core::blocks, /blocks/agents/agent-builder/, Pro)"
-Arc UI,Agent gallery,https://uiarc.dev/components/blocks/agent-gallery,Blocks · Agents,Pro,,agent-gallery,C1,C1f,"built (C1f: Dioxus + GPUI interactive, oxyn_core::blocks, /blocks/agents/agent-gallery/, Pro)"
+Arc UI,MCP servers,https://uiarc.dev/components/blocks/mcp-servers,Blocks · Agents,Pro,Pro,mcp-servers,C1,C1f,"built (C1f: Dioxus + GPUI interactive, oxyn_core::blocks, /blocks/agents/mcp-servers/, Pro)"
+Arc UI,Knowledge base,https://uiarc.dev/components/blocks/knowledge-base,Blocks · Agents,Pro,Pro,knowledge-base,C1,C1f,"built (C1f: Dioxus + GPUI interactive, oxyn_core::blocks, /blocks/agents/knowledge-base/, Pro)"
+Arc UI,Eval suite,https://uiarc.dev/components/blocks/eval-suite,Blocks · Agents,Pro,Pro,eval-suite,C1,C1f,"built (C1f: Dioxus + GPUI interactive, oxyn_core::blocks, /blocks/agents/eval-suite/, Pro)"
+Arc UI,Agent builder,https://uiarc.dev/components/blocks/agent-builder,Blocks · Agents,Pro,Pro,agent-builder,C1,C1f,"built (C1f: Dioxus + GPUI interactive, oxyn_core::blocks, /blocks/agents/agent-builder/, Pro)"
+Arc UI,Agent gallery,https://uiarc.dev/components/blocks/agent-gallery,Blocks · Agents,Pro,Pro,agent-gallery,C1,C1f,"built (C1f: Dioxus + GPUI interactive, oxyn_core::blocks, /blocks/agents/agent-gallery/, Pro)"
 Arc UI,Sidebar,https://uiarc.dev/components/blocks/sidebar,Blocks · App shell,Pro,,"workspace-chrome, side-panels",,#27,built
 Arc UI,Workspace sidebar,https://uiarc.dev/components/blocks/workspace-sidebar,None · None,Pro,,workspace-chrome,,#27,built
 Arc UI,Sidebar rail,https://uiarc.dev/components/blocks/sidebar-rail,None · None,Pro,,workspace-chrome,,#27,built
@@ -527,50 +527,50 @@ Arc UI,Cursor trail draw,https://uiarc.dev/components/cursor-trail-draw,Special 
 Arc UI,Agent status,https://uiarc.dev/components/agent-status,Special components · AI,Pro,,"status-indicator.md, acting-indicator.md",,#28,built
 Arc UI,Tool call,https://uiarc.dev/components/tool-call,Special components · AI,Pro,,tool-call.md,,#28,built
 Arc UI,Agent plan,https://uiarc.dev/components/agent-plan,Special components · AI,Pro,,"plan-todo.md, plan-approval.md",,#28,built
-Arc UI,Agent timeline,https://uiarc.dev/components/agent-timeline,Special components · AI,Pro,,agent-timeline,C1,C1d,"built (C1d: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/agent-timeline/, Pro)"
+Arc UI,Agent timeline,https://uiarc.dev/components/agent-timeline,Special components · AI,Pro,Pro,agent-timeline,C1,C1d,"built (C1d: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/agent-timeline/, Pro)"
 Arc UI,Context window,https://uiarc.dev/components/context-window,Special components · AI,Pro,,composer-context-meter.md,,#28,built
 Arc UI,Reasoning block,https://uiarc.dev/components/reasoning-block,Special components · AI,Pro,Free,reasoning-block,,#27,built
 Arc UI,Source cards,https://uiarc.dev/components/source-cards,Special components · AI,Pro,,citations-sources,,#27,built
-Arc UI,Model card,https://uiarc.dev/components/model-card,Special components · AI,Pro,,model-card,C1,C1d,"built (C1d: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/model-card/, Pro)"
-Arc UI,AI workflow,https://uiarc.dev/components/ai-workflow,Special components · AI,Pro,,ai-workflow,C1,C1d,"built (C1d: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/ai-workflow/, Pro)"
+Arc UI,Model card,https://uiarc.dev/components/model-card,Special components · AI,Pro,Pro,model-card,C1,C1d,"built (C1d: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/model-card/, Pro)"
+Arc UI,AI workflow,https://uiarc.dev/components/ai-workflow,Special components · AI,Pro,Pro,ai-workflow,C1,C1d,"built (C1d: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/ai-workflow/, Pro)"
 Arc UI,Code suggestion,https://uiarc.dev/components/code-suggestion,Special components · AI,Pro,Free,"code-suggestion, diff-viewer",,#30,built
 Arc UI,Ghost text,https://uiarc.dev/components/ghost-text,Special components · AI,Pro,,composer-input-shell.md (partial),,#28,built
-Arc UI,Image generation,https://uiarc.dev/components/image-generation,Special components · AI,Pro,,image-generation,C1,C1d,"built (C1d: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/image-generation/, Pro)"
+Arc UI,Image generation,https://uiarc.dev/components/image-generation,Special components · AI,Pro,Pro,image-generation,C1,C1d,"built (C1d: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/image-generation/, Pro)"
 Arc UI,Dictation button,https://uiarc.dev/components/dictation-button,Special components · AI,Pro,,composer-voice-input,,#27,built
-Arc UI,Speech player,https://uiarc.dev/components/speech-player,Special components · AI,Pro,,speech-player,C1,C1d,"built (C1d: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/speech-player/, Pro)"
-Arc UI,Meeting summary,https://uiarc.dev/components/meeting-summary,Special components · AI,Pro,,meeting-summary,C1,C1d,"built (C1d: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/meeting-summary/, Pro)"
-Arc UI,Reply draft,https://uiarc.dev/components/reply-draft,Special components · AI,Pro,,reply-draft,C1,C1d,"built (C1d: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/reply-draft/, Pro)"
-Arc UI,Agent handoff,https://uiarc.dev/components/agent-handoff,Special components · AI,Pro,,"human-handoff (Arc ""Agent handoff""; agent-handoff slug is the affectUI agent-to-agent component)",C1,C1d,"built (C1d: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/human-handoff/, Pro)"
-Arc UI,PII redaction,https://uiarc.dev/components/pii-redaction,Special components · AI,Pro,,pii-redaction,C1,C1d,"built (C1d: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/pii-redaction/, Pro)"
+Arc UI,Speech player,https://uiarc.dev/components/speech-player,Special components · AI,Pro,Pro,speech-player,C1,C1d,"built (C1d: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/speech-player/, Pro)"
+Arc UI,Meeting summary,https://uiarc.dev/components/meeting-summary,Special components · AI,Pro,Pro,meeting-summary,C1,C1d,"built (C1d: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/meeting-summary/, Pro)"
+Arc UI,Reply draft,https://uiarc.dev/components/reply-draft,Special components · AI,Pro,Pro,reply-draft,C1,C1d,"built (C1d: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/reply-draft/, Pro)"
+Arc UI,Agent handoff,https://uiarc.dev/components/agent-handoff,Special components · AI,Pro,Pro,"human-handoff (Arc ""Agent handoff""; agent-handoff slug is the affectUI agent-to-agent component)",C1,C1d,"built (C1d: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/human-handoff/, Pro)"
+Arc UI,PII redaction,https://uiarc.dev/components/pii-redaction,Special components · AI,Pro,Pro,pii-redaction,C1,C1d,"built (C1d: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/pii-redaction/, Pro)"
 Arc UI,Response feedback,https://uiarc.dev/components/response-feedback,Special components · AI,Pro,Free,message-bubble,,#27,built
-Arc UI,LLM cost calculator,https://uiarc.dev/components/llm-cost-calculator,Special components · AI,Pro,,llm-cost-calculator,C1,C1d,"built (C1d: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/llm-cost-calculator/, Pro)"
-Arc UI,Provider keys,https://uiarc.dev/components/provider-keys,Special components · AI,Pro,,provider-keys,C1,C1d,"built (C1d: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/provider-keys/, Pro)"
-Arc UI,Generation stats,https://uiarc.dev/components/generation-stats,Special components · AI,Pro,,generation-stats,C1,C1d,"built (C1d: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/generation-stats/, Pro)"
-Arc UI,AI translate,https://uiarc.dev/components/ai-translate,Special components · AI,Pro,,ai-translate,C1,C1d,"built (C1d: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/ai-translate/, Pro)"
-Arc UI,TL;DR toggle,https://uiarc.dev/components/tldr-toggle,Special components · AI,Pro,,tldr-toggle,C1,C1d,"built (C1d: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/tldr-toggle/, Pro)"
-Arc UI,Connector setup,https://uiarc.dev/components/connector-setup,Special components · AI,Pro,,connector-setup,C1,C1d,"built (C1d: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/connector-setup/, Pro)"
+Arc UI,LLM cost calculator,https://uiarc.dev/components/llm-cost-calculator,Special components · AI,Pro,Pro,llm-cost-calculator,C1,C1d,"built (C1d: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/llm-cost-calculator/, Pro)"
+Arc UI,Provider keys,https://uiarc.dev/components/provider-keys,Special components · AI,Pro,Pro,provider-keys,C1,C1d,"built (C1d: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/provider-keys/, Pro)"
+Arc UI,Generation stats,https://uiarc.dev/components/generation-stats,Special components · AI,Pro,Pro,generation-stats,C1,C1d,"built (C1d: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/generation-stats/, Pro)"
+Arc UI,AI translate,https://uiarc.dev/components/ai-translate,Special components · AI,Pro,Pro,ai-translate,C1,C1d,"built (C1d: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/ai-translate/, Pro)"
+Arc UI,TL;DR toggle,https://uiarc.dev/components/tldr-toggle,Special components · AI,Pro,Pro,tldr-toggle,C1,C1d,"built (C1d: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/tldr-toggle/, Pro)"
+Arc UI,Connector setup,https://uiarc.dev/components/connector-setup,Special components · AI,Pro,Pro,connector-setup,C1,C1d,"built (C1d: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/connector-setup/, Pro)"
 Arc UI,Smart form fill,https://uiarc.dev/components/smart-form-fill,Special components · AI,Pro,Pro,smart-form-fill,,#25,built
-Arc UI,Enrich column,https://uiarc.dev/components/enrich-column,Special components · AI,Pro,,enrich-column,C1,C1d,"built (C1d: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/enrich-column/, Pro)"
-Arc UI,Ticket router,https://uiarc.dev/components/ticket-router,Special components · AI,Pro,,ticket-router,C1,C1d,"built (C1d: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/ticket-router/, Pro)"
-Arc UI,Ask your data,https://uiarc.dev/components/ask-your-data,Special components · AI,Pro,,ask-your-data,C1,C1e,"built (C1e: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/ask-your-data/, Pro)"
-Arc UI,Agent cursor,https://uiarc.dev/components/agent-cursor,Special components · AI,Pro,,agent-doc-cursor,C1,C1e,"built (C1e: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/agent-doc-cursor/, Pro (slug agent-doc-cursor: agent-cursors already exists))"
-Arc UI,Provider status,https://uiarc.dev/components/provider-status,Special components · AI,Pro,,provider-status,C1,C1e,"built (C1e: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/provider-status/, Pro)"
-Arc UI,Training run,https://uiarc.dev/components/training-run,Special components · AI,Pro,,training-run,C1,C1e,"built (C1e: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/training-run/, Pro)"
+Arc UI,Enrich column,https://uiarc.dev/components/enrich-column,Special components · AI,Pro,Pro,enrich-column,C1,C1d,"built (C1d: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/enrich-column/, Pro)"
+Arc UI,Ticket router,https://uiarc.dev/components/ticket-router,Special components · AI,Pro,Pro,ticket-router,C1,C1d,"built (C1d: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/ticket-router/, Pro)"
+Arc UI,Ask your data,https://uiarc.dev/components/ask-your-data,Special components · AI,Pro,Pro,ask-your-data,C1,C1e,"built (C1e: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/ask-your-data/, Pro)"
+Arc UI,Agent cursor,https://uiarc.dev/components/agent-cursor,Special components · AI,Pro,Pro,agent-doc-cursor,C1,C1e,"built (C1e: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/agent-doc-cursor/, Pro (slug agent-doc-cursor: agent-cursors already exists))"
+Arc UI,Provider status,https://uiarc.dev/components/provider-status,Special components · AI,Pro,Pro,provider-status,C1,C1e,"built (C1e: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/provider-status/, Pro)"
+Arc UI,Training run,https://uiarc.dev/components/training-run,Special components · AI,Pro,Pro,training-run,C1,C1e,"built (C1e: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/training-run/, Pro)"
 Arc UI,AI command,https://uiarc.dev/components/ai-command,Special components · AI,Pro,Pro,ai-command,,#26,built
 Arc UI,Starter prompts,https://uiarc.dev/components/starter-prompts,Special components · AI,Pro,,messages,,#27,built
-Arc UI,AI mascot,https://uiarc.dev/components/ai-mascot,Special components · AI,Pro,,ai-mascot,C1,C1e,"built (C1e: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/ai-mascot/, Pro)"
-Arc UI,Image reveal,https://uiarc.dev/components/image-reveal,Special components · AI,Pro,,image-reveal,C1,C1e,"built (C1e: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/image-reveal/, Pro)"
-Arc UI,AI spark,https://uiarc.dev/components/ai-spark,Special components · AI,Pro,,ai-spark,C1,C1e,"built (C1e: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/ai-spark/, Pro)"
-Arc UI,Pixel mascot,https://uiarc.dev/components/pixel-mascot,Special components · AI,Pro,,pixel-mascot,C1,C1e,"built (C1e: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/pixel-mascot/, Pro)"
-Arc UI,Ghost mascot,https://uiarc.dev/components/ghost-mascot,Special components · AI,Pro,,ghost-mascot,C1,C1e,"built (C1e: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/ghost-mascot/, Pro)"
-Arc UI,Cube mascot,https://uiarc.dev/components/cube-mascot,Special components · AI,Pro,,cube-mascot,C1,C1e,"built (C1e: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/cube-mascot/, Pro)"
-Arc UI,Tone tuner,https://uiarc.dev/components/tone-tuner,Special components · AI,Pro,,tone-tuner,C1,C1e,"built (C1e: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/tone-tuner/, Pro)"
-Arc UI,Upgrade prompt,https://uiarc.dev/components/upgrade-prompt,Special components · AI,Pro,,upgrade-prompt,C1,C1e,"built (C1e: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/upgrade-prompt/, Pro)"
-Arc UI,Referral card,https://uiarc.dev/components/referral-card,Special components · AI,Pro,,referral-card,C1,C1e,"built (C1e: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/referral-card/, Pro)"
-Arc UI,Trial banner,https://uiarc.dev/components/trial-banner,Special components · AI,Pro,,trial-banner,C1,C1e,"built (C1e: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/trial-banner/, Pro)"
+Arc UI,AI mascot,https://uiarc.dev/components/ai-mascot,Special components · AI,Pro,Pro,ai-mascot,C1,C1e,"built (C1e: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/ai-mascot/, Pro)"
+Arc UI,Image reveal,https://uiarc.dev/components/image-reveal,Special components · AI,Pro,Pro,image-reveal,C1,C1e,"built (C1e: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/image-reveal/, Pro)"
+Arc UI,AI spark,https://uiarc.dev/components/ai-spark,Special components · AI,Pro,Pro,ai-spark,C1,C1e,"built (C1e: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/ai-spark/, Pro)"
+Arc UI,Pixel mascot,https://uiarc.dev/components/pixel-mascot,Special components · AI,Pro,Pro,pixel-mascot,C1,C1e,"built (C1e: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/pixel-mascot/, Pro)"
+Arc UI,Ghost mascot,https://uiarc.dev/components/ghost-mascot,Special components · AI,Pro,Pro,ghost-mascot,C1,C1e,"built (C1e: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/ghost-mascot/, Pro)"
+Arc UI,Cube mascot,https://uiarc.dev/components/cube-mascot,Special components · AI,Pro,Pro,cube-mascot,C1,C1e,"built (C1e: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/cube-mascot/, Pro)"
+Arc UI,Tone tuner,https://uiarc.dev/components/tone-tuner,Special components · AI,Pro,Pro,tone-tuner,C1,C1e,"built (C1e: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/tone-tuner/, Pro)"
+Arc UI,Upgrade prompt,https://uiarc.dev/components/upgrade-prompt,Special components · AI,Pro,Pro,upgrade-prompt,C1,C1e,"built (C1e: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/upgrade-prompt/, Pro)"
+Arc UI,Referral card,https://uiarc.dev/components/referral-card,Special components · AI,Pro,Pro,referral-card,C1,C1e,"built (C1e: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/referral-card/, Pro)"
+Arc UI,Trial banner,https://uiarc.dev/components/trial-banner,Special components · AI,Pro,Pro,trial-banner,C1,C1e,"built (C1e: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/trial-banner/, Pro)"
 Arc UI,Team switcher,https://uiarc.dev/components/team-switcher,Special components · AI,Pro,Pro,team-switcher,,#27,built
-Arc UI,Live visitors,https://uiarc.dev/components/live-visitors,Special components · AI,Pro,,live-visitors,C1,C1e,"built (C1e: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/live-visitors/, Pro)"
-Arc UI,Social proof toast,https://uiarc.dev/components/social-proof-toast,Special components · AI,Pro,,social-proof-toast,C1,C1e,"built (C1e: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/social-proof-toast/, Pro)"
+Arc UI,Live visitors,https://uiarc.dev/components/live-visitors,Special components · AI,Pro,Pro,live-visitors,C1,C1e,"built (C1e: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/live-visitors/, Pro)"
+Arc UI,Social proof toast,https://uiarc.dev/components/social-proof-toast,Special components · AI,Pro,Pro,social-proof-toast,C1,C1e,"built (C1e: Dioxus + GPUI interactive, oxyn_core::aikit, /components/ai/social-proof-toast/, Pro)"
 Arc UI,Install snippet,https://uiarc.dev/components/install-snippet,Special components · AI,Pro,,NEW (docs),N24,#24,built
 Arc UI,Data flow,https://uiarc.dev/components/data-flow,Special components · Illustrations,Pro,,NEW (illustration),N21,#42,planned
 Arc UI,Payment flow,https://uiarc.dev/components/payment-flow,Special components · Illustrations,Pro,,NEW (illustration),N21,#42,planned
@@ -606,11 +606,11 @@ Beautiful UI,Sidebar Nav,https://www.beautifului.dev/#sidebar-nav,Components,Fre
 Beautiful UI,Search,https://www.beautifului.dev/#search,Components,Free (MIT),Pro,search-field,,#26,built
 Beautiful UI,Agent Screen,https://www.beautifului.dev/#agent-screen,Components,Free (MIT),,"takeover-banner, acting-indicator, run-replay",,#39,planned
 X post,"#1 @pontusab ""first impressions matter""",https://x.com/pontusab/status/2119865335990141433,X videos,reference,,NEW,,#40,planned
-X post,#2 @fayazara Lotion,https://x.com/fayazara/status/2119742543357444272,X videos,Free,,publish-popover,C2,C2a,"built (C2a: Dioxus + GPUI interactive, oxyn_core::xpost, /components/navigation/publish-popover/, free)"
+X post,#2 @fayazara Lotion,https://x.com/fayazara/status/2119742543357444272,X videos,Free,Pro,publish-popover,C2,C2a,"built (C2a: Dioxus + GPUI interactive, oxyn_core::xpost, /components/navigation/publish-popover/, free)"
 X post,#3 @aryagm01 local T3 Code (2 photos),https://x.com/aryagm01/status/2119611853244645763,X videos,reference,Pro,thread-list,,#28,built
 X post,"#4 @FinnoTaylor ""Literal file tree 🌳""",https://x.com/FinnoTaylor/status/2112286571999428676,X videos,reference,,NEW,,#37,planned
 X post,#5 @Jakubantalik Generative effect skill,https://x.com/Jakubantalik/status/2113656694303551906,X videos,reference,,NEW,,#37,planned
-X post,#6 @kushsolitary (no text),https://x.com/kushsolitary/status/2113644365142958213,X videos,Free,,split-confirm,C2,C2a,"built (C2a: Dioxus + GPUI interactive, oxyn_core::xpost, /components/buttons/split-confirm/, free)"
+X post,#6 @kushsolitary (no text),https://x.com/kushsolitary/status/2113644365142958213,X videos,Free,Pro,split-confirm,C2,C2a,"built (C2a: Dioxus + GPUI interactive, oxyn_core::xpost, /components/buttons/split-confirm/, free)"
 X post,#7 @naklecha Cloudy,https://x.com/naklecha/status/2113728791294226729,X videos,reference,Pro,"run-mode-menu, experiment-grid",,#28,built
 X post,#8 @miu21590 Octopus OS,https://x.com/miu21590/status/2114095879632375944,X videos,reference,,NEW,,#42,planned
 X post,#9 @60fpsdesign for @twelvelabs,https://x.com/60fpsdesign/status/2114031823831650451,X videos,reference,,NEW,,#42,planned
@@ -619,7 +619,7 @@ X post,#11 @praveenisomer ASCII Web Section,https://x.com/praveenisomer/status/2
 X post,#12 @zahragr8r Calendar dashboard,https://x.com/zahragr8r/status/2114320013956141086,X videos,reference,,NEW,,#41,planned
 X post,"#13 @seanaiux clean dashboard, 3 videos",https://x.com/seanaiux/status/2115462341261402428,X videos,reference,,NEW,,#37,planned
 X post,#14 @seanaiux clean dashboard,https://x.com/seanaiux/status/2115162868039442861,X videos,reference,,NEW,,#41,planned
-X post,#15 @nutlope fontzz,https://x.com/nutlope/status/2116207994832838818,X videos,Free,,agent-prompt-copy,C2,C2a,"built (C2a: Dioxus + GPUI interactive, oxyn_core::xpost, /components/buttons/agent-prompt-copy/, free)"
+X post,#15 @nutlope fontzz,https://x.com/nutlope/status/2116207994832838818,X videos,Free,Pro,agent-prompt-copy,C2,C2a,"built (C2a: Dioxus + GPUI interactive, oxyn_core::xpost, /components/buttons/agent-prompt-copy/, free)"
 X post,#16 @keviduk sidebar polish,https://x.com/keviduk/status/2116168166673924226,X videos,reference,,workspace-chrome,,#27,built
 X post,#17 @driceroland blueprint.page,https://x.com/driceroland/status/2116116058549481657,X videos,reference,,NEW,,#37,planned
 X post,#18 @seanaiux minimalist cards,https://x.com/seanaiux/status/2116240216751247393,X videos,reference,,NEW,,#43,planned
@@ -627,7 +627,7 @@ X post,#19 @david_visuals_ AI Chat Assistant (light),https://x.com/david_visuals
 X post,#20 @DopeOblivion Hero (Framer MCP + Claude),https://x.com/DopeOblivion/status/2116120076583633153,X videos,reference,,NEW,,#43,planned
 X post,#21 @pitus_ 100% AI-generated designs (thread),https://x.com/pitus_/status/2110059026818212244,X videos,reference,Pro,token-usage-chart,,#28,built
 X post,#22 @ceefryingpan Vespin,https://x.com/ceefryingpan/status/2117705368474358071,X videos,reference,,NEW,,#39,planned
-X post,#23 @dannyinsf_ agent-todos,https://x.com/dannyinsf_/status/2117714570164732328,X videos,Free,,loop-pipeline,C2,C2a,"built (C2a: Dioxus + GPUI interactive, oxyn_core::xpost, /components/agents/loop-pipeline/, free)"
+X post,#23 @dannyinsf_ agent-todos,https://x.com/dannyinsf_/status/2117714570164732328,X videos,Free,Pro,loop-pipeline,C2,C2a,"built (C2a: Dioxus + GPUI interactive, oxyn_core::xpost, /components/agents/loop-pipeline/, free)"
 X post,#24 @TekonBurns (text only),https://x.com/TekonBurns/status/2118064914028019978,X videos,reference,Pro,polling-cost,,#28,built
 X post,"#25 @augustasdesign ""this looks insane""",https://x.com/augustasdesign/status/2117859582546526215,X videos,reference,,NEW,,#41,planned
 X post,#26 @twentycrm Twenty UI,https://x.com/twentycrm/status/2118056653861896668,X videos,reference,,NEW,,#41,planned
@@ -637,26 +637,26 @@ X post,#29 @Alok619308 Cue,https://x.com/Alok619308/status/2118262179745161617,X
 X post,#30 @flohoeller Cost Waterfall,https://x.com/flohoeller/status/2117957229227786507,X videos,reference,,NEW,,#36,planned
 X post,#31 @eliakuratli AI mascot,https://x.com/eliakuratli/status/2118271867706618291,X videos,reference,,NEW,,#38,planned
 X post,#33 @jkelleyrtp Devin redesign? (3 photos),https://x.com/jkelleyrtp/status/2118843865415463348,X videos,reference,,NEW,,#37,planned
-X post,#34 @jbedln glimm trick,https://x.com/jbedln/status/2118439042845114706,X videos,Free,,write-sweep,C2,C2a,"built (C2a: Dioxus + GPUI interactive, oxyn_core::xpost, /components/agents/write-sweep/, free)"
+X post,#34 @jbedln glimm trick,https://x.com/jbedln/status/2118439042845114706,X videos,Free,Pro,write-sweep,C2,C2a,"built (C2a: Dioxus + GPUI interactive, oxyn_core::xpost, /components/agents/write-sweep/, free)"
 X post,"#35 @MSchwaibold ""This looks awesome""",https://x.com/MSchwaibold/status/2119156591404687608,X videos,reference,,NEW,,#45,planned
 X post,#36 @componest ai composer upload by @sitenley,https://x.com/componest/status/2119304640323793268,X videos,reference,Pro,attachment-strip,,#28,built
-X post,#37 @zzzzshawn tests visualised,https://x.com/zzzzshawn/status/2119398278337073555,X videos,Free,,test-ticks,C2,C2a,"built (C2a: Dioxus + GPUI interactive, oxyn_core::xpost, /components/agents/test-ticks/, free)"
-X post,#38 @HacktronAI website,https://x.com/HacktronAI/status/2119252317241303221,X videos,Free,,triage-metro,C2,C2a,"built (C2a: Dioxus + GPUI interactive, oxyn_core::xpost, /components/agents/triage-metro/, free)"
-X post,#39 @Kubai087 shockwave,https://x.com/Kubai087/status/2119359092334743735,X videos,Free,,done-shockwave,C2,C2a,"built (C2a: Dioxus + GPUI interactive, oxyn_core::xpost, /components/feedback/done-shockwave/, free)"
+X post,#37 @zzzzshawn tests visualised,https://x.com/zzzzshawn/status/2119398278337073555,X videos,Free,Pro,test-ticks,C2,C2a,"built (C2a: Dioxus + GPUI interactive, oxyn_core::xpost, /components/agents/test-ticks/, free)"
+X post,#38 @HacktronAI website,https://x.com/HacktronAI/status/2119252317241303221,X videos,Free,Pro,triage-metro,C2,C2a,"built (C2a: Dioxus + GPUI interactive, oxyn_core::xpost, /components/agents/triage-metro/, free)"
+X post,#39 @Kubai087 shockwave,https://x.com/Kubai087/status/2119359092334743735,X videos,Free,Pro,done-shockwave,C2,C2a,"built (C2a: Dioxus + GPUI interactive, oxyn_core::xpost, /components/feedback/done-shockwave/, free)"
 X post,"#40 @a1x45h ""As smooth as it gets!""",https://x.com/a1x45h/status/2119443557119615337,X videos,reference,,NEW,,#41,planned
-X post,#41 @codycollier debloated X,https://x.com/codycollier/status/2119780776095121848,X videos,Free,,proactive-card,C2,C2a,"built (C2a: Dioxus + GPUI interactive, oxyn_core::xpost, /components/chat/proactive-card/, free)"
+X post,#41 @codycollier debloated X,https://x.com/codycollier/status/2119780776095121848,X videos,Free,Pro,proactive-card,C2,C2a,"built (C2a: Dioxus + GPUI interactive, oxyn_core::xpost, /components/chat/proactive-card/, free)"
 X post,#42 @componest workflow builder by @flohoeller,https://x.com/componest/status/2119811032340390130,X videos,reference,,NEW,,#41,planned
 X post,#44 @flohoeller AI chat composer & overview,https://x.com/flohoeller/status/2119480887297638894,X videos,reference,Pro,"activity-home, activity-heatmap",,#28,built
 X post,#45 @benchodev Genie menu by @imharshin,https://x.com/benchodev/status/2119527879960650057,X videos,reference,,NEW,,#37,planned
 X post,#46 @_adamboyle sidebar transitions,https://x.com/_adamboyle/status/2119679881784991750,X videos,reference,,workspace-chrome,,#27,built
 X post,"#47 @desdivj ""Someone just booked a call""",https://x.com/desdivj/status/2119738295039250507,X videos,reference,,NEW,,#41,planned
 X post,#48 @seanaiux dark/light switch,https://x.com/seanaiux/status/2119830876703879366,X videos,reference,,NEW,,#37,planned
-X post,#49 @n___vc animated bento,https://x.com/n___vc/status/2119815118032871499,X videos,Free,,secret-card,C2,C2a,"built (C2a: Dioxus + GPUI interactive, oxyn_core::xpost, /components/agents/secret-card/, free)"
+X post,#49 @n___vc animated bento,https://x.com/n___vc/status/2119815118032871499,X videos,Free,Pro,secret-card,C2,C2a,"built (C2a: Dioxus + GPUI interactive, oxyn_core::xpost, /components/agents/secret-card/, free)"
 X post,#50 @micka_design Fluid Functionalism sharp,https://x.com/micka_design/status/2119814240760660411,X videos,reference,,NEW,,#45,planned
 X post,#51 @AdiKodez footer,https://x.com/AdiKodez/status/2119362052993306706,X videos,reference,,NEW,,#43,planned
 X post,#52 @omarships agently,https://x.com/omarships/status/2119588761608827253,X videos,reference,,NEW,,#39,planned
 X post,#53 @waynesutton quoting @mikeysee Threadbear (2 photos),https://x.com/waynesutton/status/2119683627936321896,X videos,reference,Pro,"thread-list, activity-home, activity-heatmap",,#28,built
-Oxyn,3-way merge conflict editor,docs/specs/merge-conflict.md,Components · Agents,Pro,,merge-conflict,,#31,built
+Oxyn,3-way merge conflict editor,docs/specs/merge-conflict.md,Components · Agents,Pro,Pro,merge-conflict,,#31,built
 Oxyn,Thinking Selector · Ruler card,,Thinking Selector,Free,Pro,effort-ruler,variants-1,#39,built
 Oxyn,Thinking Selector · Reasoning panel,,Thinking Selector,Free,Pro,reasoning-panel,variants-1,#39,built
 Oxyn,Thinking Selector · Effort list,,Thinking Selector,Free,Pro,effort-list,variants-1,#39,built
@@ -743,14 +743,14 @@ Arc UI,Screens · API keys and webhooks,https://uiarc.dev/demo,Arc screens,Free,
 Arc UI,Screens · Members,https://uiarc.dev/demo,Arc screens,Free,Pro,members-roles,S15,S15,built
 Arc UI,Screens · Billing,https://uiarc.dev/demo,Arc screens,Free,Pro,billing-usage,S15,S15,built
 affectUI,Agent / Tool Calls,https://www.affectui.com/screens/agent-tool-calls,App screens,Pro,Pro,agent-tool-calls,S15,S15,built
-Oxyn,Agent apps · Threadbar (editor + agent panel pattern),https://zed.dev/docs/ai/agent-panel,Agent apps,Free,,threadbar,S16,S16a,built (GPUI interactive)
-Oxyn,Agent apps · Tabstack (agent terminal blocks pattern),https://docs.warp.dev/agents,Agent apps,Free,,tabstack,S16,S16a,built (GPUI interactive)
-Oxyn,Agent apps · Repo Desk (chat-first code-host agent pattern),https://github.blog/changelog/2026-06-17-github-copilot-app-generally-available,Agent apps,Free,,repo-desk,S16,S16a,built (GPUI interactive)
-Oxyn,Agent apps · Preview Desk (agent previews + design mode pattern),https://docs.factory.com/factory-app/overview,Agent apps,Free,,preview-desk,S16,S16a,built (GPUI interactive)
-Oxyn,Agent apps · Hangar (agent manager + editor / browser surfaces pattern),https://antigravity.google/docs/agent-manager,Agent apps,Free,,hangar,S16,S16b,built (GPUI interactive)
-Oxyn,Agent apps · Halo Chat (assistant chat + tool cards pattern),https://gemini.google/desktop,Agent apps,Free,,halo-chat,S16,S16b,built (GPUI interactive)
-Oxyn,Agent apps · Pilot Panel (editor agent panel with plan / act and checkpoints pattern),https://docs.cline.bot/usage/cline-desktop,Agent apps,Free,,pilot-panel,S16,S16b,built (GPUI interactive)
-Oxyn,Agent apps · Courier (thread-first agent with cloud sandbox pattern),https://ampcode.com/docs/apps,Agent apps,Free,,courier,S16,S16b,built (GPUI interactive)
+Oxyn,Agent apps · Threadbar (editor + agent panel pattern),https://zed.dev/docs/ai/agent-panel,Agent apps,Free,Pro,threadbar,S16,S16a,built (GPUI interactive)
+Oxyn,Agent apps · Tabstack (agent terminal blocks pattern),https://docs.warp.dev/agents,Agent apps,Free,Pro,tabstack,S16,S16a,built (GPUI interactive)
+Oxyn,Agent apps · Repo Desk (chat-first code-host agent pattern),https://github.blog/changelog/2026-06-17-github-copilot-app-generally-available,Agent apps,Free,Pro,repo-desk,S16,S16a,built (GPUI interactive)
+Oxyn,Agent apps · Preview Desk (agent previews + design mode pattern),https://docs.factory.com/factory-app/overview,Agent apps,Free,Pro,preview-desk,S16,S16a,built (GPUI interactive)
+Oxyn,Agent apps · Hangar (agent manager + editor / browser surfaces pattern),https://antigravity.google/docs/agent-manager,Agent apps,Free,Pro,hangar,S16,S16b,built (GPUI interactive)
+Oxyn,Agent apps · Halo Chat (assistant chat + tool cards pattern),https://gemini.google/desktop,Agent apps,Free,Pro,halo-chat,S16,S16b,built (GPUI interactive)
+Oxyn,Agent apps · Pilot Panel (editor agent panel with plan / act and checkpoints pattern),https://docs.cline.bot/usage/cline-desktop,Agent apps,Free,Pro,pilot-panel,S16,S16b,built (GPUI interactive)
+Oxyn,Agent apps · Courier (thread-first agent with cloud sandbox pattern),https://ampcode.com/docs/apps,Agent apps,Free,Pro,courier,S16,S16b,built (GPUI interactive)
 Oxyn,Checkpoints · Checkpoint tree (forked checkpoints as an indented tree),https://ui.oxyn.workers.dev/components/agents/checkpoint-tree/,Components · Agents,Free,,checkpoint-timeline,C1,C1a,built (GPUI interactive)
 Oxyn,Checkpoints · Checkpoint film strip (thumbnail per checkpoint on a scrubbable track),https://ui.oxyn.workers.dev/components/agents/checkpoint-film-strip/,Components · Agents,Free,,checkpoint-timeline,C1,C1a,built (GPUI interactive)
 Oxyn,Checkpoints · Undo ladder (vertical stepper of reversible steps),https://ui.oxyn.workers.dev/components/agents/undo-ladder/,Components · Agents,Free,,checkpoint-timeline,C1,C1a,built (GPUI interactive)
