@@ -27,6 +27,7 @@
 
 pub mod aikit;
 pub mod approval;
+pub mod blocks;
 pub mod brand;
 pub mod chat;
 pub mod checkpoint;
