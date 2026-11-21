@@ -2,7 +2,7 @@
 
 # Spec: AI feature launch (`ai-feature-launch`)
 
-Section: Blocks · AI (page `/blocks/ai/ai-feature-launch/`, Pro). Reference: uiarc "Blocks · AI" ("AI feature launch", https://uiarc.dev/components/blocks/ai-feature-launch), behaviour only, under our own design; no source, artwork or copy taken. Every company, person and amount is fictional; companies and models that are named carry their official coloured marks.
+Section: Blocks · AI (page `/blocks/ai/ai-feature-launch/`, Pro). Reference: uiarc "Blocks · AI" ("AI feature launch"), behaviour only, under our own design; no source, artwork or copy taken. Every company, person and amount is fictional; companies and models that are named carry their official coloured marks.
 Components: `AiFeatureLaunch` (Dioxus, `oxyn_dioxus::blocks`, styles `blocks.css`, prefix `oxbk-`) · `BlocksView` with `BlockVariant::Launch` (GPUI), rules in `oxyn_core::blocks::launch`.
 
 ## 1. Purpose

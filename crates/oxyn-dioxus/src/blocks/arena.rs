@@ -21,8 +21,8 @@ fn side_icon(s: Side) -> (&'static str, &'static str) {
 /// Model arena: one prompt goes to two models whose names stay hidden. Both answers stream side
 /// by side at each model's own pace with first token time, speed and cost under them; the first
 /// to finish is marked. Once both are in, vote (A, tie, B or both bad) and the models are
-/// revealed with their marks; the leaderboard keeps win rates. Below 560 px of card width the
-/// panes become two tabs that keep both statuses in view.
+/// revealed with their marks; the leaderboard keeps win rates. On cards under 560 px one answer
+/// shows at a time, chosen from tabs that carry each side's state.
 #[component]
 pub fn ModelArena(
     /// Host clock.

@@ -2,7 +2,7 @@
 
 # Spec: Call insights (`call-insights`)
 
-Section: Blocks · AI (page `/blocks/ai/call-insights/`, Pro). Reference: uiarc "Blocks · AI" ("Call insights", https://uiarc.dev/components/blocks/call-insights), behaviour only, under our own design; no source, artwork or copy taken. Every company, person and amount is fictional; companies and models that are named carry their official coloured marks.
+Section: Blocks · AI (page `/blocks/ai/call-insights/`, Pro). Reference: uiarc "Blocks · AI" ("Call insights"), behaviour only, under our own design; no source, artwork or copy taken. Every company, person and amount is fictional; companies and models that are named carry their official coloured marks.
 Components: `CallInsights` (Dioxus, `oxyn_dioxus::blocks`, styles `blocks.css`, prefix `oxbk-`) · `BlocksView` with `BlockVariant::Call` (GPUI), rules in `oxyn_core::blocks::call`.
 
 ## 1. Purpose

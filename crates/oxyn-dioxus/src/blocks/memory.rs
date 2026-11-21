@@ -7,7 +7,7 @@ use oxyn_core::blocks::memory::{CAPTURE, GROUPS, Memory};
 use super::switch;
 use crate::aikit::{cls, ico, key_of, live};
 
-/// Assistant memory: what an assistant remembers about you, one plain sentence per memory. The
+/// Assistant memory: the facts an assistant keeps about its user, one short line each. The
 /// header shows how full memory is and switches for saved memories and chat history; filter
 /// pills and a search sit over the grouped list; each row's source, Edit and Forget sit in
 /// reserved space (shown on hover and focus, always on touch). The chat's new memory files into

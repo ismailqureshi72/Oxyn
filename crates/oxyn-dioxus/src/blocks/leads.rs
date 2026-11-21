@@ -21,9 +21,9 @@ fn ring(score: u32, hue: &str) -> Element {
     }
 }
 
-/// Lead scoring: inbound B2B leads ranked by an AI fit score. Each row shows the company, the
-/// person, a score ring (Hot, Warm or Cold in words too) and the model's one-line reason; opening
-/// a row shows signal chips, the weighted score breakdown and a push to HubSpot or Airtable.
+/// Lead scoring: new business sign-ups sorted by a model's fit score. A line holds the company,
+/// its contact, a ring with the number (plus Hot, Warm or Cold) and a short why; expanding it
+/// lists the signals, how the points add up and a send-to-CRM action (HubSpot or Airtable).
 /// Rescore counts the rings up again and can move a lead; sort by score or newest.
 #[component]
 pub fn LeadScoring(

@@ -2,7 +2,7 @@
 
 # Spec: Catch up (`catch-up`)
 
-Section: Blocks · AI (page `/blocks/ai/catch-up/`, Pro). Reference: uiarc "Blocks · AI" ("Catch up", https://uiarc.dev/components/blocks/catch-up), behaviour only, under our own design; no source, artwork or copy taken. Every company, person and amount is fictional; companies and models that are named carry their official coloured marks.
+Section: Blocks · AI (page `/blocks/ai/catch-up/`, Pro). Reference: uiarc "Blocks · AI" ("Catch up"), behaviour only, under our own design; no source, artwork or copy taken. Every company, person and amount is fictional; companies and models that are named carry their official coloured marks.
 Components: `CatchUp` (Dioxus, `oxyn_dioxus::blocks`, styles `blocks.css`, prefix `oxbk-`) · `BlocksView` with `BlockVariant::CatchUp` (GPUI), rules in `oxyn_core::blocks::catchup`.
 
 ## 1. Purpose

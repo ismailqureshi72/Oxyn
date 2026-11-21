@@ -2,11 +2,11 @@
 
 # Spec: Assistant memory (`assistant-memory`)
 
-Section: Blocks · AI (page `/blocks/ai/assistant-memory/`, Pro). Reference: uiarc "Blocks · AI" ("Agent memory", https://uiarc.dev/components/blocks/agent-memory), behaviour only, under our own design; no source, artwork or copy taken. Every company, person and amount is fictional; companies and models that are named carry their official coloured marks.
+Section: Blocks · AI (page `/blocks/ai/assistant-memory/`, Pro). Reference: uiarc "Blocks · AI" ("Agent memory"), behaviour only, under our own design; no source, artwork or copy taken. Every company, person and amount is fictional; companies and models that are named carry their official coloured marks.
 Components: `AssistantMemory` (Dioxus, `oxyn_dioxus::blocks`, styles `blocks.css`, prefix `oxbk-`) · `BlocksView` with `BlockVariant::Memory` (GPUI), rules in `oxyn_core::blocks::memory`.
 
 ## 1. Purpose
-What an assistant remembers about you, one sentence each: filter, search, edit or forget in place, file what the chat just learned, add your own, and switch memory or chat history off. Arc "Agent memory" ships as `assistant-memory` because `agent-memory` is the Agent / Memory screen.
+The facts an assistant keeps about its user, one line each: filter, search, edit or forget in place, file what the chat just learned, add your own, and switch memory or chat history off. Arc "Agent memory" ships as `assistant-memory` because `agent-memory` is the Agent / Memory screen.
 
 ## 2. States
 All or one group · Search open (match count announced) · Memory updated pill (files into its group with a highlight) · Editing (Enter saves, Escape cancels) · Forgotten (Undo bar with a 6 s countdown) · Added (sorted by a keyword guess) · Add refused (memory full or saved memories off) · Near capacity (meter warns in amber with an icon) · Saved memories off (note, list dimmed).

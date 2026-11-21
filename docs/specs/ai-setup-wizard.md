@@ -2,7 +2,7 @@
 
 # Spec: AI setup wizard (`ai-setup-wizard`)
 
-Section: Blocks · AI (page `/blocks/ai/ai-setup-wizard/`, Pro). Reference: uiarc "Blocks · AI" ("AI setup wizard", https://uiarc.dev/components/blocks/ai-setup-wizard), behaviour only, under our own design; no source, artwork or copy taken. Every company, person and amount is fictional; companies and models that are named carry their official coloured marks.
+Section: Blocks · AI (page `/blocks/ai/ai-setup-wizard/`, Pro). Reference: uiarc "Blocks · AI" ("AI setup wizard"), behaviour only, under our own design; no source, artwork or copy taken. Every company, person and amount is fictional; companies and models that are named carry their official coloured marks.
 Components: `AiSetupWizard` (Dioxus, `oxyn_dioxus::blocks`, styles `blocks.css`, prefix `oxbk-`) · `BlocksView` with `BlockVariant::Wizard` (GPUI), rules in `oxyn_core::blocks::wizard`.
 
 ## 1. Purpose

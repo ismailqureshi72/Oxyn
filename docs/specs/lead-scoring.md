@@ -2,7 +2,7 @@
 
 # Spec: Lead scoring (`lead-scoring`)
 
-Section: Blocks · AI (page `/blocks/ai/lead-scoring/`, Pro). Reference: uiarc "Blocks · AI" ("Lead scoring", https://uiarc.dev/components/blocks/lead-scoring), behaviour only, under our own design; no source, artwork or copy taken. Every company, person and amount is fictional; companies and models that are named carry their official coloured marks.
+Section: Blocks · AI (page `/blocks/ai/lead-scoring/`, Pro). Reference: uiarc "Blocks · AI" ("Lead scoring"), behaviour only, under our own design; no source, artwork or copy taken. Every company, person and amount is fictional; companies and models that are named carry their official coloured marks.
 Components: `LeadScoring` (Dioxus, `oxyn_dioxus::blocks`, styles `blocks.css`, prefix `oxbk-`) · `BlocksView` with `BlockVariant::Leads` (GPUI), rules in `oxyn_core::blocks::leads`.
 
 ## 1. Purpose

@@ -961,11 +961,11 @@ pub(crate) fn demos() -> Vec<Demo> {
             ],
             vec![
                 "Each pane is a labelled region; its name gains the model only after the vote or with Blind off.",
-                "Status is a word with an icon (Thinking, Writing, Done, Finished first, Stopped, Failed).",
+                "Every pane status is spelled out next to its icon, never colour alone.",
                 "Votes are a labelled group; the round, the result with both models and Retry are read out.",
             ],
             vec![
-                "Up to 800 px; below 560 px the panes become two tabs that keep both statuses visible; below 480 px votes form a 2 × 2 grid.",
+                "Up to 800 px; on cards under 560 px only one answer shows at a time, picked from tabs that carry each side's state; under 480 px the four votes sit in two rows.",
             ],
             620,
         ),
@@ -1008,8 +1008,8 @@ pub(crate) fn demos() -> Vec<Demo> {
                 ("Esc", "Close a menu, or leave compare mode"),
             ],
             vec![
-                "System and User are real tabs; the diff uses ins and del with hidden Added and Removed words and a visible sign.",
-                "Each variable field has a visible label in its colour; an empty variable's chips turn dashed and the field is marked invalid.",
+                "The two message tabs use tab roles; in compare mode insertions and deletions are marked up as such, with a sign you can see and a word read aloud.",
+                "Every input is labelled with its variable name in its series colour; a blank one is flagged invalid and its chips go dashed.",
                 "Runs, results, promotions and undos are announced, including that the reply is simulated.",
             ],
             vec![
@@ -1022,7 +1022,7 @@ pub(crate) fn demos() -> Vec<Demo> {
             "Assistant memory",
             CAT_AI,
             "AssistantMemory",
-            "What an assistant remembers about you, one plain sentence each: filter by group or search, edit or forget a memory in place with Undo, file the memory this chat just made, add your own and switch saved memories or chat history off. (Arc's Agent memory; ours is assistant-memory because agent-memory is a screen.)",
+            "A card listing the facts an assistant keeps about its user, one short line each: filter by group or search, edit or forget a memory in place with Undo, file the memory this chat just made, add your own and switch saved memories or chat history off. (Arc's Agent memory; ours is assistant-memory because agent-memory is a screen.)",
             vec![
                 tog("full", "Nearly full", false),
                 tog("paused", "Saved memories off", false),
@@ -1053,7 +1053,7 @@ pub(crate) fn demos() -> Vec<Demo> {
             ],
             vec![
                 "Groups are labelled with their counts; the meter reads its fullness as text and warns with an icon.",
-                "Edit and Forget name the memory they act on; actions stay visible on touch screens.",
+                "The pencil and bin buttons carry the memory's text in their names; on touch devices they never hide.",
                 "Filing, adding (with its keyword guess), saving, forgetting with its undo window and restoring are announced.",
             ],
             vec![
@@ -1066,7 +1066,7 @@ pub(crate) fn demos() -> Vec<Demo> {
             "Catch up",
             CAT_AI,
             "CatchUp",
-            "A catch me up digest: one button reads Slack, Linear, GitHub and Gmail for the range you pick and streams back a short ranked summary (Needs you, Decisions made, Shipped, FYI); each line has its source, people and link, and marking lines as read clears them until you are caught up.",
+            "Back from time off? Press one button and the card skims Slack, Linear, GitHub and Gmail over the chosen period, then lists what matters in four ranked groups; each line has its source, people and link, and marking lines as read clears them until you are caught up.",
             vec![
                 sel("range", "Range", &RANGES, "last 3 days"),
                 tog("auto", "Read at once", true),
@@ -1098,10 +1098,10 @@ pub(crate) fn demos() -> Vec<Demo> {
             vec![
                 "Sections are labelled with a heading and count; each line starts with its source for screen readers.",
                 "Lines not yet streamed are absent; reading, ready, read counts and all caught up are announced.",
-                "Status pairs an icon with a word (sections, sources reading, read and skipped).",
+                "Group headings and source chips always show a word beside the icon.",
             ],
             vec![
-                "Up to 600 px; below 440 px the range wraps under the title and meta lines truncate.",
+                "Up to 600 px; on narrow cards the period picker drops below the heading and long people or link lines end in an ellipsis.",
             ],
             600,
         ),
@@ -1110,7 +1110,7 @@ pub(crate) fn demos() -> Vec<Demo> {
             "AI feature launch",
             CAT_AI,
             "AiFeatureLaunch",
-            "An in-product card for launching an AI feature: a looping mini demo above a three-step tour that autoplays until you take over, three benefits per step, a workspace switch only admins can turn on, and Try it now.",
+            "A what's-new card for an AI capability: a tiny animated preview sits over a three part walkthrough that autoplays until you take over, three benefits per step, a workspace switch only admins can turn on, and Try it now.",
             vec![
                 tog("admin", "You are an admin", true),
                 tog("enabled", "Already on", false),
@@ -1150,7 +1150,7 @@ pub(crate) fn demos() -> Vec<Demo> {
                 "The switch says who can change it; saving, cancelling and every simulated action are announced.",
             ],
             vec![
-                "Up to 520 px; below 440 px the actions span the width and the credit centres under them.",
+                "Up to 520 px; on cards under 440 px both buttons stretch across and the model credit moves to its own centred line.",
             ],
             560,
         ),
@@ -1159,7 +1159,7 @@ pub(crate) fn demos() -> Vec<Demo> {
             "AI setup wizard",
             CAT_AI,
             "AiSetupWizard",
-            "Three steps to turn on an AI assistant: connect sources and watch them sync, choose the model, tone and guardrails, then ask a test question whose answer streams with numbered citations before you go live.",
+            "Switch on a support assistant in three stages: link your knowledge tools and see them import, set the model, voice and safety rules, then try a sample question and check the numbered sources behind the reply before launching.",
             vec![
                 sel("start", "Start at", &WZ_START, "connect"),
                 tog("fail", "Intercom fails first", false),
@@ -1248,7 +1248,7 @@ pub(crate) fn demos() -> Vec<Demo> {
             "Lead scoring",
             CAT_AI,
             "LeadScoring",
-            "Inbound leads ranked by an AI fit score: each row has a score ring, Hot, Warm or Cold in words and the model's one-line reason; open one for its signals and weighted breakdown, then push it to HubSpot or Airtable.",
+            "New sign-ups sorted by how well they fit, as judged by a model: every line carries a ring with the number, a Hot, Warm or Cold label and a short why; open one for its signals and weighted breakdown, and send it to HubSpot or Airtable.",
             vec![
                 tog("intro", "Count up on view", true),
                 tog("open", "First lead open", false),
@@ -1279,7 +1279,7 @@ pub(crate) fn demos() -> Vec<Demo> {
                 "Rescoring, opening, the destination and pushes are announced, including that pushes are simulated.",
             ],
             vec![
-                "360 to 640 px; below 460 px the role leaves the row and the push button fills the row.",
+                "360 to 640 px; on narrow cards job titles are dropped and the send-to-CRM button spans the card.",
             ],
             600,
         ),
