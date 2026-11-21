@@ -21,6 +21,9 @@ MARKS = [
     ("cline", "Cline", "si", "cline", "18181B"),
     ("opencode", "OpenCode", "lobe", "opencode", "000000"),
     ("amp", "Amp", "lobe", "amp-color", None),
+    ("antigravity", "Google Antigravity", "lobe", "antigravity-color", None),
+    ("kimi", "Kimi Code", "lobe", "kimi-color", None),
+    ("minimax", "MiniMax Code", "lobe", "minimax-color", None),
 ]
 
 def dark(hexv):
