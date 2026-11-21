@@ -11,14 +11,15 @@ import { icon } from './icons';
 import { mark } from './brands';
 import {
   groupOf, demoUrl, props, specSection, md, highlightRust, cssConst, installLine, whenToUse, whenNotToUse,
-  related, keyChips, notesForAi, guidesFor, isScreen, isPro, REPO, type Demo,
+  related, keyChips, notesForAi, guidesFor, isScreen, isBlock, blockGroupOf, isPro, REPO, type Demo,
 } from '../../lib/data';
 
 interface Props { demo: Demo }
 const { demo } = Astro.props;
 const screen = isScreen(demo);
 const pro = isPro(demo);
-const g = screen ? null : groupOf(demo);
+const bg = isBlock(demo) ? blockGroupOf(demo) : null;
+const g = screen ? null : bg ? { slug: '', name: `Blocks · ${bg.name}` } : groupOf(demo);
 const comps = demo.dioxus.split(',').map((s) => s.trim());
 const tables = comps.map((c) => ({ name: c, info: props[c] })).filter((t) => t.info);
 const a11ySpec = specSection(demo.spec, 'Accessibility');
@@ -43,15 +44,17 @@ const notRel = whenNotToUse(demo);
 const guides = guidesFor(demo);
 const sourceUrl = `${REPO}/blob/main/crates/oxyn-dioxus/src/${demo.source}`;
 const specUrl = `${REPO}/blob/main/docs/specs/${demo.spec}.md`;
-const kind = screen ? 'screen' : 'component';
+const kind = screen ? 'screen' : bg ? 'block' : 'component';
 ---
 <Library title={`${demo.name} — ${screen ? 'Screens' : g!.name}`} description={demo.summary} type="Component" meta={`category:${screen ? 'Screens' : g!.name}`}>
   <article class="x-art">
     <div class="x-backrow" data-pagefind-ignore>
-    <BackButton fallback={screen ? '/screens/' : `/components/${g!.slug}/`} />
+    <BackButton fallback={screen ? '/screens/' : bg ? '/blocks/' : `/components/${g!.slug}/`} />
     <nav class="x-crumbs" aria-label="Breadcrumb">
       {screen ? (
         <><a href="/screens/">Screens</a><span aria-hidden="true">›</span><span aria-current="page">{demo.name}</span></>
+      ) : bg ? (
+        <><a href="/blocks/">Blocks</a><span aria-hidden="true">›</span><a href={`/blocks/#${bg.slug}`}>{bg.name}</a><span aria-hidden="true">›</span><span aria-current="page">{demo.name}</span></>
       ) : (
         <><a href="/components/">Components</a><span aria-hidden="true">›</span><a href={`/components/${g!.slug}/`}>{g!.name}</a><span aria-hidden="true">›</span><span aria-current="page">{demo.name}</span></>
       )}

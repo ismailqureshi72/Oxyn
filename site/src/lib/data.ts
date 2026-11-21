@@ -5,7 +5,7 @@ import specsJson from '../generated/specs.json';
 import parityJson from '../generated/parity.json';
 import wasmJson from '../generated/wasm.json';
 import motionJson from '../generated/motion.json';
-import { GROUPS, groupSlugOf, isScreen, isAgentApp, isArcScreen, isProComponent, ARC_SCREENS, pageUrl } from './taxonomy.mjs';
+import { GROUPS, groupSlugOf, isScreen, isAgentApp, isArcScreen, isProComponent, isBlock, blockGroupOf, BLOCK_GROUPS, ARC_SCREENS, pageUrl } from './taxonomy.mjs';
 
 export type Control = {
   key: string;
@@ -180,7 +180,11 @@ export function parityItems(section: string) {
 export type Group = { slug: string; name: string; blurb: string; family?: boolean };
 export const groups = GROUPS as Group[];
 export const screens = demos.filter((d) => isScreen(d));
-export const components = demos.filter((d) => !isScreen(d));
+export const components = demos.filter((d) => !isScreen(d) && !isBlock(d));
+/** Blocks: larger compositions with their own section (/blocks/<group>/<slug>/), all Pro. */
+export const blocks = demos.filter((d) => isBlock(d));
+export const blockGroups = BLOCK_GROUPS.map((g) => ({ ...g, items: blocks.filter((d) => d.category === g.cat) }));
+export { isBlock, blockGroupOf };
 /** Agent apps: the screens of whole desktop agent apps, their own category after Screens. */
 export const agentApps = screens.filter((d) => isAgentApp(d));
 /** Arc screens: work-app screens on the Arc frame, their own category after Agent apps. */
@@ -209,7 +213,7 @@ export const counts = {
   screens: screens.length + composedScreens.length,
   agentApps: agentApps.length,
   arcScreens: arcScreens.length,
-  blocks: 0,
+  blocks: blocks.length,
   illustrations: 0,
   motion: motionDemos.length,
   variants: demos.reduce((n, d) => n + d.variants.length, 0),
@@ -217,7 +221,7 @@ export const counts = {
 /** Oxyn Pro (docs/pricing.md): every screen and agent-app template, the AI special components
  *  (and blocks and kits as they ship) are Pro: the bolt badge, and a locked code panel for accounts
  *  without Pro. Previews stay open to everyone. Every other component and primitive stays free. */
-export const isPro = (d: Demo) => isScreen(d) || isProComponent(d);
+export const isPro = (d: Demo) => isScreen(d) || isProComponent(d) || isBlock(d);
 // Pro code never reaches a static page: some server-rendered previews carry the playground's code
 // panel, so it is cut from every Pro demo's markup here (Pro accounts get the code from the Worker).
 const stripCode = (h: string) => h.replace(/<div class="oxd-code">[\s\S]*?<\/pre><\/div>/g, '');
@@ -258,7 +262,7 @@ export function related(d: Demo, n = 4): Demo[] {
     if (hit && !out.includes(hit)) out.push(hit);
     if (out.length >= n) return out;
   }
-  const pool = isScreen(d) ? screens : inGroup(groupSlugOf(d));
+  const pool = isScreen(d) ? screens : isBlock(d) ? blocks : inGroup(groupSlugOf(d));
   for (const x of pool) {
     if (x.slug !== d.slug && !out.includes(x)) out.push(x);
     if (out.length >= n) break;

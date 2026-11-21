@@ -3,17 +3,19 @@
 // one-line description and a copy button (copies the install line).
 import OxynDemo from '../OxynDemo.astro';
 import { icon } from './icons';
-import { demoUrl, groupOf, isScreen, isPro, installLine, type Demo } from '../../lib/data';
+import { demoUrl, groupOf, isScreen, isBlock, blockGroupOf, isPro, installLine, type Demo } from '../../lib/data';
 interface Props { demo: Demo; headingLevel?: 2 | 3 }
 const { demo, headingLevel = 3 } = Astro.props;
 const v = demo.variants[0];
-const g = isScreen(demo) ? { name: 'Screen', slug: '' } : groupOf(demo);
+const bg = isBlock(demo) ? blockGroupOf(demo) : null;
+const g = isScreen(demo) ? { name: 'Screen', slug: '' } : bg ? { name: `Block · ${bg.name}`, slug: '' } : groupOf(demo);
+const chipHref = isScreen(demo) ? '/screens/' : bg ? `/blocks/#${bg.slug}` : `/components/${g.slug}/`;
 const H = headingLevel === 2 ? 'h2' : 'h3';
 const install = installLine(demo);
 ---
 <article class="x-cc">
   <div class="cc-top">
-    {g.slug ? <a class="x-chip" href={`/components/${g.slug}/`}>{g.name}</a> : <a class="x-chip" href="/screens/">{g.name}</a>}
+    <a class="x-chip" href={chipHref}>{g.name}</a>
     <span class="x-chip soft">{demo.variants.length} {demo.variants.length === 1 ? 'variant' : 'variants'}</span>
     {isPro(demo) && <span class="x-chip pro-chip" title="Oxyn Pro: the preview is free, the code needs Pro"><Fragment set:html={icon.bolt} />Pro</span>}
   </div>
