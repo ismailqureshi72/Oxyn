@@ -6,4 +6,6 @@ pub mod build;
 pub mod graph;
 pub mod scan;
 
-pub use build::{BuildConfig, MetaItem, Registry, THEME_SLUG, build, content_hash, write};
+pub use build::{
+    BuildConfig, MetaItem, Registry, THEME_SLUG, build, content_hash, write, write_pro,
+};
