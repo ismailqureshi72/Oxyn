@@ -164,7 +164,8 @@ fs.copyFileSync(path.join(root, 'tokens/oxyn.motion.json'), path.join(gen, 'moti
 
 // 6b. The CLI registry (docs/cli.md): public/r/index.json lists every item (free and Pro, metadata
 // only); public/r/<slug>.json holds the source of each installable Free item. Pro source is never
-// written here. The builder is Rust (crates/oxyn-codegen, bin oxyn-registry); it reads the catalogue
+// written there: it goes to public/_pro/r/<slug>.json, which wrangler.jsonc routes to the Worker
+// first (answering 404), so only worker/pro.ts reads it and hands it to a signed-in plan. The builder is Rust (crates/oxyn-codegen, bin oxyn-registry); it reads the catalogue
 // below and walks the renderer crates for each item's files and dependencies.
 {
   const { demos } = JSON.parse(fs.readFileSync(path.join(gen, 'demos.json'), 'utf8'));
@@ -184,8 +185,9 @@ fs.copyFileSync(path.join(root, 'tokens/oxyn.motion.json'), path.join(gen, 'moti
   fs.writeFileSync(inputPath, JSON.stringify(input));
   if (!process.env.OXYN_SKIP_REGISTRY) {
     const out = path.join(site, 'public/r');
+    const proOut = path.join(site, 'public/_pro/r');
     const extra = process.env.OXYN_REGISTRY_REV ? ['--rev', process.env.OXYN_REGISTRY_REV] : [];
-    run('cargo', ['run', '--locked', '-q', '-p', 'oxyn-codegen', '--bin', 'oxyn-registry', '--', '--input', inputPath, '--out', out, '--quiet', ...extra]);
+    run('cargo', ['run', '--locked', '-q', '-p', 'oxyn-codegen', '--bin', 'oxyn-registry', '--', '--input', inputPath, '--out', out, '--pro-out', proOut, '--quiet', ...extra]);
   }
 }
 

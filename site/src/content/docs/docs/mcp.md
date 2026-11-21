@@ -197,7 +197,7 @@ Any MCP client that can start a local (stdio) server works: the command is `oxyn
 
 - `list_components`: every item, free and Pro, filtered by `category`, `tier` or `framework`.
 - `search_components`: searches names, categories and descriptions.
-- `get_component`: one item. What it is, its props (Dioxus) or builder methods (GPUI), the items and crates it needs, the install command, its docs page, and for free items the source files.
+- `get_component`: one item. What it is, its props (Dioxus) or builder methods (GPUI), the items and crates it needs, the install command, its docs page, and the source files (for a Pro item only when the agent passes `include_code: true`, since that counts toward the month's Pro items).
 - `add_component`: copies items and what they need into a project, adds crates to `Cargo.toml` and declares `mod oxyn;`. Sets the project up on first use.
 - `get_install_instructions`: setup steps for Dioxus or GPUI: dependencies, styles and theme.
 
@@ -205,7 +205,13 @@ Any MCP client that can start a local (stdio) server works: the command is `oxyn
 
 ## Free and Pro
 
-74 components are free (MIT) and install directly. Pro items appear in the lists with their previews, but `add_component` answers with a link to [Oxyn Pro](/pricing/) instead of the code. Pro installs through the server arrive with sign-in in a later release.
+74 components are free (MIT) and install directly. Pro items install with an [Oxyn Pro or Team plan](/pricing/): the server uses the same sign-in as the CLI, so run `oxyn login` once on that computer, or give the server a token from your [account page](/account/#cli) as `OXYN_TOKEN` in its environment, for example:
+
+```sh
+claude mcp add oxyn --env OXYN_TOKEN=oxyn_… -- oxyn-mcp
+```
+
+Each distinct Pro item counts once per billing month toward your plan's Pro items (Pro: 20 components and 8 screens or blocks; Team: 75 and 22, shared), the same count as the CLI and the site; adding it again that month is free. When an item needs a plan, a sign-in, or this month's items are used, `get_component` and `add_component` say so, with the count and the reset date.
 
 ## Registry
 

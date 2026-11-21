@@ -111,6 +111,27 @@ jobs:
           printf 'mod oxyn;\n#[allow(unused_imports)]\nuse oxyn::{ApprovalCard, Composer, TagInput};\nfn main() {}\n' > src/main.rs
           cargo check
           $OXYN diff --registry "$R" composer
+      - name: Pro registry against a local mock (login --token, whoami, Pro add with a Pro dependency, cargo check)
+        run: |
+          OXYN=$CARGO_TARGET_DIR/debug/oxyn; ROOT=$PWD; R=http://127.0.0.1:8787/r
+          python3 scripts/pro-registry-mock.py "$PWD/site/public" 8787 & sleep 1
+          export OXYN_CONFIG_DIR="$RUNNER_TEMP/oxyncfg"
+          cd "$RUNNER_TEMP" && cargo new -q prodx --vcs none && cd prodx
+          cargo add -q dioxus@0.7 --no-default-features -F macro,html,signals,hooks
+          $OXYN init --registry "$R" --oxyn-path "$ROOT"
+          set +e; $OXYN add --registry "$R" memory-panel; rc=$?; set -e
+          test "$rc" = 2 || { echo "::error::a Pro item without sign-in must exit 2 (got $rc)"; exit 1; }
+          $OXYN login --registry "$R" --token oxyn_e2e
+          test "$(stat -c %a "$OXYN_CONFIG_DIR/credentials.toml")" = 600
+          $OXYN whoami --registry "$R"
+          $OXYN add --registry "$R" memory-panel activity-home
+          $OXYN add --registry "$R" tag-input
+          cat "$ROOT/site/public/_pro/mock.log"
+          grep -q '^activity-heatmap for=activity-home counted=0$' "$ROOT/site/public/_pro/mock.log" || { echo "::error::a Pro dependency must name its parent and not count"; exit 1; }
+          test "$(wc -l < "$ROOT/site/public/_pro/mock.log")" = 3 || { echo "::error::installed Pro items must not be downloaded again"; exit 1; }
+          printf 'mod oxyn;\n#[allow(unused_imports)]\nuse oxyn::{ActivityHome, MemoryPanel, TagInput};\nfn main() {}\n' > src/main.rs
+          cargo check
+          $OXYN logout --registry "$R"
       - name: MCP server over stdio (initialize, tools/list, list/get/add), then cargo check what it added
         run: |
           OXYN=$CARGO_TARGET_DIR/debug/oxyn; R=$PWD/site/public/r; ROOT=$PWD

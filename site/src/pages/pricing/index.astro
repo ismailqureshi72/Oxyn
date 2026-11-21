@@ -5,7 +5,7 @@
 // button goes to /api/billing/checkout, which signs you in first and then opens Polar's checkout.
 import Base from '../../layouts/Base.astro';
 import { icon } from '../../components/v2/icons';
-import { counts, PRICES } from '../../lib/data';
+import { CAPS, counts, PRICES } from '../../lib/data';
 
 const usd = (n: number) => `$${Number.isInteger(n) ? n : n.toFixed(2)}`;
 const perMonth = (y: number) => usd(Math.round((y / 12) * 100) / 100);
@@ -21,6 +21,7 @@ const freeList = [
 ];
 const proList = [
   'Everything in Free',
+  `Open ${CAPS.pro.components} Pro components and ${CAPS.pro.screens} screens or blocks a month`,
   `All ${counts.screens} screens, with their code`,
   `Agent-app templates (${counts.agentApps} today)`,
   `All ${counts.proComponents} Pro components, including the AI components, with their code`,
@@ -32,6 +33,7 @@ const proList = [
 const teamList = [
   'Everything in Pro',
   `Up to ${PRICES.team.people} people: you plus ${PRICES.team.seats} teammates`,
+  `${CAPS.team.components} Pro components and ${CAPS.team.screens} screens or blocks a month, shared by the team`,
   'Invite teammates by email; the owner manages seats and billing',
   'One invoice for the team',
 ];
@@ -44,10 +46,12 @@ const rows: [string, string, string, string][] = [
   ['Weekly drops', 'no', 'yes', 'yes'],
   ['Studio extras', 'no', 'yes', 'yes'],
   ['Pro CLI and MCP', 'no', 'yes', 'yes'],
+  ['Pro components / screens opened a month', 'no', `${CAPS.pro.components} / ${CAPS.pro.screens}`, `${CAPS.team.components} / ${CAPS.team.screens} shared`],
   ['Developers', '1', '1', `Up to ${PRICES.team.people}`],
 ];
 const faq: [string, string][] = [
   ['What happens if I cancel?', 'The code you already installed keeps working, for good. Cancelling stops new Pro access at the end of the period you paid for: the Pro code on this site, the Pro registry and the Pro CLI. You can cancel any time from Manage billing.'],
+  ['How do the monthly limits work?', `Pro and the founder rate open ${CAPS.pro.components} Pro components and ${CAPS.pro.screens} screens a month (blocks and agent-app templates count as screens); a Team shares ${CAPS.team.components} components and ${CAPS.team.screens} screens. An item counts once, the first time you open its code that billing month, on this site, with oxyn add or through the MCP server. Opening, copying or updating it again that month is free, and the count starts over on the day your plan renews. Your account page and oxyn whoami show where you are.`],
   ['Who handles the payment?', 'Checkout is secure and run by Polar, our merchant of record. Polar takes the payment, handles the receipts and invoices, and Oxyn never sees your card.'],
   ['Are taxes included?', 'Prices are in US dollars before tax. Sales tax or VAT for your country is added at checkout, so you see the full amount before you pay.'],
   ['How does the founder rate work?', `The first ${PRICES.founder.cap} subscribers pay ${usd(PRICES.founder.month)} a month or ${usd(PRICES.founder.year)} a year, for the same Pro. The rate stays as long as the subscription stays active. If it ends, a new subscription is at the regular price.`],

@@ -1,7 +1,8 @@
 ---
-// Your account: email, how you sign in, when it was created, your plan (and Team seats), and sign
-// out here or everywhere.
-// Static like every page; public/account.js fills it from /api/auth/me.
+// Your account: email, how you sign in, when it was created, your plan (and Team seats), this
+// month's Pro items, CLI tokens, and sign out here or everywhere.
+// Static like every page; public/account.js fills it from /api/auth/me, public/cli-tokens.js the
+// usage and the tokens (/api/billing/me, /api/cli/tokens).
 import Base from '../layouts/Base.astro';
 import { icon } from '../components/v2/icons';
 ---
@@ -42,6 +43,28 @@ import { icon } from '../components/v2/icons';
             </form>
             <p class="auth-err" id="seat-err" role="alert" data-seat-err hidden></p>
           </div>
+          <div class="x-usage" data-usage hidden>
+            <h3>Pro items this billing month <span class="acct-seats-n" data-usage-pool></span></h3>
+            <div class="x-usage-row"><span>Components</span><span class="x-usage-n" data-usage-n="components"></span></div>
+            <div class="x-meter" aria-hidden="true"><i data-usage-bar="components"></i></div>
+            <div class="x-usage-row"><span>Screens and blocks</span><span class="x-usage-n" data-usage-n="screens"></span></div>
+            <div class="x-meter" aria-hidden="true"><i data-usage-bar="screens"></i></div>
+            <p class="acct-plan-line" data-usage-line></p>
+          </div>
+        </section>
+        <section class="acct-plan x-cli" id="cli" aria-labelledby="h-cli" data-cli>
+          <div class="acct-plan-h"><h2 id="h-cli">CLI and MCP</h2></div>
+          <p class="acct-plan-line">Pro items install with <code>oxyn add</code> and the MCP server once this computer is signed in: run <code>oxyn login</code>. For CI or another machine, create a token and set it as <code>OXYN_TOKEN</code>. A new token is shown once.</p>
+          <ul class="acct-seat-list x-tok-list" data-tok-list></ul>
+          <form class="acct-seat-form" novalidate data-tok-form>
+            <label class="fb-field"><span class="fb-lbl">Token name</span><input type="text" name="name" maxlength="60" autocomplete="off" placeholder="e.g. laptop or CI" aria-describedby="tok-err" /></label>
+            <button type="submit" class="x-pill pill-black">Create token</button>
+          </form>
+          <div class="x-tok-new" data-tok-new hidden>
+            <p class="acct-plan-line" role="status">Copy this token now. It is not shown again.</p>
+            <div class="x-tok-row"><code class="x-tok-val" data-tok-value></code><button type="button" class="x-pill pill-grey pill-sm" data-tok-copy>Copy</button></div>
+          </div>
+          <p class="auth-err" id="tok-err" role="alert" data-tok-err hidden></p>
         </section>
         <p class="auth-err" role="alert" data-account-err hidden></p>
         <div class="acct-actions">
@@ -52,4 +75,5 @@ import { icon } from '../components/v2/icons';
       </div>
     </div>
   </section>
+  <script is:inline src="/cli-tokens.js" defer></script>
 </Base>
