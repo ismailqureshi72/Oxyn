@@ -2,6 +2,14 @@
 // build time (astro.config.mjs). Components follow eight categories; whole app frames are Screens.
 // Every older URL (/components/<old-category>/…) keeps working through a redirect.
 
+import FREE_TIER from './free-tier.json' with { type: 'json' };
+
+/** The Free tier (docs/pricing.md): the only items whose code is free. The single source of truth,
+ * read by the site, the Worker (plan_for gating), the registry builder and status.csv. Every item
+ * not in it, including every new one, is Oxyn Pro. */
+export const FREE = new Set(FREE_TIER.free);
+export const isFree = (d) => FREE.has(typeof d === 'string' ? d : d.slug);
+
 /** Multi-variant families: one control done many ways, each variant its own page. A family is a
  * category of its own (its pages live at /components/<family>/<slug>/) and gets its own collapsible
  * group in the sidebar. Add a family here when its first component lands. */

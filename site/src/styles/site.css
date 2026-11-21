@@ -23,6 +23,8 @@ code{font-family:var(--oxyn-font-mono)}
 .announce button{all:unset;position:absolute;right:10px;top:50%;transform:translateY(-50%);width:24px;height:24px;display:grid;place-items:center;border-radius:6px;cursor:pointer;color:var(--fg3)}
 .announce button:hover{background:var(--hov);color:var(--fg)}
 html[data-announce="hidden"] .announce{display:none}
+/* Phones: one line at a fixed height, so the bar never reflows or pushes the header. */
+@media (max-width:640px){.announce{height:32px;min-height:0;padding:0 40px 0 14px;box-sizing:border-box;font-size:12px}.announce a{display:block;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
 
 /* ── Landing ────────────────────────────────────────────────────────── */
 /* Hero, "Live edit" (Hero.astro + hero.js): the headline lockup on a 16 px dot canvas, being
@@ -311,8 +313,14 @@ html[data-sidebar="hidden"] .lsb{visibility:hidden}
 .lsb-g li a span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .lsb-g li a:hover{background:var(--hov);color:var(--fg)}
 .lsb-g li a[aria-current="page"]{background:var(--pn);color:var(--fg);font-weight:500;box-shadow:var(--shadow)}
-.lsb-g li a .pro{display:grid;color:var(--pro-fg)}
-.lsb-g li a .pro svg{width:12px;height:12px}
+.lsb-g li a .pro,.x-promark{display:inline-flex;align-items:center;flex:none;height:18px;padding:0 3px;border-radius:5px;box-shadow:inset 0 0 0 1px transparent;transition:background-color .14s,box-shadow .14s}
+.pro-l{max-width:0;opacity:0;overflow:hidden;white-space:nowrap;font-size:10.5px;font-weight:650;line-height:1;color:var(--fg);transition:max-width .16s,opacity .16s,margin .16s}
+.lsb-g li a:is(:hover,:focus-visible) .pro,.x-cc:is(:hover,:focus-within) .x-promark,.x-promark:hover{background:var(--pn);box-shadow:inset 0 0 0 1px var(--ln)}
+.lsb-g li a:is(:hover,:focus-visible) .pro-l,.x-cc:is(:hover,:focus-within) .pro-l,.x-promark:hover .pro-l{max-width:2.6em;opacity:1;margin-left:4px}
+.x-promark{margin-left:auto;height:22px;padding:0 5px;background:var(--pn);box-shadow:inset 0 0 0 1px var(--ln)}
+.x-promark .x-bolt{width:12px;height:12px}
+@media (prefers-reduced-motion:reduce){.lsb-g li a .pro,.x-promark,.pro-l{transition:none}}
+html[data-oxyn-reduced] :is(.lsb-g li a .pro,.x-promark,.pro-l){transition:none}
 .lsb-head{display:flex;align-items:center;gap:6px;height:30px;margin:10px 0 2px;padding:0 10px}
 .lsb-head a{font-size:13.5px;font-weight:600;color:var(--fg);text-decoration:none}
 .lsb-head a:hover{text-decoration:underline;text-underline-offset:3px}
@@ -331,7 +339,7 @@ html[data-sidebar="hidden"] .lib-col{padding-left:8px}
 .lbar-sp{flex:1}
 .lbar-open,.lbar-drawer,.lbar-wm,.lbar-search{display:none}
 html[data-sidebar="hidden"] .lbar-open{display:inline-grid}
-.lbar .pill-pro{height:28px;font-size:12.5px;padding:0 12px}
+.lbar .x-gopro{height:28px;font-size:12.5px;padding:0 11px}
 .lcontent{flex:1;padding:0 24px}
 .lend{width:min(62%,880px);margin:56px auto 0;padding:18px 0 36px;border-top:1px solid var(--ln);font-size:12.5px;color:var(--fg3)}
 .x-lib .x-ft{background:transparent;border-top:0}
@@ -1003,8 +1011,8 @@ html[data-oxyn-reduced] .x-lap-scene{--x-lap-p:1!important}
 }
 
 /* ── Oxyn Pro and pricing (G1, docs/pricing.md) ─────────────────────────────────────────────── */
-.pro-chip{gap:4px;background:var(--pro-bg);color:var(--pro-fg);box-shadow:inset 0 0 0 1px var(--ln);font-weight:600}
-.pro-chip svg{width:11px;height:11px}
+.pro-chip{gap:4px;border-radius:6px;background:var(--pro-bg);color:var(--pro-fg);box-shadow:inset 0 0 0 1px var(--ln);font-weight:600}
+.pro-chip svg,.pro-chip .x-bolt{width:11px;height:11px}
 .pro-chip.sm{height:18px;padding:0 6px;font-size:10.5px}
 .art-title .pro-chip{vertical-align:middle;margin-left:12px;position:relative;top:-4px}
 .cc-top{flex-wrap:wrap;justify-content:flex-start}
@@ -1113,4 +1121,4 @@ html[data-oxyn-reduced] .x-lap-scene{--x-lap-p:1!important}
 .acct-seats .auth-err{margin-top:10px}
 @media (max-width:640px){.acct-seat-form{flex-direction:column;align-items:stretch}}
 .acct-actions [hidden],.acct-plan [hidden]{display:none!important}
-html[data-pro="1"] .lbar .pill-pro{display:none}
+html[data-pro="1"] .lbar .x-gopro{display:none}

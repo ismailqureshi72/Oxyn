@@ -10,7 +10,7 @@ import { blocks, blockGroups } from '../../lib/data';
 <Library title="Blocks" description={`${blocks.length} whole agent and AI surfaces, built from the components.`} type="Category" current="/blocks/">
   <div class="lidx">
     <h1 class="lidx-title">Blocks – whole agent and AI surfaces, built from the components.</h1>
-    <p class="lede pro-lede"><span class="x-chip pro-chip"><Fragment set:html={icon.bolt} />Pro</span> Blocks are part of <a href="/pricing/">Oxyn Pro</a>. Every preview here is free to open and try; Pro opens their code.</p>
+    <p class="lede pro-lede"><span class="x-chip pro-chip"><i class="x-bolt" aria-hidden="true"></i>Pro</span> Blocks are part of <a href="/pricing/">Oxyn Pro</a>. Every preview here is free to open and try; Pro opens their code.</p>
     <LibTabs active="blocks" />
     {blockGroups.filter((g) => g.items.length).map((g) => (
       <>

@@ -49,6 +49,18 @@ Oxyn is a **Rust-first** library of those pieces:
 - **Studio.** Click any part of a component, tune tokens, props and motion, simulate an agent run on a
   timeline, then export Rust source or a CLI preset with a shareable link.
 
+## Add components with the CLI
+
+```sh
+cargo install --git https://github.com/ismailqureshi72/Oxyn oxyn-cli
+cd my-dioxus-or-gpui-app
+oxyn init
+oxyn add composer approval-card   # copies the code into src/oxyn/
+```
+
+74 components are free (MIT); `oxyn list` shows everything, Pro included. Commands, flags and the
+registry: [ui.oxyn.workers.dev/docs/cli](https://ui.oxyn.workers.dev/docs/cli/).
+
 ## Planned packages
 
 | Crate / app | Role |
@@ -58,7 +70,7 @@ Oxyn is a **Rust-first** library of those pieces:
 | `oxyn-gpui` | Components for GPUI desktop apps (primary target) |
 | `oxyn-dioxus` | Components for Dioxus (web demos, web apps) |
 | `oxyn-codegen` | Shared code generator used by the CLI and the Studio |
-| `oxyn-cli` | `oxyn add <component>` — shadcn-style copy-paste installer (free + Pro registry) |
+| `oxyn-cli` | `oxyn add <component>` — shadcn-style copy-paste installer (free registry today, Pro next) |
 | `site/` | Docs, gallery and Studio (Astro + Starlight + Rust→WASM demos) |
 
 Details: [docs/architecture.md](docs/architecture.md) and [docs/website-stack.md](docs/website-stack.md).

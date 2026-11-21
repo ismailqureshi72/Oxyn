@@ -1,6 +1,6 @@
 # Pricing, Pro and billing
 
-Oxyn's components are free. Pro and Team are subscriptions sold through
+74 of Oxyn's components are free; everything else is Oxyn Pro. Pro and Team are subscriptions sold through
 [Polar](https://polar.sh), which is the merchant of record: Polar takes the payment, adds sales tax
 or VAT at checkout, sends receipts and invoices, and runs the customer portal. The site never sees
 card details.
@@ -9,18 +9,44 @@ card details.
 
 | Plan | Monthly | Yearly | Who |
 | --- | --- | --- | --- |
-| Free | $0 | $0 | Everyone. Every component and primitive, docs, CLI. MIT. |
+| Free | $0 | $0 | Everyone. The 74 free components (the Free list below), docs, CLI. MIT. |
 | Pro | $19.99 | $199.99 | One developer. |
 | Pro, founder rate | $12.99 | $124.45 | The first 100 subscribers; same Pro. |
 | Team | $44.99 | $449 | A team of up to 4 people: the owner plus 3 teammates. |
 
 Prices are US dollars before tax. There is no lifetime plan.
 
-**Pro includes** every screen, agent-app template, block and kit, and the AI components (agent
-timeline, model card, AI workflow and the rest of `PRO_COMPONENTS` in `site/src/lib/taxonomy.mjs`),
-with their code, weekly drops, Studio extras and the Pro CLI and MCP. **Free stays fully usable**:
-free components and primitives never move to Pro (new Pro components ship as Pro from day one), and
-every Pro preview stays open to everyone.
+**Pro includes** every component outside the Free list, every screen, agent-app template, block
+and kit, and the AI components, with their code, weekly drops, Studio extras and the Pro CLI and
+MCP. Every Pro preview stays open to everyone. New components ship as Pro.
+
+**Admins** (the owners `m.ismailqureshi62@gmail.com`, `khubaibnazeer8@gmail.com` and
+everyone on the D1 `admins` list) have all access: `plan_for()` in `site/worker/billing.ts`
+returns tier `team`, `pro: true`, `admin: true` for them once Google or GitHub verified their
+email, so the Pro source endpoint and the Pro registry (P3) open, no upgrade prompt or Get Pro
+button shows, and the account menu says Admin.
+
+## The Free list
+
+`site/src/lib/free-tier.json` is the single source of truth for what is free. Everything reads it:
+the site (`isFree` / `isPro` in `site/src/lib/taxonomy.mjs` and `data.ts`: the bolt marker, the
+locked code panel, the copy and CLI gates), the Worker (only non-free items go into
+`worker/pro-src.json`, served by `/api/pro/source/<slug>` behind `plan_for()`), the CLI registry
+(`site/scripts/gen.mjs` marks each item's tier from it, and only free items get a public
+`r/<slug>.json`), and `docs/parity/status.csv` (the `oxyn_tier` column, written by
+`site/scripts/sync-tiers.mjs`; CI fails when it is stale).
+
+**How it was chosen (November 2026).** By the amount of work in each component, scored by
+`site/scripts/score-free.mjs` over the site catalogue: 3 points per variant (up to 12), 2 per
+playground control (up to 12), 8 for a GPUI build next to the Dioxus one, 1 per spec section (up to
+12) plus 1 per 1,500 characters of spec (up to 8), half a point per accessibility, keyboard and
+responsive note (up to 12) and per prop (up to 16), and 2 per built parity row in
+`docs/parity/status.csv` (up to 3). Only components are candidates (screens, agent apps, blocks and
+the AI components are Pro by definition). Components are taken in score order together with the
+components they render (from the registry's dependencies), so every free component installs and
+compiles on its own, up to 74. Re-running the script is a pricing decision, never part of a build.
+
+The 74 free items: `agent-crew`, `agent-cursors`, `agent-trail`, `approval-card`, `attachments`, `autonomy-dial`, `avatar`, `badge`, `button`, `button-group`, `calendar`, `card`, `chat-composer`, `chat-thread`, `checkbox`, `chip`, `code-block`, `code-suggestion`, `collaboration-stream`, `combobox`, `command-palette`, `composer`, `confirm-popover`, `context-map`, `context-meter`, `cost-waterfall`, `date-reel`, `decision-tree`, `dialog`, `diff-timeline`, `diff-viewer`, `dropdown-menu`, `effort-control`, `elapsed-timer`, `fallback-chain`, `fanout-grid`, `file-dropzone`, `glyph-loader`, `inline-diff`, `inline-edit`, `judge-bracket`, `memory-panel`, `message-bubble`, `model-picker`, `otp-input`, `password-strength`, `phone-input`, `queue-stack`, `rating`, `reasoning-block`, `response-feedback`, `run-controls`, `scheduled-runs`, `segmented-control`, `select`, `send-control`, `skeleton`, `slider`, `spinner`, `stepper`, `streaming-markdown`, `subagent-tree`, `switch`, `tabs`, `tag-input`, `text-field`, `text-reveal`, `text-shimmer`, `tool-access-map`, `tool-call`, `trace-waterfall`, `verb-cycler`, `voice-recorder`, `workspace-sidebar`.
 
 **Founder rate.** The first 100 founder subscriptions that become active are counted in D1
 (`founder_claims`). From the 100th on, `/api/billing/plans` reports the founder rate as closed, the

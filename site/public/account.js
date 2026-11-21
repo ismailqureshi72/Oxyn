@@ -132,9 +132,14 @@
     window.__oxynPlan = plan;
     document.documentElement.dataset.plan = plan ? plan.tier : 'none';
     if (plan && plan.pro) document.documentElement.dataset.pro = '1'; else delete document.documentElement.dataset.pro;
+    // Admins (maintainers) have everything open: no locks, no upgrade prompts, "Admin" as the plan.
+    if (plan && plan.admin) document.documentElement.dataset.admin = '1'; else delete document.documentElement.dataset.admin;
+    // Remembered for the next page's first paint (Head.astro), so Get Pro does not flash for members.
+    try { if (plan && plan.pro) localStorage.setItem('oxyn-plan-hint', plan.admin ? 'admin' : 'pro'); else localStorage.removeItem('oxyn-plan-hint'); } catch {}
     planResolve(plan);
     document.dispatchEvent(new CustomEvent('oxyn:plan', { detail: plan }));
-    $$('[data-acct-plan]').forEach((el) => { el.textContent = plan ? TIER[plan.tier] || 'Free' : 'Free'; el.dataset.tier = plan ? plan.tier : 'free'; });
+    const label = (p) => (p ? (p.admin ? 'Admin' : TIER[p.tier] || 'Free') : 'Free');
+    $$('[data-acct-plan]').forEach((el) => { el.textContent = label(plan); el.dataset.tier = plan ? (plan.admin ? 'admin' : plan.tier) : 'free'; });
     $$('[data-acct-billing]').forEach((a) => { a.hidden = !(plan && plan.has_billing); });
     fillPlan(plan);
   }
@@ -146,12 +151,14 @@
     const chip = $('[data-plan-chip]', box), line = $('[data-plan-line]', box), note = $('[data-plan-note]', box);
     const up = $('[data-plan-upgrade]', box), manage = $('[data-plan-manage]', box);
     const s = plan.subscription;
-    chip.textContent = TIER[plan.tier] || 'Free';
-    chip.dataset.tier = plan.tier;
+    chip.textContent = plan.admin ? 'Admin' : TIER[plan.tier] || 'Free';
+    chip.dataset.tier = plan.admin ? 'admin' : plan.tier;
     manage.hidden = !plan.has_billing;
     up.hidden = plan.pro;
     let text = 'Every component and primitive, free and MIT licensed.';
-    if (plan.via === 'subscription' && s) {
+    if (plan.admin) {
+      text = 'Admin: every component, screen and block is open to you, whatever the plan.';
+    } else if (plan.via === 'subscription' && s) {
       const what = `${s.plan === 'team' ? 'Team' : 'Pro'}${s.founder ? ' at the founder rate' : ''}, ${money(s.amount, s.currency)} a ${s.interval}`;
       const when = s.current_period_end ? fmtDay(s.current_period_end) : '';
       text = s.cancel_at_period_end ? `${what}. Cancelled: Pro stays open until ${when || 'the end of the period'}.`

@@ -39,3 +39,4 @@ site/dist/
 site/node_modules/
 site/.astro/
 site/worker/pro-src.json
+site/public/r/
