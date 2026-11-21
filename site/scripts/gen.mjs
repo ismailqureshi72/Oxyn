@@ -4,7 +4,7 @@
 //   node scripts/gen.mjs --wasm   also builds the live-demo WASM bundle into public/wasm/
 //
 // Outputs (all git-ignored): src/generated/*.json, src/generated/*.css, public/wasm/*,
-// worker/pro-src.json (Pro usage code, bundled into the Worker).
+// worker/pro-src.json (Pro usage code, bundled into the Worker), public/r/ (the CLI registry).
 // Needs the Rust toolchain from rust-toolchain.toml (+ wasm32-unknown-unknown and wasm-bindgen-cli
 // 0.2.130 for --wasm; wasm-opt (binaryen) is used when it is on PATH, and is required when CI is set
 // or OXYN_REQUIRE_WASM_OPT=1, since the unoptimised bundle overflows Cloudflare's 25 MiB asset cap).
@@ -15,7 +15,7 @@ import fs from 'node:fs';
 import { gzipSync } from 'node:zlib';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { SCREENS, PRO_COMPONENTS } from '../src/lib/taxonomy.mjs';
+import { isFree, isScreen, isAgentApp, isBlock, groupSlugOf, blockGroupOf, pageUrl } from '../src/lib/taxonomy.mjs';
 
 const site = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const root = path.resolve(site, '..');
@@ -145,19 +145,47 @@ fs.writeFileSync(path.join(gen, 'parity.json'), JSON.stringify(rows));
 // 5. Motion tokens.
 fs.copyFileSync(path.join(root, 'tokens/oxyn.motion.json'), path.join(gen, 'motion.json'));
 
-// 6. Pro usage code (docs/pricing.md): the code of every Pro item (screens, agent-app templates,
-// the AI special components, the blocks)
+// 6. Pro usage code (docs/pricing.md): the code of every Pro item (everything outside the Free tier
+// in src/lib/free-tier.json: screens, agent-app templates, blocks, the AI special components and
+// every other component not in the Free list)
 // goes to the Worker bundle, which hands it out only to Pro accounts (GET /api/pro/source/<slug>).
 // The static pages carry the preview and a locked code panel, never this code.
 {
   const { demos } = JSON.parse(fs.readFileSync(path.join(gen, 'demos.json'), 'utf8'));
   const pro = {};
   for (const d of demos) {
-    if (!SCREENS.includes(d.slug) && !PRO_COMPONENTS.includes(d.slug) && !String(d.category).startsWith('blocks-')) continue;
+    if (isFree(d)) continue;
     pro[d.slug] = { name: d.name, code: d.code, variants: d.variants.map((v) => ({ name: v.name, code: v.code })) };
   }
   fs.writeFileSync(path.join(site, 'worker/pro-src.json'), JSON.stringify(pro));
   console.log(`pro source: ${Object.keys(pro).length} items -> worker/pro-src.json`);
+}
+
+// 6b. The CLI registry (docs/cli.md): public/r/index.json lists every item (free and Pro, metadata
+// only); public/r/<slug>.json holds the source of each installable Free item. Pro source is never
+// written here. The builder is Rust (crates/oxyn-codegen, bin oxyn-registry); it reads the catalogue
+// below and walks the renderer crates for each item's files and dependencies.
+{
+  const { demos } = JSON.parse(fs.readFileSync(path.join(gen, 'demos.json'), 'utf8'));
+  const origin = 'https://ui.oxyn.workers.dev';
+  const input = demos.map((d) => ({
+    slug: d.slug,
+    name: d.name,
+    kind: isScreen(d) ? (isAgentApp(d) ? 'app' : 'screen') : isBlock(d) ? 'block' : 'component',
+    category: isScreen(d) ? 'screens' : isBlock(d) ? `blocks-${blockGroupOf(d).slug}` : groupSlugOf(d),
+    tier: isFree(d) ? 'free' : 'pro',
+    description: d.summary || '',
+    url: origin + pageUrl(d),
+    dioxus: d.dioxus || null,
+    gpui: d.gpui || null,
+  }));
+  const inputPath = path.join(gen, 'registry-input.json');
+  fs.writeFileSync(inputPath, JSON.stringify(input));
+  if (!process.env.OXYN_SKIP_REGISTRY) {
+    const out = path.join(site, 'public/r');
+    const extra = process.env.OXYN_REGISTRY_REV ? ['--rev', process.env.OXYN_REGISTRY_REV] : [];
+    run('cargo', ['run', '--locked', '-q', '-p', 'oxyn-codegen', '--bin', 'oxyn-registry', '--', '--input', inputPath, '--out', out, '--quiet', ...extra]);
+  }
 }
 
 // 7. The live-demo bundle.

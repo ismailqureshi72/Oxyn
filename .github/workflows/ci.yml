@@ -63,6 +63,64 @@ jobs:
         run: sudo apt-get update -qq && sudo apt-get install -y -qq libxkbcommon-dev libxkbcommon-x11-dev libfontconfig1-dev libfreetype-dev
       - run: cargo clippy --locked --manifest-path examples/gpui-agent-apps/Cargo.toml -- -D warnings
 
+  # The oxyn CLI end to end: build the registry from this commit (no WASM), then a fresh Dioxus
+  # project and a fresh GPUI project each get `oxyn init` + `oxyn add` of three free components and
+  # must `cargo check`. oxyn-core comes from this checkout (--oxyn-path), the code from the registry.
+  cli-e2e:
+    runs-on: ubuntu-latest
+    env:
+      CARGO_TARGET_DIR: ${{ github.workspace }}/target
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: "1.99"
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: cli-e2e
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+      - run: npm ci
+        working-directory: site
+      - name: registry (site/public/r) from this commit
+        run: node scripts/gen.mjs
+        working-directory: site
+      - run: cargo build --locked -p oxyn-cli
+      - name: list, search, view; a Pro item exits 2
+        run: |
+          OXYN=$CARGO_TARGET_DIR/debug/oxyn; R=$PWD/site/public/r
+          n=$($OXYN list --registry "$R" --tier free --json | node -e 'console.log(JSON.parse(require("fs").readFileSync(0)).length)')
+          echo "$n free items"; test "$n" -ge 72 && test "$n" -le 75
+          node -e 'const i=require(process.argv[1]).items.filter(x=>x.tier==="free"&&!x.installable);for(const x of i)console.log("::error::"+x.slug+": "+x.note);process.exit(i.length?1:0)' "$R/index.json"
+          $OXYN search --registry "$R" approval
+          $OXYN view --registry "$R" composer
+          mkdir -p "$RUNNER_TEMP/pro" && cd "$RUNNER_TEMP/pro" && cargo new -q p --vcs none && cd p
+          $OXYN init --registry "$R" --framework dioxus
+          set +e; $OXYN add --registry "$R" memory-panel; rc=$?; set -e
+          test "$rc" = 2 || { echo "::error::a Pro item must exit 2 (got $rc)"; exit 1; }
+      - name: fresh Dioxus project, oxyn add composer approval-card tag-input, cargo check
+        run: |
+          OXYN=$CARGO_TARGET_DIR/debug/oxyn; R=$PWD/site/public/r; ROOT=$PWD
+          cd "$RUNNER_TEMP" && cargo new -q dx --vcs none && cd dx
+          cargo add -q dioxus@0.7 --no-default-features -F macro,html,signals,hooks
+          $OXYN init --registry "$R" --oxyn-path "$ROOT"
+          $OXYN add --registry "$R" composer approval-card tag-input
+          printf 'mod oxyn;\n#[allow(unused_imports)]\nuse oxyn::{ApprovalCard, Composer, TagInput};\nfn main() {}\n' > src/main.rs
+          cargo check
+          $OXYN diff --registry "$R" composer
+      - name: fresh GPUI project, oxyn add button badge spinner, cargo check
+        run: |
+          OXYN=$CARGO_TARGET_DIR/debug/oxyn; R=$PWD/site/public/r; ROOT=$PWD
+          sudo apt-get update -qq && sudo apt-get install -y -qq libxkbcommon-dev libxkbcommon-x11-dev libfontconfig1-dev libfreetype-dev
+          cd "$RUNNER_TEMP" && cargo new -q gp --vcs none && cd gp
+          $OXYN init --registry "$R" --framework gpui --oxyn-path "$ROOT"
+          $OXYN add --registry "$R" button badge spinner
+          printf 'mod oxyn;\n#[allow(unused_imports)]\nuse oxyn::{BadgeEl, ButtonEl, SpinnerEl};\nfn main() {}\n' > src/main.rs
+          cargo check
+
   # Site: build only (Astro + Pagefind + the live-demo WASM bundle). Never uploads artifacts.
   # Deploy runs on main only, and only once the Cloudflare secrets exist; otherwise it is skipped.
   site:
@@ -95,6 +153,12 @@ jobs:
       - run: npm ci
         working-directory: site
       - run: npm run build
+        working-directory: site
+      - name: worker unit tests (entitlements)
+        run: npm test
+        working-directory: site
+      - name: status.csv tiers follow the Free list (site/src/lib/free-tier.json)
+        run: node scripts/sync-tiers.mjs --check
         working-directory: site
       # Runs on every PR so an oversized asset fails before merge, not at deploy on main.
       # Cloudflare Workers rejects any single asset over 25 MiB; keep 1 MiB of headroom.

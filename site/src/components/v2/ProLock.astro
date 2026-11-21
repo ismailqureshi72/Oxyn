@@ -11,7 +11,7 @@ const href = from ? `/pricing/?from=${from}` : '/pricing/';
   <span class="pro-lock-i" aria-hidden="true"><Fragment set:html={icon.lock} /></span>
   <div class="pro-lock-t">
     <b data-pro-lock-title>The code is part of Oxyn Pro</b>
-    <p data-pro-lock-msg>{compact ? 'The preview is free. Pro opens the code of every screen and template.' : 'The preview stays free for everyone. Pro opens the code of every screen, agent-app template, block and kit, plus the Pro CLI.'}</p>
+    <p data-pro-lock-msg>{compact ? 'The preview is free. Pro opens the code of every Pro component, screen and template.' : 'The preview stays free for everyone. Pro opens the code of every Pro component, screen, agent-app template, block and kit, plus the Pro CLI.'}</p>
   </div>
   <a class="x-pill pill-black pro-lock-go" href={href} data-pro-lock-go><Fragment set:html={icon.bolt} />Get Pro</a>
 </div>

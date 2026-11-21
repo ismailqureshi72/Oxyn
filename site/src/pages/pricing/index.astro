@@ -13,17 +13,17 @@ const save = Math.round((1 - PRICES.pro.year / (PRICES.pro.month * 12)) * 100);
 const co = (key: string) => `/api/billing/checkout?plan=${key}`;
 
 const freeList = [
-  `Every free component and primitive (${counts.components - counts.proComponents}), with all their variants`,
+  `The ${counts.free} free components, with all their variants and code`,
   'Dioxus on the web, GPUI on the desktop',
   'Light, dark and high-contrast themes',
   'Specs, live previews and docs',
-  'The oxyn CLI, when it ships',
+  'The oxyn CLI: oxyn add for every free component',
 ];
 const proList = [
   'Everything in Free',
   `All ${counts.screens} screens, with their code`,
   `Agent-app templates (${counts.agentApps} today)`,
-  `Pro AI components (${counts.proComponents} today), with their code`,
+  `All ${counts.proComponents} Pro components, including the AI components, with their code`,
   'Blocks and category kits as they ship',
   'Weekly drops of new Pro items',
   'Studio extras: saved themes and presets',
@@ -36,7 +36,8 @@ const teamList = [
   'One invoice for the team',
 ];
 const rows: [string, string, string, string][] = [
-  ['Components and primitives', 'yes', 'yes', 'yes'],
+  [`The ${counts.free} free components (code)`, 'yes', 'yes', 'yes'],
+  [`The other ${counts.proComponents} components (code)`, 'no', 'yes', 'yes'],
   ['Docs, specs and live previews', 'yes', 'yes', 'yes'],
   ['Screens and agent-app templates (code)', 'no', 'yes', 'yes'],
   ['Blocks and kits', 'no', 'yes', 'yes'],
@@ -55,7 +56,7 @@ const faq: [string, string][] = [
   ['Do I need an account?', 'Free needs nothing. To subscribe you sign in first, so Pro is tied to your Oxyn account.'],
 ];
 ---
-<Base back="/" title="Pricing" description={`Oxyn's components are free. Pro opens every screen, template, block and kit: ${usd(PRICES.pro.month)} a month or ${usd(PRICES.pro.year)} a year.`}>
+<Base back="/" title="Pricing" description={`${counts.free} Oxyn components are free. Pro opens every other component, screen, template, block and kit: ${usd(PRICES.pro.month)} a month or ${usd(PRICES.pro.year)} a year.`}>
   <div class="wrap content pricing" data-pricing data-interval="month" data-founder="open">
     <header class="pr-head">
       <h1 class="x-title">Free for the core. Pro for whole apps.</h1>
@@ -87,7 +88,7 @@ const faq: [string, string][] = [
       </section>
 
       <section class="tier main pr-tier" aria-labelledby="t-pro" data-tier="pro">
-        <div class="pr-top"><h2 id="t-pro">Pro</h2><span class="x-chip pro-chip pr-fd-chip fd"><Fragment set:html={icon.bolt} />Founder rate</span><span class="x-chip soft pr-cur" data-pr-cur hidden>Your plan</span></div>
+        <div class="pr-top"><h2 id="t-pro">Pro</h2><span class="x-chip pro-chip pr-fd-chip fd"><i class="x-bolt" aria-hidden="true"></i>Founder rate</span><span class="x-chip soft pr-cur" data-pr-cur hidden>Your plan</span></div>
         <p class="pr-for">For one developer shipping whole apps.</p>
         <div class="price">
           <span class="pr-amt mo"><span class="fd">{usd(PRICES.founder.month)}</span><span class="rg">{usd(PRICES.pro.month)}</span></span>

@@ -2,14 +2,15 @@
   "name": "oxyn-site",
   "private": true,
   "type": "module",
-  "description": "The Oxyn website: Astro (static) + Starlight docs, a ⌘K search palette, live Dioxus WASM demos.",
+  "description": "The Oxyn website: Astro (static) + Starlight docs, a \u2318K search palette, live Dioxus WASM demos.",
   "scripts": {
     "gen": "node scripts/gen.mjs",
     "gen:wasm": "node scripts/gen.mjs --wasm",
     "dev": "astro dev",
     "build": "node scripts/gen.mjs --wasm && astro build",
     "build:site": "astro build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "test": "node --experimental-strip-types --test worker/entitle.test.ts"
   },
   "engines": {
     "node": ">=22.12"

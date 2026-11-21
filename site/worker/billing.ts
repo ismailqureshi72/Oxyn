@@ -21,6 +21,8 @@
 import { EMAIL_RE, HttpError, fail, json, sameOrigin, type Ctx, type Env } from './shared';
 import { currentUser } from './auth';
 import PRO_SOURCE from './pro-src.json';
+import { isAdminRow } from './entitle';
+export { OWNERS, isAdminRow } from './entitle';
 
 export const POLAR = {
   api: 'https://api.polar.sh/v1',
@@ -70,7 +72,9 @@ export type Tier = 'free' | 'pro' | 'team';
 export interface PlanFor {
   tier: Tier;
   pro: boolean;
-  via: 'subscription' | 'seat' | 'grant' | null;
+  /** A maintainer: everything open, no upgrade prompts (see OWNERS and the D1 `admins` list). */
+  admin: boolean;
+  via: 'subscription' | 'seat' | 'grant' | 'admin' | null;
   mine: SubRow | null; // the account's own live subscription (Pro, or Team owner)
   latest: SubRow | null; // its newest subscription, live or not
   seat: (SubRow & { owner_email: string }) | null; // a live Team it holds a seat on
@@ -79,17 +83,21 @@ export interface PlanFor {
 }
 const rank = (t: Tier) => (t === 'team' ? 2 : t === 'pro' ? 1 : 0);
 
+
 /** The one licence check: what this account may use right now. Reads, in one place,
  *  1. its own Polar subscriptions (licences: Pro for one developer, or the Team owner),
  *  2. a seat on someone's live Team subscription,
  *  3. a manual grant (D1 `grants`, written by the admin panel from G2): unrevoked and not expired
  *     counts exactly like an active subscription.
  *  An email only counts when Google or GitHub verified it, so nobody can claim a licence, a seat or
- *  a grant by signing up with an address that is not theirs. The highest tier wins. */
+ *  a grant by signing up with an address that is not theirs. The highest tier wins.
+ *  4. Admins (OWNERS and the D1 `admins` list, provider-verified) have all access: tier `team`,
+ *     `pro` true, `admin` true, whatever they pay for. Every Pro check (the Pro source endpoint and
+ *     the Pro registry of P3) goes through this function, so admins are entitled everywhere. */
 export async function plan_for(env: Env, u: Who): Promise<PlanFor> {
   const v = u.email_verified ? 1 : 0;
   const now = iso();
-  const [ownR, seatR, grantR] = await env.DB.batch([
+  const [ownR, seatR, grantR, adminR] = await env.DB.batch([
     env.DB.prepare(
       'SELECT s.* FROM licences l JOIN subscriptions s ON s.id = l.subscription_id ' +
         'WHERE l.user_id = ?1 OR (?3 = 1 AND l.email = ?2) ORDER BY s.created_at DESC LIMIT 20',
@@ -102,7 +110,12 @@ export async function plan_for(env: Env, u: Who): Promise<PlanFor> {
       "SELECT id, email, plan, seats, expires_at, reason, created_at FROM grants WHERE ?2 = 1 AND email = ?1 AND revoked_at IS NULL " +
         "AND (expires_at IS NULL OR expires_at > ?3) ORDER BY (plan = 'team') DESC, created_at DESC LIMIT 1",
     ).bind(u.email, v, now),
+    env.DB.prepare(
+      'SELECT (SELECT 1 FROM admins WHERE email = ?1 AND removed_at IS NULL) AS listed, (SELECT COUNT(*) FROM oauth_accounts WHERE user_id = ?2) AS linked',
+    ).bind(u.email, u.id),
   ]);
+  const adminRow = ((adminR.results ?? [])[0] as { listed: number | null; linked: number } | undefined) ?? { listed: null, linked: 0 };
+  const admin = isAdminRow(u, !!adminRow.listed, Number(adminRow.linked ?? 0));
   const own = (ownR.results ?? []) as SubRow[];
   const seat = ((seatR.results ?? [])[0] as (SubRow & { owner_email: string }) | undefined) ?? null;
   const grant = ((grantR.results ?? [])[0] as GrantRow | undefined) ?? null;
@@ -112,8 +125,8 @@ export async function plan_for(env: Env, u: Who): Promise<PlanFor> {
   if (seat) options.push(['team', 'seat']);
   if (grant) options.push([grant.plan, 'grant']);
   options.sort((a, b) => rank(b[0]) - rank(a[0]));
-  const [tier, via] = options[0] ?? ['free', null];
-  return { tier, pro: tier !== 'free', via, mine, latest: mine ?? own[0] ?? null, seat, grant, customer: own[0]?.customer_id ?? null };
+  const [tier, via] = admin ? (['team', 'admin'] as [Tier, PlanFor['via']]) : (options[0] ?? ['free', null]);
+  return { tier, pro: admin || tier !== 'free', admin, via, mine, latest: mine ?? own[0] ?? null, seat, grant, customer: own[0]?.customer_id ?? null };
 }
 
 const pub = (s: SubRow | null) => s && {
@@ -183,7 +196,7 @@ async function checkout(req: Request, env: Env, url: URL) {
   if (!u) return redirect(`${url.origin}/login/?next=${encodeURIComponent(`/pricing/?buy=${plan.key}${from}`)}`);
   if (plan.founder && !(await founderState(env)).open) return redirect(`${url.origin}/pricing/?founder=closed${from}`);
   const ent = await plan_for(env, u);
-  if (ent.mine) return redirect(`${url.origin}/account/?billing=active#plan`);
+  if (ent.mine || ent.admin) return redirect(`${url.origin}/account/?billing=active#plan`);
   const to = new URL(plan.link);
   to.searchParams.set('customer_email', u.email);
   if (u.name) to.searchParams.set('customer_name', u.name.slice(0, 100));
@@ -203,6 +216,7 @@ async function billingMe(env: Env, u: Who) {
     ok: true,
     tier: e.tier,
     pro: e.pro,
+    admin: e.admin,
     via: e.via,
     subscription: pub(e.latest),
     seat: e.seat ? { owner_email: e.seat.owner_email, plan: 'team' } : null,
