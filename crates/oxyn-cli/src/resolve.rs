@@ -28,6 +28,7 @@ pub fn resolve(
             &mut done,
             &mut visiting,
             None,
+            s,
         )?;
     }
     Ok(out)
@@ -43,6 +44,7 @@ fn visit(
     done: &mut BTreeSet<String>,
     visiting: &mut Vec<String>,
     needed_by: Option<&str>,
+    root: &str,
 ) -> Result<(), Error> {
     if done.contains(slug) || visiting.iter().any(|s| s == slug) {
         return Ok(());
@@ -51,17 +53,22 @@ fn visit(
         .get(slug)
         .ok_or_else(|| Error::UnknownItem(slug.to_string(), suggest(index, slug)))?;
     check_entry(entry, fw, needed_by)?;
-    let item = client.item(slug)?.ok_or_else(|| {
-        Error::Invalid(format!(
-            "the registry lists `{slug}` but has no {slug}.json; try again later"
-        ))
-    })?;
+    let item = if entry.tier == Tier::Pro {
+        // The authenticated Pro registry; a dependency names the item it comes with.
+        client.fetch_pro(slug, (slug != root).then_some(root))?
+    } else {
+        client.item(slug)?.ok_or_else(|| {
+            Error::Invalid(format!(
+                "the registry lists `{slug}` but has no {slug}.json; try again later"
+            ))
+        })?
+    };
     let build = item
         .build(fw)
         .ok_or_else(|| Error::NoFramework(slug.to_string(), fw, item.framework_list()))?;
     visiting.push(slug.to_string());
     for d in build.oxyn_deps.clone() {
-        visit(client, index, &d, fw, out, done, visiting, Some(slug))?;
+        visit(client, index, &d, fw, out, done, visiting, Some(slug), root)?;
     }
     visiting.pop();
     done.insert(slug.to_string());
@@ -69,20 +76,23 @@ fn visit(
     Ok(())
 }
 
-/// Why an index entry can't be installed with the free registry, if it can't.
+/// Why an index entry can't be installed, if it can't. Pro items that are installable pass: the
+/// Pro registry checks the account (and the month's count) when they are fetched.
 pub fn check_entry(
     entry: &IndexEntry,
     fw: Framework,
     needed_by: Option<&str>,
 ) -> Result<(), Error> {
-    if entry.tier == Tier::Pro {
+    if entry.tier == Tier::Pro && !entry.installable {
         return Err(match needed_by {
             Some(by) => Error::Invalid(format!(
-                "`{by}` needs `{}`, which is part of Oxyn Pro ({}/)",
-                entry.slug,
-                crate::client::PRICING_URL
+                "`{by}` needs `{}`, a Pro item that has no CLI build yet; use the code on its page ({})",
+                entry.slug, entry.url
             )),
-            None => Error::ProRequired(entry.slug.clone()),
+            None => Error::Invalid(format!(
+                "`{}` is part of Oxyn Pro and has no CLI build yet: use the code on its page ({})",
+                entry.slug, entry.url
+            )),
         });
     }
     if !entry.installable {
