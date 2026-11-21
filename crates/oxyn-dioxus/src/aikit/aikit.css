@@ -354,20 +354,20 @@
 .oxaik-lc-s label{font-size:12px}
 .oxaik-lc-list{min-width:0}
 .oxaik-lc-rows{position:relative;margin:0;padding:0;list-style:none;border-radius:8px}
-.oxaik-lc-row{position:absolute;left:0;right:0;top:0;display:grid;grid-template-columns:18px minmax(0,150px) minmax(0,1fr) 72px;align-items:center;gap:8px;height:34px;padding:0 8px;border-radius:8px;cursor:pointer;transition:transform .24s cubic-bezier(.2,.8,.2,1),background .16s}
+.oxaik-lc-row{position:absolute;left:0;right:0;top:0;display:grid;grid-template-columns:18px minmax(0,210px) minmax(0,1fr) 72px;align-items:center;gap:8px;height:34px;padding:0 8px;border-radius:8px;cursor:pointer;transition:transform .24s cubic-bezier(.2,.8,.2,1),background .16s}
 .oxaik-lc-row:hover{background:var(--ai-hover)}
 .oxaik-lc-row.on{background:var(--ai-sel)}
 .oxaik-lc-rk{font-size:11.5px}
 .oxaik-lc-nm{flex-wrap:nowrap;font-size:12.5px;min-width:0}
-.oxaik-lc-nm span:last-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.oxaik-lc-n{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .oxaik-lc-row .oxaik-bar>span{background:var(--ai-fg2)}
 .oxaik-lc-row.on .oxaik-bar>span{background:var(--ai-fg)}
 .oxaik-lc-v{text-align:right;font-size:12.5px}
-.oxaik-lc-tag{position:absolute;right:86px;top:6px;height:20px;font-size:10.5px;padding:0 6px}
+.oxaik-lc-tag{height:20px;font-size:10.5px;padding:0 6px}
 .oxaik-lc-foot{display:flex;flex-direction:column;gap:2px;padding-top:10px;border-top:1px solid var(--ai-line)}
 .oxaik-lc-foot p{margin:0}
 .oxaik-lc-sum{font-weight:500}
-@media (max-width:600px){.oxaik-lc-grid{grid-template-columns:minmax(0,1fr)}.oxaik-lc-row{grid-template-columns:18px minmax(0,1fr) 68px}.oxaik-lc-row .oxaik-bar{display:none}.oxaik-lc-tag{display:none}}
+@media (max-width:600px){.oxaik-lc-grid{grid-template-columns:minmax(0,1fr)}.oxaik-lc-row{grid-template-columns:18px minmax(0,1fr) 68px}.oxaik-lc-row .oxaik-bar{display:none}}
 /* ── Provider keys ── */
 .oxaik-pk{width:640px}
 .oxaik-pk-list{display:flex;flex-direction:column;margin:0;padding:0;list-style:none}
@@ -508,6 +508,7 @@
 .oxaik-ay-sqlrow{display:flex;align-items:center;gap:6px;padding-right:6px}
 .oxaik-ay-sqlrow .oxaik-ib{width:26px;height:26px;border:0}
 .oxaik-ay-sqlbtn{display:flex;align-items:center;gap:8px;flex:1;min-width:0;height:36px;padding:0 10px;border:0;background:transparent;color:var(--ai-fg);font:inherit;font-size:12.5px;cursor:pointer;text-align:left}
+.oxaik-ay-sqlbtn>b{flex:none;white-space:nowrap}
 .oxaik-ay-sqlbtn>.oxaik-mute{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 .oxaik-ay-st{display:inline-grid;place-items:center;width:14px;flex:none;color:var(--ai-fg2)}
 .oxaik-ay-st[data-ph="Done"]{color:var(--h-green)}.oxaik-ay-st[data-ph="Error"]{color:var(--h-red)}
