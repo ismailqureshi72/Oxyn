@@ -18,8 +18,9 @@ const nav = [
   ['Docs', '/docs/', icon.docs],
   ['Design System', '/docs/theming/', icon.design],
   ['Pricing', '/pricing/', icon.pricing],
+  ['Studio', '/studio/', icon.sparkle],
 ];
-const libActive = !current.startsWith('/docs') && !current.startsWith('/pricing');
+const libActive = !current.startsWith('/docs') && !current.startsWith('/pricing') && !current.startsWith('/studio');
 const groupsList = [
   { label: 'Components', href: '/components/', n: counts.components, items: [], head: true },
   ...families,
@@ -42,7 +43,7 @@ const groupsList = [
   </div>
   <nav class="lsb-nav" aria-label="Site">
     {nav.map(([l, h, i]) => (
-      <a href={h} aria-current={(l === 'Library' ? libActive : current.startsWith(h)) ? 'page' : undefined}><Fragment set:html={i} />{l}</a>
+      <a href={h} aria-current={(l === 'Library' ? libActive : current.startsWith(h)) ? 'page' : undefined}><Fragment set:html={i} />{l}{l === 'Studio' && <span class="x-soon-badge">Soon</span>}</a>
     ))}
   </nav>
   <div class="lsb-style">
