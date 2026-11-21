@@ -15,7 +15,7 @@ use crate::client::Client;
 use crate::config::{self, Config, Lock, Source};
 
 /// First lines of the generated root module.
-pub const ROOT_HEADER: &str = "// Oxyn components, added with `oxyn add` (https://ui.oxyn.workers.dev/docs/cli/).\n// The CLI rewrites this file as you add components; the other files are yours to edit.\n#![allow(dead_code, unused_imports, unused_macros)]\n";
+pub const ROOT_HEADER: &str = "// Oxyn components, added with `oxyn add` (https://oxynui.com/docs/cli/).\n// The CLI rewrites this file as you add components; the other files are yours to edit.\n#![allow(dead_code, unused_imports, unused_macros)]\n";
 
 /// What `init` found and did.
 #[derive(Debug, Default)]

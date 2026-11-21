@@ -15,7 +15,7 @@ use crate::Server;
 use crate::props;
 
 /// Where the MCP docs live.
-pub const DOCS_URL: &str = "https://ui.oxyn.workers.dev/docs/mcp/";
+pub const DOCS_URL: &str = "https://oxynui.com/docs/mcp/";
 /// How to install the CLI (the same repository as the server).
 pub const CLI_INSTALL: &str =
     "cargo install --git https://github.com/ismailqureshi72/Oxyn oxyn-cli";

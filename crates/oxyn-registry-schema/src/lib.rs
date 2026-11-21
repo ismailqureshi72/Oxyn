@@ -395,7 +395,7 @@ mod tests {
             category: "chat".into(),
             tier: Tier::Free,
             description: "Send, stop, queue.".into(),
-            url: "https://ui.oxyn.workers.dev/components/chat/send-button/".into(),
+            url: "https://oxynui.com/components/chat/send-button/".into(),
             hash: "abc".into(),
             frameworks: vec![FrameworkBuild {
                 framework: Framework::Dioxus,

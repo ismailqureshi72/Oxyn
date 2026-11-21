@@ -70,9 +70,8 @@ impl Config {
 
     /// Writes `oxyn.toml`.
     pub fn save(&self, dir: &Path) -> Result<(), Error> {
-        let mut s = String::from(
-            "# Oxyn settings for this project (https://ui.oxyn.workers.dev/docs/cli/).\n",
-        );
+        let mut s =
+            String::from("# Oxyn settings for this project (https://oxynui.com/docs/cli/).\n");
         s.push_str(&toml::to_string_pretty(self).map_err(|e| Error::Invalid(e.to_string()))?);
         write(&dir.join(CONFIG_FILE), &s)
     }
