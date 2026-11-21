@@ -5,6 +5,7 @@
 //! [`MotionClock::next_frame_in`] says so.
 
 mod aikit;
+mod blocks;
 mod brand;
 mod chat;
 mod checkpoints;
@@ -23,6 +24,7 @@ mod status_text;
 mod surfaces;
 
 pub use aikit::{AiKitState, AiKitView, AiVariant};
+pub use blocks::{BlockVariant, BlocksState, BlocksView};
 pub use brand::{BrandAssets, brand_icon, brand_mark, brand_path, ink, tone_color};
 pub use chat::{
     AnswerEl, ChatThreadEl, FeedbackEl, MarkdownEl, MessageEl, ReasoningEl, SourceCardsEl,
