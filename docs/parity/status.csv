@@ -63,7 +63,7 @@ affectUI,Integration Picker,https://www.affectui.com/components/integration-pick
 affectUI,Integration Settings,https://www.affectui.com/components/integration-settings,Components · Inputs,Pro,,mcp-plugin-list,C10,#35,planned
 affectUI,Judge Bracket,https://www.affectui.com/components/judge-bracket,Components · Agents,Pro,Free,"judge-bracket (exact, ref-1 notes, family B part 9)",C8,#32,built
 affectUI,KPI Chart,https://www.affectui.com/components/kpi-chart,Components · Data display,Pro,,genui-blocks,C12,#36,planned
-affectUI,Memory Panel,https://www.affectui.com/components/memory-panel,Components · Agents,Pro,Free,"memory-panel (exact, ref-1 notes, family B part 9)",C10,#32,built
+affectUI,Memory Panel,https://www.affectui.com/components/memory-panel,Components · Agents,Pro,Pro,"memory-panel (exact, ref-1 notes, family B part 9)",C10,#32,built
 affectUI,Message Actions,https://www.affectui.com/components/message-actions,Components · Chat,Free,Mixed,"message-actions (exact, overnight batch A), icon-states, message-bubble",,#32,built
 affectUI,Model Picker,https://www.affectui.com/components/model-picker,Components · Chat,Pro,Mixed,"model-picker (exact, chunk 2; selected row marked by check and blue dashes only, batch A), model-menu, composer-effort-control",,#32,built
 affectUI,Notification Stack,https://www.affectui.com/components/notification-stack,Components · Feedback,Free,Pro,notification-stack,C3,#26,built
@@ -201,7 +201,7 @@ Arc UI,Split button,https://uiarc.dev/components/split-button,Components · Butt
 Arc UI,Button group,https://uiarc.dev/components/button-group,Components · Buttons,Free,,button-groups,N1,#23,built
 Arc UI,Floating button group,https://uiarc.dev/components/floating-button-group,Components · Buttons,Free,,button-groups,N1,#23,built
 Arc UI,Expanding button group,https://uiarc.dev/components/expanding-button-group,Components · Buttons,Free,,button-groups,N1,#23,built
-Arc UI,Copy button,https://uiarc.dev/components/copy-button,Components · Buttons,Free,Pro,copy-button,,#27,built
+Arc UI,Copy button,https://uiarc.dev/components/copy-button,Components · Buttons,Free,Free,copy-button,,#27,built
 Arc UI,Action swap,https://uiarc.dev/components/action-swap,Components · Buttons,Free,,verb-cycler.md (partial),,#28,built
 Arc UI,Icon morph,https://uiarc.dev/components/icon-morph,Components · Buttons,Free,,icon-states.md,,#42,planned
 Arc UI,Confirm morph,https://uiarc.dev/components/confirm-morph,Components · Buttons,Free,,approval-card.md (partial),,#28,built

@@ -27,6 +27,7 @@
     "confirm-popover",
     "context-map",
     "context-meter",
+    "copy-button",
     "cost-waterfall",
     "date-reel",
     "decision-tree",
@@ -43,7 +44,6 @@
     "inline-diff",
     "inline-edit",
     "judge-bracket",
-    "memory-panel",
     "message-bubble",
     "model-picker",
     "otp-input",
@@ -140,7 +140,6 @@
     "scheduled-runs": 59.1,
     "agent-crew": 59,
     "rating": 59,
-    "memory-panel": 58.9,
     "effort-control": 58,
     "elapsed-timer": 57,
     "chip": 56.2,
@@ -151,6 +150,7 @@
     "send-control": 55,
     "glyph-loader": 52.5,
     "response-feedback": 52.5,
+    "copy-button": 50.9,
     "spinner": 45.3
   }
 }
