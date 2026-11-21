@@ -509,8 +509,12 @@ impl XPostView {
                 } else {
                     hue(t, h).opacity(0.6)
                 };
-                (path(o).to_vec(), col)
+                (path(o)[1..].to_vec(), col)
             })
+            .chain(std::iter::once((
+                vec![(M_STATIONS[0].0, 100.0), (M_STATIONS[1].0, 100.0)],
+                c(t, ColorRole::BorderDefault),
+            )))
             .collect();
         let dots: Vec<((f64, f64), Hsla, bool)> = (0..FINDINGS.len())
             .filter_map(|i| {

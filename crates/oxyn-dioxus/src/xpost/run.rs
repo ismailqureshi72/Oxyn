@@ -101,21 +101,21 @@ pub fn TestTicks(
                         }
                     }
                 }
-                if fix {
-                    div { class: "oxxp-tt-fix", role: "dialog", "aria-label": "Suggested fix", style: "--row:{fail_file}",
-                        div { class: "oxxp-row oxxp-between",
-                            span { class: "oxxp-row", {ico("spark", 12.0)} b { "Fix for {FILES[fail_file].0}" } }
-                            button { class: "oxxp-ib", r#type: "button", "aria-label": "Close fix", onclick: move |_| act("tt-fix-close".into()), {ico("x", 12.0)} }
+            }
+            if fix {
+                div { class: "oxxp-tt-fix", role: "dialog", "aria-label": "Suggested fix",
+                    div { class: "oxxp-row oxxp-between",
+                        span { class: "oxxp-row", {ico("spark", 12.0)} b { "Fix for {FILES[fail_file].0}" } }
+                        button { class: "oxxp-ib", r#type: "button", "aria-label": "Close fix", onclick: move |_| act("tt-fix-close".into()), {ico("x", 12.0)} }
+                    }
+                    pre { class: "oxxp-diff oxxp-mono",
+                        for (k, (sign, line)) in FIX.iter().enumerate() {
+                            span { key: "{k}", "data-sign": "{sign}", "{sign} {line}\n" }
                         }
-                        pre { class: "oxxp-diff oxxp-mono",
-                            for (k, (sign, line)) in FIX.iter().enumerate() {
-                                span { key: "{k}", "data-sign": "{sign}", "{sign} {line}\n" }
-                            }
-                        }
-                        div { class: "oxxp-row",
-                            button { class: "oxxp-btn sm pri", r#type: "button", onclick: move |_| act("tt-fix".into()), "Apply fix and re-run" }
-                            span { class: "oxxp-mute", "Enter" }
-                        }
+                    }
+                    div { class: "oxxp-row",
+                        button { class: "oxxp-btn sm pri", r#type: "button", onclick: move |_| act("tt-fix".into()), "Apply fix and re-run" }
+                        span { class: "oxxp-mute", "Enter" }
                     }
                 }
             }
@@ -132,11 +132,12 @@ pub fn TestTicks(
     }
 }
 
+/// The branch of outcome `o`, from Triage to its terminal.
 fn poly(o: usize) -> String {
     let p = path(o);
     format!(
-        "M{} {} L{} {} L{} {} L{} {}",
-        p[0].0, p[0].1, p[1].0, p[1].1, p[2].0, p[2].1, p[3].0, p[3].1
+        "M{} {} L{} {} L{} {}",
+        p[1].0, p[1].1, p[2].0, p[2].1, p[3].0, p[3].1
     )
 }
 
@@ -188,6 +189,7 @@ pub fn TriageMetro(
                     if let Some(x) = st.write().key(&k, n) { said.set(x); }
                 },
                 svg { view_box: "0 0 {MW} {MH}", "aria-hidden": "true", preserve_aspect_ratio: "xMidYMid meet",
+                    path { class: "oxxp-tm-line oxxp-tm-trunk", d: "M{M_STATIONS[0].0} 100 L{M_STATIONS[1].0} 100" }
                     for o in 0..3usize {
                         path { key: "{o}", class: "oxxp-tm-line", "data-hue": "{OUTCOMES[o].1}", d: "{poly(o)}" }
                     }
@@ -196,11 +198,6 @@ pub fn TriageMetro(
                     }
                     for o in 0..3usize {
                         circle { key: "t{o}", class: "oxxp-tm-term", "data-hue": "{OUTCOMES[o].1}", cx: "{TERM_X}", cy: "{TERM_Y[o]}", r: "9" }
-                    }
-                    if labels {
-                        for (k, (x, l)) in M_STATIONS.iter().enumerate() {
-                            text { key: "l{k}", class: "oxxp-tm-lab", x: "{x}", y: "128", text_anchor: "middle", "{l}" }
-                        }
                     }
                     for i in 0..FINDINGS.len() {
                         if let Some((x, y)) = m.point(i, n) {
@@ -220,6 +217,7 @@ pub fn TriageMetro(
                 if labels {
                     div { class: "oxxp-tm-terms", "aria-hidden": "true",
                         for o in 0..3usize { span { key: "{o}", style: "top:{TERM_Y[o] / MH * 100.0:.1}%", "data-hue": "{OUTCOMES[o].1}", "{OUTCOMES[o].0}" } }
+                        for (k, (x, l)) in M_STATIONS.iter().enumerate() { b { key: "s{k}", class: "oxxp-tm-stl", style: "left:{x / MW * 100.0:.1}%", "{l}" } }
                     }
                 }
             }
