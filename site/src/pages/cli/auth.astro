@@ -1,0 +1,26 @@
+---
+// `oxyn login` opens this page with ?code=XXXX-XXXX (docs/cli.md, site/worker/pro.ts). Signed in,
+// you approve or decline that code; the CLI is polling and saves its new token. Signed out, it
+// sends you to sign in and back here. Static; public/cli-auth.js does the rest.
+import Base from '../../layouts/Base.astro';
+import { icon } from '../../components/v2/icons';
+---
+<Base back="/" title="Sign in the Oxyn CLI" description="Approve oxyn login on your computer." index={false}>
+  <section class="auth" data-ovl>
+    <div class="auth-card" data-cliauth data-state="loading" aria-busy="true">
+      <h1 class="auth-h">Sign in the Oxyn CLI</h1>
+      <p class="auth-sub" data-cliauth-msg role="status">Checking the code…</p>
+      <div class="x-cliauth-code" data-cliauth-code hidden></div>
+      <p class="acct-plan-line" data-cliauth-detail hidden></p>
+      <div class="acct-actions" data-cliauth-actions hidden>
+        <button type="button" class="x-pill pill-black" data-cliauth-ok><Fragment set:html={icon.bolt} />Approve</button>
+        <button type="button" class="x-pill pill-grey" data-cliauth-no>Decline</button>
+      </div>
+      <div class="acct-actions" data-cliauth-signin hidden>
+        <a class="x-pill pill-black" href="/login/" data-cliauth-login>Sign in</a>
+      </div>
+      <p class="auth-fine in">Only approve a code you see in your own terminal right now. Approving creates a token for that computer; revoke it any time under CLI and MCP on your <a href="/account/#cli">account page</a>.</p>
+    </div>
+  </section>
+  <script is:inline src="/cli-auth.js" defer></script>
+</Base>
