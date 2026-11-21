@@ -1018,8 +1018,8 @@ html[data-oxyn-reduced] .x-lap-scene{--x-lap-p:1!important}
 .art-title .pro-chip{vertical-align:middle;margin-left:12px;position:relative;top:-4px}
 .cc-top{flex-wrap:wrap;justify-content:flex-start}
 .cc-top>.x-chip:first-child{margin-right:auto}
-.pro-lede{display:flex;align-items:flex-start;gap:10px;font-size:14.5px}
-.pro-lede .pro-chip{flex:none;margin-top:1px}
+.pro-lede{font-size:14.5px}
+.pro-lede .pro-chip{display:inline-flex;vertical-align:1px;margin-right:6px}
 .pro-lock{display:flex;align-items:center;gap:16px;padding:22px 24px;border:1px dashed var(--fg3);border-radius:16px;background:var(--fill)}
 .pro-lock-i{flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:var(--pn);box-shadow:inset 0 0 0 1px var(--ln);color:var(--fg)}
 .pro-lock-i svg{width:18px;height:18px}
