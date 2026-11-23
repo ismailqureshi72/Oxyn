@@ -92,3 +92,24 @@ cargo check --locked --target wasm32-unknown-unknown -p oxyn-core -p oxyn-tokens
 CI sets `RUSTFLAGS=-D warnings`, so warnings fail the build. CI never uploads artifacts; builds ship
 through GitHub Releases. Crates live in `crates/` (layout in `docs/architecture.md`). GPUI is pinned to
 one Zed git revision in the root `Cargo.toml`; bump it in its own PR.
+
+### Oxyn Pro sources are private
+
+The code for Oxyn Pro items (screens, agent-app templates, blocks, AI special components and kits),
+their gallery demos and their specs live in the private repo `ismailqureshi72/oxyn-pro`, at the same
+paths as here. A plain checkout of this repo builds the free set: every crate, the gallery and the site
+compile without it, and the site lists Pro items with a placeholder instead of a preview. The modules
+that host Pro code are gated with `#[cfg(oxyn_pro)]`; each crate's `build.rs` turns that on when the
+`.oxyn-pro` marker (shipped by the overlay) exists at the repo root.
+
+Contributors work on the free set; nothing here needs the private repo. Maintainers with access
+overlay it before building:
+
+```bash
+git clone https://github.com/ismailqureshi72/oxyn-pro ../oxyn-pro
+rsync -a --exclude .git ../oxyn-pro/ ./   # never commit the overlaid files here
+```
+
+CI does the same with the `OXYN_PRO_TOKEN` secret (`.github/actions/pro-overlay`). Fork PRs get no
+secrets and build the free set; pushes to `main` set `OXYN_REQUIRE_PRO=1`, so the deploy fails rather
+than ship a site without the Pro previews.

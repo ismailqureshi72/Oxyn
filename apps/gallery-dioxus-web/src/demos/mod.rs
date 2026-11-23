@@ -5,12 +5,20 @@ use oxyn_core::ClockMs;
 
 use crate::{Align, Control, Demo, Kind, Vals, Variant};
 
+#[cfg(oxyn_pro)]
+#[rustfmt::skip]
 mod ai_special;
+#[cfg(oxyn_pro)]
+#[rustfmt::skip]
 mod ai_special_2;
 mod approvals;
+#[cfg(oxyn_pro)]
+#[rustfmt::skip]
 mod blocks;
 mod buttons;
 mod chat;
+#[cfg(oxyn_pro)]
+#[rustfmt::skip]
 mod checkpoints;
 mod composer;
 mod composer_parts;
@@ -24,23 +32,49 @@ mod overlays;
 mod parity_agents;
 mod parity_agents2;
 mod parity_agents3;
+#[cfg(oxyn_pro)]
+#[rustfmt::skip]
 mod parity_answers;
 mod parity_approvals;
+#[cfg(oxyn_pro)]
+#[rustfmt::skip]
 mod parity_attach;
+#[cfg(oxyn_pro)]
+#[rustfmt::skip]
 mod parity_context;
 mod parity_diff;
 mod parity_fidelity;
 mod parity_fields;
+#[cfg(oxyn_pro)]
+#[rustfmt::skip]
 mod parity_gooey;
+#[cfg(oxyn_pro)]
+#[rustfmt::skip]
 mod parity_home;
+#[cfg(oxyn_pro)]
+#[rustfmt::skip]
 mod parity_input;
+#[cfg(oxyn_pro)]
+#[rustfmt::skip]
 mod parity_merge;
 mod parity_run;
+#[cfg(oxyn_pro)]
+#[rustfmt::skip]
 mod parity_screens;
+#[cfg(oxyn_pro)]
+#[rustfmt::skip]
 mod parity_storage;
+#[cfg(oxyn_pro)]
+#[rustfmt::skip]
 mod parity_text;
+#[cfg(oxyn_pro)]
+#[rustfmt::skip]
 mod parity_theme;
+#[cfg(oxyn_pro)]
+#[rustfmt::skip]
 mod parity_thinking;
+#[cfg(oxyn_pro)]
+#[rustfmt::skip]
 mod parity_tools;
 mod pickers;
 mod search;
@@ -48,6 +82,8 @@ mod shells;
 mod status_text;
 mod surfaces;
 mod tools;
+#[cfg(oxyn_pro)]
+#[rustfmt::skip]
 mod xpost;
 
 /// A category of the Components section.
@@ -218,6 +254,7 @@ pub const CATEGORIES: [Category; 30] = [
 pub fn catalog() -> Vec<Demo> {
     let mut v = Vec::new();
     v.extend(parity_fidelity::demos());
+    #[cfg(oxyn_pro)]
     v.extend(parity_answers::demos());
     v.extend(parity_agents::demos());
     v.extend(parity_agents2::demos());
@@ -231,26 +268,43 @@ pub fn catalog() -> Vec<Demo> {
     v.extend(approvals::demos());
     v.extend(parity_approvals::demos());
     v.extend(parity_run::demos());
+    #[cfg(oxyn_pro)]
     v.extend(parity_tools::demos());
     v.extend(parity_diff::demos());
+    #[cfg(oxyn_pro)]
     v.extend(parity_thinking::demos());
+    #[cfg(oxyn_pro)]
     v.extend(parity_context::demos());
+    #[cfg(oxyn_pro)]
     v.extend(parity_screens::demos());
+    #[cfg(oxyn_pro)]
     v.extend(parity_gooey::demos());
+    #[cfg(oxyn_pro)]
     v.extend(parity_attach::demos());
+    #[cfg(oxyn_pro)]
     v.extend(parity_storage::demos());
+    #[cfg(oxyn_pro)]
     v.extend(parity_theme::demos());
+    #[cfg(oxyn_pro)]
     v.extend(parity_merge::demos());
+    #[cfg(oxyn_pro)]
     v.extend(parity_text::demos());
+    #[cfg(oxyn_pro)]
     v.extend(checkpoints::demos());
+    #[cfg(oxyn_pro)]
     v.extend(ai_special::demos());
+    #[cfg(oxyn_pro)]
     v.extend(ai_special_2::demos());
+    #[cfg(oxyn_pro)]
     v.extend(xpost::demos());
+    #[cfg(oxyn_pro)]
     v.extend(blocks::demos());
     v.extend(buttons::demos());
     v.extend(inputs::demos());
+    #[cfg(oxyn_pro)]
     v.extend(parity_input::demos());
     v.extend(parity_fields::demos());
+    #[cfg(oxyn_pro)]
     v.extend(parity_home::demos());
     v.extend(forms::demos());
     v.extend(pickers::demos());
@@ -266,7 +320,18 @@ pub fn catalog() -> Vec<Demo> {
     v
 }
 
+/// Sorts `v` into the page order `order` (a file's demos come back from its free and Pro parts).
+pub(crate) fn in_order(v: &mut [Demo], order: &[&str]) {
+    v.sort_by_key(|d| {
+        order
+            .iter()
+            .position(|s| *s == d.slug)
+            .unwrap_or(usize::MAX)
+    });
+}
+
 /// An earlier Oxyn demo by slug, shown inside a fidelity page as its "Oxyn extra".
+#[cfg(oxyn_pro)]
 pub(crate) fn legacy_demo(slug: &str) -> Option<Demo> {
     chat::demos()
         .into_iter()

@@ -41,3 +41,6 @@ site/node_modules/
 site/.astro/
 site/worker/pro-src.json
 site/public/r/
+
+# Oxyn Pro sources (private repo ismailqureshi72/oxyn-pro), checked out by CI and overlaid
+_pro_src/

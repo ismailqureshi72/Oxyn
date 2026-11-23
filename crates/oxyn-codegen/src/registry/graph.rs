@@ -38,6 +38,8 @@ pub struct Module {
     pub item_paths: Vec<Vec<Vec<String>>>,
     /// Files each item includes (`include_str!`), relative to `src/`.
     pub item_includes: Vec<Vec<String>>,
+    /// Items that were gated with `#[cfg(oxyn_pro)]` (the gate is stripped from `src`).
+    pub pro_gated: BTreeSet<usize>,
 }
 
 impl Module {
@@ -155,7 +157,10 @@ impl Graph {
         if module.children.iter().any(|c| c == name) {
             let mut p = m.clone();
             p.push(name.to_string());
-            return Some(Target::Module(p));
+            // A gated Oxyn Pro child is declared but not loaded without the Pro sources.
+            if self.modules.contains_key(&p) {
+                return Some(Target::Module(p));
+            }
         }
         for (_, u) in module.uses() {
             if u.name.as_deref() == Some(name)
@@ -306,6 +311,51 @@ impl Graph {
     }
 }
 
+/// Drops the Oxyn Pro gates from a source file, so the registry ships code that compiles in any
+/// project: the `#[cfg(oxyn_pro)]` lines (and the `#[rustfmt::skip]` that follows one on a `mod`),
+/// the free build's `#![cfg_attr(not(oxyn_pro), allow(..))]` and the comment that marks the Pro
+/// part of a module. Also returns the names of the gated `mod` declarations, whose files are only
+/// present when the Pro sources are overlaid (CONTRIBUTING.md).
+pub fn strip_pro_gates(src: &str) -> (String, BTreeSet<String>) {
+    let (out, gated, _) = strip_pro_gates_at(src);
+    (out, gated)
+}
+
+/// [`strip_pro_gates`], plus the offsets in the stripped text where a gate was removed.
+pub fn strip_pro_gates_at(src: &str) -> (String, BTreeSet<String>, Vec<usize>) {
+    let mut out = String::with_capacity(src.len());
+    let mut gated = BTreeSet::new();
+    let mut at = Vec::new();
+    let mut after_gate = false;
+    for line in src.split_inclusive('\n') {
+        let t = line.trim();
+        if t == "#[cfg(oxyn_pro)]" {
+            after_gate = true;
+            at.push(out.len());
+            continue;
+        }
+        if after_gate && t == "#[rustfmt::skip]" {
+            continue;
+        }
+        if t.starts_with("#![cfg_attr(not(oxyn_pro)")
+            || t.starts_with("// Oxyn Pro part of this module")
+        {
+            continue;
+        }
+        if after_gate {
+            let decl = t
+                .trim_start_matches("pub(crate) ")
+                .trim_start_matches("pub ");
+            if let Some(name) = decl.strip_prefix("mod ").and_then(|r| r.strip_suffix(';')) {
+                gated.insert(name.trim().to_string());
+            }
+        }
+        after_gate = false;
+        out.push_str(line);
+    }
+    (out, gated, at)
+}
+
 /// Normalises `a/b/../c.css` to `a/c.css`.
 pub fn normalize(p: &Path) -> String {
     let mut parts: Vec<String> = Vec::new();
@@ -328,9 +378,26 @@ fn load_module(
     out: &mut BTreeMap<ModPath, Module>,
 ) -> Result<(), String> {
     let full = src_dir.join(rel);
-    let src = fs::read_to_string(&full).map_err(|e| format!("{}: {e}", full.display()))?;
+    let raw = fs::read_to_string(&full).map_err(|e| format!("{}: {e}", full.display()))?;
+    let (src, gated, gate_at) = strip_pro_gates_at(&raw);
     let code = scan::blank(&src);
     let items = scan::items(&src, &code);
+    // An item is Pro-gated when a removed gate sat in its leading comments and attributes.
+    let pro_gated: BTreeSet<usize> = items
+        .iter()
+        .enumerate()
+        .filter(|(_, it)| {
+            gate_at.iter().any(|&g| {
+                g >= it.start
+                    && g < it.end
+                    && src[it.start..g].lines().all(|l| {
+                        let l = l.trim();
+                        l.is_empty() || l.starts_with("//") || l.starts_with("#[")
+                    })
+            })
+        })
+        .map(|(i, _)| i)
+        .collect();
     let mut defs = BTreeMap::new();
     let mut children = Vec::new();
     for (i, it) in items.iter().enumerate().filter(|(_, i)| !i.test_only) {
@@ -387,6 +454,7 @@ fn load_module(
             children: children.clone(),
             item_paths,
             item_includes,
+            pro_gated,
         },
     );
     for c in children {
@@ -396,6 +464,9 @@ fn load_module(
             flat
         } else if src_dir.join(&nested).exists() {
             nested
+        } else if gated.contains(&c) {
+            // An Oxyn Pro module and the Pro sources are not overlaid: its items stay unresolved.
+            continue;
         } else {
             return Err(format!(
                 "module {c} declared in {} has no file",
@@ -456,6 +527,48 @@ pub(crate) mod tests {
         } else {
             s.split("::").map(String::from).collect()
         }
+    }
+
+    #[test]
+    fn strips_pro_gates() {
+        let src = "//! Doc.\n#![cfg_attr(not(oxyn_pro), allow(dead_code))]\nmod a;\n#[cfg(oxyn_pro)]\n#[rustfmt::skip]\nmod pro;\n#[cfg(oxyn_pro)]\n#[allow(unused_imports)]\npub use pro::*;\n#[rustfmt::skip]\nfn keep() {}\n";
+        let (out, gated) = super::strip_pro_gates(src);
+        assert_eq!(
+            out,
+            "//! Doc.\nmod a;\nmod pro;\n#[allow(unused_imports)]\npub use pro::*;\n#[rustfmt::skip]\nfn keep() {}\n"
+        );
+        assert_eq!(
+            gated.into_iter().collect::<Vec<_>>(),
+            vec!["pro".to_string()]
+        );
+    }
+
+    #[test]
+    fn marks_pro_gated_items_and_skips_missing_pro_modules() {
+        let d = tempfile::tempdir().unwrap();
+        fs::write(
+            d.path().join("lib.rs"),
+            "mod a;\npub use a::Free;\n#[cfg(oxyn_pro)]\npub use a::Fancy;\n",
+        )
+        .unwrap();
+        fs::write(
+            d.path().join("a.rs"),
+            "pub fn Free() {}\n// Oxyn Pro part of this module (private).\n#[cfg(oxyn_pro)]\n#[rustfmt::skip]\nmod pro;\n#[cfg(oxyn_pro)]\n#[allow(unused_imports)]\npub use pro::*;\n",
+        )
+        .unwrap();
+        let g = Graph::load(d.path()).unwrap();
+        let root = &g.modules[&Vec::new()];
+        assert_eq!(root.pro_gated.iter().copied().collect::<Vec<_>>(), vec![2]);
+        let a = &g.modules[&vec!["a".to_string()]];
+        assert_eq!(a.pro_gated.len(), 2);
+        assert!(
+            !g.modules
+                .contains_key(&vec!["a".to_string(), "pro".to_string()])
+        );
+        assert!(
+            g.resolve_path(&Vec::new(), &["a".into(), "Fancy".into()])
+                .is_none()
+        );
     }
 
     #[test]

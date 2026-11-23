@@ -1,5 +1,6 @@
 //! Forms (plan #25): tag input, combobox, multi-select, OTP, password field, password strength,
 //! inline edit, phone input, filter menu, stepper form, multi-step form, form autofill.
+#![cfg_attr(not(oxyn_pro), allow(dead_code, unused_imports, unused_variables))]
 
 use dioxus::prelude::*;
 use oxyn_core::{
@@ -10,10 +11,9 @@ use oxyn_core::{
         stepper::{FieldKind, Step, StepField},
     },
 };
-use oxyn_dioxus::{
-    Combobox, FilterMenu, FormAutofill, InlineEdit, MultiSelect, OtpInput, PasswordField,
-    PasswordStrength, PhoneInput, StepperForm, TagInput,
-};
+use oxyn_dioxus::{Combobox, InlineEdit, OtpInput, PasswordStrength, PhoneInput, TagInput};
+#[cfg(oxyn_pro)]
+use oxyn_dioxus::{FilterMenu, FormAutofill, MultiSelect, PasswordField, StepperForm};
 
 use super::{Code, q, rng, sel, tog, txt, var};
 use crate::{Align, Demo, Vals};
@@ -166,50 +166,6 @@ fn combobox_code(v: &Vals) -> String {
         .done()
 }
 
-fn tools() -> Vec<ComboOption> {
-    [
-        "Search", "Browser", "Shell", "Files", "Calendar", "Email", "GitHub",
-    ]
-    .iter()
-    .map(|t| ComboOption::new(&t.to_lowercase(), t))
-    .collect()
-}
-
-fn multi_select(v: &Vals, _: ClockMs) -> Element {
-    rsx! {
-        div { class: "oxd-w360 oxd-room-menu-lg",
-            MultiSelect {
-                label: "Tools the agent may use",
-                options: tools(),
-                value: vec!["search".into(), "files".into(), "github".into()],
-                description: v.opt("description"),
-                max_visible: v.u("max_visible").max(1),
-                select_all: v.b("select_all"),
-                max_selected: opt_usize(v, "max_selected"),
-                open: v.b("open"),
-                disabled: v.b("disabled"),
-            }
-        }
-    }
-}
-
-fn multi_select_code(v: &Vals) -> String {
-    Code::new("MultiSelect")
-        .raw("label", q("Tools the agent may use"))
-        .raw("options", "tools")
-        .raw("value", "allowed()")
-        .opt("description", v.s("description"))
-        .raw("max_visible", v.s("max_visible").to_string())
-        .b("select_all", v.b("select_all"))
-        .raw(
-            "max_selected",
-            format!("{:?}", opt_usize(v, "max_selected")),
-        )
-        .b("disabled", v.b("disabled"))
-        .raw("on_change", "move |ids: Vec<String>| allowed.set(ids)")
-        .done()
-}
-
 // ---- OTP
 
 fn otp(v: &Vals, _: ClockMs) -> Element {
@@ -256,47 +212,6 @@ fn otp_code(v: &Vals) -> String {
         .raw("resend_in", format!("Some({})", v.s("resend_in")))
         .raw("on_complete", "move |code: String| verify(code)")
         .raw("on_resend", "move |_| send_code()")
-        .done()
-}
-
-// ---- Password field / strength
-
-fn password_field(v: &Vals, _: ClockMs) -> Element {
-    let error = v
-        .b("error")
-        .then(|| "That password is incorrect".to_string());
-    rsx! {
-        div { class: "oxd-w360",
-            PasswordField {
-                label: "Password",
-                value: "correct-horse-7",
-                description: v.opt("description"),
-                autocomplete: "current-password",
-                error,
-                caps_warning: v.b("caps_warning"),
-                reveal_for: if v.b("reveal_for") { Some(10) } else { None },
-                vault: v.b("vault"),
-                disabled: v.b("disabled"),
-            }
-        }
-    }
-}
-
-fn password_field_code(v: &Vals) -> String {
-    Code::new("PasswordField")
-        .raw("label", q("Password"))
-        .opt("description", v.s("description"))
-        .raw("autocomplete", q("current-password"))
-        .b("vault", v.b("vault"))
-        .raw(
-            "reveal_for",
-            if v.b("reveal_for") {
-                "Some(10)"
-            } else {
-                "None"
-            },
-        )
-        .raw("on_input", "move |pw: String| password.set(pw)")
         .done()
 }
 
@@ -399,217 +314,10 @@ fn phone_code(v: &Vals) -> String {
         .done()
 }
 
-// ---- Filter menu
-
-fn filter_groups(counts: bool) -> Vec<FilterGroup> {
-    let mut g = vec![
-        FilterGroup::new(
-            "status",
-            "Status",
-            &[
-                ("running", "Running"),
-                ("waiting", "Waiting on you"),
-                ("failed", "Failed"),
-                ("done", "Done"),
-            ],
-        ),
-        FilterGroup::new(
-            "agent",
-            "Agent",
-            &[("coder", "Coder"), ("scout", "Scout"), ("scribe", "Scribe")],
-        ),
-        FilterGroup::new(
-            "repo",
-            "Repository",
-            &[
-                ("web", "acme/web"),
-                ("api", "acme/api"),
-                ("infra", "acme/infra"),
-            ],
-        ),
-    ];
-    if counts {
-        g[0] = g[0].clone().counts(&[4, 2, 1, 38]);
-        g[1] = g[1].clone().counts(&[21, 14, 10]);
-        g[2] = g[2].clone().counts(&[25, 17, 3]);
-    }
-    g
-}
-
-fn filter_menu(v: &Vals, _: ClockMs) -> Element {
-    rsx! {
-        div { class: "oxd-w420",
-            FilterMenu {
-                groups: filter_groups(v.b("counts")),
-                value: vec![("status".into(), "waiting".into()), ("agent".into(), "coder".into())],
-                title: v.string("title"),
-                hints: v.b("hints"),
-                logic: v.b("logic"),
-                presets: v.b("presets"),
-                summary: v.b("summary"),
-            }
-        }
-    }
-}
-
-fn filter_menu_code(v: &Vals) -> String {
-    Code::new("FilterMenu")
-        .pre("let groups = vec![")
-        .pre("    FilterGroup::new(\"status\", \"Status\", &[(\"running\", \"Running\"), (\"waiting\", \"Waiting on you\")]),")
-        .pre("    FilterGroup::new(\"agent\", \"Agent\", &[(\"coder\", \"Coder\"), (\"scout\", \"Scout\")]),")
-        .pre("];")
-        .raw("groups", "groups")
-        .s("title", v.s("title"), "Filters")
-        .b("logic", v.b("logic"))
-        .b("presets", v.b("presets"))
-        .b("summary", v.b("summary"))
-        .raw("on_change", "move |f: Vec<(String, String)>| filters.set(f)")
-        .done()
-}
-
-// ---- Stepper / multi-step
-
-fn onboarding(conditional: bool) -> Vec<Step> {
-    let mut team = Step::new(
-        "team",
-        "Team",
-        "Invite your team",
-        vec![
-            StepField::text("invites", "Invite by email")
-                .kind(FieldKind::Tags { max: Some(5) })
-                .optional()
-                .hint("Paste a list; comma or Enter adds"),
-        ],
-    );
-    if conditional {
-        team.only_if = Some(("plan".into(), "team".into()));
-    }
-    let plan = Step::new(
-        "plan",
-        "Plan",
-        "Pick a plan",
-        vec![
-            StepField::text("plan", "Plan").kind(FieldKind::Choices(vec![
-                (
-                    "free".into(),
-                    "Free".into(),
-                    "$0".into(),
-                    "One seat, 50 runs a month".into(),
-                ),
-                (
-                    "team".into(),
-                    "Team".into(),
-                    "$12 / seat".into(),
-                    "Shared agents and approvals".into(),
-                ),
-                (
-                    "scale".into(),
-                    "Scale".into(),
-                    "Talk to us".into(),
-                    "SSO, audit log, SLAs".into(),
-                ),
-            ])),
-        ],
-    );
-    let ws = Step::new(
-        "ws",
-        "Workspace",
-        "Name your workspace",
-        vec![
-            StepField::text("name", "Workspace name"),
-            StepField::text("url", "URL")
-                .prefix("acme.app/")
-                .hint("Lowercase letters and dashes"),
-        ],
-    )
-    .describe("You can change both later in Settings.");
-    let mut v = vec![ws];
-    if conditional {
-        v.push(plan);
-        v.push(team);
-    } else {
-        v.push(team);
-        v.push(plan);
-    }
-    v.push(Step::review("Review"));
-    v
-}
-
-fn stepper(v: &Vals, _: ClockMs) -> Element {
-    rsx! {
-        StepperForm {
-            steps: onboarding(v.b("conditional")),
-            style: v.string("style"),
-            initial_step: v.u("initial_step"),
-            fail: v.b("fail"),
-            drafts: v.b("drafts"),
-            initial_values: if v.u("initial_step") > 0 { vec![("name".into(), "Acme".into()), ("url".into(), "acme".into()), ("invites".into(), "sam@acme.dev, ari@acme.dev".into()), ("plan".into(), "team".into())] } else { vec![] },
-        }
-    }
-}
-
-fn stepper_code(v: &Vals) -> String {
-    Code::new("StepperForm")
-        .pre("let steps = vec![")
-        .pre("    Step::new(\"ws\", \"Workspace\", \"Name your workspace\", vec![StepField::text(\"name\", \"Workspace name\")]),")
-        .pre("    Step::new(\"team\", \"Team\", \"Invite your team\", vec![StepField::text(\"invites\", \"Invite\").kind(FieldKind::Tags { max: Some(5) })]),")
-        .pre("    Step::review(\"Review\"),")
-        .pre("];")
-        .raw("steps", "steps")
-        .s("style", v.s("style"), "stepper")
-        .b("drafts", v.b("drafts"))
-        .raw("on_complete", "move |values| spawn(create_workspace(values))")
-        .done()
-}
-
-fn multistep(v: &Vals, _: ClockMs) -> Element {
-    rsx! {
-        StepperForm {
-            steps: onboarding(false),
-            style: "minimal",
-            submit_label: v.string("complete_label"),
-            initial_step: v.u("initial_step"),
-            drafts: v.b("drafts"),
-            initial_values: if v.u("initial_step") > 0 { vec![("name".into(), "Acme".into()), ("url".into(), "acme".into())] } else { vec![] },
-        }
-    }
-}
-
-fn multistep_code(v: &Vals) -> String {
-    Code::new("StepperForm")
-        .raw("steps", "steps")
-        .raw("style", q("minimal"))
-        .s("submit_label", v.s("complete_label"), "Finish")
-        .raw("initial_step", v.s("initial_step").to_string())
-        .raw("on_complete", "move |values| submit(values)")
-        .done()
-}
-
-// ---- Form autofill
-
-fn smart_fill(v: &Vals, _: ClockMs) -> Element {
-    rsx! {
-        FormAutofill {
-            prefill: v.b("prefill"),
-            review_threshold: v.u("review_threshold") as u8,
-            gate: v.b("gate"),
-            model: v.string("model"),
-        }
-    }
-}
-
-fn smart_fill_code(v: &Vals) -> String {
-    Code::new("FormAutofill")
-        .raw("review_threshold", v.s("review_threshold").to_string())
-        .b("gate", v.b("gate"))
-        .s("model", v.s("model"), "Haiku")
-        .raw("on_submit", "move |contact| spawn(save_contact(contact))")
-        .done()
-}
-
 /// Demos.
 pub fn demos() -> Vec<Demo> {
-    vec![
+    #[allow(unused_mut)]
+    let mut v = vec![
         Demo {
             slug: "tag-input",
             name: "Tag input",
@@ -799,65 +507,6 @@ pub fn demos() -> Vec<Demo> {
             live: false,
         },
         Demo {
-            slug: "multi-select",
-            name: "Multi-select",
-            category: "forms",
-            summary: "Several values in a compact field: chips that grow in, a rolling +N, drawn checks in the list and a Clear button.",
-            dioxus: "MultiSelect",
-            gpui: "ComboboxEl",
-            spec: "multi-select",
-            source: "primitives/fields.rs",
-            controls: vec![
-                rng("max_visible", "Chips before +N", 1.0, 4.0, 1.0, "2"),
-                txt(
-                    "description",
-                    "Description",
-                    "The agent asks before using anything else",
-                ),
-                tog("open", "Open", true),
-                tog("select_all", "Select all", false),
-                rng("max_selected", "Max picks (0 = none)", 0.0, 6.0, 1.0, "0"),
-                tog("disabled", "Disabled", false),
-            ],
-            variants: vec![
-                var("default", "Three picked, two chips and +1.", &[]),
-                var("closed", "Closed trigger.", &[("open", "false")]),
-                var(
-                    "select-all",
-                    "Select all row (Oxyn plus).",
-                    &[("select_all", "true")],
-                ),
-                var(
-                    "capped",
-                    "Max with a reason (Oxyn plus).",
-                    &[("max_selected", "4")],
-                ),
-            ],
-            render: multi_select,
-            code: multi_select_code,
-            keyboard: vec![
-                (
-                    "Enter / Space",
-                    "Open or close; Enter toggles the active option while open",
-                ),
-                ("↓ / ↑", "Open, then move through enabled options (wraps)"),
-                ("Home / End", "First / last option"),
-                ("Esc", "Close"),
-            ],
-            a11y: vec![
-                "Trigger: aria-haspopup=listbox, aria-expanded, labelled by the label and a hidden list of the picked labels.",
-                "The menu is role=listbox with aria-multiselectable; options carry aria-selected and aria-disabled.",
-                "Clear is labelled “Clear selections”; chips are aria-hidden in favour of the spoken summary.",
-            ],
-            responsive: vec![
-                "Chips cap at 9rem and ellipsize; max_visible keeps the trigger on one line.",
-                "The menu spans the field; keep lists short on small screens.",
-            ],
-            height: 420,
-            align: Align::Start,
-            live: false,
-        },
-        Demo {
             slug: "otp-input",
             name: "OTP input",
             category: "forms",
@@ -938,60 +587,6 @@ pub fn demos() -> Vec<Demo> {
                 "The input uses 16 px text so iOS doesn't zoom.",
             ],
             height: 200,
-            align: Align::Center,
-            live: false,
-        },
-        Demo {
-            slug: "password-field",
-            name: "Password field",
-            category: "forms",
-            summary: "A password input whose reveal button slashes the eye with a drawn line, with a Caps Lock warning and a reveal that hides itself again.",
-            dioxus: "PasswordField",
-            gpui: "PasswordFieldEl",
-            spec: "password-field",
-            source: "primitives/fields.rs",
-            controls: vec![
-                txt("description", "Description", "At least 12 characters"),
-                tog("caps_warning", "Caps Lock warning", true),
-                tog("reveal_for", "Hide again after 10 s", false),
-                tog("vault", "Use saved password", false),
-                tog("error", "Error", false),
-                tog("disabled", "Disabled", false),
-            ],
-            variants: vec![
-                var("default", "Label, description and reveal.", &[]),
-                var(
-                    "timed",
-                    "Hides again after 10 s (Oxyn plus).",
-                    &[("reveal_for", "true")],
-                ),
-                var(
-                    "vault",
-                    "Fill from the vault (Oxyn plus).",
-                    &[("vault", "true")],
-                ),
-                var(
-                    "error",
-                    "Wrong password.",
-                    &[("error", "true"), ("description", "")],
-                ),
-            ],
-            render: password_field,
-            code: password_field_code,
-            keyboard: vec![
-                ("Enter / Space", "On the toggle: show or hide the password"),
-                ("Tab", "Input, then the vault button, then the toggle"),
-            ],
-            a11y: vec![
-                "The toggle is a native button with aria-pressed, aria-controls and a label that switches Show / Hide password.",
-                "The description (and the Caps Lock warning) is linked with aria-describedby.",
-                "autocomplete current-password / new-password so password managers work.",
-            ],
-            responsive: vec![
-                "Fills its column; the reveal button sits inside the shell and never wraps.",
-                "Hover styles only on fine pointers.",
-            ],
-            height: 180,
             align: Align::Center,
             live: false,
         },
@@ -1187,240 +782,30 @@ pub fn demos() -> Vec<Demo> {
             align: Align::Start,
             live: false,
         },
-        Demo {
-            slug: "filter-menu",
-            name: "Filter menu",
-            category: "forms",
-            summary: "Grouped filters with removable chips, collapsible checkbox groups, Clear all and full keyboard control.",
-            dioxus: "FilterMenu",
-            gpui: "FilterMenuEl",
-            spec: "filter-menu",
-            source: "primitives/flows.rs",
-            controls: vec![
-                txt("title", "Title", "Filters"),
-                tog("hints", "Keyboard hints", true),
-                tog("counts", "Counts", false),
-                tog("logic", "Any / All", false),
-                tog("presets", "Saved views", false),
-                tog("summary", "Summary", false),
-            ],
-            variants: vec![
-                var("default", "Two filters on, first group open.", &[]),
-                var(
-                    "counts",
-                    "Result counts per option (Oxyn plus).",
-                    &[("counts", "true")],
-                ),
-                var(
-                    "logic",
-                    "Any / All per group with a summary (Oxyn plus).",
-                    &[("logic", "true"), ("summary", "true")],
-                ),
-                var("views", "Saved views (Oxyn plus).", &[("presets", "true")]),
-            ],
-            render: filter_menu,
-            code: filter_menu_code,
-            keyboard: vec![
-                (
-                    "↑ / ↓",
-                    "Move through group headers and the options of open groups",
-                ),
-                (
-                    "Enter / Space",
-                    "Pick or unpick an option, or open and close a group",
-                ),
-                (
-                    "→ / ←",
-                    "Open a group, or close it and jump back to its header",
-                ),
-                ("Home / End", "First / last row"),
-            ],
-            a11y: vec![
-                "Group headers carry aria-expanded; options are role=checkbox with aria-checked.",
-                "One tab stop for the list (aria-activedescendant), so Tab moves past it in one step.",
-                "Each chip has a remove button named for the filter; changes are announced.",
-            ],
-            responsive: vec!["Fills its container up to 420 px; chips wrap."],
-            height: 440,
-            align: Align::Center,
-            live: false,
-        },
-        Demo {
-            slug: "stepper-form",
-            name: "Stepper form",
-            category: "forms",
-            summary: "A multi-step setup flow: steps that fill and check off, sliding steps, inline validation, chip and plan fields, a review with Edit links and a success state.",
-            dioxus: "StepperForm",
-            gpui: "StepperEl",
-            spec: "stepper-form",
-            source: "primitives/flows.rs",
-            controls: vec![
-                sel(
-                    "style",
-                    "Style",
-                    &["stepper", "minimal", "vertical"],
-                    "stepper",
-                ),
-                rng("initial_step", "Start at step", 0.0, 3.0, 1.0, "0"),
-                tog("fail", "Submit fails once", false),
-                tog("drafts", "Save draft", false),
-                tog("conditional", "Team step only on Team plan", false),
-            ],
-            variants: vec![
-                var("stepper", "Numbered steps.", &[]),
-                var("review", "At the review.", &[("initial_step", "3")]),
-                var(
-                    "vertical",
-                    "A vertical rail (Oxyn plus).",
-                    &[("style", "vertical")],
-                ),
-                var(
-                    "conditional",
-                    "A step that shows only for one plan (Oxyn plus).",
-                    &[("conditional", "true")],
-                ),
-                var(
-                    "error",
-                    "The submit fails next to the button.",
-                    &[("initial_step", "3"), ("fail", "true")],
-                ),
-            ],
-            render: stepper,
-            code: stepper_code,
-            keyboard: vec![
-                ("↵", "Continue (in a chip field: add the entry first)"),
-                ("Tab", "Fields, then Back and Continue"),
-                (
-                    "← / →",
-                    "In the plan cards: move and select; ↵ picks and continues",
-                ),
-                (
-                    ", / ⌫",
-                    "In a chip field: comma adds, Backspace removes the last chip",
-                ),
-            ],
-            a11y: vec![
-                "The steps are an ordered list with aria-current=step; finished steps are buttons that jump back.",
-                "Below 420 px the list stays for screen readers while “Step 2 of 4” shows.",
-                "After a failed Continue the first invalid field shakes; errors are announced politely.",
-                "Continue looks dimmed while invalid but still answers, so everyone hears what's missing.",
-            ],
-            responsive: vec![
-                "Up to 520 px wide, down to 320 px; plan cards stack and review rows wrap below 420 px.",
-                "Touch: 16 px fields and 40 px buttons.",
-            ],
-            height: 520,
-            align: Align::Center,
-            live: false,
-        },
-        Demo {
-            slug: "multi-step-form",
-            name: "Multi-step form",
-            category: "forms",
-            summary: "One decision at a time with a rolling step count, a progress bar, sliding steps and a submit button whose width follows its label.",
-            dioxus: "StepperForm",
-            gpui: "StepperEl",
-            spec: "multi-step-form",
-            source: "primitives/flows.rs",
-            controls: vec![
-                txt("complete_label", "Complete label", "Create workspace"),
-                rng("initial_step", "Start at step", 0.0, 3.0, 1.0, "0"),
-                tog("drafts", "Save draft", false),
-            ],
-            variants: vec![
-                var("first", "Step 1 of 4.", &[]),
-                var(
-                    "middle",
-                    "Step 2 with values kept.",
-                    &[("initial_step", "1")],
-                ),
-                var(
-                    "drafts",
-                    "Save and resume (Oxyn plus).",
-                    &[("drafts", "true")],
-                ),
-            ],
-            render: multistep,
-            code: multistep_code,
-            keyboard: vec![
-                ("Enter", "Next / submit"),
-                ("Tab", "Through the step's fields, then Back and Next"),
-            ],
-            a11y: vec![
-                "Each step is a fieldset with a legend; focus moves to the new step's first field.",
-                "A visually hidden polite line announces “Step 2 of 4”.",
-                "The success state is role=status.",
-            ],
-            responsive: vec!["Below 420 px the header stacks and padding tightens."],
-            height: 460,
-            align: Align::Center,
-            live: false,
-        },
-        Demo {
-            slug: "form-autofill",
-            name: "Form autofill",
-            category: "forms",
-            summary: "Paste a signature or messy notes and the agent fills a contact form field by field, with confidence, source highlights, review and Undo.",
-            dioxus: "FormAutofill",
-            gpui: "SmartFillEl",
-            spec: "smart-form-fill",
-            source: "primitives/flows.rs",
-            controls: vec![
-                tog("prefill", "Start filled", true),
-                rng(
-                    "review_threshold",
-                    "Review below (%)",
-                    50.0,
-                    99.0,
-                    1.0,
-                    "80",
-                ),
-                tog("gate", "Threshold control", false),
-                txt("model", "Model", "Haiku"),
-            ],
-            variants: vec![
-                var(
-                    "filled",
-                    "A signature, filled with one field to review.",
-                    &[],
-                ),
-                var(
-                    "empty",
-                    "Waiting for a paste; try a sample.",
-                    &[("prefill", "false")],
-                ),
-                var(
-                    "strict",
-                    "A stricter gate (Oxyn plus).",
-                    &[("review_threshold", "93"), ("gate", "true")],
-                ),
-            ],
-            render: smart_fill,
-            code: smart_fill_code,
-            keyboard: vec![
-                (
-                    "⌘ / Ctrl + V",
-                    "Paste into the text area; the read starts right away",
-                ),
-                ("⌘ / Ctrl + Enter", "Read typed text"),
-                ("Esc", "Stop a read; nothing changes"),
-                (
-                    "Tab",
-                    "Text area, Try sample, every field, the check buttons, Undo, Save",
-                ),
-            ],
-            a11y: vec![
-                "A polite region announces each step: reading, how many filled, which need review, undo and save.",
-                "Each filled input has an aria-description with its confidence and reason; review fields are aria-invalid.",
-                "Status is never colour alone: a dot plus a percentage or a word (Review, Checked, Edited).",
-            ],
-            responsive: vec![
-                "Side by side from a 720 px container; below that the paste well stacks on top.",
-                "Under 440 px every field takes the full row.",
-            ],
-            height: 520,
-            align: Align::Center,
-            live: false,
-        },
-    ]
+    ];
+    #[cfg(oxyn_pro)]
+    v.extend(pro::demos());
+    super::in_order(&mut v, &ORDER);
+    v
 }
+
+/// Page order of this file's demos (free and Pro).
+const ORDER: [&str; 12] = [
+    "tag-input",
+    "combobox",
+    "multi-select",
+    "otp-input",
+    "password-field",
+    "password-strength",
+    "inline-edit",
+    "phone-input",
+    "filter-menu",
+    "stepper-form",
+    "multi-step-form",
+    "form-autofill",
+];
+
+// Oxyn Pro demos of this file (private repo ismailqureshi72/oxyn-pro; overlaid by CI).
+#[cfg(oxyn_pro)]
+#[rustfmt::skip]
+mod pro;
