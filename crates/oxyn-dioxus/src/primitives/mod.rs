@@ -18,6 +18,8 @@ mod chrome;
 mod command;
 mod display;
 mod fields;
+#[cfg(oxyn_pro)]
+#[rustfmt::skip]
 mod flows;
 mod forms;
 mod navigation;
@@ -30,6 +32,7 @@ pub use chrome::*;
 pub use command::*;
 pub use display::*;
 pub use fields::*;
+#[cfg(oxyn_pro)]
 pub use flows::*;
 pub use forms::*;
 pub use navigation::*;

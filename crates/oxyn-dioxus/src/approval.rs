@@ -1,4 +1,5 @@
 //! `ApprovalCard` (`approval-card.md`): inline (tray), footer, terminal, modal and paged.
+#![cfg_attr(not(oxyn_pro), allow(dead_code, unused_imports))]
 
 use dioxus::prelude::*;
 use oxyn_core::{
@@ -296,25 +297,10 @@ pub fn ApprovalCard(
     }
 }
 
-/// A queue of requests as one paged card.
-#[component]
-pub fn ApprovalPager(
-    /// Open requests.
-    queue: ApprovalQueue,
-    /// Shared clock.
-    now: ClockMs,
-    /// Page.
-    #[props(default)]
-    page: usize,
-) -> Element {
-    let open = queue.open();
-    let Some(req) = open
-        .get(page.min(open.len().saturating_sub(1)))
-        .cloned()
-        .cloned()
-    else {
-        return rsx! {};
-    };
-    let card = Card::new(req);
-    rsx! { ApprovalCard { card, now, variant: "paged", pager: queue.pager(page), batch: queue.batch() } }
-}
+// Oxyn Pro part of this module (private repo ismailqureshi72/oxyn-pro; overlaid by CI).
+#[cfg(oxyn_pro)]
+#[rustfmt::skip]
+mod pro;
+#[cfg(oxyn_pro)]
+#[allow(unused_imports)]
+pub use pro::*;
