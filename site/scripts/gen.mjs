@@ -80,7 +80,7 @@ const proCatalogPath = path.join(site, 'src/lib/pro-catalog.json');
     }
   } else {
     const placeholder = (d) =>
-      `<div class="oxd-pro-ph" role="note"><strong>${d.name}</strong><span>Part of Oxyn Pro. This build has the free components only, so the preview is not included.</span></div>`;
+      `<div class="oxyn-pro-ph" role="note"><strong>${d.name}</strong><span>Part of Oxyn Pro. This build has the free components only, so the preview is not included.</span></div>`;
     let added = 0;
     for (const d of catalog.items) {
       if (have.has(d.slug)) continue;
