@@ -306,6 +306,39 @@ impl Graph {
     }
 }
 
+/// Drops the Oxyn Pro gates from a source file, so the registry ships code that compiles in any
+/// project: the `#[cfg(oxyn_pro)]` lines (and the `#[rustfmt::skip]` that follows one on a `mod`),
+/// the free build's `#![cfg_attr(not(oxyn_pro), allow(..))]` and the comment that marks the Pro
+/// part of a module. Also returns the names of the gated `mod` declarations, whose files are only
+/// present when the Pro sources are overlaid (CONTRIBUTING.md).
+pub fn strip_pro_gates(src: &str) -> (String, BTreeSet<String>) {
+    let mut out = String::with_capacity(src.len());
+    let mut gated = BTreeSet::new();
+    let mut after_gate = false;
+    for line in src.split_inclusive('\n') {
+        let t = line.trim();
+        if t == "#[cfg(oxyn_pro)]" {
+            after_gate = true;
+            continue;
+        }
+        if after_gate && t == "#[rustfmt::skip]" {
+            continue;
+        }
+        if t.starts_with("#![cfg_attr(not(oxyn_pro)") || t.starts_with("// Oxyn Pro part of this module") {
+            continue;
+        }
+        if after_gate {
+            let decl = t.trim_start_matches("pub(crate) ").trim_start_matches("pub ");
+            if let Some(name) = decl.strip_prefix("mod ").and_then(|r| r.strip_suffix(';')) {
+                gated.insert(name.trim().to_string());
+            }
+        }
+        after_gate = false;
+        out.push_str(line);
+    }
+    (out, gated)
+}
+
 /// Normalises `a/b/../c.css` to `a/c.css`.
 pub fn normalize(p: &Path) -> String {
     let mut parts: Vec<String> = Vec::new();
@@ -328,7 +361,8 @@ fn load_module(
     out: &mut BTreeMap<ModPath, Module>,
 ) -> Result<(), String> {
     let full = src_dir.join(rel);
-    let src = fs::read_to_string(&full).map_err(|e| format!("{}: {e}", full.display()))?;
+    let raw = fs::read_to_string(&full).map_err(|e| format!("{}: {e}", full.display()))?;
+    let (src, gated) = strip_pro_gates(&raw);
     let code = scan::blank(&src);
     let items = scan::items(&src, &code);
     let mut defs = BTreeMap::new();
@@ -396,6 +430,9 @@ fn load_module(
             flat
         } else if src_dir.join(&nested).exists() {
             nested
+        } else if gated.contains(&c) {
+            // An Oxyn Pro module and the Pro sources are not overlaid: its items stay unresolved.
+            continue;
         } else {
             return Err(format!(
                 "module {c} declared in {} has no file",
@@ -456,6 +493,17 @@ pub(crate) mod tests {
         } else {
             s.split("::").map(String::from).collect()
         }
+    }
+
+    #[test]
+    fn strips_pro_gates() {
+        let src = "//! Doc.\n#![cfg_attr(not(oxyn_pro), allow(dead_code))]\nmod a;\n#[cfg(oxyn_pro)]\n#[rustfmt::skip]\nmod pro;\n#[cfg(oxyn_pro)]\n#[allow(unused_imports)]\npub use pro::*;\n#[rustfmt::skip]\nfn keep() {}\n";
+        let (out, gated) = super::strip_pro_gates(src);
+        assert_eq!(
+            out,
+            "//! Doc.\nmod a;\nmod pro;\n#[allow(unused_imports)]\npub use pro::*;\n#[rustfmt::skip]\nfn keep() {}\n"
+        );
+        assert_eq!(gated.into_iter().collect::<Vec<_>>(), vec!["pro".to_string()]);
     }
 
     #[test]

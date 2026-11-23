@@ -2,6 +2,7 @@
 //
 //   node scripts/gen.mjs          site data only (SSR previews, props, specs, parity, tokens)
 //   node scripts/gen.mjs --wasm   also builds the live-demo WASM bundle into public/wasm/
+//   node scripts/gen.mjs --write-pro-catalog   (Pro sources overlaid) refreshes src/lib/pro-catalog.json
 //
 // Outputs (all git-ignored): src/generated/*.json, src/generated/*.css, public/wasm/*,
 // worker/pro-src.json (Pro usage code, bundled into the Worker), public/r/ (the CLI registry).
@@ -44,6 +45,54 @@ if (!process.env.OXYN_SKIP_CARGO) {
   run('cargo', ['run', '--locked', '-q', '-p', 'oxyn-gallery-web', '--bin', 'site-data', '--', gen]);
 }
 fs.copyFileSync(path.join(root, 'tokens/dist/oxyn.css'), path.join(gen, 'oxyn-tokens.css'));
+
+// 1b. Oxyn Pro sources (CONTRIBUTING.md): they live in the private repo ismailqureshi72/oxyn-pro and
+// are overlaid on this checkout before a build; its root carries the `.oxyn-pro` marker. Without
+// them the catalogue has the free demos only, and every Pro item comes back here from
+// src/lib/pro-catalog.json (metadata, no code) with a Pro placeholder for its preview, so the
+// pages, search and the registry index still list all of them. OXYN_REQUIRE_PRO=1 (the deploy)
+// fails instead of building a site without the Pro sources.
+const proOverlay = fs.existsSync(path.join(root, '.oxyn-pro'));
+const proCatalogPath = path.join(site, 'src/lib/pro-catalog.json');
+{
+  if (process.env.OXYN_REQUIRE_PRO === '1' && !proOverlay) {
+    console.error('gen: OXYN_REQUIRE_PRO=1 but the Oxyn Pro sources are not overlaid (no .oxyn-pro marker)');
+    process.exit(1);
+  }
+  const demosPath = path.join(gen, 'demos.json');
+  const doc = JSON.parse(fs.readFileSync(demosPath, 'utf8'));
+  const catalog = JSON.parse(fs.readFileSync(proCatalogPath, 'utf8'));
+  const have = new Set(doc.demos.map((d) => d.slug));
+  if (proOverlay) {
+    // Keep the public metadata in step with the Pro sources.
+    const keys = ['slug', 'name', 'category', 'summary', 'dioxus', 'gpui', 'spec', 'source', 'keyboard', 'a11y', 'responsive', 'height'];
+    const fresh = {
+      $comment: catalog.$comment,
+      order: doc.demos.map((d) => d.slug),
+      items: doc.demos.filter((d) => !isFree(d)).map((d) => Object.fromEntries(keys.map((k) => [k, d[k]]))),
+    };
+    const same = JSON.stringify(fresh.order) === JSON.stringify(catalog.order) && JSON.stringify(fresh.items) === JSON.stringify(catalog.items);
+    if (args.has('--write-pro-catalog')) {
+      fs.writeFileSync(proCatalogPath, JSON.stringify(fresh, null, 1) + '\n');
+      console.log(`pro catalogue: ${fresh.items.length} items -> src/lib/pro-catalog.json`);
+    } else if (!same) {
+      console.warn('::warning::src/lib/pro-catalog.json is out of step with the Pro sources: run `node scripts/gen.mjs --write-pro-catalog` with them overlaid and commit it');
+    }
+  } else {
+    const placeholder = (d) =>
+      `<div class="oxd-pro-ph" role="note"><strong>${d.name}</strong><span>Part of Oxyn Pro. This build has the free components only, so the preview is not included.</span></div>`;
+    let added = 0;
+    for (const d of catalog.items) {
+      if (have.has(d.slug)) continue;
+      doc.demos.push({ ...d, controls: [], variants: [], live: false, code: '', html: placeholder(d), placeholder: true });
+      added++;
+    }
+    const pos = new Map(catalog.order.map((s, i) => [s, i]));
+    doc.demos.sort((a, b) => (pos.get(a.slug) ?? 1e9) - (pos.get(b.slug) ?? 1e9));
+    fs.writeFileSync(demosPath, JSON.stringify(doc));
+    console.log(`free build (no Oxyn Pro sources): ${added} Pro items listed with a placeholder`);
+  }
+}
 
 // 2. Props tables straight from the Dioxus component signatures and their doc comments.
 const srcDir = path.join(root, 'crates/oxyn-dioxus/src');
@@ -156,7 +205,7 @@ fs.copyFileSync(path.join(root, 'tokens/oxyn.motion.json'), path.join(gen, 'moti
   const { demos } = JSON.parse(fs.readFileSync(path.join(gen, 'demos.json'), 'utf8'));
   const pro = {};
   for (const d of demos) {
-    if (isFree(d)) continue;
+    if (isFree(d) || d.placeholder) continue;
     pro[d.slug] = { name: d.name, code: d.code, variants: d.variants.map((v) => ({ name: v.name, code: v.code })) };
   }
   fs.writeFileSync(path.join(site, 'worker/pro-src.json'), JSON.stringify(pro));
