@@ -17,9 +17,13 @@ use oxyn_core::{
         },
     },
 };
-use oxyn_dioxus::{AgentTrail, FlowStepper};
 #[cfg(oxyn_pro)]
-use oxyn_dioxus::{ActivityFeed, AgentFleet, AgentOrchestrator, AgentPlan, AgentRun, AgentStatus, AgentTree, AnimatedCounter, Countdown, LaunchChecklist, OnboardingChecklist, TaskBreakdown, TaskRows, TreeTable};
+use oxyn_dioxus::{
+    ActivityFeed, AgentFleet, AgentOrchestrator, AgentPlan, AgentRun, AgentStatus, AgentTree,
+    AnimatedCounter, Countdown, LaunchChecklist, OnboardingChecklist, TaskBreakdown, TaskRows,
+    TreeTable,
+};
+use oxyn_dioxus::{AgentTrail, FlowStepper};
 
 use super::{Code, mk, rng, sel, tog, var};
 use crate::{Align, Demo, Vals};
@@ -268,7 +272,8 @@ fn stepper_code(v: &Vals) -> String {
 /// The plan and run demos added for plan #28.
 pub fn demos() -> Vec<Demo> {
     #[allow(unused_mut)]
-    let mut v = vec![        Demo {
+    let mut v = vec![
+        Demo {
             controls: vec![
                 sel(
                     "stage",
@@ -423,7 +428,24 @@ pub fn demos() -> Vec<Demo> {
 }
 
 /// Page order of this file's demos (free and Pro).
-const ORDER: [&str; 16] = ["agent-plan", "agent-trail", "task-rows", "stepper", "onboarding-checklist", "launch-checklist", "task-breakdown", "agent-tree", "agent-fleet", "agent-orchestrator", "tree-table", "activity-feed", "countdown", "animated-counter", "agent-status", "agent-run"];
+const ORDER: [&str; 16] = [
+    "agent-plan",
+    "agent-trail",
+    "task-rows",
+    "stepper",
+    "onboarding-checklist",
+    "launch-checklist",
+    "task-breakdown",
+    "agent-tree",
+    "agent-fleet",
+    "agent-orchestrator",
+    "tree-table",
+    "activity-feed",
+    "countdown",
+    "animated-counter",
+    "agent-status",
+    "agent-run",
+];
 
 // Oxyn Pro demos of this file (private repo ismailqureshi72/oxyn-pro; overlaid by CI).
 #[cfg(oxyn_pro)]

@@ -233,20 +233,32 @@ pub use agentscr::{ActivityEl, AgentThreadEl, InboxBoardEl, InboxScreenEl, Memor
 #[cfg(oxyn_pro)]
 pub use agentsfid::{FindingsFeedEl, TaskInboxEl};
 #[cfg(oxyn_pro)]
-pub use answers::{AnswerCardEl, CitedAnswerEl, MessageActionsEl, ThinkingPanelEl, ThinkingPillEl, WritingAssistantEl};
-pub use approvals::{ApprovalPagerEl, ConfirmPopoverEl};
+pub use answers::{
+    AnswerCardEl, CitedAnswerEl, MessageActionsEl, ThinkingPanelEl, ThinkingPillEl,
+    WritingAssistantEl,
+};
 #[cfg(oxyn_pro)]
-pub use approvals::{AgentApprovalsEl, ApprovalGatesEl, HoldConfirmEl, InlineConfirmEl, PermissionRequestEl};
+pub use approvals::{
+    AgentApprovalsEl, ApprovalGatesEl, HoldConfirmEl, InlineConfirmEl, PermissionRequestEl,
+};
+pub use approvals::{ApprovalPagerEl, ConfirmPopoverEl};
 #[cfg(oxyn_pro)]
 pub use apps::{AgentApp, AgentAppView, Live, Own};
 #[cfg(oxyn_pro)]
-pub use arcscr::{ArcDrag, GanttTimelineEl, KanbanBoardEl, MetricsDashboardEl, ProjectBoardEl, TeamDirectoryEl};
+pub use arcscr::{
+    ArcDrag, GanttTimelineEl, KanbanBoardEl, MetricsDashboardEl, ProjectBoardEl, TeamDirectoryEl,
+};
 #[cfg(oxyn_pro)]
-pub use arcscr2::{HelpCenterEl, InboxTriageEl, MonthCalendarEl, SupportConversationEl, WeekCalendarEl};
+pub use arcscr2::{
+    HelpCenterEl, InboxTriageEl, MonthCalendarEl, SupportConversationEl, WeekCalendarEl,
+};
 #[cfg(oxyn_pro)]
 pub use arcscr3::{InvoiceDeskEl, ProductDetailEl, ProductListEl, SignInSplitEl, TradingDeskEl};
 #[cfg(oxyn_pro)]
-pub use arcscr4::{AdminOverviewEl, AgentToolCallsEl, ApiKeysWebhooksEl, AuditLogEl, BillingUsageEl, MembersRolesEl, StatusBoardEl};
+pub use arcscr4::{
+    AdminOverviewEl, AgentToolCallsEl, ApiKeysWebhooksEl, AuditLogEl, BillingUsageEl,
+    MembersRolesEl, StatusBoardEl,
+};
 #[cfg(oxyn_pro)]
 pub use attachfid::{AttachmentChipsEl, DropLanesEl, PolaroidStackEl, UploadDropzoneEl};
 pub use autonomyfid::AutonomyLevelsEl;
@@ -256,7 +268,9 @@ pub use awayfid::ReturnBriefEl;
 pub use buildscr::EvalsEl;
 pub use chatfid::{AgentRunPanelEl, ModelPickerMenuEl};
 #[cfg(oxyn_pro)]
-pub use chatscr::{ChatAgentsEl, ChatOverviewEl, ChatProgressEl, ChatRailEl, ChatRunEl, ChatStartEl};
+pub use chatscr::{
+    ChatAgentsEl, ChatOverviewEl, ChatProgressEl, ChatRailEl, ChatRunEl, ChatStartEl,
+};
 #[cfg(oxyn_pro)]
 pub use cmdboard::CommandBoardEl;
 #[cfg(oxyn_pro)]
@@ -283,16 +297,22 @@ pub use efflistfid::EffortListEl;
 pub use effpillfid::EffortPillEl;
 pub use fallbackfid::FallbackChainEl;
 pub use fanfid::TaskGridEl;
-pub use fidelity::{ChatComposerEl, file_badge};
 #[cfg(oxyn_pro)]
 pub use fidelity::{AgentCommentThreadEl, CommentsPanelEl, ThreadMsg};
-pub use fields::{FileDropzoneEl, ModelMenuEl, Pick, RunControlsEl};
+pub use fidelity::{ChatComposerEl, file_badge};
 #[cfg(oxyn_pro)]
-pub use fields::{AiComposerEl, AvatarUploadEl, ContextFieldEl, ContextGridEl, GaugeEl, ModelPillEl, NumberFieldEl, RichTextEl, RubberSliderEl, ScrubInputEl, SplitBarEl, UnfoldSelectEl, UsageMeterEl};
+pub use fields::{
+    AiComposerEl, AvatarUploadEl, ContextFieldEl, ContextGridEl, GaugeEl, ModelPillEl,
+    NumberFieldEl, RichTextEl, RubberSliderEl, ScrubInputEl, SplitBarEl, UnfoldSelectEl,
+    UsageMeterEl,
+};
+pub use fields::{FileDropzoneEl, ModelMenuEl, Pick, RunControlsEl};
 #[cfg(oxyn_pro)]
 pub use fleetwin::FleetWindowEl;
 #[cfg(oxyn_pro)]
-pub use gooeyfid::{GooeyAttachMenuEl, GooeyComposerEl, GooeyModelMenuEl, LiquidDropsEl, LiquidTabsEl};
+pub use gooeyfid::{
+    GooeyAttachMenuEl, GooeyComposerEl, GooeyModelMenuEl, LiquidDropsEl, LiquidTabsEl,
+};
 #[cfg(oxyn_pro)]
 pub use graphfid::ToolNetworkEl;
 #[cfg(oxyn_pro)]
@@ -302,7 +322,10 @@ pub use handofffid::RelayTrailEl;
 #[cfg(oxyn_pro)]
 pub use hangar::HangarEl;
 #[cfg(oxyn_pro)]
-pub use home::{ActivityHeatmapEl, ActivityHomeEl, AttachmentStripEl, DocGridEl, ExperimentGridEl, PollingCostEl, RunModeMenuEl, ThreadListEl, TokenUsageChartEl};
+pub use home::{
+    ActivityHeatmapEl, ActivityHomeEl, AttachmentStripEl, DocGridEl, ExperimentGridEl,
+    PollingCostEl, RunModeMenuEl, ThreadListEl, TokenUsageChartEl,
+};
 pub use ime::{ImeEvent, ImeInput, bind_ime_keys};
 pub use judgefid::ModelKnockoutEl;
 #[cfg(oxyn_pro)]
@@ -341,29 +364,41 @@ pub use reasonfid::ReasoningPanelEl;
 pub use recapfid::OvernightRecapEl;
 #[cfg(oxyn_pro)]
 pub use repodesk::RepoDeskEl;
-pub use review::{CodeSuggestionEl, DiffTimelineEl, DiffViewerEl, HunkAct, IdAct, InlineDiffEl};
 #[cfg(oxyn_pro)]
-pub use review::{AiInlineEditEl, ChangeSummaryEl, CommentThreadEl, DiffTableEl, ImageCompareEl, ReviewCardEl, ReviewCenterEl};
+pub use review::{
+    AiInlineEditEl, ChangeSummaryEl, CommentThreadEl, DiffTableEl, ImageCompareEl, ReviewCardEl,
+    ReviewCenterEl,
+};
+pub use review::{CodeSuggestionEl, DiffTimelineEl, DiffViewerEl, HunkAct, IdAct, InlineDiffEl};
 #[cfg(oxyn_pro)]
 pub use rootfid::RootCauseTreeEl;
 #[cfg(oxyn_pro)]
 pub use rulerfid::EffortRulerEl;
-pub use run::{AgentTrailEl, FlowStepperEl};
 #[cfg(oxyn_pro)]
-pub use run::{ActivityFeedEl, AgentPlanEl, AgentRunEl, AgentStatusEl, AgentTreeEl, BreakdownEl, ChecklistEl, CountdownEl, CounterEl, FleetEl, OrchestratorEl, ReadinessEl, TaskRowsEl, TreeTableEl};
+pub use run::{
+    ActivityFeedEl, AgentPlanEl, AgentRunEl, AgentStatusEl, AgentTreeEl, BreakdownEl, ChecklistEl,
+    CountdownEl, CounterEl, FleetEl, OrchestratorEl, ReadinessEl, TaskRowsEl, TreeTableEl,
+};
+pub use run::{AgentTrailEl, FlowStepperEl};
 #[cfg(oxyn_pro)]
 pub use runningfid::ActivityPillEl;
 pub use schedfid::ScheduledRunsEl;
 #[cfg(oxyn_pro)]
 pub use screens2fid::OrchestrationEl;
 #[cfg(oxyn_pro)]
-pub use screensfid::{AccountMenuEl, ScreenRailEl, ScreenShellEl, ScreenStageEl, SettingsEl, WorkflowEl};
+pub use screensfid::{
+    AccountMenuEl, ScreenRailEl, ScreenShellEl, ScreenStageEl, SettingsEl, WorkflowEl,
+};
 #[cfg(oxyn_pro)]
 pub use screenview::{ScreenView, screen_element};
 #[cfg(oxyn_pro)]
 pub use seqfid::SequenceDiagramEl;
 #[cfg(oxyn_pro)]
-pub use setscr::{BillingSettingsEl, GeneralSettingsEl, MembersSettingsEl, ModelsSettingsEl, NotificationsSettingsEl, OnboardingSettingsEl, PreferencesSettingsEl, PrivacySettingsEl, ProfileSettingsEl, SecuritySettingsEl};
+pub use setscr::{
+    BillingSettingsEl, GeneralSettingsEl, MembersSettingsEl, ModelsSettingsEl,
+    NotificationsSettingsEl, OnboardingSettingsEl, PreferencesSettingsEl, PrivacySettingsEl,
+    ProfileSettingsEl, SecuritySettingsEl,
+};
 #[cfg(oxyn_pro)]
 pub use stairsfid::EffortStairsEl;
 #[cfg(oxyn_pro)]
@@ -371,18 +406,26 @@ pub use storagefid::{StorageCleanupEl, StorageForecastEl, StorageMeterEl, Storag
 #[cfg(oxyn_pro)]
 pub use tabstack::TabstackEl;
 #[cfg(oxyn_pro)]
-pub use taskdeck::{TaskdeckBoardEl, TaskdeckPluginsEl, TaskdeckScheduledEl, TaskdeckSitesEl, TaskdeckStartEl, TaskdeckTaskEl};
+pub use taskdeck::{
+    TaskdeckBoardEl, TaskdeckPluginsEl, TaskdeckScheduledEl, TaskdeckSitesEl, TaskdeckStartEl,
+    TaskdeckTaskEl,
+};
 #[cfg(oxyn_pro)]
 pub use text::ThinkingLoaderEl;
 #[cfg(oxyn_pro)]
 pub use text::{LoadingStateEl, ShimmerEl, SlotTextEl};
 #[cfg(oxyn_pro)]
-pub use themefid::{AccentDensityEl, AppIconPickerEl, BackgroundPickerEl, DisplayComfortEl, LightPlaygroundEl, ThemeGridEl, ThemeScheduleEl, ThemeSplitEl, TypeScaleEl};
+pub use themefid::{
+    AccentDensityEl, AppIconPickerEl, BackgroundPickerEl, DisplayComfortEl, LightPlaygroundEl,
+    ThemeGridEl, ThemeScheduleEl, ThemeSplitEl, TypeScaleEl,
+};
 #[cfg(oxyn_pro)]
 pub use threadbar::ThreadbarEl;
 pub use toolmapfid::ToolReachEl;
 #[cfg(oxyn_pro)]
-pub use tools::{ExpandableCardEl, JsonViewerEl, LinkUnfurlEl, ToolCallCardEl, ToolCallEl, ToolChipsEl};
+pub use tools::{
+    ExpandableCardEl, JsonViewerEl, LinkUnfurlEl, ToolCallCardEl, ToolCallEl, ToolChipsEl,
+};
 pub use tracefid::TraceWaterfallEl;
 #[cfg(oxyn_pro)]
 pub use workscr::{AnalyticsEl, CrmEl, FolderDetailEl, FoldersEl, IntegrationsEl, KanbanEl};

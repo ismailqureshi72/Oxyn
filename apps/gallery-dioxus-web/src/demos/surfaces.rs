@@ -7,9 +7,11 @@ use oxyn_core::{
     ClockMs,
     primitives::control_center::{Channel, FocusMode},
 };
-use oxyn_dioxus::{Card, Dialog, Switch};
 #[cfg(oxyn_pro)]
-use oxyn_dioxus::{BottomSheet, ControlCenter, Line, ScrollArea, Sheet, SheetStack, StackPage, StackRow};
+use oxyn_dioxus::{
+    BottomSheet, ControlCenter, Line, ScrollArea, Sheet, SheetStack, StackPage, StackRow,
+};
+use oxyn_dioxus::{Card, Dialog, Switch};
 
 use super::{Code, q, rng, sel, tog, txt, var};
 use crate::{Align, Demo, Vals};
@@ -156,7 +158,8 @@ fn card_code(v: &Vals) -> String {
 
 pub(crate) fn demos() -> Vec<Demo> {
     #[allow(unused_mut)]
-    let mut v = vec![        Demo {
+    let mut v = vec![
+        Demo {
             slug: "dialog",
             name: "Dialog",
             category: "surfaces",
@@ -287,7 +290,15 @@ pub(crate) fn demos() -> Vec<Demo> {
 }
 
 /// Page order of this file's demos (free and Pro).
-const ORDER: [&str; 7] = ["dialog", "sheet", "sheet-stack", "bottom-sheet", "card", "scroll-area", "control-center"];
+const ORDER: [&str; 7] = [
+    "dialog",
+    "sheet",
+    "sheet-stack",
+    "bottom-sheet",
+    "card",
+    "scroll-area",
+    "control-center",
+];
 
 // Oxyn Pro demos of this file (private repo ismailqureshi72/oxyn-pro; overlaid by CI).
 #[cfg(oxyn_pro)]

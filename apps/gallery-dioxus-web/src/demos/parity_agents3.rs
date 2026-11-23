@@ -21,9 +21,13 @@ use oxyn_core::{
         tracefid::tw_demo,
     },
 };
-use oxyn_dioxus::{DecisionTree, FallbackChain, ModelKnockout, ScheduledRuns, TaskGrid, ToolReach, TraceWaterfall};
 #[cfg(oxyn_pro)]
-use oxyn_dioxus::{ActivityPill, AssignBoard, AttemptRace, LoadPlanner, MemoryPanel, PlanVsActual, RootCauseTree};
+use oxyn_dioxus::{
+    ActivityPill, AssignBoard, AttemptRace, LoadPlanner, MemoryPanel, PlanVsActual, RootCauseTree,
+};
+use oxyn_dioxus::{
+    DecisionTree, FallbackChain, ModelKnockout, ScheduledRuns, TaskGrid, ToolReach, TraceWaterfall,
+};
 
 use super::{Code, mk, sel, var};
 use crate::{Align, Demo, Vals};
@@ -913,7 +917,8 @@ fn fanout_grid_demo(style: crate::Control) -> Demo {
 pub(crate) fn demos() -> Vec<Demo> {
     let style = || sel("style", "Style", &["clean", "classic"], "clean");
     #[allow(unused_mut)]
-    let mut v = vec![        decision_tree_demo(style()),
+    let mut v = vec![
+        decision_tree_demo(style()),
         judge_bracket_demo(style()),
         tool_access_map_demo(style()),
         scheduled_runs_demo(style()),
@@ -1023,7 +1028,22 @@ pub(crate) fn demos() -> Vec<Demo> {
 }
 
 /// Page order of this file's demos (free and Pro).
-const ORDER: [&str; 14] = ["decision-tree", "attempt-race", "model-knockout", "memory-panel", "activity-pill", "plan-vs-actual", "root-cause-tree", "tool-reach", "scheduled-runs", "load-planner", "trace-waterfall", "task-grid", "assign-board", "fallback-chain"];
+const ORDER: [&str; 14] = [
+    "decision-tree",
+    "attempt-race",
+    "model-knockout",
+    "memory-panel",
+    "activity-pill",
+    "plan-vs-actual",
+    "root-cause-tree",
+    "tool-reach",
+    "scheduled-runs",
+    "load-planner",
+    "trace-waterfall",
+    "task-grid",
+    "assign-board",
+    "fallback-chain",
+];
 
 fn decision_tree_demo(style: crate::Control) -> Demo {
     Demo {

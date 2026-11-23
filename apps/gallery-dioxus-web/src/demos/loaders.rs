@@ -91,7 +91,8 @@ fn spinner_code(v: &Vals) -> String {
 
 pub(crate) fn demos() -> Vec<Demo> {
     #[allow(unused_mut)]
-    let mut v = vec![        Demo {
+    let mut v = vec![
+        Demo {
             slug: "glyph-loader",
             name: "Glyph loader",
             category: "loaders",

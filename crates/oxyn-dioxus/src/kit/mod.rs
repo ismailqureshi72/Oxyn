@@ -223,22 +223,41 @@ mod workscr;
 mod wscoder;
 
 #[cfg(oxyn_pro)]
-pub use agentscr::{ActivityScreen, AgentThreadScreen, InboxBoardScreen, InboxScreen, MemoryScreen, TasksScreen, s3_states};
+pub use agentscr::{
+    ActivityScreen, AgentThreadScreen, InboxBoardScreen, InboxScreen, MemoryScreen, TasksScreen,
+    s3_states,
+};
 #[cfg(oxyn_pro)]
 pub use agentsfid::{FindingsFeed, TaskInbox};
 #[cfg(oxyn_pro)]
-pub use answers::{AnswerCard, CitedAnswerCard, MessageActionBar, ThinkingPanel, ThinkingPill, WritingAssistant};
+pub use answers::{
+    AnswerCard, CitedAnswerCard, MessageActionBar, ThinkingPanel, ThinkingPill, WritingAssistant,
+};
+#[cfg(oxyn_pro)]
+pub use approvals::{
+    AgentApprovals, ApprovalGates, HoldToConfirm, InlineConfirm, PermissionRequest,
+};
 pub use approvals::{ConfirmPopover, gate_dot};
 #[cfg(oxyn_pro)]
-pub use approvals::{AgentApprovals, ApprovalGates, HoldToConfirm, InlineConfirm, PermissionRequest};
+pub use arcscr::{
+    GanttTimelineScreen, KanbanBoardScreen, MetricsDashboardScreen, ProjectBoardScreen,
+    TeamDirectoryScreen, s12_states,
+};
 #[cfg(oxyn_pro)]
-pub use arcscr::{GanttTimelineScreen, KanbanBoardScreen, MetricsDashboardScreen, ProjectBoardScreen, TeamDirectoryScreen, s12_states};
+pub use arcscr2::{
+    HelpCenterScreen, InboxTriageScreen, MonthCalendarScreen, SupportConversationScreen,
+    WeekCalendarScreen, s13_states,
+};
 #[cfg(oxyn_pro)]
-pub use arcscr2::{HelpCenterScreen, InboxTriageScreen, MonthCalendarScreen, SupportConversationScreen, WeekCalendarScreen, s13_states};
+pub use arcscr3::{
+    InvoiceDeskScreen, ProductDetailScreen, ProductListScreen, SignInSplitScreen,
+    TradingDeskScreen, s14_states,
+};
 #[cfg(oxyn_pro)]
-pub use arcscr3::{InvoiceDeskScreen, ProductDetailScreen, ProductListScreen, SignInSplitScreen, TradingDeskScreen, s14_states};
-#[cfg(oxyn_pro)]
-pub use arcscr4::{AdminOverviewScreen, AgentToolCallsScreen, ApiKeysWebhooksScreen, AuditLogScreen, BillingUsageScreen, MembersRolesScreen, StatusBoardScreen, s15_slugs, s15_states};
+pub use arcscr4::{
+    AdminOverviewScreen, AgentToolCallsScreen, ApiKeysWebhooksScreen, AuditLogScreen,
+    BillingUsageScreen, MembersRolesScreen, StatusBoardScreen, s15_slugs, s15_states,
+};
 #[cfg(oxyn_pro)]
 pub use attachfid::{AttachmentChips, DropLanes, FileIcon, PolaroidStack, UploadDropzone};
 pub use autonomyfid::AutonomyLevels;
@@ -253,7 +272,9 @@ pub use cmdboard::{CommandBoardScreen, s11_board_states};
 pub use cmdstudio::{CommandCenterScreen, SessionStudioScreen, s10_states};
 pub use collabfid::CrewChat;
 #[cfg(oxyn_pro)]
-pub use compose::{AiComposer, MenuModel, ModelMenu, ModelPill, PillModel, RichTextEditor, RunControls};
+pub use compose::{
+    AiComposer, MenuModel, ModelMenu, ModelPill, PillModel, RichTextEditor, RunControls,
+};
 pub use costfid::SpendBreakdown;
 #[cfg(oxyn_pro)]
 pub use courier::{CourierScreen, s16_courier_states};
@@ -266,9 +287,9 @@ pub use ctxvisfid::{ContextBar, ContextBreakdown, ContextStack, ContextTide};
 pub use cursorsfid::PresenceCursors;
 #[cfg(oxyn_pro)]
 pub use delegatefid::AssignBoard;
-pub use diff::{CodeSuggestion, DiffTimeline, DiffViewer, InlineDiff};
 #[cfg(oxyn_pro)]
 pub use diff::{ChangeSummary, DiffTable};
+pub use diff::{CodeSuggestion, DiffTimeline, DiffViewer, InlineDiff};
 #[cfg(oxyn_pro)]
 pub use difftlfid::DiffTimelineRun;
 pub use dtreefid::DecisionTree;
@@ -278,9 +299,11 @@ pub use efflistfid::EffortList;
 pub use effpillfid::EffortPill;
 pub use fallbackfid::FallbackChain;
 pub use fanfid::TaskGrid;
-pub use fidelity::{ChatComposer, FileTypeIcon};
 #[cfg(oxyn_pro)]
-pub use fidelity::{AgentCommentThread, AgentOrb, CommentsPanel, PhotoAvatar, Portrait, ThreadNote};
+pub use fidelity::{
+    AgentCommentThread, AgentOrb, CommentsPanel, PhotoAvatar, Portrait, ThreadNote,
+};
+pub use fidelity::{ChatComposer, FileTypeIcon};
 #[cfg(oxyn_pro)]
 pub use fields::{NumberField, RubberSlider, ScrubInput, UnfoldSelect};
 #[cfg(oxyn_pro)]
@@ -296,7 +319,10 @@ pub use handofffid::RelayTrail;
 #[cfg(oxyn_pro)]
 pub use hangar::{HangarScreen, s16_hangar_states};
 #[cfg(oxyn_pro)]
-pub use home::{ActivityHeatmap, ActivityHome, AttachmentStrip, DocGrid, ExperimentGrid, PollingCost, RunModeMenu, ThreadList, TokenUsageChart};
+pub use home::{
+    ActivityHeatmap, ActivityHome, AttachmentStrip, DocGrid, ExperimentGrid, PollingCost,
+    RunModeMenu, ThreadList, TokenUsageChart,
+};
 #[cfg(oxyn_pro)]
 pub use input::{GhostText, LabeledInput, LabeledTextarea, TextArea};
 pub use judgefid::ModelKnockout;
@@ -317,9 +343,15 @@ pub use monitorfid::RunMonitor;
 #[cfg(oxyn_pro)]
 pub use nozzlefid::NozzleSlider;
 #[cfg(oxyn_pro)]
-pub use onbscr::{OnboardingBrandScreen, OnboardingReadyScreen, OnboardingToneScreen, OnboardingWebsiteScreen, s8_states};
+pub use onbscr::{
+    OnboardingBrandScreen, OnboardingReadyScreen, OnboardingToneScreen, OnboardingWebsiteScreen,
+    s8_states,
+};
 #[cfg(oxyn_pro)]
-pub use opsscr::{AgentsScreen, PermissionsScreen, RunDetailScreen, SchedulesScreen, SkillsScreen, UsageScreen, s4_states};
+pub use opsscr::{
+    AgentsScreen, PermissionsScreen, RunDetailScreen, SchedulesScreen, SkillsScreen, UsageScreen,
+    s4_states,
+};
 #[cfg(oxyn_pro)]
 pub use parallelfid::AttemptRace;
 #[cfg(oxyn_pro)]
@@ -344,20 +376,32 @@ pub use review::{AiInlineEdit, CommentThread, ImageCompare, ReviewCard, ReviewCe
 pub use rootfid::RootCauseTree;
 #[cfg(oxyn_pro)]
 pub use rulerfid::EffortRuler;
-pub use run::{AgentTrail, FlowStepper};
 #[cfg(oxyn_pro)]
-pub use run::{ActivityFeed, AgentFleet, AgentOrchestrator, AgentPlan, AgentRun, AgentStatus, AgentTree, AnimatedCounter, Countdown, LaunchChecklist, OnboardingChecklist, TaskBreakdown, TaskRows, TreeTable};
+pub use run::{
+    ActivityFeed, AgentFleet, AgentOrchestrator, AgentPlan, AgentRun, AgentStatus, AgentTree,
+    AnimatedCounter, Countdown, LaunchChecklist, OnboardingChecklist, TaskBreakdown, TaskRows,
+    TreeTable,
+};
+pub use run::{AgentTrail, FlowStepper};
 #[cfg(oxyn_pro)]
 pub use runningfid::ActivityPill;
 pub use schedfid::ScheduledRuns;
 #[cfg(oxyn_pro)]
 pub use screens2fid::OrchestrationScreen;
 #[cfg(oxyn_pro)]
-pub use screensfid::{AppFrame, AppShellScreen, ChatAgentsScreen, ChatOverviewScreen, ChatProgressScreen, ChatRailScreen, ChatRunScreen, ChatStartScreen, MenuButton, RailFrame, RailShellScreen, ScreenComposer, ScreenStage, SettingsScreen, StageScale, WorkflowScreen};
+pub use screensfid::{
+    AppFrame, AppShellScreen, ChatAgentsScreen, ChatOverviewScreen, ChatProgressScreen,
+    ChatRailScreen, ChatRunScreen, ChatStartScreen, MenuButton, RailFrame, RailShellScreen,
+    ScreenComposer, ScreenStage, SettingsScreen, StageScale, WorkflowScreen,
+};
 #[cfg(oxyn_pro)]
 pub use seqfid::SequenceDiagram;
 #[cfg(oxyn_pro)]
-pub use setscr::{BillingSettingsScreen, GeneralSettingsScreen, MembersSettingsScreen, ModelsSettingsScreen, NotificationsSettingsScreen, OnboardingSettingsScreen, PreferencesSettingsScreen, PrivacySettingsScreen, ProfileSettingsScreen, SecuritySettingsScreen, s6_states};
+pub use setscr::{
+    BillingSettingsScreen, GeneralSettingsScreen, MembersSettingsScreen, ModelsSettingsScreen,
+    NotificationsSettingsScreen, OnboardingSettingsScreen, PreferencesSettingsScreen,
+    PrivacySettingsScreen, ProfileSettingsScreen, SecuritySettingsScreen, s6_states,
+};
 #[cfg(oxyn_pro)]
 pub use stairsfid::EffortStairs;
 #[cfg(oxyn_pro)]
@@ -365,21 +409,35 @@ pub use storagefid::{StorageCleanup, StorageForecast, StorageMeter, StorageWaffl
 #[cfg(oxyn_pro)]
 pub use tabstack::{TabstackScreen, s16_tabstack_states};
 #[cfg(oxyn_pro)]
-pub use taskdeck::{TaskdeckBoardScreen, TaskdeckPluginsScreen, TaskdeckScheduledScreen, TaskdeckSitesScreen, TaskdeckStartScreen, TaskdeckTaskScreen, s9_states};
+pub use taskdeck::{
+    TaskdeckBoardScreen, TaskdeckPluginsScreen, TaskdeckScheduledScreen, TaskdeckSitesScreen,
+    TaskdeckStartScreen, TaskdeckTaskScreen, s9_states,
+};
 #[cfg(oxyn_pro)]
-pub use text::{LoadingState, ScrollTitle, SlotReels, Source, StatefulActionButton, StreamingText, SweepText, TextMorph, ThinkingLoader, WordReveal};
+pub use text::{
+    LoadingState, ScrollTitle, SlotReels, Source, StatefulActionButton, StreamingText, SweepText,
+    TextMorph, ThinkingLoader, WordReveal,
+};
 #[cfg(oxyn_pro)]
-pub use themefid::{AccentDensity, AppIconPicker, BackgroundPicker, DisplayComfort, LightPlayground, ThemeGrid, ThemeSchedule, ThemeSplit, TypeScale};
+pub use themefid::{
+    AccentDensity, AppIconPicker, BackgroundPicker, DisplayComfort, LightPlayground, ThemeGrid,
+    ThemeSchedule, ThemeSplit, TypeScale,
+};
 #[cfg(oxyn_pro)]
 pub use threadbar::{ThreadbarScreen, s16_threadbar_states};
 pub use toolmapfid::ToolReach;
 #[cfg(oxyn_pro)]
-pub use tools::{ChipStep, DiffChip, ExpandableCard, JsonViewer, LinkUnfurl, RowOutput, ToolCall, ToolCallCard, ToolCallGroup, ToolCallList, ToolChips, ToolKindLegend};
+pub use tools::{
+    ChipStep, DiffChip, ExpandableCard, JsonViewer, LinkUnfurl, RowOutput, ToolCall, ToolCallCard,
+    ToolCallGroup, ToolCallList, ToolChips, ToolKindLegend,
+};
 pub use tracefid::TraceWaterfall;
-pub use upload::FileDropzone;
 #[cfg(oxyn_pro)]
 pub use upload::AvatarUpload;
+pub use upload::FileDropzone;
 #[cfg(oxyn_pro)]
-pub use workscr::{AnalyticsScreen, CrmScreen, FoldersScreen, IntegrationsScreen, KanbanScreen, s2_states};
+pub use workscr::{
+    AnalyticsScreen, CrmScreen, FoldersScreen, IntegrationsScreen, KanbanScreen, s2_states,
+};
 #[cfg(oxyn_pro)]
 pub use wscoder::{WorkspaceCoderScreen, s11_coder_states};

@@ -317,7 +317,8 @@ fn phone_code(v: &Vals) -> String {
 /// Demos.
 pub fn demos() -> Vec<Demo> {
     #[allow(unused_mut)]
-    let mut v = vec![        Demo {
+    let mut v = vec![
+        Demo {
             slug: "tag-input",
             name: "Tag input",
             category: "forms",
@@ -789,7 +790,20 @@ pub fn demos() -> Vec<Demo> {
 }
 
 /// Page order of this file's demos (free and Pro).
-const ORDER: [&str; 12] = ["tag-input", "combobox", "multi-select", "otp-input", "password-field", "password-strength", "inline-edit", "phone-input", "filter-menu", "stepper-form", "multi-step-form", "form-autofill"];
+const ORDER: [&str; 12] = [
+    "tag-input",
+    "combobox",
+    "multi-select",
+    "otp-input",
+    "password-field",
+    "password-strength",
+    "inline-edit",
+    "phone-input",
+    "filter-menu",
+    "stepper-form",
+    "multi-step-form",
+    "form-autofill",
+];
 
 // Oxyn Pro demos of this file (private repo ismailqureshi72/oxyn-pro; overlaid by CI).
 #[cfg(oxyn_pro)]

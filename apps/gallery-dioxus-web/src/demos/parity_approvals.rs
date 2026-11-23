@@ -121,67 +121,66 @@ fn pop_code(v: &Vals) -> String {
 /// The approval demos added for plan #28.
 pub fn demos() -> Vec<Demo> {
     #[allow(unused_mut)]
-    let mut v = vec![        Demo {
-            controls: vec![
-                tog("phrase", "Type to confirm", true),
-                sel("tone", "Tone", &["danger", "neutral"], "danger"),
-                sel("align", "Align", &["start", "center", "end"], "start"),
-                sel("result", "Action result", &["ok", "error"], "ok"),
-                tog("progress", "Reports progress", true),
-                tog("open", "Start open", true),
-            ],
-            variants: vec![
-                var("phrase", "Type the project name to unlock Delete.", &[]),
-                var(
-                    "plain",
-                    "Consequence and two buttons.",
-                    &[("phrase", "false")],
-                ),
-                var(
-                    "neutral",
-                    "Reversible: foreground fill.",
-                    &[("tone", "neutral"), ("phrase", "false")],
-                ),
-                var(
-                    "error",
-                    "Fails: the message and Try again.",
-                    &[("result", "error"), ("phrase", "false")],
-                ),
-                var(
-                    "sweep",
-                    "No progress reported: an indeterminate sweep.",
-                    &[("progress", "false"), ("phrase", "false")],
-                ),
-            ],
-            render: pop,
-            code: pop_code,
-            keyboard: vec![
-                ("Enter", "Confirm (shakes when the phrase does not match)"),
-                ("Escape", "Dismiss"),
-                ("Tab", "Phrase field, Cancel, Delete"),
-            ],
-            a11y: vec![
-                "The card is an alertdialog named by its heading and described by the consequence.",
-                "The trigger has aria-expanded; Delete is aria-disabled until the phrase matches (case and outer spaces ignored).",
-            ],
-            responsive: vec![
-                "300 px card, max 100 %; `end` keeps the right edge for buttons at the end of a row.",
-            ],
-            height: 320,
-            align: Align::Start,
-            live: true,
-            ..mk(
-                "confirm-popover",
-                "Confirm popover",
-                "approvals",
-                "A destructive button that grows into a small card: the consequence, an optional type-to-confirm phrase that fills Delete as you type, progress on the button, then a check in the button's shape or the error with Try again.",
-                "ConfirmPopover",
-                "ConfirmPopoverEl",
-                "confirm-popover",
-                "kit/approvals.rs",
-            )
-        },
-    ];
+    let mut v = vec![Demo {
+        controls: vec![
+            tog("phrase", "Type to confirm", true),
+            sel("tone", "Tone", &["danger", "neutral"], "danger"),
+            sel("align", "Align", &["start", "center", "end"], "start"),
+            sel("result", "Action result", &["ok", "error"], "ok"),
+            tog("progress", "Reports progress", true),
+            tog("open", "Start open", true),
+        ],
+        variants: vec![
+            var("phrase", "Type the project name to unlock Delete.", &[]),
+            var(
+                "plain",
+                "Consequence and two buttons.",
+                &[("phrase", "false")],
+            ),
+            var(
+                "neutral",
+                "Reversible: foreground fill.",
+                &[("tone", "neutral"), ("phrase", "false")],
+            ),
+            var(
+                "error",
+                "Fails: the message and Try again.",
+                &[("result", "error"), ("phrase", "false")],
+            ),
+            var(
+                "sweep",
+                "No progress reported: an indeterminate sweep.",
+                &[("progress", "false"), ("phrase", "false")],
+            ),
+        ],
+        render: pop,
+        code: pop_code,
+        keyboard: vec![
+            ("Enter", "Confirm (shakes when the phrase does not match)"),
+            ("Escape", "Dismiss"),
+            ("Tab", "Phrase field, Cancel, Delete"),
+        ],
+        a11y: vec![
+            "The card is an alertdialog named by its heading and described by the consequence.",
+            "The trigger has aria-expanded; Delete is aria-disabled until the phrase matches (case and outer spaces ignored).",
+        ],
+        responsive: vec![
+            "300 px card, max 100 %; `end` keeps the right edge for buttons at the end of a row.",
+        ],
+        height: 320,
+        align: Align::Start,
+        live: true,
+        ..mk(
+            "confirm-popover",
+            "Confirm popover",
+            "approvals",
+            "A destructive button that grows into a small card: the consequence, an optional type-to-confirm phrase that fills Delete as you type, progress on the button, then a check in the button's shape or the error with Try again.",
+            "ConfirmPopover",
+            "ConfirmPopoverEl",
+            "confirm-popover",
+            "kit/approvals.rs",
+        )
+    }];
     #[cfg(oxyn_pro)]
     v.extend(pro::demos());
     super::in_order(&mut v, &ORDER);
@@ -189,7 +188,14 @@ pub fn demos() -> Vec<Demo> {
 }
 
 /// Page order of this file's demos (free and Pro).
-const ORDER: [&str; 6] = ["hold-to-confirm", "inline-confirm", "confirm-popover", "approval-gates", "permission-request", "agent-approvals"];
+const ORDER: [&str; 6] = [
+    "hold-to-confirm",
+    "inline-confirm",
+    "confirm-popover",
+    "approval-gates",
+    "permission-request",
+    "agent-approvals",
+];
 
 // Oxyn Pro demos of this file (private repo ismailqureshi72/oxyn-pro; overlaid by CI).
 #[cfg(oxyn_pro)]

@@ -7,9 +7,9 @@ use oxyn_core::{
     ClockMs,
     kit::autonomyfid::{AutonomyAction, autonomy_demo},
 };
-use oxyn_dioxus::{AutonomyLevels, ContextTreemap, CrewChat, SpendBreakdown};
 #[cfg(oxyn_pro)]
 use oxyn_dioxus::ReturnBrief;
+use oxyn_dioxus::{AutonomyLevels, ContextTreemap, CrewChat, SpendBreakdown};
 
 use super::{Code, mk, sel, var};
 use crate::{Align, Demo, Vals};
@@ -226,7 +226,8 @@ fn cost_waterfall_code(_: &Vals) -> String {
 pub(crate) fn demos() -> Vec<Demo> {
     let style = || sel("style", "Style", &["clean", "classic"], "clean");
     #[allow(unused_mut)]
-    let mut v = vec![        Demo {
+    let mut v = vec![
+        Demo {
             controls: vec![
                 style(),
                 sel("level", "Level", &["risky", "always", "full"], "risky"),
@@ -609,7 +610,13 @@ pub(crate) fn demos() -> Vec<Demo> {
 }
 
 /// Page order of this file's demos (free and Pro).
-const ORDER: [&str; 5] = ["autonomy-levels", "return-brief", "crew-chat", "context-treemap", "spend-breakdown"];
+const ORDER: [&str; 5] = [
+    "autonomy-levels",
+    "return-brief",
+    "crew-chat",
+    "context-treemap",
+    "spend-breakdown",
+];
 
 // Oxyn Pro demos of this file (private repo ismailqureshi72/oxyn-pro; overlaid by CI).
 #[cfg(oxyn_pro)]

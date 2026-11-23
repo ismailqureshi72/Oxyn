@@ -9,9 +9,14 @@ use oxyn_core::{
         layout::{Crumb, DockItem, Pane, RadioCard, Tab, TocItem, ToggleItem, TreeNode},
     },
 };
-use oxyn_dioxus::{CodeBlock, CopyButton, Tabs};
 #[cfg(oxyn_pro)]
-use oxyn_dioxus::{Accordion, AccordionItem, Breadcrumb, ChipGroup, Dock, Drawer, EmptyPreset, ExpandableText, HoverCard, NotificationCenter, PageHeader, PaneView, Profile, RadioCards, Rating, Reactions, ReorderItem, ReorderableList, ResizablePanels, TeamSwitcher, TocProgress, TocSection, ToggleGroup, TreeView, UserMenu};
+use oxyn_dioxus::{
+    Accordion, AccordionItem, Breadcrumb, ChipGroup, Dock, Drawer, EmptyPreset, ExpandableText,
+    HoverCard, NotificationCenter, PageHeader, PaneView, Profile, RadioCards, Rating, Reactions,
+    ReorderItem, ReorderableList, ResizablePanels, TeamSwitcher, TocProgress, TocSection,
+    ToggleGroup, TreeView, UserMenu,
+};
+use oxyn_dioxus::{CodeBlock, CopyButton, Tabs};
 
 use super::{Code, mk, q, rng, sel, tog, txt, var};
 use crate::{Align, Demo, Vals};
@@ -158,7 +163,8 @@ fn code_code(v: &Vals) -> String {
 /// Chunk-1 demos.
 pub fn demos() -> Vec<Demo> {
     #[allow(unused_mut)]
-    let mut v = vec![        Demo {
+    let mut v = vec![
+        Demo {
             controls: vec![
                 sel(
                     "variant",
@@ -340,7 +346,31 @@ pub fn demos() -> Vec<Demo> {
 }
 
 /// Page order of this file's demos (free and Pro).
-const ORDER: [&str; 23] = ["tabs", "breadcrumb", "accordion", "resizable-panels", "drawer", "tree-view", "toc-progress", "page-header", "dock", "expandable-text", "toggle-group", "chip-group", "radio-cards", "rating", "reorderable-list", "reactions", "user-menu", "team-switcher", "notification-center", "hover-card", "copy-button", "code-block", "empty-states"];
+const ORDER: [&str; 23] = [
+    "tabs",
+    "breadcrumb",
+    "accordion",
+    "resizable-panels",
+    "drawer",
+    "tree-view",
+    "toc-progress",
+    "page-header",
+    "dock",
+    "expandable-text",
+    "toggle-group",
+    "chip-group",
+    "radio-cards",
+    "rating",
+    "reorderable-list",
+    "reactions",
+    "user-menu",
+    "team-switcher",
+    "notification-center",
+    "hover-card",
+    "copy-button",
+    "code-block",
+    "empty-states",
+];
 
 // Oxyn Pro demos of this file (private repo ismailqureshi72/oxyn-pro; overlaid by CI).
 #[cfg(oxyn_pro)]

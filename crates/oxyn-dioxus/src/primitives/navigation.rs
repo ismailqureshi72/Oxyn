@@ -29,9 +29,9 @@ use oxyn_core::{
 
 use dioxus::html::geometry::PixelsVector2D;
 
-use super::{cls, nav_key, use_glide};
 #[cfg(oxyn_pro)]
 use super::{EmptyState, Sheet};
+use super::{cls, nav_key, use_glide};
 use crate::composer::icons::Icon;
 
 fn sl(s: &str) -> String {

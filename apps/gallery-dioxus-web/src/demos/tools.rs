@@ -5,9 +5,9 @@ use std::time::Duration;
 
 use dioxus::prelude::*;
 use oxyn_core::{ClockMs, run::PlanState};
-use oxyn_dioxus::{SubagentTree, ToolCallRow};
 #[cfg(oxyn_pro)]
 use oxyn_dioxus::{PlanCard, StepTimeline, TodoList, ToolStack};
+use oxyn_dioxus::{SubagentTree, ToolCallRow};
 
 use super::{Code, rng, sel, tog, var};
 use crate::{Align, Demo, Vals, data};
@@ -81,7 +81,8 @@ fn tree_code(v: &Vals) -> String {
 
 pub(crate) fn demos() -> Vec<Demo> {
     #[allow(unused_mut)]
-    let mut v = vec![        Demo {
+    let mut v = vec![
+        Demo {
             slug: "tool-call",
             name: "Tool call",
             category: "tools",
@@ -197,7 +198,14 @@ pub(crate) fn demos() -> Vec<Demo> {
 }
 
 /// Page order of this file's demos (free and Pro).
-const ORDER: [&str; 6] = ["tool-call", "tool-stack", "todo-list", "step-timeline", "plan-card", "subagent-tree"];
+const ORDER: [&str; 6] = [
+    "tool-call",
+    "tool-stack",
+    "todo-list",
+    "step-timeline",
+    "plan-card",
+    "subagent-tree",
+];
 
 // Oxyn Pro demos of this file (private repo ismailqureshi72/oxyn-pro; overlaid by CI).
 #[cfg(oxyn_pro)]

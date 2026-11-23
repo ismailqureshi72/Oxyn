@@ -4,9 +4,12 @@
 
 use dioxus::prelude::*;
 use oxyn_core::ClockMs;
-use oxyn_dioxus::{CrewTree, PresenceCursors};
 #[cfg(oxyn_pro)]
-use oxyn_dioxus::{ChangeLedger, FindingsFeed, JobQueue, LiveLanes, OvernightRecap, RelayTrail, RunMonitor, SequenceDiagram, TaskInbox, ToolNetwork};
+use oxyn_dioxus::{
+    ChangeLedger, FindingsFeed, JobQueue, LiveLanes, OvernightRecap, RelayTrail, RunMonitor,
+    SequenceDiagram, TaskInbox, ToolNetwork,
+};
+use oxyn_dioxus::{CrewTree, PresenceCursors};
 
 use super::{Code, mk, sel, tog, var};
 use crate::{Align, Demo, Vals};
@@ -141,7 +144,8 @@ fn agent_cursors_code(v: &Vals) -> String {
 pub(crate) fn demos() -> Vec<Demo> {
     let style = || sel("style", "Style", &["clean", "classic"], "clean");
     #[allow(unused_mut)]
-    let mut v = vec![        Demo {
+    let mut v = vec![
+        Demo {
             controls: vec![
                 style(),
                 sel(
@@ -314,7 +318,20 @@ pub(crate) fn demos() -> Vec<Demo> {
 }
 
 /// Page order of this file's demos (free and Pro).
-const ORDER: [&str; 12] = ["crew-tree", "presence-cursors", "findings-feed", "tool-network", "relay-trail", "task-inbox", "live-lanes", "change-ledger", "run-monitor", "job-queue", "overnight-recap", "sequence-diagram"];
+const ORDER: [&str; 12] = [
+    "crew-tree",
+    "presence-cursors",
+    "findings-feed",
+    "tool-network",
+    "relay-trail",
+    "task-inbox",
+    "live-lanes",
+    "change-ledger",
+    "run-monitor",
+    "job-queue",
+    "overnight-recap",
+    "sequence-diagram",
+];
 
 // Oxyn Pro demos of this file (private repo ismailqureshi72/oxyn-pro; overlaid by CI).
 #[cfg(oxyn_pro)]

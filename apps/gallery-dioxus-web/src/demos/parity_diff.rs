@@ -13,9 +13,12 @@ use oxyn_core::{
     },
     kit::difftlfid::{dt_demo, dt_end},
 };
-use oxyn_dioxus::{CodeSuggestion, DiffTimeline, DiffViewer, InlineDiff};
 #[cfg(oxyn_pro)]
-use oxyn_dioxus::{AiInlineEdit, ChangeSummary, CommentThread, DiffTable, DiffTimelineRun, ImageCompare, ReviewCard, ReviewCenter};
+use oxyn_dioxus::{
+    AiInlineEdit, ChangeSummary, CommentThread, DiffTable, DiffTimelineRun, ImageCompare,
+    ReviewCard, ReviewCenter,
+};
+use oxyn_dioxus::{CodeSuggestion, DiffTimeline, DiffViewer, InlineDiff};
 
 use super::{Code, mk, q, rng, sel, tog, var};
 use crate::{Align, Demo, Vals};
@@ -417,7 +420,8 @@ fn code_suggestion_code(v: &Vals) -> String {
 
 pub(crate) fn demos() -> Vec<Demo> {
     #[allow(unused_mut)]
-    let mut v = vec![        Demo {
+    let mut v = vec![
+        Demo {
             controls: vec![
                 sel(
                     "layout",
@@ -759,7 +763,19 @@ pub(crate) fn demos() -> Vec<Demo> {
 }
 
 /// Page order of this file's demos (free and Pro).
-const ORDER: [&str; 11] = ["diff-viewer", "inline-diff", "change-summary", "diff-table", "diff-timeline", "code-suggestion", "ai-inline-edit", "image-compare", "threaded-comments", "review-center", "review-card"];
+const ORDER: [&str; 11] = [
+    "diff-viewer",
+    "inline-diff",
+    "change-summary",
+    "diff-table",
+    "diff-timeline",
+    "code-suggestion",
+    "ai-inline-edit",
+    "image-compare",
+    "threaded-comments",
+    "review-center",
+    "review-card",
+];
 
 // Oxyn Pro demos of this file (private repo ismailqureshi72/oxyn-pro; overlaid by CI).
 #[cfg(oxyn_pro)]

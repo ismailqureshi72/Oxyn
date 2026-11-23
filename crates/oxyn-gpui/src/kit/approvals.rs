@@ -19,9 +19,9 @@ use oxyn_core::{
 };
 use oxyn_tokens::{ColorRole, Theme};
 
-use super::{Act, Weight, alpha, button, c, card, muted, tag};
 #[cfg(oxyn_pro)]
 use super::dot;
+use super::{Act, Weight, alpha, button, c, card, muted, tag};
 use crate::ApprovalCardEl;
 
 fn tone_fill(t: &'static Theme, tone: ConfirmTone) -> gpui::Hsla {

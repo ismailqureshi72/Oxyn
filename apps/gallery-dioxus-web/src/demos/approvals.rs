@@ -151,104 +151,103 @@ fn card_code(v: &Vals) -> String {
 
 pub(crate) fn demos() -> Vec<Demo> {
     #[allow(unused_mut)]
-    let mut v = vec![        Demo {
-            slug: "approval-card",
-            name: "Approval card",
-            category: "approvals",
-            summary: "An agent asks before it acts: a risk tier, what exactly will happen, Allow and Deny with shortcuts, a countdown that pauses while you read, arming for high risk, hold-to-allow for critical, and a resolved row.",
-            dioxus: "ApprovalCard",
-            gpui: "ApprovalCardEl",
-            spec: "approval-card",
-            source: "approval.rs",
-            controls: vec![
-                sel(
-                    "risk",
-                    "Risk",
-                    &["low", "medium", "high", "critical"],
-                    "medium",
-                ),
-                sel(
-                    "variant",
-                    "Variant",
-                    &["inline", "footer", "terminal", "modal"],
-                    "inline",
-                ),
-                sel(
-                    "phase",
-                    "Phase",
-                    &["pending", "sending", "approved", "denied"],
-                    "pending",
-                ),
-                sel("actions", "Buttons", &["tray", "card"], "tray"),
-                tog("countdown", "Countdown (60 s)", true),
-                tog("edit", "Edit button", false),
-                sel("labels", "Labels", &["default", "custom"], "default"),
-                tog("shortcuts", "Key hints", true),
-                tog("always", "Always allow ticked", false),
-                tog("holding", "Holding (critical)", true),
-            ],
-            variants: vec![
-                var("inline", "Medium risk with a countdown.", &[]),
-                var(
-                    "edit-custom",
-                    "Edit before Deny, custom labels and icon.",
-                    &[("edit", "true"), ("labels", "custom")],
-                ),
-                var(
-                    "card-actions",
-                    "Buttons inside the card, Edit shown.",
-                    &[("actions", "card"), ("edit", "true")],
-                ),
-                var(
-                    "high-arming",
-                    "High risk: Allow arms first, Deny is the default.",
-                    &[("risk", "high"), ("countdown", "false")],
-                ),
-                var(
-                    "critical-hold",
-                    "Hold to allow.",
-                    &[("risk", "critical"), ("countdown", "false")],
-                ),
-                var(
-                    "terminal",
-                    "Terminal prompt.",
-                    &[
-                        ("risk", "low"),
-                        ("variant", "terminal"),
-                        ("countdown", "false"),
-                    ],
-                ),
-                var(
-                    "resolved",
-                    "Folded into a resolved row.",
-                    &[("phase", "approved"), ("risk", "low")],
-                ),
-            ],
-            render: card,
-            code: card_code,
-            keyboard: vec![
-                (
-                    "⌘ / Ctrl + Enter",
-                    "Allow (declared with aria-keyshortcuts; the host binds it)",
-                ),
-                ("Esc", "Deny (declared with aria-keyshortcuts)"),
-                ("Tab", "Through Deny, For this session and Allow"),
-                ("Terminal", "y allows, p allows always, Esc says no"),
-            ],
-            a11y: vec![
-                "Deny and Allow are real buttons that declare aria-keyshortcuts (Escape, Meta+Enter); the visible key hints are kbd elements.",
-                "The countdown text is aria-hidden; it turns amber in the last 10 seconds.",
-                "Risk is carried by shape and label, never colour alone.",
-            ],
-            responsive: vec![
-                "inline in a transcript, footer inside a tool-call card, terminal in a TUI, modal for critical actions.",
-                "actions card keeps the buttons inside the card for narrow side panels.",
-            ],
-            height: 360,
-            align: Align::Start,
-            live: true,
-        },
-    ];
+    let mut v = vec![Demo {
+        slug: "approval-card",
+        name: "Approval card",
+        category: "approvals",
+        summary: "An agent asks before it acts: a risk tier, what exactly will happen, Allow and Deny with shortcuts, a countdown that pauses while you read, arming for high risk, hold-to-allow for critical, and a resolved row.",
+        dioxus: "ApprovalCard",
+        gpui: "ApprovalCardEl",
+        spec: "approval-card",
+        source: "approval.rs",
+        controls: vec![
+            sel(
+                "risk",
+                "Risk",
+                &["low", "medium", "high", "critical"],
+                "medium",
+            ),
+            sel(
+                "variant",
+                "Variant",
+                &["inline", "footer", "terminal", "modal"],
+                "inline",
+            ),
+            sel(
+                "phase",
+                "Phase",
+                &["pending", "sending", "approved", "denied"],
+                "pending",
+            ),
+            sel("actions", "Buttons", &["tray", "card"], "tray"),
+            tog("countdown", "Countdown (60 s)", true),
+            tog("edit", "Edit button", false),
+            sel("labels", "Labels", &["default", "custom"], "default"),
+            tog("shortcuts", "Key hints", true),
+            tog("always", "Always allow ticked", false),
+            tog("holding", "Holding (critical)", true),
+        ],
+        variants: vec![
+            var("inline", "Medium risk with a countdown.", &[]),
+            var(
+                "edit-custom",
+                "Edit before Deny, custom labels and icon.",
+                &[("edit", "true"), ("labels", "custom")],
+            ),
+            var(
+                "card-actions",
+                "Buttons inside the card, Edit shown.",
+                &[("actions", "card"), ("edit", "true")],
+            ),
+            var(
+                "high-arming",
+                "High risk: Allow arms first, Deny is the default.",
+                &[("risk", "high"), ("countdown", "false")],
+            ),
+            var(
+                "critical-hold",
+                "Hold to allow.",
+                &[("risk", "critical"), ("countdown", "false")],
+            ),
+            var(
+                "terminal",
+                "Terminal prompt.",
+                &[
+                    ("risk", "low"),
+                    ("variant", "terminal"),
+                    ("countdown", "false"),
+                ],
+            ),
+            var(
+                "resolved",
+                "Folded into a resolved row.",
+                &[("phase", "approved"), ("risk", "low")],
+            ),
+        ],
+        render: card,
+        code: card_code,
+        keyboard: vec![
+            (
+                "⌘ / Ctrl + Enter",
+                "Allow (declared with aria-keyshortcuts; the host binds it)",
+            ),
+            ("Esc", "Deny (declared with aria-keyshortcuts)"),
+            ("Tab", "Through Deny, For this session and Allow"),
+            ("Terminal", "y allows, p allows always, Esc says no"),
+        ],
+        a11y: vec![
+            "Deny and Allow are real buttons that declare aria-keyshortcuts (Escape, Meta+Enter); the visible key hints are kbd elements.",
+            "The countdown text is aria-hidden; it turns amber in the last 10 seconds.",
+            "Risk is carried by shape and label, never colour alone.",
+        ],
+        responsive: vec![
+            "inline in a transcript, footer inside a tool-call card, terminal in a TUI, modal for critical actions.",
+            "actions card keeps the buttons inside the card for narrow side panels.",
+        ],
+        height: 360,
+        align: Align::Start,
+        live: true,
+    }];
     #[cfg(oxyn_pro)]
     v.extend(pro::demos());
     super::in_order(&mut v, &ORDER);
@@ -256,7 +255,12 @@ pub(crate) fn demos() -> Vec<Demo> {
 }
 
 /// Page order of this file's demos (free and Pro).
-const ORDER: [&str; 4] = ["approval-card", "approval-pager", "decision-card", "approval-questions"];
+const ORDER: [&str; 4] = [
+    "approval-card",
+    "approval-pager",
+    "decision-card",
+    "approval-questions",
+];
 
 // Oxyn Pro demos of this file (private repo ismailqureshi72/oxyn-pro; overlaid by CI).
 #[cfg(oxyn_pro)]

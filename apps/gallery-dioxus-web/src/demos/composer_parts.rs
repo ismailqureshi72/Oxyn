@@ -7,9 +7,11 @@ use oxyn_core::{
     ClockMs,
     composer::parts::{Suggestion, Tool},
 };
-use oxyn_dioxus::{QueueStack, VoiceRecorder};
 #[cfg(oxyn_pro)]
-use oxyn_dioxus::{AgentSteering, DictationButton, MentionInput, ModeSwitch, PermissionSelector, ToolsMenu};
+use oxyn_dioxus::{
+    AgentSteering, DictationButton, MentionInput, ModeSwitch, PermissionSelector, ToolsMenu,
+};
+use oxyn_dioxus::{QueueStack, VoiceRecorder};
 
 use super::{Code, mk, rng, sel, tog, var};
 use crate::{Align, Demo, Vals};
@@ -75,7 +77,8 @@ fn queue_code(v: &Vals) -> String {
 /// Chunk-3 demos.
 pub fn demos() -> Vec<Demo> {
     #[allow(unused_mut)]
-    let mut v = vec![        Demo {
+    let mut v = vec![
+        Demo {
             controls: vec![
                 sel(
                     "phase",
@@ -183,7 +186,16 @@ pub fn demos() -> Vec<Demo> {
 }
 
 /// Page order of this file's demos (free and Pro).
-const ORDER: [&str; 8] = ["voice-recorder", "dictation-button", "mention-input", "mode-switch", "permission-selector", "tools-menu", "queue-stack", "agent-steering"];
+const ORDER: [&str; 8] = [
+    "voice-recorder",
+    "dictation-button",
+    "mention-input",
+    "mode-switch",
+    "permission-selector",
+    "tools-menu",
+    "queue-stack",
+    "agent-steering",
+];
 
 // Oxyn Pro demos of this file (private repo ismailqureshi72/oxyn-pro; overlaid by CI).
 #[cfg(oxyn_pro)]
