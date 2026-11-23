@@ -1,5 +1,6 @@
 //! Display atoms: `Badge`, `Chip`, `ValuePill`, `Monogram`, `EntityChip`, `Avatar`,
 //! `AvatarGroup`, `Kbd`, `Separator`, `Spinner`, `EmptyState`, `ReactionBar`, `NumberTicker`.
+#![cfg_attr(not(oxyn_pro), allow(dead_code, unused_imports))]
 
 use dioxus::prelude::*;
 use oxyn_core::{
@@ -137,103 +138,6 @@ pub fn Chip(
     }
 }
 
-/// Value pill (Beautiful UI, MIT © 2026 Shane Levine): a small value badge in neutral, green,
-/// orange, red or accent. Oxyn plus: a delta arrow from the previous value (`prev`), and the
-/// number rolls when it changes (`ticker`).
-#[component]
-pub fn ValuePill(
-    /// Text ("7 days").
-    value: String,
-    /// `neutral` · `green` · `orange` · `red` · `accent` (or any badge tone).
-    #[props(default = "neutral".to_string())]
-    tone: String,
-    /// Previous numeric value and the current one, for the delta arrow.
-    #[props(default)]
-    delta: Option<(f64, f64)>,
-    /// Up is good (green) or bad (red, for cost and latency).
-    #[props(default = true)]
-    good_up: bool,
-) -> Element {
-    let accent = tone == "accent";
-    let d = delta.map(|(a, b)| Delta::of(a, b));
-    let t = match d {
-        Some(d) => d.tone(good_up),
-        None => Tone::from_id(&tone).unwrap_or_default(),
-    };
-    let (fg, bg) = t.roles();
-    let style = if accent {
-        "--fg:var(--oxyn-color-fg-on-accent);--bg:var(--oxyn-color-accent-solid)".to_string()
-    } else {
-        format!("--fg:{};--bg:{}", color_var(fg), color_var(bg))
-    };
-    let aria = match d {
-        Some(d) => format!("{value}, {}", d.word()),
-        None => value.clone(),
-    };
-    rsx! {
-        span { class: "oxyn-vpill", style: "{style}", "aria-label": "{aria}",
-            if let Some(d) = d { span { class: "dl", "aria-hidden": "true", "{d.glyph()}" } }
-            span { "aria-hidden": "true", "{value}" }
-        }
-    }
-}
-
-/// Monogram: letters on a seeded colour pair.
-#[component]
-pub fn Monogram(
-    /// Model.
-    monogram: MonogramModel,
-    /// Size px.
-    #[props(default = 18.0)]
-    size: f32,
-    /// Square corners.
-    #[props(default)]
-    square: bool,
-) -> Element {
-    let st = format!("{};--s:{size}px", mono_vars(monogram.colour));
-    rsx! { span { class: if square { "oxyn-mono sq" } else { "oxyn-mono" }, style: "{st}", "aria-hidden": "true", "{monogram.letters}" } }
-}
-
-/// Entity chip (Beautiful UI, MIT © 2026 Shane Levine): an inline company or person with a
-/// monogram. Oxyn plus: avatar image, status dot and a hover card.
-#[component]
-pub fn EntityChip(
-    /// Model.
-    entity: EntityModel,
-    /// Review sheets: show the hover card.
-    #[props(default)]
-    card_open: bool,
-) -> Element {
-    let e = entity;
-    let mut open = use_signal(|| card_open);
-    let has_card = !e.card.is_empty();
-    let id = format!("ec-{}", e.monogram.letters.to_lowercase());
-    rsx! {
-        span { class: "oxyn-entity", tabindex: if has_card { "0" } else { "" },
-            "aria-describedby": if has_card && *open.read() { "{id}" },
-            onpointerenter: move |_| if has_card { open.set(true) },
-            onpointerleave: move |_| open.set(false),
-            onfocus: move |_| if has_card { open.set(true) },
-            onblur: move |_| open.set(false),
-            onkeydown: move |k: KeyboardEvent| if k.key() == Key::Escape { open.set(false) },
-            if let Some(src) = e.image.clone() {
-                img { class: "img", src: "{src}", alt: "" }
-            } else if crate::brand::has_brand(&e.name) {
-                span { class: "bmk", crate::brand::BrandIcon { name: e.name.clone(), size: 12.0, coloured: true } }
-            } else {
-                Monogram { monogram: e.monogram.clone(), size: 16.0 }
-            }
-            span { class: "nm", "{e.name}" }
-            if let Some(p) = e.status { span { class: "st {p.id()}", "aria-label": "{p.id()}" } }
-            if has_card && *open.read() {
-                span { class: "card", role: "tooltip", id: "{id}",
-                    for (k, v) in e.card.iter() { span { class: "kv", span { class: "k", "{k}" } span { class: "v", "{v}" } } }
-                }
-            }
-        }
-    }
-}
-
 /// Avatar: picture (fades in over the initials once loaded), initials on a seeded colour, a
 /// workspace square, an agent's pixel mark that twinkles while it works, a presence dot and an
 /// agent ring for its state (or progress). Oxyn plus: model badge, ring progress, seven sizes.
@@ -332,88 +236,6 @@ pub fn AvatarGroup(
     }
 }
 
-/// Keycaps for a shortcut. Oxyn plus: platform-aware glyphs (`Mod` = ⌘ or Ctrl), sequences
-/// ("G I"), a pressed highlight, flat and inline styles.
-#[component]
-pub fn Kbd(
-    /// Shortcut ("Mod+Shift+K").
-    keys: String,
-    /// Non-Mac glyphs.
-    #[props(default)]
-    other: bool,
-    /// `keycap` · `flat` · `inline`.
-    #[props(default = "keycap".to_string())]
-    style: String,
-    /// The keys are held right now.
-    #[props(default)]
-    pressed: bool,
-) -> Element {
-    let p = if other {
-        Platform::Other
-    } else {
-        Platform::Mac
-    };
-    let chords = parse_shortcut(&keys, p);
-    let spoken: Vec<String> = chords
-        .iter()
-        .map(|c| {
-            c.iter()
-                .map(|k| k.name.clone())
-                .collect::<Vec<_>>()
-                .join(" ")
-        })
-        .collect();
-    let aria = spoken.join(", then ");
-    let ks = aria_keyshortcuts(&keys, p);
-    rsx! {
-        span { class: cls(&["oxyn-kbd", &style, if pressed { "pressed" } else { "" }]), "aria-label": "{aria}", "aria-keyshortcuts": "{ks}",
-            for (n, chord) in chords.iter().enumerate() {
-                if n > 0 { span { class: "then", "aria-hidden": "true", "then" } }
-                for k in chord.iter() { kbd { "aria-hidden": "true", "{k.glyph}" } }
-            }
-        }
-    }
-}
-
-/// Separator: horizontal or vertical, decorative or semantic. Oxyn plus: a centred label,
-/// dashed, faded ends, an inset.
-#[component]
-pub fn Separator(
-    /// Vertical.
-    #[props(default)]
-    vertical: bool,
-    /// Purely visual.
-    #[props(default = true)]
-    decorative: bool,
-    /// Label.
-    #[props(default)]
-    label: Option<String>,
-    /// Dashed.
-    #[props(default)]
-    dashed: bool,
-    /// Faded ends.
-    #[props(default)]
-    fade: bool,
-    /// Inset px.
-    #[props(default)]
-    inset: f32,
-) -> Element {
-    let class = cls(&[
-        "oxyn-sep",
-        if vertical { "v" } else { "h" },
-        if dashed { "dashed" } else { "" },
-        if fade { "fade" } else { "" },
-        if label.is_some() { "labelled" } else { "" },
-    ]);
-    let role = if decorative { "none" } else { "separator" };
-    rsx! {
-        div { class: "{class}", role: "{role}", style: "--inset:{inset}px",
-            "aria-orientation": if !decorative { if vertical { "vertical" } else { "horizontal" } },
-            if let Some(l) = label { span { class: "lb", "{l}" } }
-        }
-    }
-}
-
 /// Spinner: a 2 px arc on a 20 % ring, one turn every 750 ms, linear; announced only with a
 /// label. Oxyn plus: arc length, speed, four styles (arc, dots, ray, orbit).
 #[component]
@@ -487,165 +309,6 @@ pub fn Spinner(
     }
 }
 
-/// Empty state: icon on a soft tile, title, one line and a first-step button; framed or bare,
-/// tall. Oxyn plus: inline table-row layout, secondary action / docs link, starter prompts.
-#[component]
-pub fn EmptyState(
-    /// Model.
-    state: EmptyModel,
-    /// Primary action.
-    #[props(default)]
-    on_action: EventHandler<()>,
-    /// Secondary action.
-    #[props(default)]
-    on_secondary: EventHandler<()>,
-    /// A starter prompt was picked.
-    #[props(default)]
-    on_prompt: EventHandler<String>,
-) -> Element {
-    let s = state;
-    let icon = if s.icon.is_empty() {
-        "file".to_string()
-    } else {
-        s.icon.clone()
-    };
-    if s.layout == EmptyLayout::Inline {
-        return rsx! {
-            div { class: "oxyn-empty inline", role: "status",
-                Icon { name: icon, size: 14.0 }
-                span { class: "tt", "{s.title}" }
-                if !s.text.is_empty() { span { class: "tx", "{s.text}" } }
-                if let Some(a) = s.action.clone() { button { class: "oxyn-btn ghost xs", r#type: "button", onclick: move |_| on_action.call(()), span { class: "lb", "{a}" } } }
-            }
-        };
-    }
-    rsx! {
-        div { class: cls(&["oxyn-empty", s.layout.id(), if s.tall { "tall" } else { "" }]), role: "status",
-            span { class: "tile", Icon { name: icon, size: 18.0 } }
-            div { class: "tt", "{s.title}" }
-            if !s.text.is_empty() { div { class: "tx", "{s.text}" } }
-            if s.action.is_some() || s.secondary.is_some() {
-                div { class: "acts",
-                    if let Some(a) = s.action.clone() { button { class: "oxyn-btn primary sm", r#type: "button", onclick: move |_| on_action.call(()), Icon { name: "plus", size: 14.0 } span { class: "lb", "{a}" } } }
-                    if let Some(b) = s.secondary.clone() { button { class: "oxyn-btn ghost sm", r#type: "button", onclick: move |_| on_secondary.call(()), span { class: "lb", "{b}" } Icon { name: "external", size: 12.0 } } }
-                }
-            }
-            if !s.prompts.is_empty() {
-                div { class: "prompts",
-                    for p in s.prompts.iter() {
-                        {
-                            let pc = p.clone();
-                            rsx! { button { class: "oxyn-chip toggle", r#type: "button", onclick: move |_| on_prompt.call(pc.clone()), Icon { name: "spark", size: 11.0 } span { class: "lb", "{p}" } } }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-fn rolled(text: &str, up: bool) -> Element {
-    let n = text.chars().count();
-    rsx! {
-        span { class: if up { "roll up" } else { "roll down" }, "aria-hidden": "true",
-            for (i, ch) in text.chars().enumerate() {
-                span { key: "{n - i}-{ch}", class: if ch.is_ascii_digit() { "dg" } else { "sym" }, "{ch}" }
-            }
-        }
-    }
-}
-
-/// Reaction bar: like, comment, repost and share in one pill. Icons pop and fill with their
-/// colour; changed digits roll in. Oxyn plus: custom sets, compact icon-only, count rules.
-#[component]
-pub fn ReactionBar(
-    /// Reactions and actions.
-    reactions: Vec<Reaction>,
-    /// Icon-only.
-    #[props(default)]
-    compact: bool,
-    /// Count rule.
-    #[props(default)]
-    rule: CountRule,
-    /// Clock (pop scale).
-    #[props(default)]
-    now: ClockMs,
-    /// A reaction was pressed (`id`, now active).
-    #[props(default)]
-    on_react: EventHandler<(String, bool)>,
-) -> Element {
-    let mut list = use_signal(|| reactions.clone());
-    let mut dir = use_signal(|| true);
-    rsx! {
-        div { class: cls(&["oxyn-reactions", if compact { "compact" } else { "" }]), role: "group", "aria-label": "Reactions",
-            for (i, r) in list.read().iter().enumerate() {
-                {
-                    let tint = color_var(r.tint);
-                    let count = rule.show(r.count);
-                    let aria = r.aria(&rule);
-                    let scale = r.pop(now, false);
-                    let id = r.id.clone();
-                    rsx! {
-                        button { class: cls(&["rx", if r.active { "on" } else { "" }]), r#type: "button", style: "--tint:{tint};--pop:{scale:.3}",
-                            "aria-label": "{aria}", "aria-pressed": if r.toggles { "{r.active}" },
-                            onclick: move |_| {
-                                let mut l = list.write();
-                                let was = l[i].count;
-                                let on = l[i].press(now);
-                                dir.set(l[i].count >= was);
-                                on_react.call((id.clone(), on));
-                            },
-                            span { class: "ic", key: "{r.active}", Icon { name: r.icon.clone(), size: 16.0 } }
-                            if !compact && !count.is_empty() { {rolled(&count, *dir.read())} }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-/// Number ticker: odometer digits that roll up when the value grows and down when it shrinks;
-/// new columns slide in; counts in from zero on first view. Drive with the model and the clock.
-#[component]
-pub fn NumberTicker(
-    /// Model.
-    ticker: TickerModel,
-    /// Clock.
-    now: ClockMs,
-    /// Reduced motion.
-    #[props(default)]
-    reduced: bool,
-    /// Text size px.
-    #[props(default = 28.0)]
-    size: f32,
-) -> Element {
-    let cols = ticker.columns(now, reduced);
-    let text = ticker.text();
-    rsx! {
-        span { class: "oxyn-ticker", style: "--fs:{size}px", role: "text", "aria-label": "{text}",
-            for (i, c) in cols.iter().enumerate() {
-                match c {
-                    Column::Digit { pos, .. } => {
-                        let base = pos.floor() as u32 % 10;
-                        let f = pos.fract();
-                        rsx! {
-                            span { key: "{i}", class: "col", "aria-hidden": "true",
-                                span { class: "strip", style: "transform:translateY(-{f:.3}em)",
-                                    span { "{base}" } span { "{(base + 1) % 10}" }
-                                }
-                            }
-                        }
-                    }
-                    Column::Enter { ch, k } => rsx! { span { key: "{i}", class: "col enter", style: "--k:{k:.3}", "aria-hidden": "true", span { class: "strip", "{ch}" } } },
-                    Column::Exit { ch, k } => rsx! { span { key: "{i}", class: "col exit", style: "--k:{k:.3}", "aria-hidden": "true", span { class: "strip", "{ch}" } } },
-                    Column::Static(ch) => rsx! { span { key: "{i}", class: "sym", "aria-hidden": "true", "{ch}" } },
-                }
-            }
-        }
-    }
-}
-
 /// Presence for docs and sheets.
 pub fn presence_from(s: &str) -> Option<Presence> {
     Some(match s {
@@ -666,3 +329,11 @@ pub fn fill_from(s: &str) -> Fill {
         _ => Fill::Soft,
     }
 }
+
+// Oxyn Pro part of this module (private repo ismailqureshi72/oxyn-pro; overlaid by CI).
+#[cfg(oxyn_pro)]
+#[rustfmt::skip]
+mod pro;
+#[cfg(oxyn_pro)]
+#[allow(unused_imports)]
+pub use pro::*;
