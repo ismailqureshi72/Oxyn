@@ -1,8 +1,11 @@
 //! Loaders: glyph loader, status indicator, spinner.
+#![cfg_attr(not(oxyn_pro), allow(dead_code, unused_imports, unused_variables))]
 
 use dioxus::prelude::*;
 use oxyn_core::{ClockMs, loader::FREE_GLYPH_TABLES};
-use oxyn_dioxus::{GlyphLoader, IndicatorSize, IndicatorVariant, Spinner, StatusIndicator};
+use oxyn_dioxus::{GlyphLoader, Spinner};
+#[cfg(oxyn_pro)]
+use oxyn_dioxus::{IndicatorSize, IndicatorVariant, StatusIndicator};
 
 use super::{Code, rng, sel, tog, var};
 use crate::{Align, Demo, Vals, data};
@@ -60,54 +63,6 @@ fn glyph_code(v: &Vals) -> String {
         .done()
 }
 
-fn indicator(v: &Vals, now: ClockMs) -> Element {
-    let variant = match v.s("variant") {
-        "inline" => IndicatorVariant::Inline,
-        "dot" => IndicatorVariant::Dot,
-        _ => IndicatorVariant::Pill,
-    };
-    let size = if v.s("size") == "small" {
-        IndicatorSize::Small
-    } else {
-        IndicatorSize::Medium
-    };
-    let all = v.b("all");
-    rsx! {
-        if all {
-            div { class: "oxd-states",
-                for s in data::STATES {
-                    div { class: "oxd-state",
-                        span { class: "oxd-sl", "{s}" }
-                        StatusIndicator { state: data::state(s), now, pack: v.string("pack"), variant, size }
-                    }
-                }
-            }
-        } else {
-            StatusIndicator { state: data::state(v.s("state")), now, pack: v.string("pack"), variant, size }
-        }
-    }
-}
-
-fn indicator_code(v: &Vals) -> String {
-    let variant = match v.s("variant") {
-        "inline" => "IndicatorVariant::Inline",
-        "dot" => "IndicatorVariant::Dot",
-        _ => "IndicatorVariant::Pill",
-    };
-    let mut c = Code::new("StatusIndicator")
-        .pre(format!("let state = {};", data::state_code(v.s("state"))))
-        .raw("state", "state")
-        .raw("now", "clock.now()")
-        .s("pack", v.s("pack"), "neutral");
-    if variant != "IndicatorVariant::Pill" {
-        c = c.raw("variant", variant);
-    }
-    if v.s("size") == "small" {
-        c = c.raw("size", "IndicatorSize::Small");
-    }
-    c.done()
-}
-
 fn spinner(v: &Vals, _: ClockMs) -> Element {
     let label = v.b("label").then(|| "Loading runs".to_string());
     rsx! {
@@ -135,8 +90,8 @@ fn spinner_code(v: &Vals) -> String {
 }
 
 pub(crate) fn demos() -> Vec<Demo> {
-    vec![
-        Demo {
+    #[allow(unused_mut)]
+    let mut v = vec![        Demo {
             slug: "glyph-loader",
             name: "Glyph loader",
             category: "loaders",
@@ -183,56 +138,6 @@ pub(crate) fn demos() -> Vec<Demo> {
             live: true,
         },
         Demo {
-            slug: "status-indicator",
-            name: "Status indicator",
-            category: "loaders",
-            summary: "A dot and a label for any of the 13 agent states, as a pill, inline or a dot alone; the verb comes from a verb pack and stalls show how long.",
-            dioxus: "StatusIndicator",
-            gpui: "StatusIndicatorEl",
-            spec: "status-indicator",
-            source: "status_indicator.rs",
-            controls: vec![
-                sel("state", "Agent state", &data::STATES, "tool-running"),
-                sel("variant", "Variant", &["pill", "inline", "dot"], "pill"),
-                sel("size", "Size", &["medium", "small"], "medium"),
-                sel(
-                    "pack",
-                    "Verb pack",
-                    &["neutral", "coder", "terse", "crm"],
-                    "neutral",
-                ),
-                tog("all", "Show all 13 states", false),
-            ],
-            variants: vec![
-                var("pill", "Dot, label and a hairline pill.", &[]),
-                var(
-                    "inline",
-                    "No surface.",
-                    &[("variant", "inline"), ("state", "thinking")],
-                ),
-                var(
-                    "dot",
-                    "Dot alone; the label is the accessible name.",
-                    &[("variant", "dot"), ("state", "awaiting-approval")],
-                ),
-                var("all-states", "Every state.", &[("all", "true")]),
-            ],
-            render: indicator,
-            code: indicator_code,
-            keyboard: vec![("—", "Not focusable")],
-            a11y: vec![
-                "role=status with aria-live=polite, so state changes are announced.",
-                "The dot variant keeps the label as its accessible name.",
-                "The pulse is removed under prefers-reduced-motion.",
-            ],
-            responsive: vec![
-                "small (6 px dot, 12 px text) for dense rows; medium (8 px, 13 px) elsewhere.",
-            ],
-            height: 160,
-            align: Align::Center,
-            live: true,
-        },
-        Demo {
             slug: "spinner",
             name: "Spinner",
             category: "loaders",
@@ -266,5 +171,17 @@ pub(crate) fn demos() -> Vec<Demo> {
             align: Align::Center,
             live: false,
         },
-    ]
+    ];
+    #[cfg(oxyn_pro)]
+    v.extend(pro::demos());
+    super::in_order(&mut v, &ORDER);
+    v
 }
+
+/// Page order of this file's demos (free and Pro).
+const ORDER: [&str; 3] = ["glyph-loader", "status-indicator", "spinner"];
+
+// Oxyn Pro demos of this file (private repo ismailqureshi72/oxyn-pro; overlaid by CI).
+#[cfg(oxyn_pro)]
+#[rustfmt::skip]
+mod pro;

@@ -1,12 +1,15 @@
 //! Plan #32 (affectUI fidelity pass), overnight batch family B part 6 demos: the exact Autonomy
 //! Dial, Away Summary, Collaboration Stream, Context Map and Cost Waterfall, each with every affectUI style and state.
+#![cfg_attr(not(oxyn_pro), allow(dead_code, unused_imports, unused_variables))]
 
 use dioxus::prelude::*;
 use oxyn_core::{
     ClockMs,
     kit::autonomyfid::{AutonomyAction, autonomy_demo},
 };
-use oxyn_dioxus::{AutonomyLevels, ContextTreemap, CrewChat, ReturnBrief, SpendBreakdown};
+use oxyn_dioxus::{AutonomyLevels, ContextTreemap, CrewChat, SpendBreakdown};
+#[cfg(oxyn_pro)]
+use oxyn_dioxus::ReturnBrief;
 
 use super::{Code, mk, sel, var};
 use crate::{Align, Demo, Vals};
@@ -92,67 +95,6 @@ fn autonomy_dial_code(_: &Vals) -> String {
         .raw("title", "\"Support agent\".into()")
         .raw("on_level_change", "move |l| settings.set_level(l)")
         .raw("on_pinned_change", "move |p| settings.set_locks(p)")
-        .done()
-}
-
-// ---------- Return brief ----------
-
-fn agent_glyph() -> Element {
-    rsx! {
-        svg { width: "13", height: "13", view_box: "0 0 12 12", "aria-hidden": "true",
-            for (i, o) in [1.0, 0.45, 1.0, 0.45, 1.0, 0.45, 1.0, 0.45, 1.0].iter().enumerate() {
-                rect { key: "{i}", "data-k": "{i}", x: "{(i % 3) * 4}", y: "{(i / 3) * 4}", width: "3.2", height: "3.2", rx: ".6", fill: "#8B5CF6", opacity: "{o}" }
-            }
-        }
-    }
-}
-
-fn away_summary(v: &Vals, now: ClockMs) -> Element {
-    let mut msg = use_signal(String::new);
-    let key = format!("{}{}{}", v.s("style"), v.s("state"), v.s("width"));
-    let state = v.s("state");
-    let resolved: Vec<String> = if state == "resolved" {
-        vec!["export".into()]
-    } else {
-        vec![]
-    };
-    let since_clock = (state == "folded").then_some(9 * 60 + 40);
-    let work_ms = if state == "slow" { 2_400 } else { 0 };
-    let width = if v.s("width") == "narrow" {
-        "380px"
-    } else {
-        "600px"
-    };
-    let mute = "var(--oxyn-color-fg-muted)";
-    rsx! {
-        div { "data-k": "{key}", key: "{key}", "data-state": "{state}", style: "width:{width};max-width:100%;display:flex;flex-direction:column;gap:14px;font-size:13.5px",
-            div { style: "align-self:flex-end;max-width:85%;padding:6px 12px;border-radius:14px;background:color-mix(in srgb,currentColor 7%,transparent);line-height:1.35",
-                "Move the nightly export to the new bucket – shout if anything's unclear." }
-            div { style: "display:flex;align-items:center;gap:10px;line-height:1.35",
-                {agent_glyph()}
-                span { "Sure. I'll break it into steps and carry on while you're away." }
-            }
-            ReturnBrief { now, resolved, since_clock, work_ms, expanded: state == "expanded", default_collapsed: state == "folded", style: cstyle(v),
-                on_action: move |id: String| msg.set(format!("onAction({id:?})")),
-                on_dismiss: move |_| msg.set("onDismiss()".into()),
-                on_collapsed_change: move |c: bool| msg.set(format!("onCollapsedChange({c})")) }
-            div { style: "display:flex;align-items:center;height:46px;padding:0 11px 0 14px;border:1px solid color-mix(in srgb,currentColor 10%,transparent);border-radius:12px;background:var(--oxaw-card);box-shadow:var(--oxaw-sh);color:{mute};font-size:13px",
-                span { style: "flex:1", "Reply to the agent…" }
-                span { "aria-hidden": "true", style: "display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:color-mix(in srgb,currentColor 30%,transparent)",
-                    svg { width: "12", height: "12", view_box: "0 0 16 16", fill: "none", stroke: "#fff", stroke_width: "1.8", stroke_linecap: "round", stroke_linejoin: "round", path { d: "M8 13V3.5M4 7l4-4 4 4" } } }
-            }
-            {status(msg)}
-        }
-    }
-}
-
-fn away_summary_code(_: &Vals) -> String {
-    Code::new("ReturnBrief")
-        .raw("items", "Some(thread.away_items())")
-        .raw("away", "minutes_away")
-        .raw("now", "clock.now()")
-        .raw("on_action", "move |id| agent.act(id)")
-        .raw("on_dismiss", "move |_| seen.set(true)")
         .done()
 }
 
@@ -283,8 +225,8 @@ fn cost_waterfall_code(_: &Vals) -> String {
 /// Family B part 6 demos.
 pub(crate) fn demos() -> Vec<Demo> {
     let style = || sel("style", "Style", &["clean", "classic"], "clean");
-    vec![
-        Demo {
+    #[allow(unused_mut)]
+    let mut v = vec![        Demo {
             controls: vec![
                 style(),
                 sel("level", "Level", &["risky", "always", "full"], "risky"),
@@ -364,86 +306,6 @@ pub(crate) fn demos() -> Vec<Demo> {
                 "AutonomyLevelsEl",
                 "autonomy-dial",
                 "kit/autonomyfid.rs",
-            )
-        },
-        Demo {
-            controls: vec![
-                style(),
-                sel(
-                    "state",
-                    "State",
-                    &["default", "resolved", "expanded", "folded", "slow"],
-                    "default",
-                ),
-                sel("width", "Width", &["wide", "narrow"], "wide"),
-            ],
-            variants: vec![
-                var(
-                    "default",
-                    "Two need you, one failed, five done – five rows, Show 3 more and Got it, in the thread where you left off.",
-                    &[],
-                ),
-                var(
-                    "resolved",
-                    "A decision made: the row turns done in place, its tick draws and the counts roll.",
-                    &[("state", "resolved")],
-                ),
-                var(
-                    "expanded",
-                    "Show 3 more: every row, and Show less.",
-                    &[("state", "expanded")],
-                ),
-                var(
-                    "folded",
-                    "Since a time, folded at first: a one-line divider that opens the card again.",
-                    &[("state", "folded")],
-                ),
-                var(
-                    "slow-retry",
-                    "A retry that takes a while: the button works for a moment before the row settles.",
-                    &[("state", "slow")],
-                ),
-                var(
-                    "narrow",
-                    "Narrow: the counts drop under the title and long lines end in an ellipsis.",
-                    &[("width", "narrow")],
-                ),
-                var(
-                    "classic",
-                    "Classic style: the header in a grey band, a stronger border and shadow.",
-                    &[("style", "classic")],
-                ),
-            ],
-            render: away_summary,
-            code: away_summary_code,
-            keyboard: vec![
-                ("Tab", "Through the row actions, then Show more and Got it"),
-                (
-                    "Enter / Space",
-                    "Runs the focused action; Got it folds the card and focuses the divider, which opens it again",
-                ),
-                ("Escape", "Folds the card from anywhere inside it"),
-            ],
-            a11y: vec![
-                "A region named While you were away with a heading that says how long; the rows are a list.",
-                "Every action names its task (\"Decide: Export job\") and each row says its state in words.",
-                "Got it and the divider are buttons with aria-expanded; a working button stays focusable (aria-disabled); changes are announced politely.",
-            ],
-            responsive: vec![
-                "600 px up to its container; rows keep one height in every state.",
-                "Under 460 px the counts drop under the title; titles, details and long action labels end in an ellipsis.",
-            ],
-            height: 600,
-            live: true,
-            ..mk(
-                "return-brief",
-                "Return brief",
-                "tools",
-                "The While you were away card for a chat thread – how long you were gone, what needs you, what failed and what's done as a short list with one action per row; Got it folds it into a one-line divider.",
-                "ReturnBrief",
-                "ReturnBriefEl",
-                "away-summary",
-                "kit/awayfid.rs",
             )
         },
         Demo {
@@ -739,5 +601,17 @@ pub(crate) fn demos() -> Vec<Demo> {
                 "kit/costfid.rs",
             )
         },
-    ]
+    ];
+    #[cfg(oxyn_pro)]
+    v.extend(pro::demos());
+    super::in_order(&mut v, &ORDER);
+    v
 }
+
+/// Page order of this file's demos (free and Pro).
+const ORDER: [&str; 5] = ["autonomy-levels", "return-brief", "crew-chat", "context-treemap", "spend-breakdown"];
+
+// Oxyn Pro demos of this file (private repo ismailqureshi72/oxyn-pro; overlaid by CI).
+#[cfg(oxyn_pro)]
+#[rustfmt::skip]
+mod pro;

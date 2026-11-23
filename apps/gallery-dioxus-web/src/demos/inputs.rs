@@ -1,4 +1,5 @@
 //! Inputs: switch, checkbox, radio group, segmented control, select, slider, text field.
+#![cfg_attr(not(oxyn_pro), allow(dead_code, unused_imports, unused_variables))]
 
 use dioxus::prelude::*;
 use oxyn_core::{
@@ -9,7 +10,9 @@ use oxyn_core::{
         toggle::RadioOption,
     },
 };
-use oxyn_dioxus::{Checkbox, RadioGroup, SegmentedControl, Select, Slider, Switch, TextField};
+use oxyn_dioxus::{Checkbox, SegmentedControl, Select, Slider, Switch, TextField};
+#[cfg(oxyn_pro)]
+use oxyn_dioxus::RadioGroup;
 
 use super::{Code, q, rng, sel, tog, txt, var};
 use crate::{Align, Demo, Vals, data};
@@ -88,53 +91,6 @@ fn checkbox_code(v: &Vals) -> String {
         .b("required", v.b("required"))
         .b("disabled", v.b("disabled"))
         .raw("on_change", "move |c: Check| run_tests.set(c)")
-        .done()
-}
-
-fn radio_options(disabled: bool) -> Vec<RadioOption> {
-    vec![
-        RadioOption {
-            description: Some("Asks before every edit".into()),
-            ..RadioOption::new("ask", "Ask first")
-        },
-        RadioOption {
-            description: Some("Edits files, asks before shell commands".into()),
-            ..RadioOption::new("edits", "Auto-edit")
-        },
-        RadioOption {
-            description: Some("Runs everything; you review at the end".into()),
-            disabled: disabled.then(|| "Your admin turned this off".into()),
-            ..RadioOption::new("full", "Full auto")
-        },
-    ]
-}
-
-fn radio(v: &Vals, _: ClockMs) -> Element {
-    rsx! {
-        div { class: "oxd-w420",
-            RadioGroup {
-                label: "Approval mode",
-                options: radio_options(v.b("disabled_option")),
-                value: v.opt("value"),
-                layout: v.string("layout"),
-                name: Some("mode".to_string()),
-            }
-        }
-    }
-}
-
-fn radio_code(v: &Vals) -> String {
-    Code::new("RadioGroup")
-        .pre("let options = vec![")
-        .pre("    RadioOption { description: Some(\"Asks before every edit\".into()), ..RadioOption::new(\"ask\", \"Ask first\") },")
-        .pre("    RadioOption { description: Some(\"Edits files, asks before shell commands\".into()), ..RadioOption::new(\"edits\", \"Auto-edit\") },")
-        .pre("    RadioOption { disabled: Some(\"Your admin turned this off\".into()), ..RadioOption::new(\"full\", \"Full auto\") },")
-        .pre("];")
-        .raw("label", q("Approval mode"))
-        .raw("options", "options")
-        .opt("value", v.s("value"))
-        .s("layout", v.s("layout"), "list")
-        .raw("on_change", "move |mode: String| set_mode(mode)")
         .done()
 }
 
@@ -466,8 +422,8 @@ fn text_field_code(v: &Vals) -> String {
 }
 
 pub(crate) fn demos() -> Vec<Demo> {
-    vec![
-        Demo {
+    #[allow(unused_mut)]
+    let mut v = vec![        Demo {
             slug: "switch",
             name: "Switch",
             category: "inputs",
@@ -632,56 +588,6 @@ pub(crate) fn demos() -> Vec<Demo> {
                 "The label is part of the hit area.",
             ],
             height: 200,
-            align: Align::Center,
-            live: false,
-        },
-        Demo {
-            slug: "radio-group",
-            name: "Radio group",
-            category: "inputs",
-            summary: "Pick one: a list, cards or an inline row, with descriptions and options that are disabled with a reason.",
-            dioxus: "RadioGroup",
-            gpui: "RadioGroupEl",
-            spec: "toggles",
-            source: "primitives/forms.rs",
-            controls: vec![
-                sel(
-                    "layout",
-                    "Layout",
-                    &["list", "cards", "inline", "segmented"],
-                    "list",
-                ),
-                sel("value", "Value", &["ask", "edits", "full"], "edits"),
-                tog("disabled_option", "Disable Full auto", true),
-            ],
-            variants: vec![
-                var("list", "Stacked with descriptions.", &[]),
-                var(
-                    "cards",
-                    "Each option is a card.",
-                    &[("layout", "cards"), ("value", "ask")],
-                ),
-                var("inline", "One row.", &[("layout", "inline")]),
-                var(
-                    "segmented",
-                    "A segmented tray with one gliding pill (Oxyn plus).",
-                    &[("layout", "segmented")],
-                ),
-            ],
-            render: radio,
-            code: radio_code,
-            keyboard: vec![
-                ("↑ / ↓ or ← / →", "Move and select (skips disabled options)"),
-                ("Tab", "Into the group lands on the selected option"),
-            ],
-            a11y: vec![
-                "role=radiogroup with a label; one tab stop with roving focus.",
-                "Disabled options stay readable and say why (\"Your admin turned this off\").",
-            ],
-            responsive: vec![
-                "list and cards stack vertically; inline puts the options in one row for short labels.",
-            ],
-            height: 280,
             align: Align::Center,
             live: false,
         },
@@ -937,5 +843,17 @@ pub(crate) fn demos() -> Vec<Demo> {
             align: Align::Center,
             live: false,
         },
-    ]
+    ];
+    #[cfg(oxyn_pro)]
+    v.extend(pro::demos());
+    super::in_order(&mut v, &ORDER);
+    v
 }
+
+/// Page order of this file's demos (free and Pro).
+const ORDER: [&str; 7] = ["switch", "checkbox", "radio-group", "segmented-control", "select", "slider", "text-field"];
+
+// Oxyn Pro demos of this file (private repo ismailqureshi72/oxyn-pro; overlaid by CI).
+#[cfg(oxyn_pro)]
+#[rustfmt::skip]
+mod pro;
