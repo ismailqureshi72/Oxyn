@@ -1,8 +1,11 @@
 //! Pickers (plan #25): calendar, date picker, date range picker, time picker, time dial, date wheel.
+#![cfg_attr(not(oxyn_pro), allow(dead_code, unused_imports, unused_variables))]
 
 use dioxus::prelude::*;
 use oxyn_core::{ClockMs, primitives::dial::City};
-use oxyn_dioxus::{Calendar, DatePicker, DateRangePicker, DateWheel, TimeDial, TimePicker};
+use oxyn_dioxus::{Calendar, DateWheel};
+#[cfg(oxyn_pro)]
+use oxyn_dioxus::{DatePicker, DateRangePicker, TimeDial, TimePicker};
 
 use super::{Code, q, rng, sel, tog, var};
 use crate::{Align, Demo, Vals};
@@ -42,138 +45,6 @@ fn calendar_code(v: &Vals) -> String {
         .b("show_today", v.b("show_today"))
         .b("week_numbers", v.b("week_numbers"))
         .raw("on_change", "move |iso: String| day.set(iso)")
-        .done()
-}
-
-fn date_picker(v: &Vals, _: ClockMs) -> Element {
-    rsx! {
-        div { class: "oxd-w320 oxd-room-menu-lg",
-            DatePicker {
-                label: "Due date",
-                value: Some("2026-11-20".to_string()),
-                today: TODAY,
-                format: v.string("format"),
-                blocked: v.string("blocked"),
-                show_today: v.b("show_today"),
-                natural: v.b("natural"),
-                presets: v.b("presets"),
-                open: v.b("open"),
-                disabled: v.b("disabled"),
-                description: Some("The agent works toward this date".to_string()),
-            }
-        }
-    }
-}
-
-fn date_picker_code(v: &Vals) -> String {
-    Code::new("DatePicker")
-        .raw("label", q("Due date"))
-        .raw("value", "due()")
-        .s("format", v.s("format"), "medium")
-        .s("blocked", v.s("blocked"), "none")
-        .b("show_today", v.b("show_today"))
-        .b("natural", v.b("natural"))
-        .b("presets", v.b("presets"))
-        .raw("on_change", "move |d: Option<String>| due.set(d)")
-        .done()
-}
-
-fn range(v: &Vals, _: ClockMs) -> Element {
-    rsx! {
-        div { class: "oxd-room-menu-lg",
-            DateRangePicker {
-                label: "Runs",
-                start: Some("2026-10-15".to_string()),
-                end: Some(TODAY.to_string()),
-                today: TODAY,
-                compare: v.b("compare"),
-                default_compare: v.string("default_compare"),
-                week_starts_on: v.u("week_starts_on") as u8,
-                months: v.u("months") as u8,
-                default_open: v.b("open"),
-            }
-        }
-    }
-}
-
-fn range_code(v: &Vals) -> String {
-    Code::new("DateRangePicker")
-        .raw("label", q("Runs"))
-        .raw("start", "Some(from())")
-        .raw("end", "Some(to())")
-        .b("compare", v.b("compare"))
-        .s("default_compare", v.s("default_compare"), "previous")
-        .raw("week_starts_on", v.s("week_starts_on").to_string())
-        .raw("months", v.s("months").to_string())
-        .raw("on_change", "move |(a, b, cmp)| set_range(a, b, cmp)")
-        .done()
-}
-
-fn time_picker(v: &Vals, _: ClockMs) -> Element {
-    rsx! {
-        div { class: "oxd-w320 oxd-room-menu-lg",
-            TimePicker {
-                label: "Run every day at",
-                value: Some("09:30".to_string()),
-                minute_step: v.u("minute_step") as u32,
-                format: v.string("format"),
-                window: v.b("window").then(|| "08:00-18:00".to_string()),
-                zone: v.b("zone").then(|| "PKT".to_string()),
-                open: v.b("open"),
-                disabled: v.b("disabled"),
-                description: Some("Local time".to_string()),
-            }
-        }
-    }
-}
-
-fn time_picker_code(v: &Vals) -> String {
-    Code::new("TimePicker")
-        .raw("label", q("Run every day at"))
-        .raw("value", "Some(at())")
-        .raw("minute_step", v.s("minute_step").to_string())
-        .s("format", v.s("format"), "12h")
-        .raw("on_change", "move |hhmm: String| at.set(hhmm)")
-        .done()
-}
-
-fn cities() -> Vec<City> {
-    vec![
-        City::new("khi", "Karachi", "KHI", 300),
-        City::new("lon", "London", "LON", 0),
-        City::new("nyc", "New York", "NYC", -300),
-        City::new("sfo", "San Francisco", "SF", -480),
-        City::new("syd", "Sydney", "SYD", 660),
-    ]
-}
-
-fn time_dial(v: &Vals, _: ClockMs) -> Element {
-    let mut c = cities();
-    c.truncate(v.u("cities").clamp(2, 5));
-    rsx! {
-        div { class: "oxd-w560",
-            TimeDial {
-                cities: c,
-                value: 600,
-                hour_cycle: v.string("hour_cycle"),
-                working_hours: (540, 1080),
-                quiet_hours: v.b("quiet").then_some((1320, 420)),
-                overlap: v.b("overlap"),
-                min: v.b("bounds").then_some(240),
-                max: v.b("bounds").then_some(1200),
-            }
-        }
-    }
-}
-
-fn time_dial_code(v: &Vals) -> String {
-    Code::new("TimeDial")
-        .pre("let cities = vec![City::new(\"khi\", \"Karachi\", \"KHI\", 300), City::new(\"lon\", \"London\", \"LON\", 0)];")
-        .raw("cities", "cities")
-        .raw("value", "utc_minutes()")
-        .s("hour_cycle", v.s("hour_cycle"), "12")
-        .b("overlap", v.b("overlap"))
-        .raw("on_change", "move |m: i32| utc_minutes.set(m)")
         .done()
 }
 
@@ -218,7 +89,8 @@ fn date_reel_code(v: &Vals) -> String {
 
 /// Demos.
 pub fn demos() -> Vec<Demo> {
-    vec![
+    #[allow(unused_mut)]
+    let mut v = vec![
         Demo {
             slug: "calendar",
             name: "Calendar",
@@ -276,246 +148,6 @@ pub fn demos() -> Vec<Demo> {
                 "Below 260 px the title takes its own row.",
             ],
             height: 380,
-            align: Align::Center,
-            live: false,
-        },
-        Demo {
-            slug: "date-picker",
-            name: "Date picker",
-            category: "pickers",
-            summary: "A field that opens the calendar in a popover; the changed parts of the date roll, and the popover closes just after a pick.",
-            dioxus: "DatePicker",
-            gpui: "DatePickerEl",
-            spec: "date-picker",
-            source: "primitives/pickers.rs",
-            controls: vec![
-                tog("open", "Open", true),
-                sel(
-                    "format",
-                    "Format",
-                    &[
-                        "medium",
-                        "long",
-                        "weekday",
-                        "day-first",
-                        "month-first",
-                        "iso",
-                    ],
-                    "medium",
-                ),
-                sel("blocked", "Blocked", &["none", "weekends"], "none"),
-                tog("show_today", "Today button", true),
-                tog("natural", "Type in words", false),
-                tog("presets", "Relative presets", false),
-                tog("disabled", "Disabled", false),
-            ],
-            variants: vec![
-                var("open", "Calendar open under the field.", &[]),
-                var("closed", "Just the field.", &[("open", "false")]),
-                var(
-                    "words",
-                    "“next tue”, “in 2 weeks” (Oxyn plus).",
-                    &[("natural", "true")],
-                ),
-                var(
-                    "presets",
-                    "Today, Tomorrow, Next week (Oxyn plus).",
-                    &[("presets", "true"), ("format", "weekday")],
-                ),
-            ],
-            render: date_picker,
-            code: date_picker_code,
-            keyboard: vec![
-                (
-                    "Enter / Space / ↓",
-                    "Open and focus the picked or current day",
-                ),
-                ("Esc", "Close and return to the field"),
-                (
-                    "Calendar keys",
-                    "Arrows, Home, End, Page Up / Down as in the calendar",
-                ),
-            ],
-            a11y: vec![
-                "The trigger has aria-haspopup=dialog and aria-expanded; the popover is a dialog named “Due date calendar”.",
-                "The value lives in a visually hidden span; the rolling parts are aria-hidden.",
-            ],
-            responsive: vec![
-                "The popover is min(320 px, 100vw − 32 px), left-aligned to the field.",
-                "Below 360 px it stretches to both field edges.",
-            ],
-            height: 460,
-            align: Align::Start,
-            live: false,
-        },
-        Demo {
-            slug: "date-range-picker",
-            name: "Date range picker",
-            category: "pickers",
-            summary: "Presets and two months with a hover preview after the first click, comparison with the previous period or year, Apply and Cancel.",
-            dioxus: "DateRangePicker",
-            gpui: "RangePickerEl",
-            spec: "date-range-picker",
-            source: "primitives/pickers.rs",
-            controls: vec![
-                tog("open", "Open", true),
-                tog("compare", "Compare", true),
-                sel(
-                    "default_compare",
-                    "Compare with",
-                    &["off", "previous", "year"],
-                    "previous",
-                ),
-                sel("months", "Months", &["1", "2"], "2"),
-                sel("week_starts_on", "Week starts", &["0", "1"], "1"),
-            ],
-            variants: vec![
-                var("two-months", "Presets, two months and the comparison.", &[]),
-                var(
-                    "one-month",
-                    "One month, no comparison.",
-                    &[("months", "1"), ("compare", "false")],
-                ),
-                var(
-                    "year",
-                    "Compared with last year.",
-                    &[("default_compare", "year")],
-                ),
-                var(
-                    "closed",
-                    "The trigger with its range.",
-                    &[("open", "false")],
-                ),
-            ],
-            render: range,
-            code: range_code,
-            keyboard: vec![
-                (
-                    "Enter / Space",
-                    "Open; in the grid pick a start, then an end",
-                ),
-                (
-                    "Arrow keys",
-                    "Move by day or week; once a start is picked the preview follows",
-                ),
-                ("Home / End", "Start / end of the week"),
-                ("Page Up / Page Down", "A month (Shift: a year)"),
-                ("Esc", "Close without applying"),
-            ],
-            a11y: vec![
-                "The trigger opens a dialog and its name includes the current range.",
-                "Each month is a grid; days have full dates, aria-selected inside the range and aria-current for today.",
-                "A polite region announces the start, then the range and its length.",
-            ],
-            responsive: vec![
-                "Below 600 px the presets become a scrolling row of chips and one month shows; the footer stacks.",
-                "The panel is as wide as the screen allows, up to 652 px.",
-            ],
-            height: 520,
-            align: Align::Start,
-            live: false,
-        },
-        Demo {
-            slug: "time-picker",
-            name: "Time picker",
-            category: "pickers",
-            summary: "A time field with a list at a fixed step; a later time rises in, an earlier one drops, and the list opens on the chosen time.",
-            dioxus: "TimePicker",
-            gpui: "TimePickerEl",
-            spec: "time-picker",
-            source: "primitives/pickers.rs",
-            controls: vec![
-                tog("open", "Open", true),
-                sel("minute_step", "Step", &["5", "10", "15", "30"], "15"),
-                sel("format", "Format", &["12h", "24h"], "12h"),
-                tog("window", "Working hours only", false),
-                tog("zone", "Zone tag", false),
-                tog("disabled", "Disabled", false),
-            ],
-            variants: vec![
-                var("open", "Every 15 minutes.", &[]),
-                var(
-                    "24h",
-                    "24-hour, every 30 minutes.",
-                    &[("format", "24h"), ("minute_step", "30")],
-                ),
-                var(
-                    "window",
-                    "Working hours with a zone tag (Oxyn plus).",
-                    &[("window", "true"), ("zone", "true")],
-                ),
-            ],
-            render: time_picker,
-            code: time_picker_code,
-            keyboard: vec![
-                ("Enter / Space", "Open, or pick the active time"),
-                ("↓ / ↑", "Open, then move through times (wraps)"),
-                ("Esc", "Close"),
-            ],
-            a11y: vec![
-                "Trigger: aria-haspopup=listbox, aria-expanded, aria-controls, labelled by the label and a hidden value.",
-                "Options carry aria-selected; the list scrolls itself, never the page.",
-            ],
-            responsive: vec!["The list spans the field and caps at 250 px."],
-            height: 400,
-            align: Align::Start,
-            live: false,
-        },
-        Demo {
-            slug: "time-dial",
-            name: "Time dial",
-            category: "pickers",
-            summary: "Spin a 24-hour dial to pick a time and see which team cities are at work; the readout rolls and the sun turns into the moon.",
-            dioxus: "TimeDial",
-            gpui: "TimeDialEl",
-            spec: "time-dial",
-            source: "primitives/pickers.rs",
-            controls: vec![
-                rng("cities", "Cities", 2.0, 5.0, 1.0, "4"),
-                sel("hour_cycle", "Clock", &["12", "24"], "12"),
-                tog("bounds", "Bounds 4:00–20:00 UTC", false),
-                tog("quiet", "Quiet hours", false),
-                tog("overlap", "Best overlap", true),
-            ],
-            variants: vec![
-                var("team", "Four cities, home in Karachi.", &[]),
-                var(
-                    "24h",
-                    "24-hour readout, five cities.",
-                    &[("hour_cycle", "24"), ("cities", "5")],
-                ),
-                var(
-                    "quiet",
-                    "Quiet hours band (Oxyn plus).",
-                    &[("quiet", "true")],
-                ),
-                var(
-                    "bounded",
-                    "Rubber-bands past the bounds.",
-                    &[("bounds", "true")],
-                ),
-            ],
-            render: time_dial,
-            code: time_dial_code,
-            keyboard: vec![
-                ("→ / ↑", "A quarter hour forward"),
-                ("← / ↓", "A quarter hour back"),
-                ("Page Up / Page Down", "An hour"),
-                (
-                    "Home / End",
-                    "Start / last quarter hour of the home city's day",
-                ),
-            ],
-            a11y: vec![
-                "The dial is a focusable role=slider with aria-valuenow in home-city minutes and a spoken aria-valuetext.",
-                "Cities are buttons with aria-pressed for the home city; changes are announced politely.",
-                "The SVG face and the readout are aria-hidden.",
-            ],
-            responsive: vec![
-                "From 600 px the dial and city list sit side by side; below that they stack.",
-                "The dial is min(100%, 256 px) with touch-action none.",
-            ],
-            height: 340,
             align: Align::Center,
             live: false,
         },
@@ -584,5 +216,24 @@ pub fn demos() -> Vec<Demo> {
             align: Align::Center,
             live: false,
         },
-    ]
+    ];
+    #[cfg(oxyn_pro)]
+    v.extend(pro::demos());
+    super::in_order(&mut v, &ORDER);
+    v
 }
+
+/// Page order of this file's demos (free and Pro).
+const ORDER: [&str; 6] = [
+    "calendar",
+    "date-picker",
+    "date-range-picker",
+    "time-picker",
+    "time-dial",
+    "date-wheel",
+];
+
+// Oxyn Pro demos of this file (private repo ismailqureshi72/oxyn-pro; overlaid by CI).
+#[cfg(oxyn_pro)]
+#[rustfmt::skip]
+mod pro;

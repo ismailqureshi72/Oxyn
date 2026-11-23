@@ -2,6 +2,7 @@
 //! list, minimap, line comments, review bar), `InlineDiff`, `ChangeSummary`, `DiffTable`,
 //! `DiffTimeline` and `CodeSuggestion`. Styles: `diff.css` (classes `oxyn-diff-*`, `oxyn-chs-*`,
 //! `oxyn-dtb-*`, `oxyn-dtl-*`, `oxyn-sug-*`, `oxyn-idf-*`).
+#![cfg_attr(not(oxyn_pro), allow(dead_code, unused_imports))]
 
 use std::collections::BTreeSet;
 use std::rc::Rc;
@@ -575,136 +576,6 @@ pub fn InlineDiff(
     }
 }
 
-/// What an agent changed, at a glance: "4 files changed +58 −21", a block bar and a row per file
-/// with its status and counts; `compact` folds to the headline with an expander.
-#[component]
-pub fn ChangeSummary(
-    /// Files.
-    files: Vec<FileDiff>,
-    /// Start folded.
-    #[props(default)]
-    compact: bool,
-    /// Blocks in the bar.
-    #[props(default = 5)]
-    blocks: usize,
-    /// A file row was pressed.
-    #[props(default)]
-    on_open: EventHandler<String>,
-) -> Element {
-    let mut open = use_signal(move || !compact);
-    let (n, a, r) = change_totals(&files);
-    let (ba, br, bn) = stat_blocks(a, r, blocks);
-    rsx! {
-        div { class: "oxyn-chs", "data-open": "{open()}",
-            button { class: "oxyn-chs-hd", r#type: "button", "aria-expanded": "{open()}", onclick: move |_| { let o = !open(); open.set(o) },
-                Icon { name: "file", size: 13.0 }
-                span { class: "oxyn-chs-t", "{files_changed(n)}" }
-                span { class: "oxyn-chs-a", "+{a}" } span { class: "oxyn-chs-r", "−{r}" }
-                span { class: "oxyn-chs-blocks", "aria-hidden": "true",
-                    for i in 0..ba { i { key: "a{i}", "data-k": "add" } }
-                    for i in 0..br { i { key: "r{i}", "data-k": "del" } }
-                    for i in 0..bn { i { key: "n{i}" } }
-                }
-                span { class: "oxyn-chs-sp" }
-                span { class: "oxyn-chs-chev", Icon { name: "chevron", size: 12.0 } }
-            }
-            if open() {
-                ul { class: "oxyn-chs-list",
-                    for f in files.iter() {
-                        {
-                            let p = f.path.clone();
-                            let (fa, fr, fnn) = stat_blocks(f.added, f.removed, blocks);
-                            rsx! {
-                                li { key: "{f.path}",
-                                    button { class: "oxyn-chs-row", r#type: "button", onclick: move |_| on_open.call(p.clone()),
-                                        span { class: "oxyn-diff-fst", "data-s": f.status.id(), title: f.status.word(), "{f.status.letter()}" }
-                                        span { class: "oxyn-chs-path", if !f.dir().is_empty() { span { class: "d", "{f.dir()}/" } } "{f.name()}" }
-                                        span { class: "oxyn-chs-n", "{stat_label(f.added, f.removed)}" }
-                                        span { class: "oxyn-chs-blocks", "aria-hidden": "true",
-                                            for i in 0..fa { i { key: "a{i}", "data-k": "add" } }
-                                            for i in 0..fr { i { key: "r{i}", "data-k": "del" } }
-                                            for i in 0..fnn { i { key: "n{i}" } }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-/// Row-level changes in a keyed table (settings, records, environment): added, removed and
-/// changed rows with before → after, a filter for changed rows only and per-kind counts.
-#[component]
-pub fn DiffTable(
-    /// Rows from `table_diff`.
-    rows: Vec<RowChange>,
-    /// Column header for the key.
-    #[props(default = "Key".to_string())]
-    key_label: String,
-    /// Hide unchanged rows.
-    #[props(default = true)]
-    changed_only: bool,
-    /// Show the before column (otherwise before is struck inline).
-    #[props(default = true)]
-    columns: bool,
-) -> Element {
-    let mut only = use_signal(move || changed_only);
-    let count = |k: RowKind| rows.iter().filter(|r| r.kind == k).count();
-    let (na, nr, nc) = (
-        count(RowKind::Added),
-        count(RowKind::Removed),
-        count(RowKind::Changed),
-    );
-    let shown: Vec<RowChange> = rows
-        .iter()
-        .filter(|r| !only() || r.kind != RowKind::Same)
-        .cloned()
-        .collect();
-    rsx! {
-        div { class: "oxyn-dtb",
-            div { class: "oxyn-dtb-hd",
-                span { class: "oxyn-dtb-c", "data-k": "added", "+{na} added" }
-                span { class: "oxyn-dtb-c", "data-k": "changed", "~{nc} changed" }
-                span { class: "oxyn-dtb-c", "data-k": "removed", "−{nr} removed" }
-                span { class: "oxyn-diff-sp" }
-                label { class: "oxyn-diff-viewed", input { r#type: "checkbox", checked: only(), onchange: move |_| { let o = !only(); only.set(o) } } "Changed only" }
-            }
-            div { class: "oxyn-dtb-scroll", tabindex: "0", role: "region", "aria-label": "Table changes",
-                table { class: "oxyn-dtb-t",
-                    thead { tr {
-                        th { scope: "col", class: "oxyn-dtb-s", span { class: "oxyn-diff-sr", "Change" } }
-                        th { scope: "col", "{key_label}" }
-                        if columns { th { scope: "col", "Before" } }
-                        th { scope: "col", if columns { "After" } else { "Value" } }
-                    } }
-                    tbody {
-                        for r in shown.iter() {
-                            tr { key: "{r.key}", "data-k": r.kind.id(),
-                                td { class: "oxyn-dtb-s", span { "aria-hidden": "true", "{r.kind.sign()}" } span { class: "oxyn-diff-sr", "{r.kind.id()}" } }
-                                th { scope: "row", class: "oxyn-dtb-k", "{r.key}" }
-                                if columns {
-                                    td { class: "oxyn-dtb-b", {r.before.clone().unwrap_or_else(|| "—".into())} }
-                                    td { class: "oxyn-dtb-a", {r.after.clone().unwrap_or_else(|| "—".into())} }
-                                } else {
-                                    td { class: "oxyn-dtb-a",
-                                        if r.kind == RowKind::Changed { if let Some(b) = &r.before { del { class: "oxyn-idf-del", "{b}" } " " } }
-                                        {r.after.clone().or(r.before.clone()).unwrap_or_default()}
-                                    }
-                                }
-                            }
-                        }
-                        if shown.is_empty() { tr { td { colspan: "4", class: "oxyn-dtb-empty", "No changes" } } }
-                    }
-                }
-            }
-        }
-    }
-}
-
 /// One file across saved revisions: a rail of revisions (who, what, +/−), pick two points to
 /// compare, and the diff between them below. ← / → move the target; Shift moves the base.
 #[component]
@@ -1181,3 +1052,11 @@ fn InlineDiffReview(
         }
     }
 }
+
+// Oxyn Pro part of this module (private repo ismailqureshi72/oxyn-pro; overlaid by CI).
+#[cfg(oxyn_pro)]
+#[rustfmt::skip]
+mod pro;
+#[cfg(oxyn_pro)]
+#[allow(unused_imports)]
+pub use pro::*;

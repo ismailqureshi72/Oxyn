@@ -1,6 +1,9 @@
 //! Sample data for the demos. Invented, but shaped like a real agent run: a coding agent fixing a
 //! refresh-token race, a newsletter send waiting for approval, a checkout built in two attempts.
 
+// Much of this data feeds Oxyn Pro demos only; the free build leaves it unused.
+#![cfg_attr(not(oxyn_pro), allow(dead_code))]
+
 use std::time::Duration;
 
 use oxyn_core::{

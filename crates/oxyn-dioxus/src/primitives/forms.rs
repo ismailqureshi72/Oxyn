@@ -1,5 +1,6 @@
 //! Form controls: `Switch`, `Checkbox`, `RadioGroup`, `SegmentedControl`, `Select`, `Slider`,
 //! `TextField`.
+#![cfg_attr(not(oxyn_pro), allow(dead_code, unused_imports))]
 
 use dioxus::prelude::*;
 use oxyn_core::{
@@ -195,77 +196,6 @@ pub fn Checkbox(
                 if !label.is_empty() { span { class: "lb", "{label}" } }
                 if let Some(e) = error.clone() { span { class: "ds err", id: "{id}-d", "{e}" } }
                 else if let Some(d) = description.clone() { span { class: "ds", id: "{id}-d", "{d}" } }
-            }
-        }
-    }
-}
-
-/// Radio group: a fieldset whose legend names it; one tab stop, arrows move and select, one
-/// highlight glides to the chosen row while the new dot springs in and the old one shrinks away;
-/// a native radio `name` for forms. Oxyn plus: list / cards / inline / segmented layouts,
-/// descriptions, disabled-with-reason tooltips.
-#[component]
-pub fn RadioGroup(
-    /// Group label.
-    label: String,
-    /// Options.
-    options: Vec<RadioOption>,
-    /// Selected value.
-    #[props(default)]
-    value: Option<String>,
-    /// `list` · `cards` · `inline` · `segmented`.
-    #[props(default = "list".to_string())]
-    layout: String,
-    /// Native radio name for form submission (a hidden input carries the value).
-    #[props(default)]
-    name: Option<String>,
-    /// Changed.
-    #[props(default)]
-    on_change: EventHandler<String>,
-) -> Element {
-    let mut m = use_signal(|| RadioModel::new(options.clone(), value.as_deref()));
-    let cur_value = m.read().value.clone().unwrap_or_default();
-    let glide = use_glide();
-    let sel = m.read().selected();
-    let tab = m.read().tab_stop();
-    let id = uid("rg", &label);
-    rsx! {
-        div { class: "oxyn-radio {layout}", role: "radiogroup", "aria-labelledby": "{id}",
-            onmounted: move |e| glide.set_root(e.data()),
-            onkeydown: move |e: KeyboardEvent| {
-                // Radios use both axes.
-                let k = nav_key(&e.key(), true).or_else(|| nav_key(&e.key(), false));
-                if let Some(k) = k {
-                    e.prevent_default();
-                    let r = m.write().key(k, ClockMs(0));
-                    if let Some(v) = r {
-                        glide.go(m.peek().selected(), true);
-                        on_change.call(v);
-                    }
-                }
-            },
-            span { class: "legend", id: "{id}", "{label}" }
-            if let Some(n) = name.clone() { input { r#type: "hidden", name: "{n}", value: "{cur_value}" } }
-            span { class: "{glide.class(\"hl\")}", style: "{glide.style()}", "aria-hidden": "true" }
-            for (i, o) in options.iter().enumerate() {
-                {
-                    let on = sel == Some(i);
-                    let dis = o.disabled.is_some();
-                    rsx! {
-                        div { class: cls(&["opt", if on { "on" } else { "" }, if on && !glide.measured() { "hl-self" } else { "" }, if dis { "disabled" } else { "" }]),
-                            role: "radio", "aria-checked": "{on}", "aria-disabled": "{dis}",
-                            tabindex: if tab == Some(i) { "0" } else { "-1" },
-                            title: if let Some(r) = &o.disabled { "{r}" },
-                            onmounted: move |e| { glide.set_item(i, e.data()); if on { glide.go(Some(i), true) } },
-                            onclick: move |_| { let r = m.write().pick(i, ClockMs(0)); if let Some(v) = r { glide.go(Some(i), false); on_change.call(v) } },
-                            span { class: "dot", "aria-hidden": "true", span { class: "in" } }
-                            span { class: "txt",
-                                span { class: "lb", "{o.label}" }
-                                if let Some(d) = o.description.clone() { span { class: "ds", "{d}" } }
-                            }
-                        }
-                    }
-                }
             }
         }
     }
@@ -858,3 +788,11 @@ pub fn TextField(
         }
     }
 }
+
+// Oxyn Pro part of this module (private repo ismailqureshi72/oxyn-pro; overlaid by CI).
+#[cfg(oxyn_pro)]
+#[rustfmt::skip]
+mod pro;
+#[cfg(oxyn_pro)]
+#[allow(unused_imports)]
+pub use pro::*;

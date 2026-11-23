@@ -18,6 +18,8 @@ mod chrome;
 mod command;
 mod display;
 mod fields;
+#[cfg(oxyn_pro)]
+#[rustfmt::skip]
 mod flows;
 mod forms;
 mod navigation;
@@ -30,6 +32,7 @@ pub use chrome::*;
 pub use command::*;
 pub use display::*;
 pub use fields::*;
+#[cfg(oxyn_pro)]
 pub use flows::*;
 pub use forms::*;
 pub use navigation::*;
@@ -279,6 +282,7 @@ pub(crate) fn nav_key(k: &Key, vertical: bool) -> Option<oxyn_core::primitives::
 
 #[cfg(test)]
 mod tests {
+    #![cfg_attr(not(oxyn_pro), allow(unused_imports, dead_code))]
 
     use oxyn_core::{
         AgentState, ClockMs,
@@ -302,6 +306,7 @@ mod tests {
         dioxus_ssr::render(&dom)
     }
 
+    #[cfg(oxyn_pro)]
     #[test]
     fn buttons_carry_state_and_names() {
         let h = render(|| {
@@ -325,6 +330,7 @@ mod tests {
         );
     }
 
+    #[cfg(oxyn_pro)]
     #[test]
     fn display_atoms() {
         let h = render(|| {
@@ -351,6 +357,7 @@ mod tests {
         assert!(h.contains("role=\"separator\"") && h.contains("aria-orientation=\"horizontal\""));
     }
 
+    #[cfg(oxyn_pro)]
     #[test]
     fn form_controls() {
         let h = render(|| {
@@ -377,6 +384,7 @@ mod tests {
         assert!(h.contains("aria-invalid=\"true\"") && h.contains("Enter an email"));
     }
 
+    #[cfg(oxyn_pro)]
     #[test]
     fn overlays() {
         let h = render(|| {
@@ -390,6 +398,7 @@ mod tests {
         assert!(h.contains("row danger") && h.contains("hl-self"));
     }
 
+    #[cfg(oxyn_pro)]
     #[test]
     fn form_fields_render_their_roles() {
         use oxyn_core::primitives::combobox::ComboOption;
@@ -416,6 +425,7 @@ mod tests {
         assert!(h.contains("Country, United Kingdom +44") && h.contains("7400 123456"));
     }
 
+    #[cfg(oxyn_pro)]
     #[test]
     fn pickers_render_grids_and_spinbuttons() {
         use oxyn_core::primitives::dial::City;
@@ -438,6 +448,7 @@ mod tests {
         assert!(h.contains(r#"role="spinbutton""#) && h.contains("Today at 9:30 AM"));
     }
 
+    #[cfg(oxyn_pro)]
     #[test]
     fn flows_render() {
         use oxyn_core::primitives::{

@@ -1,15 +1,17 @@
 //! Plan #32 (affectUI fidelity pass) demos: the exact Chat Composer with every affectUI variant
 //! (and Oxyn's own AI composer as an extra), Comment Thread and Comments Panel.
+#![cfg_attr(not(oxyn_pro), allow(dead_code, unused_imports, unused_variables))]
 
 use dioxus::prelude::*;
 use oxyn_core::{
     ClockMs,
     kit::{chatfid::RunTurn, fidelity::PanelComment},
 };
+#[cfg(oxyn_pro)]
 use oxyn_dioxus::{
-    AgentCommentThread, AgentRunPanel, AiComposer, ChatComposer, CommentsPanel, MenuModel,
-    ModelMenu, ModelPickerMenu, RunControls, ThreadNote,
+    AgentCommentThread, AiComposer, CommentsPanel, MenuModel, ModelMenu, RunControls, ThreadNote,
 };
+use oxyn_dioxus::{AgentRunPanel, ChatComposer, ModelPickerMenu};
 
 use super::{Code, mk, sel, tog, var};
 use crate::{Demo, Vals};
@@ -22,6 +24,7 @@ fn status(msg: Signal<String>) -> Element {
 
 fn chat_composer(v: &Vals, now: ClockMs) -> Element {
     let mut msg = use_signal(String::new);
+    #[cfg(oxyn_pro)]
     if v.s("kind") == "oxyn" {
         return rsx! {
             div { style: "width:100%;display:flex;flex-direction:column;align-items:center;gap:8px;padding:40px 0 60px",
@@ -80,112 +83,6 @@ fn chat_composer_code(v: &Vals) -> String {
         .done()
 }
 
-// ---------- comment thread ----------
-
-fn notes() -> Vec<ThreadNote> {
-    vec![
-        ThreadNote::person(
-            "Mara Lind",
-            0,
-            12,
-            "/Edit Rename every “customers” to “members” on the pricing page.",
-        ),
-        ThreadNote::agent(
-            "Atlas",
-            10,
-            "Edit completed",
-            &[
-                "Renamed 12 mentions in 3 sections",
-                "Kept “customer support” as it is",
-                "Left the legal pages untouched",
-            ],
-        ),
-    ]
-}
-
-fn comment_thread(v: &Vals, now: ClockMs) -> Element {
-    let mut msg = use_signal(String::new);
-    rsx! {
-        div { style: "width:440px;max-width:100%;display:flex;flex-direction:column;align-items:center;gap:8px",
-            AgentCommentThread { notes: notes(), now, open: v.b("open"), avatars: v.string("avatars"),
-                answer: if v.b("answer") { "Done – I also updated the meta description.".to_string() } else { String::new() },
-                on_reply: move |t: String| msg.set(format!("onReply({t:?})")),
-                on_close: move |_| msg.set("onClose()".into()),
-            }
-            {status(msg)}
-        }
-    }
-}
-
-fn comment_thread_code(_: &Vals) -> String {
-    Code::new("AgentCommentThread")
-        .raw("notes", "thread.notes()")
-        .raw("now", "clock.now()")
-        .raw("on_reply", "move |text| api.reply(text)")
-        .raw("on_close", "move |_| close()")
-        .done()
-}
-
-// ---------- comments panel ----------
-
-fn comments() -> Vec<PanelComment> {
-    vec![
-        PanelComment::new(
-            1,
-            "Mara Lind",
-            0,
-            10,
-            "/Edit Rename every “customers” to “members” on the pricing page.",
-        ),
-        PanelComment::new(
-            2,
-            "Theo Marsh",
-            1,
-            26,
-            "/Edit Shorten every FAQ answer to two sentences.",
-        ),
-        PanelComment::new(
-            3,
-            "Priya Sen",
-            2,
-            34,
-            "Can we keep the old plan names for existing members?",
-        ),
-        PanelComment::new(
-            4,
-            "Noor Ali",
-            4,
-            52,
-            "The hero image finally looks right on mobile.",
-        ),
-        PanelComment::new(5, "Ines Duarte", 5, 61, "Can we ship this before Friday?"),
-    ]
-}
-
-fn comments_panel(v: &Vals, now: ClockMs) -> Element {
-    let mut msg = use_signal(String::new);
-    rsx! {
-        div { style: "width:420px;max-width:100%;display:flex;flex-direction:column;align-items:center;gap:8px;padding-bottom:40px",
-            CommentsPanel { key: "{v.s(\"tab\")}", comments: comments(), now, tab: v.string("tab"), avatars: v.string("avatars"), max_list: if v.b("cap") { 330.0 } else { 0.0 },
-                on_run_edit: move |id: u32| msg.set(format!("onRunEdit({id})")),
-                on_add: move |t: String| msg.set(format!("onAdd({t:?})")),
-                on_close: move |_| msg.set("onClose()".into()),
-            }
-            {status(msg)}
-        }
-    }
-}
-
-fn comments_panel_code(v: &Vals) -> String {
-    Code::new("CommentsPanel")
-        .raw("comments", "feed.comments()")
-        .s("tab", v.s("tab"), "all")
-        .raw("now", "clock.now()")
-        .raw("on_run_edit", "move |id| api.run_edit(id)")
-        .raw("on_add", "move |text| api.add(text)")
-        .done()
-}
-
 /// The plan #32 demos (chunk 1, then chunk 2).
 pub(crate) fn demos() -> Vec<Demo> {
     let mut v = demos1();
@@ -195,269 +92,122 @@ pub(crate) fn demos() -> Vec<Demo> {
 
 /// Chunk 1 demos: Chat Composer, Comment Thread, Comments Panel.
 pub(crate) fn demos1() -> Vec<Demo> {
-    vec![
-        Demo {
-            controls: vec![
-                sel("kind", "Component", &["standard", "oxyn"], "standard"),
-                sel("style", "Style", &["clean", "classic"], "clean"),
-                sel("approval", "Approval", &["ask", "auto", "full"], "ask"),
-                tog("tray", "Folder and apps tray", true),
-                tog("attach", "Start with attachments", false),
-                tog("recording", "Start recording", false),
-                sel(
-                    "open",
-                    "Open menu",
-                    &["none", "plus", "approval", "model", "folder", "apps"],
-                    "none",
-                ),
-            ],
-            variants: vec![
-                var(
-                    "default",
-                    "Clean: one continuous container with the tray under a hairline; type, pick approval and model, dictate, connect apps.",
-                    &[],
-                ),
-                var(
-                    "classic",
-                    "Classic style: the writing card inset on a darker band, the tray on the band.",
-                    &[("style", "classic")],
-                ),
-                var(
-                    "unrestricted",
-                    "Full access picked: the orange Unrestricted access chip.",
-                    &[("approval", "full")],
-                ),
-                var(
-                    "recording",
-                    "Recording: sixteen blue capsules resting as dots and rising with the voice, words arriving in grey, ✕ discards and ✓ keeps them.",
-                    &[("recording", "true")],
-                ),
-                var(
-                    "attachments",
-                    "Oxyn extra: attachment chips (PDF, image thumbnail, spreadsheet) above the field.",
-                    &[("attach", "true")],
-                ),
-                var(
-                    "plus-menu",
-                    "The plus menu: a capped, scrolling list – Files and folders, Attach Claude, Work in a folder, Goal, Plan mode, Record a skill, Draw, then Plugins: Documents, PDF.",
-                    &[("open", "plus")],
-                ),
-                var(
-                    "models",
-                    "The model menu with coloured brand marks, capped at six rows with a thin scroll.",
-                    &[("open", "model")],
-                ),
-                var(
-                    "approvals-menu",
-                    "How should actions be approved? Request approval, Approve for me, Full access.",
-                    &[("open", "approval")],
-                ),
-                var(
-                    "in-chat",
-                    "Once a chat has started: no tray, the apps move into the plus menu.",
-                    &[("tray", "false")],
-                ),
-                var(
-                    "oxyn-ai-composer",
-                    "Extended: the AI composer with / commands and @ mentions.",
-                    &[("kind", "oxyn")],
-                ),
-            ],
-            render: chat_composer,
-            code: chat_composer_code,
-            keyboard: vec![
-                ("Enter", "Send"),
-                ("Shift + Enter", "New line"),
-                (
-                    "Enter / Space / ↓",
-                    "Open the menu of the focused button (plus, approval, model, folder, apps)",
-                ),
-                ("Esc", "Close the menu, or discard a recording"),
-                (
-                    "Tab",
-                    "Move on (closes nothing silently: menus close on pick or Esc)",
-                ),
-            ],
-            a11y: vec![
-                "Plus is a menu (Plan mode a menuitemcheckbox); approval, model and folder are listboxes; apps are menuitemcheckboxes; every trigger carries aria-expanded.",
-                "A polite live region announces modes, models, attachments, recording and sends.",
-                "Clicking anywhere on the card focuses the field.",
-            ],
-            responsive: vec![
-                "Fills its container up to 680 px; under 460 px the plus menu drops its hints; under 380 px the approval chip shows its icon only.",
-            ],
-            height: 600,
-            live: true,
-            ..mk(
-                "chat-composer",
-                "Chat composer",
-                "composer",
-                "Prompt composer with model picker, voice input, app connections and approval request: a scrolling plus menu with Plugins, the orange Unrestricted access chip, recording with a dotted level meter, and a tray with a folder picker and Connect apps.",
-                "ChatComposer, FileTypeIcon",
-                "ChatComposerEl",
-                "chat-composer",
-                "kit/fidelity.rs",
-            )
-        },
-        Demo {
-            controls: vec![
-                tog("open", "Details open", false),
-                tog("answer", "Agent answers replies", true),
-                sel("avatars", "Avatars", &["photo", "drawn"], "photo"),
-            ],
-            variants: vec![
-                var(
-                    "default",
-                    "Reply, or ask @Atlas: your reply lands as just now, then Atlas thinks and answers.",
-                    &[],
-                ),
-                var(
-                    "details",
-                    "Edit completed folded open.",
-                    &[("open", "true")],
-                ),
-                var(
-                    "people-only",
-                    "The agent does not answer replies.",
-                    &[("answer", "false")],
-                ),
-                var(
-                    "drawn-avatars",
-                    "Oxyn extra: illustrated portraits instead of photos.",
-                    &[("avatars", "drawn")],
-                ),
-            ],
-            render: comment_thread,
-            code: comment_thread_code,
-            keyboard: vec![
-                ("Enter", "Send the reply"),
-                ("Tab", "Reach the status line to fold its details open"),
-            ],
-            a11y: vec![
-                "Status lines are buttons with aria-expanded; the thread is a polite log that announces new replies.",
-            ],
-            responsive: vec!["Fills its container up to 420 px."],
-            height: 520,
-            live: true,
-            ..mk(
-                "comment-thread",
-                "Comment thread",
-                "chat",
-                "One comment with replies – an assistant reports what it did, folds open details and answers @mentions.",
-                "AgentCommentThread, PhotoAvatar, AgentOrb",
-                "AgentCommentThreadEl",
-                "comment-thread",
-                "kit/fidelity.rs",
-            )
-        },
-        Demo {
-            controls: vec![
-                sel("tab", "Tab", &["all", "questions", "edits"], "all"),
-                sel("avatars", "Avatars", &["photo", "drawn"], "photo"),
-                tog("cap", "List scrolls inside a height cap", true),
-            ],
-            variants: vec![
-                var(
-                    "all",
-                    "Run edit, resolve, sort, and add a comment or /edit.",
-                    &[],
-                ),
-                var(
-                    "edits",
-                    "The Edits tab: runnable /edit comments.",
-                    &[("tab", "edits")],
-                ),
-                var("questions", "The Questions tab.", &[("tab", "questions")]),
-                var(
-                    "drawn-avatars",
-                    "Oxyn extra: illustrated portraits, the list at full height.",
-                    &[("avatars", "drawn"), ("cap", "false")],
-                ),
-            ],
-            render: comments_panel,
-            code: comments_panel_code,
-            keyboard: vec![
-                ("Tab", "Tabs, sort, comments, composer"),
-                ("Enter", "Send the comment"),
-            ],
-            a11y: vec![
-                "Filters are tabs, sorting is a menu of radio items, Resolve is a toggle button; the list announces new comments politely.",
-            ],
-            responsive: vec![
-                "Fills its container up to 400 px; the list scrolls inside a 330 px cap with a thin pill thumb while the header, tabs and composer stay put.",
-            ],
-            height: 600,
-            live: true,
-            ..mk(
-                "comments-panel",
-                "Comments panel",
-                "chat",
-                "Comment feed with filters, runnable /edit commands, resolve and a composer.",
-                "CommentsPanel, PhotoAvatar",
-                "CommentsPanelEl",
-                "comments-panel",
-                "kit/fidelity.rs",
-            )
-        },
-    ]
+    #[allow(unused_mut)]
+    let mut v = vec![Demo {
+        controls: vec![
+            sel("kind", "Component", &["standard", "oxyn"], "standard"),
+            sel("style", "Style", &["clean", "classic"], "clean"),
+            sel("approval", "Approval", &["ask", "auto", "full"], "ask"),
+            tog("tray", "Folder and apps tray", true),
+            tog("attach", "Start with attachments", false),
+            tog("recording", "Start recording", false),
+            sel(
+                "open",
+                "Open menu",
+                &["none", "plus", "approval", "model", "folder", "apps"],
+                "none",
+            ),
+        ],
+        variants: vec![
+            var(
+                "default",
+                "Clean: one continuous container with the tray under a hairline; type, pick approval and model, dictate, connect apps.",
+                &[],
+            ),
+            var(
+                "classic",
+                "Classic style: the writing card inset on a darker band, the tray on the band.",
+                &[("style", "classic")],
+            ),
+            var(
+                "unrestricted",
+                "Full access picked: the orange Unrestricted access chip.",
+                &[("approval", "full")],
+            ),
+            var(
+                "recording",
+                "Recording: sixteen blue capsules resting as dots and rising with the voice, words arriving in grey, ✕ discards and ✓ keeps them.",
+                &[("recording", "true")],
+            ),
+            var(
+                "attachments",
+                "Oxyn extra: attachment chips (PDF, image thumbnail, spreadsheet) above the field.",
+                &[("attach", "true")],
+            ),
+            var(
+                "plus-menu",
+                "The plus menu: a capped, scrolling list – Files and folders, Attach Claude, Work in a folder, Goal, Plan mode, Record a skill, Draw, then Plugins: Documents, PDF.",
+                &[("open", "plus")],
+            ),
+            var(
+                "models",
+                "The model menu with coloured brand marks, capped at six rows with a thin scroll.",
+                &[("open", "model")],
+            ),
+            var(
+                "approvals-menu",
+                "How should actions be approved? Request approval, Approve for me, Full access.",
+                &[("open", "approval")],
+            ),
+            var(
+                "in-chat",
+                "Once a chat has started: no tray, the apps move into the plus menu.",
+                &[("tray", "false")],
+            ),
+            var(
+                "oxyn-ai-composer",
+                "Extended: the AI composer with / commands and @ mentions.",
+                &[("kind", "oxyn")],
+            ),
+        ],
+        render: chat_composer,
+        code: chat_composer_code,
+        keyboard: vec![
+            ("Enter", "Send"),
+            ("Shift + Enter", "New line"),
+            (
+                "Enter / Space / ↓",
+                "Open the menu of the focused button (plus, approval, model, folder, apps)",
+            ),
+            ("Esc", "Close the menu, or discard a recording"),
+            (
+                "Tab",
+                "Move on (closes nothing silently: menus close on pick or Esc)",
+            ),
+        ],
+        a11y: vec![
+            "Plus is a menu (Plan mode a menuitemcheckbox); approval, model and folder are listboxes; apps are menuitemcheckboxes; every trigger carries aria-expanded.",
+            "A polite live region announces modes, models, attachments, recording and sends.",
+            "Clicking anywhere on the card focuses the field.",
+        ],
+        responsive: vec![
+            "Fills its container up to 680 px; under 460 px the plus menu drops its hints; under 380 px the approval chip shows its icon only.",
+        ],
+        height: 600,
+        live: true,
+        ..mk(
+            "chat-composer",
+            "Chat composer",
+            "composer",
+            "Prompt composer with model picker, voice input, app connections and approval request: a scrolling plus menu with Plugins, the orange Unrestricted access chip, recording with a dotted level meter, and a tray with a folder picker and Connect apps.",
+            "ChatComposer, FileTypeIcon",
+            "ChatComposerEl",
+            "chat-composer",
+            "kit/fidelity.rs",
+        )
+    }];
+    #[cfg(oxyn_pro)]
+    v.extend(pro::demos1());
+    super::in_order(&mut v, &ORDER_DEMOS1);
+    v
 }
 
-// ---------- model picker (affectUI) and the Oxyn model menu ----------
-
-fn menu_models() -> Vec<MenuModel> {
-    let m = |id: &str,
-             name: &str,
-             d: &str,
-             s: Option<u8>,
-             q: Option<u8>,
-             c: Option<u8>,
-             l: Option<u32>,
-             p: Option<f64>| MenuModel {
-        id: id.into(),
-        name: name.into(),
-        description: d.into(),
-        speed: s,
-        quality: q,
-        cost: c,
-        latency_ms: l,
-        price_per_m: p,
-    };
-    vec![
-        m(
-            "auto",
-            "Auto",
-            "Routes each message to the best model",
-            None,
-            None,
-            None,
-            None,
-            None,
-        ),
-        m(
-            "opus",
-            "Opus 5.5",
-            "Hardest problems and long agent runs",
-            Some(2),
-            Some(5),
-            Some(5),
-            Some(1400),
-            Some(15.0),
-        ),
-        m(
-            "sonnet",
-            "Sonnet 5.5",
-            "Everyday coding and writing",
-            Some(4),
-            Some(4),
-            Some(3),
-            Some(620),
-            Some(3.0),
-        ),
-    ]
-}
+/// Page order of this file's demos (free and Pro).
+const ORDER_DEMOS1: [&str; 3] = ["chat-composer", "comment-thread", "comments-panel"];
 
 fn model_picker(v: &Vals, _: ClockMs) -> Element {
     let mut msg = use_signal(String::new);
+    #[cfg(oxyn_pro)]
     if v.s("kind") == "oxyn" {
         return rsx! {
             div { style: "width:362px;max-width:100%;min-height:440px;display:flex;flex-direction:column;gap:6px;padding-top:24px",
@@ -536,6 +286,7 @@ fn run_controls(v: &Vals, now: ClockMs) -> Element {
             format!("on{a}({t:?})")
         })
     };
+    #[cfg(oxyn_pro)]
     if v.s("kind") == "oxyn" {
         let perm = if v.s("permission") == "auto" {
             "edits".to_string()
@@ -758,3 +509,10 @@ pub(crate) fn demos2() -> Vec<Demo> {
         },
     ]
 }
+
+// Oxyn Pro demos of this file (private repo ismailqureshi72/oxyn-pro; overlaid by CI).
+#[cfg(oxyn_pro)]
+#[rustfmt::skip]
+mod pro;
+#[cfg(oxyn_pro)]
+use pro::menu_models;

@@ -1,4 +1,5 @@
 //! `ToolCallRow` (`tool-call.md`) and `ToolStack` (`tools.md` §3, §6.1).
+#![cfg_attr(not(oxyn_pro), allow(dead_code, unused_imports))]
 
 use std::collections::BTreeSet;
 use std::time::Duration;
@@ -189,138 +190,10 @@ pub fn ToolCallRow(
     }
 }
 
-/// A turn's tool calls, grouped (§3) at a density (§4.2).
-#[component]
-pub fn ToolStack(
-    /// The turn's calls.
-    calls: Vec<ToolCall>,
-    /// Transcript order with breaks; empty means all calls in order, no breaks.
-    #[props(default)]
-    entries: Vec<Entry>,
-    /// Shared clock.
-    now: ClockMs,
-    /// `transcript`, `worked-for` or `terminal`.
-    #[props(default = "transcript".to_string())]
-    variant: String,
-    /// `hidden`, `compact`, `normal` or `verbose`.
-    #[props(default = "normal".to_string())]
-    density: String,
-    /// The turn ended after this much work (folds `worked-for`).
-    #[props(default)]
-    turn_done: Option<Duration>,
-    /// Row variant (`row`, `card`, `minimal`; `terminal` follows the stack).
-    #[props(default = "row".to_string())]
-    row: String,
-    /// Retry / Stop / Connect.
-    #[props(default)]
-    on_action: EventHandler<(String, RowAction)>,
-) -> Element {
-    let mut open = use_signal(BTreeSet::<String>::new);
-    let v = ToolStackVariant::ALL
-        .into_iter()
-        .find(|x| x.id() == variant)
-        .unwrap_or_default();
-    let d = match density.as_str() {
-        "hidden" => ToolDensity::Hidden,
-        "compact" => ToolDensity::Compact,
-        "verbose" => ToolDensity::Verbose,
-        _ => ToolDensity::Normal,
-    };
-    let entries = if entries.is_empty() {
-        (0..calls.len()).map(Entry::Call).collect()
-    } else {
-        entries
-    };
-    let items = layout(&calls, &entries, d, v, turn_done, VerbPack::neutral(), now);
-    let row_v = if v == ToolStackVariant::Terminal {
-        "terminal".to_string()
-    } else {
-        row
-    };
-    let verbose = d == ToolDensity::Verbose;
-    let mut toggle = move |k: String| {
-        let mut s = open.write();
-        if !s.remove(&k) {
-            s.insert(k);
-        }
-    };
-    let row_el = |i: usize| {
-        let c = calls[i].clone();
-        let exp = if verbose {
-            Some(true)
-        } else {
-            open().contains(&c.id).then_some(true)
-        };
-        let rv = row_v.clone();
-        rsx! { ToolCallRow { key: "{c.id}", call: c, now, variant: rv, expanded: exp, on_toggle: toggle, on_action } }
-    };
-    rsx! {
-        div { class: "oxyn-ts {v.id()}", role: "list",
-            for (n, item) in items.into_iter().enumerate() {
-                match item {
-                    StackItem::Call(i) => row_el(i),
-                    StackItem::Progress(t) => rsx! { div { key: "p{n}", class: "progress-line", span { class: "ld" } span { class: "shim", "{t}" } } },
-                    StackItem::Fold { label, pinned, calls: folded } => {
-                        let k = format!("fold{n}");
-                        let is_open = open().contains(&k);
-                        let k2 = k.clone();
-                        rsx! {
-                            div { key: "{k}", class: "group fold",
-                                button { class: "gh", r#type: "button", "aria-expanded": "{is_open}", onclick: move |_| toggle(k2.clone()),
-                                    span { class: "gl", Icon { name: "clock", size: 14.0 } }
-                                    span { class: "vb", "{label}" }
-                                    span { class: "sp" }
-                                    span { class: "chev", Icon { name: "chevron", size: 12.0 } }
-                                }
-                                if is_open { div { class: "kids", for i in folded { {row_el(i)} } } }
-                                else { for i in pinned { {row_el(i)} } }
-                            }
-                        }
-                    }
-                    StackItem::Group { calls: kids, state, label, tone: t, duration, pinned, .. } => {
-                        let k = format!("g{}", calls[kids[0]].id);
-                        let is_open = open().contains(&k) || verbose;
-                        let k2 = k.clone();
-                        let gl = match state {
-                            GroupState::Live => rsx! { span { class: "ld" } },
-                            GroupState::Waiting => rsx! { Icon { name: "hand", size: 14.0 } },
-                            GroupState::SettledWithErrors => rsx! { Icon { name: "x", size: 14.0, stroke: 2.0 } },
-                            GroupState::Cancelled => rsx! { Icon { name: "stop", size: 11.0 } },
-                            GroupState::Settled => rsx! { Icon { name: calls[kids[0]].kind.icon(), size: 14.0 } },
-                        };
-                        let n_more = kids.len() - pinned.len();
-                        if v == ToolStackVariant::Terminal {
-                            rsx! {
-                                div { key: "{k}", class: "group term t-{tone(t)}",
-                                    div { class: "tl", span { class: "b", "•" } span { class: "vb", "{label}" } if let Some(d) = duration.clone() { span { class: "du", " · {d}" } } }
-                                    for i in kids.iter().take(5) { div { class: "tc-sub", "└ {oxyn_core::run::call_label(&calls[*i], VerbPack::neutral())}" } }
-                                    if kids.len() > 5 { div { class: "tc-sub", "  … {kids.len() - 5} more" } }
-                                }
-                            }
-                        } else {
-                            rsx! {
-                                div { key: "{k}", class: "group t-{tone(t)}", role: "listitem",
-                                    button { class: "gh", r#type: "button", "aria-expanded": "{is_open}", onclick: move |_| toggle(k2.clone()),
-                                        span { class: "gl", {gl} }
-                                        span { class: if state == GroupState::Live { "vb shim" } else { "vb" }, "{label}" }
-                                        span { class: "sp" }
-                                        if let Some(d) = duration { span { class: "du", "{d}" } }
-                                        span { class: "chev", Icon { name: "chevron", size: 12.0 } }
-                                    }
-                                    if is_open {
-                                        div { class: "kids", role: "list", for i in kids.clone() { {row_el(i)} } }
-                                    } else if !pinned.is_empty() {
-                                        div { class: "kids", role: "list",
-                                            for i in pinned.clone() { {row_el(i)} }
-                                            if n_more > 0 { div { class: "more", "{n_more} more" } }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
+// Oxyn Pro part of this module (private repo ismailqureshi72/oxyn-pro; overlaid by CI).
+#[cfg(oxyn_pro)]
+#[rustfmt::skip]
+mod pro;
+#[cfg(oxyn_pro)]
+#[allow(unused_imports)]
+pub use pro::*;

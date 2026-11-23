@@ -33,12 +33,13 @@ pub use context::{ContextMeterChip, ContextMeterChipProps};
 pub use effort::{EffortChip, EffortChipProps, tier_color};
 pub use icons::{Icon, IconProps};
 pub use model::{ModelPicker, ModelPickerProps};
+#[cfg(oxyn_pro)]
 pub use parts::{
     AgentSteering, AgentSteeringProps, DictationButton, DictationButtonProps, MentionInput,
-    MentionInputProps, ModeSwitch, ModeSwitchProps, PARTS_CSS, PermissionSelector,
-    PermissionSelectorProps, QueueStack, QueueStackProps, ToolsMenu, ToolsMenuProps, VoiceRecorder,
-    VoiceRecorderProps,
+    MentionInputProps, ModeSwitch, ModeSwitchProps, PermissionSelector, PermissionSelectorProps,
+    ToolsMenu, ToolsMenuProps,
 };
+pub use parts::{PARTS_CSS, QueueStack, QueueStackProps, VoiceRecorder, VoiceRecorderProps};
 pub use send::{SendButton, SendButtonProps};
 
 use crate::{ElapsedTimer, GlyphLoader, VerbCycler};

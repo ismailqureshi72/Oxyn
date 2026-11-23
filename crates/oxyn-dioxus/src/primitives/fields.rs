@@ -5,6 +5,7 @@
 //! these components hold the model in a signal, map DOM events onto it and draw with
 //! `PRIMITIVES_CSS`. Timers (an error clearing, a save landing) run on the shared `oxyn-timer`
 //! animation so they need no clock.
+#![cfg_attr(not(oxyn_pro), allow(dead_code, unused_imports))]
 
 use dioxus::prelude::*;
 use oxyn_core::{
@@ -444,97 +445,6 @@ pub fn Combobox(
     }
 }
 
-/// Multi-select: several values in a compact field — chips with a rolling `+N`, a listbox with
-/// drawn checks, a Clear button. Oxyn plus: Select all, a max with a reason, a searchable mode.
-#[component]
-pub fn MultiSelect(
-    /// Label (also names the listbox).
-    label: String,
-    /// Options.
-    options: Vec<ComboOption>,
-    /// Starting values.
-    #[props(default)]
-    value: Vec<String>,
-    /// Placeholder.
-    #[props(default = "Select options".to_string())]
-    placeholder: String,
-    /// Helper copy.
-    #[props(default)]
-    description: Option<String>,
-    /// Chips before `+N`.
-    #[props(default = 2)]
-    max_visible: usize,
-    /// Select all row.
-    #[props(default)]
-    select_all: bool,
-    /// Max picks.
-    #[props(default)]
-    max_selected: Option<usize>,
-    /// Start open (review sheets).
-    #[props(default)]
-    open: bool,
-    /// Disabled.
-    #[props(default)]
-    disabled: bool,
-    /// Changed.
-    #[props(default)]
-    on_change: EventHandler<Vec<String>>,
-) -> Element {
-    let mut m = use_signal(|| {
-        let v: Vec<&str> = value.iter().map(String::as_str).collect();
-        let mut c = ComboModel::multi_select(options.clone(), &v);
-        c.max_visible = Some(max_visible);
-        c.select_all = select_all;
-        c.max_selected = max_selected.map(|n| (n, format!("Pick up to {n}")));
-        c.disabled = disabled;
-        if open {
-            c.open_list();
-        }
-        c
-    });
-    let id = uid("ms", &label);
-    let st = m.read().clone();
-    let (chips, extra) = st.chips();
-    rsx! {
-        div { class: cls(&["oxyn-field oxyn-combo oxyn-multi", if st.open { "open" } else { "" }, if disabled { "disabled" } else { "" }]),
-            label { class: "flabel", id: "{id}-l", "{label}" }
-            div { class: "anchor",
-                div { class: "control trig",
-                    button { id: "{id}", class: "tb", r#type: "button", disabled,
-                        "aria-haspopup": "listbox", "aria-expanded": "{st.open}", "aria-controls": "{id}-list",
-                        "aria-labelledby": "{id}-l {id}-v",
-                        "aria-activedescendant": if let (true, Some(a)) = (st.open, st.active) { "{id}-r{a}" },
-                        onclick: move |_| { let o = m.peek().open; if o { m.write().close() } else { m.write().open_list() } },
-                        onblur: move |_| m.write().close(),
-                        onkeydown: move |e: KeyboardEvent| {
-                            if let Some(k) = combo_key(&e.key(), false) {
-                                if k != ComboKey::Tab { e.prevent_default(); }
-                                let r = m.write().key(k, ClockMs(0)); if let ComboEvent::Changed(v) = r { on_change.call(v) }
-                            }
-                        },
-                        span { class: "sr", id: "{id}-v", "{st.summary(&placeholder)}" }
-                        span { class: "chips", "aria-hidden": "true",
-                            if chips.is_empty() { span { class: "ph", "{placeholder}" } }
-                            for o in chips.iter() { span { key: "{o.value}", class: "chip grow", span { class: "ct", "{o.label}" } } }
-                            if extra > 0 { span { class: "chip more roll", key: "more-{extra}", "+{extra}" } }
-                        }
-                    }
-                    if !st.value.is_empty() && !disabled {
-                        button { class: "act", r#type: "button", "aria-label": "Clear selections",
-                            onclick: move |_| { let r = m.write().clear(ClockMs(0)); if let ComboEvent::Changed(v) = r { on_change.call(v) } },
-                            Icon { name: "x", size: 12.0, stroke: 2.0 }
-                        }
-                    }
-                    span { class: "chev", Icon { name: "chevron", size: 12.0, stroke: 2.0 } }
-                }
-                if st.open { ComboList { m, id: id.clone(), on_change, on_create: move |_| {} } }
-            }
-            if let Some(d) = description { div { class: "foot", div { class: "msg", "{d}" } } }
-            span { class: "sr", role: "status", "aria-live": "polite", "{st.announce}" }
-        }
-    }
-}
-
 // ---------------------------------------------------------------------------------------------
 // OTP
 
@@ -728,103 +638,6 @@ fn EyeSlash(revealed: bool) -> Element {
             circle { cx: "12", cy: "12", r: "2.8" }
             path { class: "mask", d: "M4 4l16 16" }
             path { class: "slash", d: "M4 4l16 16", path_length: "1" }
-        }
-    }
-}
-
-/// Password field: a password input whose reveal button slashes the eye with a drawn line instead
-/// of swapping icons; the value resolves through a short reveal on each change. Oxyn plus: a Caps
-/// Lock warning, reveal-for-N-seconds, and a paste-from-vault button.
-#[component]
-pub fn PasswordField(
-    /// Label.
-    label: String,
-    /// Helper copy (linked through aria-describedby).
-    #[props(default)]
-    description: Option<String>,
-    /// Starting value.
-    #[props(default)]
-    value: String,
-    /// Placeholder.
-    #[props(default)]
-    placeholder: Option<String>,
-    /// `current-password` · `new-password`.
-    #[props(default = "current-password".to_string())]
-    autocomplete: String,
-    /// Form field name.
-    #[props(default)]
-    name: Option<String>,
-    /// Required.
-    #[props(default)]
-    required: bool,
-    /// Error.
-    #[props(default)]
-    error: Option<String>,
-    /// Toggle name when hidden.
-    #[props(default = "Show password".to_string())]
-    show_label: String,
-    /// Toggle name when shown.
-    #[props(default = "Hide password".to_string())]
-    hide_label: String,
-    /// Oxyn plus: warn when Caps Lock is on.
-    #[props(default = true)]
-    caps_warning: bool,
-    /// Oxyn plus: hide again after this many seconds.
-    #[props(default)]
-    reveal_for: Option<u32>,
-    /// Oxyn plus: a "Use saved password" button (the host fills from its vault).
-    #[props(default)]
-    vault: bool,
-    /// Disabled.
-    #[props(default)]
-    disabled: bool,
-    /// Changed.
-    #[props(default)]
-    on_input: EventHandler<String>,
-    /// Vault button pressed.
-    #[props(default)]
-    on_vault: EventHandler<()>,
-) -> Element {
-    let mut v = use_signal(|| value.clone());
-    let mut shown = use_signal(|| false);
-    let mut toggled = use_signal(|| false);
-    let mut caps = use_signal(|| false);
-    let id = uid("pw", &label);
-    let on = *shown.read();
-    let desc = error.clone().or(description.clone());
-    rsx! {
-        div { class: cls(&["oxyn-field oxyn-pw", if error.is_some() { "invalid" } else { "" }, if disabled { "disabled" } else { "" }]),
-            label { class: "flabel", r#for: "{id}", "{label}" }
-            div { class: "control",
-                input { id: "{id}", class: cls(&["in", if *toggled.read() { "resolve" } else { "" }]), key: "{on}",
-                    r#type: if on { "text" } else { "password" }, value: "{v}", disabled, required,
-                    name: if let Some(n) = &name { "{n}" }, autocomplete: "{autocomplete}",
-                    placeholder: if let Some(p) = &placeholder { "{p}" },
-                    spellcheck: "false", "aria-invalid": "{error.is_some()}",
-                    "aria-describedby": if desc.is_some() || *caps.read() { "{id}-m" },
-                    oninput: move |e: FormEvent| { v.set(e.value()); on_input.call(e.value()) },
-                    onkeydown: move |e: KeyboardEvent| {
-                        if let Key::Character(c) = e.key() && let Some(ch) = c.chars().next() && let Some(on) = caps_lock_from(ch, e.modifiers().shift()) { caps.set(on) }
-                        if e.key() == Key::CapsLock { let c = *caps.peek(); caps.set(!c) }
-                    },
-                    onblur: move |_| caps.set(false),
-                }
-                if vault && !disabled {
-                    button { class: "act", r#type: "button", "aria-label": "Use saved password", title: "Use saved password", onclick: move |_| on_vault.call(()), Icon { name: "key", size: 13.0 } }
-                }
-                button { class: "act eye-btn", r#type: "button", disabled, "aria-pressed": "{on}", "aria-controls": "{id}",
-                    "aria-label": if on { "{hide_label}" } else { "{show_label}" },
-                    onclick: move |_| { shown.set(!on); toggled.set(true) },
-                    EyeSlash { revealed: on }
-                }
-                if let (true, Some(s)) = (on, reveal_for) { span { class: "oxyn-timer", style: "animation-duration:{s}s", onanimationend: move |_| shown.set(false) } }
-            }
-            div { class: "foot",
-                div { id: "{id}-m", class: if error.is_some() { "msg err" } else { "msg" },
-                    if *caps.read() && caps_warning { span { class: "caps", Icon { name: "up", size: 11.0, stroke: 2.0 } "Caps Lock is on" } }
-                    else if let Some(d) = desc.clone() { span { key: "{d}", "{d}" } }
-                }
-            }
         }
     }
 }
@@ -1260,3 +1073,11 @@ pub fn PhoneInput(
         }
     }
 }
+
+// Oxyn Pro part of this module (private repo ismailqureshi72/oxyn-pro; overlaid by CI).
+#[cfg(oxyn_pro)]
+#[rustfmt::skip]
+mod pro;
+#[cfg(oxyn_pro)]
+#[allow(unused_imports)]
+pub use pro::*;

@@ -16,6 +16,11 @@ env:
   CARGO_TERM_COLOR: always
   RUSTFLAGS: -D warnings
 
+# Oxyn Pro sources live in the private repo ismailqureshi72/oxyn-pro (CONTRIBUTING.md). Jobs that
+# need them overlay it with .github/actions/pro-overlay when secrets.OXYN_PRO_TOKEN is set; fork PRs
+# get no secrets and build the free set. Pushes to main set OXYN_REQUIRE_PRO=1 and fail without it.
+# fmt and clippy-test cover the free (public) build; clippy-test then repeats clippy with Pro.
+
 # Lean on purpose: no upload-artifact, no caches beyond rust-cache. Builds ship via Releases.
 jobs:
   fmt:
@@ -44,6 +49,16 @@ jobs:
         run: cargo run --locked -p oxyn-tokens-gen -- --check
       - name: wasm32 check (core and both renderers)
         run: cargo check --locked --target wasm32-unknown-unknown -p oxyn-core -p oxyn-tokens -p oxyn-registry-schema -p oxyn-codegen -p oxyn-gpui -p oxyn-dioxus
+      - name: Oxyn Pro overlay (skipped without the token), then clippy and tests again
+        uses: ./.github/actions/pro-overlay
+        with:
+          token: ${{ secrets.OXYN_PRO_TOKEN }}
+          require: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') && '1' || '' }}
+      - name: clippy and tests with the Pro sources
+        if: env.OXYN_PRO_MODE == '1'
+        run: |
+          cargo clippy --workspace --all-targets --locked
+          cargo test --workspace --locked
 
   # The native GPUI example (every screen set and agent app as interactive views) is its own
   # workspace so the windowing / wgpu backends stay out of the library's lockfile. Clippy only:
@@ -52,6 +67,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Oxyn Pro overlay (skipped without the token)
+        uses: ./.github/actions/pro-overlay
+        with:
+          token: ${{ secrets.OXYN_PRO_TOKEN }}
+          require: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') && '1' || '' }}
       - uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: "1.99"
@@ -70,8 +90,14 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CARGO_TARGET_DIR: ${{ github.workspace }}/target
+      OXYN_REQUIRE_PRO: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') && '1' || '' }}
     steps:
       - uses: actions/checkout@v4
+      - name: Oxyn Pro overlay (skipped without the token)
+        uses: ./.github/actions/pro-overlay
+        with:
+          token: ${{ secrets.OXYN_PRO_TOKEN }}
+          require: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') && '1' || '' }}
       - uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: "1.99"
@@ -112,6 +138,7 @@ jobs:
           cargo check
           $OXYN diff --registry "$R" composer
       - name: Pro registry against a local mock (login --token, whoami, Pro add with a Pro dependency, cargo check)
+        if: env.OXYN_PRO_MODE == '1'
         run: |
           OXYN=$CARGO_TARGET_DIR/debug/oxyn; ROOT=$PWD; R=http://127.0.0.1:8787/r
           python3 scripts/pro-registry-mock.py "$PWD/site/public" 8787 & sleep 1
@@ -158,8 +185,14 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      OXYN_REQUIRE_PRO: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') && '1' || '' }}
     steps:
       - uses: actions/checkout@v4
+      - name: Oxyn Pro overlay (skipped without the token)
+        uses: ./.github/actions/pro-overlay
+        with:
+          token: ${{ secrets.OXYN_PRO_TOKEN }}
+          require: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') && '1' || '' }}
       - uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: "1.99"
