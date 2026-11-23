@@ -7,7 +7,9 @@
 use std::path::Path;
 
 fn main() {
-    let marker = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../.oxyn-pro");
+    // Read at run time: the compiled build script can be reused for another checkout.
+    let dir = std::env::var("CARGO_MANIFEST_DIR").expect("CARGO_MANIFEST_DIR");
+    let marker = Path::new(&dir).join("../../.oxyn-pro");
     println!("cargo::rustc-check-cfg=cfg(oxyn_pro)");
     println!("cargo::rerun-if-changed={}", marker.display());
     if marker.exists() {
