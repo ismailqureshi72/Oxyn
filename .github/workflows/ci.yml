@@ -88,6 +88,18 @@ jobs:
       - name: registry (site/public/r) from this commit
         run: node scripts/gen.mjs
         working-directory: site
+      # TEMPORARY (#94 split analysis; removed before merge): prints the demo metadata and the
+      # registry item map (no code) so the split can be planned off-runner.
+      - name: split analysis dump (temporary)
+        working-directory: site
+        run: |
+          node -e '
+            const fs=require("fs");const d=JSON.parse(fs.readFileSync("src/generated/demos.json"));
+            const meta={categories:d.categories,demos:d.demos.map(x=>({slug:x.slug,name:x.name,category:x.category,summary:x.summary,dioxus:x.dioxus,gpui:x.gpui,spec:x.spec,source:x.source,keyboard:x.keyboard,a11y:x.a11y,responsive:x.responsive,height:x.height,live:x.live,controls:x.controls,variants:x.variants.map(v=>({name:v.name,note:v.note,set:v.set}))}))};
+            fs.writeFileSync("/tmp/meta.json",JSON.stringify(meta));'
+          cp src/generated/registry-input.json /tmp/ri.json
+          tar -C /tmp -czf /tmp/dump.tgz meta.json ri.json
+          echo "DUMP-BEGIN"; base64 -w 200 /tmp/dump.tgz; echo "DUMP-END"
       - run: cargo build --locked -p oxyn-cli -p oxyn-mcp
       - name: list, search, view; a Pro item exits 2
         run: |
