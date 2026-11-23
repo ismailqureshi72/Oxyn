@@ -250,6 +250,7 @@ pub fn CommandPalette(
 }
 
 #[cfg(test)]
+#[cfg_attr(not(oxyn_pro), allow(unused_imports, dead_code))]
 mod tests {
     use super::*;
 
@@ -259,6 +260,7 @@ mod tests {
         dioxus_ssr::render(&dom)
     }
 
+    #[cfg(oxyn_pro)]
     #[test]
     fn command_components_render() {
         let h = render(|| {
@@ -293,6 +295,7 @@ mod tests {
         assert!(h.contains("Search, Command K") && h.contains(r#"aria-pressed="false""#));
     }
 
+    #[cfg(oxyn_pro)]
     #[test]
     fn control_center_renders() {
         let h = render(|| {
