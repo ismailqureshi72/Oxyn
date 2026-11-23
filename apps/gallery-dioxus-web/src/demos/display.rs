@@ -16,7 +16,9 @@ use oxyn_core::{
 };
 use oxyn_dioxus::{Avatar, AvatarGroup, Badge, Chip};
 #[cfg(oxyn_pro)]
-use oxyn_dioxus::{EmptyState, EntityChip, Kbd, Monogram, NumberTicker, ReactionBar, Separator, ValuePill};
+use oxyn_dioxus::{
+    EmptyState, EntityChip, Kbd, Monogram, NumberTicker, ReactionBar, Separator, ValuePill,
+};
 use oxyn_tokens::ColorRole;
 
 use super::{Code, q, rng, sel, tog, txt, var};
@@ -242,7 +244,8 @@ fn avatar_code(v: &Vals) -> String {
 
 pub(crate) fn demos() -> Vec<Demo> {
     #[allow(unused_mut)]
-    let mut v = vec![        Demo {
+    let mut v = vec![
+        Demo {
             slug: "badge",
             name: "Badge",
             category: "data-display",
@@ -485,7 +488,18 @@ pub(crate) fn demos() -> Vec<Demo> {
 }
 
 /// Page order of this file's demos (free and Pro).
-const ORDER: [&str; 10] = ["badge", "chip", "value-pill", "entity-chip", "avatar", "kbd", "separator", "number-ticker", "reaction-bar", "empty-state"];
+const ORDER: [&str; 10] = [
+    "badge",
+    "chip",
+    "value-pill",
+    "entity-chip",
+    "avatar",
+    "kbd",
+    "separator",
+    "number-ticker",
+    "reaction-bar",
+    "empty-state",
+];
 
 // Oxyn Pro demos of this file (private repo ismailqureshi72/oxyn-pro; overlaid by CI).
 #[cfg(oxyn_pro)]

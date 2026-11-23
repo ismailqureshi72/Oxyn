@@ -11,9 +11,12 @@ use oxyn_core::{
         thread::{ChatMessage, Delivery, Starter},
     },
 };
-use oxyn_dioxus::{ChatThread, MessageBubble, ReasoningBlock, ResponseFeedback, StreamingMarkdown};
 #[cfg(oxyn_pro)]
-use oxyn_dioxus::{AiAnswer, AiChat, ContextCards, DocumentExtraction, RecommendationCard, ResearchRun, SourceCards, StarterPrompts, SupportConversation, ThinkingTraces};
+use oxyn_dioxus::{
+    AiAnswer, AiChat, ContextCards, DocumentExtraction, RecommendationCard, ResearchRun,
+    SourceCards, StarterPrompts, SupportConversation, ThinkingTraces,
+};
+use oxyn_dioxus::{ChatThread, MessageBubble, ReasoningBlock, ResponseFeedback, StreamingMarkdown};
 
 use super::{Code, mk, q, rng, sel, tog, var};
 use crate::{Align, BASE, Demo, Vals};
@@ -191,7 +194,8 @@ fn finished() -> crate::Control {
 /// Chunk-2 demos.
 pub fn demos() -> Vec<Demo> {
     #[allow(unused_mut)]
-    let mut v = vec![        Demo {
+    let mut v = vec![
+        Demo {
             controls: vec![
                 sel(
                     "pace",
@@ -472,7 +476,23 @@ pub fn demos() -> Vec<Demo> {
 }
 
 /// Page order of this file's demos (free and Pro).
-const ORDER: [&str; 15] = ["streaming-markdown", "reasoning-block", "thinking-traces", "source-cards", "ai-answer-oxyn", "response-feedback", "message-bubble", "starter-prompts", "chat-thread", "ai-chat", "document-extraction", "research-run", "support-conversation", "recommendation-card", "context-cards"];
+const ORDER: [&str; 15] = [
+    "streaming-markdown",
+    "reasoning-block",
+    "thinking-traces",
+    "source-cards",
+    "ai-answer-oxyn",
+    "response-feedback",
+    "message-bubble",
+    "starter-prompts",
+    "chat-thread",
+    "ai-chat",
+    "document-extraction",
+    "research-run",
+    "support-conversation",
+    "recommendation-card",
+    "context-cards",
+];
 
 // Oxyn Pro demos of this file (private repo ismailqureshi72/oxyn-pro; overlaid by CI).
 #[cfg(oxyn_pro)]

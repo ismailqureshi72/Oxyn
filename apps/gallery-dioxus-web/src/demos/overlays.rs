@@ -75,80 +75,79 @@ fn menu_code(v: &Vals) -> String {
 
 pub(crate) fn demos() -> Vec<Demo> {
     #[allow(unused_mut)]
-    let mut v = vec![        Demo {
-            slug: "dropdown-menu",
-            name: "Dropdown menu",
-            category: "overlays",
-            summary: "Actions and choices behind any trigger: icons, shortcuts, checks and radios, red items and submenus, a gliding highlight, type-ahead, search and a context-menu mode.",
-            dioxus: "DropdownMenu",
-            gpui: "MenuEl",
-            spec: "dropdown-menu",
-            source: "primitives/overlays.rs",
-            controls: vec![
-                txt("trigger", "Trigger", "Thread"),
-                tog("open", "Open", true),
-                tog("title", "Heading", true),
-                sel("align", "Align", &["start", "end"], "start"),
-                sel(
-                    "density",
-                    "Density",
-                    &["comfortable", "compact"],
-                    "comfortable",
-                ),
-                tog("searchable", "Searchable", false),
-                tog("logos", "Tool logos", false),
-                tog("context", "Context-menu mode", false),
-                tog("empty", "Empty", false),
-            ],
-            variants: vec![
-                var("menu", "Every row type.", &[]),
-                var(
-                    "searchable-compact",
-                    "A filter field, compact rows.",
-                    &[
-                        ("searchable", "true"),
-                        ("density", "compact"),
-                        ("title", "false"),
-                    ],
-                ),
-                var(
-                    "context",
-                    "Opens on right-click.",
-                    &[("context", "true"), ("open", "false")],
-                ),
-                var(
-                    "empty",
-                    "Nothing to show.",
-                    &[("empty", "true"), ("title", "false")],
-                ),
-            ],
-            render: menu,
-            code: menu_code,
-            keyboard: vec![
-                (
-                    "Enter / Space / ↓",
-                    "Open on the first item (↑ opens on the last)",
-                ),
-                ("↑ / ↓, Home / End", "Move"),
-                ("→ / ←", "Open / close a submenu"),
-                ("Type", "Jump to the next item starting with that letter"),
-                ("Enter / Space", "Run, check or pick"),
-                ("Esc / Tab", "Close"),
-                ("Shift+F10 / ContextMenu", "Open in context-menu mode"),
-            ],
-            a11y: vec![
-                "role=menu with menuitem, menuitemcheckbox and menuitemradio rows.",
-                "Disabled items stay readable and are skipped by the keyboard.",
-                "Shortcuts are spelled out for screen readers.",
-            ],
-            responsive: vec![
-                "align end keeps it inside the right edge; compact density for dense apps.",
-            ],
-            height: 460,
-            align: Align::Start,
-            live: false,
-        },
-    ];
+    let mut v = vec![Demo {
+        slug: "dropdown-menu",
+        name: "Dropdown menu",
+        category: "overlays",
+        summary: "Actions and choices behind any trigger: icons, shortcuts, checks and radios, red items and submenus, a gliding highlight, type-ahead, search and a context-menu mode.",
+        dioxus: "DropdownMenu",
+        gpui: "MenuEl",
+        spec: "dropdown-menu",
+        source: "primitives/overlays.rs",
+        controls: vec![
+            txt("trigger", "Trigger", "Thread"),
+            tog("open", "Open", true),
+            tog("title", "Heading", true),
+            sel("align", "Align", &["start", "end"], "start"),
+            sel(
+                "density",
+                "Density",
+                &["comfortable", "compact"],
+                "comfortable",
+            ),
+            tog("searchable", "Searchable", false),
+            tog("logos", "Tool logos", false),
+            tog("context", "Context-menu mode", false),
+            tog("empty", "Empty", false),
+        ],
+        variants: vec![
+            var("menu", "Every row type.", &[]),
+            var(
+                "searchable-compact",
+                "A filter field, compact rows.",
+                &[
+                    ("searchable", "true"),
+                    ("density", "compact"),
+                    ("title", "false"),
+                ],
+            ),
+            var(
+                "context",
+                "Opens on right-click.",
+                &[("context", "true"), ("open", "false")],
+            ),
+            var(
+                "empty",
+                "Nothing to show.",
+                &[("empty", "true"), ("title", "false")],
+            ),
+        ],
+        render: menu,
+        code: menu_code,
+        keyboard: vec![
+            (
+                "Enter / Space / ↓",
+                "Open on the first item (↑ opens on the last)",
+            ),
+            ("↑ / ↓, Home / End", "Move"),
+            ("→ / ←", "Open / close a submenu"),
+            ("Type", "Jump to the next item starting with that letter"),
+            ("Enter / Space", "Run, check or pick"),
+            ("Esc / Tab", "Close"),
+            ("Shift+F10 / ContextMenu", "Open in context-menu mode"),
+        ],
+        a11y: vec![
+            "role=menu with menuitem, menuitemcheckbox and menuitemradio rows.",
+            "Disabled items stay readable and are skipped by the keyboard.",
+            "Shortcuts are spelled out for screen readers.",
+        ],
+        responsive: vec![
+            "align end keeps it inside the right edge; compact density for dense apps.",
+        ],
+        height: 460,
+        align: Align::Start,
+        live: false,
+    }];
     #[cfg(oxyn_pro)]
     v.extend(pro::demos());
     super::in_order(&mut v, &ORDER);

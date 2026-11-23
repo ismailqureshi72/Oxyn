@@ -10,9 +10,9 @@ use oxyn_core::{
         toggle::RadioOption,
     },
 };
-use oxyn_dioxus::{Checkbox, SegmentedControl, Select, Slider, Switch, TextField};
 #[cfg(oxyn_pro)]
 use oxyn_dioxus::RadioGroup;
+use oxyn_dioxus::{Checkbox, SegmentedControl, Select, Slider, Switch, TextField};
 
 use super::{Code, q, rng, sel, tog, txt, var};
 use crate::{Align, Demo, Vals, data};
@@ -423,7 +423,8 @@ fn text_field_code(v: &Vals) -> String {
 
 pub(crate) fn demos() -> Vec<Demo> {
     #[allow(unused_mut)]
-    let mut v = vec![        Demo {
+    let mut v = vec![
+        Demo {
             slug: "switch",
             name: "Switch",
             category: "inputs",
@@ -851,7 +852,15 @@ pub(crate) fn demos() -> Vec<Demo> {
 }
 
 /// Page order of this file's demos (free and Pro).
-const ORDER: [&str; 7] = ["switch", "checkbox", "radio-group", "segmented-control", "select", "slider", "text-field"];
+const ORDER: [&str; 7] = [
+    "switch",
+    "checkbox",
+    "radio-group",
+    "segmented-control",
+    "select",
+    "slider",
+    "text-field",
+];
 
 // Oxyn Pro demos of this file (private repo ismailqureshi72/oxyn-pro; overlaid by CI).
 #[cfg(oxyn_pro)]

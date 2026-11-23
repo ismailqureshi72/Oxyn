@@ -324,11 +324,15 @@ pub fn strip_pro_gates(src: &str) -> (String, BTreeSet<String>) {
         if after_gate && t == "#[rustfmt::skip]" {
             continue;
         }
-        if t.starts_with("#![cfg_attr(not(oxyn_pro)") || t.starts_with("// Oxyn Pro part of this module") {
+        if t.starts_with("#![cfg_attr(not(oxyn_pro)")
+            || t.starts_with("// Oxyn Pro part of this module")
+        {
             continue;
         }
         if after_gate {
-            let decl = t.trim_start_matches("pub(crate) ").trim_start_matches("pub ");
+            let decl = t
+                .trim_start_matches("pub(crate) ")
+                .trim_start_matches("pub ");
             if let Some(name) = decl.strip_prefix("mod ").and_then(|r| r.strip_suffix(';')) {
                 gated.insert(name.trim().to_string());
             }
@@ -503,7 +507,10 @@ pub(crate) mod tests {
             out,
             "//! Doc.\nmod a;\nmod pro;\n#[allow(unused_imports)]\npub use pro::*;\n#[rustfmt::skip]\nfn keep() {}\n"
         );
-        assert_eq!(gated.into_iter().collect::<Vec<_>>(), vec!["pro".to_string()]);
+        assert_eq!(
+            gated.into_iter().collect::<Vec<_>>(),
+            vec!["pro".to_string()]
+        );
     }
 
     #[test]

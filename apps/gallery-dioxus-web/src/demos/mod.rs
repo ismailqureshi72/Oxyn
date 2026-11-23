@@ -322,7 +322,12 @@ pub fn catalog() -> Vec<Demo> {
 
 /// Sorts `v` into the page order `order` (a file's demos come back from its free and Pro parts).
 pub(crate) fn in_order(v: &mut [Demo], order: &[&str]) {
-    v.sort_by_key(|d| order.iter().position(|s| *s == d.slug).unwrap_or(usize::MAX));
+    v.sort_by_key(|d| {
+        order
+            .iter()
+            .position(|s| *s == d.slug)
+            .unwrap_or(usize::MAX)
+    });
 }
 
 /// An earlier Oxyn demo by slug, shown inside a fidelity page as its "Oxyn extra".

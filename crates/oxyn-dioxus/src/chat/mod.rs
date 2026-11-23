@@ -33,10 +33,10 @@ use oxyn_core::{
     },
 };
 
-use crate::{CodeBlock, CopyButton};
-use crate::composer::icons::Icon;
 #[cfg(oxyn_pro)]
 use crate::Rating;
+use crate::composer::icons::Icon;
+use crate::{CodeBlock, CopyButton};
 
 /// Stylesheet for the chat components.
 pub const CHAT_CSS: &str = include_str!("chat.css");

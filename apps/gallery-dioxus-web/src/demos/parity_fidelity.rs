@@ -7,9 +7,11 @@ use oxyn_core::{
     ClockMs,
     kit::{chatfid::RunTurn, fidelity::PanelComment},
 };
-use oxyn_dioxus::{AgentRunPanel, ChatComposer, ModelPickerMenu};
 #[cfg(oxyn_pro)]
-use oxyn_dioxus::{AgentCommentThread, AiComposer, CommentsPanel, MenuModel, ModelMenu, RunControls, ThreadNote};
+use oxyn_dioxus::{
+    AgentCommentThread, AiComposer, CommentsPanel, MenuModel, ModelMenu, RunControls, ThreadNote,
+};
+use oxyn_dioxus::{AgentRunPanel, ChatComposer, ModelPickerMenu};
 
 use super::{Code, mk, sel, tog, var};
 use crate::{Demo, Vals};
@@ -91,110 +93,109 @@ pub(crate) fn demos() -> Vec<Demo> {
 /// Chunk 1 demos: Chat Composer, Comment Thread, Comments Panel.
 pub(crate) fn demos1() -> Vec<Demo> {
     #[allow(unused_mut)]
-    let mut v = vec![        Demo {
-            controls: vec![
-                sel("kind", "Component", &["standard", "oxyn"], "standard"),
-                sel("style", "Style", &["clean", "classic"], "clean"),
-                sel("approval", "Approval", &["ask", "auto", "full"], "ask"),
-                tog("tray", "Folder and apps tray", true),
-                tog("attach", "Start with attachments", false),
-                tog("recording", "Start recording", false),
-                sel(
-                    "open",
-                    "Open menu",
-                    &["none", "plus", "approval", "model", "folder", "apps"],
-                    "none",
-                ),
-            ],
-            variants: vec![
-                var(
-                    "default",
-                    "Clean: one continuous container with the tray under a hairline; type, pick approval and model, dictate, connect apps.",
-                    &[],
-                ),
-                var(
-                    "classic",
-                    "Classic style: the writing card inset on a darker band, the tray on the band.",
-                    &[("style", "classic")],
-                ),
-                var(
-                    "unrestricted",
-                    "Full access picked: the orange Unrestricted access chip.",
-                    &[("approval", "full")],
-                ),
-                var(
-                    "recording",
-                    "Recording: sixteen blue capsules resting as dots and rising with the voice, words arriving in grey, ✕ discards and ✓ keeps them.",
-                    &[("recording", "true")],
-                ),
-                var(
-                    "attachments",
-                    "Oxyn extra: attachment chips (PDF, image thumbnail, spreadsheet) above the field.",
-                    &[("attach", "true")],
-                ),
-                var(
-                    "plus-menu",
-                    "The plus menu: a capped, scrolling list – Files and folders, Attach Claude, Work in a folder, Goal, Plan mode, Record a skill, Draw, then Plugins: Documents, PDF.",
-                    &[("open", "plus")],
-                ),
-                var(
-                    "models",
-                    "The model menu with coloured brand marks, capped at six rows with a thin scroll.",
-                    &[("open", "model")],
-                ),
-                var(
-                    "approvals-menu",
-                    "How should actions be approved? Request approval, Approve for me, Full access.",
-                    &[("open", "approval")],
-                ),
-                var(
-                    "in-chat",
-                    "Once a chat has started: no tray, the apps move into the plus menu.",
-                    &[("tray", "false")],
-                ),
-                var(
-                    "oxyn-ai-composer",
-                    "Extended: the AI composer with / commands and @ mentions.",
-                    &[("kind", "oxyn")],
-                ),
-            ],
-            render: chat_composer,
-            code: chat_composer_code,
-            keyboard: vec![
-                ("Enter", "Send"),
-                ("Shift + Enter", "New line"),
-                (
-                    "Enter / Space / ↓",
-                    "Open the menu of the focused button (plus, approval, model, folder, apps)",
-                ),
-                ("Esc", "Close the menu, or discard a recording"),
-                (
-                    "Tab",
-                    "Move on (closes nothing silently: menus close on pick or Esc)",
-                ),
-            ],
-            a11y: vec![
-                "Plus is a menu (Plan mode a menuitemcheckbox); approval, model and folder are listboxes; apps are menuitemcheckboxes; every trigger carries aria-expanded.",
-                "A polite live region announces modes, models, attachments, recording and sends.",
-                "Clicking anywhere on the card focuses the field.",
-            ],
-            responsive: vec![
-                "Fills its container up to 680 px; under 460 px the plus menu drops its hints; under 380 px the approval chip shows its icon only.",
-            ],
-            height: 600,
-            live: true,
-            ..mk(
-                "chat-composer",
-                "Chat composer",
-                "composer",
-                "Prompt composer with model picker, voice input, app connections and approval request: a scrolling plus menu with Plugins, the orange Unrestricted access chip, recording with a dotted level meter, and a tray with a folder picker and Connect apps.",
-                "ChatComposer, FileTypeIcon",
-                "ChatComposerEl",
-                "chat-composer",
-                "kit/fidelity.rs",
-            )
-        },
-    ];
+    let mut v = vec![Demo {
+        controls: vec![
+            sel("kind", "Component", &["standard", "oxyn"], "standard"),
+            sel("style", "Style", &["clean", "classic"], "clean"),
+            sel("approval", "Approval", &["ask", "auto", "full"], "ask"),
+            tog("tray", "Folder and apps tray", true),
+            tog("attach", "Start with attachments", false),
+            tog("recording", "Start recording", false),
+            sel(
+                "open",
+                "Open menu",
+                &["none", "plus", "approval", "model", "folder", "apps"],
+                "none",
+            ),
+        ],
+        variants: vec![
+            var(
+                "default",
+                "Clean: one continuous container with the tray under a hairline; type, pick approval and model, dictate, connect apps.",
+                &[],
+            ),
+            var(
+                "classic",
+                "Classic style: the writing card inset on a darker band, the tray on the band.",
+                &[("style", "classic")],
+            ),
+            var(
+                "unrestricted",
+                "Full access picked: the orange Unrestricted access chip.",
+                &[("approval", "full")],
+            ),
+            var(
+                "recording",
+                "Recording: sixteen blue capsules resting as dots and rising with the voice, words arriving in grey, ✕ discards and ✓ keeps them.",
+                &[("recording", "true")],
+            ),
+            var(
+                "attachments",
+                "Oxyn extra: attachment chips (PDF, image thumbnail, spreadsheet) above the field.",
+                &[("attach", "true")],
+            ),
+            var(
+                "plus-menu",
+                "The plus menu: a capped, scrolling list – Files and folders, Attach Claude, Work in a folder, Goal, Plan mode, Record a skill, Draw, then Plugins: Documents, PDF.",
+                &[("open", "plus")],
+            ),
+            var(
+                "models",
+                "The model menu with coloured brand marks, capped at six rows with a thin scroll.",
+                &[("open", "model")],
+            ),
+            var(
+                "approvals-menu",
+                "How should actions be approved? Request approval, Approve for me, Full access.",
+                &[("open", "approval")],
+            ),
+            var(
+                "in-chat",
+                "Once a chat has started: no tray, the apps move into the plus menu.",
+                &[("tray", "false")],
+            ),
+            var(
+                "oxyn-ai-composer",
+                "Extended: the AI composer with / commands and @ mentions.",
+                &[("kind", "oxyn")],
+            ),
+        ],
+        render: chat_composer,
+        code: chat_composer_code,
+        keyboard: vec![
+            ("Enter", "Send"),
+            ("Shift + Enter", "New line"),
+            (
+                "Enter / Space / ↓",
+                "Open the menu of the focused button (plus, approval, model, folder, apps)",
+            ),
+            ("Esc", "Close the menu, or discard a recording"),
+            (
+                "Tab",
+                "Move on (closes nothing silently: menus close on pick or Esc)",
+            ),
+        ],
+        a11y: vec![
+            "Plus is a menu (Plan mode a menuitemcheckbox); approval, model and folder are listboxes; apps are menuitemcheckboxes; every trigger carries aria-expanded.",
+            "A polite live region announces modes, models, attachments, recording and sends.",
+            "Clicking anywhere on the card focuses the field.",
+        ],
+        responsive: vec![
+            "Fills its container up to 680 px; under 460 px the plus menu drops its hints; under 380 px the approval chip shows its icon only.",
+        ],
+        height: 600,
+        live: true,
+        ..mk(
+            "chat-composer",
+            "Chat composer",
+            "composer",
+            "Prompt composer with model picker, voice input, app connections and approval request: a scrolling plus menu with Plugins, the orange Unrestricted access chip, recording with a dotted level meter, and a tray with a folder picker and Connect apps.",
+            "ChatComposer, FileTypeIcon",
+            "ChatComposerEl",
+            "chat-composer",
+            "kit/fidelity.rs",
+        )
+    }];
     #[cfg(oxyn_pro)]
     v.extend(pro::demos1());
     super::in_order(&mut v, &ORDER_DEMOS1);

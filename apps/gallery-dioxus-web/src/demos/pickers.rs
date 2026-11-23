@@ -90,7 +90,8 @@ fn date_reel_code(v: &Vals) -> String {
 /// Demos.
 pub fn demos() -> Vec<Demo> {
     #[allow(unused_mut)]
-    let mut v = vec![        Demo {
+    let mut v = vec![
+        Demo {
             slug: "calendar",
             name: "Calendar",
             category: "pickers",
@@ -223,7 +224,14 @@ pub fn demos() -> Vec<Demo> {
 }
 
 /// Page order of this file's demos (free and Pro).
-const ORDER: [&str; 6] = ["calendar", "date-picker", "date-range-picker", "time-picker", "time-dial", "date-wheel"];
+const ORDER: [&str; 6] = [
+    "calendar",
+    "date-picker",
+    "date-range-picker",
+    "time-picker",
+    "time-dial",
+    "date-wheel",
+];
 
 // Oxyn Pro demos of this file (private repo ismailqureshi72/oxyn-pro; overlaid by CI).
 #[cfg(oxyn_pro)]

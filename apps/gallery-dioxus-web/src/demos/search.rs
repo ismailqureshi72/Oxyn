@@ -14,7 +14,10 @@ use oxyn_core::{
 };
 use oxyn_dioxus::CommandPalette;
 #[cfg(oxyn_pro)]
-use oxyn_dioxus::{AiCommand, AiSearchBar, ExpandingSearch, Pagination, ScriptedAnswer, SearchField, SettingsCommand, ShortcutList, ShortcutRecorder};
+use oxyn_dioxus::{
+    AiCommand, AiSearchBar, ExpandingSearch, Pagination, ScriptedAnswer, SearchField,
+    SettingsCommand, ShortcutList, ShortcutRecorder,
+};
 
 use super::{Code, q, rng, sel, tog, txt, var};
 use crate::{Align, Demo, Vals};
@@ -146,61 +149,60 @@ fn palette_code(v: &Vals) -> String {
 
 pub(crate) fn demos() -> Vec<Demo> {
     #[allow(unused_mut)]
-    let mut v = vec![        Demo {
-            slug: "command-palette",
-            name: "Command palette",
-            category: "search",
-            summary: "Search and run anything from one field: every word must match, matched letters in medium weight, a gliding highlight, Tab jumps sections. The menu variant adds tool logos, ⌘1–⌘5 and a tray.",
-            dioxus: "CommandPalette",
-            gpui: "CommandPaletteEl",
-            spec: "command-palette",
-            source: "primitives/command.rs",
-            controls: vec![
-                sel("variant", "Variant", &["palette", "menu"], "menu"),
-                txt("query", "Query", ""),
-                tog("scopes", "Scopes (> @ #)", true),
-                tog("ask", "Ask fallback", true),
-                tog("footer", "Footer", true),
-                tog("elevated", "Elevated", true),
-                rng("max_height", "Max height", 200.0, 420.0, 20.0, "320"),
-            ],
-            variants: vec![
-                var("command-menu", "Menu: logos, ⌘1–⌘5, tray.", &[]),
-                var(
-                    "palette",
-                    "A palette with matched letters.",
-                    &[("variant", "palette"), ("query", "sh pr")],
-                ),
-                var("files-scope", "@ narrows to files.", &[("query", "@a")]),
-                var(
-                    "no-results",
-                    "Ask the assistant instead.",
-                    &[("query", "why did run 248 fail")],
-                ),
-            ],
-            render: palette,
-            code: palette_code,
-            keyboard: vec![
-                ("↑ / ↓", "Move through all sections (wraps)"),
-                ("Home / End", "First / last"),
-                ("Tab / Shift+Tab", "Next / previous section"),
-                ("Enter", "Run the highlighted command"),
-                ("⌘1–⌘5", "Run a suggestion"),
-                ("Esc", "Clear the field, then close"),
-                ("> @ #", "Commands, files, threads"),
-            ],
-            a11y: vec![
-                "The field is a combobox controlling a listbox; the highlighted row is aria-activedescendant, so focus never leaves the field.",
-                "Groups are labelled; shortcut caps are hidden from screen readers; the result count and what ran are announced politely.",
-            ],
-            responsive: vec![
-                "Fills its container up to its width; under 480 px shortcut keys and hints are hidden.",
-            ],
-            height: 500,
-            align: Align::Center,
-            live: false,
-        },
-    ];
+    let mut v = vec![Demo {
+        slug: "command-palette",
+        name: "Command palette",
+        category: "search",
+        summary: "Search and run anything from one field: every word must match, matched letters in medium weight, a gliding highlight, Tab jumps sections. The menu variant adds tool logos, ⌘1–⌘5 and a tray.",
+        dioxus: "CommandPalette",
+        gpui: "CommandPaletteEl",
+        spec: "command-palette",
+        source: "primitives/command.rs",
+        controls: vec![
+            sel("variant", "Variant", &["palette", "menu"], "menu"),
+            txt("query", "Query", ""),
+            tog("scopes", "Scopes (> @ #)", true),
+            tog("ask", "Ask fallback", true),
+            tog("footer", "Footer", true),
+            tog("elevated", "Elevated", true),
+            rng("max_height", "Max height", 200.0, 420.0, 20.0, "320"),
+        ],
+        variants: vec![
+            var("command-menu", "Menu: logos, ⌘1–⌘5, tray.", &[]),
+            var(
+                "palette",
+                "A palette with matched letters.",
+                &[("variant", "palette"), ("query", "sh pr")],
+            ),
+            var("files-scope", "@ narrows to files.", &[("query", "@a")]),
+            var(
+                "no-results",
+                "Ask the assistant instead.",
+                &[("query", "why did run 248 fail")],
+            ),
+        ],
+        render: palette,
+        code: palette_code,
+        keyboard: vec![
+            ("↑ / ↓", "Move through all sections (wraps)"),
+            ("Home / End", "First / last"),
+            ("Tab / Shift+Tab", "Next / previous section"),
+            ("Enter", "Run the highlighted command"),
+            ("⌘1–⌘5", "Run a suggestion"),
+            ("Esc", "Clear the field, then close"),
+            ("> @ #", "Commands, files, threads"),
+        ],
+        a11y: vec![
+            "The field is a combobox controlling a listbox; the highlighted row is aria-activedescendant, so focus never leaves the field.",
+            "Groups are labelled; shortcut caps are hidden from screen readers; the result count and what ran are announced politely.",
+        ],
+        responsive: vec![
+            "Fills its container up to its width; under 480 px shortcut keys and hints are hidden.",
+        ],
+        height: 500,
+        align: Align::Center,
+        live: false,
+    }];
     #[cfg(oxyn_pro)]
     v.extend(pro::demos());
     super::in_order(&mut v, &ORDER);
@@ -208,7 +210,16 @@ pub(crate) fn demos() -> Vec<Demo> {
 }
 
 /// Page order of this file's demos (free and Pro).
-const ORDER: [&str; 8] = ["command-palette", "ai-command", "ai-search-bar", "settings-command", "search-field", "expanding-search", "shortcut-recorder", "pagination"];
+const ORDER: [&str; 8] = [
+    "command-palette",
+    "ai-command",
+    "ai-search-bar",
+    "settings-command",
+    "search-field",
+    "expanding-search",
+    "shortcut-recorder",
+    "pagination",
+];
 
 // Oxyn Pro demos of this file (private repo ismailqureshi72/oxyn-pro; overlaid by CI).
 #[cfg(oxyn_pro)]

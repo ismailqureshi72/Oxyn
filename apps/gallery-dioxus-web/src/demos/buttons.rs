@@ -6,9 +6,11 @@ use oxyn_core::{
     ClockMs,
     primitives::button::{ActionButton as ActionModel, GroupItem},
 };
-use oxyn_dioxus::{Button, ButtonGroup};
 #[cfg(oxyn_pro)]
-use oxyn_dioxus::{ActionButton, ExpandingButtonGroup, FloatingButtonGroup, IconButton, SplitButton};
+use oxyn_dioxus::{
+    ActionButton, ExpandingButtonGroup, FloatingButtonGroup, IconButton, SplitButton,
+};
+use oxyn_dioxus::{Button, ButtonGroup};
 
 use super::{Code, q, rng, sel, tog, txt, var};
 use crate::{Align, Demo, Vals};
@@ -113,7 +115,8 @@ fn group_code(v: &Vals) -> String {
 
 pub(crate) fn demos() -> Vec<Demo> {
     #[allow(unused_mut)]
-    let mut v = vec![        Demo {
+    let mut v = vec![
+        Demo {
             slug: "button",
             name: "Button",
             category: "buttons",
@@ -282,7 +285,15 @@ pub(crate) fn demos() -> Vec<Demo> {
 }
 
 /// Page order of this file's demos (free and Pro).
-const ORDER: [&str; 7] = ["button", "icon-button", "action-button", "split-button", "button-group", "floating-button-group", "expanding-button-group"];
+const ORDER: [&str; 7] = [
+    "button",
+    "icon-button",
+    "action-button",
+    "split-button",
+    "button-group",
+    "floating-button-group",
+    "expanding-button-group",
+];
 
 // Oxyn Pro demos of this file (private repo ismailqureshi72/oxyn-pro; overlaid by CI).
 #[cfg(oxyn_pro)]
