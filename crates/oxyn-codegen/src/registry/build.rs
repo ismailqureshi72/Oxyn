@@ -818,6 +818,10 @@ fn module_file(g: &Graph, p: &ModPath, items: &BTreeSet<usize>, crate_rel: &str)
             ItemKind::ModDecl(child) => {
                 let mut cp = p.clone();
                 cp.push(child.clone());
+                // An Oxyn Pro module without the Pro sources overlaid: nothing to declare.
+                if !g.modules.contains_key(&cp) {
+                    continue;
+                }
                 let code: String = text
                     .lines()
                     .filter(|l| !l.trim_start().starts_with("//"))
@@ -860,6 +864,10 @@ fn module_file(g: &Graph, p: &ModPath, items: &BTreeSet<usize>, crate_rel: &str)
                     format!("{vis} ")
                 };
                 for (k, (u, r)) in bindings.iter().zip(resolved).enumerate() {
+                    // A Pro-gated `use` whose target is not in this build (no Pro sources).
+                    if r.is_none() && m.pro_gated.contains(&i) {
+                        continue;
+                    }
                     let path: Vec<&str> = u
                         .path
                         .iter()
