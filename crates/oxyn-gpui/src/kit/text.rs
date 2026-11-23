@@ -18,9 +18,11 @@ use oxyn_tokens::{ColorRole, Theme};
 use super::{alpha, c};
 
 #[cfg(test)]
+#[cfg_attr(not(oxyn_pro), allow(unused_imports, dead_code))]
 mod tests {
     use super::*;
 
+    #[cfg(oxyn_pro)]
     #[test]
     fn sweep_rests_when_inactive() {
         let base = Hsla::default();

@@ -1217,12 +1217,14 @@ impl RenderOnce for DateWheelEl {
 }
 
 #[cfg(test)]
+#[cfg_attr(not(oxyn_pro), allow(unused_imports, dead_code))]
 mod tests {
     use super::*;
     use oxyn_core::primitives::{
         password::Policy, questions::Question, smart_fill::contact_fields,
     };
 
+    #[cfg(oxyn_pro)]
     #[test]
     fn elements_build() {
         let _ = TagInputEl::new("Labels", TagInput::new(&["a", "b"])).on_remove(|_, _, _| {});

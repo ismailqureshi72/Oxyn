@@ -426,6 +426,7 @@ pub fn ShimmerLabel(
 }
 
 #[cfg(test)]
+#[cfg_attr(not(oxyn_pro), allow(unused_imports, dead_code))]
 mod tests {
     use super::*;
 
@@ -435,6 +436,7 @@ mod tests {
         dioxus_ssr::render(&dom)
     }
 
+    #[cfg(oxyn_pro)]
     #[test]
     fn overlays_render_roles() {
         let h = render(|| {
@@ -452,6 +454,7 @@ mod tests {
         assert!(h.contains("Back to Run settings") && h.contains("Close all"));
     }
 
+    #[cfg(oxyn_pro)]
     #[test]
     fn feedback_renders() {
         let h = render(|| {

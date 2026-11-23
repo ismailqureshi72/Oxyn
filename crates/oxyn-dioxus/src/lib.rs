@@ -412,10 +412,10 @@ pub use status_text::{
     TextShimmerProps, VerbCycler, VerbCyclerProps,
 };
 
-/// Old names of components renamed in the naming pass (docs/renames.md). They still work so
-/// existing code keeps building; use self::{AutonomyLevels as AutonomyDial, ContextTreemap as ContextMap, CrewChat as CollabStream, CrewTree as AgentCrew, DateWheel as DateReel, ModelKnockout as JudgeBracket, PresenceCursors as AgentCursors, SpendBreakdown as CostWaterfall, TaskGrid as FanoutGrid, ToolReach as ToolAccessMap};
+/// Old names of renamed Oxyn Pro components.
 #[cfg(oxyn_pro)]
-use self::{
+#[doc(hidden)]
+pub use self::{
     ActivityPill as RunningNow, AssignBoard as DelegateBoard, AttemptRace as ParallelAttempts,
     BlindCompare as ModelArena, ChangeLedger as AgentLedger, FindingsFeed as AgentFindings,
     FleetOverview as MissionControl, FleetTimeline as MissionTimeline,
@@ -427,6 +427,15 @@ use self::{
     ScrollTitle as InViewTitle, SequenceDiagram as AgentSequence, SkeletonReveal as SkeletonMorph,
     StatefulActionButton as ActionSwapButton, TaskInbox as AgentInbox, ToolNetwork as AgentGraph,
     TradingDeskScreen as MarketTerminalScreen, UnfoldSelect as MorphSelect,
+};
+/// Old names of components renamed in the naming pass (docs/renames.md). They still work so
+/// existing code keeps building; use the new names in new code.
+#[doc(hidden)]
+pub use self::{
+    AutonomyLevels as AutonomyDial, ContextTreemap as ContextMap, CrewChat as CollabStream,
+    CrewTree as AgentCrew, DateWheel as DateReel, ModelKnockout as JudgeBracket,
+    PresenceCursors as AgentCursors, SpendBreakdown as CostWaterfall, TaskGrid as FanoutGrid,
+    ToolReach as ToolAccessMap,
 };
 
 /// `var(--oxyn-color-…)` for a colour role.
