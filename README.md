@@ -115,6 +115,12 @@ Details: [docs/architecture.md](docs/architecture.md) and [docs/website-stack.md
 Two maintainers, one rule set. Every change goes through a branch and a pull request; every commit
 credits both maintainers with a `Co-authored-by:` trailer. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
+## Pro sources
+
+The sources of Oxyn Pro items (screens, agent-app templates, blocks, AI special components, kits)
+are kept in a private repo. This repo builds the free set on its own; see
+[CONTRIBUTING.md](CONTRIBUTING.md#oxyn-pro-sources-are-private).
+
 ## Licence
 
 Oxyn's open core is [MIT](LICENSE). A paid Pro tier (extra variants, category kits, Studio extras) is

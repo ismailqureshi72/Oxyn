@@ -189,3 +189,8 @@ oxyn-demo[data-skel] .oxd-mount::before{content:"";position:absolute;inset:0;mar
   animation:oxd-skel 1.4s ease-in-out infinite}
 @keyframes oxd-skel{50%{opacity:.55}}
 @media (prefers-reduced-motion:reduce){oxyn-demo[data-skel] .oxd-mount::before{animation:none}}
+
+/* An Oxyn Pro item in a free build (no Pro sources overlaid): the preview is not included. */
+.oxyn-pro-ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;box-sizing:border-box;width:min(100%,420px);min-height:140px;padding:24px;border:1px dashed var(--site-line);border-radius:12px;background:var(--site-panel);text-align:center;color:var(--oxyn-color-fg-muted);font:13px/1.5 var(--oxyn-font-ui)}
+.oxyn-pro-ph strong{color:var(--oxyn-color-fg-default);font-size:14px;font-weight:600}
+.oxyn-pro-ph span{max-width:36ch;overflow-wrap:anywhere}
