@@ -3,6 +3,7 @@
 //! source) and draw a mark with [`brand_mark`] (official colours) or [`brand_icon`]. Marks draw in
 //! their official colours; brands whose guidelines ask for black or white (OpenAI, xAI, Vercel…)
 //! draw in solid black or white to match the theme, never grey.
+#![cfg_attr(not(oxyn_pro), allow(dead_code, unused_imports))]
 
 use std::borrow::Cow;
 
@@ -88,12 +89,6 @@ pub fn brand_icon(name: &str, size: f32, color: Hsla, coloured: bool) -> Option<
     })
 }
 
-/// The semantic hue of a generic object icon (folder, file, terminal…) for the theme, from
-/// `oxyn_core::icon_tone`.
-pub fn tone_color(tone: oxyn_core::icon_tone::IconTone, dark: bool) -> Hsla {
-    rgb(u32::from_str_radix(tone.hex(dark), 16).unwrap_or(0)).into()
-}
-
 /// Solid black or white for a black-or-white brand mark, from the lightness of the text colour
 /// it sits on (light text means a dark surface).
 pub fn ink(color: Hsla) -> Hsla {
@@ -103,3 +98,11 @@ pub fn ink(color: Hsla) -> Hsla {
         gpui::black()
     }
 }
+
+// Oxyn Pro part of this module (private repo ismailqureshi72/oxyn-pro; overlaid by CI).
+#[cfg(oxyn_pro)]
+#[rustfmt::skip]
+mod pro;
+#[cfg(oxyn_pro)]
+#[allow(unused_imports)]
+pub use pro::*;
