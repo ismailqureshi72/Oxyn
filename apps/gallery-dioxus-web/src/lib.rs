@@ -15,6 +15,7 @@ use std::collections::BTreeMap;
 
 use dioxus::prelude::*;
 use oxyn_core::ClockMs;
+#[cfg(oxyn_pro)]
 use oxyn_dioxus::TooltipProvider;
 
 mod data;
@@ -187,10 +188,16 @@ pub fn find(slug: &str) -> Option<Demo> {
 /// Root of one mount: a tooltip provider around the playground.
 #[component]
 pub fn DemoRoot(slug: String, variant: Option<usize>, controls: bool) -> Element {
-    rsx! {
+    // The tooltip provider is part of Oxyn Pro; the free build mounts the playground on its own.
+    #[cfg(oxyn_pro)]
+    return rsx! {
         TooltipProvider {
             Playground { slug, variant, controls }
         }
+    };
+    #[cfg(not(oxyn_pro))]
+    rsx! {
+        Playground { slug, variant, controls }
     }
 }
 
@@ -402,6 +409,10 @@ pub fn render_html(slug: &str, variant: Option<usize>, controls: bool) -> String
 #[cfg(target_arch = "wasm32")]
 #[wasm_bindgen::prelude::wasm_bindgen]
 pub fn mount(el: web_sys::Element, slug: String, variant: i32, controls: bool) {
+    // Not in this build (an Oxyn Pro demo in the free build): keep the server-rendered placeholder.
+    if find(&slug).is_none() {
+        return;
+    }
     el.set_inner_html("");
     let vdom = VirtualDom::new_with_props(
         DemoRoot,

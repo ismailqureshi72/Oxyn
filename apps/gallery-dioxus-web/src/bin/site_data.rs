@@ -82,6 +82,8 @@ fn main() {
     .expect("write demos.json");
 
     let css = [
+        // The status indicator is part of Oxyn Pro (absent from the free build).
+        #[cfg(oxyn_pro)]
         oxyn_dioxus::STATUS_INDICATOR_CSS,
         oxyn_dioxus::GLYPH_LOADER_CSS,
         oxyn_dioxus::STATUS_TEXT_CSS,

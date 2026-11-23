@@ -1,10 +1,13 @@
 //! Tool calls, plans and sub-agents.
+#![cfg_attr(not(oxyn_pro), allow(dead_code, unused_imports, unused_variables))]
 
 use std::time::Duration;
 
 use dioxus::prelude::*;
 use oxyn_core::{ClockMs, run::PlanState};
-use oxyn_dioxus::{PlanCard, StepTimeline, SubagentTree, TodoList, ToolCallRow, ToolStack};
+use oxyn_dioxus::{SubagentTree, ToolCallRow};
+#[cfg(oxyn_pro)]
+use oxyn_dioxus::{PlanCard, StepTimeline, TodoList, ToolStack};
 
 use super::{Code, rng, sel, tog, var};
 use crate::{Align, Demo, Vals, data};
@@ -44,116 +47,6 @@ fn call_code(v: &Vals) -> String {
     .done()
 }
 
-fn stack(v: &Vals, now: ClockMs) -> Element {
-    let (calls, entries) = data::explore();
-    let (calls, entries) = if v.s("turn") == "parallel" {
-        (data::parallel(), vec![])
-    } else {
-        (calls, entries)
-    };
-    let done = v.b("done").then(|| Duration::from_secs(31));
-    let term = v.s("variant") == "terminal";
-    rsx! {
-        div { class: if term { "oxd-term oxd-w560" } else { "oxd-w560" },
-            if !term { p { class: "oxd-msg", "I'll check how the refresh path takes the lock." } }
-            ToolStack { calls, entries, now, variant: v.string("variant"), density: v.string("density"), turn_done: done, row: v.string("row") }
-        }
-    }
-}
-
-fn stack_code(v: &Vals) -> String {
-    let mut c = Code::new("ToolStack")
-        .raw("calls", "turn.calls.clone()")
-        .raw(
-            "entries",
-            "turn.entries.clone() // order with breaks for prose",
-        )
-        .raw("now", "clock.now()")
-        .s("variant", v.s("variant"), "transcript")
-        .s("density", v.s("density"), "normal")
-        .s("row", v.s("row"), "row");
-    if v.b("done") {
-        c = c.raw("turn_done", "Some(turn.worked_for())");
-    }
-    c.done()
-}
-
-fn todo(v: &Vals, now: ClockMs) -> Element {
-    let plan = if v.b("all_done") {
-        data::plan_done()
-    } else {
-        data::plan()
-    };
-    let agent = data::state(v.s("agent"));
-    rsx! {
-        div { class: "oxd-w480",
-            TodoList { plan, agent, now, variant: v.string("variant"), expanded: v.b("expanded"), strike: v.b("strike") }
-        }
-    }
-}
-
-fn todo_code(v: &Vals) -> String {
-    Code::new("TodoList")
-        .raw("plan", "plan()")
-        .raw("agent", "agent.state()")
-        .raw("now", "clock.now()")
-        .s("variant", v.s("variant"), "checklist")
-        .b("expanded", v.b("expanded"))
-        .b("strike", v.b("strike"))
-        .done()
-}
-
-fn timeline(v: &Vals, now: ClockMs) -> Element {
-    let plan = if v.b("all_done") {
-        data::plan_done()
-    } else {
-        data::plan()
-    };
-    let calls = if v.b("calls") {
-        data::explore().0
-    } else {
-        vec![]
-    };
-    rsx! { div { class: "oxd-w520", StepTimeline { plan, calls, now, fold_on_done: v.b("fold") } } }
-}
-
-fn timeline_code(v: &Vals) -> String {
-    Code::new("StepTimeline")
-        .raw("plan", "plan()")
-        .raw("calls", "calls() // shown under the step that made them")
-        .raw("now", "clock.now()")
-        .b("fold_on_done", v.b("fold"))
-        .done()
-}
-
-fn plan_card(v: &Vals, now: ClockMs) -> Element {
-    let mut plan = match v.s("state") {
-        "proposed" => data::plan_proposed(),
-        _ => data::plan(),
-    };
-    match v.s("state") {
-        "drafting" => plan.state = PlanState::Drafting,
-        "executing" => plan.state = PlanState::Executing,
-        "superseded" => {
-            plan = data::plan_proposed();
-            plan.state = PlanState::Superseded { by: 3 };
-            plan.version = 2;
-        }
-        _ => {}
-    }
-    rsx! { div { class: "oxd-w520", PlanCard { plan, now, gated: v.b("gated") } } }
-}
-
-fn plan_code(v: &Vals) -> String {
-    Code::new("PlanCard")
-        .raw("plan", "plan()")
-        .raw("now", "clock.now()")
-        .b("gated", v.b("gated"))
-        .raw("on_build", "move |_| agent.run_plan()")
-        .raw("on_revise", "move |_| composer.focus()")
-        .done()
-}
-
 fn tree(v: &Vals, now: ClockMs) -> Element {
     let collapsed = if v.b("collapsed") {
         vec!["t".to_string()]
@@ -187,8 +80,8 @@ fn tree_code(v: &Vals) -> String {
 }
 
 pub(crate) fn demos() -> Vec<Demo> {
-    vec![
-        Demo {
+    #[allow(unused_mut)]
+    let mut v = vec![        Demo {
             slug: "tool-call",
             name: "Tool call",
             category: "tools",
@@ -249,196 +142,6 @@ pub(crate) fn demos() -> Vec<Demo> {
             live: true,
         },
         Demo {
-            slug: "tool-stack",
-            name: "Tool stack",
-            category: "tools",
-            summary: "A turn's tool calls grouped the way a transcript reads them: runs of reads fold into one line, parallel calls show live, and a finished turn folds into \"Worked for 31s\".",
-            dioxus: "ToolStack",
-            gpui: "ToolStackEl",
-            spec: "tools",
-            source: "run/tool_call.rs",
-            controls: vec![
-                sel("turn", "Turn", &["explore", "parallel"], "explore"),
-                sel(
-                    "variant",
-                    "Variant",
-                    &["transcript", "worked-for", "terminal"],
-                    "transcript",
-                ),
-                sel(
-                    "density",
-                    "Density",
-                    &["hidden", "compact", "normal", "verbose"],
-                    "normal",
-                ),
-                sel("row", "Row", &["row", "card", "minimal"], "row"),
-                tog("done", "Turn finished", false),
-            ],
-            variants: vec![
-                var("transcript", "Grouped with a prose break.", &[]),
-                var(
-                    "parallel",
-                    "Three calls in flight.",
-                    &[("turn", "parallel")],
-                ),
-                var(
-                    "worked-for",
-                    "Folded after the turn.",
-                    &[("variant", "worked-for"), ("done", "true")],
-                ),
-                var(
-                    "terminal",
-                    "Terminal transcript.",
-                    &[("variant", "terminal")],
-                ),
-            ],
-            render: stack,
-            code: stack_code,
-            keyboard: vec![
-                ("Enter / Space", "Open or close a group"),
-                ("← / →", "Close / open a group row (tree semantics)"),
-            ],
-            a11y: vec![
-                "Group rows use tree semantics (treeitem, ← / →); each call row is a button with aria-expanded.",
-            ],
-            responsive: vec!["Groups keep long turns short; density trades detail for space."],
-            height: 340,
-            align: Align::Start,
-            live: true,
-        },
-        Demo {
-            slug: "todo-list",
-            name: "Todo list",
-            category: "tools",
-            summary: "The agent's task list: done, active, blocked, pending and skipped items, as a checklist or a dock above the composer that fades once everything is done.",
-            dioxus: "TodoList",
-            gpui: "TodoListEl",
-            spec: "plan-todo",
-            source: "run/plan.rs",
-            controls: vec![
-                sel("variant", "Variant", &["checklist", "dock"], "checklist"),
-                sel(
-                    "agent",
-                    "Agent state",
-                    &["streaming", "tool-running", "cancelled", "done"],
-                    "streaming",
-                ),
-                tog("expanded", "Dock expanded", true),
-                tog("strike", "Strike done items", false),
-                tog("all_done", "All done", false),
-            ],
-            variants: vec![
-                var("checklist", "Every item with its status.", &[]),
-                var("dock", "Docked above the composer.", &[("variant", "dock")]),
-                var(
-                    "stopped",
-                    "The run was stopped.",
-                    &[
-                        ("variant", "dock"),
-                        ("agent", "cancelled"),
-                        ("expanded", "false"),
-                    ],
-                ),
-                var(
-                    "strike",
-                    "Done items struck through.",
-                    &[("strike", "true")],
-                ),
-            ],
-            render: todo,
-            code: todo_code,
-            keyboard: vec![("Enter / Space", "Expand or collapse the dock")],
-            a11y: vec![
-                "role=list labelled \"Agent tasks, 2 of 6 done\"; each item reads its label, status and duration.",
-                "An item becoming active is announced only if it stays active for 2 s.",
-            ],
-            responsive: vec![
-                "checklist fills a panel; dock sits above the composer and expands on demand.",
-            ],
-            height: 320,
-            align: Align::Start,
-            live: true,
-        },
-        Demo {
-            slug: "step-timeline",
-            name: "Step timeline",
-            category: "tools",
-            summary: "The plan as a vertical timeline, each step with its time and the tool calls it made; folds to one line once every step is done.",
-            dioxus: "StepTimeline",
-            gpui: "StepTimelineEl",
-            spec: "plan-todo",
-            source: "run/plan.rs",
-            controls: vec![
-                tog("calls", "Show calls under steps", true),
-                tog("all_done", "All done", false),
-                tog("fold", "Fold when done", true),
-            ],
-            variants: vec![
-                var("vertical", "Steps with their calls.", &[]),
-                var(
-                    "folded",
-                    "Everything done, folded.",
-                    &[("all_done", "true")],
-                ),
-            ],
-            render: timeline,
-            code: timeline_code,
-            keyboard: vec![("Enter / Space", "Open a folded timeline or a step's calls")],
-            a11y: vec!["An ordered list; nested calls are a sub-list."],
-            responsive: vec!["Fills its container; fold_on_done keeps finished plans to one line."],
-            height: 360,
-            align: Align::Start,
-            live: true,
-        },
-        Demo {
-            slug: "plan-card",
-            name: "Plan card",
-            category: "tools",
-            summary: "A plan as a document you review before the agent runs it: drafting, proposed with Approve or Build, executing, or superseded by a newer version.",
-            dioxus: "PlanCard",
-            gpui: "PlanCardEl",
-            spec: "plan-approval",
-            source: "run/plan.rs",
-            controls: vec![
-                sel(
-                    "state",
-                    "State",
-                    &["proposed", "drafting", "executing", "superseded"],
-                    "proposed",
-                ),
-                tog("gated", "Needs sign-off", true),
-            ],
-            variants: vec![
-                var("proposed", "Waiting for sign-off.", &[]),
-                var(
-                    "drafting",
-                    "Still being written.",
-                    &[("state", "drafting"), ("gated", "false")],
-                ),
-                var(
-                    "executing",
-                    "Running.",
-                    &[("state", "executing"), ("gated", "false")],
-                ),
-                var(
-                    "superseded",
-                    "Replaced by v3.",
-                    &[("state", "superseded"), ("gated", "false")],
-                ),
-            ],
-            render: plan_card,
-            code: plan_code,
-            keyboard: vec![
-                ("Tab", "To Approve / Build and Revise"),
-                ("Enter", "Activate the focused action"),
-            ],
-            a11y: vec!["role=region labelled with the plan title and version."],
-            responsive: vec!["Fills its container."],
-            height: 380,
-            align: Align::Start,
-            live: false,
-        },
-        Demo {
             slug: "subagent-tree",
             name: "Sub-agent tree",
             category: "tools",
@@ -486,5 +189,17 @@ pub(crate) fn demos() -> Vec<Demo> {
             align: Align::Start,
             live: true,
         },
-    ]
+    ];
+    #[cfg(oxyn_pro)]
+    v.extend(pro::demos());
+    super::in_order(&mut v, &ORDER);
+    v
 }
+
+/// Page order of this file's demos (free and Pro).
+const ORDER: [&str; 6] = ["tool-call", "tool-stack", "todo-list", "step-timeline", "plan-card", "subagent-tree"];
+
+// Oxyn Pro demos of this file (private repo ismailqureshi72/oxyn-pro; overlaid by CI).
+#[cfg(oxyn_pro)]
+#[rustfmt::skip]
+mod pro;
