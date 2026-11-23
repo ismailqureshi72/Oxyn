@@ -249,9 +249,17 @@ pub fn CommandPalette(
     }
 }
 
+// Oxyn Pro part of this module (private repo ismailqureshi72/oxyn-pro; overlaid by CI).
+#[cfg(oxyn_pro)]
+#[rustfmt::skip]
+mod pro;
+#[cfg(oxyn_pro)]
+#[allow(unused_imports)]
+pub use pro::*;
+
 #[cfg(test)]
-#[cfg_attr(not(oxyn_pro), allow(unused_imports, dead_code))]
 mod tests {
+    #![cfg_attr(not(oxyn_pro), allow(unused_imports, dead_code))]
     use super::*;
 
     fn render(app: fn() -> Element) -> String {
@@ -312,11 +320,3 @@ mod tests {
         assert!(h.contains("Start session"));
     }
 }
-
-// Oxyn Pro part of this module (private repo ismailqureshi72/oxyn-pro; overlaid by CI).
-#[cfg(oxyn_pro)]
-#[rustfmt::skip]
-mod pro;
-#[cfg(oxyn_pro)]
-#[allow(unused_imports)]
-pub use pro::*;

@@ -1216,9 +1216,17 @@ impl RenderOnce for DateWheelEl {
     }
 }
 
+// Oxyn Pro part of this module (private repo ismailqureshi72/oxyn-pro; overlaid by CI).
+#[cfg(oxyn_pro)]
+#[rustfmt::skip]
+mod pro;
+#[cfg(oxyn_pro)]
+#[allow(unused_imports)]
+pub use pro::*;
+
 #[cfg(test)]
-#[cfg_attr(not(oxyn_pro), allow(unused_imports, dead_code))]
 mod tests {
+    #![cfg_attr(not(oxyn_pro), allow(unused_imports, dead_code))]
     use super::*;
     use oxyn_core::primitives::{
         password::Policy, questions::Question, smart_fill::contact_fields,
@@ -1259,11 +1267,3 @@ mod tests {
         assert_eq!(level_role(Level::Strong), ColorRole::StatusSuccessFg);
     }
 }
-
-// Oxyn Pro part of this module (private repo ismailqureshi72/oxyn-pro; overlaid by CI).
-#[cfg(oxyn_pro)]
-#[rustfmt::skip]
-mod pro;
-#[cfg(oxyn_pro)]
-#[allow(unused_imports)]
-pub use pro::*;
