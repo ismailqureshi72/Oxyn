@@ -281,8 +281,8 @@ pub(crate) fn nav_key(k: &Key, vertical: bool) -> Option<oxyn_core::primitives::
 }
 
 #[cfg(test)]
-#[cfg_attr(not(oxyn_pro), allow(unused_imports, dead_code))]
 mod tests {
+    #![cfg_attr(not(oxyn_pro), allow(unused_imports, dead_code))]
 
     use oxyn_core::{
         AgentState, ClockMs,

@@ -17,9 +17,17 @@ use oxyn_tokens::{ColorRole, Theme};
 
 use super::{alpha, c};
 
+// Oxyn Pro part of this module (private repo ismailqureshi72/oxyn-pro; overlaid by CI).
+#[cfg(oxyn_pro)]
+#[rustfmt::skip]
+mod pro;
+#[cfg(oxyn_pro)]
+#[allow(unused_imports)]
+pub use pro::*;
+
 #[cfg(test)]
-#[cfg_attr(not(oxyn_pro), allow(unused_imports, dead_code))]
 mod tests {
+    #![cfg_attr(not(oxyn_pro), allow(unused_imports, dead_code))]
     use super::*;
 
     #[cfg(oxyn_pro)]
@@ -43,11 +51,3 @@ mod tests {
         );
     }
 }
-
-// Oxyn Pro part of this module (private repo ismailqureshi72/oxyn-pro; overlaid by CI).
-#[cfg(oxyn_pro)]
-#[rustfmt::skip]
-mod pro;
-#[cfg(oxyn_pro)]
-#[allow(unused_imports)]
-pub use pro::*;
