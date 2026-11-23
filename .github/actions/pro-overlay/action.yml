@@ -1,0 +1,51 @@
+name: Oxyn Pro overlay
+description: >
+  Checks out the private Pro sources (ismailqureshi72/oxyn-pro) and copies them over this checkout,
+  then checks their formatting. With no token (fork PRs) nothing is overlaid and the job builds the
+  free set; with require set it fails instead.
+inputs:
+  token:
+    description: Read token for ismailqureshi72/oxyn-pro (secrets.OXYN_PRO_TOKEN); empty means free build.
+    required: false
+    default: ""
+  require:
+    description: '"1" fails the job when the Pro sources are not overlaid (pushes to main).'
+    required: false
+    default: ""
+runs:
+  using: composite
+  steps:
+    - name: check out the Pro sources
+      if: inputs.token != ''
+      uses: actions/checkout@v4
+      with:
+        repository: ismailqureshi72/oxyn-pro
+        token: ${{ inputs.token }}
+        path: _pro_src
+        persist-credentials: false
+    - name: overlay the Pro sources and check their formatting
+      shell: bash
+      env:
+        REQUIRE: ${{ inputs.require }}
+      run: |
+        if [ ! -f _pro_src/.oxyn-pro ]; then
+          if [ "$REQUIRE" = "1" ]; then
+            echo "::error::OXYN_REQUIRE_PRO=1 but the Oxyn Pro sources could not be checked out (is OXYN_PRO_TOKEN set?)"
+            exit 1
+          fi
+          echo "Oxyn Pro overlay: not applied (no token), building the free set" | tee -a "$GITHUB_STEP_SUMMARY"
+          exit 0
+        fi
+        files=$(cd _pro_src && git ls-files)
+        rsync -a --exclude .git _pro_src/ ./
+        rm -rf _pro_src
+        test -f .oxyn-pro
+        n=$(printf '%s\n' "$files" | wc -l)
+        echo "Oxyn Pro overlay: applied ($n files)" | tee -a "$GITHUB_STEP_SUMMARY"
+        echo "OXYN_PRO_MODE=1" >> "$GITHUB_ENV"
+        rustup component add rustfmt >/dev/null 2>&1 || true
+        rs=$(printf '%s\n' "$files" | grep '\.rs$' || true)
+        if [ -n "$rs" ]; then
+          printf '%s\n' "$rs" | xargs rustfmt --edition 2024 --config-path rustfmt.toml --check
+          echo "rustfmt --check: $(printf '%s\n' "$rs" | wc -l) overlaid Rust files formatted"
+        fi
