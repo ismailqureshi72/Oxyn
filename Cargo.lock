@@ -2210,7 +2210,7 @@ checksum = "384b8ab6d37215f3c5301a95a4accb5d64aa607f1fcb26a11b5303878451b4fe"
 
 [[package]]
 name = "oxyn-cli"
-version = "0.0.0"
+version = "0.1.0"
 dependencies = [
  "clap",
  "oxyn-codegen",
@@ -2226,7 +2226,7 @@ dependencies = [
 
 [[package]]
 name = "oxyn-codegen"
-version = "0.0.0"
+version = "0.1.0"
 dependencies = [
  "oxyn-registry-schema",
  "serde",
@@ -2237,7 +2237,7 @@ dependencies = [
 
 [[package]]
 name = "oxyn-core"
-version = "0.0.0"
+version = "0.1.0"
 dependencies = [
  "oxyn-tokens",
  "qrcodegen",
@@ -2248,7 +2248,7 @@ dependencies = [
 
 [[package]]
 name = "oxyn-dioxus"
-version = "0.0.0"
+version = "0.1.0"
 dependencies = [
  "dioxus",
  "dioxus-ssr",
@@ -2258,7 +2258,7 @@ dependencies = [
 
 [[package]]
 name = "oxyn-gallery-web"
-version = "0.0.0"
+version = "0.1.0"
 dependencies = [
  "dioxus",
  "dioxus-ssr",
@@ -2274,7 +2274,7 @@ dependencies = [
 
 [[package]]
 name = "oxyn-gpui"
-version = "0.0.0"
+version = "0.1.0"
 dependencies = [
  "gpui",
  "oxyn-core",
@@ -2283,7 +2283,7 @@ dependencies = [
 
 [[package]]
 name = "oxyn-mcp"
-version = "0.0.0"
+version = "0.1.0"
 dependencies = [
  "oxyn-cli",
  "oxyn-codegen",
@@ -2294,7 +2294,7 @@ dependencies = [
 
 [[package]]
 name = "oxyn-registry-schema"
-version = "0.0.0"
+version = "0.1.0"
 dependencies = [
  "serde",
  "serde_json",
@@ -2302,11 +2302,11 @@ dependencies = [
 
 [[package]]
 name = "oxyn-tokens"
-version = "0.0.0"
+version = "0.1.0"
 
 [[package]]
 name = "oxyn-tokens-gen"
-version = "0.0.0"
+version = "0.1.0"
 dependencies = [
  "serde_json",
 ]
