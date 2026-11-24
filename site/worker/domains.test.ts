@@ -66,3 +66,12 @@ test('plain http on the canonical host goes to https (pages only)', async () => 
   assert.equal(canonicalRedirect(env, new URL('https://oxynui.com/')), null);
   assert.equal(canonicalRedirect(env, new URL('http://localhost:4321/')), null);
 });
+
+test('HTML pages are served as text/html; charset=utf-8, other types untouched', async () => {
+  const html = { ...env, ASSETS: { fetch: async (r: Request) => new Response('<p>x</p>', { status: 200, headers: { 'content-type': new URL(r.url).pathname.endsWith('.png') ? 'image/png' : 'text/html' } }) } } as unknown as Env;
+  const page = await worker.fetch(new Request('https://oxynui.com/pricing/'), html, ctx);
+  assert.equal(page.headers.get('content-type'), 'text/html; charset=utf-8');
+  assert.equal(await page.text(), '<p>x</p>');
+  const img = await worker.fetch(new Request('https://oxynui.com/og.png'), html, ctx);
+  assert.equal(img.headers.get('content-type'), 'image/png');
+});
