@@ -182,8 +182,8 @@ export function installLine(d: Demo): string {
   return `oxyn add ${d.slug}`;
 }
 
-/** Installs the `oxyn` CLI from the repository (no crates.io release yet). */
-export const CLI_INSTALL = `cargo install --git ${REPO} oxyn-cli`;
+/** Installs the `oxyn` CLI from crates.io. */
+export const CLI_INSTALL = `cargo install oxyn-cli`;
 
 
 // ── Library v2 (plan #29): eight categories + screens, affectUI-style pages ─────────────────

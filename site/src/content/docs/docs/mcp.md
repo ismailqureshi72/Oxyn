@@ -7,10 +7,10 @@ description: Let Claude Code, Codex, Cursor, Windsurf, VS Code, Zed, Antigravity
 
 ## Install
 
-The server is not on crates.io yet. Install it from the repository:
+Install it from crates.io:
 
 ```sh
-cargo install --git https://github.com/ismailqureshi72/Oxyn oxyn-mcp
+cargo install oxyn-mcp
 ```
 
 That puts `oxyn-mcp` in `~/.cargo/bin`. It speaks MCP over stdio; your agent starts it, you never run it by hand.
@@ -226,7 +226,7 @@ Set up Oxyn (Rust UI components for agent apps,
 https://oxynui.com) in this project.
 
 1. If the `oxyn` command is missing, install it:
-   cargo install --git https://github.com/ismailqureshi72/Oxyn oxyn-cli
+   cargo install oxyn-cli
    If the oxyn MCP server (oxyn-mcp) is connected, you can use its tools
    (search_components, get_component, add_component) instead of the CLI.
 2. In the root of this Dioxus or GPUI project, run `oxyn init` once.
