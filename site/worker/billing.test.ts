@@ -17,21 +17,44 @@ type Call = { method: string; url: string; body: any };
 let calls: Call[] = [];
 let remote: Map<string, Record<string, any>>; // subscriptions as Polar has them
 let patchStatus = 200;
+let orders: Record<string, any>[] = []; // orders as Polar has them (every customer)
+let receiptStatus = 200;
 const realFetch = globalThis.fetch;
+const P = 'https://api.polar.sh/v1';
 beforeEach(() => {
-  calls = []; remote = new Map(); patchStatus = 200;
+  calls = []; remote = new Map(); patchStatus = 200; orders = []; receiptStatus = 200;
   globalThis.fetch = (async (input: RequestInfo | URL, init: RequestInit = {}) => {
     const url = String(input);
     const method = init.method || 'GET';
     const body = init.body ? JSON.parse(String(init.body)) : null;
     calls.push({ method, url, body });
+    if (url.startsWith(P + '/orders/?')) {
+      const q = new URL(url).searchParams;
+      return Response.json({ items: orders.filter((o) => !q.get('customer_id') || o.customer_id === q.get('customer_id')) });
+    }
+    let om = url.match(/^https:\/\/api\.polar\.sh\/v1\/orders\/([^/]+)(\/receipt|\/invoice)?$/);
+    if (om) {
+      const o = orders.find((x) => x.id === om![1]);
+      if (!o) return Response.json({ error: 'ResourceNotFound' }, { status: 404 });
+      if (!om[2]) return Response.json(o);
+      if (om[2] === '/receipt') return receiptStatus === 202 ? new Response(null, { status: 202 }) : Response.json({ url: `https://files.test/r/${o.id}.pdf` });
+      if (method === 'POST') { if (!o.billing_name) return Response.json({ error: 'MissingInvoiceBillingDetails' }, { status: 422 }); o.is_invoice_generated = true; return Response.json({}, { status: 202 }); }
+      return Response.json({ url: `https://files.test/i/${o.id}.pdf` });
+    }
+    const pm = url.match(/^https:\/\/api\.polar\.sh\/v1\/customers\/([^/]+)\/payment-methods$/);
+    if (pm) return Response.json({ items: [{ id: 'pm1', type: 'card', customer_id: decodeURIComponent(pm[1]), method_metadata: { brand: 'visa', last4: '4242', exp_month: 12, exp_year: 2030, wallet: null } }] });
+    if (url === P + '/customer-sessions/') return Response.json({ token: 't', customer_portal_url: `https://polar.sh/oxyn/portal?customer_session_token=t&c=${body.customer_id}` }, { status: 201 });
     const m = url.match(/^https:\/\/api\.polar\.sh\/v1\/subscriptions\/([^/]+)$/);
     if (!m) return new Response('{}', { status: 404 });
     const s = remote.get(decodeURIComponent(m[1]));
     if (!s) return new Response('{}', { status: 404 });
     if (method === 'GET') return Response.json(s);
     if (patchStatus !== 200) return new Response('{"detail":"nope"}', { status: patchStatus });
-    if ('product_id' in body) s.pending_update = { id: 'pu1', product_id: body.product_id, applies_at: s.current_period_end };
+    if ('pending_update' in body && body.pending_update === null) s.pending_update = null;
+    if ('product_id' in body) {
+      if (body.proration_behavior === 'next_period') s.pending_update = { id: 'pu1', product_id: body.product_id, applies_at: s.current_period_end };
+      else { s.product_id = body.product_id; s.amount = PLANS.find((p) => p.product === body.product_id)!.cents; }
+    }
     if ('cancel_at_period_end' in body) s.cancel_at_period_end = body.cancel_at_period_end;
     s.modified_at = new Date().toISOString();
     return Response.json(s);
@@ -228,4 +251,165 @@ test('cancel: a Team member, an account without a subscription and a Polar failu
   assert.equal(row('t1').cancel_at_period_end, 0);
   patchStatus = 200;
   assert.equal((await post('/api/billing/cancel', await session(owner))).body.subscription.cancel_at_period_end, true);
+});
+
+// ── In-site billing ─────────────────────────────────────────────────────────────────────────────
+const TEAM_M = plan('team-month'), TEAM_Y = plan('team-year');
+const get = async (path: string, cookie: string) => {
+  const r = await worker.fetch(new Request(ORIGIN + path, { headers: { cookie } }), env, ctx);
+  const t = await r.text();
+  let body: any = null; try { body = JSON.parse(t); } catch { /* redirect */ }
+  return { status: r.status, body, location: r.headers.get('location') };
+};
+const change = async (cookie: string, planKey: string, origin = ORIGIN) => {
+  const r = await worker.fetch(new Request(ORIGIN + '/api/billing/change', { method: 'POST', headers: { cookie, origin, 'content-type': 'application/json' }, body: JSON.stringify({ plan: planKey }) }), env, ctx);
+  return { status: r.status, body: (await r.json()) as any };
+};
+
+test('change rule: Pro -> Team on the same interval now (invoice), everything else at renewal (next_period)', async () => {
+  const { changeRule, switchTargets, prorated } = await import('./billing.ts');
+  assert.deepEqual(changeRule(PRO_M, TEAM_M), { when: 'now', proration: 'invoice' });
+  assert.deepEqual(changeRule(FOUNDER_Y, TEAM_Y), { when: 'now', proration: 'invoice' });
+  assert.deepEqual(changeRule(PRO_M, PRO_Y), { when: 'renewal', proration: 'next_period' });
+  assert.deepEqual(changeRule(PRO_M, TEAM_Y), { when: 'renewal', proration: 'next_period' });
+  assert.deepEqual(changeRule(TEAM_M, PRO_M), { when: 'renewal', proration: 'next_period' });
+  assert.ok(switchTargets(FOUNDER_M).every((p) => !p.founder));
+  assert.equal(switchTargets(PRO_M).length, 3);
+  const start = new Date(0).toISOString(), end = new Date(30 * 86_400_000).toISOString();
+  assert.equal(prorated(1999, TEAM_M, start, end, 15 * 86_400_000), Math.round((4499 - 1999) / 2));
+});
+
+test('billing details: live plan, founder renewal shown as the next charge, card, no founder options', async () => {
+  const u = user('details@example.com');
+  await handleEvent(env, ctx, 'subscription.created', polarSub('b1', FOUNDER_M, u));
+  const r = await get('/api/billing/subscription', await session(u));
+  assert.equal(r.status, 200);
+  const s = r.body.subscription;
+  assert.equal(s.plan.key, 'pro-founder-month');
+  assert.equal(s.next.cents, PRO_M.cents, 'the founder intro price ends at the renewal');
+  assert.equal(s.next.founder_ends, true);
+  assert.equal(s.pending.founder_renewal, true);
+  assert.ok(s.options.length > 0 && s.options.every((o: any) => !o.founder));
+  assert.equal(r.body.card.last4, '4242');
+  for (const c of calls) assert.ok(!c.url.includes('organization_id'));
+});
+
+test('switch: monthly -> yearly is scheduled at renewal; keep drops it; founder renewal cannot be dropped', async () => {
+  const u = user('switch1@example.com');
+  await handleEvent(env, ctx, 'subscription.created', polarSub('b2', PRO_M, u));
+  const cookie = await session(u);
+  const pv = await get('/api/billing/preview?plan=pro-year', cookie);
+  assert.equal(pv.body.preview.when, 'renewal');
+  assert.equal(pv.body.preview.charge_now_cents, 0);
+  assert.equal(pv.body.preview.next_charge.cents, PRO_Y.cents);
+  assert.equal((await change(cookie, 'pro-year', 'https://evil.test')).status, 403);
+  calls = [];
+  const r = await change(cookie, 'pro-year');
+  assert.equal(r.status, 200);
+  assert.deepEqual(patches().map((p) => p.body), [{ product_id: PRO_Y.product, proration_behavior: 'next_period' }]);
+  assert.equal(remote.get('b2')!.product_id, PRO_M.product);
+  assert.equal(r.body.subscription.pending.plan.key, 'pro-year');
+  assert.equal(row('b2').plan, 'pro');
+  calls = [];
+  const k = await post('/api/billing/keep', cookie);
+  assert.equal(k.status, 200);
+  assert.deepEqual(patches().map((p) => p.body), [{ pending_update: null }]);
+  assert.equal(remote.get('b2')!.pending_update, null);
+  // Founder: its renewal as Pro stays.
+  const f = user('switch2@example.com');
+  await handleEvent(env, ctx, 'subscription.created', polarSub('b3', FOUNDER_M, f));
+  calls = [];
+  await post('/api/billing/keep', await session(f));
+  assert.equal(patches().length, 0);
+  assert.equal(remote.get('b3')!.pending_update.product_id, PRO_M.product);
+});
+
+test('switch: Pro -> Team charges the prorated difference now; founder pending renewal is cleared first', async () => {
+  const u = user('switch3@example.com');
+  await handleEvent(env, ctx, 'subscription.created', polarSub('b4', FOUNDER_M, u));
+  const cookie = await session(u);
+  const pv = await get('/api/billing/preview?plan=team-month', cookie);
+  assert.equal(pv.body.preview.when, 'now');
+  assert.ok(pv.body.preview.charge_now_cents > 0 && pv.body.preview.charge_now_cents <= TEAM_M.cents - FOUNDER_M.cents);
+  calls = [];
+  const r = await change(cookie, 'team-month');
+  assert.equal(r.status, 200);
+  assert.deepEqual(patches().map((p) => p.body), [{ pending_update: null }, { product_id: TEAM_M.product, proration_behavior: 'invoice' }]);
+  assert.equal(row('b4').plan, 'team');
+  assert.equal(row('b4').founder, 0);
+  assert.equal((await get('/api/billing/me', cookie)).body.tier, 'team');
+});
+
+test('switch: founder plans, unknown plans, a cancelling plan, a teammate and a Polar refusal', async () => {
+  const u = user('switch4@example.com');
+  await handleEvent(env, ctx, 'subscription.created', polarSub('b5', PRO_M, u));
+  const cookie = await session(u);
+  assert.equal((await change(cookie, 'pro-founder-year')).status, 400);
+  assert.equal((await change(cookie, 'nope')).status, 400);
+  assert.equal((await change(cookie, 'pro-month')).status, 409);
+  // A teammate cannot switch the owner's Team.
+  const owner = user('switch5@example.com');
+  await handleEvent(env, ctx, 'subscription.created', polarSub('b6', TEAM_M, owner));
+  const mate = user('switch6@example.com');
+  env.DB.raw.prepare('INSERT INTO team_seats (subscription_id, email, invited_by, created_at) VALUES (?, ?, ?, ?)').run('b6', mate.email, owner.id, now());
+  const mc = await session(mate);
+  const m = await change(mc, 'team-year');
+  assert.equal(m.status, 404);
+  assert.match(m.body.error.message, /Team owner/);
+  assert.equal((await get('/api/billing/subscription', mc)).body.subscription, null);
+  // Polar refuses: 502, D1 unchanged.
+  patchStatus = 422;
+  assert.equal((await change(cookie, 'team-month')).status, 502);
+  assert.equal(row('b5').plan, 'pro');
+  patchStatus = 200;
+  // Cancelling: resume first.
+  await post('/api/billing/cancel', cookie);
+  const c = await change(cookie, 'team-month');
+  assert.equal(c.status, 409);
+  assert.equal(c.body.error.code, 'cancelling');
+});
+
+test('invoices: only the account\'s own orders; receipt and invoice downloads; another customer\'s order is 404', async () => {
+  const u = user('inv@example.com');
+  await handleEvent(env, ctx, 'subscription.created', polarSub('b7', PRO_M, u));
+  const other = user('inv2@example.com');
+  await handleEvent(env, ctx, 'subscription.created', polarSub('b8', PRO_M, other));
+  const mk = (id: string, cust: string, extra = {}) => ({ id, customer_id: cust, created_at: now(), status: 'paid', total_amount: 1999, tax_amount: 0, currency: 'usd', description: 'Oxyn Pro Monthly', billing_reason: 'subscription_create', invoice_number: 'OXYN-1', is_invoice_generated: false, billing_name: null, ...extra });
+  const A = '11111111-1111-4111-8111-111111111111', B = '22222222-2222-4222-8222-222222222222', C = '33333333-3333-4333-8333-333333333333';
+  orders = [mk(A, 'cus_inv@example.com'), mk(B, 'cus_inv2@example.com'), mk(C, 'cus_inv@example.com', { billing_name: 'Ada', is_invoice_generated: false })];
+  const cookie = await session(u);
+  const l = await get('/api/billing/invoices', cookie);
+  assert.deepEqual(l.body.items.map((o: any) => o.id).sort(), [A, C].sort());
+  assert.ok(calls.some((c) => c.url.includes('customer_id=cus_inv%40example.com')));
+  assert.ok(!calls.some((c) => c.url.includes('organization_id')));
+  assert.equal((await get(`/api/billing/invoices/${A}/receipt`, cookie)).body.url, `https://files.test/r/${A}.pdf`);
+  assert.equal((await get(`/api/billing/invoices/${B}/receipt`, cookie)).status, 404);
+  assert.equal((await get(`/api/billing/invoices/${A}/invoice`, cookie)).status, 422, 'no billing address: use the receipt');
+  assert.equal((await get(`/api/billing/invoices/${C}/invoice`, cookie)).status, 202, 'generation starts');
+  assert.equal((await get(`/api/billing/invoices/${C}/invoice`, cookie)).body.url, `https://files.test/i/${C}.pdf`);
+  receiptStatus = 202;
+  assert.equal((await get(`/api/billing/invoices/${A}/receipt`, cookie)).status, 202);
+});
+
+test('card: a customer session on Polar\'s page for the owner; the old portal link lands on the account page', async () => {
+  const u = user('card@example.com');
+  await handleEvent(env, ctx, 'subscription.created', polarSub('b9', PRO_M, u));
+  const r = await get('/api/billing/card', await session(u));
+  assert.equal(r.status, 302);
+  assert.match(r.location!, /^https:\/\/polar\.sh\/oxyn\/portal\?customer_session_token=t&c=cus_card@example\.com$/);
+  const s = calls.find((c) => c.url.endsWith('/customer-sessions/'))!;
+  assert.deepEqual(s.body, { customer_id: 'cus_card@example.com', return_url: `${ORIGIN}/account/#billing` });
+  const p = await get('/api/billing/portal', await session(u));
+  assert.equal(p.location, `${ORIGIN}/account/#billing`);
+  const nobody = user('card2@example.com');
+  assert.equal((await get('/api/billing/card', await session(nobody))).location, `${ORIGIN}/account/?billing=card_unavailable#billing`);
+});
+
+test('polar check: scopes by harmless probes, once a day', async () => {
+  const { polarCheck } = await import('./billing.ts');
+  const out = await polarCheck(env);
+  assert.ok(out);
+  assert.equal(out!.subscriptions_write, 'ok');
+  assert.ok(patches().every((p) => p.url.endsWith('/00000000-0000-4000-8000-000000000000')));
+  assert.equal(await polarCheck(env), null);
 });
