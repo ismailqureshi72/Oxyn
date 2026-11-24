@@ -65,12 +65,19 @@ the first year), then $19.99/mo ($199.99/yr). First 100 new subscribers.
   monthly caps do not change, and the `founder_claims` row stays, so the spot stays counted.
 - *New subscribers only.* `/api/billing/checkout` sends anyone whose account or email had an Oxyn
   subscription before to the regular price (`/pricing/?founder=used`), and the pricing page hides
-  the founder rate for a signed-in account with a past subscription. A founder subscription that
-  still arrives from a returning customer (a direct Polar link) takes no founder spot and renews at
-  the regular price like any other.
+  the founder rate for a signed-in account with a past subscription.
+- *No public founder link.* The founder products have no Polar checkout link (the two links were
+  deleted in Polar when this gate shipped). A founder checkout is created by the Worker, one per
+  buyer, through Polar's checkout session API (`POST /v1/checkouts/`) only after the checks above:
+  signed in, founder spots left, no earlier subscription. If Polar does not answer, the buyer goes
+  back to `/pricing/?checkout=unavailable`, never to a link.
+- *Backstop.* A founder subscription that still arrives from a returning customer (say a checkout
+  session passed on to someone else) takes no founder spot, renews at the regular price like any
+  other, and is flagged once in the audit log (`billing.founder_repeat`, actor `polar-webhook`); the
+  admin **Activity** tab lists these under **Needs a look**. Nothing is changed on the subscription
+  automatically.
 - *Not in the customer portal.* Both founder products are `visibility: private` in Polar, so they
-  can only be bought through their checkout links and a subscriber cannot switch to them from the
-  portal.
+  are not on the Polar storefront and a subscriber cannot switch to them from the portal.
 
 The first 100 founder subscriptions that become active are counted in D1
 (`founder_claims`). From the 100th on, `/api/billing/plans` reports the founder rate as closed, the
@@ -94,12 +101,12 @@ Pro CLI. A cancellation at the end of the period keeps Pro open until that date.
 | --- | --- | --- |
 | `pro-month` | `677990ee-37fd-4144-a7b4-fc0072db0236` | https://buy.polar.sh/polar_cl_nOTwWhBDBia5V47drawKkcEPM1g1ClF73jekN2cDk0k |
 | `pro-year` | `6c6f941c-eb68-42a1-9588-6999793d7723` | https://buy.polar.sh/polar_cl_TIpeARSu8pHt9MTbFwisPzixrXIdJhlEBJOHG2B2fYk |
-| `pro-founder-month` | `dd6c77e0-537e-4575-8272-179818c4636c` | https://buy.polar.sh/polar_cl_1DDghPtFc5Mtf4xW8kEUbXO68TclXcBADP5xN1UD4x6 |
-| `pro-founder-year` | `b2c7ff7d-5ed5-4677-b4c2-023860cf6440` | https://buy.polar.sh/polar_cl_coirJZKmfkFV75qqxxVDvjQO9bmbnqmAnQd9T2Xrezv |
+| `pro-founder-month` | `dd6c77e0-537e-4575-8272-179818c4636c` | none: checkout session per buyer |
+| `pro-founder-year` | `b2c7ff7d-5ed5-4677-b4c2-023860cf6440` | none: checkout session per buyer |
 | `team-month` | `47ac4829-9dea-4c5f-a47c-948eb3005865` | https://buy.polar.sh/polar_cl_NCvpX9ojhDrafHw1bLtki9PTVUOePRTSPrUgL2ipK4Y |
 | `team-year` | `c9ad78fa-8fd7-4f81-a19a-af4c6472f000` | https://buy.polar.sh/polar_cl_tGlTFd4OLxE5lYiu8NWR2eDjPRkrJGfUUcEwd1eo3vC |
 
-Every checkout link has the success URL
+Every checkout link (and every founder checkout session) has the success URL
 `https://oxynui.com/pricing/success?checkout_id={CHECKOUT_ID}` and the return URL
 `https://oxynui.com/pricing/` (set on Polar; moved from `ui.oxyn.workers.dev` with the domain). The ids and links live in `PLANS` in
 `site/worker/billing.ts`; prices shown on the site are `PRICES` in `site/src/lib/data.ts`. Change
@@ -116,10 +123,10 @@ format raw, API version 2026-10, events `subscription.created`, `subscription.up
 | Secret | Needed for | Without it |
 | --- | --- | --- |
 | `POLAR_WEBHOOK_SECRET` | Verifying webhooks (Standard Webhooks). | The webhook answers 503; no subscription is recorded. |
-| `POLAR_ACCESS_TOKEN` | The Billing section of the account page (plan switch, payments and receipts, the card on file, Update card), Cancel / Resume, scheduling founder subscriptions to renew as regular Pro, archiving the founder products at 100. Scopes: `subscriptions:read/write`, `orders:read`, `customers:read`, `customer_sessions:write`, `products:write`; checked daily (D1 settings `polar_check`, shown in the admin panel). | The Billing section and Cancel plan answer 503; founder renewals and the founder archive stay pending in the admin panel (the site still stops selling it). |
+| `POLAR_ACCESS_TOKEN` | The Billing section of the account page (plan switch, payments and receipts, the card on file, Update card), Cancel / Resume, scheduling founder subscriptions to renew as regular Pro, archiving the founder products at 100. Founder checkouts (`checkouts:write`). Scopes: `subscriptions:read/write`, `orders:read`, `customers:read`, `customer_sessions:write`, `checkouts:write`, `products:write`; checked daily (D1 settings `polar_check`, shown in the admin panel). | The Billing section and Cancel plan answer 503; founder checkouts go back to pricing (`?checkout=unavailable`); founder renewals and the founder archive stay pending in the admin panel (the site still stops selling it). |
 
 Set them from `site/` with `npx wrangler secret put <NAME>`. An organization access token from Polar
-(Settings, Developers) with `products:write`, `subscriptions:read`, `subscriptions:write` and `customer_sessions:write` is enough for
+(Settings, Developers) with `products:write`, `subscriptions:read`, `subscriptions:write`, `customer_sessions:write` and `checkouts:write` is enough for
 `POLAR_ACCESS_TOKEN`.
 
 ## How a sale flows
@@ -127,8 +134,10 @@ Set them from `site/` with `npx wrangler secret put <NAME>`. An organization acc
 1. The pricing page links to `/api/billing/checkout?plan=<key>`. Signed out, that goes to
    `/login/?next=/pricing/?buy=<key>`, and the pricing page carries on to checkout after sign-in.
 2. Signed in, the Worker redirects to the plan's checkout link with `customer_email`,
-   `customer_name` and `reference_id=<account id>` (stored by Polar in the checkout metadata). An
-   account that already has a live subscription goes to its Account page instead.
+   `customer_name` and `reference_id=<account id>` (stored by Polar in the checkout metadata). For a
+   founder plan it creates a checkout session instead (same email, name and `reference_id` in
+   `metadata`) and redirects to its URL. An account that already has a live subscription goes to
+   its Account page instead.
 3. Polar sends `checkout.updated` (status `succeeded`) and the `subscription.*` events. The Worker
    checks the signature (HMAC-SHA256 over `id.timestamp.body`; both Standard Webhooks and Polar's
    older key derivation), ignores replays (`webhook_events`) and older states (`polar_modified_at`),
