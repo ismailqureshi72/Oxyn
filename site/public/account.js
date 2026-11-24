@@ -307,7 +307,7 @@
       b.type = 'button'; b.className = 'x-bill-opt'; b.setAttribute('aria-pressed', 'false');
       const t = document.createElement('b'); t.textContent = planName(op);
       const pr = document.createElement('span'); pr.textContent = `${money(op.cents, s.currency)} ${per(op.interval)}`;
-      const w = document.createElement('em'); w.textContent = op.scheduled ? 'Scheduled for your renewal' : op.when === 'now' ? 'Starts now' : 'Starts at your renewal';
+      const w = document.createElement('em'); w.textContent = op.scheduled ? 'Your plan from the renewal' : op.when === 'now' ? 'Starts now' : 'Starts at your renewal';
       b.append(t, pr, w);
       b.disabled = !!op.scheduled;
       b.addEventListener('click', () => confirmSwitch(box, op, b));

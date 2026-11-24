@@ -431,7 +431,7 @@ function describe(s: Polar, row: SubRow, owner: boolean) {
     current_period_end: s.current_period_end ?? row.current_period_end,
     next: nextPlan ? { date: s.current_period_end ?? row.current_period_end, cents: nextCents, plan: planOut(nextPlan), founder_ends: cur.founder } : null,
     pending: pendingPlan ? { plan: planOut(pendingPlan), applies_at: s.pending_update.applies_at ?? s.current_period_end, founder_renewal: founderRenewal } : null,
-    options: canSwitch ? switchTargets(cur).map((p) => ({ ...planOut(p), ...changeRule(cur, p), scheduled: pendingPlan?.product === p.product && !founderRenewal })) : [],
+    options: canSwitch ? switchTargets(cur).map((p) => ({ ...planOut(p), ...changeRule(cur, p), scheduled: pendingPlan?.product === p.product })) : [],
     blocked: !owner ? 'not_owner' : s.cancel_at_period_end ? 'cancelling' : String(s.status) === 'past_due' ? 'past_due' : canSwitch ? null : 'inactive',
   };
 }
