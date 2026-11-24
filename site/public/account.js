@@ -159,11 +159,17 @@
     if (plan.admin) {
       text = 'Admin: every component, screen and block is open to you, whatever the plan.';
     } else if (plan.via === 'subscription' && s) {
-      const what = `${s.plan === 'team' ? 'Team' : 'Pro'}${s.founder ? ' at the founder rate' : ''}, ${money(s.amount, s.currency)} a ${s.interval}`;
+      // Founder rate = intro price: the first month (or year), then the regular Pro price.
+      const what = s.founder
+        ? `Pro at the founder rate, ${money(s.amount, s.currency)} for your first ${s.interval}`
+        : `${s.plan === 'team' ? 'Team' : 'Pro'}, ${money(s.amount, s.currency)} a ${s.interval}`;
       const when = s.current_period_end ? fmtDay(s.current_period_end) : '';
+      const renew = s.founder && s.renews_at_amount
+        ? ` Renews${when ? ` on ${when}` : ''} at the regular ${money(s.renews_at_amount, s.currency)} a ${s.interval}.`
+        : when ? ` Renews on ${when}.` : '';
       text = s.cancel_at_period_end ? `${what}. Cancelled: Pro stays open until ${when || 'the end of the period'}.`
         : s.status === 'past_due' ? `${what}. The last payment did not go through; update your card in Manage billing.`
-        : `${what}.${when ? ` Renews on ${when}.` : ''}`;
+        : `${what}.${renew}`;
     } else if (plan.via === 'seat' && plan.seat) {
       text = `Pro through a Team plan (seat from ${plan.seat.owner_email}).`;
     } else if (plan.via === 'grant' && plan.grant) {
@@ -172,6 +178,7 @@
       text = `Your ${s.plan === 'team' ? 'Team' : 'Pro'} subscription has ended. Code you installed keeps working; subscribe again to get the Pro code and updates.`;
     }
     line.textContent = text;
+    cancelUi(box, plan);
     const p = new URLSearchParams(location.search);
     if (p.get('billing') === 'active') { note.textContent = 'You already have an active plan. To change it, use Manage billing.'; note.hidden = false; }
     else if (!plan.pro && !plan.email_verified && plan.tier === 'free') { note.textContent = 'Got a Team seat? Sign in once with Google or GitHub on this email to verify it, and the seat opens.'; note.hidden = false; }
@@ -198,6 +205,36 @@
     const form = $('[data-seat-form]', seats);
     form.hidden = plan.seats.length >= plan.seat_limit;
   }
+  // Cancel at the period end / resume, for the account's own live subscription (not a Team seat,
+  // not a grant). Polar keeps Pro open until the period end and refunds nothing.
+  function cancelUi(box, plan) {
+    const s = plan.subscription;
+    const own = !!(s && s.active); // its own live subscription (a seat or grant is not)
+    const cancelB = $('[data-plan-cancel]', box), resumeB = $('[data-plan-resume]', box), confirm = $('[data-plan-confirm]', box);
+    if (!cancelB || !resumeB || !confirm) return;
+    const when = s && s.current_period_end ? fmtDay(s.current_period_end) : '';
+    cancelB.hidden = !own || s.cancel_at_period_end;
+    resumeB.hidden = !own || !s.cancel_at_period_end;
+    confirm.hidden = true;
+    planErr('');
+    if (!own) return;
+    if (s.cancel_at_period_end) {
+      $('[data-plan-line]', box).textContent = `Cancels on ${when || 'the last day of this period'}. Pro stays open until then, and the plan will not renew.`;
+    }
+    $('[data-plan-confirm-msg]', confirm).textContent = `Your plan stays active until ${when || 'the end of this billing period'}, then it won't renew. Nothing is refunded, and you can resume any time before then.`;
+    cancelB.onclick = () => { confirm.hidden = false; cancelB.hidden = true; $('[data-plan-confirm-no]', confirm).focus(); };
+    $('[data-plan-confirm-no]', confirm).onclick = () => { confirm.hidden = true; cancelB.hidden = false; cancelB.focus(); };
+    const send = async (btn, path) => {
+      btn.disabled = true; planErr('');
+      const r = await api(path, {});
+      btn.disabled = false;
+      if (r.ok) { await loadPlan(); const f = $(path.endsWith('cancel') ? '[data-plan-resume]' : '[data-plan-cancel]', box); if (f && !f.hidden) f.focus(); }
+      else planErr((r.data.error && r.data.error.message) || 'That did not work. Please try again, or use Manage billing.');
+    };
+    $('[data-plan-confirm-yes]', confirm).onclick = (e) => send(e.currentTarget, '/api/billing/cancel');
+    resumeB.onclick = (e) => send(e.currentTarget, '/api/billing/resume');
+  }
+  function planErr(t) { const e = $('[data-plan-err]'); if (e) { e.textContent = t || ''; e.hidden = !t; } }
   function seatErr(t) { const e = $('[data-seat-err]'); if (e) { e.textContent = t || ''; e.hidden = !t; } }
   async function apiDelete(path) {
     try { const r = await fetch(path, { method: 'DELETE', credentials: 'same-origin', headers: { accept: 'application/json' } }); let d = {}; try { d = await r.json(); } catch { /* empty */ } return { ok: r.ok, data: d }; }

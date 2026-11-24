@@ -13,7 +13,7 @@
 
 import { EMAIL_RE, HttpError, KINDS, fail, json, openIssue, sha256Hex, type Ctx, type Env, type Kind } from './shared';
 import { adminStanding, currentUser } from './auth';
-import { adminBilling } from './billing';
+import { adminBilling, adminFounderRenewals } from './billing';
 import { activity, addGrants, changePlan, checkGrants, getUser, listGrants, listUsers, resetUsage, restoreGrant, revokeGrant } from './access';
 import PAGE from './admin-ui/index.html';
 import CSS from './admin-ui/app.css';
@@ -257,6 +257,10 @@ async function api(req: Request, env: Env, ctx: Ctx, url: URL, email: string, na
 
   // Billing: subscribers and recurring revenue (Polar webhook copy in D1, see billing.ts)
   if (route === '/billing' && m === 'GET') return adminBilling(env);
+  if (route === '/billing/founder-renewals' && m === 'POST') {
+    await audit(env, email, 'billing.founder_renewals', 'retry');
+    return adminFounderRenewals(env);
+  }
 
   // Settings: content flags
   if (route === '/flags' && m === 'GET') return json({ ok: true, flags: await readFlags(env) });

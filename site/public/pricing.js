@@ -95,7 +95,11 @@
   }));
   setInterval_(params.get('interval') === 'year' ? 'year' : 'month');
 
+  // The founder rate is for new subscribers: someone who had an Oxyn subscription sees the regular price.
+  let returning = params.get('founder') === 'used';
+  if (returning) { page.dataset.founder = 'closed'; setInterval_(page.dataset.interval); }
   if (params.get('founder') === 'closed') say('The founder rate has just run out: all 100 spots are taken. Pro is still here at the regular price.');
+  else if (returning) say('The founder rate is for new subscribers only, and this account has had an Oxyn subscription before. Pro is here at the regular price.');
   else if (params.get('billing') === 'active') say('You already have an active plan. Manage it from Manage billing in your account menu.');
   else if (from) say(`The code of ${fromName} is part of Oxyn Pro. Pick a plan; after checkout you can go straight back to it.`);
 
@@ -104,7 +108,7 @@
     .then((d) => {
       if (!d || !d.founder) return;
       const f = d.founder;
-      page.dataset.founder = f.open ? 'open' : 'closed';
+      page.dataset.founder = f.open && !returning ? 'open' : 'closed';
       const left = $('[data-pr-left]');
       if (left) left.textContent = f.open ? `${f.remaining} of ${f.cap} spots left.` : '';
       setInterval_(page.dataset.interval);
@@ -112,6 +116,10 @@
     .catch(() => {});
 
   planP().then((plan) => {
+    if (plan && plan.subscription) {
+      returning = true;
+      if (page.dataset.founder === 'open') { page.dataset.founder = 'closed'; setInterval_(page.dataset.interval); }
+    }
     if (plan) {
       $$('[data-tier]').forEach((t) => {
         const cur = t.dataset.tier === plan.tier;

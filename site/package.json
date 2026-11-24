@@ -10,7 +10,7 @@
     "build": "node scripts/gen.mjs --wasm && astro build",
     "build:site": "astro build",
     "preview": "astro preview",
-    "test": "node --experimental-transform-types --no-warnings --import ./worker/testing/register.mjs --test worker/entitle.test.ts worker/pro.test.ts worker/domains.test.ts"
+    "test": "node --experimental-transform-types --no-warnings --import ./worker/testing/register.mjs --test worker/entitle.test.ts worker/pro.test.ts worker/domains.test.ts worker/billing.test.ts"
   },
   "engines": {
     "node": ">=22.12"
