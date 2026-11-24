@@ -3,9 +3,12 @@
 // time), replaced by the WASM mount when it scrolls into view (public/oxyn-demo.js).
 // `defer`: stay on the server-rendered markup until a script calls mountLive() (laptop tabs).
 // `proLock`: an Oxyn Pro item; the live playground leaves its generated code out (hide_code).
-interface Props { slug: string; html: string; variant?: number; controls?: boolean; height?: number; defer?: boolean; proLock?: boolean }
-const { slug, html, variant = -1, controls = false, defer = false, proLock = false } = Astro.props;
+// `lazy`: a preview in a hidden tab. Its markup is not inlined; it is fetched from /ssr/<key>.html
+// the first time the preview comes near the screen (lib/lazy-ssr.ts lists every such preview).
+import { ssrUrl } from '../lib/lazy-ssr';
+interface Props { slug: string; html: string; variant?: number; controls?: boolean; height?: number; defer?: boolean; proLock?: boolean; lazy?: boolean }
+const { slug, html, variant = -1, controls = false, defer = false, proLock = false, lazy = false } = Astro.props;
 ---
-<oxyn-demo data-pagefind-ignore data-slug={slug} data-variant={variant} data-controls={controls ? 'true' : 'false'} data-defer={defer ? 'true' : undefined} data-pro-item={proLock ? 'true' : undefined}>
-  <div class="oxd-root" set:html={html} />
+<oxyn-demo data-pagefind-ignore data-slug={slug} data-variant={variant} data-controls={controls ? 'true' : 'false'} data-defer={defer ? 'true' : undefined} data-pro-item={proLock ? 'true' : undefined} data-ssr={lazy ? ssrUrl(slug, variant) : undefined}>
+  {lazy ? <div class="oxd-root" /> : <div class="oxd-root" set:html={html} />}
 </oxyn-demo>
