@@ -7,21 +7,12 @@ import Hero from '../components/v2/Hero.astro';
 import { icon } from '../components/v2/icons';
 import { mark, brands } from '../components/v2/brands';
 import { demos, counts, screens, blocks, demoUrl, REPO, CLI_INSTALL } from '../lib/data';
+import { homeTabSets, compareTabSlugs } from '../lib/lazy-ssr';
 import { BRAND, ENTITY, HOME_DESCRIPTION, organization, website, softwareApplication, faqPage } from '../lib/seo';
 
 const find = (s: string) => demos.find((d) => d.slug === s)!;
-const tabSets: [string, string, string[] | null][] = [
-  ['components', 'Components', ['approval-card', 'tool-call', 'agent-plan', 'model-picker', 'thinking-pill', 'context-meter']],
-  ['screens', 'Screens', screens.slice(0, 6).map((d) => d.slug)],
-  ['blocks', 'Blocks', blocks.slice(0, 6).map((d) => d.slug)],
-  ['illustrations', 'Illustrations', null],
-  ['motion', 'Motion', ['text-shimmer', 'verb-cycler', 'text-reveal', 'elapsed-timer', 'text-morph', 'slot-text']],
-];
-const compareTabs = [
-  ['approval', 'Approval', find('approval-card')],
-  ['tools', 'Tool calls', find('tool-call')],
-  ['chat', 'Agent chat', find('reasoning-block')],
-] as const;
+const tabSets = homeTabSets;
+const compareTabs = compareTabSlugs.map(([k, l, slug]) => [k, l, find(slug)] as const);
 // The compare seam: a vertical sine (wavelength 120 px, amplitude 6 px) drawn in a 48 px band whose
 // centre (x 24) is the divider. The same sine masks the Oxyn side, and both live in one element that
 // flows down by one wavelength per loop, so the drawn line and the cut edge can never drift apart.
@@ -68,7 +59,7 @@ const jsonld = [organization(), website(), softwareApplication(), faqPage(faq.ma
     <p class="lp-sub x-what-p">{ENTITY}</p>
     <ul class="x-explore" aria-label={`Explore ${BRAND}`}>
       {explore.map(([l, href, img, d]) => (
-        <li><a href={href}><img src={`/og/${img}.png`} width="1200" height="630" loading="lazy" decoding="async" alt={`${l}: ${BRAND}, Rust UI components for AI agents`} /><b>{l}</b><span>{d}</span></a></li>
+        <li><a href={href}><img src={`/og/t/${img}.webp`} width="640" height="336" loading="lazy" decoding="async" alt={`${l}: ${BRAND}, Rust UI components for AI agents`} /><b>{l}</b><span>{d}</span></a></li>
       ))}
     </ul>
   </section>
@@ -82,7 +73,7 @@ const jsonld = [organization(), website(), softwareApplication(), faqPage(faq.ma
       {tabSets.map(([k, l, slugs], i) => (
         <div class="lp-panel" role="tabpanel" id={`p-${k}`} aria-labelledby={`t-${k}`} hidden={i !== 0}>
           {slugs ? (
-            <div class="cgrid">{slugs.map((s) => <CompCard demo={find(s)} />)}</div>
+            <div class="cgrid">{slugs.map((s) => <CompCard demo={find(s)} lazy={i !== 0} />)}</div>
           ) : (
             <div class="lp-soon"><b>{l} are coming soon.</b><span>Animated spot art for empty states, onboarding and errors, drawn from the same tokens.</span><a class="x-pill pill-grey" href={`/${k}/`}>Learn more</a></div>
           )}
@@ -181,7 +172,7 @@ const jsonld = [organization(), website(), softwareApplication(), faqPage(faq.ma
               </div>
               <div class="cmp-clip" aria-hidden="true">
                 <div class="cmp-ride">
-                  <div class="cmp-mbox"><div class="cmp-anti"><div class="cmp-after" inert><OxynDemo slug={d.slug} html={d.variants[0].html} variant={0} defer /></div></div></div>
+                  <div class="cmp-mbox"><div class="cmp-anti"><div class="cmp-after" inert><OxynDemo slug={d.slug} html={d.variants[0].html} variant={0} defer lazy={i !== 0} /></div></div></div>
                   <svg class="cmp-wave" focusable="false"><path class="cmp-halo" d={wave} /><path class="cmp-stroke" d={wave} /><path class="cmp-glint" d={wave} />{sparks.map(([x, y, i, r]) => <path class="cmp-spark" d={star(x, y, r)} style={`--i:${i}`} />)}</svg>
                 </div>
               </div>

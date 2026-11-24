@@ -4,7 +4,8 @@
 // plane in perspective laid back 74° (black hinge band, black keyboard close behind it, speaker
 // grilles, wide trackpad) and one continuous slab outline with the thin front edge and finger scoop). The screen is the selected tab's live screen demo (the same Rust component as its
 // /screens/<slug>/ page) on its 1440 × 900 stage: clickable, scrollable, real. Only the active tab
-// is mounted; the others mount the first time they are picked (site.js).
+// is mounted; the others mount the first time they are picked (site.js), and their markup is
+// fetched when the laptop nears the screen (lib/lazy-ssr.ts).
 // The lid opens with the scroll position across most of the section: on wide screens the scene
 // stays pinned under the tab bar for part of a viewport while the lid opens, so the whole opening
 // is seen. site.js eases the progress (0 closed → 1 open) toward the scroll position in one rAF loop
@@ -16,16 +17,8 @@ import OxynDemo from '../OxynDemo.astro';
 import { icon } from './icons';
 import { markSvg } from './logo';
 import { demos, demoUrl, counts } from '../../lib/data';
-const tabs = (
-  [
-    ['chat-agents', 'Agent chat', 'chat'],
-    ['agent-orchestration', 'Orchestration', 'branch'],
-    ['chat-run', 'Agent run', 'play'],
-    ['kanban', 'Kanban', 'kanban'],
-    ['workflow', 'Workflow', 'flow'],
-    ['folders-overview', 'Folders', 'folder'],
-  ] as const
-)
+import { lapTabs } from '../../lib/lazy-ssr';
+const tabs = lapTabs
   .map(([slug, label, ic]) => ({ d: demos.find((x) => x.slug === slug), label, ic }))
   .filter((t) => t.d) as { d: (typeof demos)[number]; label: string; ic: keyof typeof icon }[];
 // The keyboard, in key units (15 across): function row, numbers, three letter rows, then the bottom
@@ -153,7 +146,7 @@ const g = (y: number) => r2(y / slabH);
             <span class="x-lap-notch" aria-hidden="true"><i></i></span>
             <div class="x-lap-scr">
               {tabs.map(({ d, label }, i) => (
-                <div class="x-lap-shot" data-shot={d.slug} data-on={i === 0 ? '' : undefined} inert={i !== 0} role="group" aria-label={`${label} screen, live`}><OxynDemo slug={d.slug} html={d.html} defer={i !== 0} /></div>
+                <div class="x-lap-shot" data-shot={d.slug} data-on={i === 0 ? '' : undefined} inert={i !== 0} role="group" aria-label={`${label} screen, live`}><OxynDemo slug={d.slug} html={d.html} defer={i !== 0} lazy={i !== 0} /></div>
               ))}
             </div>
             <span class="x-lap-glare" aria-hidden="true"></span>

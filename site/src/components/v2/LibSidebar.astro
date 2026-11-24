@@ -59,7 +59,7 @@ const groupsList = [
         {g.items.length > 0 ? (
           <ul>
             {g.items.map(([name, href, pro]) => (
-              <li><a href={href} aria-current={current === href ? 'page' : undefined}><span>{name}</span>{pro && <span class="pro"><i class="x-bolt" aria-hidden="true"></i><span class="pro-l">Pro</span></span>}</a></li>
+              <li><a href={href} aria-current={current === href ? 'page' : undefined}><span>{name}</span>{pro && <b class="pro"></b>}</a></li>
             ))}
           </ul>
         ) : (

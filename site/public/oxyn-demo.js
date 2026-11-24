@@ -8,6 +8,9 @@
 // - Mounts are queued and run in batches on animation frames, only for demos still on screen
 //   after a short dwell, so a fast scroll past a grid of cards does not bring every card it passed
 //   to life (fewer live demos running = less CPU and memory on long pages).
+// - data-ssr (landing previews in hidden tabs): the server-rendered markup is not inlined; it is
+//   fetched from that URL the moment the preview comes near the screen (or is mounted), so a tab
+//   shows its preview at once while the live mount follows.
 // - A preview with nothing visible to show (no text, no graphics) gets a neutral skeleton until the
 //   live component is in (data-skel; demo.css).
 const cfg = window.OXYN_WASM || {};
@@ -61,6 +64,13 @@ const io = 'IntersectionObserver' in window
     }, { rootMargin: '120px 0px' })
   : null;
 
+// data-ssr: fill the empty root from the fragment, once, unless the live mount got there first.
+const ssrIo = 'IntersectionObserver' in window
+  ? new IntersectionObserver((entries) => {
+      for (const e of entries) if (e.isIntersecting) { ssrIo.unobserve(e.target); e.target.fillSsr(); }
+    }, { rootMargin: '600px 0px' })
+  : null;
+
 const hasContent = (el) => {
   const root = el.querySelector('.oxd-mount') || el;
   if (root.querySelector('svg,img,canvas,video,input,textarea,button')) return true;
@@ -73,13 +83,31 @@ class OxynDemo extends HTMLElement {
     this.dataset.state = 'static';
     const root = this.querySelector('.oxd-root');
     if (root && !hasContent(root)) this.dataset.skel = '';
-    if (!cfg.js) { this.dataset.state = 'static-only'; delete this.dataset.skel; return; }
+    if (this.dataset.ssr) { if (ssrIo) ssrIo.observe(this); else this.fillSsr(); }
+    if (!cfg.js) { this.dataset.state = 'static-only'; if (!this.dataset.ssr) delete this.dataset.skel; return; }
     // data-defer: mounted on demand (mountLive), e.g. a laptop tab the first time it is picked.
     if (this.dataset.defer === 'true') return;
     if (io) io.observe(this); else this.mountLive();
   }
+  fillSsr() {
+    const url = this.dataset.ssr;
+    if (!url || this.ssrPromise) return this.ssrPromise;
+    ssrIo?.unobserve(this);
+    this.ssrPromise = fetch(url)
+      .then((r) => (r.ok ? r.text() : ''))
+      .then((html) => {
+        const root = this.querySelector('.oxd-root');
+        // The live component owns the root once mounted; a late fragment must not replace it.
+        if (!html || !root || this.dataset.state === 'live') return;
+        root.innerHTML = html;
+        if (hasContent(root)) delete this.dataset.skel;
+      })
+      .catch(() => {});
+    return this.ssrPromise;
+  }
   async mountLive() {
     delete this.dataset.defer;
+    this.fillSsr();
     if (this.dataset.state === 'live' || this.dataset.state === 'loading') return;
     this.dataset.state = 'loading';
     io?.unobserve(this);
