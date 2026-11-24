@@ -3,16 +3,17 @@ resolver = "3"
 members = ["crates/*", "tools/*", "apps/*"]
 
 [workspace.package]
-version = "0.0.0"
+version = "0.1.0"
 edition = "2024"
 rust-version = "1.99"
 license = "MIT"
 repository = "https://github.com/ismailqureshi72/Oxyn"
+homepage = "https://oxynui.com"
 
 [workspace.dependencies]
-oxyn-core = { path = "crates/oxyn-core" }
-oxyn-tokens = { path = "crates/oxyn-tokens" }
-oxyn-registry-schema = { path = "crates/oxyn-registry-schema" }
+oxyn-core = { path = "crates/oxyn-core", version = "0.1.0" }
+oxyn-tokens = { path = "crates/oxyn-tokens", version = "0.1.0" }
+oxyn-registry-schema = { path = "crates/oxyn-registry-schema", version = "0.1.0" }
 oxyn-codegen = { path = "crates/oxyn-codegen" }
 
 # GPUI is pinned to one Zed revision (decision 3 of the #11 spike). The same
