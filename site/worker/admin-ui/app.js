@@ -325,11 +325,18 @@
     if (!r.webhook_ready) notes.push('The POLAR_WEBHOOK_SECRET Worker secret is not set: Polar webhooks are refused and nothing is recorded.');
     if (!r.api_token) notes.push('No POLAR_ACCESS_TOKEN Worker secret: Manage billing opens Polar’s portal sign-in instead of a pre-signed session, and the founder products cannot be archived automatically.');
     if (f.archive && f.archive !== 'done') notes.push(`Founder products in Polar: ${f.archive}.`);
+    // The founder rate is an intro price: each founder subscription is scheduled in Polar to renew as regular Pro.
+    if (c.renewal_unscheduled) notes.push(h('span', {}, `${c.renewal_unscheduled} founder ${c.renewal_unscheduled === 1 ? 'subscription is' : 'subscriptions are'} not yet scheduled to renew at the regular Pro price. `,
+      h('button', { class: 'btn sm', type: 'button', onclick: async (e) => {
+        e.target.disabled = true;
+        try { const x = await api('/billing/founder-renewals', { method: 'POST', body: {} }); toast(`Checked ${x.checked}: ${x.results.map((y) => y.result).join(', ') || 'nothing to do'}`); renderBilling(); }
+        catch (err) { toast(err.message); e.target.disabled = false; }
+      } }, 'Schedule now')));
     const rows = r.items.map((s) => h('tr', {},
       h('td', { class: 'u' }, s.customer_email, s.linked ? null : h('span', { class: 'chip outline', title: 'Not linked to a site account yet' }, 'no account')),
-      h('td', {}, cap(s.plan) + (s.founder ? ' · founder' : ''), s.seats ? ` · ${s.seats} seats` : ''),
+      h('td', {}, cap(s.plan) + (s.founder ? ' · founder intro' : ''), s.seats ? ` · ${s.seats} seats` : ''),
       h('td', {}, s.interval === 'year' ? 'Yearly' : 'Monthly'),
-      h('td', {}, usd(s.amount)),
+      h('td', { title: s.founder ? `Founder intro price; renewal at the regular price: ${s.renewal || 'not scheduled yet'}` : null }, usd(s.amount), s.founder && s.active ? h('small', { class: 'muted' }, s.renewal === 'scheduled' ? ' → regular at renewal' : ' · renewal not scheduled') : null),
       h('td', {}, h('span', { class: 'chip' + (s.active ? ' solid' : '') }, s.cancel_at_period_end && s.active ? 'canceling' : s.status)),
       h('td', { class: 't' }, s.current_period_end ? fmtDate(s.current_period_end) : '—'),
       h('td', { class: 't' }, h('time', { datetime: s.created_at, title: fmtDate(s.created_at) }, ago(s.created_at)))));
