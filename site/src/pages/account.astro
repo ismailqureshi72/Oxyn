@@ -32,7 +32,7 @@ import { counts } from '../lib/data';
           <p class="auth-err acct-plan-note" role="status" data-plan-note hidden></p>
           <div class="acct-actions">
             <a class="x-pill pill-black" href="/pricing/" data-plan-upgrade><Fragment set:html={icon.bolt} />See Pro plans</a>
-            <a class="x-pill pill-grey" href="/api/billing/portal" rel="nofollow" data-astro-prefetch="false" data-plan-manage hidden><Fragment set:html={icon.card} />Manage billing</a>
+            <a class="x-pill pill-grey" href="#billing" data-plan-manage hidden><Fragment set:html={icon.card} />Billing</a>
             <button type="button" class="x-pill pill-grey" data-plan-cancel hidden>Cancel plan</button>
             <button type="button" class="x-pill pill-black" data-plan-resume hidden>Resume plan</button>
           </div>
@@ -63,6 +63,41 @@ import { counts } from '../lib/data';
             <div class="x-meter" aria-hidden="true"><i data-usage-bar="screens"></i></div>
             <p class="acct-plan-line" data-usage-line></p>
           </div>
+        </section>
+        <section class="acct-plan x-bill" id="billing" aria-labelledby="h-bill" data-bill hidden>
+          <div class="acct-plan-h"><h2 id="h-bill">Billing</h2></div>
+          <p class="acct-plan-line" data-bill-load role="status">Loading billing…</p>
+          <dl class="acct-dl x-bill-dl" data-bill-sum hidden>
+            <div><dt>Plan</dt><dd data-bill-plan></dd></div>
+            <div><dt>Price</dt><dd data-bill-price></dd></div>
+            <div><dt>Next payment</dt><dd data-bill-next></dd></div>
+            <div><dt>Payment method</dt><dd class="x-bill-card"><span data-bill-card></span><a class="x-pill pill-grey pill-sm" href="/api/billing/card" rel="nofollow" data-astro-prefetch="false" data-bill-card-up hidden>Update card</a></dd></div>
+          </dl>
+          <p class="x-bill-fine" data-bill-card-note hidden>Update card opens Polar's secure card page (our payment provider) and brings you back here.</p>
+          <div class="x-bill-pending" data-bill-pending hidden>
+            <p class="acct-plan-line" data-bill-pending-msg></p>
+            <button type="button" class="x-pill pill-grey pill-sm" data-bill-keep hidden>Keep my current plan</button>
+          </div>
+          <div class="x-bill-switch" data-bill-switch hidden>
+            <h3>Change plan</h3>
+            <p class="acct-plan-line">Moving from Pro to Team on the same billing period starts now: you pay the difference for the rest of this period. Every other change (monthly or yearly, Team to Pro) starts at your next renewal, with nothing charged or refunded now.</p>
+            <div class="x-bill-opts" data-bill-opts></div>
+            <p class="acct-plan-line" data-bill-why hidden></p>
+            <div class="acct-cancel" data-bill-confirm role="group" aria-labelledby="bill-confirm-h" hidden>
+              <h3 id="bill-confirm-h" data-bill-confirm-h>Switch plan?</h3>
+              <p class="acct-plan-line" data-bill-confirm-msg></p>
+              <div class="acct-actions">
+                <button type="button" class="x-pill pill-black" data-bill-confirm-yes>Confirm</button>
+                <button type="button" class="x-pill pill-grey" data-bill-confirm-no>Not now</button>
+              </div>
+            </div>
+          </div>
+          <div class="x-bill-orders" data-bill-orders hidden>
+            <h3>Payments and invoices</h3>
+            <ul class="acct-seat-list x-bill-list" data-bill-list></ul>
+            <p class="acct-plan-line" data-bill-empty hidden>No payments yet.</p>
+          </div>
+          <p class="auth-err" role="alert" data-bill-err hidden></p>
         </section>
         <section class="acct-plan x-cli" id="cli" aria-labelledby="h-cli" data-cli>
           <div class="acct-plan-h"><h2 id="h-cli">CLI and MCP</h2></div>

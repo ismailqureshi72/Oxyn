@@ -140,7 +140,7 @@
     document.dispatchEvent(new CustomEvent('oxyn:plan', { detail: plan }));
     const label = (p) => (p ? (p.admin ? 'Admin' : TIER[p.tier] || 'Free') : 'Free');
     $$('[data-acct-plan]').forEach((el) => { el.textContent = label(plan); el.dataset.tier = plan ? (plan.admin ? 'admin' : plan.tier) : 'free'; });
-    $$('[data-acct-billing]').forEach((a) => { a.hidden = !(plan && plan.has_billing); });
+    $$('[data-acct-billing]').forEach((a) => { a.hidden = !(plan && plan.has_billing && plan.via !== 'seat'); });
     fillPlan(plan);
   }
   const fmtDay = (s) => { const d = new Date(s); return isNaN(d) ? '' : d.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }); };
@@ -149,11 +149,10 @@
     const box = $('[data-plan]');
     if (!box || !plan) return;
     const chip = $('[data-plan-chip]', box), line = $('[data-plan-line]', box), note = $('[data-plan-note]', box);
-    const up = $('[data-plan-upgrade]', box), manage = $('[data-plan-manage]', box);
+    const up = $('[data-plan-upgrade]', box);
     const s = plan.subscription;
     chip.textContent = plan.admin ? 'Admin' : TIER[plan.tier] || 'Free';
     chip.dataset.tier = plan.admin ? 'admin' : plan.tier;
-    manage.hidden = !plan.has_billing;
     up.hidden = plan.pro;
     let text = line.dataset.freeLine || 'The free components and primitives, MIT licensed.';
     if (plan.admin) {
@@ -168,7 +167,7 @@
         ? ` Renews${when ? ` on ${when}` : ''} at the regular ${money(s.renews_at_amount, s.currency)} a ${s.interval}.`
         : when ? ` Renews on ${when}.` : '';
       text = s.cancel_at_period_end ? `${what}. Cancelled: Pro stays open until ${when || 'the end of the period'}.`
-        : s.status === 'past_due' ? `${what}. The last payment did not go through; update your card in Manage billing.`
+        : s.status === 'past_due' ? `${what}. The last payment did not go through; update your card under Billing below.`
         : `${what}.${renew}`;
     } else if (plan.via === 'seat' && plan.seat) {
       text = `Pro through a Team plan (seat from ${plan.seat.owner_email}).`;
@@ -179,8 +178,9 @@
     }
     line.textContent = text;
     cancelUi(box, plan);
+    loadBilling(plan);
     const p = new URLSearchParams(location.search);
-    if (p.get('billing') === 'active') { note.textContent = 'You already have an active plan. To change it, use Manage billing.'; note.hidden = false; }
+    if (p.get('billing') === 'active') { note.textContent = 'You already have an active plan. Change it under Billing below.'; note.hidden = false; }
     else if (!plan.pro && !plan.email_verified && plan.tier === 'free') { note.textContent = 'Got a Team seat? Sign in once with Google or GitHub on this email to verify it, and the seat opens.'; note.hidden = false; }
     // Team owner: seats
     const seats = $('[data-seats]', box);
@@ -229,11 +229,152 @@
       const r = await api(path, {});
       btn.disabled = false;
       if (r.ok) { await loadPlan(); const f = $(path.endsWith('cancel') ? '[data-plan-resume]' : '[data-plan-cancel]', box); if (f && !f.hidden) f.focus(); }
-      else planErr((r.data.error && r.data.error.message) || 'That did not work. Please try again, or use Manage billing.');
+      else planErr((r.data.error && r.data.error.message) || 'That did not work. Please try again.');
     };
     $('[data-plan-confirm-yes]', confirm).onclick = (e) => send(e.currentTarget, '/api/billing/cancel');
     resumeB.onclick = (e) => send(e.currentTarget, '/api/billing/resume');
   }
+  // ── Billing (account page, #billing): read live from Polar through the Worker (worker/billing.ts).
+  // Plan switches, payments and receipts happen here; only "Update card" opens Polar's card page.
+  const PLAN_NAME = { pro: 'Pro', team: 'Team' };
+  const per = (i) => (i === 'year' ? 'a year' : 'a month');
+  const planName = (p) => `${p.founder ? 'Pro (founder rate)' : PLAN_NAME[p.plan] || 'Pro'} ${p.interval === 'year' ? 'yearly' : 'monthly'}`;
+  let billSeq = 0;
+  async function loadBilling(plan) {
+    const box = $('[data-bill]');
+    if (!box) return;
+    const show = !!(plan && (plan.has_billing || (plan.subscription && plan.via === 'subscription')));
+    box.hidden = !show;
+    $$('[data-plan-manage]').forEach((a) => { a.hidden = !show; });
+    if (!show) return;
+    const seq = ++billSeq;
+    const [r, o] = await Promise.all([api('/api/billing/subscription'), api('/api/billing/invoices')]);
+    if (seq !== billSeq) return;
+    $('[data-bill-load]', box).hidden = true;
+    billErr(r.ok ? '' : (r.data.error && r.data.error.message) || 'Billing could not be loaded. Please try again.');
+    if (r.ok) fillBilling(box, r.data);
+    fillOrders(box, o.ok ? o.data.items : null, o.ok ? '' : (o.data.error && o.data.error.message));
+    const p = new URLSearchParams(location.search);
+    if (p.get('billing') === 'card_unavailable') billErr('The card page could not be opened right now. Please try again in a minute.');
+  }
+  function fillBilling(box, d) {
+    const s = d.subscription;
+    const sum = $('[data-bill-sum]', box), pend = $('[data-bill-pending]', box), sw = $('[data-bill-switch]', box);
+    sum.hidden = !s; pend.hidden = true; sw.hidden = true;
+    if (!s) return;
+    $('[data-bill-plan]', box).textContent = planName(s.plan) + (s.status === 'past_due' ? ' · payment failed' : s.cancel_at_period_end ? ' · cancels at the period end' : '');
+    $('[data-bill-price]', box).textContent = s.plan.founder
+      ? `${money(s.amount, s.currency)} for your first ${s.plan.interval} (founder intro price)`
+      : `${money(s.amount, s.currency)} ${per(s.plan.interval)}`;
+    const end = fmtDay(s.current_period_end);
+    let next = '';
+    if (s.cancel_at_period_end) next = `None. The plan ends on ${end}.`;
+    else if (s.next) {
+      next = `${money(s.next.cents, s.currency)} on ${fmtDay(s.next.date)}`;
+      if (s.next.founder_ends && s.next.plan.key !== s.plan.key) next += `: the founder price ends and ${planName(s.next.plan)} starts at the regular price`;
+      else if (s.next.plan.key !== s.plan.key) next += ` for ${planName(s.next.plan)}`;
+    }
+    $('[data-bill-next]', box).textContent = next || '—';
+    const c = d.card;
+    $('[data-bill-card]', box).textContent = c ? `${c.brand.charAt(0).toUpperCase() + c.brand.slice(1)} ending in ${c.last4}, expires ${String(c.exp_month).padStart(2, '0')}/${String(c.exp_year).slice(-2)}` : 'The card you paid with';
+    $('[data-bill-card-up]', box).hidden = false;
+    $('[data-bill-card-note]', box).hidden = false;
+    // A switch the owner scheduled for the renewal (not the founder price ending, which shows above).
+    if (s.pending && !s.pending.founder_renewal) {
+      pend.hidden = false;
+      $('[data-bill-pending-msg]', box).textContent = `Switching to ${planName(s.pending.plan)} on ${fmtDay(s.pending.applies_at)}. Nothing changes before then.`;
+      const keep = $('[data-bill-keep]', box);
+      keep.hidden = false;
+      keep.onclick = async () => {
+        keep.disabled = true; billErr('');
+        const r = await api('/api/billing/keep', {});
+        keep.disabled = false;
+        if (r.ok) { await loadPlan(); } else billErr((r.data.error && r.data.error.message) || 'That did not work. Please try again.');
+      };
+    }
+    const why = $('[data-bill-why]', box), opts = $('[data-bill-opts]', box);
+    sw.hidden = false; opts.textContent = ''; why.hidden = true;
+    $('[data-bill-confirm]', box).hidden = true;
+    if (s.blocked) {
+      why.hidden = false;
+      why.textContent = s.blocked === 'cancelling' ? 'Your plan is set to cancel. Resume it above to change plan.'
+        : s.blocked === 'past_due' ? 'The last payment did not go through. Update your card, then change plan.'
+        : 'This plan cannot be changed right now.';
+      return;
+    }
+    for (const op of s.options) {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'x-bill-opt'; b.setAttribute('aria-pressed', 'false');
+      const t = document.createElement('b'); t.textContent = planName(op);
+      const pr = document.createElement('span'); pr.textContent = `${money(op.cents, s.currency)} ${per(op.interval)}`;
+      const w = document.createElement('em'); w.textContent = op.scheduled ? 'Your plan from the renewal' : op.when === 'now' ? 'Starts now' : 'Starts at your renewal';
+      b.append(t, pr, w);
+      b.disabled = !!op.scheduled;
+      b.addEventListener('click', () => confirmSwitch(box, op, b));
+      opts.append(b);
+    }
+  }
+  async function confirmSwitch(box, op, btn) {
+    const cf = $('[data-bill-confirm]', box), msg = $('[data-bill-confirm-msg]', box);
+    $$('.x-bill-opt', box).forEach((x) => x.setAttribute('aria-pressed', String(x === btn)));
+    billErr('');
+    btn.disabled = true;
+    const r = await api('/api/billing/preview?plan=' + encodeURIComponent(op.key));
+    btn.disabled = false;
+    if (!r.ok) { billErr((r.data.error && r.data.error.message) || 'That plan cannot be chosen right now.'); return; }
+    const p = r.data.preview;
+    $('[data-bill-confirm-h]', box).textContent = `Switch to ${planName(p.to)}?`;
+    const later = `${money(p.next_charge.cents, p.currency)} ${per(p.to.interval)} from ${fmtDay(p.next_charge.date)}`;
+    msg.textContent = p.when === 'now'
+      ? `Team starts now. You are charged about ${money(p.charge_now_cents, p.currency)} today: the difference for the rest of this period (plus any tax, on Polar's invoice), to the card on file. Then ${later}.`
+      : `Nothing is charged now. You keep ${planName(p.from)} until ${fmtDay(p.next_charge.date)}, then ${later}.${p.seats_end ? ' Your teammates lose their Team seats on that day.' : ''}`;
+    cf.hidden = false;
+    const yes = $('[data-bill-confirm-yes]', box), no = $('[data-bill-confirm-no]', box);
+    yes.textContent = p.when === 'now' ? `Pay and switch` : 'Schedule the switch';
+    yes.focus();
+    no.onclick = () => { cf.hidden = true; btn.setAttribute('aria-pressed', 'false'); btn.focus(); };
+    yes.onclick = async () => {
+      yes.disabled = true; billErr('');
+      const c = await api('/api/billing/change', { plan: op.key });
+      yes.disabled = false;
+      if (c.ok) { cf.hidden = true; await loadPlan(); $('[data-bill]')?.scrollIntoView({ block: 'start' }); }
+      else billErr((c.data.error && c.data.error.message) || 'That did not work. Please try again.');
+    };
+  }
+  const REASON = { subscription_create: 'New subscription', subscription_cycle: 'Renewal', subscription_update: 'Plan change', purchase: 'Purchase' };
+  function fillOrders(box, items, err) {
+    const wrap = $('[data-bill-orders]', box), list = $('[data-bill-list]', box), empty = $('[data-bill-empty]', box);
+    wrap.hidden = false; list.textContent = '';
+    if (!items) { empty.hidden = false; empty.textContent = err || 'Payments could not be loaded.'; return; }
+    empty.hidden = items.length > 0; empty.textContent = 'No payments yet.';
+    for (const o of items) {
+      const li = document.createElement('li');
+      const row = document.createElement('span'); row.className = 'x-bill-row';
+      const top = document.createElement('span'); top.textContent = `${fmtDay(o.created_at)} · ${money(o.total_cents, o.currency)}`;
+      const sm = document.createElement('small');
+      sm.textContent = [o.description, REASON[o.billing_reason] || '', o.status === 'paid' ? '' : o.status.replace('_', ' '), o.invoice_number || ''].filter(Boolean).join(' · ');
+      row.append(top, sm);
+      const btns = document.createElement('span'); btns.className = 'x-bill-dl-btns';
+      for (const kind of o.receipt ? ['receipt', 'invoice'] : []) {
+        const b = document.createElement('button'); b.type = 'button'; b.className = 'x-pill pill-grey pill-sm';
+        b.textContent = kind === 'receipt' ? 'Receipt' : 'Invoice';
+        b.setAttribute('aria-label', `${b.textContent} PDF for ${fmtDay(o.created_at)}`);
+        b.addEventListener('click', () => download(b, o.id, kind));
+        btns.append(b);
+      }
+      li.append(row, btns); list.append(li);
+    }
+  }
+  async function download(btn, id, kind, tries = 0) {
+    btn.disabled = true; billErr('');
+    const r = await api(`/api/billing/invoices/${id}/${kind}`);
+    if (r.ok && r.data.url) { btn.disabled = false; location.href = r.data.url; return; }
+    if (r.status === 202 && tries < 5) { setTimeout(() => download(btn, id, kind, tries + 1), 2500); return; }
+    btn.disabled = false;
+    billErr((r.data.error && r.data.error.message) || r.data.message || 'That PDF is not ready yet. Please try again in a moment.');
+  }
+  function billErr(t) { const e = $('[data-bill-err]'); if (e) { e.textContent = t || ''; e.hidden = !t; } }
+
   function planErr(t) { const e = $('[data-plan-err]'); if (e) { e.textContent = t || ''; e.hidden = !t; } }
   function seatErr(t) { const e = $('[data-seat-err]'); if (e) { e.textContent = t || ''; e.hidden = !t; } }
   async function apiDelete(path) {

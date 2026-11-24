@@ -323,7 +323,13 @@
     const stat = (k, v, sub) => h('div', { class: 'stat card' }, h('span', { class: 'k' }, k), h('b', {}, v), sub ? h('small', {}, sub) : null);
     const notes = [];
     if (!r.webhook_ready) notes.push('The POLAR_WEBHOOK_SECRET Worker secret is not set: Polar webhooks are refused and nothing is recorded.');
-    if (!r.api_token) notes.push('No POLAR_ACCESS_TOKEN Worker secret: Manage billing opens Polar’s portal sign-in instead of a pre-signed session, and the founder products cannot be archived automatically.');
+    if (!r.api_token) notes.push('No POLAR_ACCESS_TOKEN Worker secret: the Billing section of the account page (plan switch, payments, card) and Cancel plan do not work, founder renewals stay unscheduled, and the founder products cannot be archived automatically.');
+    // Daily scope probe of the Polar token (worker/billing.ts polarCheck): names any scope it lacks.
+    try {
+      const pc = r.polar_check && JSON.parse(r.polar_check.value);
+      const bad = pc && !pc.running ? Object.entries(pc).filter(([, v]) => v !== 'ok') : [];
+      if (bad.length) notes.push('The Polar access token cannot do everything the site needs: ' + bad.map(([k, v]) => `${k.replace(/_/g, ' ')} (${v.replace(/_/g, ' ')})`).join(', ') + '. Make a new organization token with these scopes and set it as POLAR_ACCESS_TOKEN.');
+    } catch { /* not checked yet */ }
     if (f.archive && f.archive !== 'done') notes.push(`Founder products in Polar: ${f.archive}.`);
     // The founder rate is an intro price: each founder subscription is scheduled in Polar to renew as regular Pro.
     if (c.renewal_unscheduled) notes.push(h('span', {}, `${c.renewal_unscheduled} founder ${c.renewal_unscheduled === 1 ? 'subscription is' : 'subscriptions are'} not yet scheduled to renew at the regular Pro price. `,

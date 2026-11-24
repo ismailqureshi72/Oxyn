@@ -19,8 +19,8 @@
 // Secrets (optional): GITHUB_TOKEN opens a GitHub issue per feedback; RATE_SALT salts IP hashes;
 // GITHUB_OAUTH_CLIENT_ID / GITHUB_OAUTH_CLIENT_SECRET turn on "Continue with GitHub";
 // GOOGLE_OAUTH_CLIENT_ID / GOOGLE_OAUTH_CLIENT_SECRET turn on "Continue with Google";
-// POLAR_WEBHOOK_SECRET turns on the Polar webhook; POLAR_ACCESS_TOKEN (optional) adds pre-signed
-// customer portal links and archives the founder products at 100.
+// POLAR_WEBHOOK_SECRET turns on the Polar webhook; POLAR_ACCESS_TOKEN runs the account page's
+// Billing section (plan switch, payments, card), cancel / resume and the founder renewals.
 
 import { EMAIL_RE, HttpError, KINDS, canonicalRedirect, fail, json, openIssue, sameOrigin, sha256Hex, type Ctx, type Env, type Kind } from './shared';
 import { handleAdmin, isAdminPath, publicFlags } from './admin';

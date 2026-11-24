@@ -56,3 +56,13 @@ test('SITE_URL defaults to https://oxynui.com', () => {
   const r = canonicalRedirect({ SITE_URL: 'https://example.test' }, new URL('https://www.example.test/a?b=1'));
   assert.equal(r?.headers.get('location'), 'https://example.test/a?b=1');
 });
+
+test('plain http on the canonical host goes to https (pages only)', async () => {
+  const r = await go('http://oxynui.com/pricing/?x=1');
+  assert.equal(r.status, 301);
+  assert.equal(r.headers.get('location'), 'https://oxynui.com/pricing/?x=1');
+  assert.equal((await go('http://oxynui.com/')).headers.get('location'), 'https://oxynui.com/');
+  assert.equal(canonicalRedirect(env, new URL('http://oxynui.com/api/billing/plans')), null);
+  assert.equal(canonicalRedirect(env, new URL('https://oxynui.com/')), null);
+  assert.equal(canonicalRedirect(env, new URL('http://localhost:4321/')), null);
+});
