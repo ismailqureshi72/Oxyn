@@ -6,7 +6,11 @@ edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
 repository.workspace = true
-publish = false
+homepage.workspace = true
+documentation = "https://docs.rs/oxyn-core"
+readme = "README.md"
+keywords = ["agent","ui","state-machine","animation","oxyn"]
+categories = ["gui"]
 
 [dependencies]
 oxyn-tokens.workspace = true
