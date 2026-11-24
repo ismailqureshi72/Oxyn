@@ -371,6 +371,9 @@
   // Warm the index once the page is idle, so the first keystroke already has it.
   if ('requestIdleCallback' in window) requestIdleCallback(() => load(), { timeout: 4000 });
   else setTimeout(load, 1500);
+  // /?q=<terms> (any page) opens the palette with the terms: the site search that the WebSite
+  // JSON-LD's SearchAction points search engines at (src/lib/seo.ts).
+  try { const q0 = new URLSearchParams(location.search).get('q'); if (q0) { input.value = q0.slice(0, 120); open(); } } catch (e) {}
   // Capture phase on window: a live demo that also binds ⌘K (a command menu) cannot swallow it.
   window.addEventListener('keydown', (e) => {
     const a = document.activeElement;
