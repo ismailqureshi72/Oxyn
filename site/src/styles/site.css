@@ -321,10 +321,17 @@ html[data-sidebar="hidden"] .lsb{visibility:hidden}
 .pro-l{max-width:0;opacity:0;overflow:hidden;white-space:nowrap;font-size:10.5px;font-weight:650;line-height:1;color:var(--fg);transition:max-width .16s,opacity .16s,margin .16s}
 .lsb-g li a:is(:hover,:focus-visible) .pro,.x-cc:is(:hover,:focus-within) .x-promark,.x-promark:hover{background:var(--pn);box-shadow:inset 0 0 0 1px var(--ln)}
 .lsb-g li a:is(:hover,:focus-visible) .pro-l,.x-cc:is(:hover,:focus-within) .pro-l,.x-promark:hover .pro-l{max-width:2.6em;opacity:1;margin-left:4px}
+/* Sidebar Pro mark: an empty <b class="pro"> per item (about 380 on a library page), the bolt and
+   the "Pro" label drawn here instead of repeated markup. The label is generated text, so screen
+   readers still read "Pro" after the item name. */
+.lsb-g li a .pro::before{content:"";flex:none;width:12px;height:12px;background:linear-gradient(135deg,var(--bolt-a),var(--bolt-b));-webkit-mask:var(--bolt-mask) center/contain no-repeat;mask:var(--bolt-mask) center/contain no-repeat}
+.lsb-g li a .pro::after{content:"Pro";max-width:0;opacity:0;overflow:hidden;white-space:nowrap;font-size:10.5px;font-weight:650;line-height:1;color:var(--fg);transition:max-width .16s,opacity .16s,margin .16s}
+.lsb-g li a:is(:hover,:focus-visible) .pro::after{max-width:2.6em;opacity:1;margin-left:4px}
 .x-promark{margin-left:auto;height:22px;padding:0 5px;background:var(--pn);box-shadow:inset 0 0 0 1px var(--ln)}
 .x-promark .x-bolt{width:12px;height:12px}
-@media (prefers-reduced-motion:reduce){.lsb-g li a .pro,.x-promark,.pro-l{transition:none}}
+@media (prefers-reduced-motion:reduce){.lsb-g li a .pro,.lsb-g li a .pro::after,.x-promark,.pro-l{transition:none}}
 html[data-oxyn-reduced] :is(.lsb-g li a .pro,.x-promark,.pro-l){transition:none}
+html[data-oxyn-reduced] .lsb-g li a .pro::after{transition:none}
 .lsb-head{display:flex;align-items:center;gap:6px;height:30px;margin:10px 0 2px;padding:0 10px}
 .lsb-head a{font-size:13.5px;font-weight:600;color:var(--fg);text-decoration:none}
 .lsb-head a:hover{text-decoration:underline;text-underline-offset:3px}
