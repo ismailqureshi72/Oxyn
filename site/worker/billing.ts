@@ -5,7 +5,17 @@
 //   GET    /api/billing/checkout?plan=   signed in: redirect to the plan's Polar checkout link with the
 //                                        account's email and id (reference_id) filled in
 //   GET    /api/billing/me               signed in: plan, status, renewal, Team seats
-//   GET    /api/billing/portal           signed in: Polar customer portal (manage, cancel, invoices)
+//   GET    /api/billing/subscription     signed in: the billing section of the account page, read live
+//                                        from Polar: plan, price, next payment, scheduled change, card,
+//                                        and (subscription owner) the plans it can switch to
+//   GET    /api/billing/preview?plan=    subscription owner: what switching to that plan charges and when
+//   POST   /api/billing/change           subscription owner: {plan} switches plan (rule: changeRule)
+//   POST   /api/billing/keep             subscription owner: drops a switch scheduled for the renewal
+//   GET    /api/billing/invoices         signed in: the account's own Polar orders (newest first)
+//   GET    /api/billing/invoices/<id>/receipt|invoice   signed in, own order only: {url} of the PDF
+//   GET    /api/billing/card             subscription owner: Polar's hosted card page (customer session);
+//                                        the only Polar page a customer is sent to (see updateCard)
+//   GET    /api/billing/portal           old links: 301 to the billing section of the account page
 //   POST   /api/billing/cancel           subscription owner: cancel at the period end (no refund; Pro
 //                                        stays open until current_period_end, then it does not renew)
 //   POST   /api/billing/resume           subscription owner: undo that cancel before the period ends
@@ -17,12 +27,15 @@
 //   POST   /api/polar/webhook            Polar events, signed (Standard Webhooks)
 //
 // The Worker never needs the Polar API for a sale: checkout links are public URLs, and the signed
-// webhook writes subscriptions, licences and the founder counter to D1. Three extras use the Polar
-// API when the Worker secret POLAR_ACCESS_TOKEN exists, and degrade without it: a pre-signed
-// customer portal session (else Polar's portal asks for the email), scheduling every founder
-// subscription to renew as regular Pro (below), and archiving the founder products once 100 founder
-// subscriptions exist (else the admin panel shows it as pending; the site already stops offering
-// the founder rate either way).
+// webhook writes subscriptions, licences and the founder counter to D1. Billing after the sale
+// happens on the account page, through the Polar API with the Worker secret POLAR_ACCESS_TOKEN
+// (never with an organization_id: the token is an organization token): cancel / resume, switching
+// plan, invoices and receipts, the card on file. The one exception is changing the card: Polar's
+// API only adds a card from a Stripe confirmation token made with Polar's own Stripe account, so
+// "Update card" opens Polar's hosted page through a pre-signed customer session. Plan changes are
+// switched off in Polar's customer portal (organization customer_portal_settings), so plans change
+// only here, under changeRule. The token also schedules every founder subscription to renew as
+// regular Pro (below) and archives the founder products once 100 founder subscriptions exist.
 //
 // The founder rate is an intro price, not a locked-in one: $12.99 for the first month (or $124.45
 // for the first year), then regular Pro at $19.99 a month ($199.99 a year), for the first 100 new
@@ -95,7 +108,7 @@ export interface PlanFor {
   latest: SubRow | null; // its newest subscription, live or not
   seat: (SubRow & { owner_email: string }) | null; // a live Team it holds a seat on
   grant: GrantRow | null; // a live manual grant
-  customer: string | null; // Polar customer id, for the portal
+  customer: string | null; // Polar customer id of its newest own subscription
 }
 const rank = (t: Tier) => (t === 'team' ? 2 : t === 'pro' ? 1 : 0);
 
@@ -171,6 +184,7 @@ export async function handleBilling(req: Request, env: Env, ctx: Ctx, url: URL):
     }
     if (route === '/api/billing/plans' && (m === 'GET' || m === 'HEAD')) {
       const founder = await founderState(env);
+      ctx.waitUntil(polarCheck(env).catch((e) => console.error('polar check', e)));
       return json({ ok: true, founder, plans: PLANS.filter((p) => founder.open || !p.founder).map(({ key, plan, interval, founder: f, cents }) => ({ key, plan, interval, founder: f, cents })) },
         200, { 'cache-control': 'public, max-age=60' });
     }
@@ -179,12 +193,22 @@ export async function handleBilling(req: Request, env: Env, ctx: Ctx, url: URL):
       return await checkout(req, env, url);
     }
     const u = await currentUser(req, env);
-    if (route === '/api/billing/portal' && m === 'GET') {
-      if (!u) return redirect(`${url.origin}/login/?next=${encodeURIComponent('/account/')}`);
-      return await portal(env, url, u);
+    // Billing lives on the account page now; old "Manage billing" links land there.
+    if (route === '/api/billing/portal' && m === 'GET') return redirect(`${url.origin}/account/#billing`, { 'cache-control': 'no-store' });
+    if (route === '/api/billing/card' && m === 'GET') {
+      if (isPrefetch(req)) return new Response(null, { status: 204, headers: SEC });
+      if (!u) return redirect(`${url.origin}/login/?next=${encodeURIComponent('/account/#billing')}`);
+      return await updateCard(env, url, u);
     }
     if (!u) throw new HttpError(401, 'signed_out', 'Sign in to Oxyn first.');
     if (route === '/api/billing/me' && m === 'GET') return await billingMe(env, u);
+    if (route === '/api/billing/subscription' && m === 'GET') return await billingDetails(env, u);
+    if (route === '/api/billing/preview' && m === 'GET') return await previewChange(env, u, url.searchParams.get('plan') || '');
+    if (route === '/api/billing/change' && m === 'POST') return await changePlan(req, env, ctx, url, u);
+    if (route === '/api/billing/keep' && m === 'POST') return await keepPlan(req, env, ctx, url, u);
+    if (route === '/api/billing/invoices' && m === 'GET') return await listInvoices(env, u);
+    const inv = route.match(/^\/api\/billing\/invoices\/([0-9a-f-]{36})\/(receipt|invoice)$/);
+    if (inv && m === 'GET') return await invoiceFile(env, u, inv[1], inv[2] as 'receipt' | 'invoice');
     if ((route === '/api/billing/cancel' || route === '/api/billing/resume') && m === 'POST') return await setCancel(req, env, ctx, url, u, route.endsWith('/cancel'));
     const src = route.match(/^\/api\/pro\/source\/([a-z0-9-]{1,80})$/);
     if (src && (m === 'GET' || m === 'POST')) return await proSource(req, env, url, u, src[1]);
@@ -282,26 +306,6 @@ async function billingMe(env: Env, u: Who) {
   });
 }
 
-/** Polar's customer portal: a pre-signed session when POLAR_ACCESS_TOKEN is set, else the portal's
- *  own sign-in (Polar emails a code to the address the subscription was bought with). */
-async function portal(env: Env, url: URL, u: Who) {
-  const e = await plan_for(env, u);
-  if (env.POLAR_ACCESS_TOKEN && e.customer) {
-    try {
-      const r = await fetch(`${POLAR.api}/customer-sessions/`, {
-        method: 'POST',
-        headers: { authorization: `Bearer ${env.POLAR_ACCESS_TOKEN}`, 'content-type': 'application/json', accept: 'application/json' },
-        body: JSON.stringify({ customer_id: e.customer, return_url: `${url.origin}/account/` }),
-      });
-      if (r.ok) {
-        const s = (await r.json()) as { customer_portal_url?: string };
-        if (s.customer_portal_url?.startsWith('https://')) return redirect(s.customer_portal_url);
-      } else console.error('polar customer session', r.status, (await r.text()).slice(0, 200));
-    } catch (err) { console.error('polar customer session', err); }
-  }
-  return redirect(POLAR.portal);
-}
-
 /** Cancel at the period end, or resume, the account's own live subscription (Pro, or a Team it
  *  owns; a teammate's seat is not theirs to cancel). Polar keeps access until current_period_end and
  *  issues no refund. D1 is updated from Polar's answer at once; the webhook that follows agrees. */
@@ -311,7 +315,7 @@ async function setCancel(req: Request, env: Env, ctx: Ctx, url: URL, u: Who, can
   const sub = e.mine;
   if (!sub) throw new HttpError(404, 'no_subscription', e.seat ? 'Only the Team owner can cancel this plan.' : 'This account has no active subscription to cancel.');
   if (!!sub.cancel_at_period_end === cancel) return json({ ok: true, subscription: pub(sub) });
-  if (!env.POLAR_ACCESS_TOKEN) throw new HttpError(503, 'billing_api_unavailable', 'This cannot be done from the site right now. Use Manage billing instead.');
+  if (!env.POLAR_ACCESS_TOKEN) throw new HttpError(503, 'billing_api_unavailable', 'Billing changes are not available right now. Please try again later.');
   let r: Response;
   try {
     r = await fetch(`${POLAR.api}/subscriptions/${encodeURIComponent(sub.id)}`, {
@@ -319,20 +323,70 @@ async function setCancel(req: Request, env: Env, ctx: Ctx, url: URL, u: Who, can
     });
   } catch (err) {
     console.error('polar cancel', sub.id, err);
-    throw new HttpError(502, 'billing_unreachable', 'Could not reach our billing provider. Please try again, or use Manage billing.');
+    throw new HttpError(502, 'billing_unreachable', 'Could not reach our billing provider. Please try again.');
   }
   if (!r.ok) {
     console.error('polar cancel', sub.id, r.status, (await r.text()).slice(0, 300));
-    throw new HttpError(502, 'billing_failed', `Our billing provider did not accept the change. Please try again, or use Manage billing.`);
+    throw new HttpError(502, 'billing_failed', 'Our billing provider did not accept the change. Please try again.');
   }
-  const d = (await r.json()) as Record<string, any>;
-  // Polar's answer is the subscription as it is now: write it like a webhook would (the email and
-  // customer come from D1 when the answer leaves them out).
+  const row = await syncFromPolar(env, ctx, (await r.json()) as Record<string, any>, sub, u, cancel ? 'api.cancel' : 'api.resume', { cancel_at_period_end: cancel });
+  return json({ ok: true, subscription: pub(row ?? sub) });
+}
+
+// ── In-site billing (account page) ───────────────────────────────────────────────────────────
+// Everything a subscriber manages happens on oxynui.com/account/#billing through the Polar API.
+// Only "Update card" opens a Polar page (see updateCard).
+
+/** When a plan switch takes effect, and how Polar bills it (proration_behavior):
+ *  - Pro -> Team on the same interval: right away, `invoice`: Polar charges the prorated difference
+ *    for the rest of the current period now, and the next renewal bills the full Team price.
+ *  - Everything else (monthly <-> yearly, Team -> Pro): at the next renewal, `next_period`: nothing
+ *    is charged or refunded now; the renewal bills the new plan.
+ *  Founder products are never a target (founder: false only). Exported for the tests. */
+export function changeRule(from: Plan, to: Plan): { when: 'now' | 'renewal'; proration: 'invoice' | 'next_period' } {
+  return from.interval === to.interval && from.plan === 'pro' && to.plan === 'team'
+    ? { when: 'now', proration: 'invoice' }
+    : { when: 'renewal', proration: 'next_period' };
+}
+/** The plans an account can switch to: regular plans other than the current one. */
+export const switchTargets = (current: Plan) => PLANS.filter((p) => !p.founder && p.product !== current.product);
+/** Estimated charge now for an immediate switch: the price difference for the share of the period
+ *  that is left (Polar's own proration; tax is added by Polar on top). */
+export function prorated(currentCents: number, to: Plan, start: string | null, end: string | null, nowMs = Date.now()) {
+  const s = Date.parse(start || ''), e = Date.parse(end || '');
+  if (!Number.isFinite(s) || !Number.isFinite(e) || e <= s) return Math.max(0, to.cents - currentCents);
+  const left = Math.min(1, Math.max(0, (e - nowMs) / (e - s)));
+  return Math.max(0, Math.round((to.cents - currentCents) * left));
+}
+
+type Polar = Record<string, any>;
+async function polar(env: Env, path: string, init: { method?: string; body?: unknown } = {}): Promise<{ status: number; data: Polar }> {
+  if (!env.POLAR_ACCESS_TOKEN) throw new HttpError(503, 'billing_api_unavailable', 'Billing is not available right now. Please try again later.');
+  let r: Response;
+  try {
+    r = await fetch(`${POLAR.api}${path}`, { method: init.method || 'GET', headers: polarHeaders(env), body: init.body === undefined ? undefined : JSON.stringify(init.body) });
+  } catch (err) {
+    console.error('polar', path, err);
+    throw new HttpError(502, 'billing_unreachable', 'Could not reach our billing provider. Please try again.');
+  }
+  let data: Polar = {};
+  try { data = (await r.json()) as Polar; } catch { data = {}; }
+  if (r.status >= 500 || r.status === 401 || r.status === 403) {
+    console.error('polar', init.method || 'GET', path, r.status, JSON.stringify(data).slice(0, 300));
+    throw new HttpError(502, 'billing_failed', 'Our billing provider did not answer as expected. Please try again.');
+  }
+  return { status: r.status, data };
+}
+
+/** Writes Polar's answer for one subscription to D1, like a webhook would (fields Polar leaves out
+ *  come from the D1 row), and returns the row. */
+async function syncFromPolar(env: Env, ctx: Ctx, d: Polar, sub: SubRow, u: Who, type: string, fallback: Polar = {}) {
   await upsertSubscription(env, ctx, {
+    ...fallback,
     ...d,
     id: d.id ?? sub.id,
     modified_at: d.modified_at ?? iso(),
-    cancel_at_period_end: d.cancel_at_period_end ?? cancel,
+    cancel_at_period_end: d.cancel_at_period_end ?? fallback.cancel_at_period_end ?? !!sub.cancel_at_period_end,
     customer: d.customer ?? { id: sub.customer_id, email: sub.customer_email },
     customer_id: d.customer_id ?? sub.customer_id,
     product_id: d.product_id ?? d.product?.id ?? sub.product_id,
@@ -343,9 +397,233 @@ async function setCancel(req: Request, env: Env, ctx: Ctx, url: URL, u: Who, can
     amount: d.amount ?? sub.amount,
     currency: d.currency ?? sub.currency,
     metadata: { reference_id: u.id },
-  }, cancel ? 'api.cancel' : 'api.resume');
-  const row = await env.DB.prepare('SELECT * FROM subscriptions WHERE id = ?1').bind(sub.id).first<SubRow>();
-  return json({ ok: true, subscription: pub(row ?? sub) });
+  }, type);
+  return env.DB.prepare('SELECT * FROM subscriptions WHERE id = ?1').bind(sub.id).first<SubRow>();
+}
+
+/** The account's own live subscription (Pro, or a Team it owns), else a 404 naming why. */
+async function ownSub(env: Env, u: Who, what = 'change this plan') {
+  const e = await plan_for(env, u);
+  if (!e.mine) throw new HttpError(404, 'no_subscription', e.seat ? `Only the Team owner can ${what}.` : 'This account has no active subscription.');
+  return { e, sub: e.mine };
+}
+const planOf = (product: string | null | undefined) => (product ? byProduct.get(product) : undefined);
+const planOut = (p: Plan) => ({ key: p.key, plan: p.plan, interval: p.interval, founder: p.founder, cents: p.cents });
+
+/** What the account page shows about one live Polar subscription. */
+function describe(s: Polar, row: SubRow, owner: boolean) {
+  const cur = planOf(s.product_id) ?? planOf(row.product_id)!;
+  const pendingPlan = planOf(s.pending_update?.product_id);
+  const founderRenewal = !!(cur.founder && pendingPlan && pendingPlan.product === renewsAs(cur)?.product);
+  const ends = !!s.cancel_at_period_end || !!s.ended_at;
+  const nextPlan = ends ? null : pendingPlan ?? renewsAs(cur) ?? cur;
+  // A founder (intro) price renews at the regular price; otherwise the next charge is what Polar
+  // bills today (which includes any discount), unless a switch is scheduled.
+  const nextCents = !nextPlan ? null : nextPlan.product === cur.product ? Number(s.amount ?? row.amount) : nextPlan.cents;
+  const canSwitch = owner && ['active', 'trialing'].includes(String(s.status)) && !s.cancel_at_period_end && !s.ended_at;
+  return {
+    plan: planOut(cur),
+    status: String(s.status ?? row.status),
+    amount: Number(s.amount ?? row.amount),
+    currency: String(s.currency ?? row.currency ?? 'usd'),
+    cancel_at_period_end: !!s.cancel_at_period_end,
+    current_period_start: s.current_period_start ?? row.current_period_start ?? null,
+    current_period_end: s.current_period_end ?? row.current_period_end,
+    next: nextPlan ? { date: s.current_period_end ?? row.current_period_end, cents: nextCents, plan: planOut(nextPlan), founder_ends: cur.founder } : null,
+    pending: pendingPlan ? { plan: planOut(pendingPlan), applies_at: s.pending_update.applies_at ?? s.current_period_end, founder_renewal: founderRenewal } : null,
+    options: canSwitch ? switchTargets(cur).map((p) => ({ ...planOut(p), ...changeRule(cur, p), scheduled: pendingPlan?.product === p.product && !founderRenewal })) : [],
+    blocked: !owner ? 'not_owner' : s.cancel_at_period_end ? 'cancelling' : String(s.status) === 'past_due' ? 'past_due' : canSwitch ? null : 'inactive',
+  };
+}
+
+async function readSub(env: Env, sub: SubRow) {
+  const r = await polar(env, `/subscriptions/${encodeURIComponent(sub.id)}`);
+  if (r.status !== 200) throw new HttpError(502, 'billing_failed', 'Could not read your subscription from our billing provider.');
+  return r.data;
+}
+
+/** GET /api/billing/subscription: the billing section. A teammate on a Team seat sees no billing
+ *  (it is the owner's); an account with no own subscription gets subscription: null. */
+async function billingDetails(env: Env, u: Who) {
+  const e = await plan_for(env, u);
+  const row = e.mine;
+  const customers = await customerIds(env, u);
+  if (!row) return json({ ok: true, subscription: null, has_history: customers.length > 0, seat: !!e.seat });
+  const s = await readSub(env, row);
+  let card: { brand: string; last4: string; exp_month: number; exp_year: number; wallet: string | null } | null = null;
+  try {
+    const pm = await polar(env, `/customers/${encodeURIComponent(row.customer_id)}/payment-methods`);
+    const c = (pm.data.items ?? []).find((x: Polar) => x.type === 'card' && x.method_metadata);
+    if (c) card = { brand: String(c.method_metadata.brand), last4: String(c.method_metadata.last4), exp_month: Number(c.method_metadata.exp_month), exp_year: Number(c.method_metadata.exp_year), wallet: c.method_metadata.wallet ?? null };
+  } catch (err) { console.error('polar payment methods', err); }
+  return json({ ok: true, subscription: describe(s, row, true), card, has_history: true, seat: false });
+}
+
+async function targetFor(env: Env, u: Who, key: string) {
+  const to = byKey.get(key as PlanKey);
+  if (!to || to.founder) throw new HttpError(400, 'invalid_plan', 'That plan cannot be chosen here.');
+  const { sub } = await ownSub(env, u);
+  const s = await readSub(env, sub);
+  const d = describe(s, sub, true);
+  const cur = planOf(s.product_id) ?? planOf(sub.product_id)!;
+  if (d.blocked === 'cancelling') throw new HttpError(409, 'cancelling', 'This plan is set to cancel. Resume it first, then switch.');
+  if (d.blocked === 'past_due') throw new HttpError(409, 'past_due', 'The last payment did not go through. Update your card first, then switch.');
+  if (d.blocked) throw new HttpError(409, 'inactive', 'This subscription cannot be changed right now.');
+  if (to.product === cur.product) throw new HttpError(409, 'same_plan', 'You are already on that plan.');
+  const rule = changeRule(cur, to);
+  const charge_now = rule.when === 'now' ? prorated(Number(s.amount ?? sub.amount), to, s.current_period_start ?? sub.current_period_start ?? null, s.current_period_end ?? sub.current_period_end) : 0;
+  const preview = {
+    from: planOut(cur), to: planOut(to), ...rule, currency: String(s.currency ?? 'usd'),
+    charge_now_cents: charge_now, // an estimate before tax; Polar's invoice is exact
+    next_charge: { date: s.current_period_end ?? sub.current_period_end, cents: to.cents },
+    seats_end: cur.plan === 'team' && to.plan === 'pro',
+  };
+  return { sub, s, cur, to, rule, preview };
+}
+
+/** GET /api/billing/preview?plan=: what a switch charges and when, for the confirm step. */
+async function previewChange(env: Env, u: Who, key: string) {
+  return json({ ok: true, preview: (await targetFor(env, u, key)).preview });
+}
+
+/** POST /api/billing/change {plan}: switches the account's own subscription under changeRule. A
+ *  pending change (a founder renewal or an earlier switch) is cleared first, so exactly one change
+ *  is ever scheduled; if Polar then refuses the switch, the earlier one is put back. */
+async function changePlan(req: Request, env: Env, ctx: Ctx, url: URL, u: Who) {
+  if (!sameOrigin(req, url)) throw new HttpError(403, 'forbidden_origin', 'Requests must come from the Oxyn site.');
+  const b = await body(req);
+  const { sub, s, cur, to, rule, preview } = await targetFor(env, u, String(b.plan || ''));
+  const path = `/subscriptions/${encodeURIComponent(sub.id)}`;
+  const pending = s.pending_update?.product_id as string | undefined;
+  if (rule.when === 'renewal' && pending === to.product) return json({ ok: true, preview, subscription: describe(s, sub, true) });
+  if (pending) {
+    const c = await polar(env, path, { method: 'PATCH', body: { pending_update: null } });
+    if (c.status >= 300) throw new HttpError(502, 'billing_failed', 'Our billing provider did not accept the change. Please try again.');
+  }
+  const r = await polar(env, path, { method: 'PATCH', body: { product_id: to.product, proration_behavior: rule.proration } });
+  if (r.status >= 300) {
+    console.error('polar change', sub.id, r.status, JSON.stringify(r.data).slice(0, 300));
+    if (pending) {
+      if (cur.founder) await scheduleRegularRenewal(env, { id: sub.id }, cur);
+      else await polar(env, path, { method: 'PATCH', body: { product_id: pending, proration_behavior: 'next_period' } }).catch(() => undefined);
+    }
+    throw new HttpError(502, 'billing_failed', r.status === 402 || /payment|card/i.test(JSON.stringify(r.data)) ? 'The payment for this switch did not go through. Check your card and try again.' : 'Our billing provider did not accept the change. Please try again.');
+  }
+  const row = await syncFromPolar(env, ctx, r.data, sub, u, rule.when === 'now' ? 'api.change' : 'api.schedule');
+  return json({ ok: true, preview, subscription: describe(r.data.id ? r.data : s, row ?? sub, true) });
+}
+
+/** POST /api/billing/keep: drops a switch scheduled for the renewal. A founder subscription keeps
+ *  (or gets back) its scheduled renewal as regular Pro; that one cannot be dropped. */
+async function keepPlan(req: Request, env: Env, ctx: Ctx, url: URL, u: Who) {
+  if (!sameOrigin(req, url)) throw new HttpError(403, 'forbidden_origin', 'Requests must come from the Oxyn site.');
+  const { sub } = await ownSub(env, u);
+  const s = await readSub(env, sub);
+  const cur = planOf(s.product_id) ?? planOf(sub.product_id)!;
+  const pending = s.pending_update?.product_id as string | undefined;
+  const regular = renewsAs(cur);
+  if (!pending || (cur.founder && pending === regular?.product)) return json({ ok: true, subscription: describe(s, sub, true) });
+  const path = `/subscriptions/${encodeURIComponent(sub.id)}`;
+  const r = await polar(env, path, { method: 'PATCH', body: { pending_update: null } });
+  if (r.status >= 300) throw new HttpError(502, 'billing_failed', 'Our billing provider did not accept the change. Please try again.');
+  if (cur.founder) await scheduleRegularRenewal(env, { id: sub.id }, cur);
+  const fresh = await readSub(env, sub).catch(() => r.data);
+  const row = await syncFromPolar(env, ctx, fresh, sub, u, 'api.keep');
+  return json({ ok: true, subscription: describe(fresh, row ?? sub, true) });
+}
+
+/** The Polar customer ids of this account's own subscriptions (never a Team owner's). */
+async function customerIds(env: Env, u: Who): Promise<string[]> {
+  const r = await env.DB.prepare(
+    'SELECT DISTINCT s.customer_id AS c FROM licences l JOIN subscriptions s ON s.id = l.subscription_id ' +
+      "WHERE (l.user_id = ?1 OR (?3 = 1 AND l.email = ?2)) AND s.customer_id != '' LIMIT 5",
+  ).bind(u.id, u.email, u.email_verified ? 1 : 0).all<{ c: string }>();
+  return (r.results ?? []).map((x) => x.c);
+}
+
+/** GET /api/billing/invoices: the account's own orders (payments), newest first. */
+async function listInvoices(env: Env, u: Who) {
+  const ids = await customerIds(env, u);
+  const out: Polar[] = [];
+  for (const id of ids) {
+    const r = await polar(env, `/orders/?customer_id=${encodeURIComponent(id)}&limit=50&sorting=-created_at`);
+    for (const o of r.data.items ?? []) {
+      if (o.customer_id !== id) continue; // only ever this customer's orders
+      out.push({
+        id: o.id, created_at: o.created_at, status: o.status, total_cents: o.total_amount, tax_cents: o.tax_amount, refunded_cents: o.refunded_amount ?? 0,
+        currency: o.currency, description: o.description || o.product?.name || 'Oxyn', billing_reason: o.billing_reason,
+        invoice_number: o.invoice_number ?? null, invoice_ready: !!o.is_invoice_generated, receipt: o.status !== 'draft' && o.status !== 'pending',
+      });
+    }
+  }
+  out.sort((a, b) => String(b.created_at).localeCompare(String(a.created_at)));
+  return json({ ok: true, items: out.slice(0, 50) });
+}
+
+/** GET /api/billing/invoices/<id>/receipt|invoice: a short-lived download URL for one of the
+ *  account's own orders. 202 {pending} while Polar is still making the PDF. */
+async function invoiceFile(env: Env, u: Who, id: string, kind: 'receipt' | 'invoice') {
+  const ids = await customerIds(env, u);
+  const o = await polar(env, `/orders/${id}`);
+  if (o.status !== 200 || !ids.includes(String(o.data.customer_id))) throw new HttpError(404, 'not_found', 'There is no such payment on this account.');
+  const pdf = async (path: string) => {
+    const r = await polar(env, path);
+    if (r.status === 202) return json({ ok: false, pending: true, message: 'Polar is preparing this PDF. Try again in a few seconds.' }, 202);
+    if (r.status === 200 && typeof r.data.url === 'string' && r.data.url.startsWith('https://')) return json({ ok: true, url: r.data.url });
+    throw new HttpError(502, 'billing_failed', 'This PDF is not available right now. Please try again.');
+  };
+  if (kind === 'receipt') return pdf(`/orders/${id}/receipt`);
+  if (o.data.is_invoice_generated) return pdf(`/orders/${id}/invoice`);
+  const g = await polar(env, `/orders/${id}/invoice`, { method: 'POST' });
+  if (g.status === 422) throw new HttpError(422, 'invoice_details', 'An invoice needs the billing name and address from the payment. This payment has none, so use the receipt.');
+  if (g.status === 409) throw new HttpError(409, 'invoice_not_eligible', 'This payment cannot have an invoice yet. Use the receipt.');
+  if (g.status >= 300) throw new HttpError(502, 'billing_failed', 'This invoice is not available right now. Please try again.');
+  return json({ ok: false, pending: true, message: 'Your invoice is being made. Try again in a few seconds.' }, 202);
+}
+
+/** GET /api/billing/card: Polar's API cannot take a new card without Polar's own Stripe page, so
+ *  this is the one step that leaves the site: a pre-signed customer session on Polar's page (plan
+ *  changes are switched off there), with a way back to the account page. */
+async function updateCard(env: Env, url: URL, u: Who) {
+  const back = `${url.origin}/account/#billing`;
+  const e = await plan_for(env, u);
+  const customer = e.mine?.customer_id ?? (e.seat ? null : e.customer);
+  if (!customer || !env.POLAR_ACCESS_TOKEN) return redirect(`${url.origin}/account/?billing=card_unavailable#billing`);
+  try {
+    const r = await polar(env, '/customer-sessions/', { method: 'POST', body: { customer_id: customer, return_url: back } });
+    const to = r.data.customer_portal_url;
+    if (r.status < 300 && typeof to === 'string' && to.startsWith('https://')) return redirect(to);
+    console.error('polar customer session', r.status, JSON.stringify(r.data).slice(0, 200));
+  } catch (err) { console.error('polar customer session', err); }
+  return redirect(`${url.origin}/account/?billing=card_unavailable#billing`);
+}
+
+/** Which Polar API scopes the Worker's token has, by harmless calls (reads, and writes aimed at an
+ *  id that does not exist: 404/422 means the scope is there, 401/403 that it is not). Kept in D1
+ *  settings `polar_check` for the admin panel; rerun at most once a day (from /api/billing/plans). */
+export async function polarCheck(env: Env, force = false) {
+  if (!env.POLAR_ACCESS_TOKEN) return null;
+  const prev = await env.DB.prepare("SELECT updated_at FROM settings WHERE key = 'polar_check'").first<{ updated_at: string }>();
+  if (!force && prev && Date.now() - Date.parse(prev.updated_at) < 86_400_000) return null;
+  // Claim the run first so concurrent requests do not repeat it.
+  await env.DB.prepare("INSERT INTO settings (key, value, updated_at) VALUES ('polar_check', '{\"running\":true}', ?1) ON CONFLICT (key) DO UPDATE SET value = '{\"running\":true}', updated_at = ?1").bind(iso()).run();
+  const zero = '00000000-0000-4000-8000-000000000000';
+  const probes: [string, string, string, unknown?][] = [
+    ['subscriptions_read', 'GET', '/subscriptions/?limit=1'],
+    ['subscriptions_write', 'PATCH', `/subscriptions/${zero}`, { cancel_at_period_end: false }],
+    ['orders_read', 'GET', '/orders/?limit=1'],
+    ['customers_read', 'GET', `/customers/${zero}/payment-methods`],
+    ['customer_sessions_write', 'POST', '/customer-sessions/', { customer_id: zero }],
+  ];
+  const out: Record<string, string> = {};
+  for (const [name, method, path, b] of probes) {
+    try {
+      const r = await fetch(`${POLAR.api}${path}`, { method, headers: polarHeaders(env), body: b === undefined ? undefined : JSON.stringify(b) });
+      out[name] = r.status === 401 ? 'invalid_token' : r.status === 403 ? 'missing_scope' : [200, 404, 422].includes(r.status) ? 'ok' : `http_${r.status}`;
+    } catch { out[name] = 'unreachable'; }
+  }
+  await env.DB.prepare("UPDATE settings SET value = ?1, updated_at = ?2 WHERE key = 'polar_check'").bind(JSON.stringify(out), iso()).run();
+  return out;
 }
 
 async function body(req: Request): Promise<Record<string, unknown>> {
@@ -652,6 +930,7 @@ export async function billingSummary(env: Env) {
     founder: { ...founder, archive: st?.value ?? null },
     webhook_ready: !!env.POLAR_WEBHOOK_SECRET,
     api_token: !!env.POLAR_ACCESS_TOKEN,
+    polar_check: await env.DB.prepare("SELECT value, updated_at FROM settings WHERE key = 'polar_check'").first<{ value: string; updated_at: string }>(),
     items: rows.map((s) => ({ ...s, active: live(s) })),
   };
 }
