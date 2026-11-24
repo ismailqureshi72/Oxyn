@@ -13,7 +13,7 @@ keywords = ["mcp","ai","agent","components","dioxus"]
 categories = ["development-tools","gui"]
 
 [dependencies]
-oxyn-cli = { path = "../oxyn-cli", version = "0.1.0" }
+oxyn-cli = { path = "../oxyn-cli", version = "0.1.1" }
 oxyn-registry-schema.workspace = true
 serde_json = "1"
 
