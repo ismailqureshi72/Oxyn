@@ -44,6 +44,16 @@ export const LIMITS = {
   burst: { window: 600, max: 5 }, // 5 per 10 minutes
   daily: { window: 86_400, max: 30 }, // 30 per day
 };
+/** Static HTML from the ASSETS binding comes as a bare `text/html`; name the charset so no browser
+ *  or crawler has to sniff it. Other types and responses without a body type pass through. */
+export function withCharset(r: Response): Response {
+  const type = r.headers.get('content-type') || '';
+  if (!/^text\/html\s*$/i.test(type)) return r;
+  const out = new Response(r.body, r);
+  out.headers.set('content-type', 'text/html; charset=utf-8');
+  return out;
+}
+
 const IMAGE_TYPES: Record<string, string> = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/webp': 'webp', 'image/gif': 'gif' };
 
 export default {
@@ -58,7 +68,7 @@ export default {
     // /_pro/*: the Pro registry JSON. A Worker-only asset (wrangler.jsonc run_worker_first); never
     // served to a request, read only by pro.ts through the ASSETS binding.
     if (url.pathname.startsWith('/_pro/') || url.pathname === '/_pro') return fail(new HttpError(404, 'not_found', 'Not found.'));
-    if (!url.pathname.startsWith('/api/')) return env.ASSETS.fetch(req);
+    if (!url.pathname.startsWith('/api/')) return withCharset(await env.ASSETS.fetch(req));
     if (url.pathname.startsWith('/api/auth/')) return handleAuth(req, env, ctx, url);
     if (isBillingPath(url.pathname)) return handleBilling(req, env, ctx, url);
     // /api/r/*, /api/cli/*: the Pro registry, CLI tokens and `oxyn login`, see pro.ts and docs/cli.md.
