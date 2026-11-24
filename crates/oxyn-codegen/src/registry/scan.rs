@@ -80,7 +80,28 @@ pub fn blank(src: &str) -> String {
                 }
                 j += 1;
             }
-            wipe(&mut out, i + 1, j.min(n));
+            let end = j.min(n);
+            wipe(&mut out, i + 1, end);
+            // Inline format arguments ("{FREE}", "{fmt_axis(v, m)}" in format!, rsx! and friends)
+            // name code: keep their identifiers and `::` so the helpers they call stay in the item's
+            // dependencies. Braces and other punctuation stay blanked; `{{` is an escape.
+            let mut k = i + 1;
+            while k < end {
+                if b[k] == b'{' && k + 1 < end && b[k + 1] == b'{' {
+                    k += 2;
+                } else if b[k] == b'{' {
+                    let mut m = k + 1;
+                    while m < end && b[m] != b'}' && b[m] != b'{' {
+                        if ident(b[m]) || b[m] == b':' {
+                            out[m] = b[m];
+                        }
+                        m += 1;
+                    }
+                    k = m + 1;
+                } else {
+                    k += 1;
+                }
+            }
             i = j + 1;
         } else if c == b'\'' {
             // Char literal or lifetime / label.
@@ -590,6 +611,22 @@ mod tests {
         assert!(b.contains("fn f<'a>"));
         assert!(!b.contains("\"q\""));
         assert!(b.contains('\n'));
+    }
+
+    #[test]
+    fn blank_keeps_inline_format_arguments() {
+        let src = r#"div { key: "{FREE}", "{fmt_axis(v, m)} of {{zz}} {a::b:>4}" }"#;
+        let b = blank(src);
+        assert_eq!(b.len(), src.len());
+        for w in ["FREE", "fmt_axis", "v", "m", "a::b"] {
+            assert!(b.contains(w), "{w} kept in {b:?}");
+        }
+        assert!(!b.contains("zz"), "an escaped brace is text: {b:?}");
+        assert_eq!(
+            b.matches('{').count(),
+            1,
+            "only the code brace is left: {b:?}"
+        );
     }
 
     #[test]
