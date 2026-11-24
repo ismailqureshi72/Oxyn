@@ -113,7 +113,7 @@ Rules:
   **glides into the plan step or transcript row that consumed it** [R080] and leaves an inline
   "↳ Steered" marker. If the plan component isn't mounted, it glides into the transcript.
 - **Send now.** Header flashes "Stopping current run…"; the status strip drops "Interrupted" into the
-  transcript (see [composer-status-strip.md](composer-status-strip.md)); then the chip delivers.
+  transcript (see `composer-status-strip.md` — Pro (private)); then the chip delivers.
 - **Delivery.** Up next chip slides down-and-into the transcript as the user bubble; the remaining
   chips settle down one slot. Read-receipt fade on the bubble until the agent's first event (note 08).
 - **Stash.** Text **shrinks into a tab** at the composer's top-left with a count badge [R079]
@@ -254,8 +254,8 @@ note as `Steered`; `AwaitingApproval` holds draining.
 
 ## 9. Related components
 Send control (`Queued(n)`, ⌘↵ steer, ↑ edits last queued, [composer-send-control.md](composer-send-control.md)) ·
-status strip ("Interrupted" on send-now, [composer-status-strip.md](composer-status-strip.md)) ·
-input shell (edit mode, [composer-input-shell.md](composer-input-shell.md)) · plan / action-plan
+status strip ("Interrupted" on send-now, `composer-status-strip.md` — Pro (private)) ·
+input shell (edit mode, `composer-input-shell.md` — Pro (private)) · plan / action-plan
 component (steer target) · transcript user bubble (delivery target) · model picker and effort control
 (per-item overrides).
 

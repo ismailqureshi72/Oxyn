@@ -2,11 +2,11 @@
 
 # Spec: approval card & command-approval footer (`approval-card`)
 
-Part of family G ([approvals.md](approvals.md)). Same depth as
+Part of family G (`approvals.md` — Pro (private)). Same depth as
 [composer-send-control.md](composer-send-control.md). Target **5 free + 14 Pro = 19 variants** on one
 state machine. Implements the **approval footer slot** that [tool-call.md](tool-call.md) §5 "Approval
-hand-off" and [tools.md](tools.md) §2.2 hand to family G. The request model, risk tiers, decision set,
-timeout and batching rules are in [approvals.md](approvals.md) §2; this file is the visual component.
+hand-off" and `tools.md` — Pro (private) §2.2 hand to family G. The request model, risk tiers, decision set,
+timeout and batching rules are in `approvals.md` — Pro (private) §2; this file is the visual component.
 Numbers are Oxyn **proposals** unless a source is cited next to them.
 
 ## 1. Purpose
@@ -285,16 +285,16 @@ impl ApprovalCard<'_> {
 ```
 
 ## 10. Related components and references
-**Related:** [approvals.md](approvals.md) (model, tiers, decisions, timeout, batching, audit) ·
-[approval-questions.md](approval-questions.md) (Beautiful UI's question-style Approval Card, plan #25) ·
-[decision-card.md](decision-card.md) ·
-[tool-call.md](tool-call.md) (host card, Approved flash, `Denied` row) · [tools.md](tools.md) (lifecycle,
-expand while awaiting approval) · [file-edit-chip.md](file-edit-chip.md) (first hunk) · family H diff
-viewer · [composer-permission-selector.md](composer-permission-selector.md) (mini chip, attention badge,
-card-driven raise) · [composer-status-strip.md](composer-status-strip.md) (`AwaitingYou`, ⌘⇧A) ·
-[composer-input-shell.md](composer-input-shell.md) / [composer-send-control.md](composer-send-control.md)
-(placeholder, ↑ answers the card) · [permission-rules.md](permission-rules.md) (pattern editor writes a
-rule) · [plan-approval.md](plan-approval.md) · [subagent-tree.md](subagent-tree.md) (Review from a child).
+**Related:** `approvals.md` — Pro (private) (model, tiers, decisions, timeout, batching, audit) ·
+`approval-questions.md` — Pro (private) (Beautiful UI's question-style Approval Card, plan #25) ·
+`decision-card.md` — Pro (private) ·
+[tool-call.md](tool-call.md) (host card, Approved flash, `Denied` row) · `tools.md` — Pro (private) (lifecycle,
+expand while awaiting approval) · `file-edit-chip.md` — Pro (private) (first hunk) · family H diff
+viewer · `composer-permission-selector.md` — Pro (private) (mini chip, attention badge,
+card-driven raise) · `composer-status-strip.md` — Pro (private) (`AwaitingYou`, ⌘⇧A) ·
+`composer-input-shell.md` — Pro (private) / [composer-send-control.md](composer-send-control.md)
+(placeholder, ↑ answers the card) · `permission-rules.md` — Pro (private) (pattern editor writes a
+rule) · `plan-approval.md` — Pro (private) · [subagent-tree.md](subagent-tree.md) (Review from a child).
 
 | Reference | What we take | Licence note |
 |---|---|---|
@@ -323,4 +323,4 @@ Gaps closed against affectUI Approval Card:
 - New demo controls: Edit button, Labels (default / custom); new variants `edit-custom`, `card-actions`.
 - GPUI: `ApprovalPagerEl` closes the pager gap.
 
-Related new components: [hold-to-confirm](hold-to-confirm.md), [confirm-morph](confirm-morph.md), [confirm-popover](confirm-popover.md), [approval-gates](approval-gates.md), [permission-request](permission-request.md), [agent-approvals](agent-approvals.md).
+Related new components: `hold-to-confirm.md` — Pro (private), `confirm-morph.md` — Pro (private), [confirm-popover](confirm-popover.md), `approval-gates.md` — Pro (private), `permission-request.md` — Pro (private), `agent-approvals.md` — Pro (private).

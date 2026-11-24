@@ -3,11 +3,11 @@
 # Spec: sub-agent tree (`subagent-tree`)
 
 Part of family F, part 2 "Orchestration & observability" ([../component-taxonomy.md](../component-taxonomy.md),
-family overview in [tools.md](tools.md)). Same depth as the worked example
+family overview in `tools.md` — Pro (private)). Same depth as the worked example
 [composer-send-control.md](composer-send-control.md). Target **5 free + 14 Pro = 19 variants**. This file
 also defines the shared **`RunGraph`** model (§9) that [fanout-grid.md](fanout-grid.md),
-[acting-indicator.md](acting-indicator.md), [trace-view.md](trace-view.md), [run-replay.md](run-replay.md)
-and [run-meter.md](run-meter.md) read. If [tools.md](tools.md) defines a family-wide type with the same
+`acting-indicator.md` — Pro (private), `trace-view.md` — Pro (private), `run-replay.md` — Pro (private)
+and `run-meter.md` — Pro (private) read. If `tools.md` — Pro (private) defines a family-wide type with the same
 job, that one wins and this section becomes an alias.
 
 ## 1. Purpose
@@ -48,9 +48,9 @@ Rules (proposed):
    `AwaitingYou` > `Failed` > `Stalled` > `Working` > `Done`). A parent never looks "done" while a child
    still runs.
 3. **Parent stall only when all are silent**: a parent waiting on children is `Waiting on 3 agents`, not
-   stalled (same rule as [composer-status-strip.md](composer-status-strip.md) §6).
+   stalled (same rule as `composer-status-strip.md` — Pro (private) §6).
 4. **Each row is its own busy region**; at most **8 rows animate**, the rest show the still "working" dot
-   ([loaders.md](loaders.md) §2.3).
+   (`loaders.md` — Pro (private) §2.3).
 5. **Display depth ≠ runtime depth**: the tree shows depth 0–2 expanded by default and folds deeper levels
    into a "+n nested agents" row; the runtime depth limit belongs to the app and is only *reported*.
 6. Colour is identity, never state: state uses dot shape + tone + text; the 8 identity colours never
@@ -283,12 +283,12 @@ blip); `Stalled`→`Stalled`; `Done`→`Returning`→`Done`; `Error`→`Failed`;
 `AgentState` (a gap in architecture.md: it has no notion of child runs; proposed addition above).
 
 ## 10. Related components and references
-Related: [tool-call.md](tool-call.md) (inline-wrapper reuses the tool row) · [plan-todo.md](plan-todo.md)
+Related: [tool-call.md](tool-call.md) (inline-wrapper reuses the tool row) · `plan-todo.md` — Pro (private)
 (todo owner = sub-agent colour) · [fanout-grid.md](fanout-grid.md) (siblings side by side) ·
-[acting-indicator.md](acting-indicator.md) (which agent drives a surface) · [trace-view.md](trace-view.md)
-(sub-agent spans nest the same way) · [run-replay.md](run-replay.md) · [run-meter.md](run-meter.md) (per
-node usage) · [composer-status-strip.md](composer-status-strip.md) ("+2 agents" and lanes peek) ·
-[elapsed-timer.md](elapsed-timer.md) (child clocks) · [loaders.md](loaders.md) (row busy regions) ·
+`acting-indicator.md` — Pro (private) (which agent drives a surface) · `trace-view.md` — Pro (private)
+(sub-agent spans nest the same way) · `run-replay.md` — Pro (private) · `run-meter.md` — Pro (private) (per
+node usage) · `composer-status-strip.md` — Pro (private) ("+2 agents" and lanes peek) ·
+[elapsed-timer.md](elapsed-timer.md) (child clocks) · `loaders.md` — Pro (private) (row busy regions) ·
 approvals family G ([../component-taxonomy.md](../component-taxonomy.md)).
 
 | Ref | What we take | Licence note |
@@ -307,4 +307,4 @@ approvals family G ([../component-taxonomy.md](../component-taxonomy.md)).
 
 ## Plan #28 parity (2026-11-14)
 
-Closed with [agent-tree](agent-tree.md) (branch cost roll-up, folding, needs-you / failed windows), [agent-fleet](agent-fleet.md), [agent-orchestrator](agent-orchestrator.md) and [tree-table](tree-table.md).
+Closed with `agent-tree.md` — Pro (private) (branch cost roll-up, folding, needs-you / failed windows), `agent-fleet.md` — Pro (private), `agent-orchestrator.md` — Pro (private) and `tree-table.md` — Pro (private).
