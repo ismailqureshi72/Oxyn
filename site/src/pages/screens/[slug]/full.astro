@@ -15,7 +15,7 @@ const { demo } = Astro.props as { demo: Demo };
 ---
 <!doctype html>
 <html lang="en" data-theme="light" data-oxyn-theme="light">
-  <head><Head title={`${demo.name} · full screen · Oxyn`} description={demo.summary} /><meta name="robots" content="noindex" /></head>
+  <head><Head title={`${demo.name}, full screen – Oxyn UI`} description={demo.summary} /><meta name="robots" content="noindex" /></head>
   <body class="site fullscreen">
     <main id="main" class="fs-main" data-screen-full>
       <h1 class="sr-only">{demo.name}</h1>

@@ -19,6 +19,7 @@ import FeedbackButton from '../components/FeedbackButton.astro';
 import { icon } from '../components/v2/icons';
 import { lockup } from '../components/v2/logo';
 import { endLine } from '../lib/data';
+import { titleOf } from '../lib/seo';
 
 interface Props {
   title: string;
@@ -27,13 +28,19 @@ interface Props {
   /** Sidebar item to mark as current (defaults to this page). */
   current?: string;
   meta?: string;
+  /** The page's short name for breadcrumbs when the title is longer (item pages). */
+  name?: string;
+  /** Link-preview card under public/og/ (Head.astro). */
+  image?: string;
+  /** schema.org nodes for this page (src/lib/seo.ts). */
+  jsonld?: object[];
 }
-const { title, description, type = 'Page', current, meta } = Astro.props;
+const { title, description, type = 'Page', current, meta, name, image, jsonld } = Astro.props;
 const path = Astro.url.pathname;
 ---
 <!doctype html>
 <html lang="en" data-theme="light" data-oxyn-theme="light">
-  <head><Head title={`${title} · Oxyn`} description={description} /></head>
+  <head><Head title={titleOf(title)} name={name ?? title} description={description} image={image} jsonld={jsonld} /></head>
   <body class="site x-lib">
     <a class="x-skip" href="#main">Skip to content</a>
     <div class="lib-grid">
@@ -44,7 +51,7 @@ const path = Astro.url.pathname;
           <div class="lbar" data-pagefind-ignore>
             <button class="iconbtn lbar-open" type="button" data-sidebar-toggle aria-label="Show sidebar" title="Show sidebar"><Fragment set:html={icon.panel} /></button>
             <button class="iconbtn lbar-drawer" type="button" data-drawer-open aria-controls="lsb" aria-expanded="false" aria-label="Open menu"><Fragment set:html={icon.menu} /></button>
-            <a class="wm lbar-wm x-logo-link" href="/" aria-label="Oxyn home"><Fragment set:html={lockup} /></a>
+            <a class="wm lbar-wm x-logo-link" href="/" aria-label="Oxyn UI home"><Fragment set:html={lockup} /></a>
             <span class="lbar-sp"></span>
             <button class="iconbtn lbar-search" type="button" data-open-search aria-label="Search"><Fragment set:html={icon.search} /></button>
             <FeedbackButton />
