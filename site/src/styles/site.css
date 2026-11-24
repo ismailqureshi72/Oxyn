@@ -915,7 +915,7 @@ html[data-oxyn-reduced] .x-lap-scene{--x-lap-p:1!important}
 .x-foot-btns .x-pill{height:40px;padding:0 18px;font-size:14px}
 .x-foot-btns .x-pill svg{width:15px;height:15px}
 .x-foot-n{margin-left:2px;padding:2px 8px;border-radius:999px;background:color-mix(in srgb,var(--on-ink) 18%,transparent);font-size:12px;font-variant-numeric:tabular-nums}
-.x-foot-grid{display:grid;grid-template-columns:1.8fr repeat(3,minmax(0,1fr));gap:32px;padding:56px 4px 44px}
+.x-foot-grid{display:grid;grid-template-columns:1.6fr repeat(4,minmax(0,1fr));gap:32px;padding:56px 4px 44px}
 .x-foot-about{min-width:0}
 .x-foot-wm .x-logo-lockup{height:22px}
 .x-foot-about p{margin:12px 0 20px;max-width:330px;font-size:14px;color:var(--fg2)}
@@ -951,7 +951,7 @@ html[data-oxyn-reduced] .x-lap-scene{--x-lap-p:1!important}
 .x-lib .x-foot-big{height:clamp(52px,10vw,140px)}
 .x-lib .x-foot-big .x-logo-word{width:min(72%,680px)}
 @media (max-width:900px){
-  .x-foot-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .x-foot-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
   .x-foot-about{grid-column:1 / -1}
 }
 @media (max-width:640px){
