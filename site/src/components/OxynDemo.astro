@@ -3,7 +3,7 @@
 // time), replaced by the WASM mount when it scrolls into view (public/oxyn-demo.js).
 // `defer`: stay on the server-rendered markup until a script calls mountLive() (laptop tabs).
 // `proLock`: an Oxyn Pro item; the live playground leaves its generated code out (hide_code).
-// `lazy`: a preview in a hidden tab. Its markup is not inlined; it is fetched from /ssr/<key>.html
+// `lazy`: a preview in a hidden tab. Its markup is not inlined; it is fetched from /ssr/<key>.htm
 // the first time the preview comes near the screen (lib/lazy-ssr.ts lists every such preview).
 import { ssrUrl } from '../lib/lazy-ssr';
 interface Props { slug: string; html: string; variant?: number; controls?: boolean; height?: number; defer?: boolean; proLock?: boolean; lazy?: boolean }

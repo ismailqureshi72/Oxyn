@@ -3,6 +3,7 @@
 // the landing names Oxyn UI in its title and H1, and robots.txt, sitemap.xml and llms.txt are there.
 import fs from 'node:fs';
 import path from 'node:path';
+import { OG_V } from '../src/lib/site.mjs';
 
 const dist = path.resolve(process.argv[2] ?? 'dist');
 const errors = [];
@@ -12,6 +13,18 @@ const walk = (d) => { for (const e of fs.readdirSync(d, { withFileTypes: true })
 walk(dist);
 
 let blocks = 0;
+let docsLd = 0;
+const cards = new Map();
+/** A link-preview card in dist: PNG, 1200 x 630, under 300 KB. Checked once per file. */
+const card = (rel, url) => {
+  const file = path.join(dist, new URL(url).pathname);
+  if (cards.has(file)) return;
+  cards.set(file, true);
+  if (!fs.existsSync(file)) return fail(`${rel}: og:image ${url} is not in dist`);
+  const b = fs.readFileSync(file);
+  if (b.length > 300 * 1024) fail(`${url}: ${Math.round(b.length / 1024)} KB (link-preview cards stay under 300 KB)`);
+  if (b.toString('latin1', 1, 4) !== 'PNG' || b.readUInt32BE(16) !== 1200 || b.readUInt32BE(20) !== 630) fail(`${url}: not a 1200 x 630 PNG`);
+};
 for (const f of pages) {
   const html = fs.readFileSync(f, 'utf8');
   const rel = path.relative(dist, f);
@@ -25,7 +38,24 @@ for (const f of pages) {
   else if (!/href="https:\/\/oxynui\.com\//.test(canon[0])) fail(`${rel}: canonical is not https://oxynui.com/…`);
   if (!/<title>[^<]+<\/title>/.test(html)) fail(`${rel}: no <title>`);
   if (!/<meta[^>]+name="description"[^>]+content="[^"]+"/.test(html)) fail(`${rel}: no meta description`);
+  // Link previews: a versioned og:image at the top of <head>, before any stylesheet or script.
+  const og = /<meta[^>]+property="og:image"[^>]+content="([^"]+)"/.exec(html);
+  if (!og) fail(`${rel}: no og:image`);
+  else {
+    if (!og[1].startsWith('https://oxynui.com/') || !og[1].endsWith(`?v=${OG_V}`)) fail(`${rel}: og:image ${og[1]} is not https://oxynui.com/…?v=${OG_V}`);
+    const head = html.slice(0, html.indexOf('</head>'));
+    const firstAsset = Math.min(...[/<link[^>]+rel="stylesheet"/, /<script/].map((re) => { const m = re.exec(head); return m ? m.index : Infinity; }));
+    if (og.index > firstAsset) fail(`${rel}: og:image comes after a stylesheet or script in <head>`);
+    card(rel, og[1]);
+  }
+  // Docs, guides and compare (Starlight, src/route-data.ts): TechArticle + BreadcrumbList.
+  if (/^(docs|guides|compare)[\/]/.test(rel)) {
+    const ld = [...html.matchAll(/<script[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)].map((m) => m[1]).join(' ');
+    for (const t of ['TechArticle', 'BreadcrumbList']) if (!ld.includes(`"@type":"${t}"`)) fail(`${rel}: docs JSON-LD has no ${t}`);
+    docsLd++;
+  }
 }
+if (docsLd < 10) fail(`only ${docsLd} docs pages carry the docs JSON-LD`);
 
 const home = fs.readFileSync(path.join(dist, 'index.html'), 'utf8');
 const title = /<title>([^<]+)<\/title>/.exec(home)?.[1] ?? '';
@@ -46,7 +76,7 @@ const llms = fs.readFileSync(path.join(dist, 'llms.txt'), 'utf8');
 if (!llms.startsWith('# Oxyn UI')) fail('llms.txt does not start with "# Oxyn UI"');
 if (!fs.existsSync(path.join(dist, 'llms-full.txt'))) fail('no llms-full.txt');
 
-console.log(`${pages.length} pages, ${blocks} JSON-LD blocks, ${urls} sitemap URLs, landing title "${title}" (${title.length}), description ${desc.length} chars`);
+console.log(`${pages.length} pages, ${blocks} JSON-LD blocks (${docsLd} docs pages with TechArticle), ${cards.size} og:image cards, ${urls} sitemap URLs, landing title "${title}" (${title.length}), description ${desc.length} chars`);
 if (errors.length) {
   for (const e of errors.slice(0, 50)) console.log(`::error::${e}`);
   if (errors.length > 50) console.log(`… and ${errors.length - 50} more`);

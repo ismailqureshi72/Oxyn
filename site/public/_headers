@@ -9,3 +9,7 @@
 
 /wasm/gallery-dioxus.*
   Cache-Control: public, max-age=31536000, immutable
+
+# Landing preview fragments (src/pages/ssr): fetched by the page script, never a search result.
+/ssr/*
+  X-Robots-Tag: noindex

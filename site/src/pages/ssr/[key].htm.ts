@@ -1,4 +1,4 @@
-// /ssr/<key>.html: the server-rendered markup of a landing preview that sits in a hidden tab,
+// /ssr/<key>.htm: the server-rendered markup of a landing preview that sits in a hidden tab,
 // fetched by <oxyn-demo data-ssr> when it is first shown (see lib/lazy-ssr.ts). A bare fragment.
 import type { APIRoute, GetStaticPaths } from 'astro';
 import { lazySsr } from '../../lib/lazy-ssr';

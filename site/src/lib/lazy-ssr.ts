@@ -1,7 +1,7 @@
 // Server-rendered previews the landing does not inline. Hidden tab panels (the Screens, Blocks and
 // Motion grids, the laptop's other screens, the other compare tabs) would put ~400 KB of markup
 // into the first HTML for things nobody sees until they pick a tab. Their markup is written to
-// /ssr/<key>.html instead (pages/ssr/[key].html.ts) and <oxyn-demo data-ssr> fetches it the first
+// /ssr/<key>.htm instead (pages/ssr/[key].htm.ts) and <oxyn-demo data-ssr> fetches it the first
 // time the preview comes near the screen (public/oxyn-demo.js), before the live WASM mount.
 // One list for both sides, so every lazy preview has its fragment.
 import { demos, screens, blocks, type Demo } from './data';
@@ -36,7 +36,7 @@ export const compareTabSlugs = [
 
 /** The fragment name for a preview: `<slug>` for the whole-screen markup (variant -1), else `<slug>.<variant>`. */
 export const ssrKey = (slug: string, variant: number) => (variant < 0 ? slug : `${slug}.${variant}`);
-export const ssrUrl = (slug: string, variant: number) => `/ssr/${ssrKey(slug, variant)}.html`;
+export const ssrUrl = (slug: string, variant: number) => `/ssr/${ssrKey(slug, variant)}.htm`;
 
 /** Every lazy preview on the landing: its fragment name and markup. */
 export function lazySsr(): { key: string; html: string }[] {
