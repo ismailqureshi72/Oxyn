@@ -58,7 +58,7 @@ const explore: [string, string, string, string][] = [
   ['Pricing', '/pricing/', 'pricing', 'Free components under MIT; Pro for every screen and block.'],
   ['About', '/about/', 'about', `What ${BRAND} is, who makes it and how it works.`],
 ];
-const jsonld = [organization(), website(), softwareApplication(), faqPage(faq.map(([q, a]) => [q, a]))];
+const jsonld = [organization(), website(), softwareApplication(), faqPage(faq.map(([q, a]) => [q, a] as [string, string]))];
 ---
 <Base title={`${BRAND} — Rust UI components for AI agents`} description={HOME_DESCRIPTION} type="Page" promo jsonld={jsonld}>
   <Hero />
