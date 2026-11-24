@@ -29,7 +29,7 @@ const wave = `M24 0 ${Array.from({ length: 16 }, (_, i) => (i === 0 ? 'q12 30 0 
 const sparks: [number, number, number, number][] = [[31, 20, 0, 3.2], [17, 80, 5, 2], [32, 150, 2, 2.6], [16, 205, 7, 3.4], [30, 270, 1, 1.8], [18, 330, 4, 2.8], [33, 395, 6, 2.2], [15, 450, 3, 3], [29, 515, 8, 2.4], [19, 575, 2, 1.8]];
 const star = (x: number, y: number, r: number) => `M${x} ${y - r}Q${x} ${y} ${x + r} ${y}Q${x} ${y} ${x} ${y + r}Q${x} ${y} ${x - r} ${y}Q${x} ${y} ${x} ${y - r}Z`;
 const agents = ['claude-code', 'codex', 'cursor', 'windsurf', 'github-copilot', 'zed', 'antigravity', 'gemini-cli', 'kimi', 'minimax', 'cline', 'opencode'];
-const MCP_INSTALL = `cargo install --git ${REPO} oxyn-mcp`;
+const MCP_INSTALL = `cargo install oxyn-mcp`;
 const moreHref: Record<string, [string, string]> = { components: ['/components/', 'Explore all components'], screens: ['/screens/', 'Explore all screens'], blocks: ['/blocks/', 'Explore all blocks'], illustrations: ['/illustrations/', 'About illustrations'], motion: ['/motion/', 'Explore motion'] };
 // Brand names in running text get their mark in front (the name stays as text).
 const named = (s: string) =>
