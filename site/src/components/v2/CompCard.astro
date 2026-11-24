@@ -4,8 +4,9 @@
 import OxynDemo from '../OxynDemo.astro';
 import { icon } from './icons';
 import { demoUrl, groupOf, isScreen, isBlock, blockGroupOf, isPro, installLine, type Demo } from '../../lib/data';
-interface Props { demo: Demo; headingLevel?: 2 | 3 }
-const { demo, headingLevel = 3 } = Astro.props;
+// `lazy`: the preview's markup is fetched when it is first shown (a card in a hidden tab panel).
+interface Props { demo: Demo; headingLevel?: 2 | 3; lazy?: boolean }
+const { demo, headingLevel = 3, lazy = false } = Astro.props;
 const v = demo.variants[0];
 const bg = isBlock(demo) ? blockGroupOf(demo) : null;
 const g = isScreen(demo) ? { name: 'Screen', slug: '' } : bg ? { name: `Block · ${bg.name}`, slug: '' } : groupOf(demo);
@@ -20,7 +21,7 @@ const install = installLine(demo);
     {isPro(demo) && <span class="x-promark" title="Oxyn Pro: the preview is free, the code needs Pro"><i class="x-bolt" aria-hidden="true"></i><span class="pro-l">Pro</span></span>}
   </div>
   <div class="cc-prev" aria-hidden="true" inert>
-    <OxynDemo slug={demo.slug} html={v.html} variant={0} />
+    <OxynDemo slug={demo.slug} html={v.html} variant={0} lazy={lazy} />
   </div>
   <div class="cc-foot">
     <div class="cc-txt">
