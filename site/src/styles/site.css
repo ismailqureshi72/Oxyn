@@ -1113,6 +1113,9 @@ html[data-oxyn-reduced] .x-lap-scene{--x-lap-p:1!important}
 .acct-plan-h .x-chip[data-tier="pro"],.acct-plan-h .x-chip[data-tier="team"]{background:var(--ink);color:var(--on-ink)}
 .acct-plan-line{margin:8px 0 0;font-size:14px;line-height:1.5;color:var(--fg2)}
 .acct-plan-note{margin-top:12px}
+.acct-cancel{margin-top:18px;padding:14px 16px;border-radius:14px;box-shadow:inset 0 0 0 1px var(--ln);background:var(--pn)}
+.acct-cancel h3{margin:0;font-size:15px;font-weight:620}
+.acct-cancel .acct-actions{margin-top:14px}
 .acct-plan .acct-actions{margin-top:16px}
 .acct-seats{margin-top:22px}
 .acct-seats h3{margin:0;font-size:15px;font-weight:600}

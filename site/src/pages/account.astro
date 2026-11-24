@@ -33,7 +33,18 @@ import { counts } from '../lib/data';
           <div class="acct-actions">
             <a class="x-pill pill-black" href="/pricing/" data-plan-upgrade><Fragment set:html={icon.bolt} />See Pro plans</a>
             <a class="x-pill pill-grey" href="/api/billing/portal" rel="nofollow" data-astro-prefetch="false" data-plan-manage hidden><Fragment set:html={icon.card} />Manage billing</a>
+            <button type="button" class="x-pill pill-grey" data-plan-cancel hidden>Cancel plan</button>
+            <button type="button" class="x-pill pill-black" data-plan-resume hidden>Resume plan</button>
           </div>
+          <div class="acct-cancel" data-plan-confirm role="group" aria-labelledby="cancel-h" hidden>
+            <h3 id="cancel-h">Cancel your plan?</h3>
+            <p class="acct-plan-line" data-plan-confirm-msg></p>
+            <div class="acct-actions">
+              <button type="button" class="x-pill pill-black" data-plan-confirm-yes>Cancel plan</button>
+              <button type="button" class="x-pill pill-grey" data-plan-confirm-no>Keep my plan</button>
+            </div>
+          </div>
+          <p class="auth-err" role="alert" data-plan-err hidden></p>
           <div class="acct-seats" data-seats hidden>
             <h3>Team seats <span class="acct-seats-n" data-seat-count></span></h3>
             <p class="acct-plan-line">A Team is up to 4 people: you plus 3 teammates. Add a teammate's email. They sign in to Oxyn with Google or GitHub on that email, and Pro opens for them.</p>
