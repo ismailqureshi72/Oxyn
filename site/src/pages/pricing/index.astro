@@ -50,11 +50,11 @@ const rows: [string, string, string, string][] = [
   ['Developers', '1', '1', `Up to ${PRICES.team.people}`],
 ];
 const faq: [string, string][] = [
-  ['What happens if I cancel?', 'The code you already installed keeps working, for good. Cancelling stops new Pro access at the end of the period you paid for: the Pro code on this site, the Pro registry and the Pro CLI. You can cancel any time from Manage billing.'],
+  ['What happens if I cancel?', 'The code you already installed keeps working, for good. Cancel any time with Cancel plan on your account page (or from Manage billing): nothing is refunded, the plan does not renew, and Pro stays open until the end of the period you paid for. After that, new Pro access stops: the Pro code on this site, the Pro registry and the Pro CLI. Changed your mind before then? Resume plan on the same page.'],
   ['How do the monthly limits work?', `Pro and the founder rate open ${CAPS.pro.components} Pro components and ${CAPS.pro.screens} screens a month (blocks and agent-app templates count as screens); a Team shares ${CAPS.team.components} components and ${CAPS.team.screens} screens. An item counts once, the first time you open its code that billing month, on this site, with oxyn add or through the MCP server. Opening, copying or updating it again that month is free, and the count starts over on the day your plan renews. Your account page and oxyn whoami show where you are.`],
   ['Who handles the payment?', 'Checkout is secure and run by Polar, our merchant of record. Polar takes the payment, handles the receipts and invoices, and Oxyn never sees your card.'],
   ['Are taxes included?', 'Prices are in US dollars before tax. Sales tax or VAT for your country is added at checkout, so you see the full amount before you pay.'],
-  ['How does the founder rate work?', `The first ${PRICES.founder.cap} subscribers pay ${usd(PRICES.founder.month)} a month or ${usd(PRICES.founder.year)} a year, for the same Pro. The rate stays as long as the subscription stays active. If it ends, a new subscription is at the regular price.`],
+  ['How does the founder rate work?', `It is an intro price for the first ${PRICES.founder.cap} new subscribers: ${usd(PRICES.founder.month)} for your first month (or ${usd(PRICES.founder.year)} for your first year), then Pro renews at the regular ${usd(PRICES.pro.month)} a month (${usd(PRICES.pro.year)} a year). It is the same Pro, and it is only for people who have not subscribed to Oxyn before.`],
   ['What does Team include?', `Pro for a team of up to ${PRICES.team.people} people: the owner plus ${PRICES.team.seats} teammates. The owner adds teammates by email on the Account page; each teammate signs in to Oxyn with Google or GitHub on that email, and Pro opens for them.`],
   ['Can I switch between monthly and yearly?', 'Yes. Open Manage billing from your account menu and change the plan there; Polar works out the difference.'],
   ['Do I need an account?', 'Free needs nothing. To subscribe you sign in first, so Pro is tied to your Oxyn account.'],
@@ -71,7 +71,7 @@ const faq: [string, string][] = [
 
     <div class="pr-founder" data-pr-founder>
       <span class="pr-founder-i" aria-hidden="true"><Fragment set:html={icon.sparkle} /></span>
-      <p><b>Founder rate.</b> The first {PRICES.founder.cap} subscribers get Pro for {usd(PRICES.founder.month)} a month or {usd(PRICES.founder.year)} a year, locked in while the subscription stays active. <span class="pr-left" data-pr-left></span></p>
+      <p><b>Founder rate.</b> {usd(PRICES.founder.month)} for your first month (or {usd(PRICES.founder.year)} for your first year), then {usd(PRICES.pro.month)}/mo ({usd(PRICES.pro.year)}/yr). First {PRICES.founder.cap} new subscribers. <span class="pr-left" data-pr-left></span></p>
     </div>
 
     <div class="pr-toggle">
@@ -97,11 +97,11 @@ const faq: [string, string][] = [
         <div class="price">
           <span class="pr-amt mo"><span class="fd">{usd(PRICES.founder.month)}</span><span class="rg">{usd(PRICES.pro.month)}</span></span>
           <span class="pr-amt yr"><span class="fd">{usd(PRICES.founder.year)}</span><span class="rg">{usd(PRICES.pro.year)}</span></span>
-          <small class="mo">/ month</small><small class="yr">/ year</small>
+          <small class="mo"><span class="fd">first month</span><span class="rg">/ month</span></small><small class="yr"><span class="fd">first year</span><span class="rg">/ year</span></small>
         </div>
         <p class="pr-sub">
-          <span class="mo"><span class="fd"><s>{usd(PRICES.pro.month)}</s> regular price</span><span class="rg">Billed monthly</span></span>
-          <span class="yr"><span class="fd"><s>{usd(PRICES.pro.year)}</s> regular · {perMonth(PRICES.founder.year)} a month</span><span class="rg">{perMonth(PRICES.pro.year)} a month, billed yearly</span></span>
+          <span class="mo"><span class="fd">Then {usd(PRICES.pro.month)} a month</span><span class="rg">Billed monthly</span></span>
+          <span class="yr"><span class="fd">Then {usd(PRICES.pro.year)} a year</span><span class="rg">{perMonth(PRICES.pro.year)} a month, billed yearly</span></span>
         </p>
         <ul class="pr-list">{proList.map((t) => <li><Fragment set:html={icon.check} />{t}</li>)}</ul>
         <a class="x-pill pill-black pr-go" href={co('pro-founder-month')} rel="nofollow" data-astro-prefetch="false"
