@@ -15,9 +15,17 @@ pub const CONFIG_FILE: &str = "oxyn.toml";
 /// File name of the lock file, next to `Cargo.toml`.
 pub const LOCK_FILE: &str = "oxyn.lock";
 
-/// Where the Oxyn crates (`oxyn-core`, `oxyn-tokens`) come from.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+/// The crates.io version requirement `oxyn init` writes for the Oxyn crates by default.
+pub const CRATES_IO_VERSION: &str = "0.1";
+
+/// Where the Oxyn crates (`oxyn-core`, `oxyn-tokens`) come from: crates.io (the default), a local
+/// checkout (`path`) or the git repository (`git`, usually pinned to `rev`). When several are set,
+/// `path` wins, then `git`, then `version`; with none set, crates.io at [`CRATES_IO_VERSION`].
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Source {
+    /// crates.io version requirement (`"0.1"`).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub version: Option<String>,
     /// Git repository.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub git: Option<String>,
@@ -27,6 +35,33 @@ pub struct Source {
     /// A local checkout of the Oxyn repository instead of git (for contributors and CI).
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub path: Option<String>,
+}
+
+impl Source {
+    /// The Oxyn crates from crates.io at [`CRATES_IO_VERSION`] (what `oxyn init` uses by default).
+    pub fn crates_io() -> Source {
+        Source {
+            version: Some(CRATES_IO_VERSION.into()),
+            ..Source::default()
+        }
+    }
+
+    /// The Oxyn git repository, pinned to a commit when `rev` is given.
+    pub fn git(repo: impl Into<String>, rev: Option<String>) -> Source {
+        Source {
+            git: Some(repo.into()),
+            rev,
+            ..Source::default()
+        }
+    }
+
+    /// A local checkout of the Oxyn repository (its root directory).
+    pub fn local(dir: impl Into<String>) -> Source {
+        Source {
+            path: Some(dir.into()),
+            ..Source::default()
+        }
+    }
 }
 
 /// `oxyn.toml`.
@@ -183,11 +218,7 @@ mod tests {
         let d = tempfile::tempdir().unwrap();
         let mut c = Config::new(
             Framework::Dioxus,
-            Source {
-                git: Some("https://g".into()),
-                rev: Some("abc".into()),
-                path: None,
-            },
+            Source::git("https://g", Some("abc".into())),
         );
         c.mark_installed("button");
         c.mark_installed("badge");
@@ -201,6 +232,19 @@ mod tests {
         );
         let text = fs::read_to_string(d.path().join(CONFIG_FILE)).unwrap();
         assert!(text.contains("framework = \"dioxus\""));
+        // The default source is crates.io; an oxyn.toml from before it (git + rev) still reads as git.
+        let mut c = Config::new(Framework::Dioxus, Source::crates_io());
+        c.save(d.path()).unwrap();
+        let text = fs::read_to_string(d.path().join(CONFIG_FILE)).unwrap();
+        assert!(text.contains("[oxyn]\nversion = \"0.1\""), "{text}");
+        assert_eq!(Config::load(d.path()).unwrap().oxyn, Source::crates_io());
+        let old: Config = toml::from_str(
+            "framework = \"gpui\"\npath = \"src/oxyn\"\ncss = \"assets/oxyn\"\n[oxyn]\ngit = \"https://g\"\nrev = \"abc\"\n",
+        )
+        .unwrap();
+        assert_eq!(old.oxyn, Source::git("https://g", Some("abc".into())));
+        c = Config::new(Framework::Dioxus, Source::default());
+        assert_eq!(c.oxyn.version, None);
         assert!(matches!(
             Config::load(&d.path().join("nope")),
             Err(Error::NotInitialised(_))
