@@ -2,6 +2,7 @@
 // Everything both layouts put in <head>: meta, the theme boot script and the demo runtime.
 import { wasm } from '../../lib/data';
 import { BRAND, breadcrumbs, ldJson } from '../../lib/seo';
+import { ogUrl } from '../../lib/site.mjs';
 interface Props {
   /** The full <title>. */
   title: string;
@@ -17,7 +18,7 @@ const { title, description, name = title, image, jsonld = [] } = Astro.props;
 const path = Astro.url.pathname;
 // Self-referencing canonical: https, the apex host, the path with its trailing slash, no query.
 const canonical = new URL(path, Astro.site).href;
-const ogImage = new URL(image ?? '/og.png?v=2', Astro.site).href;
+const ogImage = ogUrl(image ?? '/og.png');
 const OG_ALT = image ? `${name}: ${BRAND}, Rust UI components for AI agents` : `${BRAND}: Rust UI components for AI agents`;
 const crumbs = breadcrumbs(path, name);
 const graph = [...jsonld, ...(crumbs ? [crumbs] : [])];
@@ -25,7 +26,7 @@ const graph = [...jsonld, ...(crumbs ? [crumbs] : [])];
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <!-- Link previews first (WhatsApp, iMessage, Slack, Discord, X read the top of <head>). og:image
-     carries ?v= so apps that cached an older card fetch the new one: bump it when og.png changes. -->
+     carries ?v=OG_V (src/lib/site.mjs) so apps that cached an older card fetch the new one. -->
 <meta property="og:site_name" content={BRAND} />
 <meta property="og:type" content="website" />
 <meta property="og:title" content={title} />
