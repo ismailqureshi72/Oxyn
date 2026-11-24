@@ -12,7 +12,7 @@ listed in §6.
 **Hard rules for this kit**
 1. **Money never moves without a Critical stop.** Any payment, transfer, payroll run or tax filing is a
    `Critical` request: press-and-hold 1200 ms, "Allow once" only, never auto-approved at any permission
-   level, Bypass included ([../specs/approvals.md](../specs/approvals.md) §2.3).
+   level, Bypass included (`approvals.md` — Pro (private) §2.3).
 2. **A money approval always shows amount, payee, account and risk** without a click: amount and
    currency in large tabular figures, payee name, the account debited and the payee account (masked),
    the risk tier glyph + label + reasons.
@@ -79,12 +79,12 @@ ask "why?" about whatever is on screen.
 
 | Region | Size | Components |
 |---|---|---|
-| Nav rail | 56 px, icons + tooltip; 200 px expanded | [side-panels.md](../specs/side-panels.md) `side-panel/rail`; counts as badges ("23") |
-| Top bar | 48 px | company switcher, **period chip** (new, §6), [command-palette.md](../specs/command-palette.md) `command-palette/answer-cards`, approvals badge → [desktop-overlays.md](../specs/desktop-overlays.md) `tray-popover/approvals-only` |
+| Nav rail | 56 px, icons + tooltip; 200 px expanded | `side-panels.md` — Pro (private) `side-panel/rail`; counts as badges ("23") |
+| Top bar | 48 px | company switcher, **period chip** (new, §6), [command-palette.md](../specs/command-palette.md) `command-palette/answer-cards`, approvals badge → `desktop-overlays.md` — Pro (private) `tray-popover/approvals-only` |
 | Canvas | fluid, min 720 px | the screen (§3) |
-| Agent panel | 400 px (resizable 320–560) | [message-bubble.md](../specs/message-bubble.md) `message/flat`, [tool-call.md](../specs/tool-call.md) `tool-call/row`, [plan-todo.md](../specs/plan-todo.md), [approval-card.md](../specs/approval-card.md), composer below |
-| Composer | in panel, bottom | [composer-input-shell.md](../specs/composer-input-shell.md) `composer-input/rounded-box`, [composer-mode-switch.md](../specs/composer-mode-switch.md) `mode-switch/chip-menu` (Ask / Plan / Agent), [composer-permission-selector.md](../specs/composer-permission-selector.md) `permission-selector/risk-ladder`, [composer-slash-mentions.md](../specs/composer-slash-mentions.md) |
-| Status bar | 24 px | [side-panels.md](../specs/side-panels.md) `status-bar/run-strip`, [background-jobs.md](../specs/background-jobs.md) `background-jobs/dock-pill`, [run-meter.md](../specs/run-meter.md) |
+| Agent panel | 400 px (resizable 320–560) | [message-bubble.md](../specs/message-bubble.md) `message/flat`, [tool-call.md](../specs/tool-call.md) `tool-call/row`, `plan-todo.md` — Pro (private), [approval-card.md](../specs/approval-card.md), composer below |
+| Composer | in panel, bottom | `composer-input-shell.md` — Pro (private) `composer-input/rounded-box`, `composer-mode-switch.md` — Pro (private) `mode-switch/chip-menu` (Ask / Plan / Agent), `composer-permission-selector.md` — Pro (private) `permission-selector/risk-ladder`, `composer-slash-mentions.md` — Pro (private) |
+| Status bar | 24 px | `side-panels.md` — Pro (private) `status-bar/run-strip`, `background-jobs.md` — Pro (private) `background-jobs/dock-pill`, `run-meter.md` — Pro (private) |
 
 Slash commands (in-house copy): `/categorise`, `/reconcile`, `/explain`, `/pay`, `/close`, `/memo`.
 Mentions: `@payee`, `@account`, `@txn` (a transaction chip), `@period`.
@@ -178,16 +178,16 @@ wash (`dur.highlight.fade`, 1600 ms, [../motion.md](../motion.md)).
 
 | Part | Component (spec) | Notes |
 |---|---|---|
-| KPI tiles | [genui-blocks.md](../specs/genui-blocks.md) `genui-metric/board` (Pro) or `genui-metric/tile` (free) with `genui-metric/sparkbar` | `direction_good`: up for cash/revenue/net, **down** for expenses; delta = sign + ▲/▼ + % (§3.0 number rules) |
+| KPI tiles | `genui-blocks.md` — Pro (private) `genui-metric/board` (Pro) or `genui-metric/tile` (free) with `genui-metric/sparkbar` | `direction_good`: up for cash/revenue/net, **down** for expenses; delta = sign + ▲/▼ + % (§3.0 number rules) |
 | Insight chart | `genui-chart/scrub-insight` (Pro), `genui-chart/annotated-story` (Pro), free fallback `genui-chart/plain` | Agent annotations are numbered pins; "1 of 2 ‹ ›" steps through them; dragging a range sends "Explain Aug–Oct" to the agent |
-| Needs-you list | [genui-blocks.md](../specs/genui-blocks.md) `genui-list/rich-rows`; risk glyphs via [approvals.md](../specs/approvals.md) `risk-badge/shape` | Click opens the card in the agent panel ([approval-card.md](../specs/approval-card.md) `approval-card/paged`) |
-| Agent question | [genui-forms.md](../specs/genui-forms.md) `genui-question/chips` | "(recommended)" marker on the agent's preferred answer |
-| Close progress | [plan-todo.md](../specs/plan-todo.md) `todo-list/capsules` | links to 3.4 |
+| Needs-you list | `genui-blocks.md` — Pro (private) `genui-list/rich-rows`; risk glyphs via `approvals.md` — Pro (private) `risk-badge/shape` | Click opens the card in the agent panel ([approval-card.md](../specs/approval-card.md) `approval-card/paged`) |
+| Agent question | `genui-forms.md` — Pro (private) `genui-question/chips` | "(recommended)" marker on the agent's preferred answer |
+| Close progress | `plan-todo.md` — Pro (private) `todo-list/capsules` | links to 3.4 |
 
 | State | Shows |
 |---|---|
-| Empty (no bank connected) | [citations-sources.md](../specs/citations-sources.md) `empty-state/starters-grid`: "Connect a bank feed", "Import a CSV", "Try with demo data" |
-| Loading | [genui-skeletons.md](../specs/genui-skeletons.md) `genui-skel/kpi-morph-in`, `genui-skel/line-chart-draw`, `genui-skel/list-stream-fill`; first reveal counts up (`dur.count.up` 500 ms) |
+| Empty (no bank connected) | `citations-sources.md` — Pro (private) `empty-state/starters-grid`: "Connect a bank feed", "Import a CSV", "Try with demo data" |
+| Loading | `genui-skeletons.md` — Pro (private) `genui-skel/kpi-morph-in`, `genui-skel/line-chart-draw`, `genui-skel/list-stream-fill`; first reveal counts up (`dur.count.up` 500 ms) |
 | Error | per-tile error at the same footprint ("Couldn't load cash · Retry"); other tiles stay live |
 | Stale feed | top-bar chip "Bank feed 3 days old" in warning glyph ◇ + text; KPIs show "as of 9 Nov" |
 
@@ -227,12 +227,12 @@ wash (`dur.highlight.fade`, 1600 ms, [../motion.md](../motion.md)).
 
 | Part | Component (spec) | Notes |
 |---|---|---|
-| Table | [genui-blocks.md](../specs/genui-blocks.md) `genui-table/data-grid` (free) · `genui-table/bulk-actions` + `genui-table/calc-footer` + `genui-table/changed-cells` (Pro) | cells: `date`, `text`, `status`, `currency { code }`; virtualised > 200 rows; Σ footer recomputes on filter |
+| Table | `genui-blocks.md` — Pro (private) `genui-table/data-grid` (free) · `genui-table/bulk-actions` + `genui-table/calc-footer` + `genui-table/changed-cells` (Pro) | cells: `date`, `text`, `status`, `currency { code }`; virtualised > 200 rows; Σ footer recomputes on filter |
 | Filter chips with counts | `follow-ups/chips` styling, counts roll | |
 | Category cell | ✦ = set by agent; hover shows why ([reasoning-block.md](../specs/reasoning-block.md) `reasoning-block/inline-summary`) and "similar past transactions" | |
-| Confidence | [citations-sources.md](../specs/citations-sources.md) `confidence-badge/meter` (Pro) / `confidence-badge/label` (free: "Sure" / "Likely" / "Unsure") | 4 dots + % text; never colour only |
+| Confidence | `citations-sources.md` — Pro (private) `confidence-badge/meter` (Pro) / `confidence-badge/label` (free: "Sure" / "Likely" / "Unsure") | 4 dots + % text; never colour only |
 | Anomaly flag | **`anomaly-flag`** (new, §6) chip ⚑ on the row + expandable explanation line | |
-| Inline question | [genui-forms.md](../specs/genui-forms.md) `genui-question/chips` | answer is learned (memory receipt `memory-receipt/footer-line`: "I'll file TAXPAY as VAT liability from now on · Undo") |
+| Inline question | `genui-forms.md` — Pro (private) `genui-question/chips` | answer is learned (memory receipt `memory-receipt/footer-line`: "I'll file TAXPAY as VAT liability from now on · Undo") |
 | Bulk bar | `genui-table/bulk-actions` | "Accept all ≥ 90%" is one **Medium** `Edit`-like request (posts to ledger), batched per approvals.md §2.6 |
 | Multi-currency row | second line shows original amount, rate and rate date | |
 
@@ -300,12 +300,12 @@ Enter manually".
 
 | Part | Component (spec) | Notes |
 |---|---|---|
-| Checklist | **`todo-list/close-checklist`** (new variant of [plan-todo.md](../specs/plan-todo.md) `todo-list`, §6), built on `todo-list/owner-lanes` | owner = agent (identity colour + name) or person; evidence links; sign-off column |
-| Running task | [loaders.md](../specs/loaders.md) glyph loader + [elapsed-timer.md](../specs/elapsed-timer.md) `elapsed-timer/units` | |
+| Checklist | **`todo-list/close-checklist`** (new variant of `plan-todo.md` — Pro (private) `todo-list`, §6), built on `todo-list/owner-lanes` | owner = agent (identity colour + name) or person; evidence links; sign-off column |
+| Running task | `loaders.md` — Pro (private) glyph loader + [elapsed-timer.md](../specs/elapsed-timer.md) `elapsed-timer/units` | |
 | Agent tree | [subagent-tree.md](../specs/subagent-tree.md) `subagent-tree/indented` in the agent panel: Close agent → Categoriser, Reconciler, Accruals, Reporter | |
-| Run remaining | [plan-approval.md](../specs/plan-approval.md) — the run is a plan; approving it does not pre-approve its gated steps | |
+| Run remaining | `plan-approval.md` — Pro (private) — the run is a plan; approving it does not pre-approve its gated steps | |
 | Lock period | `approval-card/inline` High (§5) | |
-| Scheduled | [background-jobs.md](../specs/background-jobs.md) `background-jobs/scheduled`: "Close prep runs on BD+1 at 07:00" | |
+| Scheduled | `background-jobs.md` — Pro (private) `background-jobs/scheduled`: "Close prep runs on BD+1 at 07:00" | |
 
 States: **Empty** (new period) "Start October close · Use last month's checklist" · **Blocked** task shows
 ⊘ + reason ("Waiting on bank rec") · **Overdue** BD count turns to warning glyph ◇ + "1 day late".
@@ -358,7 +358,7 @@ the new variant **`approval-card/payment-run`** (§6) in the agent panel or as `
 | Bills table | `genui-table/data-grid` + `genui-table/bulk-actions` | Risk column uses `risk-badge/glyph`; per-row reasons in tooltip |
 | Payment-run card | **`approval-card/payment-run`** (new variant, §6), built on `approval-card/amount` + `approval-card/hold-ring` | Unticking a line is an `AllowEdited` before the hold; totals roll; hold length never changes |
 | Result | [tool-call.md](../specs/tool-call.md) `tool-call/row` per payment: Submitted → Sent → Settled / Failed | each with bank reference; failure keeps the others' status |
-| Undo | none for sent payments; [rollback-impact.md](../specs/rollback-impact.md) `rollback-impact/compensations` lists the compensating action ("Request refund from payee") | |
+| Undo | none for sent payments; `rollback-impact.md` — Pro (private) `rollback-impact/compensations` lists the compensating action ("Request refund from payee") | |
 
 States: **Empty** "No bills due · Upload a bill" · **Loading** `genui-skel/table-stream-fill` ·
 **Partial failure** "4 of 5 sent · Brightwick failed: IBAN rejected · Retry (new Critical request)" ·
@@ -388,11 +388,11 @@ States: **Empty** "No bills due · Upload a bill" · **Loading** `genui-skel/tab
 | Part | Component (spec) | Notes |
 |---|---|---|
 | Memo body | [streaming-markdown.md](../specs/streaming-markdown.md) `markdown/editorial` | streams in; numbers in tabular figures |
-| Citations | [citations-sources.md](../specs/citations-sources.md) `citation/number` + `citation/quote-peek` (Pro) | **new source kind `Record { ledger, ids }`** (§6): preview shows the transactions as a mini table, "Open in Transactions" filters 3.2 to them |
+| Citations | `citations-sources.md` — Pro (private) `citation/number` + `citation/quote-peek` (Pro) | **new source kind `Record { ledger, ids }`** (§6): preview shows the transactions as a mini table, "Open in Transactions" filters 3.2 to them |
 | Sources rail | `source-list/rail` | grouped by report, transaction set, statement |
 | Claim confidence | `confidence-badge/label` ("Sourced" / "Inferred") per sentence; inferred claims underlined (`confidence-badge/underline`, Pro) | |
 | Embedded charts | `genui-chart/plain` bar (horizontal) with `genui-chart/compare` (Pro) | "View as table" (`T`) |
-| Report picker | [genui-forms.md](../specs/genui-forms.md) `genui-form/inline`: report type (Close memo, P&L, Cash flow, Flux), period, compare-to | |
+| Report picker | `genui-forms.md` — Pro (private) `genui-form/inline`: report type (Close memo, P&L, Cash flow, Flux), period, compare-to | |
 
 States: **Empty** "Pick a report" · **Generating** `genui-skel/text-line-by-line` with source cards
 arriving first (`source-list/loading-first`) · **Stale** "Ledger changed since this memo · Regenerate"
@@ -419,13 +419,13 @@ banner (the memo keeps its old numbers until regenerated; changed numbers listed
 
 | Part | Component (spec) | Notes |
 |---|---|---|
-| Log | [permission-rules.md](../specs/permission-rules.md) `audit-log/table` (dense) or `audit-log/ledger` (grouped by run) | append-only; "By" distinguishes person, agent, rule, level |
+| Log | `permission-rules.md` — Pro (private) `audit-log/table` (dense) or `audit-log/ledger` (grouped by run) | append-only; "By" distinguishes person, agent, rule, level |
 | Detail | `audit-log/timeline` detail sheet | request snapshot with masked accounts |
-| Replay | [run-replay.md](../specs/run-replay.md) `run-replay/step-list` | "what the agent saw and did" for one run |
+| Replay | `run-replay.md` — Pro (private) `run-replay/step-list` | "what the agent saw and did" for one run |
 | Export | CSV / JSON callback; read-only role for the accountant | |
 
 ### 3.8 Rules
-[permission-rules.md](../specs/permission-rules.md) `permission-rules/table` + `permission-rules/simulator`
+`permission-rules.md` — Pro (private) `permission-rules/table` + `permission-rules/simulator`
 ("would this rule have auto-posted last month's 312 transactions?"). Categorisation rules the agent learned
 appear as `permission-rules/suggestions` ("Always file TAXPAY as VAT liability?"). Money rules are
 **not offered**: no "always allow" exists for Spend (approvals.md §2.4).
@@ -522,7 +522,7 @@ with the user's reason. **Cancelled:** open approvals go `Stale` ("Run stopped �
 
 ## 5. Approvals and risk
 
-Tiers per [../specs/approvals.md](../specs/approvals.md) §2.3. The finance kit sets the `Spend` threshold to
+Tiers per `approvals.md` — Pro (private) §2.3. The finance kit sets the `Spend` threshold to
 **0**, so every money movement is Critical (approvals.md allows "Critical above an app threshold").
 
 | Action | Kind | Tier | Why | "Always allow"? |
@@ -565,7 +565,7 @@ Few, by rule. Each needs a full 10-point spec before it is built.
 | `period-chip` | J (Workspace chrome) | free (3) | Top-bar chip "Oct 2026 · Open / Closing BD+4 / Locked 🔒"; menu to switch period; lock state uses glyph + word. Shared by future BI kits. |
 | `approval-card/payment-run` | G (variant of `approval-card`) | Pro | Spend layout for N payments in one request: per-currency totals, from-account + balance after, itemised lines (payee, masked account, amount, risk), include / exclude per line as `AllowEdited`, one hold ring. Built on `approval-card/amount` + `approval-card/hold-ring`. A free fallback is `approval-card/inline` with the itemised list in the preview slot. |
 | `todo-list/close-checklist` | F (variant of `todo-list`) | free | Checklist with owner (agent identity or person), due business day (BD+n), evidence link and sign-off columns; built on `todo-list/owner-lanes`. |
-| `citation` source kind `Record` | E (extension of [citations-sources.md](../specs/citations-sources.md)) | free | `Source::Record { system, ids, label }`; preview renders the cited transactions as a mini table with totals, and "Open" filters the host screen. |
+| `citation` source kind `Record` | E (extension of `citations-sources.md` — Pro (private)) | free | `Source::Record { system, ids, label }`; preview renders the cited transactions as a mini table with totals, and "Open" filters the host screen. |
 | Finance verb pack | C (verb pack for [verb-cycler.md](../specs/verb-cycler.md)) | free | In-house copy: Categorising / Categorised, Matching / Matched, Totting up / Totted up, Checking the statement / Checked, Drafting / Drafted, Preparing payments / Prepared. |
 | Tokens `color.data.gain` / `color.data.loss` | tokens | — | Aliases of status success / danger; daltonized themes swap to blue / orange; added to tokens.md §9 table with cue "sign + ▲/▼ + word". |
 
@@ -703,7 +703,7 @@ re-implemented from our own specs ([../licensing.md](../licensing.md)).
 | Beautiful UI harness / "Creamery Ops" (research note 17 §4 ideas 1, 6, 8) | one invented company per kit; data-heavy blocks: records grid with calc footer, insight cards with scrubbable charts | MIT per [../licensing.md](../licensing.md) — may port with attribution |
 | affectUI KPI Board, Metrics Dashboard, Agent Ledger, Decision Inbox, Invoice & Credit Note (research note 11) | coverage check for dashboard and ledger blocks | Paid — study only |
 | Arc UI Finance (Market terminal, Budget variance), Analytics, Money input, Scrub input (research note 12) | coverage check: money input, scrub input, budget variance | Paid — study only |
-| Codex / Claude Code approvals (via [../specs/approvals.md](../specs/approvals.md)) | decision set, risk tiers, hold-to-allow | see approvals.md §10 |
+| Codex / Claude Code approvals (via `approvals.md` — Pro (private)) | decision set, risk tiers, hold-to-allow | see approvals.md §10 |
 
 **Open questions**
 1. **Q1 Payment runs:** one `Spend` request with itemised lines (this kit) vs one Critical request per
