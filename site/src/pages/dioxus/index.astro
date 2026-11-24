@@ -1,0 +1,50 @@
+---
+// Landing for "Dioxus components", "Dioxus component library", "Dioxus chat UI" and
+// "shadcn for Dioxus": what Oxyn UI gives a Dioxus app, how to install a component, and links
+// into the library. Lists come from the data, never hand-written.
+import Base from '../../layouts/Base.astro';
+import Prose from '../../components/v2/Prose.astro';
+import { inGroup, components, counts, demoUrl, isPro, CLI_INSTALL } from '../../lib/data';
+import { BRAND, itemList, faqPage } from '../../lib/seo';
+const chat = inGroup('chat');
+const agents = inGroup('agents');
+const free = components.filter((d) => !isPro(d));
+const faq: [string, string][] = [
+  ['Is there a shadcn/ui for Dioxus?', `${BRAND} works the same way as shadcn/ui, for Dioxus: the oxyn CLI copies a component's Rust source and CSS into src/oxyn/ in your project, so you own and change the code instead of depending on a package.`],
+  ['Which Dioxus targets does it support?', 'The components are ordinary Dioxus components styled with CSS custom properties, so they render wherever Dioxus renders HTML: web (WebAssembly), desktop and mobile webviews, and server-side rendering.'],
+  ['Is it free?', `${counts.free} components are free under the MIT licence. ${BRAND} Pro adds the rest of the components, every screen and every block.`],
+];
+const title = 'Dioxus components for AI agent apps';
+const desc = `Dioxus components for chat and AI agent apps: ${counts.components} shadcn-style Rust UI components (${counts.free} free) you install as source with the oxyn CLI.`;
+---
+<Base title="Dioxus components" description={desc} image="/og/dioxus.png" jsonld={[itemList('Dioxus chat and agent components', [...chat, ...agents].map((d) => ({ name: d.name, url: demoUrl(d) }))), faqPage(faq)]}>
+  <Prose kicker={`${BRAND} for Dioxus`} h1={title} lede={`${BRAND} is a Dioxus component library for chat, AI agent and everyday app interfaces: ${counts.components} components, ${counts.free} of them free, each rendered live on this site from its own Rust source.`}>
+    <img class="x-prose-img" src="/og/dioxus.png" width="1200" height="630" alt={`Dioxus components: ${BRAND}, shadcn-style AI agent UI components for Dioxus`} />
+
+    <h2>Shadcn-style components for Dioxus</h2>
+    <p>Install the CLI once, then add a component by name. Its Rust source and stylesheet land in <code>src/oxyn/</code>, yours to rename, restyle or change. Nothing hides behind a package version.</p>
+    <pre><code>{CLI_INSTALL}
+oxyn init
+oxyn add composer</code></pre>
+    <p>Each component reads the same <code>--oxyn-*</code> design tokens, so light, dark and high-contrast themes come built in, and reduced motion is respected. Read <a href="/docs/installation/">Installation</a> and <a href="/docs/cli/">the CLI docs</a>, or let your coding agent do it with the <a href="/docs/mcp/">MCP server</a>.</p>
+
+    <h2>Dioxus chat UI components</h2>
+    <p>The parts of a chat interface in Dioxus: a composer with send, stop, queue and steer, model and effort pickers, streaming markdown, reasoning, sources and message actions.</p>
+    <ul class="x-prose-cols">{chat.map((d) => <li><a href={demoUrl(d)}>{d.name}</a>{isPro(d) ? ' (Pro)' : ''}</li>)}</ul>
+
+    <h2>AI agent components for Dioxus</h2>
+    <p>What an agent is doing and what it needs from the user: tool calls, plans, approvals, checkpoints, status text and run timelines.</p>
+    <ul class="x-prose-cols">{agents.map((d) => <li><a href={demoUrl(d)}>{d.name}</a>{isPro(d) ? ' (Pro)' : ''}</li>)}</ul>
+
+    <h2>Free Dioxus components</h2>
+    <p>{free.length} components are free under the MIT licence, including {free.slice(0, 6).map((d) => d.name).join(', ')}. See them all on the <a href="/components/">components page</a>; the free ones carry no Pro mark.</p>
+
+    <h2>The same components on the desktop with GPUI</h2>
+    <p>Most components also ship a GPUI element that reads the same models and state machines from <code>oxyn-core</code>, so a Dioxus web app and a native GPUI desktop app behave alike. See <a href="/gpui/">GPUI components</a>.</p>
+
+    <h2>Questions</h2>
+    {faq.map(([q, a]) => (<><h3>{q}</h3><p>{a}</p></>))}
+
+    <div class="x-prose-links"><a class="x-pill pill-black" href="/components/">Browse Dioxus components</a><a class="x-pill pill-grey" href="/guides/build-an-ai-agent-ui-in-rust/">Build an AI agent UI in Rust</a></div>
+  </Prose>
+</Base>

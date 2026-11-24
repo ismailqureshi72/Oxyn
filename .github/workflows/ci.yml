@@ -218,6 +218,9 @@ jobs:
         working-directory: site
       - run: npm run build
         working-directory: site
+      - name: SEO checks (JSON-LD parses, canonicals, landing title/H1, robots, sitemap, llms.txt)
+        run: node scripts/check-seo.mjs dist
+        working-directory: site
       - name: worker unit tests (entitlements)
         run: npm test
         working-directory: site

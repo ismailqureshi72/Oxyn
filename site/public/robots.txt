@@ -1,6 +1,26 @@
+# oxynui.com: Oxyn UI, Rust UI components for AI agents. Search engines and AI answer engines are
+# welcome on every public page. Summary for LLMs: https://oxynui.com/llms.txt
+
+User-agent: Googlebot
+User-agent: Bingbot
+User-agent: Google-Extended
+User-agent: OAI-SearchBot
+User-agent: GPTBot
+User-agent: ChatGPT-User
+User-agent: ClaudeBot
+User-agent: Claude-User
+User-agent: Claude-SearchBot
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: Applebot
+User-agent: DuckDuckBot
+Allow: /
+Disallow: /admin
+Disallow: /api/
+
 User-agent: *
 Allow: /
 Disallow: /admin
 Disallow: /api/
 
-Sitemap: https://oxynui.com/sitemap-index.xml
+Sitemap: https://oxynui.com/sitemap.xml

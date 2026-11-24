@@ -13,6 +13,7 @@ import SearchModal from '../components/SearchModal.astro';
 import Feedback from '../components/Feedback.astro';
 import BackButton from '../components/v2/BackButton.astro';
 import { ANNOUNCE } from '../lib/data';
+import { titleOf } from '../lib/seo';
 
 interface Props {
   title: string;
@@ -24,16 +25,20 @@ interface Props {
   index?: boolean;
   /** Shows a Back button above the content; the value is where it goes without a same-site history entry. */
   back?: string;
+  /** Link-preview card under public/og/ (Head.astro). */
+  image?: string;
+  /** schema.org nodes for this page (src/lib/seo.ts). */
+  jsonld?: object[];
 }
-const { title, description, type = 'Page', promo = false, index = true, back } = Astro.props;
+const { title, description, type = 'Page', promo = false, index = true, back, image, jsonld } = Astro.props;
 const path = Astro.url.pathname;
-const fullTitle = path === '/' ? title : `${title} · Oxyn`;
+const fullTitle = titleOf(title, path === '/');
 // Promo strip: from the data (src/lib/data.ts ANNOUNCE), so it never claims a tier it doesn't have.
 const promo_ = ANNOUNCE;
 ---
 <!doctype html>
 <html lang="en" data-theme="light" data-oxyn-theme="light">
-  <head><Head title={fullTitle} description={description} />{!index && <meta name="robots" content="noindex" />}</head>
+  <head><Head title={fullTitle} name={title} description={description} image={image} jsonld={jsonld} />{!index && <meta name="robots" content="noindex" />}</head>
   <body class="site page-white">
     <a class="x-skip" href="#main">Skip to content</a>
     {promo && (
