@@ -31,8 +31,8 @@ export interface Env {
   GOOGLE_OAUTH_CLIENT_ID?: string; // secret
   GOOGLE_OAUTH_CLIENT_SECRET?: string; // secret
   // Pro and Team through Polar (docs/pricing.md). POLAR_WEBHOOK_SECRET verifies Polar's webhook
-  // (unset: the webhook answers 503 and nothing is written). POLAR_ACCESS_TOKEN (optional) lets the
-  // Worker open pre-signed customer portal sessions and archive the founder products at 100.
+  // (unset: the webhook answers 503 and nothing is written). POLAR_ACCESS_TOKEN runs the account page's
+  // Billing section, cancel / resume, founder renewals and the founder archive.
   POLAR_WEBHOOK_SECRET?: string; // secret
   POLAR_ACCESS_TOKEN?: string; // secret
 }
