@@ -5,9 +5,10 @@ import Library from '../../layouts/Library.astro';
 import LibTabs from '../../components/v2/LibTabs.astro';
 import CompCard from '../../components/v2/CompCard.astro';
 import { icon } from '../../components/v2/icons';
-import { blocks, blockGroups } from '../../lib/data';
+import { blocks, blockGroups, demoUrl } from '../../lib/data';
+import { itemList } from '../../lib/seo';
 ---
-<Library title="Blocks" description={`${blocks.length} whole agent and AI surfaces, built from the components.`} type="Category" current="/blocks/">
+<Library title="Blocks" description={`${blocks.length} Rust UI blocks for AI products: agent sessions, mission control, run inspectors, model arenas and more, for Dioxus and GPUI.`} type="Category" current="/blocks/" image="/og/blocks.png" jsonld={[itemList('Oxyn UI blocks', blocks.map((d) => ({ name: d.name, url: demoUrl(d) })))]}>
   <div class="lidx">
     <h1 class="lidx-title">Blocks – whole agent and AI surfaces, built from the components.</h1>
     <p class="lede pro-lede"><span class="x-chip pro-chip"><i class="x-bolt" aria-hidden="true"></i>Pro</span> Blocks are part of <a href="/pricing/">Oxyn Pro</a>. Every preview here is free to open and try; Pro opens their code.</p>

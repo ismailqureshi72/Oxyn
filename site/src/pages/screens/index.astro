@@ -3,9 +3,10 @@ import Library from '../../layouts/Library.astro';
 import LibTabs from '../../components/v2/LibTabs.astro';
 import CompCard from '../../components/v2/CompCard.astro';
 import { icon } from '../../components/v2/icons';
-import { screens, appScreens, agentApps, arcScreens, composedScreens } from '../../lib/data';
+import { screens, appScreens, agentApps, arcScreens, composedScreens, demoUrl } from '../../lib/data';
+import { itemList } from '../../lib/seo';
 ---
-<Library title="Screens" description={`${screens.length} whole app frames for agent products, built from the components.`} type="Category">
+<Library title="Screens" description={`${screens.length} complete AI agent app screens in Rust for Dioxus and GPUI: chat apps, coding agents, dashboards and settings, built from Oxyn UI components.`} type="Category" image="/og/screens.png" jsonld={[itemList('Oxyn UI screens', [...composedScreens.map((c) => ({ name: c.name, url: c.href })), ...screens.map((d) => ({ name: d.name, url: demoUrl(d) }))])]}>
   <div class="lidx">
     <h1 class="lidx-title">Complete screens – whole app frames built from the components.</h1>
     <p class="lede pro-lede"><span class="x-chip pro-chip"><i class="x-bolt" aria-hidden="true"></i>Pro</span> Screens and agent apps are part of <a href="/pricing/">Oxyn Pro</a>. Every preview here is free to open and try; Pro opens their code.</p>

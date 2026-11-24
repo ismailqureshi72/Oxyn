@@ -4,7 +4,8 @@ import LibTabs from '../../../components/v2/LibTabs.astro';
 import CompCard from '../../../components/v2/CompCard.astro';
 import Redirect from '../../../components/v2/Redirect.astro';
 import BackButton from '../../../components/v2/BackButton.astro';
-import { groups, inGroup, categories, type Group } from '../../../lib/data';
+import { groups, inGroup, categories, demoUrl, type Group } from '../../../lib/data';
+import { itemList } from '../../../lib/seo';
 import { redirects } from '../../../lib/taxonomy.mjs';
 
 export function getStaticPaths() {
@@ -19,7 +20,7 @@ const { group, to } = Astro.props as { group: Group | null; to: string | null };
 const list = group ? inGroup(group.slug) : [];
 ---
 {to ? <Redirect to={to} /> : (
-  <Library title={`${group!.name} components`} description={group!.blurb} type="Category" current="/components/">
+  <Library title={`${group!.name} components`} description={`${group!.name} components for Rust (Dioxus and GPUI): ${group!.blurb}`} type="Category" current="/components/" image="/og/components.png" jsonld={[itemList(`Oxyn UI ${group!.name.toLowerCase()} components`, list.map((d) => ({ name: d.name, url: demoUrl(d) })))]}>
     <div class="lidx">
       <div class="x-backrow" data-pagefind-ignore><BackButton fallback="/components/" /><nav class="x-crumbs" aria-label="Breadcrumb"><a href="/components/">Components</a><span aria-hidden="true">›</span><span aria-current="page">{group!.name}</span></nav></div>
       <h1 class="lidx-title">{group!.name}</h1>
