@@ -11,7 +11,7 @@ card details.
 | --- | --- | --- | --- |
 | Free | $0 | $0 | Everyone. The 74 free components (the Free list below), docs, CLI. MIT. |
 | Pro | $19.99 | $199.99 | One developer. |
-| Pro, founder rate | $12.99 | $124.45 | The first 100 subscribers; same Pro. |
+| Pro, founder rate | $12.99 first month, then $19.99 | $124.45 first year, then $199.99 | Intro price for the first 100 new subscribers; same Pro. |
 | Team | $44.99 | $449 | A team of up to 4 people: the owner plus 3 teammates. |
 
 Prices are US dollars before tax. There is no lifetime plan.
@@ -48,12 +48,36 @@ compiles on its own, up to 74. Re-running the script is a pricing decision, neve
 
 The 74 free items: `crew-tree`, `presence-cursors`, `agent-trail`, `approval-card`, `attachments`, `autonomy-levels`, `avatar`, `badge`, `button`, `button-group`, `calendar`, `card`, `chat-composer`, `chat-thread`, `checkbox`, `chip`, `code-block`, `code-suggestion`, `crew-chat`, `combobox`, `command-palette`, `composer`, `confirm-popover`, `context-treemap`, `context-meter`, `spend-breakdown`, `date-wheel`, `decision-tree`, `dialog`, `diff-timeline`, `diff-viewer`, `dropdown-menu`, `effort-control`, `elapsed-timer`, `fallback-chain`, `task-grid`, `file-dropzone`, `glyph-loader`, `inline-diff`, `inline-edit`, `model-knockout`, `memory-panel`, `message-bubble`, `model-picker`, `otp-input`, `password-strength`, `phone-input`, `queue-stack`, `rating`, `reasoning-block`, `response-feedback`, `run-controls`, `scheduled-runs`, `segmented-control`, `select`, `send-control`, `skeleton`, `slider`, `spinner`, `stepper`, `streaming-markdown`, `subagent-tree`, `switch`, `tabs`, `tag-input`, `text-field`, `text-reveal`, `text-shimmer`, `tool-reach`, `tool-call`, `trace-waterfall`, `verb-cycler`, `voice-recorder`, `workspace-sidebar`.
 
-**Founder rate.** The first 100 founder subscriptions that become active are counted in D1
+**Founder rate.** An intro price, not a locked-in one: $12.99 for the first month (or $124.45 for
+the first year), then $19.99/mo ($199.99/yr). First 100 new subscribers.
+
+- *Renewal at the regular price.* When a founder subscription becomes active, the webhook schedules
+  a product change in Polar to the matching regular product (Founder Monthly → Pro Monthly, Founder
+  Yearly → Pro Yearly): `PATCH /v1/subscriptions/{id} {"product_id": …, "proration_behavior":
+  "next_period"}`. Nothing is charged now; the first renewal bills the regular price. It is
+  idempotent (skipped when `pending_update` already targets the Pro product; the PATCH's own
+  `subscription.updated` webhook lands on that check) and waits while the subscription is set to
+  cancel (un-cancelling sends a webhook that schedules it). The outcome is kept in `settings`
+  (`founder_renewal:<subscription id>`); the admin Billing tab lists founder subscriptions not yet
+  scheduled and has **Schedule now** (`POST /api/admin/billing/founder-renewals`).
+- *In D1.* At renewal Polar switches the product, the next webhook writes the row with the Pro
+  product and `founder = 0`: `founder` means "in the founder intro period". The plan stays `pro`, the
+  monthly caps do not change, and the `founder_claims` row stays, so the spot stays counted.
+- *New subscribers only.* `/api/billing/checkout` sends anyone whose account or email had an Oxyn
+  subscription before to the regular price (`/pricing/?founder=used`), and the pricing page hides
+  the founder rate for a signed-in account with a past subscription. A founder subscription that
+  still arrives from a returning customer (a direct Polar link) takes no founder spot and renews at
+  the regular price like any other.
+- *Not in the customer portal.* Both founder products are `visibility: private` in Polar, so they
+  can only be bought through their checkout links and a subscriber cannot switch to them from the
+  portal.
+
+The first 100 founder subscriptions that become active are counted in D1
 (`founder_claims`). From the 100th on, `/api/billing/plans` reports the founder rate as closed, the
 pricing page stops showing it, `/api/billing/checkout` refuses founder plans, and the Worker archives
 both founder products in Polar (`PATCH /v1/products/{id} {"is_archived": true}`) so a direct link
-cannot start a checkout either. Existing founder subscriptions keep their rate while they stay
-active. Archiving needs the `POLAR_ACCESS_TOKEN` Worker secret; without it the admin panel shows the
+cannot start a checkout either. Existing founder subscriptions are unaffected and renew at the
+regular price as above. Archiving needs the `POLAR_ACCESS_TOKEN` Worker secret; without it the admin panel shows the
 archive as pending.
 
 **Team.** A Team is up to 4 people in total. The owner adds up to three teammate emails on the Account page (`team_seats`). A seat opens Pro for
@@ -92,10 +116,10 @@ format raw, API version 2026-10, events `subscription.created`, `subscription.up
 | Secret | Needed for | Without it |
 | --- | --- | --- |
 | `POLAR_WEBHOOK_SECRET` | Verifying webhooks (Standard Webhooks). | The webhook answers 503; no subscription is recorded. |
-| `POLAR_ACCESS_TOKEN` (optional) | Pre-signed customer portal sessions; archiving the founder products at 100. | Manage billing opens `https://polar.sh/oxyn/portal`, where Polar emails a sign-in code; the founder archive stays pending (the site still stops selling it). |
+| `POLAR_ACCESS_TOKEN` | Pre-signed customer portal sessions; scheduling founder subscriptions to renew as regular Pro; archiving the founder products at 100. | Manage billing opens `https://polar.sh/oxyn/portal`, where Polar emails a sign-in code; founder renewals and the founder archive stay pending in the admin panel (the site still stops selling it). |
 
 Set them from `site/` with `npx wrangler secret put <NAME>`. An organization access token from Polar
-(Settings, Developers) with `products:write` and `customer_sessions:write` is enough for
+(Settings, Developers) with `products:write`, `subscriptions:read`, `subscriptions:write` and `customer_sessions:write` is enough for
 `POLAR_ACCESS_TOKEN`.
 
 ## How a sale flows
@@ -112,6 +136,22 @@ Set them from `site/` with `npx wrangler secret put <NAME>`. An organization acc
    checkout, then Polar's external customer id; otherwise the licence matches the buyer's email
    once Google or GitHub verified it.
 4. `/pricing/success/` polls `/api/billing/me` until the plan is on.
+
+## Cancelling
+
+**Cancel plan** on the Account page (plan section) cancels at the period end: no refund, no
+renewal, and Pro stays open until `current_period_end`. After a confirm step the page shows
+"Cancels on <date>" with **Resume plan**. Both call the Worker as the signed-in subscription owner
+(a Pro subscriber, or a Team owner; a teammate's seat and a grant have nothing to cancel), from the
+site's own origin:
+
+- `POST /api/billing/cancel` → Polar `PATCH /v1/subscriptions/{id} {"cancel_at_period_end": true}`
+- `POST /api/billing/resume` → the same with `false`
+
+The Worker writes Polar's answer to D1 straight away (the `subscription.updated` webhook that
+follows agrees with it) and needs `POLAR_ACCESS_TOKEN`; without it the routes answer 503 and point to
+Manage billing, which still works through Polar's portal. Resuming a founder subscription in its
+first period schedules its regular-price renewal again.
 
 ## Who has Pro: `plan_for(user)`
 
