@@ -70,7 +70,10 @@ and the day buckets of the charts follow it too.
   sign-ins by provider; pricing views → checkout clicks → paid subscriptions; the most viewed
   components and screens; and **Pro copy attempts** per item (Copy button, Ctrl/⌘+C or the CLI
   command on a Pro item without a plan, which leads to pricing): the clearest sign of what people
-  want to buy. Charts are plain SVG and CSS.
+  want to buy. Charts are plain SVG and CSS. On top, **Needs a look** lists founder subscriptions
+  started by a customer who already had an Oxyn subscription (the backstop of the founder checkout
+  gate, see [pricing.md](pricing.md); audit action `billing.founder_repeat`, last 90 days); it is
+  hidden when there are none.
 - **Users**: total signups with today / 7 / 30 days and the change against the period before; one
   row per account with its email, name, sign-in methods, verified (Google/GitHub) or not, signed
   up, last active and **current plan**: Free, Pro, Founder, Team owner, Team member (a seat on a

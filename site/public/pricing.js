@@ -1,6 +1,6 @@
 // The pricing page (/pricing/) and the thank-you page (/pricing/success/). docs/pricing.md.
 // Pricing: monthly/yearly switch, founder spots from /api/billing/plans (the founder rate disappears
-// at 100), "Your plan" on the current tier, notes for ?founder=closed, ?billing=active and
+// at 100), "Your plan" on the current tier, notes for ?founder=closed, ?checkout=unavailable, ?billing=active and
 // ?from=<slug> (the Pro item a visitor tried to copy), and ?buy=<plan> to carry on to checkout after
 // signing in. Success: waits for Polar's webhook to turn the plan on, then offers the way back.
 (function () {
@@ -100,6 +100,7 @@
   if (returning) { page.dataset.founder = 'closed'; setInterval_(page.dataset.interval); }
   if (params.get('founder') === 'closed') say('The founder rate has just run out: all 100 spots are taken. Pro is still here at the regular price.');
   else if (returning) say('The founder rate is for new subscribers only, and this account has had an Oxyn subscription before. Pro is here at the regular price.');
+  else if (params.get('checkout') === 'unavailable') say('Checkout could not be opened just now. Please try again in a minute.');
   else if (params.get('billing') === 'active') say('You already have an active plan. Change it under Billing on your account page.');
   else if (from) say(`The code of ${fromName} is part of Oxyn Pro. Pick a plan; after checkout you can go straight back to it.`);
 

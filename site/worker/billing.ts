@@ -3,7 +3,8 @@
 //
 //   GET    /api/billing/plans            public: plans, prices, founder spots left (cached 60 s)
 //   GET    /api/billing/checkout?plan=   signed in: redirect to the plan's Polar checkout link with the
-//                                        account's email and id (reference_id) filled in
+//                                        account's email and id (reference_id) filled in; founder plans:
+//                                        a checkout session made for this buyer after the checks
 //   GET    /api/billing/me               signed in: plan, status, renewal, Team seats
 //   GET    /api/billing/subscription     signed in: the billing section of the account page, read live
 //                                        from Polar: plan, price, next payment, scheduled change, card,
@@ -26,7 +27,8 @@
 //   POST   /api/pro/source/<slug>        Pro, from the site: opens it (one of the month's caps, pro.ts)
 //   POST   /api/polar/webhook            Polar events, signed (Standard Webhooks)
 //
-// The Worker never needs the Polar API for a sale: checkout links are public URLs, and the signed
+// Regular plans sell through public Polar checkout links; the founder intro price has no link and
+// each founder checkout is a session the Worker creates after its checks (founderCheckout). The signed
 // webhook writes subscriptions, licences and the founder counter to D1. Billing after the sale
 // happens on the account page, through the Polar API with the Worker secret POLAR_ACCESS_TOKEN
 // (never with an organization_id: the token is an organization token): cancel / resume, switching
@@ -64,12 +66,13 @@ export const POLAR = {
 export type PlanKey = 'pro-month' | 'pro-year' | 'pro-founder-month' | 'pro-founder-year' | 'team-month' | 'team-year';
 export interface Plan { key: PlanKey; plan: 'pro' | 'team'; interval: 'month' | 'year'; founder: boolean; cents: number; product: string; link: string }
 
-/** The six Polar products (production, organization "oxyn") and their checkout links. */
+/** The six Polar products (production, organization "oxyn") and their checkout links. The founder
+ *  products have none on purpose: their checkouts are created per buyer by founderCheckout. */
 export const PLANS: Plan[] = [
   { key: 'pro-month', plan: 'pro', interval: 'month', founder: false, cents: 1999, product: '677990ee-37fd-4144-a7b4-fc0072db0236', link: 'https://buy.polar.sh/polar_cl_nOTwWhBDBia5V47drawKkcEPM1g1ClF73jekN2cDk0k' },
   { key: 'pro-year', plan: 'pro', interval: 'year', founder: false, cents: 19999, product: '6c6f941c-eb68-42a1-9588-6999793d7723', link: 'https://buy.polar.sh/polar_cl_TIpeARSu8pHt9MTbFwisPzixrXIdJhlEBJOHG2B2fYk' },
-  { key: 'pro-founder-month', plan: 'pro', interval: 'month', founder: true, cents: 1299, product: 'dd6c77e0-537e-4575-8272-179818c4636c', link: 'https://buy.polar.sh/polar_cl_1DDghPtFc5Mtf4xW8kEUbXO68TclXcBADP5xN1UD4x6' },
-  { key: 'pro-founder-year', plan: 'pro', interval: 'year', founder: true, cents: 12445, product: 'b2c7ff7d-5ed5-4677-b4c2-023860cf6440', link: 'https://buy.polar.sh/polar_cl_coirJZKmfkFV75qqxxVDvjQO9bmbnqmAnQd9T2Xrezv' },
+  { key: 'pro-founder-month', plan: 'pro', interval: 'month', founder: true, cents: 1299, product: 'dd6c77e0-537e-4575-8272-179818c4636c', link: '' },
+  { key: 'pro-founder-year', plan: 'pro', interval: 'year', founder: true, cents: 12445, product: 'b2c7ff7d-5ed5-4677-b4c2-023860cf6440', link: '' },
   { key: 'team-month', plan: 'team', interval: 'month', founder: false, cents: 4499, product: '47ac4829-9dea-4c5f-a47c-948eb3005865', link: 'https://buy.polar.sh/polar_cl_NCvpX9ojhDrafHw1bLtki9PTVUOePRTSPrUgL2ipK4Y' },
   { key: 'team-year', plan: 'team', interval: 'year', founder: false, cents: 44900, product: 'c9ad78fa-8fd7-4f81-a19a-af4c6472f000', link: 'https://buy.polar.sh/polar_cl_tGlTFd4OLxE5lYiu8NWR2eDjPRkrJGfUUcEwd1eo3vC' },
 ];
@@ -264,12 +267,45 @@ async function checkout(req: Request, env: Env, url: URL) {
     const regular = renewsAs(plan)!;
     return redirect(`${url.origin}/pricing/?founder=used&interval=${regular.interval}${from}`);
   }
+  if (plan.founder) return founderCheckout(env, url, u, plan, from);
   const to = new URL(plan.link);
   to.searchParams.set('customer_email', u.email);
   if (u.name) to.searchParams.set('customer_name', u.name.slice(0, 100));
   to.searchParams.set('reference_id', u.id);
   to.searchParams.set('utm_source', 'oxyn-site');
   return redirect(to.toString());
+}
+
+/** The founder intro price has no public checkout link: a founder checkout is created here, one
+ *  per buyer, after the checks above (signed in, spots left, never subscribed), through Polar's
+ *  checkout session API. Opening a Polar link directly can no longer start a founder subscription.
+ *  If Polar does not answer, the buyer goes back to pricing (never to a link). */
+async function founderCheckout(env: Env, url: URL, u: Who & { name?: string | null }, plan: Plan, from: string) {
+  const back = `${url.origin}/pricing/?checkout=unavailable${from}`;
+  if (!env.POLAR_ACCESS_TOKEN) return redirect(back);
+  let r: { status: number; data: Polar };
+  try {
+    r = await polar(env, '/checkouts/', {
+      method: 'POST',
+      body: {
+        products: [plan.product],
+        customer_email: u.email,
+        ...(u.name ? { customer_name: u.name.slice(0, 100) } : {}),
+        metadata: { reference_id: u.id, oxyn_plan: plan.plan, oxyn_interval: plan.interval, oxyn_founder: true, utm_source: 'oxyn-site' },
+        success_url: `${url.origin}/pricing/success?checkout_id={CHECKOUT_ID}`,
+        return_url: `${url.origin}/pricing/`,
+      },
+    });
+  } catch (err) {
+    console.error('founder checkout', err);
+    return redirect(back);
+  }
+  const to = typeof r.data.url === 'string' ? r.data.url : '';
+  if ((r.status !== 201 && r.status !== 200) || !to.startsWith('https://')) {
+    console.error('founder checkout', r.status, JSON.stringify(r.data).slice(0, 300));
+    return redirect(back);
+  }
+  return redirect(to);
 }
 
 /** Whether this account or email ever had an Oxyn subscription (any plan, any state). `except`
@@ -614,6 +650,7 @@ export async function polarCheck(env: Env, force = false) {
     ['orders_read', 'GET', '/orders/?limit=1'],
     ['customers_read', 'GET', `/customers/${zero}/payment-methods`],
     ['customer_sessions_write', 'POST', '/customer-sessions/', { customer_id: zero }],
+    ['checkouts_write', 'POST', '/checkouts/', { products: [zero] }],
   ];
   const out: Record<string, string> = {};
   for (const [name, method, path, b] of probes) {
@@ -800,11 +837,23 @@ async function upsertSubscription(env: Env, ctx: Ctx, d: Record<string, any>, ty
     const claimed = await env.DB.prepare('SELECT 1 AS one FROM founder_claims WHERE subscription_id = ?1').bind(String(d.id)).first();
     if (!before || claimed) {
       await env.DB.prepare('INSERT OR IGNORE INTO founder_claims (subscription_id, email, claimed_at) VALUES (?1, ?2, ?3)').bind(String(d.id), email, now).run();
-    } else console.log('polar webhook: founder subscription from a returning customer, no founder spot taken', String(d.id));
+    } else await flagFounderRepeat(env, String(d.id), email, customerId, plan);
     await scheduleRegularRenewal(env, d, plan);
   }
   const f = await founderState(env);
   if (!f.open) ctx.waitUntil(archiveFounder(env).catch((e) => console.error('founder archive', e)));
+}
+
+/** Backstop for the founder checkout gate: a founder subscription for a customer who already had an
+ *  Oxyn subscription (say a checkout made outside the site) is written once to the audit log as
+ *  `billing.founder_repeat`, which the admin Activity tab lists under "Needs a look". Nothing is
+ *  changed on the subscription: an admin decides what to do with it. */
+async function flagFounderRepeat(env: Env, id: string, email: string, customerId: string, plan: Plan) {
+  console.log('polar webhook: founder subscription from a returning customer, no founder spot taken', id);
+  const seen = await env.DB.prepare("SELECT 1 AS one FROM audit_log WHERE action = 'billing.founder_repeat' AND target = ?1 LIMIT 1").bind(id).first();
+  if (seen) return;
+  await env.DB.prepare('INSERT INTO audit_log (at, actor, action, target, detail) VALUES (?1, ?2, ?3, ?4, ?5)')
+    .bind(iso(), 'polar-webhook', 'billing.founder_repeat', id, JSON.stringify({ email, customer_id: customerId || null, plan: plan.key })).run();
 }
 
 const polarHeaders = (env: Env) => ({ authorization: `Bearer ${env.POLAR_ACCESS_TOKEN}`, 'content-type': 'application/json', accept: 'application/json' });
