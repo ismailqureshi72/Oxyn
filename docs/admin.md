@@ -116,7 +116,9 @@ and the day buckets of the charts follow it too.
 - **Billing**: subscribers from Polar (email, plan, monthly or yearly, amount, status, renewal),
   monthly recurring revenue (yearly plans count a twelfth, live subscriptions only, before tax),
   founder spots used, and warnings when a Polar secret is missing or the founder products still need
-  archiving. Read-only; refunds and plan changes happen in Polar. See [pricing.md](pricing.md).
+  archiving. Founder subscriptions show whether their renewal at the regular Pro price is scheduled
+  in Polar; when some are not (say the token was missing), **Schedule now** schedules them. Otherwise
+  read-only; refunds and plan changes happen in Polar. See [pricing.md](pricing.md).
 - **Admins**: the D1 `admins` list, with whether each email is verified yet. **Add admin** takes an
   email; **Remove** asks first. The last active admin cannot be removed, and removing yourself asks
   you to type your own email (the Worker checks it too) because it closes the panel for you at once.

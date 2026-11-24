@@ -110,7 +110,7 @@ Migrations live in `site/migrations/` (`migrations_dir` in `wrangler.jsonc`).
 | `subscriptions` | Polar subscriptions, latest state per id: account, customer, plan, interval, founder, status, amount, period end (0005, [pricing.md](pricing.md)) |
 | `licences` | the licence each subscription grants its buyer (account id or email) (0005) |
 | `team_seats` | emails a Team owner gave a seat (3 per Team: up to 4 people with the owner) (0005) |
-| `founder_claims` | one row per founder subscription that became active; 100 closes the founder rate (0005) |
+| `founder_claims` | one row per new subscriber whose founder subscription became active (kept after it renews as regular Pro); 100 closes the founder rate (0005) |
 | `checkout_refs` | finished Polar checkouts and the account that started them (0005) |
 | `webhook_events` | Polar webhook ids already handled (replays are no-ops) (0005) |
 | `grants` | manual Pro/Team grants (email, plan, seats, expiry, reason); read by `plan_for`, admin UI in G2 (0005) |
@@ -133,7 +133,7 @@ Add a migration with `npx wrangler d1 migrations create oxyn <name>`; never edit
 | `RATE_SALT` | Worker secret, optional | Salt for IP hashes (a fixed default is used when unset). |
 | `GOOGLE_OAUTH_CLIENT_ID`, `GOOGLE_OAUTH_CLIENT_SECRET` | Worker secrets, optional | "Continue with Google" on `/login/`. Until set, the button reads "coming soon" and the Google routes answer 503. Setup in [auth.md](auth.md). Google or GitHub sign-in is also what opens the admin panel ([admin.md](admin.md)). |
 | `POLAR_WEBHOOK_SECRET` | Worker secret | Verifying Polar webhooks (set). Unset: the webhook answers 503. [pricing.md](pricing.md) |
-| `POLAR_ACCESS_TOKEN` | Worker secret, optional | Pre-signed customer portal sessions and archiving the founder products at 100. [pricing.md](pricing.md) |
+| `POLAR_ACCESS_TOKEN` | Worker secret | Pre-signed customer portal sessions, scheduling founder subscriptions to renew as regular Pro, and archiving the founder products at 100. [pricing.md](pricing.md) |
 | `GITHUB_REPO` | var in `wrangler.jsonc` | Repository for feedback issues. |
 | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` | GitHub Actions secrets | The deploy step on `main`. The token needs Workers Scripts Edit; D1 and R2 Edit are needed for the bindings and for applying migrations from a machine. |
 
