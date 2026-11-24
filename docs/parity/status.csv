@@ -656,7 +656,7 @@ X post,#50 @micka_design Fluid Functionalism sharp,https://x.com/micka_design/st
 X post,#51 @AdiKodez footer,https://x.com/AdiKodez/status/2119362052993306706,X videos,reference,,NEW,,#43,planned
 X post,#52 @omarships agently,https://x.com/omarships/status/2119588761608827253,X videos,reference,,NEW,,#39,planned
 X post,#53 @waynesutton quoting @mikeysee Threadbear (2 photos),https://x.com/waynesutton/status/2119683627936321896,X videos,reference,Pro,"thread-list, activity-home, activity-heatmap",,#28,built
-Oxyn,3-way merge conflict editor,docs/specs/merge-conflict.md,Components · Agents,Pro,Pro,merge-conflict,,#31,built
+Oxyn,3-way merge conflict editor,,Components · Agents,Pro,Pro,merge-conflict,,#31,built
 Oxyn,Thinking Selector · Ruler card,,Thinking Selector,Free,Pro,effort-ruler,variants-1,#39,built
 Oxyn,Thinking Selector · Reasoning panel,,Thinking Selector,Free,Pro,reasoning-panel,variants-1,#39,built
 Oxyn,Thinking Selector · Effort list,,Thinking Selector,Free,Pro,effort-list,variants-1,#39,built

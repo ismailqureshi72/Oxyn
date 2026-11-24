@@ -1,4 +1,4 @@
-# Verb pack "neutral". Original copy, MIT. Schema: docs/specs/status-text.md §5.1.
+# Verb pack "neutral". Original copy, MIT. Schema: spec status-text.md §5.1, Pro (private).
 id = "neutral"
 name = "Neutral"
 description = "Plain, calm, product-safe. The default."

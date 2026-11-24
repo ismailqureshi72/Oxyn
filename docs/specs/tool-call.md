@@ -2,7 +2,7 @@
 
 # Spec: tool call (rows, cards, group rows, MCP badge)
 
-Part of family F ([tools.md](tools.md) — event model, grouping, collapse and density rules live
+Part of family F (`tools.md` — Pro (private) — event model, grouping, collapse and density rules live
 there and are not repeated here). Same depth as the worked example
 [composer-send-control.md](composer-send-control.md). Target **4 free + 14 Pro variants**.
 
@@ -36,7 +36,7 @@ Our row covers all of that plus approval hand-off, MCP identity, stalls and reda
  └ stderr (Failed) ──────────────────── Copy ┘   last 5 lines visible, rest behind "Show all"
  group row:  [loader|✓] Read 6 files, searched 2 patterns  · 3.4s  [›]   → children are tool-call rows
 ```
-- **Icon per kind** from [tools.md](tools.md) §2.4 (read page, edit pencil, search magnifier, shell
+- **Icon per kind** from `tools.md` — Pro (private) §2.4 (read page, edit pencil, search magnifier, shell
   `›_`, web globe, MCP server mark or plug). While the call is live the icon slot holds the row
   loader (default `loader/ring-comet` at 16 px, or the semantic activity loader, loaders.md §3.4);
   on settle the loader morphs into the state glyph, then back to the kind icon after the 600 ms
@@ -53,7 +53,7 @@ Our row covers all of that plus approval hand-off, MCP identity, stalls and reda
   (stdio / HTTP), scope (project / user), tool count.
 
 ## 3. State machine (row UI)
-The call lifecycle is [tools.md](tools.md) §2.2. The row adds **presentation** states on top: hover,
+The call lifecycle is `tools.md` — Pro (private) §2.2. The row adds **presentation** states on top: hover,
 focus, pressed, expanded, retrying, copied.
 
 ```
@@ -159,7 +159,7 @@ focus, pressed, expanded, retrying, copied.
 | `tool-call/json-tree` | Expanded args and result as a collapsible JSON tree with search and copy-path (Arc JSON viewer idea, note 12) |
 | `tool-call/args-stream` | Arguments type out key by key during `StreamingInput` with a caret, then compact into the preview |
 | `tool-call/semantic-loader` | The kind icon itself animates (magnifier sweeps, page scans, pencil writes) instead of a separate loader |
-| `tool-call/border-beam` | A light travels the card border while running and stops on settle ([border-beam.md](border-beam.md)) |
+| `tool-call/border-beam` | A light travels the card border while running and stops on settle (`border-beam.md` — Pro (private)) |
 | `tool-call/deck` | Group rows render as a fanned deck of cards that spreads open on expand |
 | `tool-call/duration-bar` | A thin bar under the row shows this call's duration against the turn's longest call |
 | `tool-call/mcp-branded` | Large server mark, tool name in mono, read/write access glyph and scope chip (MCP list idea, note 12) |
@@ -246,10 +246,10 @@ pub struct ToolGroupRow<'a> {
 ```
 
 ## 11. Related components and references
-**Related:** [tools.md](tools.md) (model, grouping, density) · [file-edit-chip.md](file-edit-chip.md)
-(edit calls render as chips) · [terminal-output.md](terminal-output.md) (shell detail) ·
-[plan-todo.md](plan-todo.md) (plan calls) · loaders ([loader-glyph.md](loader-glyph.md),
-[loader-vector.md](loader-vector.md)) · status-text tense roll · family G approval footer · family J
+**Related:** `tools.md` — Pro (private) (model, grouping, density) · `file-edit-chip.md` — Pro (private)
+(edit calls render as chips) · `terminal-output.md` — Pro (private) (shell detail) ·
+`plan-todo.md` — Pro (private) (plan calls) · loaders ([loader-glyph.md](loader-glyph.md),
+`loader-vector.md` — Pro (private)) · status-text tense roll · family G approval footer · family J
 MCP server list (connect flow).
 
 | Reference | What we take | Licence note |
@@ -267,4 +267,4 @@ MCP server list (connect flow).
 
 ## Plan #28 parity (2026-11-14)
 
-Closed with [tool-call-card](tool-call-card.md) (open on error, capped code, group summary), [tool-call-transcript](tool-call-transcript.md) (approval / denied, list-table-JSON-text output, auto-collapsing group), [tool-chips](tool-chips.md), [json-viewer](json-viewer.md), [expandable-card](expandable-card.md) and the shared [tool-kind-map](tool-kind-map.md).
+Closed with `tool-call-card.md` — Pro (private) (open on error, capped code, group summary), `tool-call-transcript.md` — Pro (private) (approval / denied, list-table-JSON-text output, auto-collapsing group), `tool-chips.md` — Pro (private), `json-viewer.md` — Pro (private), `expandable-card.md` — Pro (private) and the shared `tool-kind-map.md` — Pro (private).

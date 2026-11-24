@@ -12,10 +12,10 @@ component builds on, and specifies them to the 10-point standard of [README.md](
 2. **focus regions and F6 cycling**;
 3. the **family catalogue** (variant table for all family J components).
 
-Component specs: [terminal-tabs.md](terminal-tabs.md) · [side-panels.md](side-panels.md) (side panels,
-file tree, status bar) · [mcp-plugin-list.md](mcp-plugin-list.md) ·
+Component specs: `terminal-tabs.md` — Pro (private) · `side-panels.md` — Pro (private) (side panels,
+file tree, status bar) · `mcp-plugin-list.md` — Pro (private) ·
 [command-palette.md](command-palette.md) (⌘K palette, notification centre) ·
-[desktop-overlays.md](desktop-overlays.md) (tray popover, hotkey launcher, floating HUD, notch / island).
+`desktop-overlays.md` — Pro (private) (tray popover, hotkey launcher, floating HUD, notch / island).
 All numbers are Oxyn **proposals** unless a source is cited next to them.
 
 ## 1. Purpose
@@ -182,7 +182,7 @@ last-focused element and an entry rule.
 | 4 | Right dock (file tree, MCP list, …) | `complementary` | last focused node |
 | 5 | Bottom dock (terminal tabs) | `region` "Terminal" | active terminal's grid |
 | 6 | Status bar | `status` container with focusable items (`toolbar` semantics) | first item |
-| 7 | Toasts / notification centre (only when present) | `region` "Notifications" | newest toast (matches [checkpoint-timeline.md](checkpoint-timeline.md) F6 to toasts) |
+| 7 | Toasts / notification centre (only when present) | `region` "Notifications" | newest toast (matches `checkpoint-timeline.md` — Pro (private) F6 to toasts) |
 
 Rules (proposed):
 1. **F6** moves to the next region, **Shift+F6** to the previous; wraps. Collapsed and hidden regions are
@@ -205,17 +205,17 @@ Rules (proposed):
 | Component | Spec | Free | Pro | Total |
 |---|---|---|---|---|
 | Panel & resizer `panel-split` | this file §7 | 3 | 8 | 11 |
-| Terminal tabs `terminal-tabs` | [terminal-tabs.md](terminal-tabs.md) | 4 | 12 | 16 |
-| Side panel / pane switcher `side-panel` | [side-panels.md](side-panels.md) | 3 | 6 | 9 |
-| File tree `file-tree` | [side-panels.md](side-panels.md) | 3 | 8 | 11 |
-| Status bar `status-bar` | [side-panels.md](side-panels.md) | 3 | 6 | 9 |
-| MCP / plugin list `mcp-list` | [mcp-plugin-list.md](mcp-plugin-list.md) | 4 | 12 | 16 |
+| Terminal tabs `terminal-tabs` | `terminal-tabs.md` — Pro (private) | 4 | 12 | 16 |
+| Side panel / pane switcher `side-panel` | `side-panels.md` — Pro (private) | 3 | 6 | 9 |
+| File tree `file-tree` | `side-panels.md` — Pro (private) | 3 | 8 | 11 |
+| Status bar `status-bar` | `side-panels.md` — Pro (private) | 3 | 6 | 9 |
+| MCP / plugin list `mcp-list` | `mcp-plugin-list.md` — Pro (private) | 4 | 12 | 16 |
 | Command palette `command-palette` | [command-palette.md](command-palette.md) | 3 | 10 | 13 |
 | Notification centre `notification-center` | [command-palette.md](command-palette.md) | 3 | 8 | 11 |
-| Tray popover `tray-popover` | [desktop-overlays.md](desktop-overlays.md) | 2 | 4 | 6 |
-| Hotkey launcher `hotkey-launcher` | [desktop-overlays.md](desktop-overlays.md) | 2 | 4 | 6 |
-| Floating HUD `floating-hud` | [desktop-overlays.md](desktop-overlays.md) | 2 | 4 | 6 |
-| Notch / island `island` | [desktop-overlays.md](desktop-overlays.md) | 2 | 5 | 7 |
+| Tray popover `tray-popover` | `desktop-overlays.md` — Pro (private) | 2 | 4 | 6 |
+| Hotkey launcher `hotkey-launcher` | `desktop-overlays.md` — Pro (private) | 2 | 4 | 6 |
+| Floating HUD `floating-hud` | `desktop-overlays.md` — Pro (private) | 2 | 4 | 6 |
+| Notch / island `island` | `desktop-overlays.md` — Pro (private) | 2 | 5 | 7 |
 | **Family J** | | **34** | **87** | **121** |
 
 Target in the taxonomy is 40+; we exceed it because the family has twelve distinct components. Launch
@@ -282,10 +282,10 @@ pub struct FocusRegion { pub id: RegionId, pub name: SharedString, pub landmark:
 
 ## 13. Related components and references
 **Related:** every family J spec above · [composer.md](composer.md) (motion tokens) ·
-[composer-status-strip.md](composer-status-strip.md) · [background-jobs.md](background-jobs.md) (jobs
-panel, corner tile) · [acting-indicator.md](acting-indicator.md) (agent-opened panes, follow) ·
-[skeletons.md](skeletons.md) · [checkpoint-timeline.md](checkpoint-timeline.md) (F6 to toasts) ·
-[diff-viewer.md](diff-viewer.md) and [terminal-output.md](terminal-output.md) (pane contents).
+`composer-status-strip.md` — Pro (private) · `background-jobs.md` — Pro (private) (jobs
+panel, corner tile) · `acting-indicator.md` — Pro (private) (agent-opened panes, follow) ·
+[skeletons.md](skeletons.md) · `checkpoint-timeline.md` — Pro (private) (F6 to toasts) ·
+[diff-viewer.md](diff-viewer.md) and `terminal-output.md` — Pro (private) (pane contents).
 
 | Reference | What we take | Licence note |
 |---|---|---|

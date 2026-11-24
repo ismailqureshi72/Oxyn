@@ -1,6 +1,6 @@
-//! The run model behind family F (`docs/specs/tools.md`): tool calls, their row views, grouping
-//! into stacks, plans and todo lists, and the sub-agent graph. Everything here is pure data and
-//! pure functions of `now`, so every renderer shows the same thing.
+//! The run model behind family F (spec `tools.md`, Pro (private)): tool calls, their row views,
+//! grouping into stacks, plans and todo lists, and the sub-agent graph. Everything here is pure
+//! data and pure functions of `now`, so every renderer shows the same thing.
 
 pub mod args;
 pub mod graph;

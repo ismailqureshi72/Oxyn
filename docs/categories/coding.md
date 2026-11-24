@@ -53,12 +53,12 @@ Ekwueme** (maintainer, reviewer), **Wren Castellanos** (teammate). Agent: "Larch
 
 | Region | Component (spec) | Default size |
 |---|---|---|
-| Title / thread header | **new** `thread-header` (§6) + [git-chips](../specs/git-chips.md) `git-chips/pill` + [mcp-plugin-list](../specs/mcp-plugin-list.md) `mcp-list/chip` + [composer-context-meter](../specs/composer-context-meter.md) `context-meter/ring` | 40 px |
+| Title / thread header | **new** `thread-header` (§6) + `git-chips.md` — Pro (private) `git-chips/pill` + `mcp-plugin-list.md` — Pro (private) `mcp-list/chip` + [composer-context-meter](../specs/composer-context-meter.md) `context-meter/ring` | 40 px |
 | Left dock | **new** `thread-list` (§6) | 260 px, rail 48 px |
 | Center | [messages](../specs/messages.md) `transcript/ide-panel` + [composer](../specs/composer.md) `composer/ide-panel` | ≥ 320 px |
-| Right dock | [side-panels](../specs/side-panels.md) `side-panel/tabs` hosting [diff-viewer](../specs/diff-viewer.md), `file-tree/changed`, [plan-todo](../specs/plan-todo.md), [pr-card](../specs/pr-card.md) `pr-card/checks-list` | 320 px (grows to 50 % in review) |
-| Bottom dock | [terminal-tabs](../specs/terminal-tabs.md) `terminal-tabs/strip` + [terminal-output](../specs/terminal-output.md) `terminal-output/block` | 33 %, collapsed by default |
-| Status bar | [side-panels](../specs/side-panels.md) `status-bar/ide` + [composer-status-strip](../specs/composer-status-strip.md) | 24 px |
+| Right dock | `side-panels.md` — Pro (private) `side-panel/tabs` hosting [diff-viewer](../specs/diff-viewer.md), `file-tree/changed`, `plan-todo.md` — Pro (private), `pr-card.md` — Pro (private) `pr-card/checks-list` | 320 px (grows to 50 % in review) |
+| Bottom dock | `terminal-tabs.md` — Pro (private) `terminal-tabs/strip` + `terminal-output.md` — Pro (private) `terminal-output/block` | 33 %, collapsed by default |
+| Status bar | `side-panels.md` — Pro (private) `status-bar/ide` + `composer-status-strip.md` — Pro (private) | 24 px |
 | Layout | [workspace-chrome](../specs/workspace-chrome.md) `panel-split/hairline`, F6 region cycling | sizes saved per project |
 
 ### 2.2 Web (Dioxus) `shell/coding-web`
@@ -100,7 +100,7 @@ switch; approvals and diffs are full-width sheets.
 ```
 Thread list is its own screen (back arrow); terminal is read-only `terminal-output/tail`.
 Critical approvals on touch use the hold (1200 ms, haptic ticks) per
-[approvals.md](../specs/approvals.md) §4.
+`approvals.md` — Pro (private) §4.
 
 ## 3. Screens
 
@@ -137,9 +137,9 @@ Purpose: what needs me, what is running, what shipped. Opens on launch and on "H
 │ #209 Docs typo         ● merged 2h    │ sparkline of runs (Pro: run-meter/sparkl…) │
 └───────────────────────────────────────┴────────────────────────────────────────────┘
 ```
-Uses: [composer](../specs/composer.md) `composer/desktop` + [composer-input-shell](../specs/composer-input-shell.md) `composer-input/hero-dock` ·
-**new** `review-queue` compact list (Needs you) · [background-jobs](../specs/background-jobs.md) `background-jobs/panel` (Running) ·
-[pr-card](../specs/pr-card.md) `pr-card/compact` · [run-meter](../specs/run-meter.md) `run-meter/panel` · [risk-badge](../specs/approvals.md) `risk-badge/pill`.
+Uses: [composer](../specs/composer.md) `composer/desktop` + `composer-input-shell.md` — Pro (private) `composer-input/hero-dock` ·
+**new** `review-queue` compact list (Needs you) · `background-jobs.md` — Pro (private) `background-jobs/panel` (Running) ·
+`pr-card.md` — Pro (private) `pr-card/compact` · `run-meter.md` — Pro (private) `run-meter/panel` · `approvals.md` — Pro (private) `risk-badge/pill`.
 
 | State | Shows |
 |---|---|
@@ -154,27 +154,27 @@ Purpose: one agent thread end to end. Wireframe is §2.1. Transcript rows:
 |---|---|
 | user turn | [message-bubble](../specs/message-bubble.md) `message/flat` + `message-actions/hover-bar` (edit, fork) |
 | reasoning | [reasoning-block](../specs/reasoning-block.md) `reasoning-block/inline-summary` ("Thought for 3s") |
-| tool calls | [tools](../specs/tools.md) `tool-stack/worked-for` grouping [tool-call](../specs/tool-call.md) `tool-call/row` |
-| edits | [file-edit-chip](../specs/file-edit-chip.md) `file-edit-chip/row` (+N −N, opens the diff) |
-| shell | [terminal-output](../specs/terminal-output.md) `terminal-output/block`, auto-collapse after `delay.auto-collapse` |
-| plan | [plan-todo](../specs/plan-todo.md) `plan-card/document` + [plan-approval](../specs/plan-approval.md) `plan-approval/footer` |
+| tool calls | `tools.md` — Pro (private) `tool-stack/worked-for` grouping [tool-call](../specs/tool-call.md) `tool-call/row` |
+| edits | `file-edit-chip.md` — Pro (private) `file-edit-chip/row` (+N −N, opens the diff) |
+| shell | `terminal-output.md` — Pro (private) `terminal-output/block`, auto-collapse after `delay.auto-collapse` |
+| plan | `plan-todo.md` — Pro (private) `plan-card/document` + `plan-approval.md` — Pro (private) `plan-approval/footer` |
 | approval | [approval-card](../specs/approval-card.md) `approval-card/footer` inside the tool-call card |
-| checkpoint | [checkpoint-timeline](../specs/checkpoint-timeline.md) `checkpoint-timeline/inline-marker` per turn |
+| checkpoint | `checkpoint-timeline.md` — Pro (private) `checkpoint-timeline/inline-marker` per turn |
 | answer | [streaming-markdown](../specs/streaming-markdown.md) `markdown/compact` + `code-block/file` |
-| working line | [status-text](../specs/status-text.md) + [text-shimmer](../specs/text-shimmer.md) `text-shimmer/sweep` + [verb-cycler](../specs/verb-cycler.md) `verb-cycler/fade` + [elapsed-timer](../specs/elapsed-timer.md) `elapsed-timer/units` |
+| working line | `status-text.md` — Pro (private) + [text-shimmer](../specs/text-shimmer.md) `text-shimmer/sweep` + [verb-cycler](../specs/verb-cycler.md) `verb-cycler/fade` + [elapsed-timer](../specs/elapsed-timer.md) `elapsed-timer/units` |
 | jump to live | [messages](../specs/messages.md) `jump-pill/labelled` |
 
-Composer row: [composer-mode-switch](../specs/composer-mode-switch.md) `mode-switch/chip-menu` (Plan / Agent / Ask) ·
+Composer row: `composer-mode-switch.md` — Pro (private) `mode-switch/chip-menu` (Plan / Agent / Ask) ·
 [composer-model-picker](../specs/composer-model-picker.md) `model-picker/pill-popover` ·
 [composer-effort-control](../specs/composer-effort-control.md) `effort-control/signal-bars` ·
-[composer-permission-selector](../specs/composer-permission-selector.md) `permission-selector/chip-list` ·
+`composer-permission-selector.md` — Pro (private) `permission-selector/chip-list` ·
 [composer-send-control](../specs/composer-send-control.md) `send-control/classic` (send / stop / queue / steer) ·
 [composer-queue-stack](../specs/composer-queue-stack.md) `queue-stack/chips` ·
-[composer-slash-mentions](../specs/composer-slash-mentions.md) `trigger-menu/popover` (`@file`, `@issue`, `/review`, `/undo`).
+`composer-slash-mentions.md` — Pro (private) `trigger-menu/popover` (`@file`, `@issue`, `/review`, `/undo`).
 
 | State | Shows |
 |---|---|
-| Empty thread | [citations-sources](../specs/citations-sources.md) `empty-state/starters-grid` with repo-aware starters ("Fix a failing check", "Explain crate layout") |
+| Empty thread | `citations-sources.md` — Pro (private) `empty-state/starters-grid` with repo-aware starters ("Fix a failing check", "Explain crate layout") |
 | Loading history | `skeleton/static` rows; scroll anchor kept (zero-jump rule) |
 | Agent error | tool row `Failed` + inline "Retry step" / "Ask agent to recover"; status strip `Error` |
 | Offline | composer disabled with reason; queued messages kept; approvals disabled (fail safe) |
@@ -228,9 +228,9 @@ findings, failing PR checks, conflicts. Ordered by risk, then age.
 ```
 Uses: **new** `review-queue` (rows + preview) · [approval-card](../specs/approval-card.md)
 `approval-card/paged` · [diff-viewer](../specs/diff-viewer.md) `diff-viewer/unified` ·
-[review-card](../specs/review-card.md) `review-card/by-severity` · [pr-card](../specs/pr-card.md)
-`pr-card/checks-list` · [merge-conflict](../specs/merge-conflict.md) `merge-conflict/card` ·
-[genui-forms](../specs/genui-forms.md) `genui-question/numbered` · `risk-badge/shape`.
+`review-card.md` — Pro (private) `review-card/by-severity` · `pr-card.md` — Pro (private)
+`pr-card/checks-list` · `merge-conflict.md` — Pro (private) `merge-conflict/card` ·
+`genui-forms.md` — Pro (private) `genui-question/numbered` · `risk-badge/shape`.
 Batch: only rows the approval batch rule allows (≤ Medium, one kind, one agent; approvals.md §2.6).
 
 | State | Shows |
@@ -256,7 +256,7 @@ Full-window review of one thread's changes before commit / PR (the right dock ex
 ```
 Uses `diff-viewer/split` / `diff-viewer/unified` (Pro: `diff-viewer/review-pane`,
 `diff-viewer/commit-filter`, `diff-viewer/minimap-heat`), `file-tree/changed`,
-`file-edit-chip/review-bar` (Pro), [review-card](../specs/review-card.md) `review-card/inline-thread`.
+`file-edit-chip/review-bar` (Pro), `review-card.md` — Pro (private) `review-card/inline-thread`.
 Empty: "No changes yet". Large / binary files follow diff-viewer §2.5. Error: per-file "Couldn't
 load diff · Retry".
 
@@ -279,8 +279,8 @@ pick a winner.
 Uses [subagent-tree](../specs/subagent-tree.md) `subagent-tree/rail`, [fanout-grid](../specs/fanout-grid.md)
 `fanout-grid/columns` (attempt mode: `fanout-grid/inbox-board`; Pro `fanout-grid/judge-bracket`,
 `fanout-grid/diff-tabs`), `git-chips/pill` + worktree badge (Pro `git-chips/worktree-stack`,
-`git-chips/agent-owner`), [acting-indicator](../specs/acting-indicator.md) `acting-indicator/chip`,
-[trace-view](../specs/trace-view.md) `trace-view/waterfall`, `run-meter/footer-line`.
+`git-chips/agent-owner`), `acting-indicator.md` — Pro (private) `acting-indicator/chip`,
+`trace-view.md` — Pro (private) `trace-view/waterfall`, `run-meter/footer-line`.
 Agent identity tones: `color.agent.*` (8 tones; labels always carry the name too).
 
 | State | Shows |
@@ -300,14 +300,14 @@ Agent identity tones: `color.agent.*` (8 tones; labels always carry the name too
 │ [Merge ▾] disabled · "Types failing"        ✦ Fix with agent   ⋯                 │
 └──────────────────────────────────────────────────────────────────────────────────┘
 ```
-Uses [pr-card](../specs/pr-card.md) `pr-card/card` (Pro `pr-card/auto-fix-loop`,
-`pr-card/merge-when-ready`, `pr-card/stack`), `git-chips/pill`, [review-card](../specs/review-card.md)
+Uses `pr-card.md` — Pro (private) `pr-card/card` (Pro `pr-card/auto-fix-loop`,
+`pr-card/merge-when-ready`, `pr-card/stack`), `git-chips/pill`, `review-card.md` — Pro (private)
 `review-card/verdict-chip` (Pro). Opening a PR is a `Network` request (Medium) through approvals.
 Empty: "No PR yet · Create PR" in the thread header. Error: "GitHub didn't respond · Retry"; a merge
 that fails keeps the card at its last state with the reason.
 
 ### S8 Merge conflict `shell/coding-merge`
-[merge-conflict](../specs/merge-conflict.md) `merge-conflict/three-pane` (desktop),
+`merge-conflict.md` — Pro (private) `merge-conflict/three-pane` (desktop),
 `merge-conflict/inline-stacked` (narrow), `merge-conflict/tui` (Pro, terminal) — wireframe in that
 spec §2, branch names from fixtures. Kit additions: header "✦ Resolve all with agent" runs a sub-turn
 whose suggestions land as `color.merge.suggested` regions with a rationale; the user accepts per
@@ -327,10 +327,10 @@ Empty: "No conflicts". Error: "Merge aborted · working tree restored".
 │ chat after turn 3 kept (Restore files) · removed (Rewind chat)    [Cancel] [Restore]│
 └──────────────────────────────────────────────────────────────────────────────────────┘
 ```
-Uses [checkpoint-timeline](../specs/checkpoint-timeline.md) `checkpoint-timeline/side-list`,
-[rollback-impact](../specs/rollback-impact.md) `rollback-impact/sheet`,
-[checkpoints-git](../specs/checkpoints-git.md) `snapshot-banner/bar` (read-only preview), Pro
-[run-replay](../specs/run-replay.md) `run-replay/scrubber`. Actions: **Restore files** / **Rewind
+Uses `checkpoint-timeline.md` — Pro (private) `checkpoint-timeline/side-list`,
+`rollback-impact.md` — Pro (private) `rollback-impact/sheet`,
+`checkpoints-git.md` — Pro (private) `snapshot-banner/bar` (read-only preview), Pro
+`run-replay.md` — Pro (private) `run-replay/scrubber`. Actions: **Restore files** / **Rewind
 chat** / **Restore files and chat** / **Fork from here** (names from checkpoint-timeline). Empty:
 "No checkpoints yet · one is saved before each turn that writes". Error: `RestoreFailed (nothing
 changed)` with Retry.
@@ -352,18 +352,18 @@ Opens over the work (overlay), sections Account / Agents / Project / Organisatio
 │                  │ Audit log ▸  last 30 days · 212 decisions                          │
 └──────────────────┴─────────────────────────────────────────────────────────────────────┘
 ```
-Uses **new** `settings-panel` (nav + sections) · [permission-rules](../specs/permission-rules.md)
+Uses **new** `settings-panel` (nav + sections) · `permission-rules.md` — Pro (private)
 `permission-rules/table`, `permission-rules/editor`, `sandbox-badge/chip`, `audit-log/timeline` ·
-[composer-permission-selector](../specs/composer-permission-selector.md) `permission-selector/segmented`
+`composer-permission-selector.md` — Pro (private) `permission-selector/segmented`
 (tier ≥ 3 runs its danger confirm) · `model-picker/compact`. Worktrees section: root path, keep-last-N
 (default 15), auto-delete on archive, snapshot before delete (Codex app behaviour, §10).
 Empty rules: suggested rules from recent approvals (Pro `permission-rules/suggestions`). Error: save
 failed keeps the old value and shows the field error. Policy-managed rows show 🔒 with a reason.
 
 ### S11 MCP & plugins `shell/coding-mcp`
-[mcp-plugin-list](../specs/mcp-plugin-list.md) `mcp-list/rows` inside `settings-panel`; health chip
+`mcp-plugin-list.md` — Pro (private) `mcp-list/rows` inside `settings-panel`; health chip
 `mcp-list/chip` in the title bar; `mcp-list/tui` for S3; Pro `mcp-list/directory`,
-`mcp-list/budget-bar`, `mcp-list/per-session`. Icons: [plugin-icons](../specs/plugin-icons.md)
+`mcp-list/budget-bar`, `mcp-list/per-session`. Icons: `plugin-icons.md` — Pro (private)
 `plugin-icon/monogram` (fixture servers are invented: `larch-issues`, `crate-docs`, `ci-logs`,
 `staging-db`). Repo-declared servers (`.mcp.json`) arrive as "Added by repo — approve?" (pending
 approval state). Skills / plugins tab lists the same rows with "renders its own pane" marked by
@@ -458,7 +458,7 @@ first); restore never races a live write.
 
 ## 5. Approvals and risk
 
-Tiers per [../specs/approvals.md](../specs/approvals.md) §2.3. Floors are this kit's *proposed*
+Tiers per `approvals.md` — Pro (private) §2.3. Floors are this kit's *proposed*
 defaults; apps can raise, never lower. **Critical always stops, even in Bypass**
 (`bypass_includes_critical = false`).
 
@@ -528,7 +528,7 @@ MCP health chip, context ring, overflow (export as Markdown, share). States incl
 (`Approval`, `Diff`, `Finding`, `Check`, `Conflict`, `Question`) rendered by its owning component in a
 preview pane. Sorted by risk tier then age; rows show the tier glyph, thread, one-line summary, age,
 primary action. j/k move, Enter opens, `Y`/`N` only when the preview card has focus (approvals input
-guard applies). Count feeds the tray / island badges ([desktop-overlays](../specs/desktop-overlays.md)
+guard applies). Count feeds the tray / island badges (`desktop-overlays.md` — Pro (private)
 `tray-popover/approvals-only`). Differs from `approval-card/inbox` (Pro, approvals only) and
 `fanout-grid/inbox-board` (one run's lanes): it spans threads and item kinds.
 

@@ -4,7 +4,7 @@
 
 Part of family E ([messages.md](messages.md)). Same depth as
 [composer-send-control.md](composer-send-control.md). Target **5 free + 15 Pro = 20 variants**.
-The header line reuses family C: verb + timer + shimmer from [status-text.md](status-text.md)
+The header line reuses family C: verb + timer + shimmer from `status-text.md` — Pro (private)
 (`status-text/thought-header` is the stand-alone header line; this spec owns the container, body,
 display levels and collapse policy). Body text reveal follows [text-reveal.md](text-reveal.md).
 
@@ -47,7 +47,7 @@ from under someone reading it. This spec defines all of it.
 | State | Shows | Primary action | Secondary | Keyboard |
 |---|---|---|---|---|
 | `Hidden` | nothing (status row covers the first 300 ms) | — | — | — |
-| `Pending` | nothing yet; the transcript-tail loader / status row runs ([loaders.md](loaders.md) §3.3) | — | — | — |
+| `Pending` | nothing yet; the transcript-tail loader / status row runs (`loaders.md` — Pro (private) §3.3) | — | — | — |
 | `Live{expanded}` | header "Thinking 8s" (shimmer, ticking timer, ▾) + body window (max 160 px, follows tail, 24 px top fade) | collapse | Stop (composer) | Enter/Space on header toggles; Esc stops run (composer) |
 | `Live{collapsed}` | header "Thinking 8s" + one-line live subtitle "· Checking the auth flow" (latest summary heading or first sentence ≤ 60 chars) | expand | — | Enter/Space |
 | `Stalled` (overlay) | header verb freezes, tone ramps to warning after `stall_soft`; text "Still thinking…" after 15 s (status-text rules) | — | — | — |
@@ -260,9 +260,9 @@ impl ReasoningPhase {
 ```
 
 ## 10. Related components and references
-Related: [status-text.md](status-text.md) (`status-text/thought-header`, tense roll) ·
+Related: `status-text.md` — Pro (private) (`status-text/thought-header`, tense roll) ·
 [verb-cycler.md](verb-cycler.md) · [elapsed-timer.md](elapsed-timer.md) ·
-[text-shimmer.md](text-shimmer.md) · [text-reveal.md](text-reveal.md) · [loaders.md](loaders.md)
+[text-shimmer.md](text-shimmer.md) · [text-reveal.md](text-reveal.md) · `loaders.md` — Pro (private)
 (`show_delay`, transcript-tail loader) · [composer-effort-control.md](composer-effort-control.md)
 (`budget-bar`, `effort-tint`) · [message-bubble.md](message-bubble.md) · family F (tool rows between
 segments).

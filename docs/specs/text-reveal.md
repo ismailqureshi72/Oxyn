@@ -2,7 +2,7 @@
 
 # Spec: text reveal and carets (`text-reveal`, `caret`)
 
-Part of family C ([status-text.md](status-text.md)). Same depth as
+Part of family C (`status-text.md` — Pro (private)). Same depth as
 [composer-send-control.md](composer-send-control.md). Target **`text-reveal` 5 free + 13 Pro** and
 **`caret` 3 free + 5 Pro** = **26 variants**.
 
@@ -276,7 +276,7 @@ pub struct CatchUpCfg {
 ```
 
 ## 13. Related components and references
-Related: [status-text.md](status-text.md) · [text-shimmer.md](text-shimmer.md) (optional shimmer on
+Related: `status-text.md` — Pro (private) · [text-shimmer.md](text-shimmer.md) (optional shimmer on
 the last line after typing) · streaming markdown, message bubble, citations (family E) · tool rows
 (family F) · voice captions (family K) · [composer-send-control.md](composer-send-control.md) (Stop).
 
@@ -295,4 +295,4 @@ the last line after typing) · streaming markdown, message bubble, citations (fa
 
 ## Plan #28 parity (2026-11-14)
 
-Closed with [word-reveal](word-reveal.md) (word / char, capped stagger, delay, once) and [in-view-title](in-view-title.md).
+Closed with `word-reveal.md` — Pro (private) (word / char, capped stagger, delay, once) and `in-view-title.md` — Pro (private).

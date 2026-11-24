@@ -58,12 +58,12 @@ change.
 
 | Region | Size (proposed) | Built from |
 |---|---|---|
-| Top bar | 40 px | [workspace-chrome](../specs/workspace-chrome.md); job pill [`background-jobs/dock-pill`](../specs/background-jobs.md); credits [`run-meter/credits`](../specs/run-meter.md); ⌘K [`command-palette/agent-scope`](../specs/command-palette.md) |
-| Left rail + panel | 48 px rail, 280 px panel (resizable 220–400) | [`side-panel/rail`](../specs/side-panels.md); panel hosts Bin, Shots, Transcript, Captions, Queue, Review, Publish |
-| Viewers | flexible, 16:9 boxes | `genui-media/player` ([genui-blocks](../specs/genui-blocks.md)) + **flash-guard** (new) |
+| Top bar | 40 px | [workspace-chrome](../specs/workspace-chrome.md); job pill `background-jobs.md` — Pro (private); credits `run-meter.md` — Pro (private); ⌘K [`command-palette/agent-scope`](../specs/command-palette.md) |
+| Left rail + panel | 48 px rail, 280 px panel (resizable 220–400) | `side-panels.md` — Pro (private); panel hosts Bin, Shots, Transcript, Captions, Queue, Review, Publish |
+| Viewers | flexible, 16:9 boxes | `genui-media/player` (`genui-blocks.md` — Pro (private)) + **flash-guard** (new) |
 | Timeline | 240 px default, drag to 160–480 | **media-timeline** + **frame-scrubber** (new) |
-| Agent panel | 360 px (320–480) | [message-bubble](../specs/message-bubble.md), [tool-call](../specs/tool-call.md), [plan-todo](../specs/plan-todo.md), [approval-card](../specs/approval-card.md), [composer](../specs/composer.md) |
-| Status bar | 24 px | [`status-bar/ide`](../specs/side-panels.md), [permission selector](../specs/composer-permission-selector.md) chip, [checkpoint](../specs/checkpoint-timeline.md) chip |
+| Agent panel | 360 px (320–480) | [message-bubble](../specs/message-bubble.md), [tool-call](../specs/tool-call.md), `plan-todo.md` — Pro (private), [approval-card](../specs/approval-card.md), [composer](../specs/composer.md) |
+| Status bar | 24 px | `side-panels.md` — Pro (private), permission selector (`composer-permission-selector.md`) — Pro (private) chip, `checkpoint-timeline.md` — Pro (private) chip |
 
 ### 2.2 Web (Dioxus) and breakpoints
 
@@ -123,9 +123,9 @@ Components are linked to their specs; **bold** names are new (section 6).
 
 Purpose: what needs me, what is running, what is it costing. Uses
 [`fanout-grid/inbox-board`](../specs/fanout-grid.md) (Needs you / Running / Done columns),
-[`background-jobs/render-queue`](../specs/background-jobs.md),
-[`run-meter/budget-burn`](../specs/run-meter.md), [`approval-card/inbox`](../specs/approval-card.md),
-[`genui-list/rich-rows`](../specs/genui-blocks.md).
+`background-jobs.md` — Pro (private),
+`run-meter.md` — Pro (private), [`approval-card/inbox`](../specs/approval-card.md),
+`genui-blocks.md` — Pro (private).
 
 | State | Shows |
 |---|---|
@@ -136,10 +136,10 @@ Purpose: what needs me, what is running, what is it costing. Uses
 ### S2. Editor (`shell/video-editor`)
 
 The shell in 2.1. Agent edits arrive as **ghost clips** (dashed outline, 40 % fill) until applied;
-applied edits create a checkpoint ([`checkpoint-timeline/filmstrip`](../specs/checkpoint-timeline.md)).
-Who is acting on the timeline is shown by [`acting-indicator/timeline-strip`](../specs/acting-indicator.md);
+applied edits create a checkpoint (`checkpoint-timeline.md` — Pro (private)).
+Who is acting on the timeline is shown by `acting-indicator.md` — Pro (private);
 when the agent holds the playhead, the user's first scrub hands control back
-([takeover-banner](../specs/takeover-banner.md)).
+(`takeover-banner.md` — Pro (private)).
 
 | State | Shows |
 |---|---|
@@ -166,10 +166,10 @@ when the agent holds the playhead, the user's first scrub hands control back
 
 Purpose: prompt or script → numbered shots the user can reorder, edit, mark "use filmed B-roll" vs
 "generate", then send. Each card is a **shot-board** card wrapping a
-[`gen-placeholder/video-strip`](../specs/media-generation-placeholder.md) tile; the batch runs as
+`media-generation-placeholder.md` — Pro (private) tile; the batch runs as
 [`fanout-grid/media-contact-sheet`](../specs/fanout-grid.md). The plan header and its approval use
-[`plan-card/document`](../specs/plan-todo.md) and
-[`plan-approval/scope-preview`](../specs/plan-approval.md). `⊘ Not shown` is the placeholder's
+`plan-todo.md` — Pro (private) and
+`plan-approval.md` — Pro (private). `⊘ Not shown` is the placeholder's
 `Blocked(policy)` state: it never shows what was blocked.
 
 | State | Shows |
@@ -193,11 +193,11 @@ Purpose: prompt or script → numbered shots the user can reorder, edit, mark "u
 ```
 
 Purpose: find footage by what is in it. Import triggers *Scout*: each item shows
-[`analysis-scan/frame-index`](../specs/media-analysis-scan.md) (video keyframe strip, `Indexing(frame
-k/n)`), stills use [`analysis-scan/region-hunt`](../specs/media-analysis-scan.md), faces of
-non-consenting people can be pre-blurred with [`analysis-scan/redact`](../specs/media-analysis-scan.md).
+`media-analysis-scan.md` — Pro (private) (video keyframe strip, `Indexing(frame
+k/n)`), stills use `media-analysis-scan.md` — Pro (private), faces of
+non-consenting people can be pre-blurred with `media-analysis-scan.md` — Pro (private).
 Auto tags are chips with confidence; the user can accept, remove or add. Built on **asset-bin**
-(new), whose list mode extends [`file-tree`](../specs/side-panels.md).
+(new), whose list mode extends `side-panels.md` — Pro (private).
 
 | State | Shows |
 |---|---|
@@ -223,10 +223,10 @@ Auto tags are chips with confidence; the user can accept, remove or add. Built o
 ```
 
 Purpose: one list for every slow thing (generate, render, scan, transcribe, translate), with cost per
-job and honest progress. This is [`background-jobs/render-queue`](../specs/background-jobs.md) with
-[`background-jobs/budget-meter`](../specs/background-jobs.md) and
-[`background-jobs/batch-retry`](../specs/background-jobs.md); ETA only when the provider supplies one
-(background-jobs §1 rule 2); costs use [`run-meter/credits`](../specs/run-meter.md). Cancelling a
+job and honest progress. This is `background-jobs.md` — Pro (private) with
+`background-jobs.md` — Pro (private) and
+`background-jobs.md` — Pro (private); ETA only when the provider supplies one
+(background-jobs §1 rule 2); costs use `run-meter.md` — Pro (private). Cancelling a
 costly job asks first ("Cancel render? 41 % will be lost"). Policy-blocked jobs cost 0 cr only if the
 provider refunds; otherwise the row says what was charged.
 
@@ -254,9 +254,9 @@ provider refunds; otherwise the row says what was charged.
 
 Purpose: edit video by editing text; the agent proposes strikes with a reason per span, the user
 keeps or restores any span before applying. Built on **transcript-cut** (new), which reuses the
-`Word` model and scroll rules of [`voice-transcript`](../specs/live-captions.md) (word-level timing,
+`Word` model and scroll rules of `live-captions.md` — Pro (private) (word-level timing,
 `Estimated` timing marked) and the per-hunk keep / undo grammar of [diff-viewer](../specs/diff-viewer.md).
-Clicking a word seeks the playhead ([`voice-transcript/scrub`](../specs/live-captions.md) idea).
+Clicking a word seeks the playhead (`live-captions.md` — Pro (private) idea).
 Nothing is deleted from media: cuts are non-destructive and restorable.
 
 | State | Shows |
@@ -280,8 +280,8 @@ Nothing is deleted from media: cuts are non-destructive and restorable.
 ```
 
 Purpose: auto-captions, fix, style, translate, and keep cues in sync with the cut. Built on
-**caption-editor** (new); the preview overlay uses [`captions/cinema`](../specs/live-captions.md) and
-bilingual preview uses [`captions/translate`](../specs/live-captions.md). The translation job runs in
+**caption-editor** (new); the preview overlay uses `live-captions.md` — Pro (private) and
+bilingual preview uses `live-captions.md` — Pro (private). The translation job runs in
 the queue (S5); rows fill as cues arrive ([`skeleton/line-by-line`](../specs/skeletons.md)). Reading
 speed (characters per second, CPS) over a threshold (17, proposed) is flagged amber with a fix.
 
@@ -309,9 +309,9 @@ speed (characters per second, CPS) over a threshold (17, proposed) is flagged am
 Purpose: reviewers leave comments pinned to a timecode (and optionally a region of the frame); the
 agent turns each into a proposed fix the editor applies or rejects. Built on **timecode-review**
 (new), which borrows severity, thread and fix-popover patterns from
-[`review-card/inline-thread`](../specs/review-card.md) and [`review-card/fix-popover`](../specs/review-card.md).
-Version compare uses `genui-media/compare-slider` ([genui-blocks](../specs/genui-blocks.md)) and
-[`checkpoint-timeline/compare-pair`](../specs/checkpoint-timeline.md).
+`review-card.md` — Pro (private) and `review-card.md` — Pro (private).
+Version compare uses `genui-media/compare-slider` (`genui-blocks.md` — Pro (private)) and
+`checkpoint-timeline.md` — Pro (private).
 
 | State | Shows |
 |---|---|
@@ -336,8 +336,8 @@ Version compare uses `genui-media/compare-slider` ([genui-blocks](../specs/genui
 ```
 
 Purpose: pick outputs, see pre-flight checks, choose destinations. Each destination shows its risk
-tier before the user commits. The form is [`genui-forms`](../specs/genui-forms.md); the checks list is
-`genui-list/checklist` ([genui-blocks](../specs/genui-blocks.md)); the publish step is an
+tier before the user commits. The form is `genui-forms.md` — Pro (private); the checks list is
+`genui-list/checklist` (`genui-blocks.md` — Pro (private)); the publish step is an
 [`approval-card`](../specs/approval-card.md) at **Critical** (hold 1200 ms, Allow once only, stops in
 Bypass). The flash check is **flash-guard** run on the rendered file.
 
@@ -350,7 +350,7 @@ Bypass). The flash check is **flash-guard** run on the rendered file.
 ## 4. Agent flows
 
 States are the `AgentState` enum in [../architecture.md](../architecture.md). Approval behaviour is
-[../specs/approvals.md](../specs/approvals.md) §2. "Steer" means the user acts mid-run (`Steering`) or
+`approvals.md` — Pro (private) §2. "Steer" means the user acts mid-run (`Steering`) or
 queues a message ([composer-queue-stack](../specs/composer-queue-stack.md)).
 
 ### F1. Script → storyboard → generate shots (fan-out, some fail, retry)
@@ -361,12 +361,12 @@ queues a message ([composer-queue-stack](../specs/composer-queue-stack.md)).
 | 2 | `Submitted` | send-control pulse < 500 ms ([composer-send-control](../specs/composer-send-control.md)) | stop |
 | 3 | `Thinking { "Breaking down the script" }` | [verb-cycler](../specs/verb-cycler.md), collapsible [reasoning-block](../specs/reasoning-block.md) | queue "keep it under a minute" |
 | 4 | `Streaming` | shot cards fill S3 as blueprints; plan card counts 12 shots, est 480 cr | edit, reorder, mark s05 "use B-roll" |
-| 5 | `AwaitingApproval { Plan + Spend }` | [`plan-approval/scope-preview`](../specs/plan-approval.md) with a Spend line: "Generate 11 shots · up to 480 cr · 168 cr left after" (High) | Allow once, Allow session up to N cr, Edit and allow (fewer shots), Deny with reason |
-| 6 | `ToolRunning { gen_shot, "Generating" }` ×11 | [`fanout-grid/media-contact-sheet`](../specs/fanout-grid.md); each tile [`gen-placeholder/video-strip`](../specs/media-generation-placeholder.md); queue pill "◔ 11 jobs"; credits meter ticks per settled job | cancel one tile, cancel all |
+| 5 | `AwaitingApproval { Plan + Spend }` | `plan-approval.md` — Pro (private) with a Spend line: "Generate 11 shots · up to 480 cr · 168 cr left after" (High) | Allow once, Allow session up to N cr, Edit and allow (fewer shots), Deny with reason |
+| 6 | `ToolRunning { gen_shot, "Generating" }` ×11 | [`fanout-grid/media-contact-sheet`](../specs/fanout-grid.md); each tile `media-generation-placeholder.md` — Pro (private); queue pill "◔ 11 jobs"; credits meter ticks per settled job | cancel one tile, cancel all |
 | 7 | (partial) | s07 `Failed(timeout)`; s08 `Blocked(policy)` ("Not shown"); grid `Partial`, 9 ✓ | Retry s07; Cutter offers a rewritten s08 prompt for the user to accept |
 | 8 | `ToolRunning` (retry) | retry is a new job with `retry_of`; inside the approved envelope, no new ask | — |
 | 9 | `AwaitingApproval { Spend }` *(only if over budget)* | retries would pass the 600 cr project budget → **Critical** card, hold to allow | Edit and allow (lower count), Deny |
-| 10 | `Done { 6m 12s }` | [`run-meter/receipt`](../specs/run-meter.md) "11 shots · 440 cr · 6m 12s"; clips drop on V2 as ghosts, then apply → checkpoint | Undo via checkpoint |
+| 10 | `Done { 6m 12s }` | `run-meter.md` — Pro (private) "11 shots · 440 cr · 6m 12s"; clips drop on V2 as ghosts, then apply → checkpoint | Undo via checkpoint |
 
 Stalled: no provider event for the stall window → tile and lane shift to `Stalled` tone; the job is
 not auto-cancelled.
@@ -375,12 +375,12 @@ not auto-cancelled.
 
 | # | `AgentState` | What the user sees | Steer |
 |---|---|---|---|
-| 1 | `ToolRunning { transcribe }` | S4 item shows [`analysis-scan/frame-index`](../specs/media-analysis-scan.md) + transcript streaming in S6 | cancel |
+| 1 | `ToolRunning { transcribe }` | S4 item shows `media-analysis-scan.md` — Pro (private) + transcript streaming in S6 | cancel |
 | 2 | `Composing` → `Submitted` | "Cut to about 4 min, the storm night, keep his voice not mine" | — |
 | 3 | `Thinking { "Reading the interview" }` | [`text-shimmer/calm`](../specs/text-shimmer.md) status; [tool-call](../specs/tool-call.md) rows for `search_transcript` | — |
 | 4 | `Streaming` | strikes appear span by span in **transcript-cut**, each with a reason; ghost cuts mirror on V1; duration counter 42:10 → 4:06 ([`elapsed-timer/odometer`](../specs/elapsed-timer.md) style digits) | restore any span → `Steering` ("keep 11:40–12:02") |
 | 5 | `AwaitingApproval { Edit }` | [`approval-card/split-preview`](../specs/approval-card.md): transcript left, timeline right; "Apply 41 cuts to *Ep7 main*" (Medium) | Allow once; Edit and allow (open in S6) |
-| 6 | `Done { 48s }` | cuts applied as one checkpoint "Interview cut v1"; [`checkpoint-timeline/filmstrip`](../specs/checkpoint-timeline.md) | Restore checkpoint |
+| 6 | `Done { 48s }` | cuts applied as one checkpoint "Interview cut v1"; `checkpoint-timeline.md` — Pro (private) | Restore checkpoint |
 
 ### F3. Regenerate one shot with a variation
 
@@ -388,7 +388,7 @@ not auto-cancelled.
 |---|---|---|---|
 | 1 | `Composing` | clip s04 selected → context chip `@s04`; "lower camera, more fog, 3 options" | — |
 | 2 | `AwaitingApproval { Spend }` *or skipped* | "3 variations · 120 cr" (High). Skipped if a session allowance from F1 still covers it | Allow once / session |
-| 3 | `ToolRunning { gen_variation }` | 1×3 [`gen-placeholder/candidate-race`](../specs/media-generation-placeholder.md) in the agent panel; `Previewing` frames under thinning noise | cancel one |
+| 3 | `ToolRunning { gen_variation }` | 1×3 `media-generation-placeholder.md` — Pro (private) in the agent panel; `Previewing` frames under thinning noise | cancel one |
 | 4 | `Done` | user picks candidate 2; s04 swaps on V2 with a **take stack** badge "3 takes" (old take kept) | Swap back any time |
 | — | `Error { policy }` | a candidate `Blocked`: tile says "Not shown"; no preview, prompt, or reason text that would reveal content | Rewrite prompt |
 
@@ -397,14 +397,14 @@ not auto-cancelled.
 | # | `AgentState` | What the user sees | Steer |
 |---|---|---|---|
 | 1 | `Composing` | "Render v5 and publish to Harbour Channel Friday 6 pm, with all captions" | — |
-| 2 | `Thinking` → `AwaitingApproval { Plan }` | [`plan-card/document`](../specs/plan-todo.md): render 3 outputs → checks → schedule publish (Low; the plan itself does nothing) | edit steps |
-| 3 | `ToolRunning { render }` | S5 row + [`gen-placeholder/timeline-render`](../specs/media-generation-placeholder.md) fills rendered ranges on the clip track | cancel (confirm, costly) |
+| 2 | `Thinking` → `AwaitingApproval { Plan }` | `plan-todo.md` — Pro (private): render 3 outputs → checks → schedule publish (Low; the plan itself does nothing) | edit steps |
+| 3 | `ToolRunning { render }` | S5 row + `media-generation-placeholder.md` — Pro (private) fills rendered ranges on the clip track | cancel (confirm, costly) |
 | 4 | `ToolRunning { preflight }` | S9 checks tick in order; **flash-guard** scans the render; music licence warns | fix and re-run |
 | 5 | `AwaitingApproval { Publish }` | **Critical** [`approval-card/hold-ring`](../specs/approval-card.md): thumbnail, title, Public, Harbour Channel, Fri 18:00 PKT, captions EN ES UR, warnings listed. Hold 1200 ms. Stops even in Bypass | Deny with reason; Edit (schedule, visibility → Patron feed lowers to High) |
 | 6 | `Done` | "Scheduled for Fri 18:00 PKT" receipt with Unschedule (Low before the time) and Unpublish after (High) | — |
 
 If the window is unfocused when step 5 is reached, the card also goes to
-[`island/approvals`](../specs/desktop-overlays.md) and mobile (2.3); it never auto-expires into a
+`desktop-overlays.md` — Pro (private) and mobile (2.3); it never auto-expires into a
 yes. A timed-out Critical request resolves as denied.
 
 ### F5. Auto-captions and translation
@@ -416,11 +416,11 @@ yes. A timed-out Critical request resolves as denied.
 | 3 | `AwaitingApproval { Spend }` | "Translate to ES, UR · 12 cr" (High; usually covered by session allowance) | pick languages |
 | 4 | `ToolRunning { translate } ×2` | two queue rows; UR column renders RTL; untranslated cells say "Translating…" | cancel one language |
 | 5 | `AwaitingApproval { Edit }` | "Replace track EN v1 with EN v2" → **High** because 14 manual edits on v1 would be overwritten; offers "Save as new track" (Low) instead | choose new track |
-| 6 | `Done { 1m 20s }` | three tracks; preview toggles [`captions/translate`](../specs/live-captions.md) | — |
+| 6 | `Done { 1m 20s }` | three tracks; preview toggles `live-captions.md` — Pro (private) | — |
 
 ## 5. Approvals and risk
 
-Tiers per [../specs/approvals.md](../specs/approvals.md) §2.3. Spend uses the `Spend` request kind
+Tiers per `approvals.md` — Pro (private) §2.3. Spend uses the `Spend` request kind
 (floor High, Critical above the app threshold). **Critical always stops, including in Bypass**
 (`bypass_includes_critical = false`).
 
@@ -438,7 +438,7 @@ Tiers per [../specs/approvals.md](../specs/approvals.md) §2.3. Spend uses the `
 | Publish or schedule to a members-only feed | `Custom(Publish)` | High | |
 | **Publish or schedule to a public channel** | `Custom(Publish)` | **Critical** | thumbnail, title, visibility, time, warnings |
 | Unpublish a live public video | `Custom(Publish)` | High | |
-| **Delete source footage or originals** (not proxies) | `Custom(Delete)` | **Critical** | lists files, size, "used in 3 sequences" via [rollback-impact](../specs/rollback-impact.md) |
+| **Delete source footage or originals** (not proxies) | `Custom(Delete)` | **Critical** | lists files, size, "used in 3 sequences" via `rollback-impact.md` — Pro (private) |
 | **Clone a real person's voice or likeness** | `Custom(Likeness)` | **Critical** | needs a recorded consent asset; card names it |
 | Use a stored platform credential to post | `Credential` | High | secret name only, never value |
 
@@ -550,13 +550,13 @@ Fixture plan (`fixtures/video/`, invented content only):
 | `shell/video-storyboard-first` | prompt-first: storyboard full screen, timeline collapsed | expressive | Pro |
 | `shell/video-transcript-first` | doc-style: transcript centre, timeline as a strip | subtle | Pro |
 | `shell/video-studio-queue` | dashboard + multi-project render farm view | subtle | Pro |
-| `shell/video-terminal` | TUI: queue + transcript only, [`background-jobs/ascii-bars`](../specs/background-jobs.md) | none | Pro |
+| `shell/video-terminal` | TUI: queue + transcript only, `background-jobs.md` — Pro (private) | none | Pro |
 
 ### Screen variants
 
 | Screen | Free | Pro |
 |---|---|---|
-| Dashboard | inbox board | studio wall with live render thumbnails ([`background-jobs/corner-tile`](../specs/background-jobs.md)) |
+| Dashboard | inbox board | studio wall with live render thumbnails (`background-jobs.md` — Pro (private)) |
 | Storyboard | grid of cards, `noise-resolve` / `video-strip` placeholders | `blueprint`, `scan-car`, `dot-noise` placeholders; animatic playback |
 | Asset bin | grid + `frame-index` scan | `region-hunt`, `heatmap`, `redact` scans; smart bins |
 | Queue | `render-queue` list | swimlanes on a time axis, batch retry, sound cues |

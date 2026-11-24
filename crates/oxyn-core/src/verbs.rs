@@ -1,5 +1,5 @@
-//! Verb packs, the activity table and the duration phrases (`docs/specs/status-text.md` §5 and
-//! `docs/specs/elapsed-timer.md` §4).
+//! Verb packs, the activity table and the duration phrases (spec `status-text.md` §5, Pro
+//! (private), and `docs/specs/elapsed-timer.md` §4).
 //!
 //! A pack is **content, not motion**: a TOML file of present/past pairs. Both tenses are stored,
 //! never generated. Timing and animation of the words live in the status-text components.

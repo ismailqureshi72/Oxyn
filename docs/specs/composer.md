@@ -224,19 +224,19 @@ Preset notes (proposed):
 ## 7. Part specs
 | Part | Spec | What it owns |
 |---|---|---|
-| Input shell | [composer-input-shell.md](composer-input-shell.md) | text area, container, growth, placeholder by state |
-| Tools menu | [composer-tools-menu.md](composer-tools-menu.md) | `+` → × menu, submenus, overflowed controls |
+| Input shell | `composer-input-shell.md` — Pro (private) | text area, container, growth, placeholder by state |
+| Tools menu | `composer-tools-menu.md` — Pro (private) | `+` → × menu, submenus, overflowed controls |
 | Attachments | [composer-attachments.md](composer-attachments.md) | clip, drop zone, chips / tiles with ring progress |
-| Slash commands & mentions | [composer-slash-mentions.md](composer-slash-mentions.md) | `/` and `@` triggers, popovers, tokens in the draft |
+| Slash commands & mentions | `composer-slash-mentions.md` — Pro (private) | `/` and `@` triggers, popovers, tokens in the draft |
 | Model picker | [composer-model-picker.md](composer-model-picker.md) | model pill + popover, mid-run policy |
 | Effort control | [composer-effort-control.md](composer-effort-control.md) | thinking-effort levels / slider / dial |
 | Context meter | [composer-context-meter.md](composer-context-meter.md) | context-window ring / bar / grid |
-| Mode switch | [composer-mode-switch.md](composer-mode-switch.md) | Ask / Plan / Agent (and category modes) |
-| Permission selector | [composer-permission-selector.md](composer-permission-selector.md) | autonomy / approval level |
+| Mode switch | `composer-mode-switch.md` — Pro (private) | Ask / Plan / Agent (and category modes) |
+| Permission selector | `composer-permission-selector.md` — Pro (private) | autonomy / approval level |
 | Voice input | [composer-voice-input.md](composer-voice-input.md) | mic, push-to-talk, dictation strip, voice-mode entry |
 | Send control | [composer-send-control.md](composer-send-control.md) | send / stop / queue / steer (worked example) |
 | Queue stack | [composer-queue-stack.md](composer-queue-stack.md) | queued messages, steer notes, lanes, stash |
-| Status strip | [composer-status-strip.md](composer-status-strip.md) | status tab, budget, jobs, PR pill, stall, approval, banners |
+| Status strip | `composer-status-strip.md` — Pro (private) | status tab, budget, jobs, PR pill, stall, approval, banners |
 
 ## 8. Edge cases (composer level)
 - **Overflow:** footer collapse order in §2; layers above the shell share one max height

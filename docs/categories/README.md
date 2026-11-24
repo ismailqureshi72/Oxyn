@@ -18,7 +18,7 @@ cover lists it under *New components*, with a one-paragraph brief; the full 10-p
 4. **Agent flows**: 3–5 end-to-end runs walked through `AgentState` (Idle → … → Done / Error), naming
    which component shows each step, where approvals stop the run, and what the user can steer.
 5. **Approvals and risk**: which actions in this vertical are Low / Medium / High / Critical
-   (per [../specs/approvals.md](../specs/approvals.md)); Critical always stops, even in Bypass.
+   (per `approvals.md` — Pro (private)); Critical always stops, even in Bypass.
 6. **New components**: anything A–L lacks, with a brief, the family it joins, and its tier.
 7. **Data model and fixtures**: the records the demo needs (Rust struct sketch) and a fixture plan.
    Fixtures are invented; no real people, companies or logos.

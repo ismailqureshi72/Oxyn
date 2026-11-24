@@ -67,7 +67,7 @@ Pagefind filter keys (§11).
 | `density` | `comfy`, `cozy` (default), `compact` | §7 |
 
 **Advanced (hidden behind "More filters", proposed):** `render` = `t0`…`t4` (render tiers,
-[../specs/loaders.md](../specs/loaders.md) §2.2; only items that declare one), `status` = `new`, `beta`.
+`loaders.md` — Pro (private) §2.2; only items that declare one), `status` = `new`, `beta`.
 
 Display order of values: taxonomy order (A→M, the `AgentState` lifecycle order above), never
 alphabetical, so the state facet reads like a run.
@@ -389,7 +389,7 @@ CI checks sizes on every deploy job (no `upload-artifact`, per [../website-stack
 
 Opened for this file: [../component-taxonomy.md](../component-taxonomy.md) §A–C,
 [../variants.md](../variants.md), [../architecture.md](../architecture.md), [../tokens.md](../tokens.md),
-[../motion.md](../motion.md) §8–10, [../specs/loaders.md](../specs/loaders.md) §2.2,
+[../motion.md](../motion.md) §8–10, `loaders.md` — Pro (private) §2.2,
 [../website-stack.md](../website-stack.md), [../studio.md](../studio.md),
 [../categories/README.md](../categories/README.md); project research notes `12-arc-site-design`,
 `13-bench-metalforge`, `14-bencho`, `16-niche-sites-a`, `17-niche-sites-b`, `18-website-stack`;

@@ -157,7 +157,7 @@ card 16 px (proposed).
 | older | "12 Oct 2025" | same |
 Relative labels update on the shared 1 Hz clock only while visible and only at boundaries (once a
 minute below 1 h). Agent messages may show the **run duration** ("Worked for 1m 12s",
-[status-text.md](status-text.md) §5.4) in the footer instead of a clock time.
+`status-text.md` — Pro (private) §5.4) in the footer instead of a clock time.
 
 ## 4. Micro-interactions
 - **User bubble enter:** receives the composer fly-up (≤ 260 ms, [composer.md](composer.md) §4); for
@@ -168,7 +168,7 @@ minute below 1 h). Agent messages may show the **run duration** ("Worked for 1m 
 - **Copy:** icon crossfades + blur 4 → 0 px into ✓ (160 ms), holds 1500 ms, reverts 160 ms (affectUI
   "copy blurs into a green check", note 11 — our timings).
 - **Retry:** ↻ rotates 360° once (400 ms `ease.in-out`); keeps rotating at 1 turn / 1000 ms while
-  `Regenerating` ([loaders.md](loaders.md) `loop.base`).
+  `Regenerating` (`loaders.md` — Pro (private) `loop.base`).
 - **Thumb vote:** scale 1 → 1.18 → 1 (`spring.soft`, ~240 ms), fill swaps to `color.feedback.on`; the
   opposite thumb dims to 50 % (still ≥ 3:1).
 - **Reason row:** unfolds below the bar (`dur.collapse` 200 ms); chips stagger in (40 ms, cap 5); on Send
@@ -179,7 +179,7 @@ minute below 1 h). Agent messages may show the **run duration** ("Worked for 1m 
   springs to editor width (200 ms); caret at end. **Cancel:** reverse. **Save & send:** editor text
   morphs into the new bubble (same fly as composer send, 260 ms).
 - **Interrupted / failed marker:** "Interrupted" drops in from the status tab (owned by
-  [composer-status-strip.md](composer-status-strip.md), 220 ms `ease.firm`); failed row tone fades 200 ms;
+  `composer-status-strip.md` — Pro (private), 220 ms `ease.firm`); failed row tone fades 200 ms;
   no shake on text.
 - **Regenerating:** old body to 40 % opacity (160 ms); when the new first block lands, old collapses
   (200 ms) with the anchor rule ([messages.md](messages.md) §4.2).
@@ -350,10 +350,10 @@ pub struct MessageActions {
 
 ## 10. Related components and references
 Related: [messages.md](messages.md) · [streaming-markdown.md](streaming-markdown.md) ·
-[reasoning-block.md](reasoning-block.md) · [citations-sources.md](citations-sources.md) ·
+[reasoning-block.md](reasoning-block.md) · `citations-sources.md` — Pro (private) ·
 [composer-send-control.md](composer-send-control.md) (fly-up, Stop) ·
 [composer-queue-stack.md](composer-queue-stack.md) (dispatch, unread) ·
-[composer-model-picker.md](composer-model-picker.md) (regenerate-with) · [status-text.md](status-text.md)
+[composer-model-picker.md](composer-model-picker.md) (regenerate-with) · `status-text.md` — Pro (private)
 (Worked for, Interrupted) · family H (checkpoint restore on edit).
 
 | Reference | IDs / note | What we take | Licence note |
