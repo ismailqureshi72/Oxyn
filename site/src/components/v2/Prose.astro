@@ -1,0 +1,12 @@
+---
+// A long-form text page on the white layout (About, the Dioxus and GPUI landings): a kicker, the
+// H1, a lede, then the page's sections. Styles: .x-prose in site.css.
+interface Props { kicker?: string; h1: string; lede: string }
+const { kicker, h1, lede } = Astro.props;
+---
+<article class="wrap x-prose">
+  {kicker && <p class="x-prose-k">{kicker}</p>}
+  <h1>{h1}</h1>
+  <p class="x-prose-lede">{lede}</p>
+  <slot />
+</article>
