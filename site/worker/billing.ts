@@ -6,6 +6,9 @@
 //                                        account's email and id (reference_id) filled in
 //   GET    /api/billing/me               signed in: plan, status, renewal, Team seats
 //   GET    /api/billing/portal           signed in: Polar customer portal (manage, cancel, invoices)
+//   POST   /api/billing/cancel           subscription owner: cancel at the period end (no refund; Pro
+//                                        stays open until current_period_end, then it does not renew)
+//   POST   /api/billing/resume           subscription owner: undo that cancel before the period ends
 //   POST   /api/billing/seats            Team owner: {email} takes one of the 3 teammate seats (4 people with the owner)
 //   DELETE /api/billing/seats/<email>    Team owner: frees a seat
 //   GET    /api/pro/source/<slug>        Pro: the usage code of a Pro item this account's pool already
@@ -14,11 +17,19 @@
 //   POST   /api/polar/webhook            Polar events, signed (Standard Webhooks)
 //
 // The Worker never needs the Polar API for a sale: checkout links are public URLs, and the signed
-// webhook writes subscriptions, licences and the founder counter to D1. Two extras use the Polar API
-// when the Worker secret POLAR_ACCESS_TOKEN exists, and degrade without it: a pre-signed customer
-// portal session (else Polar's portal asks for the email), and archiving the founder products once
-// 100 founder subscriptions exist (else the admin panel shows it as pending; the site already stops
-// offering the founder rate either way).
+// webhook writes subscriptions, licences and the founder counter to D1. Three extras use the Polar
+// API when the Worker secret POLAR_ACCESS_TOKEN exists, and degrade without it: a pre-signed
+// customer portal session (else Polar's portal asks for the email), scheduling every founder
+// subscription to renew as regular Pro (below), and archiving the founder products once 100 founder
+// subscriptions exist (else the admin panel shows it as pending; the site already stops offering
+// the founder rate either way).
+//
+// The founder rate is an intro price, not a locked-in one: $12.99 for the first month (or $124.45
+// for the first year), then regular Pro at $19.99 a month ($199.99 a year), for the first 100 new
+// subscribers. Polar charges what the subscription's product costs, so when a founder subscription
+// starts, the webhook schedules a product change to the matching regular Pro product with
+// proration_behavior "next_period": nothing is charged now, and the first renewal bills the regular
+// price. Only someone who never had an Oxyn subscription can buy (or claim) the founder rate.
 
 import { EMAIL_RE, HttpError, fail, json, sameOrigin, type Ctx, type Env } from './shared';
 import { currentUser } from './auth';
@@ -50,6 +61,8 @@ export const PLANS: Plan[] = [
   { key: 'team-year', plan: 'team', interval: 'year', founder: false, cents: 44900, product: 'c9ad78fa-8fd7-4f81-a19a-af4c6472f000', link: 'https://buy.polar.sh/polar_cl_tGlTFd4OLxE5lYiu8NWR2eDjPRkrJGfUUcEwd1eo3vC' },
 ];
 const byProduct = new Map(PLANS.map((p) => [p.product, p]));
+/** The regular plan a founder plan renews as after its first period (same plan and interval). */
+export const renewsAs = (p: Plan): Plan | undefined => (p.founder ? PLANS.find((x) => !x.founder && x.plan === p.plan && x.interval === p.interval) : undefined);
 const byKey = new Map(PLANS.map((p) => [p.key, p]));
 
 /** Polar statuses that keep Pro open. past_due: Polar is retrying the card; it revokes on failure. */
@@ -135,6 +148,8 @@ export async function plan_for(env: Env, u: Who): Promise<PlanFor> {
 const pub = (s: SubRow | null) => s && {
   plan: s.plan, interval: s.interval, founder: !!s.founder, status: s.status, active: live(s), amount: s.amount, currency: s.currency,
   cancel_at_period_end: !!s.cancel_at_period_end, current_period_end: s.current_period_end, started_at: s.started_at, ended_at: s.ended_at,
+  // A founder subscription renews at the regular price: what it will cost from the next period.
+  renews_at_amount: s.founder ? (renewsAs(byProduct.get(s.product_id) ?? PLANS[0])?.cents ?? null) : null,
 };
 
 async function founderState(env: Env) {
@@ -170,6 +185,7 @@ export async function handleBilling(req: Request, env: Env, ctx: Ctx, url: URL):
     }
     if (!u) throw new HttpError(401, 'signed_out', 'Sign in to Oxyn first.');
     if (route === '/api/billing/me' && m === 'GET') return await billingMe(env, u);
+    if ((route === '/api/billing/cancel' || route === '/api/billing/resume') && m === 'POST') return await setCancel(req, env, ctx, url, u, route.endsWith('/cancel'));
     const src = route.match(/^\/api\/pro\/source\/([a-z0-9-]{1,80})$/);
     if (src && (m === 'GET' || m === 'POST')) return await proSource(req, env, url, u, src[1]);
     if (route === '/api/billing/seats' && m === 'POST') return await addSeat(req, env, url, u);
@@ -218,12 +234,27 @@ async function checkout(req: Request, env: Env, url: URL) {
   if (plan.founder && !(await founderState(env)).open) return redirect(`${url.origin}/pricing/?founder=closed${from}`);
   const ent = await plan_for(env, u);
   if (ent.mine || ent.admin) return redirect(`${url.origin}/account/?billing=active#plan`);
+  // The founder rate is for new subscribers only: anyone who had an Oxyn subscription before (by
+  // account, or by email in Polar's records) is sent to the regular price.
+  if (plan.founder && (ent.latest || (await hadSubscription(env, u.id, u.email)))) {
+    const regular = renewsAs(plan)!;
+    return redirect(`${url.origin}/pricing/?founder=used&interval=${regular.interval}${from}`);
+  }
   const to = new URL(plan.link);
   to.searchParams.set('customer_email', u.email);
   if (u.name) to.searchParams.set('customer_name', u.name.slice(0, 100));
   to.searchParams.set('reference_id', u.id);
   to.searchParams.set('utm_source', 'oxyn-site');
   return redirect(to.toString());
+}
+
+/** Whether this account or email ever had an Oxyn subscription (any plan, any state). `except`
+ *  leaves one subscription out (the one a webhook is handling). */
+async function hadSubscription(env: Env, userId: string | null, email: string, except = '') {
+  const r = await env.DB.prepare(
+    'SELECT 1 AS one FROM subscriptions WHERE id != ?3 AND ((?1 IS NOT NULL AND user_id = ?1) OR lower(customer_email) = lower(?2)) LIMIT 1',
+  ).bind(userId, email, except).first();
+  return !!r;
 }
 
 async function billingMe(env: Env, u: Who) {
@@ -269,6 +300,52 @@ async function portal(env: Env, url: URL, u: Who) {
     } catch (err) { console.error('polar customer session', err); }
   }
   return redirect(POLAR.portal);
+}
+
+/** Cancel at the period end, or resume, the account's own live subscription (Pro, or a Team it
+ *  owns; a teammate's seat is not theirs to cancel). Polar keeps access until current_period_end and
+ *  issues no refund. D1 is updated from Polar's answer at once; the webhook that follows agrees. */
+async function setCancel(req: Request, env: Env, ctx: Ctx, url: URL, u: Who, cancel: boolean) {
+  if (!sameOrigin(req, url)) throw new HttpError(403, 'forbidden_origin', 'Requests must come from the Oxyn site.');
+  const e = await plan_for(env, u);
+  const sub = e.mine;
+  if (!sub) throw new HttpError(404, 'no_subscription', e.seat ? 'Only the Team owner can cancel this plan.' : 'This account has no active subscription to cancel.');
+  if (!!sub.cancel_at_period_end === cancel) return json({ ok: true, subscription: pub(sub) });
+  if (!env.POLAR_ACCESS_TOKEN) throw new HttpError(503, 'billing_api_unavailable', 'This cannot be done from the site right now. Use Manage billing instead.');
+  let r: Response;
+  try {
+    r = await fetch(`${POLAR.api}/subscriptions/${encodeURIComponent(sub.id)}`, {
+      method: 'PATCH', headers: polarHeaders(env), body: JSON.stringify({ cancel_at_period_end: cancel }),
+    });
+  } catch (err) {
+    console.error('polar cancel', sub.id, err);
+    throw new HttpError(502, 'billing_unreachable', 'Could not reach our billing provider. Please try again, or use Manage billing.');
+  }
+  if (!r.ok) {
+    console.error('polar cancel', sub.id, r.status, (await r.text()).slice(0, 300));
+    throw new HttpError(502, 'billing_failed', `Our billing provider did not accept the change. Please try again, or use Manage billing.`);
+  }
+  const d = (await r.json()) as Record<string, any>;
+  // Polar's answer is the subscription as it is now: write it like a webhook would (the email and
+  // customer come from D1 when the answer leaves them out).
+  await upsertSubscription(env, ctx, {
+    ...d,
+    id: d.id ?? sub.id,
+    modified_at: d.modified_at ?? iso(),
+    cancel_at_period_end: d.cancel_at_period_end ?? cancel,
+    customer: d.customer ?? { id: sub.customer_id, email: sub.customer_email },
+    customer_id: d.customer_id ?? sub.customer_id,
+    product_id: d.product_id ?? d.product?.id ?? sub.product_id,
+    current_period_end: d.current_period_end ?? sub.current_period_end,
+    current_period_start: d.current_period_start ?? sub.current_period_start ?? null,
+    started_at: d.started_at ?? sub.started_at,
+    status: d.status ?? sub.status,
+    amount: d.amount ?? sub.amount,
+    currency: d.currency ?? sub.currency,
+    metadata: { reference_id: u.id },
+  }, cancel ? 'api.cancel' : 'api.resume');
+  const row = await env.DB.prepare('SELECT * FROM subscriptions WHERE id = ?1').bind(sub.id).first<SubRow>();
+  return json({ ok: true, subscription: pub(row ?? sub) });
 }
 
 async function body(req: Request): Promise<Record<string, unknown>> {
@@ -437,14 +514,89 @@ async function upsertSubscription(env: Env, ctx: Ctx, d: Record<string, any>, ty
     ).bind(crypto.randomUUID(), String(d.id), userId, email, plan.plan, now, ended ? now : null),
   ]);
   if (plan.founder && ACTIVE.includes(status) && !ended) {
-    await env.DB.prepare('INSERT OR IGNORE INTO founder_claims (subscription_id, email, claimed_at) VALUES (?1, ?2, ?3)').bind(String(d.id), email, now).run();
+    // One founder spot per new subscriber. Someone who subscribed before (a direct Polar link gets
+    // past the checkout check) takes no spot; their subscription still renews at the regular price.
+    const customerId = String(d.customer_id || d.customer?.id || '');
+    const before = (await hadSubscription(env, userId, email, String(d.id))) ||
+      (!!customerId && !!(await env.DB.prepare('SELECT 1 AS one FROM subscriptions WHERE customer_id = ?1 AND id != ?2 LIMIT 1').bind(customerId, String(d.id)).first()));
+    const claimed = await env.DB.prepare('SELECT 1 AS one FROM founder_claims WHERE subscription_id = ?1').bind(String(d.id)).first();
+    if (!before || claimed) {
+      await env.DB.prepare('INSERT OR IGNORE INTO founder_claims (subscription_id, email, claimed_at) VALUES (?1, ?2, ?3)').bind(String(d.id), email, now).run();
+    } else console.log('polar webhook: founder subscription from a returning customer, no founder spot taken', String(d.id));
+    await scheduleRegularRenewal(env, d, plan);
   }
   const f = await founderState(env);
   if (!f.open) ctx.waitUntil(archiveFounder(env).catch((e) => console.error('founder archive', e)));
 }
 
+const polarHeaders = (env: Env) => ({ authorization: `Bearer ${env.POLAR_ACCESS_TOKEN}`, 'content-type': 'application/json', accept: 'application/json' });
+const renewalKey = (id: string) => `founder_renewal:${id}`;
+
+/** Founder rate = intro price: makes a founder subscription renew as the matching regular Pro
+ *  product (Founder Monthly -> Pro Monthly, Founder Yearly -> Pro Yearly) with
+ *  proration_behavior "next_period", so nothing is charged now and the next renewal bills the
+ *  regular price. Idempotent: skipped when Polar already has that change pending (the PATCH itself
+ *  fires a subscription.updated webhook that lands here again). Never throws: the outcome is kept
+ *  in D1 settings (`founder_renewal:<id>`) for the admin panel, and later webhooks for the same
+ *  subscription (or Retry in the admin panel) try again. Exported for the tests. */
+export async function scheduleRegularRenewal(env: Env, d: Record<string, any>, plan: Plan): Promise<string> {
+  const target = renewsAs(plan);
+  const id = String(d.id || '');
+  if (!target || !id) return 'not_founder';
+  const save = async (v: string) => {
+    await env.DB.prepare('INSERT INTO settings (key, value, updated_at) VALUES (?1, ?2, ?3) ON CONFLICT (key) DO UPDATE SET value = ?2, updated_at = ?3')
+      .bind(renewalKey(id), v, iso()).run();
+    return v;
+  };
+  try {
+    if (d.pending_update?.product_id === target.product) return await save('scheduled');
+    if (!env.POLAR_ACCESS_TOKEN) return await save('pending: set the POLAR_ACCESS_TOKEN Worker secret');
+    // The webhook payload can be stale: read the subscription as Polar has it now.
+    const g = await fetch(`${POLAR.api}/subscriptions/${encodeURIComponent(id)}`, { headers: polarHeaders(env) });
+    if (!g.ok) return await save(`error: read ${g.status}`);
+    const s = (await g.json()) as Record<string, any>;
+    const pending = s.pending_update?.product_id as string | undefined;
+    if (s.product_id !== plan.product) return await save('done: no longer on the founder product');
+    if (pending === target.product) return await save('scheduled');
+    if (!ACTIVE.includes(String(s.status)) || s.ended_at) return await save(`skipped: ${s.status}`);
+    if (s.cancel_at_period_end) return await save('waiting: cancels at the period end');
+    // A change the customer scheduled to another regular plan (say Team) already ends the founder price.
+    if (pending && !byProduct.get(pending)?.founder) return await save('done: another plan change is scheduled');
+    const r = await fetch(`${POLAR.api}/subscriptions/${encodeURIComponent(id)}`, {
+      method: 'PATCH',
+      headers: polarHeaders(env),
+      body: JSON.stringify({ product_id: target.product, proration_behavior: 'next_period' }),
+    });
+    if (!r.ok) {
+      console.error('founder renewal', id, r.status, (await r.text()).slice(0, 300));
+      return await save(`error: ${r.status}`);
+    }
+    return await save('scheduled');
+  } catch (err) {
+    console.error('founder renewal', id, err);
+    try { return await save('error: request failed'); } catch { return 'error'; }
+  }
+}
+
+/** POST /api/admin/billing/founder-renewals: schedules the regular-price renewal on every live
+ *  founder subscription that does not have it yet (after the token was missing or Polar failed). */
+export async function adminFounderRenewals(env: Env) {
+  const subs = (await env.DB.prepare(
+    `SELECT s.id, s.product_id, st.value AS renewal FROM subscriptions s LEFT JOIN settings st ON st.key = 'founder_renewal:' || s.id ` +
+      `WHERE s.founder = 1 AND s.status IN (${ACTIVE_SQL}) AND s.ended_at IS NULL`,
+  ).all<{ id: string; product_id: string; renewal: string | null }>()).results ?? [];
+  const out: { id: string; result: string }[] = [];
+  for (const s of subs) {
+    const plan = byProduct.get(s.product_id);
+    if (!plan?.founder || s.renewal === 'scheduled') continue;
+    out.push({ id: s.id, result: await scheduleRegularRenewal(env, { id: s.id }, plan) });
+  }
+  return json({ ok: true, checked: subs.length, results: out });
+}
+
 /** At 100 founder subscriptions: archive both founder products in Polar so no new founder checkout
- *  can start (existing founder subscriptions keep renewing at their rate). Runs once; retried on
+ *  can start (existing founder subscriptions are unaffected: each renews as regular Pro after its
+ *  first period, see scheduleRegularRenewal). Runs once; retried on
  *  later webhooks while it has not succeeded. Needs POLAR_ACCESS_TOKEN. */
 export async function archiveFounder(env: Env) {
   const st = await env.DB.prepare("SELECT value FROM settings WHERE key = 'founder_archive'").first<{ value: string }>();
@@ -455,7 +607,7 @@ export async function archiveFounder(env: Env) {
   for (const p of PLANS.filter((x) => x.founder)) {
     const r = await fetch(`${POLAR.api}/products/${p.product}`, {
       method: 'PATCH',
-      headers: { authorization: `Bearer ${env.POLAR_ACCESS_TOKEN}`, 'content-type': 'application/json', accept: 'application/json' },
+      headers: polarHeaders(env),
       body: JSON.stringify({ is_archived: true }),
     });
     if (!r.ok) errs.push(`${p.key} ${r.status}`);
@@ -474,16 +626,18 @@ export async function billingSummary(env: Env) {
   const rows = (await env.DB.prepare(
     'SELECT s.id, s.customer_email, s.plan, s.interval, s.founder, s.status, s.amount, s.currency, s.cancel_at_period_end, ' +
       's.current_period_end, s.started_at, s.ended_at, s.created_at, s.user_id IS NOT NULL AS linked, ' +
-      "(SELECT COUNT(*) FROM team_seats t WHERE t.subscription_id = s.id AND t.removed_at IS NULL) AS seats " +
+      "(SELECT COUNT(*) FROM team_seats t WHERE t.subscription_id = s.id AND t.removed_at IS NULL) AS seats, " +
+      "(SELECT value FROM settings WHERE key = 'founder_renewal:' || s.id) AS renewal " +
       'FROM subscriptions s ORDER BY s.created_at DESC LIMIT 500',
-  ).all<SubRow & { linked: number; seats: number }>()).results ?? [];
+  ).all<SubRow & { linked: number; seats: number; renewal: string | null }>()).results ?? [];
   let mrr = 0;
-  const counts = { active: 0, pro: 0, team: 0, founder: 0, canceling: 0, ended: 0 };
+  const counts = { active: 0, pro: 0, team: 0, founder: 0, canceling: 0, ended: 0, renewal_unscheduled: 0 };
   for (const s of rows) {
     if (live(s)) {
       counts.active++;
       counts[s.plan]++;
       if (s.founder) counts.founder++;
+      if (s.founder && !s.cancel_at_period_end && s.renewal !== 'scheduled') counts.renewal_unscheduled++;
       if (s.cancel_at_period_end) counts.canceling++;
       mrr += s.interval === 'year' ? s.amount / 12 : s.amount;
     } else counts.ended++;
