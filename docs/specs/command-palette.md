@@ -58,7 +58,7 @@ behind toasts and OS notifications). Target **3 + 3 free, 10 + 8 Pro = 24 varian
 ```
 
 ### 2.1 Matching and the ask row
-- **Matcher** shared with [composer-slash-mentions.md](composer-slash-mentions.md) §"Fuzzy matching":
+- **Matcher** shared with `composer-slash-mentions.md` — Pro (private) §"Fuzzy matching":
   every query word matches the label anywhere, a word start in the description / keywords, or as a
   subsequence; label-prefix first; groups follow their best match; recency boost.
 - **Sources** (app-registered, each a group): Commands, Threads, Files, Symbols, Settings, Agents, MCP
@@ -82,7 +82,7 @@ behind toasts and OS notifications). Target **3 + 3 free, 10 + 8 Pro = 24 varian
 | Needs you (approval, question) | until answered or the run ends (then "Expired") | yes, sticky | if window unfocused and app opted in | opt-in "attention" cue |
 | Run done | 7 d (Codex "Ready" 7 d, note 08) | yes, 5 s, only if the user is not looking at that thread | if unfocused + opted in | opt-in "ready" cue |
 | Run failed | until dismissed; auto-archive after 7 d | yes, sticky | if unfocused + opted in | opt-in "error" cue |
-| Job finished / failed | as [background-jobs.md](background-jobs.md) retention (24 h finished) | per jobs rules | per jobs rules | — |
+| Job finished / failed | as `background-jobs.md` — Pro (private) retention (24 h finished) | per jobs rules | per jobs rules | — |
 | System (MCP, update, offline) | 24 h | only if it blocks work | no | — |
 | Progress ("Thinking") | not stored (Codex keeps "Thinking" 3 min as a transient, note 08) | no | no | — |
 Rules: one notification per event — **toast, centre and OS never duplicate**: if an OS notification
@@ -206,10 +206,10 @@ Notification centre:
 | Name | One-line idea |
 |---|---|
 | `command-palette/split-preview` | Right pane previews the highlighted thread / file / command before you run it |
-| `command-palette/answer-cards` | Answers render as cards with sources ([citations-sources.md](citations-sources.md)) and a confidence badge |
+| `command-palette/answer-cards` | Answers render as cards with sources (`citations-sources.md` — Pro (private)) and a confidence badge |
 | `command-palette/agent-scope` | Scope chips (This thread / Workspace / Web) decide what the agent may read before answering |
 | `command-palette/morph-from-composer` | ⌘K morphs the composer into the palette and back (same shell, different job) |
-| `command-palette/orb-ask` | Ask row shows a mini [thinking-orb.md](thinking-orb.md) that becomes the answer's header loader |
+| `command-palette/orb-ask` | Ask row shows a mini `thinking-orb.md` — Pro (private) that becomes the answer's header loader |
 | `command-palette/voice-ask` | Hold Space on the ask row to dictate the question ([composer-voice-input.md](composer-voice-input.md)) |
 | `command-palette/recipes` | Multi-step command recipes ("Review → fix → test") shown as a step row with progress |
 | `command-palette/history` | Previous palette questions and answers searchable as a group |
@@ -232,7 +232,7 @@ Notification centre:
 | `notification-center/thread-stacks` | Toasts from one thread stack into one card with a count and the latest line |
 | `notification-center/timeline` | Events on a day timeline with run bars; click to open run replay |
 | `notification-center/focus-schedules` | Quiet hours and per-thread mute with a visible "held 4" counter |
-| `notification-center/island-relay` | When the app is unfocused, needs-you events go to the desktop island first ([desktop-overlays.md](desktop-overlays.md)) |
+| `notification-center/island-relay` | When the app is unfocused, needs-you events go to the desktop island first (`desktop-overlays.md` — Pro (private)) |
 
 ## 8. Edge cases
 - **Command vs question ambiguity** ("test"): command wins; the ask row stays last; pressing Tab always
@@ -320,12 +320,12 @@ pub struct NotificationCenter<'a> {
 ```
 
 ## 11. Related components and references
-**Related:** [composer-slash-mentions.md](composer-slash-mentions.md) (matcher, row) ·
+**Related:** `composer-slash-mentions.md` — Pro (private) (matcher, row) ·
 [composer-model-picker.md](composer-model-picker.md) (`model-picker/command` shares the sheet) ·
 [streaming-markdown.md](streaming-markdown.md) · [text-shimmer.md](text-shimmer.md) ·
-[approval-card.md](approval-card.md) (chip approvals, needs-you) · [background-jobs.md](background-jobs.md)
-(job notifications, retention) · [side-panels.md](side-panels.md) (bell item) ·
-[desktop-overlays.md](desktop-overlays.md) (hotkey launcher reuses this palette outside the window) ·
+[approval-card.md](approval-card.md) (chip approvals, needs-you) · `background-jobs.md` — Pro (private)
+(job notifications, retention) · `side-panels.md` — Pro (private) (bell item) ·
+`desktop-overlays.md` — Pro (private) (hotkey launcher reuses this palette outside the window) ·
 [workspace-chrome.md](workspace-chrome.md) (F6 to toasts).
 
 | Reference | What we take | Licence note |
@@ -342,9 +342,9 @@ pub struct NotificationCenter<'a> {
 ## Plan #26 implementation
 Implemented in `oxyn-core::primitives::command` (`Command`, `Palette`, `PaletteKey`, `PaletteOutcome`,
 `search`, `score`, `highlight`) with `oxyn-dioxus::CommandPalette` and `oxyn-gpui::CommandPaletteEl`.
-The AI answer half is split into [ai-command.md](ai-command.md), [ai-search-bar.md](ai-search-bar.md)
-and [settings-command.md](settings-command.md); toasts and notices into [toaster.md](toaster.md)
-and [notification-stack.md](notification-stack.md).
+The AI answer half is split into `ai-command.md` — Pro (private), `ai-search-bar.md` — Pro (private)
+and `settings-command.md` — Pro (private); toasts and notices into `toaster.md` — Pro (private)
+and `notification-stack.md` — Pro (private).
 
 - **Arc UI Command palette (block):** every word must match (label anywhere, a word start in the
   description or keywords, or letters in order); matched letters in medium weight; groups follow

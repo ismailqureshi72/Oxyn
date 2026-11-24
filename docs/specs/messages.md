@@ -15,7 +15,7 @@ components of its own: `transcript` and `jump-pill`.
 | [message-bubble.md](message-bubble.md) | `message` (user / agent / system shells), `message-actions` (copy, edit, retry, branch ‹ 2/3 ›, feedback) | 5 + 15, 4 + 12 = **36** |
 | [streaming-markdown.md](streaming-markdown.md) | `markdown` (block renderer), `code-block` | 3 + 8, 4 + 12 = **27** |
 | [reasoning-block.md](reasoning-block.md) | `reasoning-block` (collapsible thinking, display levels) | 5 + 15 = **20** |
-| [citations-sources.md](citations-sources.md) | `citation`, `source-list`, `confidence-badge`, `memory-receipt`, `follow-ups`, `empty-state` | 18 + 37 = **55** |
+| `citations-sources.md` — Pro (private) | `citation`, `source-list`, `confidence-badge`, `memory-receipt`, `follow-ups`, `empty-state` | 18 + 37 = **55** |
 | **Family E total** | | **46 free + 117 Pro = 163** (table in §7) |
 
 All values marked *proposed* are Oxyn's own starting points, tuned later in the Studio. Numbers
@@ -130,7 +130,7 @@ Rules (proposed):
 
 | State | Shows | Primary action | Secondary | Keyboard |
 |---|---|---|---|---|
-| `Empty` | empty state + starter prompts ([citations-sources.md](citations-sources.md) §empty-state) | pick a starter | — | Tab into starters; typing goes to the composer |
+| `Empty` | empty state + starter prompts (`citations-sources.md` — Pro (private) §empty-state) | pick a starter | — | Tab into starters; typing goes to the composer |
 | `Loading(history)` | message skeletons (2 user + 2 agent shapes, [skeletons.md](skeletons.md)) after 150 ms | — | — | — |
 | `LoadFailed` | inline row "Couldn't load this thread · Retry" | retry | open offline copy (if cached) | Enter |
 | `Resting` | transcript at bottom, no run | read / act on messages | — | PageUp/PageDown, Home/End, `[`/`]` previous/next turn (proposed) |
@@ -183,7 +183,7 @@ Owned by this spec; text-reveal's "↓ New output" pill is this component.
 | `Hidden` | nothing (following, or within 48 px of bottom) | — | — |
 | `Idle` | "↓" + "Jump to latest" (label hidden below 360 px width) | smooth scroll to bottom | End, ⌘/Ctrl+↓ |
 | `NewContent(n)` | "↓ n new" — n = new **messages** when ≥ 1 message arrived, else rolling **line** count of the live tail | jump to the first unread block, not the very bottom, when n ≥ 2 messages (proposed) | same |
-| `Streaming` | pill carries a 12 px loader still frame or the lead loader if the composer region is hidden ([loaders.md](loaders.md) §2.3: mirror by default) | jump | same |
+| `Streaming` | pill carries a 12 px loader still frame or the lead loader if the composer region is hidden (`loaders.md` — Pro (private) §2.3: mirror by default) | jump | same |
 | `AwaitingYou` | amber dot + "Needs your approval ↓" | jump to the approval card | same |
 | `Error` | danger dot + "Run failed ↓" | jump to the error row | same |
 
@@ -197,7 +197,7 @@ Owned by this spec; text-reveal's "↓ New output" pill is this component.
 ## 6. Micro-interactions (family-wide)
 - **New user message:** arrives via the composer's fly-up (≤ 260 ms, [composer.md](composer.md) §4); the
   transcript reserves its final height in the same frame so nothing jumps.
-- **Agent message appears:** the status line / thinking row occupies the agent slot first ([loaders.md](loaders.md)
+- **Agent message appears:** the status line / thinking row occupies the agent slot first (`loaders.md` — Pro (private)
   §3.3 `show_delay` 300 ms); first content replaces it in place (no slide).
 - **System / event row:** fades in with a 4 px rise, 180 ms.
 - **Hover:** message footer actions fade from 0 → 100 % (desktop); timestamp appears in the header.
@@ -359,8 +359,8 @@ shown by the status row, not the transcript.
 
 ## 11. Related components and references
 Related: [composer.md](composer.md) (fly-up, queue dispatch) · [text-reveal.md](text-reveal.md)
-(follow mode, live tail) · [status-text.md](status-text.md) (status row, "Worked for") ·
-[loaders.md](loaders.md) (busy regions) · [skeletons.md](skeletons.md) (history loading) · family F
+(follow mode, live tail) · `status-text.md` — Pro (private) (status row, "Worked for") ·
+`loaders.md` — Pro (private) (busy regions) · [skeletons.md](skeletons.md) (history loading) · family F
 (tool rows, rollups) · family G (approval cards) · family H (checkpoints / fork) · family K (captions).
 
 | Reference | IDs / note | What we take | Licence note |

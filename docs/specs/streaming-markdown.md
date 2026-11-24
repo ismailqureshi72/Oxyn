@@ -36,7 +36,7 @@ blocks with stable ids: `Paragraph`, `Heading(1..=6)`, `List { ordered, start, t
 `CodeFence { lang, meta }`, `Table`, `Math { display }`, `Rule`, `Image`, `Html` (sanitised, off by
 default), `FootnoteDef`, `Details` (collapsible), `Diagram { kind }` (fenced `mermaid` and similar,
 rendered by a pluggable renderer). Inline: emphasis, strong, strike, code, link, autolink, image,
-citation marker ([citations-sources.md](citations-sources.md)), footnote ref, inline math.
+citation marker (`citations-sources.md` — Pro (private)), footnote ref, inline math.
 
 ### 2.2 Block lifecycle
 ```
@@ -84,7 +84,7 @@ citation marker ([citations-sources.md](citations-sources.md)), footnote ref, in
 Run and Apply are **host capabilities**: the block shows them only when the host passes a handler and
 the language is allowed (Run defaults to shell-like languages only — proposed: `sh`, `bash`, `zsh`,
 `fish`, `pwsh`, `console`). Run respects the composer's permission level
-([composer-permission-selector.md](composer-permission-selector.md)): when the level requires approval,
+(`composer-permission-selector.md` — Pro (private)): when the level requires approval,
 Run opens a family-G approval card first.
 
 ## 3. Rendering rules
@@ -334,7 +334,7 @@ pub enum CodeBlockState {
 ## 10. Related components and references
 Related: [text-reveal.md](text-reveal.md) (pacer, incomplete-syntax table, caret, follow) ·
 [message-bubble.md](message-bubble.md) (copy semantics at message level) ·
-[citations-sources.md](citations-sources.md) (inline markers) · [skeletons.md](skeletons.md) ·
+`citations-sources.md` — Pro (private) (inline markers) · [skeletons.md](skeletons.md) ·
 family F (terminal output, tool rows) · family G (approval before Run) · family H (diff viewer, apply
 conflicts) · family I (gen-UI blocks, charts from tables).
 

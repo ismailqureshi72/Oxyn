@@ -2,7 +2,7 @@
 
 # Spec: Confirm popover (`confirm-popover`)
 
-Family: G Approvals ([approvals.md](approvals.md)). Closes the parity row(s): Arc UI · Confirm popover.
+Family: G Approvals (`approvals.md` — Pro (private)). Closes the parity row(s): Arc UI · Confirm popover.
 
 ## 1. Purpose
 A destructive button that grows into a small confirmation card: the consequence in one or two sentences, an optional type-to-confirm phrase (case and outer spaces ignored) that fills Confirm as the typed prefix matches, progress on the Confirm button (reported or an indeterminate sweep), then a check in the button's shape, or the failure with the rejection message and Try again.

@@ -3,7 +3,7 @@
 
 # Spec: glyph loaders (terminal / text frame loaders)
 
-Part of the loaders family ([loaders.md](loaders.md)). Same depth as the worked example
+Part of the loaders family (`loaders.md` — Pro (private)). Same depth as the worked example
 [composer-send-control.md](composer-send-control.md). Target **14 free + 30 Pro = 44 variants**, all
 drawn by one renderer from **frame tables** (render tier T1), all driven by the shared
 `LoaderPhase` derived from `AgentState`.
@@ -258,10 +258,10 @@ pub struct GlyphTable {
 ```
 
 ## 10. Related components and references
-**Related:** status strip dot and verb ([composer-status-strip.md](composer-status-strip.md)) ·
+**Related:** status strip dot and verb (`composer-status-strip.md` — Pro (private)) ·
 `composer/terminal` layout ([composer.md](composer.md)) · send control `glyph` and Pro
 `ascii-spinner` ([composer-send-control.md](composer-send-control.md)) · family C shimmer and verb
-cycler (sits right of the glyph) · family F tool rows · [loader-vector.md](loader-vector.md) (SVG
+cycler (sits right of the glyph) · family F tool rows · `loader-vector.md` — Pro (private) (SVG
 versions of the same motions for GUI).
 
 | Reference | What we take | Licence note |

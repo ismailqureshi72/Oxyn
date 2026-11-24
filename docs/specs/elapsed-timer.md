@@ -2,7 +2,7 @@
 
 # Spec: elapsed timer and run counters (`elapsed-timer`)
 
-Part of family C ([status-text.md](status-text.md)). Same depth as
+Part of family C (`status-text.md` — Pro (private)). Same depth as
 [composer-send-control.md](composer-send-control.md). Target **4 free + 14 Pro = 18 variants**. Covers
 the elapsed time of a run or step, token count, tokens per second, cost, and the completion summary
 ("Worked for 1m 12s").
@@ -214,9 +214,9 @@ pub struct RunClock {
 ```
 
 ## 11. Related components and references
-Related: [status-text.md](status-text.md) (summary phrasing, tense rules) ·
+Related: `status-text.md` — Pro (private) (summary phrasing, tense rules) ·
 [verb-cycler.md](verb-cycler.md) (past-tense roll precedes the summary) ·
-[composer-status-strip.md](composer-status-strip.md) (budget chip, token count after 30 s, stall) ·
+`composer-status-strip.md` — Pro (private) (budget chip, token count after 30 s, stall) ·
 [composer-context-meter.md](composer-context-meter.md) (context window ≠ run tokens) · run meter and
 cost waterfall (family F) · test runner and tool rows (family F).
 
@@ -239,4 +239,4 @@ cost waterfall (family F) · test runner and tool rows (family F).
 
 ## Plan #28 parity (2026-11-14)
 
-Related new components: [countdown](countdown.md) and [animated-counter](animated-counter.md).
+Related new components: `countdown.md` — Pro (private) and `animated-counter.md` — Pro (private).

@@ -65,7 +65,7 @@ Rules:
 - **Busy-choice shake.** With `busy_action = Ask`, Enter shakes Steer / Queue / Stop to force a choice
   [R085].
 - **Stop.** ■ press → the status line drops into the transcript as "Interrupted" [R079] (owned by
-  [composer-status-strip.md](composer-status-strip.md)); the button morphs ■ → ↑ (or ↑ muted if empty).
+  `composer-status-strip.md` — Pro (private)); the button morphs ■ → ↑ (or ↑ muted if empty).
 - **Done.** ■ → ↑ morph; no celebration on the button by default (Pro `shockwave-done` adds one).
 - **Error.** ⟲ in danger tone + 2-cycle shake + inline "Couldn't send · Retry".
 - **Dictation.** ↑ → ✓ while the voice strip is open [R021] (see
@@ -131,7 +131,7 @@ Rules:
 - **Touch.** 44 px hit area; `long-press-options` replaces the ▾; Stop with `StopConfirm::Hold`
   uses 400 ms.
 - **Slow networks / offline.** `Sending` may last; the status strip's stall thresholds apply
-  ([composer-status-strip.md](composer-status-strip.md)), and the button stays ■ so the user can cancel. Offline → `Disabled("Offline")`, but
+  (`composer-status-strip.md` — Pro (private)), and the button stays ■ so the user can cancel. Offline → `Disabled("Offline")`, but
   Enter still queues locally if the queue stack is enabled (proposed).
 - **Pending card.** While an approval/question card waits, ↑ answers the card [R088]; a normal
   message is still possible via the queue.
