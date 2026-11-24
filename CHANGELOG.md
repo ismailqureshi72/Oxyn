@@ -3,6 +3,17 @@
 All notable changes to Oxyn are listed here. Versions follow [Semantic Versioning](https://semver.org/);
 before 1.0, a minor version (0.x) may change APIs.
 
+## [Unreleased]
+
+### oxyn-cli 0.1.1
+
+- **`oxyn init` adds `oxyn-core = "0.1"` from crates.io** instead of a git dependency pinned to the
+  registry's commit. `--oxyn-path <dir>` still uses a local checkout, and the new `--oxyn-git` keeps
+  the git source. Projects set up with 0.1.0 keep their git source (`[oxyn]` in `oxyn.toml`). The MCP
+  server's `add_component` sets up a new project the same way.
+- `cargo test` works from the published `oxyn-core` package: the icon-tone CSS check reads the
+  `oxyn-dioxus` stylesheet at run time and is skipped outside the repository.
+
 ## [0.1.0] - 2026-11-24
 
 The first public release: the component library, the site at [oxynui.com](https://oxynui.com), and the
