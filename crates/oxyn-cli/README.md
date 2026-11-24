@@ -7,7 +7,7 @@ code is yours to change.
 ```sh
 cargo install oxyn-cli
 cd my-dioxus-or-gpui-app
-oxyn init                          # oxyn.toml, src/oxyn/, `mod oxyn;` and the oxyn-core dependency
+oxyn init                          # oxyn.toml, src/oxyn/, `mod oxyn;` and oxyn-core = "0.1" (crates.io)
 oxyn add composer approval-card    # copies the code and the components it needs
 ```
 

@@ -24,6 +24,20 @@ oxyn add composer button  # copies both, and what they need
 
 `init` detects the framework from `Cargo.toml`; pass `--framework dioxus` or `--framework gpui` when the project has both or neither. `--path` picks another folder inside `src/`.
 
+`init` adds `oxyn-core` from crates.io:
+
+```toml
+[dependencies]
+oxyn-core = "0.1"
+```
+
+Two other sources, for contributors and for trying unreleased changes:
+
+- `--oxyn-path <dir>` uses a local checkout of the Oxyn repository (`oxyn-core = { path = "<dir>/crates/oxyn-core" }`).
+- `--oxyn-git` uses the Oxyn git repository, pinned to the commit the registry was built from (`oxyn-core = { git = "…", rev = "…" }`).
+
+The choice is saved in `oxyn.toml` (`[oxyn]`), so crates that `oxyn add` needs later come from the same place. Projects set up with an earlier `oxyn` keep their git source.
+
 Then use the components from `crate::oxyn`. `oxyn add` prints the exact lines for what it installed:
 
 ```rust
@@ -40,7 +54,7 @@ Set `data-oxyn-theme="dark"`, `"light"` or `"hc-dark"` on any ancestor element t
 
 | Command | What it does |
 |---|---|
-| `oxyn init` | Sets up the project: `oxyn.toml`, `src/oxyn/`, `mod oxyn;` and the `oxyn-core` dependency. |
+| `oxyn init [--framework dioxus\|gpui] [--path <dir>] [--oxyn-path <dir> \| --oxyn-git] [--force]` | Sets up the project: `oxyn.toml`, `src/oxyn/`, `mod oxyn;` and the `oxyn-core` dependency (crates.io unless `--oxyn-path` or `--oxyn-git`). |
 | `oxyn list [--category <c>] [--tier free\|pro]` | Every item in the registry, free and Pro. |
 | `oxyn search <words>` | Searches names, categories and descriptions. |
 | `oxyn view <slug>` | One item: what it is, its files, the items and crates it needs. |
