@@ -548,6 +548,8 @@ export async function activity(env: Env, ctx: Ctx, url: URL): Promise<Response> 
     q(`SELECT COUNT(*) AS n FROM grants WHERE revoked_at IS NULL AND (expires_at IS NULL OR expires_at > ?1)`, iso()), // 15 grants
     q('SELECT COUNT(*) AS n FROM users'), // 16 users
     q("SELECT COUNT(*) AS n, MIN(at) AS first FROM events"), // 17 events kept
+    // 18 founder subscriptions from returning customers (billing.ts flagFounderRepeat), last 90 days
+    q("SELECT at, target, detail FROM audit_log WHERE action = 'billing.founder_repeat' AND at >= ?1 ORDER BY at DESC LIMIT 20", new Date((t - 90 * 86_400) * 1000).toISOString()),
   ]);
   const rows = <T>(i: number) => (res[i].results ?? []) as T[];
   const one = <T>(i: number) => (rows<T>(i)[0] ?? {}) as T;
@@ -578,5 +580,10 @@ export async function activity(env: Env, ctx: Ctx, url: URL): Promise<Response> 
     users: n(16),
     retention_days: EVENTS.retentionDays,
     events_kept: n(17),
+    flags: rows<{ at: string; target: string; detail: string | null }>(18).map((x) => {
+      let d: Record<string, unknown> = {};
+      try { d = x.detail ? JSON.parse(x.detail) : {}; } catch { /* keep empty */ }
+      return { kind: 'founder_repeat', at: x.at, subscription_id: x.target, email: typeof d.email === 'string' ? d.email : null, plan: typeof d.plan === 'string' ? d.plan : null };
+    }),
   });
 }

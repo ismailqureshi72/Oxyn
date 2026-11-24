@@ -1070,7 +1070,16 @@
     const fmax = Math.max(1, ...funnel.map((f) => f[1]));
     const paidPlans = co.paid_by_plan.map((x) => `${x.n} ${x.plan === 'team' ? 'Team' : x.founder ? 'Founder' : 'Pro'}`).join(' · ');
     const noEvents = !r.events_kept;
+    // Backstop of the founder checkout gate: founder subscriptions from customers who had one before.
+    const flags = (r.flags || []).length ? h('section', { class: 'card section', 'aria-labelledby': 'fl-t' }, h('h3', { id: 'fl-t' }, 'Needs a look'),
+      h('p', { class: 'muted small' }, 'Founder subscriptions started by a customer who already had an Oxyn subscription. They took no founder spot and still renew at the regular price; nothing was changed in Polar.'),
+      h('div', { class: 'twrap' }, h('table', { class: 'audit' },
+        h('caption', { class: 'sr' }, 'Founder subscriptions from returning customers'),
+        h('thead', {}, h('tr', {}, ['When', 'Customer', 'Plan', 'Subscription'].map((t) => h('th', { scope: 'col' }, t)))),
+        h('tbody', {}, r.flags.map((x) => h('tr', {}, h('td', {}, fmtDate(x.at)), h('td', {}, x.email || '—'), h('td', {}, x.plan || '—'), h('td', { class: 'mono' }, x.subscription_id)))))))
+      : null;
     fill(body,
+      flags,
       noEvents ? h('div', { class: 'note' }, h('div', {}, h('p', { class: 'nline' }, 'No site events recorded yet. Page views, Pro copy attempts, pricing views and checkout clicks are counted from this version on (no cookies, nothing personal, kept 90 days).'))) : null,
       h('div', { class: 'stats' },
         statCard('Daily active', num(r.active.dau), 'accounts, last 24 h'),
