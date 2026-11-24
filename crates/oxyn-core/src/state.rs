@@ -151,7 +151,8 @@ impl AgentState {
     }
 }
 
-/// Stall thresholds (`docs/specs/composer-status-strip.md` and `tools.md`, proposed defaults).
+/// Stall thresholds (specs `composer-status-strip.md` and `tools.md`, Pro (private); proposed
+/// defaults).
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct StallPolicy {
     /// Silence before `Soft` when no tool is running (5 s).

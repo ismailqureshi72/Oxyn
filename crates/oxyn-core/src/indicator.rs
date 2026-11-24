@@ -1,4 +1,4 @@
-//! The renderer-free model behind `StatusIndicator` (`docs/specs/status-indicator.md`).
+//! The renderer-free model behind `StatusIndicator` (spec `status-indicator.md`, Pro (private)).
 //!
 //! Both renderers (GPUI and Dioxus) call [`indicator`] with the current [`AgentState`] and draw
 //! what it returns, so the two can never disagree about a colour, a word or a motion.

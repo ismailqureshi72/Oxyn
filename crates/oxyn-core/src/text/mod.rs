@@ -1,6 +1,6 @@
-//! Status-text effects (family C, `docs/specs/status-text.md`): shimmer, verb cycler, elapsed
-//! timer, streaming reveal and carets. Every effect is a pure function of the shared clock time;
-//! nothing here owns a timer, and nothing changes advance widths except append-only reveals.
+//! Status-text effects (family C, spec `status-text.md`, Pro (private)): shimmer, verb cycler,
+//! elapsed timer, streaming reveal and carets. Every effect is a pure function of the shared clock
+//! time; nothing here owns a timer, and nothing changes advance widths except append-only reveals.
 
 mod cycler;
 mod reveal;
