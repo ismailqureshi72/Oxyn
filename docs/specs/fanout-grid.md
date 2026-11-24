@@ -3,7 +3,7 @@
 # Spec: fan-out grid and parallel lanes (`fanout-grid`)
 
 Part of family F, part 2 "Orchestration & observability" ([../component-taxonomy.md](../component-taxonomy.md),
-overview in [tools.md](tools.md)). Same depth as [composer-send-control.md](composer-send-control.md).
+overview in `tools.md` — Pro (private)). Same depth as [composer-send-control.md](composer-send-control.md).
 Target **4 free + 14 Pro = 18 variants**. Reads the shared `RunGraph` from
 [subagent-tree.md](subagent-tree.md) §9.
 
@@ -278,10 +278,10 @@ Lane states map from each child's `AgentState` exactly as in [subagent-tree.md](
 
 ## 10. Related components and references
 Related: [subagent-tree.md](subagent-tree.md) (same nodes as a tree) · [tool-call.md](tool-call.md) and
-[terminal-output.md](terminal-output.md) (lane bodies) · [file-edit-chip.md](file-edit-chip.md) (diff
-stats) · [run-meter.md](run-meter.md) (per-lane usage) · [trace-view.md](trace-view.md) (swimlanes
-share the time axis) · [background-jobs.md](background-jobs.md) (lanes left running in background) ·
-[composer-status-strip.md](composer-status-strip.md) Pro `lanes-peek` · [skeletons.md](skeletons.md) ·
+`terminal-output.md` — Pro (private) (lane bodies) · `file-edit-chip.md` — Pro (private) (diff
+stats) · `run-meter.md` — Pro (private) (per-lane usage) · `trace-view.md` — Pro (private) (swimlanes
+share the time axis) · `background-jobs.md` — Pro (private) (lanes left running in background) ·
+`composer-status-strip.md` — Pro (private) Pro `lanes-peek` · [skeletons.md](skeletons.md) ·
 diff / merge / worktree chips (family H) and approvals (family G) in
 [../component-taxonomy.md](../component-taxonomy.md).
 

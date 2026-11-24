@@ -2,13 +2,13 @@
 
 # Spec: diff viewer (`diff-viewer`)
 
-Part of family H ([checkpoints-git.md](checkpoints-git.md) — shared `ChangeSet` model §2.6, diff colour
+Part of family H (`checkpoints-git.md` — Pro (private) — shared `ChangeSet` model §2.6, diff colour
 and motion tokens §5.2 live there). Same depth as the worked example
 [composer-send-control.md](composer-send-control.md). Target **4 free + 16 Pro = 20 variants** (hero
-component). Opened from [file-edit-chip.md](file-edit-chip.md) ("View diff"), the expanded Edit tool
-call ([tool-call.md](tool-call.md)), [checkpoint-timeline.md](checkpoint-timeline.md) ("View changes"),
-[rollback-impact.md](rollback-impact.md) file rows, [pr-card.md](pr-card.md) and
-[review-card.md](review-card.md). Three-way conflicts hand off to [merge-conflict.md](merge-conflict.md).
+component). Opened from `file-edit-chip.md` — Pro (private) ("View diff"), the expanded Edit tool
+call ([tool-call.md](tool-call.md)), `checkpoint-timeline.md` — Pro (private) ("View changes"),
+`rollback-impact.md` — Pro (private) file rows, `pr-card.md` — Pro (private) and
+`review-card.md` — Pro (private). Three-way conflicts hand off to `merge-conflict.md` — Pro (private).
 Syntax highlighting reuses the code-block highlighter ([streaming-markdown.md](streaming-markdown.md)
 §3.3).
 
@@ -411,15 +411,15 @@ pub struct DiffLine {
 ```
 
 ## 11. Related components and references
-**Related:** [checkpoints-git.md](checkpoints-git.md) (ChangeSet, tokens) ·
-[file-edit-chip.md](file-edit-chip.md) (entry point; partial-apply count format) ·
-[tool-call.md](tool-call.md) / [tools.md](tools.md) (expanded while awaiting approval, collapsed after) ·
+**Related:** `checkpoints-git.md` — Pro (private) (ChangeSet, tokens) ·
+`file-edit-chip.md` — Pro (private) (entry point; partial-apply count format) ·
+[tool-call.md](tool-call.md) / `tools.md` — Pro (private) (expanded while awaiting approval, collapsed after) ·
 [streaming-markdown.md](streaming-markdown.md) §3.3 (highlighter, caps, follow) ·
-[checkpoint-timeline.md](checkpoint-timeline.md) (View changes, compare-pair) ·
-[rollback-impact.md](rollback-impact.md) (file-diffs variant) · [merge-conflict.md](merge-conflict.md)
-(Conflict hunks) · [review-card.md](review-card.md) (findings that jump into the diff, sent comments) ·
-[pr-card.md](pr-card.md) (PR file changes) · [git-chips.md](git-chips.md) (base branch shown in header) ·
-[run-replay.md](run-replay.md) (`diff-scrub` variant renders this read-only) · family G approvals
+`checkpoint-timeline.md` — Pro (private) (View changes, compare-pair) ·
+`rollback-impact.md` — Pro (private) (file-diffs variant) · `merge-conflict.md` — Pro (private)
+(Conflict hunks) · `review-card.md` — Pro (private) (findings that jump into the diff, sent comments) ·
+`pr-card.md` — Pro (private) (PR file changes) · `git-chips.md` — Pro (private) (base branch shown in header) ·
+`run-replay.md` — Pro (private) (`diff-scrub` variant renders this read-only) · family G approvals
 (Proposed mode).
 
 | Reference | What we take | Licence note |

@@ -2,7 +2,7 @@
 
 # Spec: verb cycler (`verb-cycler`)
 
-Part of family C ([status-text.md](status-text.md)). Same depth as
+Part of family C (`status-text.md` — Pro (private)). Same depth as
 [composer-send-control.md](composer-send-control.md). Target **5 free + 17 Pro = 22 variants**.
 Content comes from verb packs (status-text.md §5); this spec is the **motion and timing** of
 changing one status word into another, including the final roll into past tense.
@@ -216,9 +216,9 @@ pub enum CyclerInput {
 ```
 
 ## 10. Related components and references
-Related: [status-text.md](status-text.md) (packs, tense rules, activity table) ·
+Related: `status-text.md` — Pro (private) (packs, tense rules, activity table) ·
 [text-shimmer.md](text-shimmer.md) (band yields to swaps) · [elapsed-timer.md](elapsed-timer.md)
-(duration in the settled line) · [composer-status-strip.md](composer-status-strip.md) · tool rows and
+(duration in the settled line) · `composer-status-strip.md` — Pro (private) · tool rows and
 plan steps (family F) · loaders (family B, `semantic-verb` pairing).
 
 | Ref | What we take | Licence note |
@@ -239,4 +239,4 @@ plan steps (family F) · loaders (family B, `semantic-verb` pairing).
 
 ## Plan #28 parity (2026-11-14)
 
-Related new components: [text-morph](text-morph.md), [action-swap](action-swap.md), [thinking-loader](thinking-loader.md).
+Related new components: `text-morph.md` — Pro (private), `action-swap.md` — Pro (private), `thinking-loader.md` — Pro (private).

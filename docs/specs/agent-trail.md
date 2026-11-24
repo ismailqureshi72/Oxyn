@@ -2,7 +2,7 @@
 
 # Spec: Agent trail (`agent-trail`)
 
-Family: F Tool calls & plans ([tools.md](tools.md)). Closes the parity row(s): affectUI · Agent Trail (https://www.affectui.com/components/agent-trail), behaviour-only rebuild, no source copied.
+Family: F Tool calls & plans (`tools.md` — Pro (private)). Closes the parity row(s): affectUI · Agent Trail (https://www.affectui.com/components/agent-trail), behaviour-only rebuild, no source copied.
 
 ## 1. Purpose
 The steps an agent works through as one quiet trail, for a chat answer, a side panel or a task card: what is done, what it is doing now and what comes next, and a stop that needs your approval coming into view before it is reached.

@@ -4,7 +4,7 @@
 
 Family: Composer ([composer.md](composer.md)). Closes the parity row: affectUI · Chat Composer.
 Behaviour-only rebuild from the live page and a screen recording; nothing is copied. Oxyn's own
-"What should we work on?" composer stays as [ai-composer.md](ai-composer.md) and as the
+"What should we work on?" composer stays as `ai-composer.md` — Pro (private) and as the
 `oxyn-ai-composer` variant on this page.
 
 ## 1. Purpose

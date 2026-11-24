@@ -613,7 +613,7 @@ comments; timing comes from the spec table resolved against `tokens/oxyn.motion.
 Opened for this file: [../website-stack.md](../website-stack.md), [../studio.md](../studio.md),
 [../vision.md](../vision.md), [../component-taxonomy.md](../component-taxonomy.md),
 [../variants.md](../variants.md), [../architecture.md](../architecture.md),
-[../specs/README.md](../specs/README.md), [../specs/loaders.md](../specs/loaders.md) §2.2,
+[../specs/README.md](../specs/README.md), `loaders.md` — Pro (private) §2.2,
 [../specs/composer-send-control.md](../specs/composer-send-control.md) §2,
 [../categories/README.md](../categories/README.md), [../tokens.md](../tokens.md),
 [../motion.md](../motion.md) §8–10, [../licensing.md](../licensing.md); project research notes

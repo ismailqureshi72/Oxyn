@@ -262,9 +262,9 @@ disables server STT. The STT engine is an adapter (`trait Transcriber`), not par
 
 ## 9. Related components
 Send control (✓ confirm, [composer-send-control.md](composer-send-control.md)) · input shell
-([composer-input-shell.md](composer-input-shell.md)) · queue stack (InsertAndSend while busy,
+(`composer-input-shell.md` — Pro (private)) · queue stack (InsertAndSend while busy,
 [composer-queue-stack.md](composer-queue-stack.md)) · status strip (offline banner,
-[composer-status-strip.md](composer-status-strip.md)) · voice-session bar and voice orb (future) ·
+`composer-status-strip.md` — Pro (private)) · voice-session bar and voice orb (future) ·
 device picker (future) · question / approval card.
 
 ## 10. References (study only unless MIT/Apache)

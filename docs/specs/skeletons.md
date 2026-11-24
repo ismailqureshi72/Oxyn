@@ -2,7 +2,7 @@
 
 # Spec: skeletons (messages, cards, tables, charts, code blocks)
 
-Part of family D ([container-loaders.md](container-loaders.md)); follows the 10-point standard in
+Part of family D (`container-loaders.md` — Pro (private)); follows the 10-point standard in
 [README.md](README.md) at the depth of [composer-send-control.md](composer-send-control.md). Target
 **4 free + 12 Pro = 16 variants** of sweep style and swap behaviour. **Block shapes** (message, card,
 table, chart, code, plus image, list, form, map, timeline) are shared with family I's generative-UI
@@ -235,7 +235,7 @@ arrives; not researched per protocol.
 `oxyn-core::primitives::skeleton` (`Shape`, `Sweep`, `Bone`, `line_widths`, `sheen_phase`, `Morph`,
 `timing`), `oxyn-dioxus::Skeleton`, `ShimmerLabel`, `SkeletonMorph` + `MorphBlock`,
 `oxyn-gpui::SkeletonEl` and `SkeletonMorphEl`. Morph details live in
-[skeleton-morph.md](skeleton-morph.md).
+`skeleton-morph.md` — Pro (private).
 
 - **Arc UI Skeleton:** text lines (1–6, last one shorter), optional avatar, a staggered pulse (`wave`).
 - **affectUI Skeleton + Shimmer Loader:** one sheen shared by every bone (`background-attachment:

@@ -2,7 +2,7 @@
 
 # Spec: text shimmer (`text-shimmer`)
 
-Part of family C ([status-text.md](status-text.md)). Same depth as
+Part of family C (`status-text.md` — Pro (private)). Same depth as
 [composer-send-control.md](composer-send-control.md). Target **4 free + 18 Pro = 22 variants**.
 Runs on the family-C engine (status-text.md §2): per-glyph sampling, no advance-width changes, shared
 clock.
@@ -238,8 +238,8 @@ impl ShimmerDrive {
 ```
 
 ## 10. Related components and references
-Related: [status-text.md](status-text.md) (engine, tokens, stall ramp) · [verb-cycler.md](verb-cycler.md)
-(text swaps interrupt the band) · [composer-status-strip.md](composer-status-strip.md) (uses the Codex
+Related: `status-text.md` — Pro (private) (engine, tokens, stall ramp) · [verb-cycler.md](verb-cycler.md)
+(text swaps interrupt the band) · `composer-status-strip.md` — Pro (private) (uses the Codex
 cadence) · family D border beams (same band maths along a path) · skeleton sweeps (family I).
 
 | Ref | What we take | Licence note |
@@ -257,4 +257,4 @@ cadence) · family D border beams (same band maths along a path) · skeleton swe
 
 ## Plan #28 parity (2026-11-14)
 
-Arc UI behaviour (active, pass duration, label rise) is [shimmer-label](shimmer-label.md).
+Arc UI behaviour (active, pass duration, label rise) is `shimmer-label.md` — Pro (private).

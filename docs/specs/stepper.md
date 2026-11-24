@@ -2,7 +2,7 @@
 
 # Spec: Stepper (`stepper`)
 
-Family: F Tool calls & plans ([tools.md](tools.md)). Closes the parity row(s): Arc UI · Stepper.
+Family: F Tool calls & plans (`tools.md` — Pro (private)). Closes the parity row(s): Arc UI · Stepper.
 
 ## 1. Purpose
 Where a person is in a multi-step flow and what is done. Horizontal or vertical; numbers morph into checks or an alert; connectors fill one after another; descriptions for all steps or only the current one (errors always show); optional steps; compact markers with a caption (“Step 3 of 4 · Billing”), automatic below 30 rem; completed steps are selectable with arrow keys when `on_select` is set.
