@@ -24,9 +24,9 @@
 
 ---
 
-> **Status: research & design baseline.** No component code yet. This repo currently holds the
-> product docs, specs, roadmap and brand assets. Development starts when research phase V2-R closes
-> (see [roadmap](docs/roadmap.md)).
+> **Status: 0.1.0 released.** 454 components, screens, blocks and agent-app templates for Dioxus and
+> GPUI, the `oxyn` CLI and the MCP server are live; browse them at [oxynui.com](https://oxynui.com).
+> What shipped and the known gaps: [CHANGELOG.md](CHANGELOG.md).
 
 ## What Oxyn is
 
@@ -52,7 +52,7 @@ Oxyn is a **Rust-first** library of those pieces:
 ## Add components with the CLI
 
 ```sh
-cargo install --git https://github.com/ismailqureshi72/Oxyn oxyn-cli
+cargo install oxyn-cli
 cd my-dioxus-or-gpui-app
 oxyn init
 oxyn add composer approval-card   # copies the code into src/oxyn/
@@ -67,7 +67,7 @@ Commands, flags and the registry: [oxynui.com/docs/cli](https://oxynui.com/docs/
 ## Let your coding agent add them (MCP)
 
 ```sh
-cargo install --git https://github.com/ismailqureshi72/Oxyn oxyn-mcp
+cargo install oxyn-mcp
 claude mcp add oxyn -- oxyn-mcp     # Cursor, Codex and Zed: see the docs
 ```
 
@@ -75,7 +75,10 @@ The `oxyn-mcp` server gives Claude Code, Cursor, Codex and Zed five tools: list,
 components (props, dependencies, source), and add them to a project the way `oxyn add` does.
 Setup for each agent: [oxynui.com/docs/mcp](https://oxynui.com/docs/mcp/).
 
-## Planned packages
+## Packages
+
+Published on crates.io: `oxyn-core`, `oxyn-tokens`, `oxyn-registry-schema`, `oxyn-cli` and
+`oxyn-mcp`. The renderer crates reach your project through the CLI, which copies their source.
 
 | Crate / app | Role |
 |---|---|
