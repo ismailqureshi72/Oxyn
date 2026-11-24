@@ -1171,3 +1171,13 @@ html[data-pro="1"] .lbar .x-gopro{display:none}
 .x-bill-list .x-bill-row{display:flex;flex-direction:column;gap:2px;min-width:0}
 .x-bill-list .x-bill-row small{color:var(--fg2);font-size:12.5px}
 .x-bill-list .x-bill-dl-btns{display:flex;gap:6px;flex-wrap:wrap}
+/* ── Landing: What is Oxyn UI + section cards (SEO PR) ─────────────────────────────────────── */
+.x-what-p{max-width:760px;text-align:left;line-height:1.65;color:var(--fg2)}
+.x-explore{list-style:none;margin:36px 0 0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.x-explore a{display:flex;flex-direction:column;gap:6px;height:100%;padding:10px 10px 14px;border:1px solid var(--ln);border-radius:16px;color:inherit;text-decoration:none;background:var(--pn);transition:border-color .18s,transform .18s}
+.x-explore a:hover{border-color:var(--fg3);transform:translateY(-1px)}
+.x-explore img{display:block;width:100%;height:auto;aspect-ratio:1200/630;border-radius:10px;margin-bottom:6px}
+.x-explore b{font-size:15px;font-weight:600;padding:0 4px}
+.x-explore span{font-size:13px;line-height:1.45;color:var(--fg2);padding:0 4px}
+@media (max-width:900px){.x-explore{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:480px){.x-explore{grid-template-columns:1fr}}
