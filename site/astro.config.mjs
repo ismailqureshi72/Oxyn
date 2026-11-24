@@ -23,6 +23,47 @@ const movedUrls = {
   },
 };
 
+// sitemap.xml (the one robots.txt names): every indexable page in the build, with its images
+// (og:image and same-site <img>) as image-sitemap entries. Pages marked noindex (sign-in, account,
+// full-screen views) and moved-page stubs are left out. Starlight's own sitemap-index.xml stays.
+const sitemap = {
+  name: 'oxyn-sitemap',
+  hooks: {
+    'astro:build:done': ({ dir }) => {
+      const root = fileURLToPath(dir);
+      const pages = [];
+      const walk = (d) => {
+        for (const e of fs.readdirSync(d, { withFileTypes: true })) {
+          const f = path.join(d, e.name);
+          if (e.isDirectory()) walk(f);
+          else if (e.name.endsWith('.html')) pages.push(f);
+        }
+      };
+      walk(root);
+      const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+      const rows = [];
+      for (const f of pages) {
+        const html = fs.readFileSync(f, 'utf8');
+        if (/<meta[^>]+name="robots"[^>]+noindex/i.test(html) || /http-equiv="refresh"/i.test(html)) continue;
+        let rel = path.relative(root, f).split(path.sep).join('/');
+        if (rel === '404.html' || rel.endsWith('/404.html')) continue;
+        rel = rel === 'index.html' ? '' : rel.endsWith('/index.html') ? rel.slice(0, -'index.html'.length) : rel;
+        const loc = `${SITE}/${rel}`;
+        const imgs = new Set();
+        const og = /<meta[^>]+property="og:image"[^>]+content="([^"]+)"/i.exec(html);
+        if (og) imgs.add(og[1].replace(/&amp;/g, '&'));
+        for (const m of html.matchAll(/<img[^>]+src="(\/[^"/][^"]*\.(?:png|jpe?g|webp))"/gi)) imgs.add(SITE + m[1]);
+        rows.push(`<url><loc>${esc(loc)}</loc>${[...imgs].map((i) => `<image:image><image:loc>${esc(i)}</image:loc></image:image>`).join('')}</url>`);
+      }
+      rows.sort();
+      fs.writeFileSync(
+        path.join(root, 'sitemap.xml'),
+        `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n${rows.join('\n')}\n</urlset>\n`,
+      );
+    },
+  },
+};
+
 // Static site: Astro pages for the component gallery, Starlight for docs and guides.
 // Search is the site's own ⌘K palette over /search-index.json (src/pages/search-index.json.ts),
 // so Starlight's Pagefind run is off and its header is replaced by the site nav.
@@ -32,8 +73,10 @@ export default defineConfig({
   trailingSlash: 'ignore',
   integrations: [
     movedUrls,
+    sitemap,
     starlight({
-      title: 'Oxyn',
+      title: 'Oxyn UI',
+      titleDelimiter: '–',
       favicon: '/favicon.svg',
       head: [
         { tag: 'link', attrs: { rel: 'icon', href: '/favicon.ico', sizes: '48x48' } },
@@ -43,12 +86,12 @@ export default defineConfig({
         // The same link-preview card as the site pages (src/components/v2/Head.astro).
         ...[
           ['og:image', `${SITE}/og.png?v=2`], ['og:image:secure_url', `${SITE}/og.png?v=2`], ['og:image:type', 'image/png'],
-          ['og:image:width', '1200'], ['og:image:height', '630'], ['og:image:alt', 'Oxyn: UI components for AI agents, in Rust'],
+          ['og:image:width', '1200'], ['og:image:height', '630'], ['og:image:alt', 'Oxyn UI: Rust UI components for AI agents'],
         ].map(([property, content]) => ({ tag: 'meta', attrs: { property, content } })),
         { tag: 'meta', attrs: { name: 'twitter:card', content: 'summary_large_image' } },
         { tag: 'meta', attrs: { name: 'twitter:image', content: `${SITE}/og.png?v=2` } },
       ],
-      description: 'Agent-UI components for Rust: GPUI and Dioxus.',
+      description: 'Oxyn UI docs: Rust UI components for AI agents, for Dioxus and GPUI.',
       pagefind: false,
       tableOfContents: false,
       disable404Route: true,
@@ -78,6 +121,7 @@ export default defineConfig({
           label: 'Guides',
           items: [
             { label: 'All guides', link: '/guides/' },
+            { label: 'Build an AI agent UI in Rust', link: '/guides/build-an-ai-agent-ui-in-rust/' },
             { label: 'Show what your agent is doing', link: '/guides/agent-activity/' },
             { label: 'Ask before acting', link: '/guides/approvals/' },
             { label: 'Build a composer', link: '/guides/composer/' },

@@ -45,8 +45,12 @@ const rel = related(demo, 4);
 const notRel = whenNotToUse(demo);
 const guides = guidesFor(demo);
 const kind = screen ? 'screen' : bg ? 'block' : 'component';
+// "<Name> component for Dioxus and GPUI": the search phrase, for what it really ships for.
+const targets = demo.gpui?.trim() ? 'Dioxus and GPUI' : 'Dioxus';
+const seoTitle = `${demo.name} ${kind} for ${targets}`;
+const seoDesc = `${demo.name}, a Rust ${kind} for ${targets} in Oxyn UI${pro ? ' Pro' : ''}: ${demo.summary.replace(/\.$/, '')}.`;
 ---
-<Library title={`${demo.name} — ${screen ? 'Screens' : g!.name}`} description={demo.summary} type="Component" meta={`category:${screen ? 'Screens' : g!.name}`}>
+<Library title={seoTitle} name={demo.name} description={seoDesc} type="Component" meta={`category:${screen ? 'Screens' : g!.name}`} image={`/og/${screen ? 'screens' : bg ? 'blocks' : 'components'}.png`}>
   <article class="x-art">
     <div class="x-backrow" data-pagefind-ignore>
     <BackButton fallback={screen ? '/screens/' : bg ? '/blocks/' : `/components/${g!.slug}/`} />

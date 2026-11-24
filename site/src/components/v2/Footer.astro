@@ -8,10 +8,12 @@ import { lockup, wordmark } from './logo';
 import { mark, brands } from './brands';
 import { starCount } from './meta';
 import { REPO, countsText } from '../../lib/data';
+import { BRAND } from '../../lib/seo';
 const stars = await starCount();
 const cols: [string, [string, string][]][] = [
-  ['Library', [['Components', '/components/'], ['Screens', '/screens/'], ['Motion', '/motion/'], ['Compare', '/compare/'], ['Pricing', '/pricing/']]],
-  ['Docs', [['Introduction', '/docs/'], ['Installation', '/docs/installation/'], ['Theming and tokens', '/docs/theming/'], ['Accessibility', '/docs/accessibility/'], ['Guides', '/guides/']]],
+  ['Library', [['Components', '/components/'], ['Screens', '/screens/'], ['Blocks', '/blocks/'], ['Motion', '/motion/'], ['Pricing', '/pricing/']]],
+  ['Docs', [['Introduction', '/docs/'], ['Installation', '/docs/installation/'], ['CLI', '/docs/cli/'], ['MCP server', '/docs/mcp/'], ['Theming and tokens', '/docs/theming/'], ['Guides', '/guides/']]],
+  ['Oxyn UI', [['About', '/about/'], ['Dioxus components', '/dioxus/'], ['GPUI components', '/gpui/'], ['AI agent UI in Rust', '/guides/build-an-ai-agent-ui-in-rust/'], ['Compare', '/compare/']]],
   ['Project', [['GitHub', REPO], ['Licence (MIT)', `${REPO}/blob/main/LICENSE`], ['Third-party notices', `${REPO}/blob/main/THIRD_PARTY_NOTICES.md`], ['Contributing', `${REPO}/blob/main/CONTRIBUTING.md`], ['Security', `${REPO}/blob/main/SECURITY.md`]]],
 ];
 const agents = ['claude-code', 'codex', 'cursor', 'gemini-cli', 'github-copilot', 'zed'];
@@ -41,8 +43,8 @@ const founders: [string, [keyof typeof social, string][]][] = [
     </div>
     <div class="x-foot-grid">
       <div class="x-foot-about">
-        <a class="wm x-foot-wm" href="/" aria-label="Oxyn home"><Fragment set:html={lockup} /></a>
-        <p>Agent-UI components for Rust: Dioxus on the web, GPUI on the desktop. {countsText()}.</p>
+        <a class="wm x-foot-wm" href="/" aria-label="Oxyn UI home"><Fragment set:html={lockup} /></a>
+        <p>{BRAND}: Rust UI components for AI agents, Dioxus on the web and GPUI on the desktop. {countsText()}.</p>
         <span class="x-foot-lbl">Works with</span>
         <ul class="x-foot-agents" aria-label="Agents that can use Oxyn">
           {agents.map((id) => <li title={brands[id].title}><Fragment set:html={mark(id)} /><span class="sr-only">{brands[id].title}</span></li>)}
@@ -76,7 +78,7 @@ const founders: [string, [keyof typeof social, string][]][] = [
       </div>
     </div>
     <div class="x-foot-legal">
-      <span>© 2026 Oxyn · Free components MIT licensed, free to use and change.</span>
+      <span>© 2026 {BRAND} · Free components MIT licensed, free to use and change.</span>
       <span>Built with Rust, Dioxus, GPUI and Astro. Brand marks belong to their owners.</span>
     </div>
   </div>

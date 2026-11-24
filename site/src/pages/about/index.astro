@@ -1,0 +1,40 @@
+---
+// About Oxyn UI: the encyclopedia-style page answer engines quote. Facts from the data and the
+// published crates; nothing hand-counted.
+import Base from '../../layouts/Base.astro';
+import Prose from '../../components/v2/Prose.astro';
+import { counts, PRICES, REPO, CLI_INSTALL } from '../../lib/data';
+import { BRAND, BRAND_SHORT, ENTITY, CRATES, organization, softwareApplication } from '../../lib/seo';
+const usd = (n: number) => `$${Number.isInteger(n) ? n : n.toFixed(2)}`;
+const desc = `About ${BRAND} (${BRAND_SHORT}): an open-source Rust UI component library for AI agent interfaces in Dioxus and GPUI, made by Khubaib Nazeer and Ismail Qureshi.`;
+const aboutPage = { '@type': 'AboutPage', name: `About ${BRAND}`, url: 'https://oxynui.com/about/', about: { '@id': 'https://oxynui.com/#software' } };
+---
+<Base title="About" description={desc} image="/og/about.png" jsonld={[aboutPage, organization(), softwareApplication()]}>
+  <Prose kicker="About" h1={`About ${BRAND}`} lede={ENTITY}>
+    <img class="x-prose-img" src="/og/about.png" width="1200" height="630" alt={`About ${BRAND}: the Rust UI component library for AI agents`} />
+
+    <h2>What {BRAND} is</h2>
+    <p>{BRAND} is a component library for the interfaces of AI agents and the apps around them, written in Rust. It covers what an agent is doing and what it needs from the user (status text, tool calls, plans, approvals, checkpoints, run timelines), the conversation (composer, messages, streaming answers, reasoning, sources), and the everyday parts of an app (inputs, navigation, data display, feedback, cards and buttons).</p>
+    <p>The library has {counts.components} components, {counts.screens} screens and {counts.blocks} blocks. {counts.free} components are free under the MIT licence.</p>
+
+    <h2>How it works</h2>
+    <ul>
+      <li><b>Two frameworks, one core.</b> Each component is a <a href="/dioxus/">Dioxus</a> component for the web, and most also have a <a href="/gpui/">GPUI</a> element for native desktop apps. Both read the same models and state machines from the <code>oxyn-core</code> crate.</li>
+      <li><b>Code you own.</b> The oxyn CLI (<code>{CLI_INSTALL}</code>) copies a component's source into <code>src/oxyn/</code> in your project, the way shadcn/ui does for React.</li>
+      <li><b>Built for coding agents.</b> The <a href="/docs/mcp/">oxyn-mcp server</a> lets Claude Code, Codex, Cursor and other MCP clients search the library and add components.</li>
+      <li><b>Live previews.</b> Every preview on this site is the Rust component itself, rendered to HTML at build time and mounted live from WebAssembly.</li>
+      <li><b>Design tokens.</b> Light, dark and high-contrast themes from one token set; WAI-ARIA patterns and reduced motion respected.</li>
+    </ul>
+
+    <h2>Pricing</h2>
+    <p>The free components, the docs, the CLI and the MCP server are free. {BRAND} Pro opens every other component, screen and block for {usd(PRICES.pro.month)} a month or {usd(PRICES.pro.year)} a year; Team covers up to {PRICES.team.people} people for {usd(PRICES.team.month)} a month. See <a href="/pricing/">pricing</a>.</p>
+
+    <h2>Crates and source</h2>
+    <p>The source is on <a href={REPO}>GitHub</a>. Published crates on crates.io: {CRATES.map((c, i) => <>{i > 0 && ', '}<a href={`https://crates.io/crates/${c}`}>{c}</a></>)}. API docs are on <a href="https://docs.rs/oxyn-core">docs.rs</a>.</p>
+
+    <h2>Who makes it</h2>
+    <p>{BRAND} is made by <a href="https://github.com/Khubaib7-del">Khubaib Nazeer</a> and <a href="https://github.com/ismailqureshi72">Ismail Qureshi</a>. The name is written {BRAND}; {BRAND_SHORT} is the short form, and the site is oxynui.com.</p>
+
+    <div class="x-prose-links"><a class="x-pill pill-black" href="/components/">Browse the library</a><a class="x-pill pill-grey" href="/docs/">Read the docs</a></div>
+  </Prose>
+</Base>

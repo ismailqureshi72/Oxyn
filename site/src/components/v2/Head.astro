@@ -1,18 +1,32 @@
 ---
 // Everything both layouts put in <head>: meta, the theme boot script and the demo runtime.
 import { wasm } from '../../lib/data';
-interface Props { title: string; description: string }
-const { title, description } = Astro.props;
+import { BRAND, breadcrumbs, ldJson } from '../../lib/seo';
+interface Props {
+  /** The full <title>. */
+  title: string;
+  description: string;
+  /** The page's own short name (the last breadcrumb); defaults to the title. */
+  name?: string;
+  /** Link-preview image under public/ (a section card from public/og/); defaults to og.png. */
+  image?: string;
+  /** Extra schema.org nodes for this page; a BreadcrumbList is added for every page but the landing. */
+  jsonld?: object[];
+}
+const { title, description, name = title, image, jsonld = [] } = Astro.props;
 const path = Astro.url.pathname;
+// Self-referencing canonical: https, the apex host, the path with its trailing slash, no query.
 const canonical = new URL(path, Astro.site).href;
-const ogImage = new URL('/og.png?v=2', Astro.site).href;
-const OG_ALT = 'Oxyn: UI components for AI agents, in Rust';
+const ogImage = new URL(image ?? '/og.png?v=2', Astro.site).href;
+const OG_ALT = image ? `${name}: ${BRAND}, Rust UI components for AI agents` : `${BRAND}: Rust UI components for AI agents`;
+const crumbs = breadcrumbs(path, name);
+const graph = [...jsonld, ...(crumbs ? [crumbs] : [])];
 ---
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <!-- Link previews first (WhatsApp, iMessage, Slack, Discord, X read the top of <head>). og:image
      carries ?v= so apps that cached an older card fetch the new one: bump it when og.png changes. -->
-<meta property="og:site_name" content="Oxyn" />
+<meta property="og:site_name" content={BRAND} />
 <meta property="og:type" content="website" />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
@@ -32,6 +46,7 @@ const OG_ALT = 'Oxyn: UI components for AI agents, in Rust';
 <meta name="description" content={description} />
 <link rel="canonical" href={canonical} />
 <meta name="color-scheme" content="light dark" />
+{graph.length > 0 && <script is:inline type="application/ld+json" set:html={ldJson(graph)} />}
 <!-- Logo v2 (E1 cube mark): ICO (16, 32, 48) for search results and old browsers, SVG for modern
      browsers, PNGs, and the app icon for iOS. Search engines want a square icon in a multiple of 48. -->
 <link rel="icon" href="/favicon.ico" sizes="48x48" />

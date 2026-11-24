@@ -2,12 +2,13 @@
 import Library from '../../layouts/Library.astro';
 import LibTabs from '../../components/v2/LibTabs.astro';
 import CompCard from '../../components/v2/CompCard.astro';
-import { components, groups, inGroup } from '../../lib/data';
+import { components, groups, inGroup, counts, demoUrl } from '../../lib/data';
+import { itemList } from '../../lib/seo';
 const ordered = groups.flatMap((g) => inGroup(g.slug));
 ---
-<Library title="Components" description={`${components.length} agent-UI components for Rust – Dioxus and GPUI, rendered live.`} type="Category">
+<Library title="Components" description={`${components.length} Rust UI components for AI agents – ${counts.free} free. Chat, tool calls, approvals and more for Dioxus and GPUI, rendered live.`} type="Category" image="/og/components.png" jsonld={[itemList('Oxyn UI components', ordered.map((d) => ({ name: d.name, url: demoUrl(d) })))]}>
   <div class="lidx">
-    <h1 class="lidx-title">Agent-ready UI for Rust apps – every component rendered live from its own source.</h1>
+    <h1 class="lidx-title">Rust UI components for AI agents – every component rendered live from its own source.</h1>
     <LibTabs active="components" />
     <div class="cgrid">{ordered.map((d) => <CompCard demo={d} />)}</div>
   </div>

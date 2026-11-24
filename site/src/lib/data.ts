@@ -312,6 +312,7 @@ export function notesForAi(d: Demo, propNames: string[]): string[] {
 }
 
 export const GUIDES = [
+  { href: '/guides/build-an-ai-agent-ui-in-rust/', title: 'Build an AI agent UI in Rust', blurb: 'Composer, streaming answers, tool calls and approvals, step by step.', for: ['agents', 'chat'] },
   { href: '/guides/agent-activity/', title: 'Show what your agent is doing', blurb: 'Status, tool calls and plans while a run is going.', for: ['agents', 'feedback'] },
   { href: '/guides/approvals/', title: 'Ask before acting', blurb: 'Approval cards, risk tiers, countdowns and what happens after.', for: ['agents', 'cards'] },
   { href: '/guides/composer/', title: 'Build a composer', blurb: 'Send and stop, queue and steer, models, effort and attachments.', for: ['chat', 'inputs', 'buttons'] },
