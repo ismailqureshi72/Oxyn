@@ -306,14 +306,7 @@ fn own_files(
             keep
         });
     }
-    let cfg = Config::new(
-        fw,
-        Source {
-            git: None,
-            rev: None,
-            path: None,
-        },
-    );
+    let cfg = Config::new(fw, Source::default());
     let planned: Vec<Planned> = install::compose(&[solo], fw, &cfg, &server.client)?;
     // The entry's own file first, then the rest; past CODE_BUDGET only paths and sizes.
     let module = item
@@ -515,11 +508,8 @@ fn add_component(server: &Server, args: &Value) -> Result<Value, Error> {
     let mut cfg = match Config::load(&project) {
         Ok(c) => c,
         Err(Error::NotInitialised(_)) => {
-            let source = Source {
-                git: Some(idx.source.git.clone()),
-                rev: Some(idx.source.rev.clone()),
-                path: None,
-            };
+            // Like `oxyn init`: oxyn-core from crates.io.
+            let source = Source::crates_io();
             let rep = install::init(&project, fw, path, source, false)?;
             setup = rep.changes;
             Config::load(&project)?
