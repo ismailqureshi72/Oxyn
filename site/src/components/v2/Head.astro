@@ -4,24 +4,39 @@ import { wasm } from '../../lib/data';
 interface Props { title: string; description: string }
 const { title, description } = Astro.props;
 const path = Astro.url.pathname;
+const canonical = new URL(path, Astro.site).href;
+const ogImage = new URL('/og.png?v=2', Astro.site).href;
+const OG_ALT = 'Oxyn: UI components for AI agents, in Rust';
 ---
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>{title}</title>
-<meta name="description" content={description} />
-<link rel="canonical" href={new URL(path, Astro.site)} />
+<!-- Link previews first (WhatsApp, iMessage, Slack, Discord, X read the top of <head>). og:image
+     carries ?v= so apps that cached an older card fetch the new one: bump it when og.png changes. -->
+<meta property="og:site_name" content="Oxyn" />
+<meta property="og:type" content="website" />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
-<meta name="color-scheme" content="light dark" />
-<meta property="og:type" content="website" />
-<meta property="og:url" content={new URL(path, Astro.site)} />
-<meta property="og:image" content={new URL('/og.png', Astro.site)} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={ogImage} />
+<meta property="og:image:secure_url" content={ogImage} />
+<meta property="og:image:type" content="image/png" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content={OG_ALT} />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:image" content={new URL('/og.png', Astro.site)} />
-<!-- Logo v2 (E1 cube mark): SVG for modern browsers, PNG and ICO fallbacks, the app icon for iOS. -->
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImage} />
+<meta name="twitter:image:alt" content={OG_ALT} />
+<title>{title}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+<meta name="color-scheme" content="light dark" />
+<!-- Logo v2 (E1 cube mark): ICO (16, 32, 48) for search results and old browsers, SVG for modern
+     browsers, PNGs, and the app icon for iOS. Search engines want a square icon in a multiple of 48. -->
+<link rel="icon" href="/favicon.ico" sizes="48x48" />
 <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="/favicon-96.png" type="image/png" sizes="96x96" />
 <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
 <link rel="icon" href="/favicon-16.png" type="image/png" sizes="16x16" />
 <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />

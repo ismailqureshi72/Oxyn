@@ -31,8 +31,8 @@ export interface Env {
   GOOGLE_OAUTH_CLIENT_ID?: string; // secret
   GOOGLE_OAUTH_CLIENT_SECRET?: string; // secret
   // Pro and Team through Polar (docs/pricing.md). POLAR_WEBHOOK_SECRET verifies Polar's webhook
-  // (unset: the webhook answers 503 and nothing is written). POLAR_ACCESS_TOKEN (optional) lets the
-  // Worker open pre-signed customer portal sessions and archive the founder products at 100.
+  // (unset: the webhook answers 503 and nothing is written). POLAR_ACCESS_TOKEN runs the account page's
+  // Billing section, cancel / resume, founder renewals and the founder archive.
   POLAR_WEBHOOK_SECRET?: string; // secret
   POLAR_ACCESS_TOKEN?: string; // secret
 }
@@ -52,6 +52,11 @@ export const LEGACY_HOSTS = ['ui.oxyn.workers.dev'];
 export function canonicalRedirect(env: Pick<Env, 'SITE_URL'>, url: URL, method = 'GET'): Response | null {
   const site = new URL(siteOrigin(env));
   const host = url.hostname.toLowerCase();
+  // Plain http on the canonical host (a bare "oxynui.com" typed or pasted, as in a WhatsApp message):
+  // one 301 to https, so link previews and search engines read the canonical page.
+  if (host === site.hostname && url.protocol === 'http:' && site.protocol === 'https:' && !(url.pathname === '/api' || url.pathname.startsWith('/api/'))) {
+    return new Response(null, { status: method === 'GET' || method === 'HEAD' ? 301 : 308, headers: { location: `${site.origin}${url.pathname}${url.search}`, 'cache-control': 'public, max-age=3600' } });
+  }
   if (host === site.hostname) return null;
   if (host !== `www.${site.hostname}` && !LEGACY_HOSTS.includes(host)) return null;
   if (url.pathname === '/api' || url.pathname.startsWith('/api/')) return null;

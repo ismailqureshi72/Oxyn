@@ -100,7 +100,7 @@
   if (returning) { page.dataset.founder = 'closed'; setInterval_(page.dataset.interval); }
   if (params.get('founder') === 'closed') say('The founder rate has just run out: all 100 spots are taken. Pro is still here at the regular price.');
   else if (returning) say('The founder rate is for new subscribers only, and this account has had an Oxyn subscription before. Pro is here at the regular price.');
-  else if (params.get('billing') === 'active') say('You already have an active plan. Manage it from Manage billing in your account menu.');
+  else if (params.get('billing') === 'active') say('You already have an active plan. Change it under Billing on your account page.');
   else if (from) say(`The code of ${fromName} is part of Oxyn Pro. Pick a plan; after checkout you can go straight back to it.`);
 
   fetch('/api/billing/plans', { headers: { accept: 'application/json' } })
@@ -126,7 +126,7 @@
         t.classList.toggle('pr-on', cur);
         const c = $('[data-pr-cur]', t); if (c) c.hidden = !cur;
       });
-      if (plan.pro && plan.has_billing) $$('[data-pr-buy]').forEach((a) => { a.href = '/api/billing/portal'; $('[data-pr-label]', a).textContent = 'Manage billing'; });
+      if (plan.pro && plan.has_billing) $$('[data-pr-buy]').forEach((a) => { a.href = '/account/#billing'; $('[data-pr-label]', a).textContent = 'Change plan'; });
     }
     // Back from signing in with a plan picked: go on to checkout once (the URL forgets ?buy).
     const buy = params.get('buy');

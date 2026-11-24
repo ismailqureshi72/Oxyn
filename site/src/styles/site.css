@@ -1151,3 +1151,23 @@ html[data-pro="1"] .lbar .x-gopro{display:none}
 /* /cli/auth/: the oxyn login code */
 .x-cliauth-code{margin-top:16px;padding:14px 16px;border-radius:12px;background:var(--chip);font:600 26px/1.2 var(--oxyn-font-mono);letter-spacing:.12em;text-align:center;color:var(--fg)}
 [data-cliauth] [hidden]{display:none!important}
+/* Billing section of the account page (public/account.js, worker/billing.ts) */
+.x-bill-dl{margin-top:12px}
+.x-bill-card{display:flex;align-items:center;flex-wrap:wrap;gap:8px 12px}
+.x-bill-fine{margin:8px 0 0;font-size:12.5px;line-height:1.5;color:var(--fg3,var(--fg2))}
+.x-bill-pending{margin-top:14px;padding:12px 14px;border-radius:12px;background:var(--pn);box-shadow:inset 0 0 0 1px var(--ln);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.x-bill-pending .acct-plan-line{margin:0}
+.x-bill-switch,.x-bill-orders{margin-top:22px}
+.x-bill-switch h3,.x-bill-orders h3{margin:0;font-size:15px;font-weight:620}
+.x-bill-opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px;margin-top:12px}
+.x-bill-opt{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:12px 14px;border:0;border-radius:12px;background:var(--pn);box-shadow:inset 0 0 0 1px var(--ln);color:var(--fg);font:inherit;text-align:left;cursor:pointer}
+.x-bill-opt:hover{box-shadow:inset 0 0 0 1px var(--fg2)}
+.x-bill-opt:focus-visible{outline:2px solid var(--fg);outline-offset:2px}
+.x-bill-opt[aria-pressed="true"]{box-shadow:inset 0 0 0 2px var(--fg)}
+.x-bill-opt b{font-size:14px;font-weight:620}
+.x-bill-opt span{font-size:13px;color:var(--fg2)}
+.x-bill-opt em{font-style:normal;font-size:12px;color:var(--fg2)}
+.x-bill-list li{flex-wrap:wrap}
+.x-bill-list .x-bill-row{display:flex;flex-direction:column;gap:2px;min-width:0}
+.x-bill-list .x-bill-row small{color:var(--fg2);font-size:12.5px}
+.x-bill-list .x-bill-dl-btns{display:flex;gap:6px;flex-wrap:wrap}

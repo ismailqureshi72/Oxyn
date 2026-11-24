@@ -133,7 +133,7 @@ Add a migration with `npx wrangler d1 migrations create oxyn <name>`; never edit
 | `RATE_SALT` | Worker secret, optional | Salt for IP hashes (a fixed default is used when unset). |
 | `GOOGLE_OAUTH_CLIENT_ID`, `GOOGLE_OAUTH_CLIENT_SECRET` | Worker secrets, optional | "Continue with Google" on `/login/`. Until set, the button reads "coming soon" and the Google routes answer 503. Setup in [auth.md](auth.md). Google or GitHub sign-in is also what opens the admin panel ([admin.md](admin.md)). |
 | `POLAR_WEBHOOK_SECRET` | Worker secret | Verifying Polar webhooks (set). Unset: the webhook answers 503. [pricing.md](pricing.md) |
-| `POLAR_ACCESS_TOKEN` | Worker secret | Pre-signed customer portal sessions, scheduling founder subscriptions to renew as regular Pro, and archiving the founder products at 100. [pricing.md](pricing.md) |
+| `POLAR_ACCESS_TOKEN` | Worker secret | The account page's Billing section (plan switch, payments, card), Cancel / Resume, scheduling founder subscriptions to renew as regular Pro, and archiving the founder products at 100. [pricing.md](pricing.md) |
 | `GITHUB_REPO` | var in `wrangler.jsonc` | Repository for feedback issues. |
 | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` | GitHub Actions secrets | The deploy step on `main`. The token needs Workers Scripts Edit; D1 and R2 Edit are needed for the bindings and for applying migrations from a machine. |
 
