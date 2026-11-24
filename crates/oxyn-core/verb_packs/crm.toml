@@ -1,4 +1,4 @@
-# Verb pack "crm". Original copy, MIT. Schema: docs/specs/status-text.md §5.1.
+# Verb pack "crm". Original copy, MIT. Schema: spec status-text.md §5.1, Pro (private).
 id = "crm"
 name = "CRM"
 description = "Sales and CRM agents."

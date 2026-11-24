@@ -1,6 +1,6 @@
-//! Input shell model (`docs/specs/composer-input-shell.md`): variants, row growth, placeholders by
-//! state, large-paste chips, limits and prompt history. Text editing itself (caret, selection,
-//! IME) belongs to the renderer; it hands the text back here.
+//! Input shell model (spec `composer-input-shell.md`, Pro (private)): variants, row growth,
+//! placeholders by state, large-paste chips, limits and prompt history. Text editing itself (caret,
+//! selection, IME) belongs to the renderer; it hands the text back here.
 
 use unicode_segmentation::UnicodeSegmentation;
 

@@ -1,6 +1,6 @@
-//! The loader engine (`docs/specs/loaders.md` §2–3): loader phases derived from [`AgentState`],
-//! a tempo-continuous beat clock, show/hide hysteresis, busy-region arbitration and the glyph
-//! (T1) renderer-free frame tables.
+//! The loader engine (spec `loaders.md` §2–3, Pro (private)): loader phases derived from
+//! [`AgentState`], a tempo-continuous beat clock, show/hide hysteresis, busy-region arbitration and
+//! the glyph (T1) renderer-free frame tables.
 //!
 //! Renderers own no timing: they hold a [`GlyphLoader`], call [`GlyphLoader::update`] with the
 //! current state, and draw the [`GlyphFrame`] it returns.
@@ -22,7 +22,7 @@ use crate::{
     state::{AgentState, StallLevel},
 };
 
-/// Shared loader timings (`docs/specs/loaders.md` §3.3 and §5).
+/// Shared loader timings (spec `loaders.md` §3.3 and §5, Pro (private)).
 pub mod timing {
     use std::time::Duration;
 
