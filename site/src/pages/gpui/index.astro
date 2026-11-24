@@ -1,0 +1,43 @@
+---
+// Landing for "GPUI components" and "Rust desktop agent UI": what Oxyn UI gives a GPUI app.
+import Base from '../../layouts/Base.astro';
+import Prose from '../../components/v2/Prose.astro';
+import { components, screens, counts, demoUrl, inGroup, CLI_INSTALL } from '../../lib/data';
+import { BRAND, itemList, faqPage } from '../../lib/seo';
+const withGpui = components.filter((d) => d.gpui?.trim());
+const agents = inGroup('agents').filter((d) => d.gpui?.trim());
+const apps = screens.filter((d) => d.gpui?.trim());
+const faq: [string, string][] = [
+  ['What is GPUI?', 'GPUI is the GPU-accelerated Rust UI framework behind the Zed editor. It draws native desktop windows on macOS, Linux and Windows.'],
+  ['How do GPUI components install?', `With the same oxyn CLI as the Dioxus components (${CLI_INSTALL}, then oxyn add): the element's Rust source is copied into your project, named after its Dioxus component with an El suffix, such as ApprovalCardEl.`],
+  ['Do the GPUI and Dioxus versions match?', 'Yes. Both read the same models and state machines from the oxyn-core crate, so states, keyboard behaviour and timing are the same in each.'],
+];
+const desc = `GPUI components for native Rust desktop agent apps: ${withGpui.length} Oxyn UI components and ${apps.length} screens as GPUI elements, sharing models with Dioxus.`;
+---
+<Base title="GPUI components" description={desc} image="/og/gpui.png" jsonld={[itemList('GPUI agent components', agents.map((d) => ({ name: d.name, url: demoUrl(d) }))), faqPage(faq)]}>
+  <Prose kicker={`${BRAND} for GPUI`} h1="GPUI components for desktop AI agent apps" lede={`${BRAND} ships ${withGpui.length} of its components and ${apps.length} whole screens as GPUI elements, for native Rust desktop apps in the style of Zed: chat, tool calls, approvals, checkpoints and live runs.`}>
+    <img class="x-prose-img" src="/og/gpui.png" width="1200" height="630" alt={`GPUI components: ${BRAND}, native desktop agent UI components for GPUI`} />
+
+    <h2>Rust desktop UI for AI agents</h2>
+    <p>Coding agents, assistants and agent managers need the same parts on the desktop as on the web: a composer, a stream of tool calls, approval prompts, plans and a way back to a checkpoint. {BRAND} draws them as GPUI <code>RenderOnce</code> elements on the models in <code>oxyn-core</code>.</p>
+    <pre><code>{CLI_INSTALL}
+oxyn init
+oxyn add approval-card</code></pre>
+    <p>See <a href="/docs/installation/">Installation</a> for the GPUI setup and the pinned Zed revision.</p>
+
+    <h2>GPUI agent components</h2>
+    <ul class="x-prose-cols">{agents.map((d) => <li><a href={demoUrl(d)}>{d.name}</a></li>)}</ul>
+
+    <h2>Whole agent app screens in GPUI</h2>
+    <p>Screens run live in GPUI too: coding-agent apps, agent managers, settings and dashboards. Browse them on the <a href="/screens/">screens page</a>.</p>
+    <ul class="x-prose-cols">{apps.slice(0, 12).map((d) => <li><a href={demoUrl(d)}>{d.name}</a></li>)}</ul>
+
+    <h2>The same components on the web with Dioxus</h2>
+    <p>Every GPUI element has a Dioxus twin for the web, desktop webviews and mobile. See <a href="/dioxus/">Dioxus components</a>.</p>
+
+    <h2>Questions</h2>
+    {faq.map(([q, a]) => (<><h3>{q}</h3><p>{a}</p></>))}
+
+    <div class="x-prose-links"><a class="x-pill pill-black" href="/components/">Browse components</a><a class="x-pill pill-grey" href="/guides/build-an-ai-agent-ui-in-rust/">Build an AI agent UI in Rust</a></div>
+  </Prose>
+</Base>
