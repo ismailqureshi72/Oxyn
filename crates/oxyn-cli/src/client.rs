@@ -296,7 +296,7 @@ impl Client {
             serde_json::from_str(&s).map_err(|e| Error::Invalid(format!("index.json: {e}")))?;
         if idx.schema > SCHEMA_VERSION {
             return Err(Error::Invalid(format!(
-                "the registry uses schema {} and this oxyn understands {SCHEMA_VERSION}: update it with `cargo install --git https://github.com/ismailqureshi72/Oxyn oxyn-cli --force`",
+                "the registry uses schema {} and this oxyn understands {SCHEMA_VERSION}: update it with `cargo install oxyn-cli --force`",
                 idx.schema
             )));
         }
