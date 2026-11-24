@@ -64,11 +64,11 @@ Persistent frame: **left nav · main screen · agent panel**. The agent panel is
 
 | Region | Components |
 |---|---|
-| Left nav | `side-panel/rail` pattern for the nav list ([side-panels.md](../specs/side-panels.md)); count badges; agent presence row = [`acting-indicator/chip`](../specs/acting-indicator.md) + [`icon-state/crossfade`](../specs/icon-states.md) |
+| Left nav | `side-panel/rail` pattern for the nav list (`side-panels.md` — Pro (private)); count badges; agent presence row = `acting-indicator.md` — Pro (private) + `icon-states.md` — Pro (private) |
 | Top bar search | [`command-palette/answer-cards`](../specs/command-palette.md) (Pro) / `command-palette/centered` (free): records, commands, "Ask Fern" |
-| Top bar right | [`background-jobs/popover`](../specs/background-jobs.md) pill · [`permission-selector/chip-list`](../specs/composer-permission-selector.md) (Ask / Auto-edit / Full / Bypass) · [`run-meter/chip`](../specs/run-meter.md) showing enrichment credits · account |
-| Agent panel | [`message/flat`](../specs/message-bubble.md), [`markdown/chat`](../specs/streaming-markdown.md), [`tool-call/row`](../specs/tool-call.md), [`approval-card/inline`](../specs/approval-card.md), [`composer-input/docked-bar`](../specs/composer-input-shell.md), [`trigger-menu/popover`](../specs/composer-slash-mentions.md) for `@record` and `/enrich` |
-| Status bar | [`status-bar/run-strip`](../specs/side-panels.md) with [`status-text/line`](../specs/status-text.md) + [`verb-cycler/fade`](../specs/verb-cycler.md) |
+| Top bar right | `background-jobs.md` — Pro (private) pill · `composer-permission-selector.md` — Pro (private) (Ask / Auto-edit / Full / Bypass) · `run-meter.md` — Pro (private) showing enrichment credits · account |
+| Agent panel | [`message/flat`](../specs/message-bubble.md), [`markdown/chat`](../specs/streaming-markdown.md), [`tool-call/row`](../specs/tool-call.md), [`approval-card/inline`](../specs/approval-card.md), `composer-input-shell.md` — Pro (private), `composer-slash-mentions.md` — Pro (private) for `@record` and `/enrich` |
+| Status bar | `side-panels.md` — Pro (private) with `status-text.md` — Pro (private) + [`verb-cycler/fade`](../specs/verb-cycler.md) |
 | Splits | [`panel-split/hairline`](../specs/workspace-chrome.md); F6 cycles nav → main → agent panel → status bar |
 
 Rules (proposed):
@@ -79,7 +79,7 @@ Rules (proposed):
 
 ### 2.2 Web (Dioxus)
 Same layout. Differences: the top bar adds a "Connected · Mailbox" status chip; the agent panel can
-pop out to a [`genui-surface/side-panel`](../specs/genui-renderer.md); tables render with CSS sticky
+pop out to a `genui-renderer.md` — Pro (private); tables render with CSS sticky
 headers; keyboard shortcuts avoid browser-reserved keys (`⌘K` is fine, `⌘N` is not).
 
 ### 2.3 Breakpoints
@@ -144,12 +144,12 @@ separate, quieter tab.
 ```
 | Part | Component |
 |---|---|
-| List | [`approval-card/inbox`](../specs/approval-card.md) (Pro) or `approval-card/paged` (free); rows as [`genui-list/rich-rows`](../specs/genui-blocks.md) with [`risk-badge/shape`](../specs/approvals.md) glyphs |
-| Filters | chips with counts (`follow-ups/chips` styling, [citations-sources.md](../specs/citations-sources.md)) |
-| Draft detail | [`genui-form/draft-review`](../specs/genui-forms.md) (Pro) + [`approval-card/footer`](../specs/approval-card.md); [`citation/number`](../specs/citations-sources.md) + [`source-list/list`](../specs/citations-sources.md) |
+| List | [`approval-card/inbox`](../specs/approval-card.md) (Pro) or `approval-card/paged` (free); rows as `genui-blocks.md` — Pro (private) with `approvals.md` — Pro (private) glyphs |
+| Filters | chips with counts (`follow-ups/chips` styling, `citations-sources.md` — Pro (private)) |
+| Draft detail | `genui-forms.md` — Pro (private) (Pro) + [`approval-card/footer`](../specs/approval-card.md); `citations-sources.md` — Pro (private) + `citations-sources.md` — Pro (private) |
 | Conflict detail | **new** `genui-question/source-pick` (§6) over [`enrichment-chip`](#6-new-components) values |
 | Updates detail | [`diff-viewer/table-cells`](../specs/diff-viewer.md) with per-row keep / undo |
-| Question detail | [`genui-question/numbered`](../specs/genui-forms.md) |
+| Question detail | `genui-forms.md` — Pro (private) |
 | Stalled run | [`fanout-grid/cells`](../specs/fanout-grid.md) summary + retry |
 
 Ordering: newest first within tier; a Critical item shows "1 critical" in the header but does not jump
@@ -187,12 +187,12 @@ activity timeline mixing human and agent events.
 ```
 | Part | Component |
 |---|---|
-| Header | monogram (`color.monogram.*`) + [`genui-metric/inline`](../specs/genui-blocks.md) for ARR; agent presence [`acting-indicator/chip`](../specs/acting-indicator.md) when Fern is writing here |
-| Fields | **new** `enrichment-chip` per value (source mark, [`confidence-badge/icon`](../specs/citations-sources.md), age); [`citation/quote-peek`](../specs/citations-sources.md) on hover (Pro) |
+| Header | monogram (`color.monogram.*`) + `genui-blocks.md` — Pro (private) for ARR; agent presence `acting-indicator.md` — Pro (private) when Fern is writing here |
+| Fields | **new** `enrichment-chip` per value (source mark, `citations-sources.md` — Pro (private), age); `citations-sources.md` — Pro (private) on hover (Pro) |
 | Filling field | `enrichment-chip` `Filling` state ([`text-shimmer/calm`](../specs/text-shimmer.md) on the placeholder) |
-| Activity | [`genui-timeline/vertical`](../specs/genui-blocks.md) (free) / **new** `genui-timeline/activity` (Pro); agent items carry the agent swatch and an Undo |
-| Undo of agent writes | [`rollback-impact/inline`](../specs/rollback-impact.md) ("Undo 6 field changes · 1 was edited since") |
-| Deals, people | [`genui-list/rich-rows`](../specs/genui-blocks.md) |
+| Activity | `genui-blocks.md` — Pro (private) (free) / **new** `genui-timeline/activity` (Pro); agent items carry the agent swatch and an Undo |
+| Undo of agent writes | `rollback-impact.md` — Pro (private) ("Undo 6 field changes · 1 was edited since") |
+| Deals, people | `genui-blocks.md` — Pro (private) |
 
 | State | Shows |
 |---|---|
@@ -222,16 +222,16 @@ summarises the current filter.
 ```
 | Part | Component |
 |---|---|
-| Grid | [`genui-table/data-grid`](../specs/genui-blocks.md) (free, virtualised, sticky first column), density `compact` (28 px rows) |
-| Calc footer | [`genui-table/calc-footer`](../specs/genui-blocks.md) (Pro); free fallback: a [`genui-metric/strip`](../specs/genui-blocks.md) above the grid |
+| Grid | `genui-blocks.md` — Pro (private) (free, virtualised, sticky first column), density `compact` (28 px rows) |
+| Calc footer | `genui-blocks.md` — Pro (private) (Pro); free fallback: a `genui-blocks.md` — Pro (private) above the grid |
 | Agent columns, cell loading | **new** `genui-table/agent-columns` (§6): per-cell `Queued / Filling / Filled / Failed / Conflict / Locked` |
-| Changed cells | [`genui-table/changed-cells`](../specs/genui-blocks.md) highlighter on cells Fern changed since you last looked |
-| Selection | [`genui-table/bulk-actions`](../specs/genui-blocks.md) (Pro): floating bar "12 selected · Enrich · Add to sequence · Export"; every bulk intent goes through approvals |
-| Run progress | header chip from [`background-jobs/dock-pill`](../specs/background-jobs.md); "Show run" opens [`fanout-grid/cells`](../specs/fanout-grid.md) |
-| "+ Agent column" | [`genui-form/inline`](../specs/genui-forms.md): column name + instruction ("Fit score 0–100 from trucks, region, tech stack") + sources |
+| Changed cells | `genui-blocks.md` — Pro (private) highlighter on cells Fern changed since you last looked |
+| Selection | `genui-blocks.md` — Pro (private) (Pro): floating bar "12 selected · Enrich · Add to sequence · Export"; every bulk intent goes through approvals |
+| Run progress | header chip from `background-jobs.md` — Pro (private); "Show run" opens [`fanout-grid/cells`](../specs/fanout-grid.md) |
+| "+ Agent column" | `genui-forms.md` — Pro (private): column name + instruction ("Fit score 0–100 from trucks, region, tech stack") + sources |
 
 Rules (proposed):
-1. Footer recomputes on filter and as cells fill; numbers roll with [`genui-metric/odometer`](../specs/genui-blocks.md) timing (`stagger.digit` 30 ms), at most once per 500 ms during a run.
+1. Footer recomputes on filter and as cells fill; numbers roll with `genui-blocks.md` — Pro (private) timing (`stagger.digit` 30 ms), at most once per 500 ms during a run.
 2. Footer counts only `Filled` cells and says so: "avg 68 · 142/200" (n shown when < total).
 3. A user edit to a cell sets `Locked`; the agent never overwrites a locked cell; its value becomes a conflict.
 4. Only cells in view animate; off-screen cells update silently (motion.md §9 budget).
@@ -263,9 +263,9 @@ reason and an Undo, and lands in the FYI tab.
 | Part | Component |
 |---|---|
 | Board | **new** `genui-board` (§6) `genui-board/columns` (free), `genui-board/agent-moves` (Pro: move ribbon with reason, ghost at old position, Undo) |
-| Column header totals | [`genui-metric/inline`](../specs/genui-blocks.md), digits roll on change |
-| Card "Fern updating" | [`border-beam/hairline`](../specs/border-beam.md) on the card while the agent writes |
-| "Fern moves: 3" | popover list of today's agent moves, each linking to its audit entry ([`audit-log/timeline`](../specs/permission-rules.md)) |
+| Column header totals | `genui-blocks.md` — Pro (private), digits roll on change |
+| Card "Fern updating" | `border-beam.md` — Pro (private) on the card while the agent writes |
+| "Fern moves: 3" | popover list of today's agent moves, each linking to its audit entry (`permission-rules.md` — Pro (private)) |
 | Stage-change approval (when level = Ask) | [`approval-card/inline`](../specs/approval-card.md) anchored to the card, showing from → to and reason |
 | Table toggle | `genui-table/compact-records` with stage as a column |
 
@@ -299,19 +299,19 @@ email at each step, and a clear view of what is approved, scheduled and sent.
 ```
 | Part | Component |
 |---|---|
-| Steps rail | [`step-timeline/vertical`](../specs/plan-todo.md) with wait rows; per-step approval state glyph from [`risk-badge/shape`](../specs/approvals.md) |
-| Draft pager | [`genui-form/draft-review`](../specs/genui-forms.md) + `approval-card/paged` pager "1 of 142"; personalised spans marked ✦ ([`genui-form/prefill-sparkle`](../specs/genui-forms.md) style) |
-| Flagged drafts | [`genui-question/paged`](../specs/genui-forms.md) "Draft 1 of 12 · reason: claim not sourced" with [`confidence-badge/label`](../specs/citations-sources.md) |
+| Steps rail | `plan-todo.md` — Pro (private) with wait rows; per-step approval state glyph from `approvals.md` — Pro (private) |
+| Draft pager | `genui-forms.md` — Pro (private) + `approval-card/paged` pager "1 of 142"; personalised spans marked ✦ (`genui-forms.md` — Pro (private) style) |
+| Flagged drafts | `genui-forms.md` — Pro (private) "Draft 1 of 12 · reason: claim not sourced" with `citations-sources.md` — Pro (private) |
 | Template edit | [`diff-viewer/redline`](../specs/diff-viewer.md) for "what changed vs template" |
 | Start / send | **new** `approval-card/bulk-recipients` (§6), Critical |
-| Running send | [`background-jobs/dock-pill`](../specs/background-jobs.md) "Sending 38/130 · Stop remaining" |
+| Running send | `background-jobs.md` — Pro (private) "Sending 38/130 · Stop remaining" |
 
 | State | Shows |
 |---|---|
 | Empty | "No steps · Ask Fern to draft a 4-step sequence for this list" |
 | Drafting | [`fanout-grid/cells`](../specs/fanout-grid.md) of 142 drafts filling; pager disabled until ≥ 1 ready |
 | Partially drafted | "118 / 142 drafted · 24 failed (no verified email)" with "Exclude failed" |
-| Error | "Mailbox disconnected · Reconnect" ([`mcp-plugin-list`](../specs/mcp-plugin-list.md) `needs-auth` state); send disabled with reason |
+| Error | "Mailbox disconnected · Reconnect" (`mcp-plugin-list.md` — Pro (private) `needs-auth` state); send disabled with reason |
 | Sent | step row ✓ "Sent 128 · 2 bounced"; drafts become read-only |
 
 ### 3.6 Meeting prep brief (`shell/crm-meeting-prep`)
@@ -334,11 +334,11 @@ open questions, and suggested goals. Everything cited.
 ```
 | Part | Component |
 |---|---|
-| Body | [`markdown/editorial`](../specs/streaming-markdown.md) streaming, [`citation/number`](../specs/citations-sources.md), [`confidence-badge/icon`](../specs/citations-sources.md) per claim |
-| Sources | [`source-list/rail`](../specs/citations-sources.md), `Searching(n)` state while gathering |
-| Goals | [`genui-list/checklist`](../specs/genui-blocks.md) (ticks write back to the deal's next steps) |
-| Deal sidebar | [`genui-metric/tile`](../specs/genui-blocks.md) + `enrichment-chip` |
-| Generation | [`genui-skeleton/progressive-detail`](../specs/genui-skeletons.md) for sections not yet streamed |
+| Body | [`markdown/editorial`](../specs/streaming-markdown.md) streaming, `citations-sources.md` — Pro (private), `citations-sources.md` — Pro (private) per claim |
+| Sources | `citations-sources.md` — Pro (private), `Searching(n)` state while gathering |
+| Goals | `genui-blocks.md` — Pro (private) (ticks write back to the deal's next steps) |
+| Deal sidebar | `genui-blocks.md` — Pro (private) + `enrichment-chip` |
+| Generation | `genui-skeletons.md` — Pro (private) for sections not yet streamed |
 
 | State | Shows |
 |---|---|
@@ -364,11 +364,11 @@ open questions, and suggested goals. Everything cited.
 ```
 | Part | Component |
 |---|---|
-| KPI strip | [`genui-metric/strip`](../specs/genui-blocks.md) (free) / `genui-metric/board` (Pro); quota as `genui-metric/target-vs-actual` (Pro) |
-| Stage chart | [`genui-chart/card`](../specs/genui-blocks.md) (free) / `genui-chart/compare` (Pro) |
+| KPI strip | `genui-blocks.md` — Pro (private) (free) / `genui-metric/board` (Pro); quota as `genui-metric/target-vs-actual` (Pro) |
+| Stage chart | `genui-blocks.md` — Pro (private) (free) / `genui-chart/compare` (Pro) |
 | Reply rate | `genui-chart/card` bar |
-| Agent activity | [`genui-list/plain`](../specs/genui-blocks.md) counts + [`run-meter/sparkline-session`](../specs/run-meter.md) for credits; link to [`audit-log/table`](../specs/permission-rules.md) |
-| Runs | [`trace-view/cost-rows`](../specs/trace-view.md) on demand (Pro) |
+| Agent activity | `genui-blocks.md` — Pro (private) counts + `run-meter.md` — Pro (private) for credits; link to `permission-rules.md` — Pro (private) |
+| Runs | `trace-view.md` — Pro (private) on demand (Pro) |
 
 States: Empty ("Connect a pipeline"), Loading (`skeleton/chart-draw` per tile), Error per tile
 (other tiles stay), Stale ("Updated 3h ago · Refresh").
@@ -381,14 +381,14 @@ the user sees at that step.
 ### 4.1 Enrich a list of 200 leads (fan-out, partial failures)
 | # | AgentState | What happens | Shows |
 |---|---|---|---|
-| 1 | `Composing` | Noor types `/enrich` on the Q4 list: "Fill employees, trucks, HQ, email; add a fit score" | [`trigger-menu/popover`](../specs/composer-slash-mentions.md), [`token-chip/pill`](../specs/composer-slash-mentions.md) "@Q4 freight list" |
-| 2 | `Submitted` → `Thinking{"Planning"}` | plans columns, sources, credit cost | [`status-text/line`](../specs/status-text.md) |
-| 3 | `AwaitingApproval{Plan}` | plan: 5 columns × 200 rows, est. 410 credits, writes empty fields only | [`plan-card/document`](../specs/plan-todo.md) + [`plan-approval/footer`](../specs/plan-approval.md); spend shown as [`approval-card/amount`](../specs/approval-card.md) when over the run budget |
+| 1 | `Composing` | Noor types `/enrich` on the Q4 list: "Fill employees, trucks, HQ, email; add a fit score" | `composer-slash-mentions.md` — Pro (private), `composer-slash-mentions.md` — Pro (private) "@Q4 freight list" |
+| 2 | `Submitted` → `Thinking{"Planning"}` | plans columns, sources, credit cost | `status-text.md` — Pro (private) |
+| 3 | `AwaitingApproval{Plan}` | plan: 5 columns × 200 rows, est. 410 credits, writes empty fields only | `plan-todo.md` — Pro (private) + `plan-approval.md` — Pro (private); spend shown as [`approval-card/amount`](../specs/approval-card.md) when over the run budget |
 | 4 | `ToolRunning{enrich,"Enriching"}` | 200 tasks fan out, 8 at a time | table cells go `Queued → Filling → Filled` (`genui-table/agent-columns`); [`fanout-grid/cells`](../specs/fanout-grid.md) in the agent panel; `background-jobs/dock-pill` 0→200 |
 | 5 | `Stalled{since}` | provider rate-limited for 45 s | grid header "No progress for 45 s", [`text-shimmer/stall-ember`](../specs/text-shimmer.md) (Pro) / colour ramp; Retry / Wait |
-| 6 | `Steering` | Noor types "skip anyone under 50 trucks" mid-run | [`composer-input/split-steer`](../specs/composer-input-shell.md) (Pro) or queued message; 23 queued cells → `Skipped` |
+| 6 | `Steering` | Noor types "skip anyone under 50 trucks" mid-run | `composer-input-shell.md` — Pro (private) (Pro) or queued message; 23 queued cells → `Skipped` |
 | 7 | `ToolRunning` | continues; 9 cells fail (no domain), 4 conflicts | cells `Failed` / `Conflict`; inbox gains 2 items (conflicts grouped by field, failures grouped by reason) |
-| 8 | `Done{elapsed}` | "Worked for 6m 12s · 164 enriched · 23 skipped · 9 failed · 4 need you" | [`elapsed-timer/summary`](../specs/elapsed-timer.md), [`background-jobs/batch-retry`](../specs/background-jobs.md) "9 failed: no domain · Retry with Webscan" |
+| 8 | `Done{elapsed}` | "Worked for 6m 12s · 164 enriched · 23 skipped · 9 failed · 4 need you" | [`elapsed-timer/summary`](../specs/elapsed-timer.md), `background-jobs.md` — Pro (private) "9 failed: no domain · Retry with Webscan" |
 
 User can steer at any time: stop (cells already filled stay), skip a column, raise concurrency (if
 the app allows), pin a source. Risk: Medium plan (writes to many records, reversible); overwriting
@@ -398,33 +398,33 @@ non-empty values is not in this plan and would need its own approval.
 | # | AgentState | What happens | Shows |
 |---|---|---|---|
 | 1 | `Composing` | on Harrowgate's record: "Write Ines an intro about the trailer expansion" | composer with "Context: Harrowgate Freight" chip |
-| 2 | `ToolRunning{web.search,"Researching"}` | reads Newswire, Webscan, past emails | [`tool-call/row`](../specs/tool-call.md), [`source-list/stack`](../specs/citations-sources.md) `Searching(3)` |
-| 3 | `Streaming` | draft streams into editable fields | `genui-form/draft-review` with [`citation/number`](../specs/citations-sources.md) markers |
+| 2 | `ToolRunning{web.search,"Researching"}` | reads Newswire, Webscan, past emails | [`tool-call/row`](../specs/tool-call.md), `citations-sources.md` — Pro (private) `Searching(3)` |
+| 3 | `Streaming` | draft streams into editable fields | `genui-form/draft-review` with `citations-sources.md` — Pro (private) markers |
 | 4 | `AwaitingApproval{SendEmail, High}` | one external recipient | [`approval-card/footer`](../specs/approval-card.md) under the draft (arms 600 ms; `Enter` = Deny); mirrored in the inbox |
 | 5a | user edits subject → `AllowEdited` | agent must send the edited version | `genui-form/review-diff` (Pro) shows old → new before allow |
 | 5b | user `DenyWithReason("too salesy, mention the pilot")` | agent redrafts | "Sent to agent" line; back to `Thinking` |
 | 6 | `ToolRunning{email.send,"Sending"}` | mailbox send | tool row; 5 s "Undo send" if the mail tool supports a delay (app) |
-| 7 | `Done` | timeline gets "Email sent to Ines"; next-step task suggested | [`follow-ups/chips`](../specs/citations-sources.md) "Remind me in 3 days" |
+| 7 | `Done` | timeline gets "Email sent to Ines"; next-step task suggested | `citations-sources.md` — Pro (private) "Remind me in 3 days" |
 
 ### 4.3 Meeting notes → update records → next steps
 | # | AgentState | What happens | Shows |
 |---|---|---|---|
 | 1 | `Composing` | Noor drops the call transcript (or the call app pushes it) | [`composer-attachments`](../specs/composer-attachments.md) chip `uploading → reading → ready` |
-| 2 | `ToolRunning{transcript.read,"Reading"}` → `Streaming` | summary + decisions | `markdown/chat` with [`citation/timestamp`](../specs/citations-sources.md) (Pro) to transcript moments |
+| 2 | `ToolRunning{transcript.read,"Reading"}` → `Streaming` | summary + decisions | `markdown/chat` with `citations-sources.md` — Pro (private) (Pro) to transcript moments |
 | 3 | `AwaitingApproval{RecordWrite, Medium}` ×4 (batch) | stage Discovery → Evaluation, amount $40k → $48k, 2 new contacts | [`diff-viewer/table-cells`](../specs/diff-viewer.md) with per-row keep / undo; batch "Allow all 4 once" (approvals.md §2.6) |
 | 4 | `AwaitingApproval{RecordWrite, High}` | close date moves out of the committed quarter | separate [`approval-card/inline`](../specs/approval-card.md) (High is never batched) |
 | 5 | `ToolRunning{crm.update}` | writes; record header and board card update | `genui-table/changed-cells` highlight; board card moves (§3.4) |
-| 6 | `Streaming` | next steps + follow-up email draft | [`genui-list/checklist`](../specs/genui-blocks.md) tasks; draft enters flow 4.2 at step 4 |
-| 7 | `Done` | "Updated 5 fields · 2 tasks · 1 draft waiting" | [`memory-receipt/footer-line`](../specs/citations-sources.md)-style receipt line linking to the audit log |
+| 6 | `Streaming` | next steps + follow-up email draft | `genui-blocks.md` — Pro (private) tasks; draft enters flow 4.2 at step 4 |
+| 7 | `Done` | "Updated 5 fields · 2 tasks · 1 draft waiting" | `citations-sources.md` — Pro (private)-style receipt line linking to the audit log |
 
 ### 4.4 Deal-stage change with reason (background run)
 | # | AgentState | What happens | Shows |
 |---|---|---|---|
-| 1 | `Idle` → `Thinking{"Reviewing pipeline"}` | scheduled hygiene run, Fridays 16:00 | [`background-jobs/scheduled`](../specs/background-jobs.md) (Pro); nav presence chip |
+| 1 | `Idle` → `Thinking{"Reviewing pipeline"}` | scheduled hygiene run, Fridays 16:00 | `background-jobs.md` — Pro (private) (Pro); nav presence chip |
 | 2 | `ToolRunning{crm.read}` | finds Corvid: Proposal, no reply 21 days | — |
 | 3a | level `Ask` → `AwaitingApproval{StageChange, Medium}` | "Move Corvid to Stalled · No reply in 21 days to 2 emails" | approval anchored to the card; inbox item |
 | 3b | level `FullAccess` → auto-resolved | card moves; reason ribbon; FYI item | `genui-board/agent-moves`; audit `by: Level(FullAccess)` |
-| 4 | user presses Undo / "Why" | Undo returns the card and sends "rejected: <reason>" to the agent | [`rollback-impact/inline`](../specs/rollback-impact.md) if fields changed after the move |
+| 4 | user presses Undo / "Why" | Undo returns the card and sends "rejected: <reason>" to the agent | `rollback-impact.md` — Pro (private) if fields changed after the move |
 | 5 | `Done` | "Moved 3 deals · 1 needs you" | status bar + FYI tab |
 
 Moves **into Won or Lost** are High (they change forecast and commission): never auto-run below
@@ -446,7 +446,7 @@ need a new Critical approval (the request is for an exact recipient set, approva
 
 ## 5. Approvals and risk
 
-Tiers per [../specs/approvals.md](../specs/approvals.md) §2.3. CRM actions map onto request kinds
+Tiers per `approvals.md` — Pro (private) §2.3. CRM actions map onto request kinds
 as `Custom { label, icon }` with a declared floor (approvals.md §2.2); the app classifier can only
 raise a tier.
 
@@ -466,11 +466,11 @@ raise a tier.
 | Move a deal to Won / Lost; change amount or close date in a committed forecast | `StageChange` / `RecordWrite` | High | no | never batched |
 | Reassign owner; merge two records | `RecordWrite` | High | no | merge shows field-by-field winner |
 | Send to many contacts (≥ 25, app-set) | `BulkSend` | **Critical** | never | hold 1200 ms; only Allow once; **stops even in Bypass** |
-| Delete records (any count) | `RecordDelete` | **Critical** | never | [`rollback-impact/hold-to-confirm`](../specs/rollback-impact.md) shows dependants (deals, activities) |
+| Delete records (any count) | `RecordDelete` | **Critical** | never | `rollback-impact.md` — Pro (private) shows dependants (deals, activities) |
 | Export PII (CSV, sync to another tool, share link) | `Export` | **Critical** | never | lists fields included; emails / phones named |
 | Change consent / unsubscribe fields in bulk | `RecordWrite` | **Critical** | never | legal exposure |
 
-Permission levels in this kit ([composer-permission-selector.md](../specs/composer-permission-selector.md)):
+Permission levels in this kit (`composer-permission-selector.md` — Pro (private)):
 
 | Level | Auto-runs in CRM |
 |---|---|
@@ -480,8 +480,8 @@ Permission levels in this kit ([composer-permission-selector.md](../specs/compos
 | `FullAccess` | up to Medium writes and stage changes; High still asks unless a rule exists *(proposed: CRM kit sets FullAccess to stop at Medium, since High here means customer contact)* |
 | `Bypass` | up to High; **never Critical** (`bypass_includes_critical = false`) |
 
-Every resolution writes an `AuditEntry`; the kit's Rules screen is [`permission-rules/table`](../specs/permission-rules.md)
-+ [`audit-log/table`](../specs/permission-rules.md), filtered by record.
+Every resolution writes an `AuditEntry`; the kit's Rules screen is `permission-rules.md` — Pro (private)
++ `permission-rules.md` — Pro (private), filtered by record.
 
 ## 6. New components
 
@@ -505,7 +505,7 @@ monogram or favicon the app supplies) · confidence glyph (reuses `confidence-ba
 with `dur.base` 180 ms crossfade, highlight `opacity.highlight` fades over `dur.beat`), `Conflict{n}`
 (◇ n, opens `source-pick`), `Failed{reason}`, `Stale{age}` (dims to `fg.muted`, "Refresh"),
 `Locked` (user-entered, lock glyph, agent cannot write), `Verified` (user confirmed). Hover / focus
-opens a peek: each source's value, date, quoted snippet ([`citation/quote-peek`](../specs/citations-sources.md)
+opens a peek: each source's value, date, quoted snippet (`citations-sources.md` — Pro (private)
 pattern). Free: `enrichment-chip/inline` (value + source letter), `/cell` (table-cell fit, glyph
 only), `/glyph` (TUI `410 [r●3d]`). Pro: `/stacked-sources` (avatars of all sources that agree),
 `/waterfall` (shows the provider order tried, hits and misses — Clay waterfall idea, study only),
@@ -605,7 +605,7 @@ library API.
 | `transcript-harrowgate.md` | 32-min call, 14 speaker turns, invented | flow 4.3 |
 | `sequence-q4.json` | 4 steps, 142 enrolled, 12 flagged drafts with reasons | flow 4.5 |
 | `sources.json` | Registry, Webscan, Mailcheck, Newswire, Notes with monogram colours | enrichment chips |
-| Event scripts | `.oxynrun` replays of all five flows at 1×, 4× and "instant" speed | gallery, tests ([`run-replay/scrubber`](../specs/run-replay.md)) |
+| Event scripts | `.oxynrun` replays of all five flows at 1×, 4× and "instant" speed | gallery, tests (`run-replay.md` — Pro (private)) |
 
 Rules: names, domains (`.example`), numbers and quotes are invented; no real company, person or logo;
 generated names are checked against a deny-list of real brands before publishing (proposed).

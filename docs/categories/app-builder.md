@@ -38,7 +38,7 @@ Everything named below (product, people, business, hosts, providers) is **invent
 Three panes in one window: **conversation** (left), **workspace** (right, tabbed: Preview, Code,
 Database, Env, Deploy, History) and a collapsible **console drawer** under the workspace. Built on
 `panel-split` ([../specs/workspace-chrome.md](../specs/workspace-chrome.md)) with the
-`genui-surface/split-preview` layout idea ([../specs/genui-renderer.md](../specs/genui-renderer.md)).
+`genui-surface/split-preview` layout idea (`genui-renderer.md` — Pro (private)).
 
 ### 2.1 Desktop (GPUI)
 
@@ -69,12 +69,12 @@ Database, Env, Deploy, History) and a collapsible **console drawer** under the w
 
 | Region | Parts | Spec |
 |---|---|---|
-| Top bar | project switcher, version chip, run status, presence, Share, Publish split-button | `git-chips/pill` ([git-chips](../specs/git-chips.md)), `acting-indicator/chip` ([acting-indicator](../specs/acting-indicator.md)), `presence-stack` (new, §6) |
-| Conversation | transcript, plan, tool rows, composer | [message-bubble](../specs/message-bubble.md), [plan-todo](../specs/plan-todo.md), [tool-call](../specs/tool-call.md), [composer](../specs/composer.md) |
-| Workspace tabs | Preview · Code · Database · Env · Deploy · History | `side-panel/tabs` ([side-panels](../specs/side-panels.md)) |
+| Top bar | project switcher, version chip, run status, presence, Share, Publish split-button | `git-chips/pill` (`git-chips.md` — Pro (private)), `acting-indicator/chip` (`acting-indicator.md` — Pro (private)), `presence-stack` (new, §6) |
+| Conversation | transcript, plan, tool rows, composer | [message-bubble](../specs/message-bubble.md), `plan-todo.md` — Pro (private), [tool-call](../specs/tool-call.md), [composer](../specs/composer.md) |
+| Workspace tabs | Preview · Code · Database · Env · Deploy · History | `side-panel/tabs` (`side-panels.md` — Pro (private)) |
 | Preview toolbar | reload, back / forward, route field, device toggles, Select, fullscreen, open in tab | `preview-frame` (new, §6) |
-| Console drawer | Logs (live tail), Problems (errors with "Fix with Brick") | [terminal-output](../specs/terminal-output.md), `problem-list` (new) |
-| Status bar | environment, branch, draft vs live version, elapsed, run meter, problem count | `status-bar/run-strip` ([side-panels](../specs/side-panels.md)), `run-meter/footer-line` ([run-meter](../specs/run-meter.md)), `env-badge` (new) |
+| Console drawer | Logs (live tail), Problems (errors with "Fix with Brick") | `terminal-output.md` — Pro (private), `problem-list` (new) |
+| Status bar | environment, branch, draft vs live version, elapsed, run meter, problem count | `status-bar/run-strip` (`side-panels.md` — Pro (private)), `run-meter/footer-line` (`run-meter.md` — Pro (private)), `env-badge` (new) |
 
 Rules (proposed):
 1. **The preview never goes blank while the agent works.** It keeps the last good build; regions being
@@ -140,9 +140,9 @@ Every screen lists its Oxyn parts. "(new)" points to §6.
 | | |
 |---|---|
 | Purpose | Start a new app from a prompt or template; see which projects are live, building or broken |
-| Parts | hero composer `composer-input/hero-dock` ([composer-input-shell](../specs/composer-input-shell.md)), `attachment/chip-bar` ([composer-attachments](../specs/composer-attachments.md)), `project-card` (new), `background-jobs/popover` for builds running elsewhere ([background-jobs](../specs/background-jobs.md)), activity list `notification-center/timeline` ([command-palette](../specs/command-palette.md)), `command-palette/centered` for ⌘K |
+| Parts | hero composer `composer-input/hero-dock` (`composer-input-shell.md` — Pro (private)), `attachment/chip-bar` ([composer-attachments](../specs/composer-attachments.md)), `project-card` (new), `background-jobs/popover` for builds running elsewhere (`background-jobs.md` — Pro (private)), activity list `notification-center/timeline` ([command-palette](../specs/command-palette.md)), `command-palette/centered` for ⌘K |
 | Empty | No projects: hero composer + 3 template chips + "Start blank"; no illustration needed |
-| Loading | `genui-skel/card-shimmer` cards (`oxyn-skel-02`, [genui-skeletons](../specs/genui-skeletons.md)), 6 tiles |
+| Loading | `genui-skel/card-shimmer` cards (`oxyn-skel-02`, `genui-skeletons.md` — Pro (private)), 6 tiles |
 | Error | Gallery fetch failed: inline banner with Retry; cached thumbnails stay, marked "offline" |
 
 ### 3.2 Template picker — `shell/app-builder-templates`
@@ -163,9 +163,9 @@ Every screen lists its Oxyn parts. "(new)" points to §6.
 | | |
 |---|---|
 | Purpose | Pick a starting point and see what it needs (database, secrets) before choosing |
-| Parts | filter chips `genui-question/chips` ([genui-forms](../specs/genui-forms.md)), `template-card` (new), right pane `preview-frame` (new) in read-only mode, needs line from `env-badge` + secret names (never values) |
+| Parts | filter chips `genui-question/chips` (`genui-forms.md` — Pro (private)), `template-card` (new), right pane `preview-frame` (new) in read-only mode, needs line from `env-badge` + secret names (never values) |
 | Empty | Filter returns nothing: "No templates for *Form* yet · Describe it instead" opens the hero composer with the query |
-| Loading | Thumbnails use `skeleton/shimmer`; live preview shows `gen-placeholder/blueprint` ([media-generation-placeholder](../specs/media-generation-placeholder.md)) until the template boots |
+| Loading | Thumbnails use `skeleton/shimmer`; live preview shows `gen-placeholder/blueprint` (`media-generation-placeholder.md` — Pro (private)) until the template boots |
 | Error | Template preview fails to boot: static thumbnail + "Preview unavailable · Use anyway" |
 
 ### 3.3 Builder (prompt + live preview) — `shell/app-builder-builder`
@@ -188,9 +188,9 @@ The shell in 2.1 with the Preview tab active. Three preview phases:
 | | |
 |---|---|
 | Purpose | Watch the app take shape; steer mid-run; see what changed |
-| Parts (conversation) | `message/flat` ([message-bubble](../specs/message-bubble.md)), `reasoning-block/inline-summary` ([reasoning-block](../specs/reasoning-block.md)), `plan-card/versioned` + `todo-list/checklist` ([plan-todo](../specs/plan-todo.md)), `tool-call/row` ([tool-call](../specs/tool-call.md)), `file-edit-chip/row` ([file-edit-chip](../specs/file-edit-chip.md)), `terminal-output/tail` ([terminal-output](../specs/terminal-output.md)), `verb-cycler/fade` + `elapsed-timer/summary` ([verb-cycler](../specs/verb-cycler.md), [elapsed-timer](../specs/elapsed-timer.md)) |
-| Parts (composer) | `composer-input/rounded-box`, `mode-switch/segmented` Plan / Build / Ask ([composer-mode-switch](../specs/composer-mode-switch.md)), `permission-selector/segmented` ([composer-permission-selector](../specs/composer-permission-selector.md)), `queue-stack/chips` ([composer-queue-stack](../specs/composer-queue-stack.md)), `send-control/steer-slide` ([composer-send-control](../specs/composer-send-control.md)), `@` element chips from the picker ([composer-slash-mentions](../specs/composer-slash-mentions.md)) |
-| Parts (preview) | `preview-frame` (new) hosting the dev server; wireframe over rewritten regions = `genui-surface/blueprint-build` look with `genui-skel/surface-blueprint` (`oxyn-skel-44`) ([genui-renderer](../specs/genui-renderer.md), [genui-skeletons](../specs/genui-skeletons.md)); changed-region markers from `genui-surface/diff-regenerate`; reduced-motion fallback `skeleton/static` ([skeletons](../specs/skeletons.md)) |
+| Parts (conversation) | `message/flat` ([message-bubble](../specs/message-bubble.md)), `reasoning-block/inline-summary` ([reasoning-block](../specs/reasoning-block.md)), `plan-card/versioned` + `todo-list/checklist` (`plan-todo.md` — Pro (private)), `tool-call/row` ([tool-call](../specs/tool-call.md)), `file-edit-chip/row` (`file-edit-chip.md` — Pro (private)), `terminal-output/tail` (`terminal-output.md` — Pro (private)), `verb-cycler/fade` + `elapsed-timer/summary` ([verb-cycler](../specs/verb-cycler.md), [elapsed-timer](../specs/elapsed-timer.md)) |
+| Parts (composer) | `composer-input/rounded-box`, `mode-switch/segmented` Plan / Build / Ask (`composer-mode-switch.md` — Pro (private)), `permission-selector/segmented` (`composer-permission-selector.md` — Pro (private)), `queue-stack/chips` ([composer-queue-stack](../specs/composer-queue-stack.md)), `send-control/steer-slide` ([composer-send-control](../specs/composer-send-control.md)), `@` element chips from the picker (`composer-slash-mentions.md` — Pro (private)) |
+| Parts (preview) | `preview-frame` (new) hosting the dev server; wireframe over rewritten regions = `genui-surface/blueprint-build` look with `genui-skel/surface-blueprint` (`oxyn-skel-44`) (`genui-renderer.md` — Pro (private), `genui-skeletons.md` — Pro (private)); changed-region markers from `genui-surface/diff-regenerate`; reduced-motion fallback `skeleton/static` ([skeletons](../specs/skeletons.md)) |
 | Empty | New blank project: preview shows a centred "Your app will appear here" with three starter prompts as chips |
 | Loading | Dev server booting: `preview-frame` *Booting* (route field shimmer `text-shimmer/calm`, [text-shimmer](../specs/text-shimmer.md)); first build: full-page blueprint wireframe with mono labels ("HEADER 1280×64") per [R005] |
 | Error | Build failed: last good build stays, dimmed to `opacity.stalled`, with a top banner "Build failed · v14 · Fix with Brick / Show log" (flow F3); runtime crash: in-frame error card + Problems count in console |
@@ -221,7 +221,7 @@ changed regions keep a ✦ marker for `dur.highlight.fade`. A region the agent a
 | Purpose | Point at a thing instead of describing it; small style / text tweaks without a prompt; bigger changes by prompt with the element attached |
 | Parts | `element-picker` (new) overlay: hover outline, name tag with size and match count, multi-select with ⌘/Ctrl-click; selection becomes a composer chip `attachment/context-chip` ([composer-attachments](../specs/composer-attachments.md)); `style-inspector` (new, Pro) builds on `genui-surface/inspector-edit`; Apply produces a new version with `file-edit-chip/row` in the transcript |
 | Empty | Picker on with nothing hovered: hint chip "Click any element · Esc to stop" |
-| Loading | Apply sent: selected region gets `border-beam/hairline` ([border-beam](../specs/border-beam.md)) until the patch lands |
+| Loading | Apply sent: selected region gets `border-beam/hairline` (`border-beam.md` — Pro (private)) until the patch lands |
 | Error | Element not traceable to source ("generated at runtime"): inspector shows "Can't edit directly · Ask Brick" and keeps the prompt route; preview reloaded under the selection: selection clears with a toast "Selection lost after reload" |
 
 ### 3.5 Code view — `shell/app-builder-code`
@@ -242,10 +242,10 @@ changed regions keep a ✦ marker for `dur.highlight.fade`. A region the agent a
 | | |
 |---|---|
 | Purpose | Let a developer (Tomás) read or edit code; let anyone see what a version changed |
-| Parts | `file-tree/changed` ([side-panels](../specs/side-panels.md)); editor body `code-block/file` ([streaming-markdown](../specs/streaming-markdown.md)); "Changes in vN" toggles `diff-viewer/unified` / `diff-viewer/split` ([diff-viewer](../specs/diff-viewer.md)); "Brick ✎" owner tag while the agent writes the file = `file-edit-chip/writing-sweep` |
+| Parts | `file-tree/changed` (`side-panels.md` — Pro (private)); editor body `code-block/file` ([streaming-markdown](../specs/streaming-markdown.md)); "Changes in vN" toggles `diff-viewer/unified` / `diff-viewer/split` ([diff-viewer](../specs/diff-viewer.md)); "Brick ✎" owner tag while the agent writes the file = `file-edit-chip/writing-sweep` |
 | Empty | Nothing generated yet: "Code appears after the first build" |
 | Loading | Large file: `skeleton/code-gutter` ([skeletons](../specs/skeletons.md)) |
-| Error | User edits a file the agent is writing: the editor goes read-only with "Brick is editing this file · Take over" (`takeover-banner/strip`, [takeover-banner](../specs/takeover-banner.md)) |
+| Error | User edits a file the agent is writing: the editor goes read-only with "Brick is editing this file · Take over" (`takeover-banner/strip`, `takeover-banner.md` — Pro (private)) |
 
 ### 3.6 Version history — `shell/app-builder-history`
 
@@ -267,7 +267,7 @@ changed regions keep a ✦ marker for `dur.highlight.fade`. A region the agent a
 | | |
 |---|---|
 | Purpose | Find a known-good state, compare, restore it (dev) or roll production back to it (flow F5) |
-| Parts | `checkpoint-timeline/filmstrip` + `checkpoint-timeline/milestone-cards` + `checkpoint-timeline/compare-pair` ([checkpoint-timeline](../specs/checkpoint-timeline.md)); `env-badge` (new) for Live / Draft / Preview; restore sheet `rollback-impact/sheet` with `rollback-impact/compensations` and `rollback-impact/receipt` ([rollback-impact](../specs/rollback-impact.md)); compare opens [diff-viewer](../specs/diff-viewer.md) |
+| Parts | `checkpoint-timeline/filmstrip` + `checkpoint-timeline/milestone-cards` + `checkpoint-timeline/compare-pair` (`checkpoint-timeline.md` — Pro (private)); `env-badge` (new) for Live / Draft / Preview; restore sheet `rollback-impact/sheet` with `rollback-impact/compensations` and `rollback-impact/receipt` (`rollback-impact.md` — Pro (private)); compare opens [diff-viewer](../specs/diff-viewer.md) |
 | Empty | One version only: list with a single row and "Every change Brick makes is saved here" |
 | Loading | Thumbnails: `genui-skel/media-shimmer` (`oxyn-skel-12`) |
 | Error | Version too old to restore: Restore disabled-with-reason "Can't restore this far back · Preview only" |
@@ -291,7 +291,7 @@ changed regions keep a ✦ marker for `dur.highlight.fade`. A region the agent a
 | | |
 |---|---|
 | Purpose | See the data the app stores, the schema the agent made, and approve migrations |
-| Parts | `genui-table/data-grid` ([genui-blocks](../specs/genui-blocks.md)); `genui-table/changed-cells` after the agent edits seed data; `schema-graph` (new, Pro); migration row is a `tool-call/card` whose run goes through [approval-card](../specs/approval-card.md) (`approval-card/split-preview` with the SQL on the left); `env-badge` switches Dev / Production |
+| Parts | `genui-table/data-grid` (`genui-blocks.md` — Pro (private)); `genui-table/changed-cells` after the agent edits seed data; `schema-graph` (new, Pro); migration row is a `tool-call/card` whose run goes through [approval-card](../specs/approval-card.md) (`approval-card/split-preview` with the SQL on the left); `env-badge` switches Dev / Production |
 | Empty | No database yet: "This app doesn't store anything yet · Add a database" (Medium approval: provisions a resource) |
 | Loading | `genui-skel/table-shimmer` (`oxyn-skel-04`) |
 | Error | Connection lost: grid keeps last page, header turns `color.status.warning.*` "Reconnecting…", Retry |
@@ -317,7 +317,7 @@ separate, Critical request (§5).
 | | |
 |---|---|
 | Purpose | Add, replace and scope keys; see which code uses them; never expose a value |
-| Parts | `secret-list` (new, family G) with masked value cells (status only: *set*, *missing*, *expired*); add / replace uses a write-only field in `genui-form/side-panel` ([genui-forms](../specs/genui-forms.md)) that clears on submit; agent requests to use a secret render as `approval-card/secret` ([approval-card](../specs/approval-card.md)); `permission-selector/secret-guard` idea for the composer |
+| Parts | `secret-list` (new, family G) with masked value cells (status only: *set*, *missing*, *expired*); add / replace uses a write-only field in `genui-form/side-panel` (`genui-forms.md` — Pro (private)) that clears on submit; agent requests to use a secret render as `approval-card/secret` ([approval-card](../specs/approval-card.md)); `permission-selector/secret-guard` idea for the composer |
 | Empty | "No environment variables · Brick will ask when the app needs one" |
 | Loading | `genui-skel/list-shimmer` (`oxyn-skel-03`) |
 | Error | Save failed: field keeps focus, value is **not** kept in memory after failure (user re-enters); scope conflict: inline "Already set for Production · Replace?" |
@@ -344,7 +344,7 @@ Hard rules: no reveal button, no copy button, no value in logs (console masks kn
 | | |
 |---|---|
 | Purpose | Ship a version to Preview (shareable, not public) or Production (public), watch it go, roll back |
-| Parts | `deploy-pipeline` (new, family F) built from `step-timeline/metro` ([plan-todo](../specs/plan-todo.md)) + `terminal-output/section-fold` logs ([terminal-output](../specs/terminal-output.md)) + `elapsed-timer/eta`; checks as `review-card/verdict-chip` ([review-card](../specs/review-card.md)); background copy `background-jobs/dock-pill` when the user leaves the tab; production publish card `approval-card/modal` + `approval-card/hold-ring` (Critical); domain rows use `genui-table/compact-records` |
+| Parts | `deploy-pipeline` (new, family F) built from `step-timeline/metro` (`plan-todo.md` — Pro (private)) + `terminal-output/section-fold` logs (`terminal-output.md` — Pro (private)) + `elapsed-timer/eta`; checks as `review-card/verdict-chip` (`review-card.md` — Pro (private)); background copy `background-jobs/dock-pill` when the user leaves the tab; production publish card `approval-card/modal` + `approval-card/hold-ring` (Critical); domain rows use `genui-table/compact-records` |
 | Empty | Never published: "Not live yet · Publish a preview link first" with a Preview button (Low) |
 | Loading | Pipeline steps as `todo-list/checklist` pending rows; logs `skeleton/line-by-line` |
 | Error | Step failed: that step turns `color.status.danger.*`, log auto-scrolls to first error line, "Fix with Brick" (F3) and "Keep live on v12" note — **a failed publish never touches traffic** |
@@ -367,15 +367,15 @@ Hard rules: no reveal button, no copy button, no value in logs (console masks kn
 | | |
 |---|---|
 | Purpose | Invite collaborators, share a preview, let others remix without secrets or data |
-| Parts | `genui-form/stacked` ([genui-forms](../specs/genui-forms.md)); `presence-stack` (new) with live location ("in Code · slots.rs"); comment pins in the preview reuse `element-picker` anchoring; human vs agent edits distinguished by `acting-indicator/avatar-ring` ([acting-indicator](../specs/acting-indicator.md)) |
+| Parts | `genui-form/stacked` (`genui-forms.md` — Pro (private)); `presence-stack` (new) with live location ("in Code · slots.rs"); comment pins in the preview reuse `element-picker` anchoring; human vs agent edits distinguished by `acting-indicator/avatar-ring` (`acting-indicator.md` — Pro (private)) |
 | Empty | Only owner: "Just you so far" + invite field focused |
-| Loading | Invite sending: row with `loader/dots-typing` ([loader-vector](../specs/loader-vector.md)) |
+| Loading | Invite sending: row with `loader/dots-typing` (`loader-vector.md` — Pro (private)) |
 | Error | Invite failed / address invalid: inline field error; link toggle failed: toggle snaps back with toast |
 
 ## 4. Agent flows
 
 States are [../architecture.md](../architecture.md) `AgentState`. "Shows" names the component carrying
-the step. Approvals per [../specs/approvals.md](../specs/approvals.md).
+the step. Approvals per `approvals.md` — Pro (private).
 
 ### F1. First build from a prompt
 Ines types on Home: "A preorder page for my bakery. Weekend menu, pickup slots, pay by card."
@@ -384,7 +384,7 @@ Ines types on Home: "A preorder page for my bakery. Weekend menu, pickup slots, 
 |---|---|---|---|---|
 | 1 | `Composing` → `Submitted` | Prompt sent from the hero composer; app shell opens with the builder | `composer-input/hero-dock` morphs to the docked composer (`dur.layout.switch`); `send-control` submitted pulse | — |
 | 2 | `Thinking { "Planning" }` | Brick drafts a plan: pages, data, integrations | `reasoning-block/inline-summary`; `verb-cycler/fade` | Stop |
-| 3 | `AwaitingApproval { Plan }` | Plan card: 5 steps, "will create a database", "will need PAYRAIL keys later" | `plan-card/versioned` + `plan-approval` ([plan-approval](../specs/plan-approval.md)); risk Low | Edit plan, approve, or reply "no payments yet" |
+| 3 | `AwaitingApproval { Plan }` | Plan card: 5 steps, "will create a database", "will need PAYRAIL keys later" | `plan-card/versioned` + `plan-approval` (`plan-approval.md` — Pro (private)); risk Low | Edit plan, approve, or reply "no payments yet" |
 | 4 | `ToolRunning { write }` | Files written; the preview shows the full blueprint wireframe from the plan's layout hint | `file-edit-chip/row` per file; `preview-frame` *Wireframe* | Type to queue ("make it green") → `queue-stack/chips` |
 | 5 | `ToolRunning { "db.create" }` | Dev database provisioned | `tool-call/row`; Medium approval if level is Ask (resource created) | Allow / Deny |
 | 6 | `ToolRunning { "cargo build" }` | Build + dev server | `terminal-output/tail`; preview *Booting* | Stop |
@@ -458,7 +458,7 @@ Restoring **dev only** (no production effect) is Low and needs no hold: it creat
 
 ## 5. Approvals and risk
 
-Tiers per [../specs/approvals.md](../specs/approvals.md) §2.3. **Critical always stops, at every
+Tiers per `approvals.md` — Pro (private) §2.3. **Critical always stops, at every
 permission level including Bypass.** Default permission level for this kit: **Auto-edit**
 (`AutoEdit` auto-runs Low `Edit`s only).
 
@@ -486,7 +486,7 @@ Kit rules (proposed):
 1. The agent can **request** any Critical action; only the user's hold completes it. No rule, session
    grant or level can pre-approve Critical (`AllowAlways` and `AllowSession` hidden).
 2. Batching never includes Critical: a paged card shows one Critical item per page.
-3. Every resolution writes an audit row (`audit-log/timeline`, [permission-rules](../specs/permission-rules.md)),
+3. Every resolution writes an audit row (`audit-log/timeline`, `permission-rules.md` — Pro (private)),
    shown in Deploy → History.
 4. Permission level lives in the composer (`permission-selector/segmented`); the level's reach is
    shown with `sandbox-badge/chip`.
@@ -602,7 +602,7 @@ thumbnails are generated from it, and no real logo, brand or person appears.
   panels at `dur.surface.enter`; sheets at `dur.sheet.enter` (`spring.snap`).
 - **expressive**: blueprint draw-in then `loop.scan` reveal; `genui-surface/aurora-build` glow over the
   region being written; publish success uses the `mark/ring-step` success state
-  ([animated-marks](../specs/animated-marks.md)).
+  (`animated-marks.md` — Pro (private)).
 
 ## 9. Accessibility and edge cases
 
