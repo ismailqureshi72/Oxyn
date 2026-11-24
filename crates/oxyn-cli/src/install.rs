@@ -202,19 +202,20 @@ pub fn add_cargo_deps(
                     "path",
                     Value::from(format!("{}/crates/{}", path.trim_end_matches('/'), d.name)),
                 );
-            } else {
-                t.insert(
-                    "git",
-                    Value::from(
-                        source
-                            .git
-                            .clone()
-                            .unwrap_or_else(|| "https://github.com/ismailqureshi72/Oxyn".into()),
-                    ),
-                );
+            } else if let Some(git) = &source.git {
+                t.insert("git", Value::from(git.clone()));
                 if let Some(rev) = &source.rev {
                     t.insert("rev", Value::from(rev.clone()));
                 }
+            } else {
+                // crates.io: a plain version requirement, `oxyn-core = "0.1"`.
+                let v = source
+                    .version
+                    .clone()
+                    .unwrap_or_else(|| config::CRATES_IO_VERSION.into());
+                table.insert(&d.name, toml_edit::value(v));
+                added.push(d.name.clone());
+                continue;
             }
         } else {
             if let Some(v) = &d.version {
@@ -673,11 +674,10 @@ mod tests {
     }
 
     fn src() -> Source {
-        Source {
-            git: Some("https://github.com/ismailqureshi72/Oxyn".into()),
-            rev: Some("a".repeat(40)),
-            path: None,
-        }
+        Source::git(
+            "https://github.com/ismailqureshi72/Oxyn",
+            Some("a".repeat(40)),
+        )
     }
 
     #[test]
@@ -730,6 +730,21 @@ mod tests {
     }
 
     #[test]
+    fn init_uses_crates_io_by_default() {
+        let d = project("dioxus = \"0.7\"");
+        init(d.path(), None, None, Source::crates_io(), false).unwrap();
+        let cargo = fs::read_to_string(d.path().join("Cargo.toml")).unwrap();
+        assert!(cargo.contains("\noxyn-core = \"0.1\"\n"), "{cargo}");
+        assert!(!cargo.contains("git ="), "{cargo}");
+        assert_eq!(Config::load(d.path()).unwrap().oxyn, Source::crates_io());
+        // A source with nothing set (an oxyn.toml edited by hand) is crates.io too.
+        let e = project("dioxus = \"0.7\"");
+        init(e.path(), None, None, Source::default(), false).unwrap();
+        let cargo = fs::read_to_string(e.path().join("Cargo.toml")).unwrap();
+        assert!(cargo.contains("\noxyn-core = \"0.1\"\n"), "{cargo}");
+    }
+
+    #[test]
     fn init_needs_a_framework() {
         let d = project("");
         assert!(
@@ -741,11 +756,7 @@ mod tests {
             Err(Error::NoCargoProject(_))
         ));
         let p = project("");
-        let local = Source {
-            git: None,
-            rev: None,
-            path: Some("/repo/oxyn".into()),
-        };
+        let local = Source::local("/repo/oxyn");
         init(
             p.path(),
             Some(Framework::Gpui),

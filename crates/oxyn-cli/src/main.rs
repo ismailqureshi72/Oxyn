@@ -24,7 +24,8 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Cmd {
-    /// Set up this project: oxyn.toml, src/oxyn/, `mod oxyn;` and the oxyn-core dependency.
+    /// Set up this project: oxyn.toml, src/oxyn/, `mod oxyn;` and the oxyn-core dependency
+    /// (from crates.io unless --oxyn-path or --oxyn-git).
     Init {
         /// dioxus or gpui (detected from Cargo.toml when there is exactly one).
         #[arg(long, short)]
@@ -32,9 +33,13 @@ enum Cmd {
         /// Where components go, inside src/ (default src/oxyn).
         #[arg(long)]
         path: Option<String>,
-        /// Use a local checkout of the Oxyn repository for oxyn-core instead of git.
-        #[arg(long, value_name = "DIR")]
+        /// Use a local checkout of the Oxyn repository for oxyn-core instead of crates.io.
+        #[arg(long, value_name = "DIR", conflicts_with = "oxyn_git")]
         oxyn_path: Option<String>,
+        /// Use the Oxyn git repository, pinned to the commit the registry was built from, instead of
+        /// crates.io (oxyn-core = "0.1" by default).
+        #[arg(long)]
+        oxyn_git: bool,
         /// Write oxyn.toml again even if it exists.
         #[arg(long)]
         force: bool,
@@ -185,6 +190,7 @@ fn run(cli: Cli) -> Result<(), Error> {
             framework,
             path,
             oxyn_path,
+            oxyn_git,
             force,
         } => {
             let p = project_dir(&cli.cwd)?;
@@ -192,20 +198,13 @@ fn run(cli: Cli) -> Result<(), Error> {
                 Some(dir) => {
                     let abs = std::fs::canonicalize(&dir)
                         .map_err(|e| Error::Io(PathBuf::from(&dir), e))?;
-                    Source {
-                        git: None,
-                        rev: None,
-                        path: Some(abs.to_string_lossy().into_owned()),
-                    }
+                    Source::local(abs.to_string_lossy().into_owned())
                 }
-                None => {
+                None if oxyn_git => {
                     let idx = client.index()?;
-                    Source {
-                        git: Some(idx.source.git),
-                        rev: Some(idx.source.rev),
-                        path: None,
-                    }
+                    Source::git(idx.source.git, Some(idx.source.rev))
                 }
+                None => Source::crates_io(),
             };
             let rep = install::init(&p, framework, path.as_deref(), source, force)?;
             for c in rep.changes {
