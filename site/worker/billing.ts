@@ -3,7 +3,8 @@
 //
 //   GET    /api/billing/plans            public: plans, prices, founder spots left (cached 60 s)
 //   GET    /api/billing/checkout?plan=   signed in: redirect to the plan's Polar checkout link with the
-//                                        account's email and id (reference_id) filled in
+//                                        account's email and id (reference_id) filled in; founder plans:
+//                                        a checkout session made for this buyer after the checks
 //   GET    /api/billing/me               signed in: plan, status, renewal, Team seats
 //   GET    /api/billing/subscription     signed in: the billing section of the account page, read live
 //                                        from Polar: plan, price, next payment, scheduled change, card,
@@ -26,7 +27,8 @@
 //   POST   /api/pro/source/<slug>        Pro, from the site: opens it (one of the month's caps, pro.ts)
 //   POST   /api/polar/webhook            Polar events, signed (Standard Webhooks)
 //
-// The Worker never needs the Polar API for a sale: checkout links are public URLs, and the signed
+// Regular plans sell through public Polar checkout links; the founder intro price has no link and
+// each founder checkout is a session the Worker creates after its checks (founderCheckout). The signed
 // webhook writes subscriptions, licences and the founder counter to D1. Billing after the sale
 // happens on the account page, through the Polar API with the Worker secret POLAR_ACCESS_TOKEN
 // (never with an organization_id: the token is an organization token): cancel / resume, switching
