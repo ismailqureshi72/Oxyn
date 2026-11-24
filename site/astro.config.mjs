@@ -33,7 +33,8 @@ export default defineConfig({
   integrations: [
     movedUrls,
     starlight({
-      title: 'Oxyn',
+      title: 'Oxyn UI',
+      titleDelimiter: '–',
       favicon: '/favicon.svg',
       head: [
         { tag: 'link', attrs: { rel: 'icon', href: '/favicon.ico', sizes: '48x48' } },
@@ -43,12 +44,12 @@ export default defineConfig({
         // The same link-preview card as the site pages (src/components/v2/Head.astro).
         ...[
           ['og:image', `${SITE}/og.png?v=2`], ['og:image:secure_url', `${SITE}/og.png?v=2`], ['og:image:type', 'image/png'],
-          ['og:image:width', '1200'], ['og:image:height', '630'], ['og:image:alt', 'Oxyn: UI components for AI agents, in Rust'],
+          ['og:image:width', '1200'], ['og:image:height', '630'], ['og:image:alt', 'Oxyn UI: Rust UI components for AI agents'],
         ].map(([property, content]) => ({ tag: 'meta', attrs: { property, content } })),
         { tag: 'meta', attrs: { name: 'twitter:card', content: 'summary_large_image' } },
         { tag: 'meta', attrs: { name: 'twitter:image', content: `${SITE}/og.png?v=2` } },
       ],
-      description: 'Agent-UI components for Rust: GPUI and Dioxus.',
+      description: 'Oxyn UI docs: Rust UI components for AI agents, for Dioxus and GPUI.',
       pagefind: false,
       tableOfContents: false,
       disable404Route: true,
@@ -78,6 +79,7 @@ export default defineConfig({
           label: 'Guides',
           items: [
             { label: 'All guides', link: '/guides/' },
+            { label: 'Build an AI agent UI in Rust', link: '/guides/build-an-ai-agent-ui-in-rust/' },
             { label: 'Show what your agent is doing', link: '/guides/agent-activity/' },
             { label: 'Ask before acting', link: '/guides/approvals/' },
             { label: 'Build a composer', link: '/guides/composer/' },
