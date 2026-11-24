@@ -19,10 +19,11 @@ let remote: Map<string, Record<string, any>>; // subscriptions as Polar has them
 let patchStatus = 200;
 let orders: Record<string, any>[] = []; // orders as Polar has them (every customer)
 let receiptStatus = 200;
+let checkoutStatus = 201; // what Polar answers POST /checkouts/
 const realFetch = globalThis.fetch;
 const P = 'https://api.polar.sh/v1';
 beforeEach(() => {
-  calls = []; remote = new Map(); patchStatus = 200; orders = []; receiptStatus = 200;
+  calls = []; remote = new Map(); patchStatus = 200; orders = []; receiptStatus = 200; checkoutStatus = 201;
   globalThis.fetch = (async (input: RequestInfo | URL, init: RequestInit = {}) => {
     const url = String(input);
     const method = init.method || 'GET';
@@ -43,6 +44,10 @@ beforeEach(() => {
     }
     const pm = url.match(/^https:\/\/api\.polar\.sh\/v1\/customers\/([^/]+)\/payment-methods$/);
     if (pm) return Response.json({ items: [{ id: 'pm1', type: 'card', customer_id: decodeURIComponent(pm[1]), method_metadata: { brand: 'visa', last4: '4242', exp_month: 12, exp_year: 2030, wallet: null } }] });
+    if (url === P + '/checkouts/' && method === 'POST') {
+      if (checkoutStatus !== 201) return Response.json({ detail: 'nope' }, { status: checkoutStatus });
+      return Response.json({ id: 'co1', url: 'https://buy.polar.sh/polar_c_session1', client_secret: 'polar_c_session1', ...body }, { status: 201 });
+    }
     if (url === P + '/customer-sessions/') return Response.json({ token: 't', customer_portal_url: `https://polar.sh/oxyn/portal?customer_session_token=t&c=${body.customer_id}` }, { status: 201 });
     const m = url.match(/^https:\/\/api\.polar\.sh\/v1\/subscriptions\/([^/]+)$/);
     if (!m) return new Response('{}', { status: 404 });
@@ -192,7 +197,15 @@ test('checkout: a returning customer is sent to the regular price, a new one to 
   const fresh = user('fresh@example.com');
   let r = await worker.fetch(new Request(ORIGIN + '/api/billing/checkout?plan=pro-founder-month', { headers: { cookie: await session(fresh) } }), env, ctx);
   assert.equal(r.status, 302);
-  assert.match(r.headers.get('location')!, /^https:\/\/buy\.polar\.sh\//);
+  assert.equal(r.headers.get('location'), 'https://buy.polar.sh/polar_c_session1');
+  // The founder checkout is a session made for this buyer, never the public link.
+  const made = calls.filter((c) => c.url === P + '/checkouts/');
+  assert.equal(made.length, 1);
+  assert.deepEqual(made[0].body.products, [FOUNDER_M.product]);
+  assert.equal(made[0].body.customer_email, 'fresh@example.com');
+  assert.equal(made[0].body.metadata.reference_id, fresh.id);
+  assert.equal(made[0].body.organization_id, undefined);
+  assert.equal(made[0].body.success_url, `${ORIGIN}/pricing/success?checkout_id={CHECKOUT_ID}`);
   const back = user('back@example.com');
   const old = polarSub('old1', PRO_M, back, { status: 'canceled', ended_at: now() });
   await handleEvent(env, ctx, 'subscription.revoked', old);
@@ -209,6 +222,34 @@ test('webhook: a founder subscription from a returning customer takes no spot bu
   await handleEvent(env, ctx, 'subscription.created', polarSub('s7', FOUNDER_M, u));
   assert.deepEqual(claims(), []);
   assert.equal(patches().length, 1);
+  // ...and it is flagged once for the admins (Activity: Needs a look), however many events follow.
+  await handleEvent(env, ctx, 'subscription.updated', polarSub('s7', FOUNDER_M, u));
+  const flags = env.DB.raw.prepare("SELECT actor, target, detail FROM audit_log WHERE action = 'billing.founder_repeat'").all() as any[];
+  assert.equal(flags.length, 1);
+  assert.equal(flags[0].target, 's7');
+  assert.equal(flags[0].actor, 'polar-webhook');
+  assert.equal(JSON.parse(flags[0].detail).email, 'again@example.com');
+});
+
+test('webhook: a first founder subscription is not flagged', async () => {
+  const u = user('first@example.com');
+  await handleEvent(env, ctx, 'subscription.created', polarSub('s8', FOUNDER_M, u));
+  assert.deepEqual(claims(), ['s8']);
+  assert.equal((env.DB.raw.prepare("SELECT COUNT(*) AS n FROM audit_log WHERE action = 'billing.founder_repeat'").get() as any).n, 0);
+});
+
+test('checkout: founder checkouts are never the public link, and a Polar failure goes back to pricing', async () => {
+  for (const p of PLANS.filter((x) => x.founder)) assert.equal(p.link, '');
+  checkoutStatus = 403;
+  const u = user('noluck@example.com');
+  const r = await worker.fetch(new Request(ORIGIN + '/api/billing/checkout?plan=pro-founder-year&from=x-y', { headers: { cookie: await session(u) } }), env, ctx);
+  assert.equal(r.headers.get('location'), `${ORIGIN}/pricing/?checkout=unavailable&from=x-y`);
+  // Spots gone: no session is made at all.
+  checkoutStatus = 201; calls = [];
+  for (let i = 0; i < 100; i++) env.DB.raw.prepare('INSERT INTO founder_claims (subscription_id, email, claimed_at) VALUES (?, ?, ?)').run(`c${i}`, `c${i}@x.test`, now());
+  const r2 = await worker.fetch(new Request(ORIGIN + '/api/billing/checkout?plan=pro-founder-month', { headers: { cookie: await session(user('late@example.com')) } }), env, ctx);
+  assert.equal(r2.headers.get('location'), `${ORIGIN}/pricing/?founder=closed`);
+  assert.equal(calls.filter((c) => c.url === P + '/checkouts/').length, 0);
 });
 
 // ── Cancel / resume ───────────────────────────────────────────────────────────────────────────
