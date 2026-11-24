@@ -96,6 +96,10 @@
   function loop() {
     timers.forEach(clearTimeout); timers = []; clearTimeout(stopT);
     playing = true; reset(); clear();
+    // Phones: the headline must not change height while the demo plays (each change moved the whole
+    // page below it, CLS 0.15 on a mobile Lighthouse run). Keep at least its resting height, and
+    // skip the width drag, whose cursor is hidden at this size anyway.
+    h1.style.minHeight = small() ? h1.getBoundingClientRect().height + 'px' : '';
     const s = rel(stage), words = $$('.dz-w');
     at(curA, s.w * 0.78, s.h * 0.9); at(curB, s.w * 0.2, s.h * 0.95); show(curA, true); show(curB, true);
     amb.forEach((c, i) => { at(c, s.w * (0.12 + 0.3 * i), s.h * (0.08 + 0.05 * i)); show(c, true); wander(i, 300 + i * 450); });
@@ -107,6 +111,7 @@
     later(4800, () => { press(curB); setWt(620); setTr(-0.048); flash($('[data-ins-trf]')); });
     later(4300, () => move(curA, handleE, 0.5, 0.5, -2, -2));
     later(5300, () => {
+      if (small()) return;
       press(curA); sel.classList.add('drag'); const w0 = h1.getBoundingClientRect().width, w1 = Math.max(300, w0 - (small() ? 90 : 250));
       const follow = () => { frame(); move(curA, handleE, 0.5, 0.5, -2, -2); };
       curA.classList.add('drag');
