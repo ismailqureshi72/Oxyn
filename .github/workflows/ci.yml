@@ -181,6 +181,68 @@ jobs:
           printf 'mod oxyn;\n#[allow(unused_imports)]\nuse oxyn::{BadgeEl, ButtonEl, SpinnerEl};\nfn main() {}\n' > src/main.rs
           cargo check
 
+  # The free set on its own, the way a fork or anyone without Oxyn Pro gets it: no Pro overlay, the
+  # registry generated from this checkout, then every Free item (site/src/lib/free-tier.json, plus
+  # any other free registry item such as the theme) added to one fresh Dioxus project with
+  # `oxyn add`, which must `cargo check`. Catches a free item that only builds with Pro sources.
+  free-only:
+    runs-on: ubuntu-latest
+    env:
+      CARGO_TARGET_DIR: ${{ github.workspace }}/target
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: "1.99"
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: free-only
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+      - run: npm ci
+        working-directory: site
+      - name: no Pro sources in this checkout
+        run: |
+          test ! -e .oxyn-pro || { echo "::error::free-only must run without the Pro overlay"; exit 1; }
+          echo "OXYN_PRO_MODE=${OXYN_PRO_MODE:-unset}"
+      - name: registry (site/public/r) from this commit, free set
+        run: node scripts/gen.mjs
+        working-directory: site
+      - run: cargo build --locked -p oxyn-cli
+      - name: every Free item is in the registry, free and installable
+        run: |
+          OXYN=$CARGO_TARGET_DIR/debug/oxyn; R=$PWD/site/public/r
+          $OXYN list --registry "$R" --tier free --json > "$RUNNER_TEMP/free.json"
+          node -e '
+            const fs = require("fs");
+            const want = JSON.parse(fs.readFileSync("site/src/lib/free-tier.json", "utf8")).free;
+            const reg = JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP + "/free.json", "utf8"));
+            const idx = JSON.parse(fs.readFileSync("site/public/r/index.json", "utf8")).items;
+            const bySlug = new Map(idx.map((x) => [x.slug, x]));
+            let bad = 0;
+            for (const s of want) {
+              const x = bySlug.get(s);
+              if (!x) { console.log(`::error::${s} (free-tier.json) is not in the registry`); bad++; continue; }
+              if (x.tier !== "free" || !x.installable) { console.log(`::error::${s}: tier=${x.tier} installable=${x.installable} ${x.note || ""}`); bad++; }
+            }
+            const slugs = [...new Set([...want, ...reg.map((x) => x.slug)])];
+            fs.writeFileSync(process.env.RUNNER_TEMP + "/slugs.txt", slugs.join(" "));
+            console.log(`${want.length} Free items, ${slugs.length} to install`);
+            process.exit(bad ? 1 : 0);'
+      - name: fresh Dioxus project, oxyn add every free item, cargo check
+        run: |
+          OXYN=$CARGO_TARGET_DIR/debug/oxyn; R=$PWD/site/public/r; ROOT=$PWD
+          cd "$RUNNER_TEMP" && cargo new -q free --vcs none && cd free
+          cargo add -q dioxus@0.7 --no-default-features -F macro,html,signals,hooks
+          $OXYN init --registry "$R" --oxyn-path "$ROOT"
+          $OXYN add --registry "$R" $(cat "$RUNNER_TEMP/slugs.txt")
+          printf 'mod oxyn;\nfn main() {}\n' > src/main.rs
+          ls src/oxyn | wc -l
+          cargo check
+
   # Site: build only (Astro + Pagefind + the live-demo WASM bundle). Never uploads artifacts.
   # Deploy runs on main only, and only once the Cloudflare secrets exist; otherwise it is skipped.
   site:
