@@ -36,8 +36,17 @@ export default defineConfig({
       title: 'Oxyn',
       favicon: '/favicon.svg',
       head: [
+        { tag: 'link', attrs: { rel: 'icon', href: '/favicon.ico', sizes: '48x48' } },
+        { tag: 'link', attrs: { rel: 'icon', href: '/favicon-96.png', type: 'image/png', sizes: '96x96' } },
         { tag: 'link', attrs: { rel: 'icon', href: '/favicon-32.png', type: 'image/png', sizes: '32x32' } },
         { tag: 'link', attrs: { rel: 'apple-touch-icon', href: '/apple-touch-icon.png', sizes: '180x180' } },
+        // The same link-preview card as the site pages (src/components/v2/Head.astro).
+        ...[
+          ['og:image', `${SITE}/og.png?v=2`], ['og:image:secure_url', `${SITE}/og.png?v=2`], ['og:image:type', 'image/png'],
+          ['og:image:width', '1200'], ['og:image:height', '630'], ['og:image:alt', 'Oxyn: UI components for AI agents, in Rust'],
+        ].map(([property, content]) => ({ tag: 'meta', attrs: { property, content } })),
+        { tag: 'meta', attrs: { name: 'twitter:card', content: 'summary_large_image' } },
+        { tag: 'meta', attrs: { name: 'twitter:image', content: `${SITE}/og.png?v=2` } },
       ],
       description: 'Agent-UI components for Rust: GPUI and Dioxus.',
       pagefind: false,
