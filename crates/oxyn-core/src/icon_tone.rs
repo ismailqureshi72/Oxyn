@@ -303,7 +303,17 @@ mod tests {
 
     #[test]
     fn css_defines_every_tone_for_both_themes() {
-        let css = include_str!("../../oxyn-dioxus/src/kit/icontone.css");
+        // The stylesheet lives in oxyn-dioxus, which is not in the published oxyn-core package: read
+        // it at run time from the workspace and skip outside it, so `cargo test` works from crates.io.
+        let p = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("../oxyn-dioxus/src/kit/icontone.css");
+        let Ok(css) = std::fs::read_to_string(&p) else {
+            eprintln!(
+                "skipped: {} not found (not in the Oxyn workspace)",
+                p.display()
+            );
+            return;
+        };
         for t in IconTone::ALL {
             let l = format!("--ox-ic-{}:#{}", t.key(), t.light());
             let d = format!("--ox-ic-{}:#{}", t.key(), t.dark());
