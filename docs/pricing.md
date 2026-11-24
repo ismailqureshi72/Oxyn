@@ -2,8 +2,8 @@
 
 74 of Oxyn's components are free; everything else is Oxyn Pro. Pro and Team are subscriptions sold through
 [Polar](https://polar.sh), which is the merchant of record: Polar takes the payment, adds sales tax
-or VAT at checkout, sends receipts and invoices, and runs the customer portal. The site never sees
-card details.
+or VAT at checkout and sends receipts and invoices. Everything after the checkout happens on the
+site's own account page (see Billing on the site); the site never sees card details.
 
 ## Plans
 
@@ -116,7 +116,7 @@ format raw, API version 2026-10, events `subscription.created`, `subscription.up
 | Secret | Needed for | Without it |
 | --- | --- | --- |
 | `POLAR_WEBHOOK_SECRET` | Verifying webhooks (Standard Webhooks). | The webhook answers 503; no subscription is recorded. |
-| `POLAR_ACCESS_TOKEN` | Pre-signed customer portal sessions; scheduling founder subscriptions to renew as regular Pro; archiving the founder products at 100. | Manage billing opens `https://polar.sh/oxyn/portal`, where Polar emails a sign-in code; founder renewals and the founder archive stay pending in the admin panel (the site still stops selling it). |
+| `POLAR_ACCESS_TOKEN` | The Billing section of the account page (plan switch, payments and receipts, the card on file, Update card), Cancel / Resume, scheduling founder subscriptions to renew as regular Pro, archiving the founder products at 100. Scopes: `subscriptions:read/write`, `orders:read`, `customers:read`, `customer_sessions:write`, `products:write`; checked daily (D1 settings `polar_check`, shown in the admin panel). | The Billing section and Cancel plan answer 503; founder renewals and the founder archive stay pending in the admin panel (the site still stops selling it). |
 
 Set them from `site/` with `npx wrangler secret put <NAME>`. An organization access token from Polar
 (Settings, Developers) with `products:write`, `subscriptions:read`, `subscriptions:write` and `customer_sessions:write` is enough for
@@ -149,14 +149,44 @@ site's own origin:
 - `POST /api/billing/resume` → the same with `false`
 
 The Worker writes Polar's answer to D1 straight away (the `subscription.updated` webhook that
-follows agrees with it) and needs `POLAR_ACCESS_TOKEN`; without it the routes answer 503 and point to
-Manage billing, which still works through Polar's portal. Resuming a founder subscription in its
+follows agrees with it) and needs `POLAR_ACCESS_TOKEN`; without it the routes answer 503. Resuming a founder subscription in its
 first period schedules its regular-price renewal again.
+
+## Billing on the site
+
+Subscribers manage billing on `/account/#billing`, never in Polar's customer portal. The Worker
+reads Polar live with the organization token (no `organization_id` in any call):
+
+- **Summary**: plan, price, next payment (a founder subscription shows the switch to the regular
+  price at its renewal), the card on file (`GET /v1/customers/{id}/payment-methods`).
+- **Change plan** (subscription owner only; a teammate sees nothing to change; founder products are
+  never offered): a confirm step shows what is charged and when (`GET /api/billing/preview`), then
+  `POST /api/billing/change` sends `PATCH /v1/subscriptions/{id}` with this rule (`changeRule`):
+
+  | Switch | Takes effect | `proration_behavior` | Charged now |
+  |---|---|---|---|
+  | Pro → Team, same interval | at once | `invoice` | the price difference for the rest of the period (estimate shown; Polar adds tax) |
+  | monthly ↔ yearly, Team → Pro, any interval change | next renewal | `next_period` | nothing; the renewal bills the new plan |
+
+  One change is scheduled at a time: a pending one (an earlier switch, or a founder subscription's
+  renewal as Pro) is cleared first and put back if Polar refuses. **Keep my current plan**
+  (`POST /api/billing/keep`) drops a scheduled switch; a founder subscription keeps its renewal as
+  Pro. Cancelling subscriptions cannot switch until resumed; past-due ones until the card works.
+- **Payments and invoices**: `GET /v1/orders/?customer_id=` for the account's own Polar customers
+  only (never a Team owner's); **Receipt** and **Invoice** PDFs through
+  `/v1/orders/{id}/receipt|invoice` after checking the order belongs to the account. An invoice
+  needs a billing name and address on the order; without them only the receipt is offered.
+- **Update card** is the one Polar page: Polar's API adds a card only from a Stripe confirmation
+  token made with Polar's own Stripe account, so `/api/billing/card` opens Polar's hosted page with a
+  pre-signed customer session and a way back to the account page. Plan changes are switched off in
+  Polar's customer portal (organization `customer_portal_settings.subscription.update_plan: false`),
+  so the portal cannot route around the rule above. The old `/api/billing/portal` link now lands on
+  `/account/#billing`.
 
 ## Who has Pro: `plan_for(user)`
 
 One helper in `site/worker/billing.ts` answers "what may this account use", and every check
-(`/api/billing/me`, `/api/pro/source/*`, checkout, seats, the portal) goes through it. It reads:
+(`/api/billing/me`, `/api/pro/source/*`, checkout, seats, billing) goes through it. It reads:
 
 1. the account's own Polar subscriptions (via `licences`): live means status `active`, `trialing` or
    `past_due` (Polar is retrying the card) and not ended;
